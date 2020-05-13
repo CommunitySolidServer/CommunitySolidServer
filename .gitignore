@@ -1,0 +1,10 @@
+.idea
+node_modules
+coverage
+
+*.js
+*.js.map
+*.d.ts
+
+!.eslintrc.js
+!jest.config.js

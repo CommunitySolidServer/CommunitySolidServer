@@ -1,0 +1,9 @@
+# don't ever lint node_modules
+node_modules
+# don't lint nyc coverage output
+coverage
+
+# ignore generated files
+**/*.js
+**/*.d.ts
+**/*.js.map

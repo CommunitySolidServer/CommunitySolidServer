@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+ - "10"
+ - "12"
+ - "14"
+ - "node"
+script:
+ - npm run build
+ - npm run lint
+ - npm run test
+cache: npm
