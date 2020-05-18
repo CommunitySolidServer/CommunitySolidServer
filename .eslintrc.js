@@ -8,6 +8,7 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'prettier',
+    'eslint-plugin-tsdoc',
   ],
   extends: [
     'eslint:recommended',
@@ -20,5 +21,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
     'prettier/prettier': 'error',
+    "sort-imports": "error",
+    'tsdoc/syntax': 'error',
   },
 };
