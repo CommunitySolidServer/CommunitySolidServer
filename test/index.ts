@@ -1,5 +1,5 @@
-describe('A basic test', () => {
-  it('to have something pass', () => {
+describe('A basic test', (): void => {
+  it('to have something pass.', async (): Promise<void> => {
     expect(true).toBeTruthy();
   });
 });
