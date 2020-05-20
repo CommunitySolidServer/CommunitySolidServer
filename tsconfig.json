@@ -10,10 +10,11 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "stripInternal": true
   },
   "include": [
-    "lib/**/*.ts",
+    "src/**/*.ts",
     "test/**/*.ts"
   ],
   "exclude": [

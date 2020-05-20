@@ -7,4 +7,5 @@ coverage
 *.d.ts
 
 !.eslintrc.js
+!test/eslintrc.js
 !jest.config.js
