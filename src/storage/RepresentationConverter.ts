@@ -1,5 +1,5 @@
-import { Representation } from '../ldp/http/Representation';
-import { RepresentationPreferences } from '../ldp/http/RepresentationPreferences';
+import { Representation } from '../ldp/representation/Representation';
+import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 
 /**
  * Allows converting from one resource representation to another.

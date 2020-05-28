@@ -1,4 +1,4 @@
-import { Representation } from './Representation';
+import { Representation } from '../representation/Representation';
 
 /**
  * Represents the changes needed for a PATCH request.

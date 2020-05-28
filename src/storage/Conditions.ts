@@ -1,4 +1,4 @@
-import { RepresentationMetadata } from '../ldp/http/RepresentationMetadata';
+import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 
 /**
  * The conditions of an HTTP conditional request.

@@ -1,5 +1,5 @@
 import { Lock } from './Lock';
-import { ResourceIdentifier } from '../ldp/http/ResourceIdentifier';
+import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
  * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.
