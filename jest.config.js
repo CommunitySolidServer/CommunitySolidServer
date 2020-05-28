@@ -7,18 +7,22 @@ module.exports = {
   "transform": {
     "^.+\\.ts$": "ts-jest"
   },
-  "testRegex": "/test/.*\\.ts$",
+  "testRegex": "/test/.*\\.test\\.ts$",
   "moduleFileExtensions": [
     "ts",
     "js"
   ],
   "testEnvironment": "node",
   "collectCoverage": true,
-  // either we don't build the test files (but then eslint needs a separate tsconfig) or we do this
-  "testPathIgnorePatterns": [
-    ".*\\.d\\.ts"
-  ],
   "coveragePathIgnorePatterns": [
     "/node_modules/"
-  ]
+  ],
+  "coverageThreshold": {
+    "./src": {
+      "branches": 100,
+      "functions": 100,
+      "lines": 100,
+      "statements": 100
+    }
+  }
 };

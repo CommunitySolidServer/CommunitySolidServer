@@ -5,4 +5,4 @@ import { PermissionSet } from './PermissionSet';
 /**
  * Verifies which permissions are requested on a given {@link Operation}.
  */
-export type PermissionsExtractor = AsyncHandler<Operation, PermissionSet>;
+export abstract class PermissionsExtractor extends AsyncHandler<Operation, PermissionSet> {}

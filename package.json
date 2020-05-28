@@ -11,7 +11,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run build"
+      "pre-commit": "npm run build && npm run lint && npm run test"
     }
   },
   "files": [
@@ -34,7 +34,7 @@
     "eslint-plugin-tsdoc": "^0.2.4",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
-    "ts-jest": "^25.5.1",
+    "ts-jest": "^26.0.0",
     "typescript": "^3.9.2"
   }
 }

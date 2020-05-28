@@ -7,7 +7,7 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
  * Verifies if the given credentials have access to the given permissions on the given resource.
  * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
  */
-export type Authorizer = AsyncHandler<AuthorizerArgs>;
+export abstract class Authorizer extends AsyncHandler<AuthorizerArgs> {}
 
 export interface AuthorizerArgs {
   /**

@@ -5,4 +5,4 @@ import { HttpResponse } from './HttpResponse';
 /**
  * An HTTP request handler.
  */
-export type HttpHandler = AsyncHandler<{ request: HttpRequest; response: HttpResponse }>;
+export abstract class HttpHandler extends AsyncHandler<{ request: HttpRequest; response: HttpResponse }> {}
