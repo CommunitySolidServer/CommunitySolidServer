@@ -5,4 +5,4 @@ import { Operation } from '../operations/Operation';
 /**
  * Converts an incoming HttpRequest to an Operation.
  */
-export type RequestParser = AsyncHandler<HttpRequest, Operation>;
+export abstract class RequestParser extends AsyncHandler<HttpRequest, Operation> {}
