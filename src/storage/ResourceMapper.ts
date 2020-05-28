@@ -1,4 +1,4 @@
-import { RepresentationMetadata } from '../ldp/http/RepresentationMetadata';
+import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 
 /**
  * Supports mapping a file to an URL and back.

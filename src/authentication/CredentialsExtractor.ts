@@ -1,15 +1,9 @@
+import { AsyncHandler } from '../util/AsyncHandler';
 import { Credentials } from './Credentials';
 import { HttpRequest } from '../server/HttpRequest';
 
 /**
- * Responsible for extracting credentials.
+ * Responsible for extracting credentials from an incoming request.
+ * Will return `null` if no credentials were found.
  */
-export interface CredentialsExtractor {
-  /**
-   * Extracts the credentials found in an HttpRequest.
-   *
-   * @param request - The incoming request.
-   * @returns A promise resolving to the credentials.
-   */
-  extractCredentials: (request: HttpRequest) => Promise<Credentials>;
-}
+export type CredentialsExtractor = AsyncHandler<HttpRequest, Credentials>;
