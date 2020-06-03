@@ -46,22 +46,17 @@ export interface AuthenticatedLdpHandlerArgs {
  */
 export class AuthenticatedLdpHandler extends HttpHandler {
   private readonly requestParser: RequestParser;
-
   private readonly credentialsExtractor: CredentialsExtractor;
-
   private readonly permissionsExtractor: PermissionsExtractor;
-
   private readonly authorizer: Authorizer;
-
   private readonly operationHandler: OperationHandler;
-
   private readonly responseWriter: ResponseWriter;
 
   /**
    * Creates the handler.
    * @param args - The handlers required. None of them are optional.
    */
-  public constructor (args: AuthenticatedLdpHandlerArgs) {
+  public constructor(args: AuthenticatedLdpHandlerArgs) {
     super();
     Object.assign(this, args);
   }
@@ -73,7 +68,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving if this request can be handled, otherwise rejecting with an Error.
    */
-  public async canHandle (input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async canHandle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
     return this.requestParser.canHandle(input.request);
   }
 
@@ -90,7 +85,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving when the handling is finished.
    */
-  public async handle (input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
     let err: Error;
     let operation: Operation;
 
@@ -112,15 +107,11 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving to the generated Operation.
    */
-  private async runHandlers (request: HttpRequest): Promise<Operation> {
+  private async runHandlers(request: HttpRequest): Promise<Operation> {
     const op: Operation = await this.requestParser.handleSafe(request);
-
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
-
     const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(op);
-
     await this.authorizer.handleSafe({ credentials, identifier: op.target, permissions });
-
     await this.operationHandler.handleSafe(op);
 
     return op;

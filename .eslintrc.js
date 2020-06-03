@@ -13,7 +13,11 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
-    "sort-imports": "error",
+    '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
+    'class-methods-use-this': 'off',
+    'comma-dangle': ['error', 'always-multiline'],
+    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+    'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',
   },
 };

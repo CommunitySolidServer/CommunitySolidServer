@@ -11,7 +11,7 @@ export abstract class HttpError extends Error {
    * @param name - Error name. Useful for logging and stack tracing.
    * @param message - Message to be thrown.
    */
-  protected constructor (statusCode: number, name: string, message: string) {
+  protected constructor(statusCode: number, name: string, message: string) {
     super(message);
     this.statusCode = statusCode;
     this.name = name;
