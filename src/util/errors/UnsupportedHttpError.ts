@@ -9,7 +9,7 @@ export class UnsupportedHttpError extends HttpError {
    * Default message is 'The given input is not supported by the server configuration.'.
    * @param message - Optional, more specific, message.
    */
-  public constructor (message?: string) {
+  public constructor(message?: string) {
     super(400, 'UnsupportedHttpError', message || 'The given input is not supported by the server configuration.');
   }
 }

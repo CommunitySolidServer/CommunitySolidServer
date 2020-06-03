@@ -11,7 +11,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   let args: AuthenticatedLdpHandlerArgs;
   let responseFn: jest.Mock<Promise<void>, [any]>;
 
-  beforeEach(async (): Promise<void> => {
+  beforeEach(async(): Promise<void> => {
     const requestParser: RequestParser = new StaticAsyncHandler(true, 'parser' as any);
     const credentialsExtractor: CredentialsExtractor = new StaticAsyncHandler(true, 'credentials' as any);
     const permissionsExtractor: PermissionsExtractor = new StaticAsyncHandler(true, 'permissions' as any);
@@ -19,7 +19,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
     const operationHandler: OperationHandler = new StaticAsyncHandler(true, 'operation' as any);
     const responseWriter: ResponseWriter = new StaticAsyncHandler(true, 'response' as any);
 
-    responseFn = jest.fn(async (input: any): Promise<void> => {
+    responseFn = jest.fn(async(input: any): Promise<void> => {
       if (!input) {
         throw new Error('error');
       }
@@ -29,17 +29,17 @@ describe('An AuthenticatedLdpHandler', (): void => {
     args = { requestParser, credentialsExtractor, permissionsExtractor, authorizer, operationHandler, responseWriter };
   });
 
-  it('can be created.', async (): Promise<void> => {
+  it('can be created.', async(): Promise<void> => {
     expect(new AuthenticatedLdpHandler(args)).toBeInstanceOf(AuthenticatedLdpHandler);
   });
 
-  it('can check if it handles input.', async (): Promise<void> => {
+  it('can check if it handles input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
     await expect(handler.canHandle({ request: null, response: null })).resolves.toBeUndefined();
   });
 
-  it('can handle input.', async (): Promise<void> => {
+  it('can handle input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
     await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toEqual('response');
@@ -47,7 +47,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
     expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', operation: 'parser' as any });
   });
 
-  it('sends an error to the output if a handler does not support the input.', async (): Promise<void> => {
+  it('sends an error to the output if a handler does not support the input.', async(): Promise<void> => {
     args.requestParser = new StaticAsyncHandler(false, null);
     const handler = new AuthenticatedLdpHandler(args);
 
@@ -56,7 +56,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
     expect(responseFn.mock.calls[0][0].error).toBeInstanceOf(Error);
   });
 
-  it('errors if the response writer does not support the result.', async (): Promise< void> => {
+  it('errors if the response writer does not support the result.', async(): Promise< void> => {
     args.responseWriter = new StaticAsyncHandler(false, null);
     const handler = new AuthenticatedLdpHandler(args);
 

@@ -12,7 +12,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    * Creates a new CompositeAsyncHandler that stores the given handlers.
    * @param handlers - Handlers over which it will run.
    */
-  public constructor (handlers: AsyncHandler<TIn, TOut>[]) {
+  public constructor(handlers: AsyncHandler<TIn, TOut>[]) {
     this.handlers = handlers;
   }
 
@@ -22,7 +22,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    *
    * @returns A promise resolving if at least 1 handler supports to input, or rejecting if none do.
    */
-  public async canHandle (input: TIn): Promise<void> {
+  public async canHandle(input: TIn): Promise<void> {
     await this.findHandler(input);
   }
 
@@ -33,7 +33,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    * @returns A promise corresponding to the handle call of a handler that supports the input.
    * It rejects if no handlers support the given data.
    */
-  public async handle (input: TIn): Promise<TOut> {
+  public async handle(input: TIn): Promise<TOut> {
     let handler: AsyncHandler<TIn, TOut>;
 
     try {
@@ -52,7 +52,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    * @returns A promise corresponding to the handle call of a handler that supports the input.
    * It rejects if no handlers support the given data.
    */
-  public async handleSafe (input: TIn): Promise<TOut> {
+  public async handleSafe(input: TIn): Promise<TOut> {
     const handler = await this.findHandler(input);
 
     return handler.handle(input);
@@ -66,7 +66,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    *
    * @returns A promise resolving to a handler that supports the data or otherwise rejecting.
    */
-  private async findHandler (input: TIn): Promise<AsyncHandler<TIn, TOut>> {
+  private async findHandler(input: TIn): Promise<AsyncHandler<TIn, TOut>> {
     const errors: Error[] = [];
 
     for (const handler of this.handlers) {

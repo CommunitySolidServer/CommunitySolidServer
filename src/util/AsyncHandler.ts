@@ -27,7 +27,7 @@ export abstract class AsyncHandler<TInput, TOutput = void> {
    *
    * @returns The result of the handle function of the handler.
    */
-  public async handleSafe (data: TInput): Promise<TOutput> {
+  public async handleSafe(data: TInput): Promise<TOutput> {
     await this.canHandle(data);
 
     return this.handle(data);
