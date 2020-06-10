@@ -5,6 +5,7 @@ import streamifyArray from 'streamify-array';
 import { StreamParser } from 'n3';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { namedNode, triple } from '@rdfjs/data-model';
+import 'jest-rdf';
 
 const contentTypes = [
   'application/n-quads',

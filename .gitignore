@@ -9,4 +9,3 @@ coverage
 !.eslintrc.js
 !test/eslintrc.js
 !jest.config.js
-!external-types/*.d.ts
