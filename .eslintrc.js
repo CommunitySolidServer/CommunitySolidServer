@@ -16,6 +16,7 @@ module.exports = {
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
     'class-methods-use-this': 'off',
     'comma-dangle': ['error', 'always-multiline'],
+    'dot-location': ['error', 'property'],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',

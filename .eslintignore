@@ -7,3 +7,5 @@ coverage
 **/*.js
 **/*.d.ts
 **/*.js.map
+
+!external-types/*.d.ts
