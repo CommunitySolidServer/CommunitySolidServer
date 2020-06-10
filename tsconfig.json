@@ -5,6 +5,7 @@
     "newLine": "lf",
     "alwaysStrict": true,
     "declaration": true,
+    "esModuleInterop": true,
     "inlineSources": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -14,6 +15,7 @@
     "stripInternal": true
   },
   "include": [
+    "external-types/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts"
   ],
