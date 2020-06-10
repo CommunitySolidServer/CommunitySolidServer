@@ -9,5 +9,5 @@ export interface RepresentationPreference {
   /**
    * How important this preference is in a value going from 0 to 1.
    */
-  weight?: number;
+  weight: number;
 }

@@ -6,7 +6,6 @@ import { RepresentationMetadata } from '../representation/RepresentationMetadata
 import { StreamParser } from 'n3';
 import { TypedReadable } from '../../util/TypedReadable';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import 'jest-rdf';
 
 export class SimpleBodyParser extends BodyParser {
   private static readonly contentTypes = [
@@ -32,12 +31,12 @@ export class SimpleBodyParser extends BodyParser {
       return undefined;
     }
 
-    const specificType = contentType.split(';')[0];
+    const mediaType = contentType.split(';')[0];
 
     const metadata: RepresentationMetadata = {
       raw: [],
       profiles: [],
-      contentType: specificType,
+      contentType: mediaType,
     };
 
     // StreamParser is a Readable but typings are incorrect at time of writing

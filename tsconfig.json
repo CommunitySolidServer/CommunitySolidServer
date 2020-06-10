@@ -15,7 +15,6 @@
     "stripInternal": true
   },
   "include": [
-    "external-types/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts"
   ],

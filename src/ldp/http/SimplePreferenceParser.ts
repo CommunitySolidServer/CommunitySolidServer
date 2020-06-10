@@ -20,7 +20,7 @@ export class SimplePreferenceParser extends PreferenceParser {
     // Datetime can have commas so requires separate rules
     let datetime;
     if (input.headers['accept-datetime']) {
-      datetime = [{ value: input.headers['accept-datetime'] as string }];
+      datetime = [{ value: input.headers['accept-datetime'] as string, weight: 1 }];
     }
 
     return { type, charset, datetime, language };
@@ -34,7 +34,7 @@ export class SimplePreferenceParser extends PreferenceParser {
     return header.split(',').map((preference): RepresentationPreference => {
       const parts = preference.split(';');
       if (parts.length === 1) {
-        return { value: parts[0].trim() };
+        return { value: parts[0].trim(), weight: 1 };
       }
       return { value: parts[0].trim(), weight: parseFloat(parts[1].trim().slice('q='.length)) };
     });

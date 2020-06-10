@@ -3,7 +3,7 @@
  */
 export interface ResourceIdentifier {
   /**
-   * Path to the relevant resource. Usually this would be an URL.
+   * Path to the relevant resource.
    */
   path: string;
 }
