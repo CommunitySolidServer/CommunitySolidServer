@@ -9,6 +9,7 @@ import { OperationHandler } from './operations/OperationHandler';
 import { PermissionSet } from './permissions/PermissionSet';
 import { PermissionsExtractor } from './permissions/PermissionsExtractor';
 import { RequestParser } from './http/RequestParser';
+import { ResponseDescription } from './operations/ResponseDescription';
 import { ResponseWriter } from './http/ResponseWriter';
 
 /**
@@ -87,15 +88,15 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    */
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
     let err: Error;
-    let operation: Operation;
+    let description: ResponseDescription;
 
     try {
-      operation = await this.runHandlers(input.request);
+      description = await this.runHandlers(input.request);
     } catch (error) {
       err = error;
     }
 
-    const writeData = { response: input.response, operation, error: err };
+    const writeData = { response: input.response, description, error: err };
 
     return this.responseWriter.handleSafe(writeData);
   }
@@ -107,13 +108,11 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving to the generated Operation.
    */
-  private async runHandlers(request: HttpRequest): Promise<Operation> {
+  private async runHandlers(request: HttpRequest): Promise<ResponseDescription> {
     const op: Operation = await this.requestParser.handleSafe(request);
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
     const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(op);
     await this.authorizer.handleSafe({ credentials, identifier: op.target, permissions });
-    await this.operationHandler.handleSafe(op);
-
-    return op;
+    return this.operationHandler.handleSafe(op);
   }
 }

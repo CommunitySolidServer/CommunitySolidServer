@@ -44,7 +44,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
     await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toEqual('response');
     expect(responseFn).toHaveBeenCalledTimes(1);
-    expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', operation: 'parser' as any });
+    expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', description: 'operation' as any });
   });
 
   it('sends an error to the output if a handler does not support the input.', async(): Promise<void> => {
