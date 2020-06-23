@@ -1,6 +1,6 @@
-import { OutgoingMessage } from 'http';
+import { ServerResponse } from 'http';
 
 /**
  * An outgoing HTTP response;
  */
-export type HttpResponse = OutgoingMessage;
+export type HttpResponse = ServerResponse;

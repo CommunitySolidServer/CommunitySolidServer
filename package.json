@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@types/arrayify-stream": "^1.0.0",
+    "@types/express": "^4.17.6",
     "@types/jest": "^25.2.1",
     "@types/streamify-array": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
@@ -40,6 +41,7 @@
     "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-rdf": "^1.5.0",
+    "node-mocks-http": "^1.8.1",
     "streamify-array": "^1.0.1",
     "ts-jest": "^26.0.0",
     "typescript": "^3.9.2"
