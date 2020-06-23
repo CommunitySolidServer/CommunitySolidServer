@@ -13,11 +13,13 @@ module.exports = {
   ],
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'off', // problems with optional parameters
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
-    'class-methods-use-this': 'off',
+    'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
     'comma-dangle': ['error', 'always-multiline'],
     'dot-location': ['error', 'property'],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+    'no-underscore-dangle': 'off', // conflicts with external libraries
     'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',
   },
