@@ -3,6 +3,9 @@
  */
 import { Quad } from 'rdf-js';
 
+/**
+ * Metadata corresponding to a {@link Representation}.
+ */
 export interface RepresentationMetadata {
   /**
    * All metadata triples of the resource.

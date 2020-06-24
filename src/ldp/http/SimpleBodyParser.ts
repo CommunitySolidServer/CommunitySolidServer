@@ -5,6 +5,10 @@ import { RepresentationMetadata } from '../representation/RepresentationMetadata
 import { StreamParser } from 'n3';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 
+/**
+ * Parses the incoming {@link HttpRequest} if there is no body or if it contains turtle (or similar) RDF data.
+ * Naively parses the content-type header to determine the body type.
+ */
 export class SimpleBodyParser extends BodyParser {
   private static readonly contentTypes = [
     'application/n-quads',

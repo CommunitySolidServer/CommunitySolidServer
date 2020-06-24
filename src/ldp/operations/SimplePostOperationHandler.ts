@@ -4,6 +4,10 @@ import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
+/**
+ * Handles POST {@link Operation}s.
+ * Calls the addResource function from a {@link ResourceStore}.
+ */
 export class SimplePostOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;
 

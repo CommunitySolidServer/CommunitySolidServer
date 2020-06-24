@@ -4,6 +4,10 @@ import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
+/**
+ * Handles DELETE {@link Operation}s.
+ * Calls the deleteResource function from a {@link ResourceStore}.
+ */
 export class SimpleDeleteOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;
 

@@ -4,6 +4,10 @@ import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
+/**
+ * Handles GET {@link Operation}s.
+ * Calls the getRepresentation function from a {@link ResourceStore}.
+ */
 export class SimpleGetOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;
 
