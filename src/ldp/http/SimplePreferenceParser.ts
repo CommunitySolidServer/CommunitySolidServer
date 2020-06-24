@@ -3,6 +3,10 @@ import { PreferenceParser } from './PreferenceParser';
 import { RepresentationPreference } from '../representation/RepresentationPreference';
 import { RepresentationPreferences } from '../representation/RepresentationPreferences';
 
+/**
+ * Extracts preferences from the accept-* headers from an incoming {@link HttpRequest}.
+ * Parsing of header strings is done naively.
+ */
 export class SimplePreferenceParser extends PreferenceParser {
   public constructor() {
     super();

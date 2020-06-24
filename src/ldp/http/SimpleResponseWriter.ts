@@ -4,6 +4,9 @@ import { ResponseDescription } from '../operations/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
+/**
+ * Writes to an {@link HttpResponse} based on the incoming {@link ResponseDescription} or error.
+ */
 export class SimpleResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; description?: ResponseDescription; error?: Error }): Promise<void> {
     if (!input.description && !input.error) {

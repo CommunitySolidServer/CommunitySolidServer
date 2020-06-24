@@ -14,6 +14,10 @@ export interface SimpleRequestParserArgs {
   bodyParser: BodyParser;
 }
 
+/**
+ * Creates an {@link Operation} from an incoming {@link HttpRequest} by aggregating the results
+ * of a {@link TargetExtractor}, {@link PreferenceParser}, and {@link BodyParser}.
+ */
 export class SimpleRequestParser extends RequestParser {
   private readonly targetExtractor: TargetExtractor;
   private readonly preferenceParser: PreferenceParser;
