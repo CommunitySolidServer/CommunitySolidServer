@@ -3,7 +3,6 @@ import { BinaryRepresentation } from '../ldp/representation/BinaryRepresentation
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { Quad } from 'rdf-js';
 import { QuadRepresentation } from '../ldp/representation/QuadRepresentation';
-import { Readable } from 'stream';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
@@ -74,7 +73,7 @@ export class SimpleResourceStore implements ResourceStore {
   private generateBinaryRepresentation(data: Quad[]): BinaryRepresentation {
     return {
       dataType: 'binary',
-      data: streamifyArray(data).pipe(new StreamWriter({ format: 'text/turtle' })) as unknown as Readable,
+      data: streamifyArray(data).pipe(new StreamWriter({ format: 'text/turtle' })),
       metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
     };
   }

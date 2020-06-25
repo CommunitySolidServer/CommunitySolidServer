@@ -1,10 +1,8 @@
 import { BodyParser } from './BodyParser';
 import { HttpRequest } from '../../server/HttpRequest';
-import { Quad } from 'rdf-js';
 import { QuadRepresentation } from '../representation/QuadRepresentation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { StreamParser } from 'n3';
-import { TypedReadable } from '../../util/TypedReadable';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 
 export class SimpleBodyParser extends BodyParser {
@@ -39,12 +37,9 @@ export class SimpleBodyParser extends BodyParser {
       contentType: mediaType,
     };
 
-    // StreamParser is a Readable but typings are incorrect at time of writing
-    const quads: TypedReadable<Quad> = input.pipe(new StreamParser()) as unknown as TypedReadable<Quad>;
-
     return {
       dataType: 'quad',
-      data: quads,
+      data: input.pipe(new StreamParser()),
       metadata,
     };
   }
