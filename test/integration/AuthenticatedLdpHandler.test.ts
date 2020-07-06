@@ -1,3 +1,4 @@
+import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
 import { EventEmitter } from 'events';
@@ -11,7 +12,6 @@ import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDel
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
 import { SimplePermissionsExtractor } from '../../src/ldp/permissions/SimplePermissionsExtractor';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
-import { SimplePreferenceParser } from '../../src/ldp/http/SimplePreferenceParser';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
 import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
@@ -25,7 +25,7 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
   beforeEach(async(): Promise<void> => {
     const requestParser = new SimpleRequestParser({
       targetExtractor: new SimpleTargetExtractor(),
-      preferenceParser: new SimplePreferenceParser(),
+      preferenceParser: new AcceptPreferenceParser(),
       bodyParser: new SimpleBodyParser(),
     });
 

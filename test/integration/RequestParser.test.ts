@@ -1,7 +1,7 @@
+import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import arrayifyStream from 'arrayify-stream';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
-import { SimplePreferenceParser } from '../../src/ldp/http/SimplePreferenceParser';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import streamifyArray from 'streamify-array';
@@ -11,7 +11,7 @@ import { namedNode, triple } from '@rdfjs/data-model';
 describe('A SimpleRequestParser with simple input parsers', (): void => {
   const targetExtractor = new SimpleTargetExtractor();
   const bodyParser = new SimpleBodyParser();
-  const preferenceParser = new SimplePreferenceParser();
+  const preferenceParser = new AcceptPreferenceParser();
   const requestParser = new SimpleRequestParser({ targetExtractor, bodyParser, preferenceParser });
 
   it('can parse an incoming request.', async(): Promise<void> => {
