@@ -1,4 +1,9 @@
-import { parseAccept, parseAcceptCharset, parseAcceptLanguage } from '../../../src/util/AcceptParser';
+import {
+  parseAccept,
+  parseAcceptCharset,
+  parseAcceptEncoding,
+  parseAcceptLanguage,
+} from '../../../src/util/AcceptParser';
 
 describe('AcceptParser', (): void => {
   describe('parseAccept function', (): void => {
@@ -20,7 +25,7 @@ describe('AcceptParser', (): void => {
     });
 
     it('parses complex Accept headers.', async(): Promise<void> => {
-      expect(parseAccept('text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4,text/x-dvi; q=.8; mxb=100000; mxt')).toEqual([
+      expect(parseAccept('text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4,text/x-dvi; q=0.8; mxb=100000; mxt')).toEqual([
         { range: 'text/html', weight: 1, parameters: { mediaType: { level: '1' }, extension: {}}},
         { range: 'text/x-dvi', weight: 0.8, parameters: { mediaType: {}, extension: { mxb: '100000', mxt: '' }}},
         { range: 'text/html', weight: 0.7, parameters: { mediaType: {}, extension: {}}},
@@ -33,6 +38,33 @@ describe('AcceptParser', (): void => {
         { range: 'audio/basic', weight: 0.5, parameters: { mediaType: { param1: '"val"' }, extension: { param2: '"\\\\\\"valid"' }}},
       ]);
     });
+
+    it('rejects Accept Headers with invalid types.', async(): Promise<void> => {
+      expect((): any => parseAccept('*')).toThrow('Invalid Accept range:');
+      expect((): any => parseAccept('"bad"/text')).toThrow('Invalid Accept range:');
+      expect((): any => parseAccept('*/\\bad')).toThrow('Invalid Accept range:');
+      expect((): any => parseAccept('*/*')).not.toThrow('Invalid Accept range:');
+    });
+
+    it('rejects Accept Headers with invalid q values.', async(): Promise<void> => {
+      expect((): any => parseAccept('a/b; q=text')).toThrow('Invalid q value:');
+      expect((): any => parseAccept('a/b; q=0.1234')).toThrow('Invalid q value:');
+      expect((): any => parseAccept('a/b; q=1.1')).toThrow('Invalid q value:');
+      expect((): any => parseAccept('a/b; q=1.000')).not.toThrow();
+      expect((): any => parseAccept('a/b; q=0.123')).not.toThrow();
+    });
+
+    it('rejects Accept Headers with invalid parameters.', async(): Promise<void> => {
+      expect((): any => parseAccept('a/b; a')).toThrow('Invalid Accept parameter:');
+      expect((): any => parseAccept('a/b; a=\\')).toThrow('Invalid Accept parameter:');
+      expect((): any => parseAccept('a/b; q=1 ; a=\\')).toThrow('Invalid Accept parameter:');
+      expect((): any => parseAccept('a/b; q=1 ; a')).not.toThrow('Invalid Accept parameter:');
+    });
+
+    it('rejects Accept Headers with quoted parameters.', async(): Promise<void> => {
+      expect((): any => parseAccept('a/b; a="\\""')).not.toThrow();
+      expect((): any => parseAccept('a/b; a="\\\u007F"')).toThrow('Invalid quoted string in Accept header:');
+    });
   });
 
   describe('parseCharset function', (): void => {
@@ -42,6 +74,11 @@ describe('AcceptParser', (): void => {
         { range: 'unicode-1-1', weight: 0.8 },
       ]);
     });
+
+    it('rejects invalid Accept-Charset Headers.', async(): Promise<void> => {
+      expect((): any => parseAcceptCharset('a/b')).toThrow('Invalid Accept-Charset range:');
+      expect((): any => parseAcceptCharset('a; q=text')).toThrow('Invalid q value:');
+    });
   });
 
   describe('parseEncoding function', (): void => {
@@ -50,11 +87,16 @@ describe('AcceptParser', (): void => {
     });
 
     it('parses Accept-Encoding headers.', async(): Promise<void> => {
-      expect(parseAcceptCharset('gzip;q=1.0, identity; q=0.5, *;q=0')).toEqual([
+      expect(parseAcceptEncoding('gzip;q=1.000, identity; q=0.5, *;q=0')).toEqual([
         { range: 'gzip', weight: 1 },
         { range: 'identity', weight: 0.5 },
         { range: '*', weight: 0 },
       ]);
+    });
+
+    it('rejects invalid Accept-Encoding Headers.', async(): Promise<void> => {
+      expect((): any => parseAcceptEncoding('a/b')).toThrow('Invalid Accept-Encoding range:');
+      expect((): any => parseAcceptEncoding('a; q=text')).toThrow('Invalid q value:');
     });
   });
 
@@ -65,6 +107,17 @@ describe('AcceptParser', (): void => {
         { range: 'en-gb', weight: 0.8 },
         { range: 'en', weight: 0.7 },
       ]);
+    });
+
+    it('rejects invalid Accept-Language Headers.', async(): Promise<void> => {
+      expect((): any => parseAcceptLanguage('a/b')).toThrow('Invalid Accept-Language range:');
+      expect((): any => parseAcceptLanguage('05-a')).toThrow('Invalid Accept-Language range:');
+      expect((): any => parseAcceptLanguage('a--05')).toThrow('Invalid Accept-Language range:');
+      expect((): any => parseAcceptLanguage('a-"a"')).toThrow('Invalid Accept-Language range:');
+      expect((): any => parseAcceptLanguage('a-05')).not.toThrow('Invalid Accept-Language range:');
+      expect((): any => parseAcceptLanguage('a-b-c-d')).not.toThrow('Invalid Accept-Language range:');
+
+      expect((): any => parseAcceptLanguage('a; q=text')).toThrow('Invalid q value:');
     });
   });
 });
