@@ -1,5 +1,5 @@
 {
-  "name": "open-solid-server",
+  "name": "@solid/community-server",
   "private": true,
   "version": "0.0.1",
   "main": "index.js",
