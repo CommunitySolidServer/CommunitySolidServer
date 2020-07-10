@@ -59,6 +59,13 @@ describe('A SimpleResourceStore', (): void => {
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ quad ]);
   });
 
+  it('can add resources to previously added resources.', async(): Promise<void> => {
+    const identifier = await store.addResource({ path: base }, representation);
+    representation.data = streamifyArray([ quad ]);
+    const childIdentifier = await store.addResource(identifier, representation);
+    expect(childIdentifier.path).toContain(identifier.path);
+  });
+
   it('can read binary data.', async(): Promise<void> => {
     const identifier = await store.addResource({ path: base }, representation);
     expect(identifier.path.startsWith(base)).toBeTruthy();
