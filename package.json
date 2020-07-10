@@ -4,11 +4,14 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
+  "bin": "bin/server.js",
   "scripts": {
     "build": "tsc",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "eslint . --ext .ts",
-    "test": "jest"
+    "start": "node ./bin/server.js -p 3000",
+    "test": "jest",
+    "watch": "nodemon --watch \"src/**/*.js\" --watch \"bin/**/*.js\" --exec npm start"
   },
   "husky": {
     "hooks": {
@@ -18,21 +21,29 @@
   "files": [
     "index.js",
     "index.d.ts",
+    "bin/*.js",
+    "bin/*.d.ts",
     "src/**/*.js",
     "src/**/*.d.ts"
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.1.2",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.6",
     "@types/n3": "^1.4.0",
     "@types/node": "^14.0.1",
     "@types/rdf-js": "^3.0.0",
-    "n3": "^1.4.0"
+    "@types/yargs": "^15.0.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "n3": "^1.4.0",
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@types/arrayify-stream": "^1.0.0",
-    "@types/express": "^4.17.6",
     "@types/jest": "^25.2.1",
     "@types/streamify-array": "^1.0.0",
+    "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "arrayify-stream": "^1.0.0",
@@ -44,7 +55,9 @@
     "jest": "^26.0.1",
     "jest-rdf": "^1.5.0",
     "node-mocks-http": "^1.8.1",
+    "nodemon": "^2.0.4",
     "streamify-array": "^1.0.1",
+    "supertest": "^4.0.2",
     "ts-jest": "^26.0.0",
     "typescript": "^3.9.2"
   }
