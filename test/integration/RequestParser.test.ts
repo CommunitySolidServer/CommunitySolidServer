@@ -17,11 +17,12 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
   it('can parse an incoming request.', async(): Promise<void> => {
     const request = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
     request.method = 'POST';
-    request.url = 'http://test.com/';
+    request.url = '/';
     request.headers = {
       accept: 'text/turtle; q=0.8',
       'accept-language': 'en-gb, en;q=0.5',
       'content-type': 'text/turtle',
+      host: 'test.com',
     };
 
     const result = await requestParser.handle(request);
