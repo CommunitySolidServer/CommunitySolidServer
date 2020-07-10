@@ -1,8 +1,10 @@
 import { BodyParser } from './BodyParser';
 import { HttpRequest } from '../../server/HttpRequest';
+import { PassThrough } from 'stream';
 import { QuadRepresentation } from '../representation/QuadRepresentation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { StreamParser } from 'n3';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 
 /**
@@ -41,9 +43,16 @@ export class SimpleBodyParser extends BodyParser {
       contentType: mediaType,
     };
 
+    // Catch parsing errors and emit correct error
+    // Node 10 requires both writableObjectMode and readableObjectMode
+    const errorStream = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    const data = input.pipe(new StreamParser());
+    data.pipe(errorStream);
+    data.on('error', (error): boolean => errorStream.emit('error', new UnsupportedHttpError(error.message)));
+
     return {
       dataType: 'quad',
-      data: input.pipe(new StreamParser()),
+      data: errorStream,
       metadata,
     };
   }

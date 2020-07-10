@@ -1,11 +1,11 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import arrayifyStream from 'arrayify-stream';
 import { HttpRequest } from '../../src/server/HttpRequest';
+import { Readable } from 'stream';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import streamifyArray from 'streamify-array';
-import { StreamParser } from 'n3';
 import { namedNode, triple } from '@rdfjs/data-model';
 
 describe('A SimpleRequestParser with simple input parsers', (): void => {
@@ -34,7 +34,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
         language: [{ value: 'en-gb', weight: 1 }, { value: 'en', weight: 0.5 }],
       },
       body: {
-        data: expect.any(StreamParser),
+        data: expect.any(Readable),
         dataType: 'quad',
         metadata: {
           contentType: 'text/turtle',
