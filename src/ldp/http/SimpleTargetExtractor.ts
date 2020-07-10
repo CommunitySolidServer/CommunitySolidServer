@@ -1,6 +1,8 @@
+import { format } from 'url';
 import { HttpRequest } from '../../server/HttpRequest';
 import { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
+import { TLSSocket } from 'tls';
 
 /**
  * Extracts an identifier from an incoming {@link HttpRequest}.
@@ -14,6 +16,13 @@ export class SimpleTargetExtractor extends TargetExtractor {
   }
 
   public async handle(input: HttpRequest): Promise<ResourceIdentifier> {
-    return { path: input.url };
+    const isHttps = input.connection && (input.connection as TLSSocket).encrypted;
+    const url = format({
+      protocol: `http${isHttps ? 's' : ''}`,
+      host: input.headers.host,
+      pathname: input.url,
+    });
+
+    return { path: url };
   }
 }

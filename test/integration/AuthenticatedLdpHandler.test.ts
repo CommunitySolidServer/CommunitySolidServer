@@ -18,6 +18,7 @@ import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import streamifyArray from 'streamify-array';
 import { createResponse, MockResponse } from 'node-mocks-http';
+import * as url from 'url';
 
 describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
   let handler: AuthenticatedLdpHandler;
@@ -54,11 +55,13 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
 
   it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
     // POST
+    let requestUrl = new url.URL('http://test.com/');
     let request = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
-    request.url = 'http://test.com/';
+    request.url = requestUrl.pathname;
     request.method = 'POST';
     request.headers = {
       'content-type': 'text/turtle',
+      host: requestUrl.host,
     };
     let response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
 
@@ -69,7 +72,7 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
         expect(response.statusCode).toBe(200);
         expect(response._getData()).toHaveLength(0);
         id = response._getHeaders().location;
-        expect(id).toContain(request.url);
+        expect(id).toContain(url.format(requestUrl));
         resolve();
       });
     });
@@ -78,11 +81,13 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
     await endPromise;
 
     // GET
+    requestUrl = new url.URL(id);
     request = {} as HttpRequest;
-    request.url = id;
+    request.url = requestUrl.pathname;
     request.method = 'GET';
     request.headers = {
       accept: 'text/turtle',
+      host: requestUrl.host,
     };
     response = createResponse({ eventEmitter: EventEmitter });
 
@@ -91,7 +96,7 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
         expect(response._isEndCalled()).toBeTruthy();
         expect(response.statusCode).toBe(200);
         expect(response._getData()).toContain('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
-        expect(response._getHeaders().location).toBe(request.url);
+        expect(response._getHeaders().location).toBe(url.format(requestUrl));
         resolve();
       });
     });
@@ -101,9 +106,11 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
 
     // DELETE
     request = {} as HttpRequest;
-    request.url = id;
+    request.url = requestUrl.pathname;
     request.method = 'DELETE';
-    request.headers = {};
+    request.headers = {
+      host: requestUrl.host,
+    };
     response = createResponse({ eventEmitter: EventEmitter });
 
     endPromise = new Promise((resolve): void => {
@@ -111,7 +118,7 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
         expect(response._isEndCalled()).toBeTruthy();
         expect(response.statusCode).toBe(200);
         expect(response._getData()).toHaveLength(0);
-        expect(response._getHeaders().location).toBe(request.url);
+        expect(response._getHeaders().location).toBe(url.format(requestUrl));
         resolve();
       });
     });
@@ -121,10 +128,11 @@ describe('An AuthenticatedLdpHandler with instantiated handlers', (): void => {
 
     // GET
     request = {} as HttpRequest;
-    request.url = id;
+    request.url = requestUrl.pathname;
     request.method = 'GET';
     request.headers = {
       accept: 'text/turtle',
+      host: requestUrl.host,
     };
     response = createResponse({ eventEmitter: EventEmitter });
 
