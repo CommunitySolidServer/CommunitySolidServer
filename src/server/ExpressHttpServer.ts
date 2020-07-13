@@ -21,7 +21,13 @@ export class ExpressHttpServer {
     }));
 
     app.use(async(request, response): Promise<void> => {
-      await this.handler.handleSafe({ request, response });
+      try {
+        await this.handler.handleSafe({ request, response });
+      } catch (error) {
+        const errMsg = `${error.name}: ${error.message}\n${error.stack}`;
+        process.stderr.write(errMsg);
+        response.status(500).send(errMsg);
+      }
     });
     return app.listen(port);
   }
