@@ -12,6 +12,11 @@ export class SimpleResponseWriter extends ResponseWriter {
     if (!input.description && !input.error) {
       throw new UnsupportedHttpError('Either a description or an error is required for output.');
     }
+    if (input.description && input.description.body) {
+      if (input.description.body.dataType !== 'binary' && input.description.body.dataType !== 'string') {
+        throw new UnsupportedHttpError('Only string or binary results are supported.');
+      }
+    }
   }
 
   public async handle(input: { response: HttpResponse; description?: ResponseDescription; error?: Error }): Promise<void> {

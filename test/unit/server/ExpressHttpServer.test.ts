@@ -24,8 +24,9 @@ describe('ExpressHttpServer', (): void => {
   let server: Server;
   let canHandleJest: jest.Mock<Promise<void>, []>;
   let handleJest: jest.Mock<Promise<void>, [any]>;
+  let handler: SimpleHttpHandler;
   beforeEach(async(): Promise<void> => {
-    const handler = new SimpleHttpHandler();
+    handler = new SimpleHttpHandler();
     canHandleJest = jest.fn(async(): Promise<void> => undefined);
     handleJest = jest.fn(async(input): Promise<void> => handle(input));
 
@@ -73,5 +74,13 @@ describe('ExpressHttpServer', (): void => {
       }),
       response: expect.objectContaining({}),
     });
+  });
+
+  it('catches errors thrown by its handler.', async(): Promise<void> => {
+    handler.handle = async(): Promise<void> => {
+      throw new Error('dummyError');
+    };
+    const res = await request(server).get('/').expect(500);
+    expect(res.text).toContain('dummyError');
   });
 });

@@ -20,6 +20,12 @@ describe('A SimpleResponseWriter', (): void => {
     await expect(writer.canHandle({ response })).rejects.toThrow(UnsupportedHttpError);
   });
 
+  it('requires the description body to be a string or binary stream if present.', async(): Promise<void> => {
+    await expect(writer.canHandle({ response, description: { body: { dataType: 'quad' }} as ResponseDescription })).rejects.toThrow(UnsupportedHttpError);
+    await expect(writer.canHandle({ response, description: { body: { dataType: 'string' }} as ResponseDescription })).resolves.toBeUndefined();
+    await expect(writer.canHandle({ response, description: { body: { dataType: 'binary' }} as ResponseDescription })).resolves.toBeUndefined();
+  });
+
   it('responds with status code 200 and a location header if there is a description.', async(): Promise<void> => {
     await writer.handle({ response, description: { identifier: { path: 'path' }}});
     expect(response._isEndCalled()).toBeTruthy();

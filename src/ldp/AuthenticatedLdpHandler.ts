@@ -98,7 +98,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
 
     const writeData = { response: input.response, description, error: err };
 
-    return this.responseWriter.handleSafe(writeData);
+    await this.responseWriter.handleSafe(writeData);
   }
 
   /**

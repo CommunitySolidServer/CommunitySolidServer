@@ -42,7 +42,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   it('can handle input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toEqual('response');
+    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toEqual(undefined);
     expect(responseFn).toHaveBeenCalledTimes(1);
     expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', description: 'operation' as any });
   });
@@ -51,7 +51,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
     args.requestParser = new StaticAsyncHandler(false, null);
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.handle({ request: 'request' as any, response: null })).resolves.toEqual('response');
+    await expect(handler.handle({ request: 'request' as any, response: null })).resolves.toEqual(undefined);
     expect(responseFn).toHaveBeenCalledTimes(1);
     expect(responseFn.mock.calls[0][0].error).toBeInstanceOf(Error);
   });
