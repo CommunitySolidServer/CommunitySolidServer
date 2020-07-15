@@ -56,10 +56,12 @@ export * from './src/server/HttpResponse';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/Lock';
+export * from './src/storage/LockingResourceStore';
 export * from './src/storage/RepresentationConverter';
 export * from './src/storage/ResourceLocker';
 export * from './src/storage/ResourceMapper';
 export * from './src/storage/ResourceStore';
+export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/SimpleResourceStore';
 
 // Util/Errors
