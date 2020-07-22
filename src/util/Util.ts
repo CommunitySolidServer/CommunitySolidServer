@@ -1,3 +1,6 @@
+import arrayifyStream from 'arrayify-stream';
+import { Readable } from 'stream';
+
 /**
  * Makes sure the input path has exactly 1 slash at the end.
  * Multiple slashes will get merged into one.
@@ -8,3 +11,5 @@
  * @returns The potentially changed path.
  */
 export const ensureTrailingSlash = (path: string): string => path.replace(/\/*$/u, '/');
+
+export const readableToString = async(stream: Readable): Promise<string> => (await arrayifyStream(stream)).join('');
