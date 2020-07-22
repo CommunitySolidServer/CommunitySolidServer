@@ -20,7 +20,7 @@ export class AcceptPreferenceParser extends PreferenceParser {
   }
 
   public async canHandle(): Promise<void> {
-    return undefined;
+    // Supports all HttpRequests
   }
 
   public async handle(input: HttpRequest): Promise<RepresentationPreferences> {

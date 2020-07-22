@@ -12,7 +12,7 @@ const handle = async(input: { request: HttpRequest; response: HttpResponse }): P
 
 class SimpleHttpHandler extends HttpHandler {
   public async canHandle(): Promise<void> {
-    return undefined;
+    // Supports all HttpRequests
   }
 
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {

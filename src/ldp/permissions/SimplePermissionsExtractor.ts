@@ -7,7 +7,7 @@ import { PermissionsExtractor } from './PermissionsExtractor';
  */
 export class SimplePermissionsExtractor extends PermissionsExtractor {
   public async canHandle(): Promise<void> {
-    return undefined;
+    // Supports all operations
   }
 
   public async handle(input: Operation): Promise<PermissionSet> {

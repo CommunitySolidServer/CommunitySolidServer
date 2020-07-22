@@ -32,7 +32,7 @@ export class SimpleBodyParser extends BodyParser {
     const contentType = input.headers['content-type'];
 
     if (!contentType) {
-      return undefined;
+      return;
     }
 
     const mediaType = contentType.split(';')[0];
