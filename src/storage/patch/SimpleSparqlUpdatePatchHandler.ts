@@ -27,7 +27,7 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
   }
 
   public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
-    if (input.patch.dataType !== 'algebra' || !input.patch.algebra) {
+    if (input.patch.dataType !== 'sparql-algebra' || !input.patch.algebra) {
       throw new UnsupportedHttpError('Only SPARQL update patch requests are supported.');
     }
   }
