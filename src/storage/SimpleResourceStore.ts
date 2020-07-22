@@ -122,16 +122,21 @@ export class SimpleResourceStore implements ResourceStore {
    * Converts an array of Quads to a Representation.
    * If preferences.type contains 'text/turtle' the result will be a stream of turtle strings,
    * otherwise a stream of Quads.
+   *
+   * Note that in general this should be done by resource store specifically made for converting to turtle,
+   * this is just here to make this simple resource store work.
+   *
    * @param data - Quads to transform.
    * @param preferences - Requested preferences.
    *
    * @returns The resulting Representation.
    */
   private generateRepresentation(data: Quad[], preferences: RepresentationPreferences): Representation {
-    if (preferences.type && preferences.type.some((preference): boolean => preference.value.includes('text/turtle'))) {
-      return this.generateBinaryRepresentation(data);
+    // Always return turtle unless explicitly asked for quads
+    if (preferences.type?.some((preference): boolean => preference.value.includes('internal/quads'))) {
+      return this.generateQuadRepresentation(data);
     }
-    return this.generateQuadRepresentation(data);
+    return this.generateBinaryRepresentation(data);
   }
 
   /**

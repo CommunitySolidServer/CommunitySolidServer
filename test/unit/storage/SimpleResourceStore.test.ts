@@ -47,7 +47,7 @@ describe('A SimpleResourceStore', (): void => {
   it('can write and read data.', async(): Promise<void> => {
     const identifier = await store.addResource({ path: base }, representation);
     expect(identifier.path.startsWith(base)).toBeTruthy();
-    const result = await store.getRepresentation(identifier, {});
+    const result = await store.getRepresentation(identifier, { type: [{ value: 'internal/quads', weight: 1 }]});
     expect(result).toEqual({
       dataType: 'quad',
       data: expect.any(Readable),
@@ -84,9 +84,27 @@ describe('A SimpleResourceStore', (): void => {
     );
   });
 
+  it('returns turtle data if no preference was set.', async(): Promise<void> => {
+    const identifier = await store.addResource({ path: base }, representation);
+    expect(identifier.path.startsWith(base)).toBeTruthy();
+    const result = await store.getRepresentation(identifier, { });
+    expect(result).toEqual({
+      dataType: 'binary',
+      data: expect.any(Readable),
+      metadata: {
+        profiles: [],
+        raw: [],
+        contentType: 'text/turtle',
+      },
+    });
+    await expect(arrayifyStream(result.data)).resolves.toContain(
+      `<${quad.subject.value}> <${quad.predicate.value}> <${quad.object.value}>`,
+    );
+  });
+
   it('can set data.', async(): Promise<void> => {
     await store.setRepresentation({ path: base }, representation);
-    const result = await store.getRepresentation({ path: base }, {});
+    const result = await store.getRepresentation({ path: base }, { type: [{ value: 'internal/quads', weight: 1 }]});
     expect(result).toEqual({
       dataType: 'quad',
       data: expect.any(Readable),
