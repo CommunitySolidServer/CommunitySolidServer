@@ -7,13 +7,12 @@ import { HttpRequest } from '../server/HttpRequest';
  */
 export class SimpleCredentialsExtractor extends CredentialsExtractor {
   public async canHandle(): Promise<void> {
-    return undefined;
+    // Supports all requests
   }
 
   public async handle(input: HttpRequest): Promise<Credentials> {
     if (input.headers.authorization) {
       return { webID: input.headers.authorization };
     }
-    return undefined;
   }
 }

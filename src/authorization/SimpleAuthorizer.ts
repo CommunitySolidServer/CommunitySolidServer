@@ -12,6 +12,6 @@ export class SimpleAuthorizer extends Authorizer {
   }
 
   public async handle(): Promise<void> {
-    return undefined;
+    // Allows all actions
   }
 }
