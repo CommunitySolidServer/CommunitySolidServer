@@ -3,4 +3,9 @@ import { Representation } from '../representation/Representation';
 /**
  * Represents the changes needed for a PATCH request.
  */
-export interface Patch extends Representation {}
+export interface Patch extends Representation {
+  /**
+   * The raw body of the PATCH request.
+   */
+  raw: string;
+}
