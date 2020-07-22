@@ -26,7 +26,7 @@ export class ExpressHttpServer {
       } catch (error) {
         const errMsg = `${error.name}: ${error.message}\n${error.stack}`;
         process.stderr.write(errMsg);
-        response.status(500).send(errMsg);
+        response.status(500).contentType('text/plain').send(errMsg);
       }
     });
     return app.listen(port);
