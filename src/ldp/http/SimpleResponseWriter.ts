@@ -23,9 +23,8 @@ export class SimpleResponseWriter extends ResponseWriter {
     if (input.description) {
       input.response.setHeader('location', input.description.identifier.path);
       if (input.description.body) {
-        if (input.description.body.metadata.contentType) {
-          input.response.setHeader('content-type', input.description.body.metadata.contentType);
-        }
+        const contentType = input.description.body.metadata.contentType || 'text/plain';
+        input.response.setHeader('content-type', contentType);
         input.description.body.data.pipe(input.response);
       }
 
@@ -40,6 +39,7 @@ export class SimpleResponseWriter extends ResponseWriter {
       if (input.error instanceof HttpError) {
         code = input.error.statusCode;
       }
+      input.response.setHeader('content-type', 'text/plain');
       input.response.writeHead(code);
       input.response.end(`${input.error.name}: ${input.error.message}\n${input.error.stack}`);
     }
