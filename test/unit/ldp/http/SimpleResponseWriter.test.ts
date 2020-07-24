@@ -5,6 +5,7 @@ import { SimpleResponseWriter } from '../../../../src/ldp/http/SimpleResponseWri
 import streamifyArray from 'streamify-array';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { createResponse, MockResponse } from 'node-mocks-http';
+import { DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 
 describe('A SimpleResponseWriter', (): void => {
   const writer = new SimpleResponseWriter();
@@ -15,11 +16,9 @@ describe('A SimpleResponseWriter', (): void => {
   });
 
   it('requires the description body to be a string or binary stream if present.', async(): Promise<void> => {
-    await expect(writer.canHandle({ response, result: { body: { dataType: 'quad' }} as ResponseDescription }))
+    await expect(writer.canHandle({ response, result: { body: { dataType: DATA_TYPE_QUAD }} as ResponseDescription }))
       .rejects.toThrow(UnsupportedHttpError);
-    await expect(writer.canHandle({ response, result: { body: { dataType: 'string' }} as ResponseDescription }))
-      .resolves.toBeUndefined();
-    await expect(writer.canHandle({ response, result: { body: { dataType: 'binary' }} as ResponseDescription }))
+    await expect(writer.canHandle({ response, result: { body: { dataType: DATA_TYPE_BINARY }} as ResponseDescription }))
       .resolves.toBeUndefined();
   });
 
@@ -33,7 +32,7 @@ describe('A SimpleResponseWriter', (): void => {
   it('responds with a body if the description has a body.', async(done): Promise<void> => {
     const body = {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      dataType: 'binary',
+      dataType: DATA_TYPE_BINARY,
       metadata: {
         raw: [] as Quad[],
         profiles: [] as string[],
@@ -54,7 +53,7 @@ describe('A SimpleResponseWriter', (): void => {
   it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
     const body = {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      dataType: 'binary',
+      dataType: DATA_TYPE_BINARY,
       metadata: {
         raw: [] as Quad[],
         profiles: [] as string[],

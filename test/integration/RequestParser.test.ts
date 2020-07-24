@@ -1,5 +1,6 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import arrayifyStream from 'arrayify-stream';
+import { DATA_TYPE_QUAD } from '../../src/util/ContentTypes';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { Readable } from 'stream';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
@@ -35,7 +36,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
       body: {
         data: expect.any(Readable),
-        dataType: 'quad',
+        dataType: DATA_TYPE_QUAD,
         metadata: {
           contentType: 'text/turtle',
           profiles: [],

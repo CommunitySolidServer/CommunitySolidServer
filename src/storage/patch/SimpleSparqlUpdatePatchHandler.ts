@@ -11,6 +11,7 @@ import { someTerms } from 'rdf-terms';
 import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { Store } from 'n3';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
 
 /**
  * PatchHandler that supports specific types of SPARQL updates.
@@ -55,7 +56,7 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
 
     const lock = await this.locker.acquire(input.identifier);
     const quads = await this.source.getRepresentation(input.identifier,
-      { type: [{ value: 'internal/quads', weight: 1 }]});
+      { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
     const store = new Store<BaseQuad>();
     const importEmitter = store.import(quads.data);
     await new Promise((resolve, reject): void => {
@@ -66,11 +67,11 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
     store.addQuads(inserts);
     const representation: Representation = {
       data: store.match() as Readable,
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       metadata: {
         raw: [],
         profiles: [],
-        contentType: 'internal/quads',
+        contentType: CONTENT_TYPE_QUADS,
       },
     };
     await this.source.setRepresentation(input.identifier, representation);
