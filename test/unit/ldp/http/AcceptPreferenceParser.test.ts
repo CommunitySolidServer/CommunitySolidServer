@@ -18,22 +18,29 @@ describe('An AcceptPreferenceParser', (): void => {
   });
 
   it('parses accept-charset headers.', async(): Promise<void> => {
-    await expect(preferenceParser.handle({ headers: { 'accept-charset': 'iso-8859-5, unicode-1-1;q=0.8' }} as unknown as HttpRequest))
-      .resolves.toEqual({ charset: [{ value: 'iso-8859-5', weight: 1 }, { value: 'unicode-1-1', weight: 0.8 }]});
+    await expect(preferenceParser.handle(
+      { headers: { 'accept-charset': 'iso-8859-5, unicode-1-1;q=0.8' }} as unknown as HttpRequest,
+    )).resolves.toEqual({ charset: [{ value: 'iso-8859-5', weight: 1 }, { value: 'unicode-1-1', weight: 0.8 }]});
   });
 
   it('parses accept-datetime headers.', async(): Promise<void> => {
-    await expect(preferenceParser.handle({ headers: { 'accept-datetime': 'Tue, 20 Mar 2001 20:35:00 GMT' }} as unknown as HttpRequest))
-      .resolves.toEqual({ datetime: [{ value: 'Tue, 20 Mar 2001 20:35:00 GMT', weight: 1 }]});
+    await expect(preferenceParser.handle(
+      { headers: { 'accept-datetime': 'Tue, 20 Mar 2001 20:35:00 GMT' }} as unknown as HttpRequest,
+    )).resolves.toEqual({ datetime: [{ value: 'Tue, 20 Mar 2001 20:35:00 GMT', weight: 1 }]});
   });
 
   it('parses accept-encoding headers.', async(): Promise<void> => {
-    await expect(preferenceParser.handle({ headers: { 'accept-encoding': 'gzip;q=1.0, identity; q=0.5, *;q=0' }} as unknown as HttpRequest))
-      .resolves.toEqual({ encoding: [{ value: 'gzip', weight: 1 }, { value: 'identity', weight: 0.5 }, { value: '*', weight: 0 }]});
+    await expect(preferenceParser.handle(
+      { headers: { 'accept-encoding': 'gzip;q=1.0, identity; q=0.5, *;q=0' }} as unknown as HttpRequest,
+    )).resolves.toEqual(
+      { encoding: [{ value: 'gzip', weight: 1 }, { value: 'identity', weight: 0.5 }, { value: '*', weight: 0 }]},
+    );
   });
 
   it('parses accept-language headers.', async(): Promise<void> => {
     await expect(preferenceParser.handle({ headers: { 'accept-language': 'da, en-gb;q=0.8, en;q=0.7' }} as HttpRequest))
-      .resolves.toEqual({ language: [{ value: 'da', weight: 1 }, { value: 'en-gb', weight: 0.8 }, { value: 'en', weight: 0.7 }]});
+      .resolves.toEqual(
+        { language: [{ value: 'da', weight: 1 }, { value: 'en-gb', weight: 0.8 }, { value: 'en', weight: 0.7 }]},
+      );
   });
 });

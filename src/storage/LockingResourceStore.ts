@@ -20,24 +20,31 @@ export class LockingResourceStore implements AtomicResourceStore {
     this.locks = locks;
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions): Promise<ResourceIdentifier> {
-    return this.lockedRun(container, async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
+  public async addResource(container: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier> {
+    return this.lockedRun(container,
+      async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
   }
 
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
     return this.lockedRun(identifier, async(): Promise<void> => this.source.deleteResource(identifier, conditions));
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences, conditions?: Conditions): Promise<Representation> {
-    return this.lockedRun(identifier, async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
+  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+    conditions?: Conditions): Promise<Representation> {
+    return this.lockedRun(identifier,
+      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier, async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
+    return this.lockedRun(identifier,
+      async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation, conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier, async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<void> {
+    return this.lockedRun(identifier,
+      async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
   private async lockedRun<T>(identifier: ResourceIdentifier, func: () => Promise<T>): Promise<T> {

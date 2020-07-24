@@ -16,7 +16,8 @@ describe('A SimpleTargetExtractor', (): void => {
   });
 
   it('uses https protocol if the connection is secure.', async(): Promise<void> => {
-    await expect(extractor.handle({ url: 'url', headers: { host: 'test.com' }, connection: { encrypted: true } as any } as any))
-      .resolves.toEqual({ path: 'https://test.com/url' });
+    await expect(extractor.handle(
+      { url: 'url', headers: { host: 'test.com' }, connection: { encrypted: true } as any } as any,
+    )).resolves.toEqual({ path: 'https://test.com/url' });
   });
 });

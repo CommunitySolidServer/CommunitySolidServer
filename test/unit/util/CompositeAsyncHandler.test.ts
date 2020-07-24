@@ -67,7 +67,7 @@ describe('A CompositeAsyncHandler', (): void => {
       expect(handleFn).toHaveBeenCalledTimes(1);
     });
 
-    it('throws the same error as canHandle when calling handleSafe if no handler supports the data.', async(): Promise<void> => {
+    it('throws the canHandle error when calling handleSafe if the data is not supported.', async(): Promise<void> => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported., Not supported.]');

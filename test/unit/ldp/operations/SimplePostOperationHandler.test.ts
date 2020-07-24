@@ -11,8 +11,10 @@ describe('A SimplePostOperationHandler', (): void => {
   const handler = new SimplePostOperationHandler(store);
 
   it('only supports POST operations with a body.', async(): Promise<void> => {
-    await expect(handler.canHandle({ method: 'POST', body: { dataType: 'test' }} as Operation)).resolves.toBeUndefined();
-    await expect(handler.canHandle({ method: 'GET', body: { dataType: 'test' }} as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.canHandle({ method: 'POST', body: { dataType: 'test' }} as Operation))
+      .resolves.toBeUndefined();
+    await expect(handler.canHandle({ method: 'GET', body: { dataType: 'test' }} as Operation))
+      .rejects.toThrow(UnsupportedHttpError);
     await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
@@ -21,6 +23,7 @@ describe('A SimplePostOperationHandler', (): void => {
   });
 
   it('adds the given representation to the store and returns the new identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ method: 'POST', body: { dataType: 'test' }} as Operation)).resolves.toEqual({ identifier: { path: 'newPath' }});
+    await expect(handler.handle({ method: 'POST', body: { dataType: 'test' }} as Operation))
+      .resolves.toEqual({ identifier: { path: 'newPath' }});
   });
 });

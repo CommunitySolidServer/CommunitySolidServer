@@ -39,7 +39,9 @@ describe('An AuthenticatedLdpHandler', (): void => {
   it('can check if it handles input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.canHandle({ request: {} as HttpRequest, response: {} as HttpResponse })).resolves.toBeUndefined();
+    await expect(handler.canHandle(
+      { request: {} as HttpRequest, response: {} as HttpResponse },
+    )).resolves.toBeUndefined();
   });
 
   it('can handle input.', async(): Promise<void> => {

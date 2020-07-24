@@ -63,7 +63,9 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
 
   const basicChecks = async(quads: Quad[]): Promise<void> => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: 'path' }, { type: [{ value: 'internal/quads', weight: 1 }]});
+    expect(source.getRepresentation).toHaveBeenLastCalledWith(
+      { path: 'path' }, { type: [{ value: 'internal/quads', weight: 1 }]},
+    );
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'setRepresentation', 'release' ]);
     const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
@@ -76,7 +78,8 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
   };
 
   it('only accepts SPARQL updates.', async(): Promise<void> => {
-    const input = { identifier: { path: 'path' }, patch: { dataType: 'sparql-algebra', algebra: {}} as SparqlUpdatePatch };
+    const input = { identifier: { path: 'path' },
+      patch: { dataType: 'sparql-algebra', algebra: {}} as SparqlUpdatePatch };
     await expect(handler.canHandle(input)).resolves.toBeUndefined();
     input.patch.dataType = 'notAlgebra';
     await expect(handler.canHandle(input)).rejects.toThrow(UnsupportedHttpError);
@@ -102,7 +105,9 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
         { quads: true },
       ) } as SparqlUpdatePatch });
     await basicChecks(
-      [ quad(namedNode('http://test.com/startS2'), namedNode('http://test.com/startP2'), namedNode('http://test.com/startO2')) ],
+      [ quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')) ],
     );
   });
 
@@ -113,7 +118,9 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
         { quads: true },
       ) } as SparqlUpdatePatch });
     await basicChecks(
-      [ quad(namedNode('http://test.com/startS2'), namedNode('http://test.com/startP2'), namedNode('http://test.com/startO2')) ],
+      [ quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')) ],
     );
   });
 
@@ -125,16 +132,21 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
         'WHERE {}',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await basicChecks(
-      [ quad(namedNode('http://test.com/startS2'), namedNode('http://test.com/startP2'), namedNode('http://test.com/startO2')),
-        quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')) ],
-    );
+    await basicChecks([
+      quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')),
+      quad(namedNode('http://test.com/s1'),
+        namedNode('http://test.com/p1'),
+        namedNode('http://test.com/o1')),
+    ]);
   });
 
   it('rejects GRAPH inserts.', async(): Promise<void> => {
     const handle = handler.handle({ identifier: { path: 'path' },
       patch: { algebra: translate(
-        'INSERT DATA { GRAPH <http://test.com/graph> { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
+        'INSERT DATA { GRAPH <http://test.com/graph> { ' +
+          '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
         { quads: true },
       ) } as SparqlUpdatePatch });
     await expect(handle).rejects.toThrow('GRAPH statements are not supported.');
@@ -144,7 +156,8 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
   it('rejects GRAPH deletes.', async(): Promise<void> => {
     const handle = handler.handle({ identifier: { path: 'path' },
       patch: { algebra: translate(
-        'DELETE DATA { GRAPH <http://test.com/graph> { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
+        'DELETE DATA { GRAPH <http://test.com/graph> { ' +
+          '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
         { quads: true },
       ) } as SparqlUpdatePatch });
     await expect(handle).rejects.toThrow('GRAPH statements are not supported.');

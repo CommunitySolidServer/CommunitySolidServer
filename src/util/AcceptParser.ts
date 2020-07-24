@@ -38,7 +38,8 @@ import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 // language-range   = (1*8ALPHA *("-" 1*8alphanum)) / "*"
 // alphanum         = ALPHA / DIGIT
 //
-// Delimiters are chosen from the set of US-ASCII visual characters not allowed in a token (DQUOTE and "(),/:;<=>?@[\]{}").
+// Delimiters are chosen from the set of US-ASCII visual characters
+// not allowed in a token (DQUOTE and "(),/:;<=>?@[\]{}").
 // token          = 1*tchar
 // tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
 //                / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
@@ -65,7 +66,10 @@ export interface Accept extends AcceptHeader {
   parameters: {
     /** Media type parameters. These are the parameters that came before the q value. */
     mediaType: { [key: string]: string };
-    /** Extension parameters. These are the parameters that came after the q value. Value will be an empty string if there was none. */
+    /**
+     * Extension parameters. These are the parameters that came after the q value.
+     * Value will be an empty string if there was none.
+     */
     extension: { [key: string]: string };
   };
 }
@@ -101,7 +105,9 @@ const transformQuotedStrings = (input: string): { result: string; replacements: 
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!/^"(?:[\t !\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|(?:\\[\t\u0020-\u007e\u0080-\u00ff]))*"$/u.test(match)) {
-      throw new UnsupportedHttpError(`Invalid quoted string in Accept header: ${match}. Check which characters are allowed`);
+      throw new UnsupportedHttpError(
+        `Invalid quoted string in Accept header: ${match}. Check which characters are allowed`,
+      );
     }
     const replacement = `"${idx}"`;
     replacements[replacement] = match;
@@ -131,7 +137,9 @@ const splitAndClean = (input: string): string[] =>
  */
 const testQValue = (qvalue: string): void => {
   if (!/^q=(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
-    throw new UnsupportedHttpError(`Invalid q value: ${qvalue} does not match ("q=" ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] )).`);
+    throw new UnsupportedHttpError(
+      `Invalid q value: ${qvalue} does not match ("q=" ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] )).`,
+    );
   }
 };
 
@@ -155,7 +163,9 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
   // No reason to test differently for * since we don't check if the type exists
   const [ type, subtype ] = range.split('/');
   if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
-    throw new Error(`Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`);
+    throw new Error(
+      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
+    );
   }
 
   let weight = 1;
@@ -174,9 +184,12 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
       // Test replaced string for easier check
       // parameter  = token "=" ( token / quoted-string )
       // second part is optional for extension parameters
-      if (!token.test(name) || !((map === extensionParams && !value) || (value && (/^"\d+"$/u.test(value) || token.test(value))))) {
-        throw new UnsupportedHttpError(`Invalid Accept parameter: ${param} does not match (token "=" ( token / quoted-string )). ` +
-        'Second part optional for extension parameters.');
+      if (!token.test(name) ||
+        !((map === extensionParams && !value) || (value && (/^"\d+"$/u.test(value) || token.test(value))))) {
+        throw new UnsupportedHttpError(
+          `Invalid Accept parameter: ${param} does not match (token "=" ( token / quoted-string )). ` +
+          `Second part is optional for extension parameters.`,
+        );
       }
 
       let actualValue = value;
@@ -256,7 +269,9 @@ export const parseAcceptCharset = (input: string): AcceptCharset[] => {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
-      throw new UnsupportedHttpError(`Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`);
+      throw new UnsupportedHttpError(
+        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
+      );
     }
   });
   return results;
@@ -297,7 +312,9 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
   results.forEach((result): void => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
-      throw new UnsupportedHttpError(`Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`);
+      throw new UnsupportedHttpError(
+        `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
+      );
     }
   });
   return results;

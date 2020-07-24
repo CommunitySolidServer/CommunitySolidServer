@@ -20,7 +20,8 @@ export class PatchingStore implements ResourceStore {
     this.patcher = patcher;
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions): Promise<ResourceIdentifier> {
+  public async addResource(container: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier> {
     return this.source.addResource(container, representation, conditions);
   }
 
@@ -28,11 +29,13 @@ export class PatchingStore implements ResourceStore {
     return this.source.deleteResource(identifier, conditions);
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences, conditions?: Conditions): Promise<Representation> {
+  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+    conditions?: Conditions): Promise<Representation> {
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation, conditions?: Conditions): Promise<void> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<void> {
     return this.source.setRepresentation(identifier, representation, conditions);
   }
 
