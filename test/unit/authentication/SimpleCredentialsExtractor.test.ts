@@ -9,7 +9,7 @@ describe('A SimpleCredentialsExtractor', (): void => {
   });
 
   it('returns undefined if there is no input.', async(): Promise<void> => {
-    await expect(extractor.handle({ headers: {}} as HttpRequest)).resolves.toBeUndefined();
+    await expect(extractor.handle({ headers: {}} as HttpRequest)).resolves.toEqual({});
   });
 
   it('returns the authorization header as webID if there is one.', async(): Promise<void> => {

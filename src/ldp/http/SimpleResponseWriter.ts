@@ -8,40 +8,38 @@ import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
  * Writes to an {@link HttpResponse} based on the incoming {@link ResponseDescription} or error.
  */
 export class SimpleResponseWriter extends ResponseWriter {
-  public async canHandle(input: { response: HttpResponse; description?: ResponseDescription; error?: Error }): Promise<void> {
-    if (!input.description && !input.error) {
-      throw new UnsupportedHttpError('Either a description or an error is required for output.');
-    }
-    if (input.description && input.description.body) {
-      if (input.description.body.dataType !== 'binary' && input.description.body.dataType !== 'string') {
+  public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
+    if (!(input.result instanceof Error)) {
+      const dataType = input.result.body?.dataType;
+      if (dataType && dataType !== 'binary' && dataType !== 'string') {
         throw new UnsupportedHttpError('Only string or binary results are supported.');
       }
     }
   }
 
-  public async handle(input: { response: HttpResponse; description?: ResponseDescription; error?: Error }): Promise<void> {
-    if (input.description) {
-      input.response.setHeader('location', input.description.identifier.path);
-      if (input.description.body) {
-        const contentType = input.description.body.metadata.contentType || 'text/plain';
+  public async handle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
+    if (input.result instanceof Error) {
+      let code = 500;
+      if (input.result instanceof HttpError) {
+        code = input.result.statusCode;
+      }
+      input.response.setHeader('content-type', 'text/plain');
+      input.response.writeHead(code);
+      input.response.end(`${input.result.name}: ${input.result.message}\n${input.result.stack}`);
+    } else {
+      input.response.setHeader('location', input.result.identifier.path);
+      if (input.result.body) {
+        const contentType = input.result.body.metadata.contentType ?? 'text/plain';
         input.response.setHeader('content-type', contentType);
-        input.description.body.data.pipe(input.response);
+        input.result.body.data.pipe(input.response);
       }
 
       input.response.writeHead(200);
 
-      if (!input.description.body) {
+      if (!input.result.body) {
         // If there is an input body the response will end once the input stream ends
         input.response.end();
       }
-    } else {
-      let code = 500;
-      if (input.error instanceof HttpError) {
-        code = input.error.statusCode;
-      }
-      input.response.setHeader('content-type', 'text/plain');
-      input.response.writeHead(code);
-      input.response.end(`${input.error.name}: ${input.error.message}\n${input.error.stack}`);
     }
   }
 }

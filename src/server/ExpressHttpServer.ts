@@ -16,7 +16,7 @@ export class ExpressHttpServer {
     app.use(cors({
       // Based on https://github.com/solid/solid-spec/blob/master/recommendations-server.md#cors---cross-origin-resource-sharing
       // By default origin is always '*', this forces it to be the origin header if there is one
-      origin: (origin, callback): void => callback(null, (origin || '*') as any),
+      origin: (origin, callback): void => callback(null, (origin ?? '*') as any),
       methods: [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ],
     }));
 

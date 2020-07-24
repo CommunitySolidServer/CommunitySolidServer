@@ -1,5 +1,7 @@
+import { Patch } from '../../../src/ldp/http/Patch';
 import { PatchHandler } from '../../../src/storage/patch/PatchHandler';
 import { PatchingStore } from '../../../src/storage/PatchingStore';
+import { Representation } from '../../../src/ldp/representation/Representation';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
 
 describe('A PatchingStore', (): void => {
@@ -24,44 +26,44 @@ describe('A PatchingStore', (): void => {
   });
 
   it('calls getRepresentation directly from the source.', async(): Promise<void> => {
-    await expect(store.getRepresentation({ path: 'getPath' }, null)).resolves.toBe('get');
+    await expect(store.getRepresentation({ path: 'getPath' }, {})).resolves.toBe('get');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: 'getPath' }, null, undefined);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: 'getPath' }, {}, undefined);
   });
 
   it('calls addResource directly from the source.', async(): Promise<void> => {
-    await expect(store.addResource({ path: 'addPath' }, null)).resolves.toBe('add');
+    await expect(store.addResource({ path: 'addPath' }, {} as Representation)).resolves.toBe('add');
     expect(source.addResource).toHaveBeenCalledTimes(1);
-    expect(source.addResource).toHaveBeenLastCalledWith({ path: 'addPath' }, null, undefined);
+    expect(source.addResource).toHaveBeenLastCalledWith({ path: 'addPath' }, {}, undefined);
   });
 
   it('calls setRepresentation directly from the source.', async(): Promise<void> => {
-    await expect(store.setRepresentation({ path: 'setPath' }, null)).resolves.toBe('set');
+    await expect(store.setRepresentation({ path: 'setPath' }, {} as Representation)).resolves.toBe('set');
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'setPath' }, null, undefined);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'setPath' }, {}, undefined);
   });
 
   it('calls deleteResource directly from the source.', async(): Promise<void> => {
-    await expect(store.deleteResource({ path: 'deletePath' }, null)).resolves.toBe('delete');
+    await expect(store.deleteResource({ path: 'deletePath' })).resolves.toBe('delete');
     expect(source.deleteResource).toHaveBeenCalledTimes(1);
-    expect(source.deleteResource).toHaveBeenLastCalledWith({ path: 'deletePath' }, null);
+    expect(source.deleteResource).toHaveBeenLastCalledWith({ path: 'deletePath' }, undefined);
   });
 
   it('calls modifyResource directly from the source if available.', async(): Promise<void> => {
-    await expect(store.modifyResource({ path: 'modifyPath' }, null)).resolves.toBe('modify');
+    await expect(store.modifyResource({ path: 'modifyPath' }, {} as Patch)).resolves.toBe('modify');
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
-    expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, null, undefined);
+    expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, {}, undefined);
   });
 
   it('calls its patcher if modifyResource failed.', async(): Promise<void> => {
     source.modifyResource = jest.fn(async(): Promise<any> => {
       throw new Error('dummy');
     });
-    await expect(store.modifyResource({ path: 'modifyPath' }, null)).resolves.toBe('patcher');
+    await expect(store.modifyResource({ path: 'modifyPath' }, {} as Patch)).resolves.toBe('patcher');
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
-    expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, null, undefined);
+    expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, {}, undefined);
     await expect((source.modifyResource as jest.Mock).mock.results[0].value).rejects.toThrow('dummy');
     expect(handleSafeFn).toHaveBeenCalledTimes(1);
-    expect(handleSafeFn).toHaveBeenLastCalledWith({ identifier: { path: 'modifyPath' }, patch: null });
+    expect(handleSafeFn).toHaveBeenLastCalledWith({ identifier: { path: 'modifyPath' }, patch: {}});
   });
 });

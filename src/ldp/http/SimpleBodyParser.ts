@@ -28,7 +28,9 @@ export class SimpleBodyParser extends BodyParser {
     }
   }
 
-  public async handle(input: HttpRequest): Promise<QuadRepresentation> {
+  // Note that the only reason this is a union is in case the body is empty.
+  // If this check gets moved away from the BodyParsers this union could be removed
+  public async handle(input: HttpRequest): Promise<QuadRepresentation | undefined> {
     const contentType = input.headers['content-type'];
 
     if (!contentType) {

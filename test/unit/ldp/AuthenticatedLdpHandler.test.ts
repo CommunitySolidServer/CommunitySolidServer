@@ -1,5 +1,8 @@
 import { Authorizer } from '../../../src/authorization/Authorizer';
 import { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
+import { HttpRequest } from '../../../src/server/HttpRequest';
+import { HttpResponse } from '../../../src/server/HttpResponse';
+import { Operation } from '../../../src/ldp/operations/Operation';
 import { OperationHandler } from '../../../src/ldp/operations/OperationHandler';
 import { PermissionsExtractor } from '../../../src/ldp/permissions/PermissionsExtractor';
 import { RequestParser } from '../../../src/ldp/http/RequestParser';
@@ -36,30 +39,30 @@ describe('An AuthenticatedLdpHandler', (): void => {
   it('can check if it handles input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.canHandle({ request: null, response: null })).resolves.toBeUndefined();
+    await expect(handler.canHandle({ request: {} as HttpRequest, response: {} as HttpResponse })).resolves.toBeUndefined();
   });
 
   it('can handle input.', async(): Promise<void> => {
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toEqual(undefined);
+    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toBeUndefined();
     expect(responseFn).toHaveBeenCalledTimes(1);
-    expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', description: 'operation' as any });
+    expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', result: 'operation' as any });
   });
 
   it('sends an error to the output if a handler does not support the input.', async(): Promise<void> => {
-    args.requestParser = new StaticAsyncHandler(false, null);
+    args.requestParser = new StaticAsyncHandler(false, {} as Operation);
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.handle({ request: 'request' as any, response: null })).resolves.toEqual(undefined);
+    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).resolves.toBeUndefined();
     expect(responseFn).toHaveBeenCalledTimes(1);
-    expect(responseFn.mock.calls[0][0].error).toBeInstanceOf(Error);
+    expect(responseFn.mock.calls[0][0].result).toBeInstanceOf(Error);
   });
 
   it('errors if the response writer does not support the result.', async(): Promise< void> => {
-    args.responseWriter = new StaticAsyncHandler(false, null);
+    args.responseWriter = new StaticAsyncHandler(false, undefined);
     const handler = new AuthenticatedLdpHandler(args);
 
-    await expect(handler.handle({ request: 'request' as any, response: null })).rejects.toThrow(Error);
+    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toThrow(Error);
   });
 });

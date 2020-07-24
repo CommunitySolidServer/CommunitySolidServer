@@ -46,12 +46,12 @@ export interface AuthenticatedLdpHandlerArgs {
  * The central manager that connects all the necessary handlers to go from an incoming request to an executed operation.
  */
 export class AuthenticatedLdpHandler extends HttpHandler {
-  private readonly requestParser: RequestParser;
-  private readonly credentialsExtractor: CredentialsExtractor;
-  private readonly permissionsExtractor: PermissionsExtractor;
-  private readonly authorizer: Authorizer;
-  private readonly operationHandler: OperationHandler;
-  private readonly responseWriter: ResponseWriter;
+  private readonly requestParser!: RequestParser;
+  private readonly credentialsExtractor!: CredentialsExtractor;
+  private readonly permissionsExtractor!: PermissionsExtractor;
+  private readonly authorizer!: Authorizer;
+  private readonly operationHandler!: OperationHandler;
+  private readonly responseWriter!: ResponseWriter;
 
   /**
    * Creates the handler.
@@ -87,16 +87,13 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    * @returns A promise resolving when the handling is finished.
    */
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
-    let err: Error;
-    let description: ResponseDescription;
+    let writeData: { response: HttpResponse; result: ResponseDescription | Error };
 
     try {
-      description = await this.runHandlers(input.request);
+      writeData = { response: input.response, result: await this.runHandlers(input.request) };
     } catch (error) {
-      err = error;
+      writeData = { response: input.response, result: error };
     }
-
-    const writeData = { response: input.response, description, error: err };
 
     await this.responseWriter.handleSafe(writeData);
   }

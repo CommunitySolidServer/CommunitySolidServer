@@ -37,7 +37,7 @@ const { argv } = yargs
 const { port } = argv;
 
 // This is instead of the dependency injection that still needs to be added
-const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation>([
+const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
   new SimpleBodyParser(),
   new SimpleSparqlUpdateBodyParser(),
 ]);

@@ -3,15 +3,13 @@
     "module": "commonjs",
     "target": "es2017",
     "newLine": "lf",
-    "alwaysStrict": true,
     "declaration": true,
     "esModuleInterop": true,
     "inlineSources": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "strict": true,
     "stripInternal": true
   },
   "include": [

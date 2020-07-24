@@ -14,20 +14,14 @@ describe('A SimpleResponseWriter', (): void => {
     response = createResponse({ eventEmitter: EventEmitter });
   });
 
-  it('can handle input that has at least a description or an error.', async(): Promise<void> => {
-    await expect(writer.canHandle({ response, description: {} as ResponseDescription })).resolves.toBeUndefined();
-    await expect(writer.canHandle({ response, error: {} as Error })).resolves.toBeUndefined();
-    await expect(writer.canHandle({ response })).rejects.toThrow(UnsupportedHttpError);
-  });
-
   it('requires the description body to be a string or binary stream if present.', async(): Promise<void> => {
-    await expect(writer.canHandle({ response, description: { body: { dataType: 'quad' }} as ResponseDescription })).rejects.toThrow(UnsupportedHttpError);
-    await expect(writer.canHandle({ response, description: { body: { dataType: 'string' }} as ResponseDescription })).resolves.toBeUndefined();
-    await expect(writer.canHandle({ response, description: { body: { dataType: 'binary' }} as ResponseDescription })).resolves.toBeUndefined();
+    await expect(writer.canHandle({ response, result: { body: { dataType: 'quad' }} as ResponseDescription })).rejects.toThrow(UnsupportedHttpError);
+    await expect(writer.canHandle({ response, result: { body: { dataType: 'string' }} as ResponseDescription })).resolves.toBeUndefined();
+    await expect(writer.canHandle({ response, result: { body: { dataType: 'binary' }} as ResponseDescription })).resolves.toBeUndefined();
   });
 
   it('responds with status code 200 and a location header if there is a description.', async(): Promise<void> => {
-    await writer.handle({ response, description: { identifier: { path: 'path' }}});
+    await writer.handle({ response, result: { identifier: { path: 'path' }}});
     expect(response._isEndCalled()).toBeTruthy();
     expect(response._getStatusCode()).toBe(200);
     expect(response._getHeaders()).toMatchObject({ location: 'path' });
@@ -51,7 +45,7 @@ describe('A SimpleResponseWriter', (): void => {
       done();
     });
 
-    await writer.handle({ response, description: { identifier: { path: 'path' }, body }});
+    await writer.handle({ response, result: { identifier: { path: 'path' }, body }});
   });
 
   it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
@@ -73,11 +67,11 @@ describe('A SimpleResponseWriter', (): void => {
       done();
     });
 
-    await writer.handle({ response, description: { identifier: { path: 'path' }, body }});
+    await writer.handle({ response, result: { identifier: { path: 'path' }, body }});
   });
 
   it('responds with 500 if an error if there is an error.', async(): Promise<void> => {
-    await writer.handle({ response, error: new Error('error') });
+    await writer.handle({ response, result: new Error('error') });
     expect(response._isEndCalled()).toBeTruthy();
     expect(response._getStatusCode()).toBe(500);
     expect(response._getData()).toMatch('Error: error');
@@ -85,7 +79,7 @@ describe('A SimpleResponseWriter', (): void => {
 
   it('responds with the given statuscode if there is an HttpError.', async(): Promise<void> => {
     const error = new UnsupportedHttpError('error');
-    await writer.handle({ response, error });
+    await writer.handle({ response, result: error });
     expect(response._isEndCalled()).toBeTruthy();
     expect(response._getStatusCode()).toBe(error.statusCode);
     expect(response._getData()).toMatch('UnsupportedHttpError: error');

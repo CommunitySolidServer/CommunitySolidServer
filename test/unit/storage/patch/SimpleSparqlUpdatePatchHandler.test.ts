@@ -41,15 +41,13 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
           metadata: null,
         };
       }),
-      addResource: null,
       setRepresentation: jest.fn(async(): Promise<any> => {
         order.push('setRepresentation');
       }),
-      deleteResource: null,
       modifyResource: jest.fn(async(): Promise<any> => {
         throw new Error('noModify');
       }),
-    };
+    } as unknown as ResourceStore;
 
     release = jest.fn(async(): Promise<any> => order.push('release'));
     locker = {
