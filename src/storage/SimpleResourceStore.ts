@@ -11,6 +11,7 @@ import { ResourceStore } from './ResourceStore';
 import streamifyArray from 'streamify-array';
 import { StreamWriter } from 'n3';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
 
 /**
  * Resource store storing its data as Quads in an in-memory map.
@@ -113,7 +114,7 @@ export class SimpleResourceStore implements ResourceStore {
    * @returns Promise of array of Quads pulled from the stream.
    */
   private async parseRepresentation(representation: Representation): Promise<Quad[]> {
-    if (representation.dataType !== 'quad') {
+    if (representation.dataType !== DATA_TYPE_QUAD) {
       throw new UnsupportedMediaTypeHttpError('SimpleResourceStore only supports quad representations.');
     }
     return arrayifyStream(representation.data);
@@ -134,7 +135,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   private generateRepresentation(data: Quad[], preferences: RepresentationPreferences): Representation {
     // Always return turtle unless explicitly asked for quads
-    if (preferences.type?.some((preference): boolean => preference.value.includes('internal/quads'))) {
+    if (preferences.type?.some((preference): boolean => preference.value.includes(CONTENT_TYPE_QUADS))) {
       return this.generateQuadRepresentation(data);
     }
     return this.generateBinaryRepresentation(data);
@@ -148,7 +149,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   private generateBinaryRepresentation(data: Quad[]): BinaryRepresentation {
     return {
-      dataType: 'binary',
+      dataType: DATA_TYPE_BINARY,
       data: streamifyArray([ ...data ]).pipe(new StreamWriter({ format: 'text/turtle' })),
       metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
     };
@@ -162,7 +163,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   private generateQuadRepresentation(data: Quad[]): QuadRepresentation {
     return {
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       data: streamifyArray([ ...data ]),
       metadata: { raw: [], profiles: []},
     };

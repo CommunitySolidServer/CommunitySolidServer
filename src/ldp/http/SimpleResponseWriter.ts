@@ -1,3 +1,4 @@
+import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { HttpResponse } from '../../server/HttpResponse';
 import { ResponseDescription } from '../operations/ResponseDescription';
@@ -11,8 +12,8 @@ export class SimpleResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error)) {
       const dataType = input.result.body?.dataType;
-      if (dataType && dataType !== 'binary' && dataType !== 'string') {
-        throw new UnsupportedHttpError('Only string or binary results are supported.');
+      if (dataType && dataType !== DATA_TYPE_BINARY) {
+        throw new UnsupportedHttpError('Only binary results are supported.');
       }
     }
   }

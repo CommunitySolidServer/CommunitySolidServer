@@ -8,6 +8,7 @@ import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import streamifyArray from 'streamify-array';
 import { translate } from 'sparqlalgebrajs';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 import { namedNode, quad } from '@rdfjs/data-model';
 
 describe('A SimpleSparqlUpdatePatchHandler', (): void => {
@@ -64,15 +65,15 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
   const basicChecks = async(quads: Quad[]): Promise<void> => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
-      { path: 'path' }, { type: [{ value: 'internal/quads', weight: 1 }]},
+      { path: 'path' }, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]},
     );
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'setRepresentation', 'release' ]);
     const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
     expect(setParams[0]).toEqual({ path: 'path' });
     expect(setParams[1]).toEqual(expect.objectContaining({
-      dataType: 'quad',
-      metadata: { raw: [], profiles: [], contentType: 'internal/quads' },
+      dataType: DATA_TYPE_QUAD,
+      metadata: { raw: [], profiles: [], contentType: CONTENT_TYPE_QUADS },
     }));
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
   };

@@ -6,6 +6,7 @@ import { RepresentationMetadata } from '../../../src/ldp/representation/Represen
 import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
 import { namedNode, triple } from '@rdfjs/data-model';
 
 const base = 'http://test.com/';
@@ -24,7 +25,7 @@ describe('A SimpleResourceStore', (): void => {
 
     representation = {
       data: streamifyArray([ quad ]),
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       metadata: {} as RepresentationMetadata,
     };
   });
@@ -43,16 +44,16 @@ describe('A SimpleResourceStore', (): void => {
   });
 
   it('errors for wrong input data types.', async(): Promise<void> => {
-    (representation as any).dataType = 'binary';
+    (representation as any).dataType = DATA_TYPE_BINARY;
     await expect(store.addResource({ path: base }, representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
   });
 
   it('can write and read data.', async(): Promise<void> => {
     const identifier = await store.addResource({ path: base }, representation);
     expect(identifier.path.startsWith(base)).toBeTruthy();
-    const result = await store.getRepresentation(identifier, { type: [{ value: 'internal/quads', weight: 1 }]});
+    const result = await store.getRepresentation(identifier, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
     expect(result).toEqual({
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       data: expect.any(Readable),
       metadata: {
         profiles: [],
@@ -74,7 +75,7 @@ describe('A SimpleResourceStore', (): void => {
     expect(identifier.path.startsWith(base)).toBeTruthy();
     const result = await store.getRepresentation(identifier, { type: [{ value: 'text/turtle', weight: 1 }]});
     expect(result).toEqual({
-      dataType: 'binary',
+      dataType: DATA_TYPE_BINARY,
       data: expect.any(Readable),
       metadata: {
         profiles: [],
@@ -92,7 +93,7 @@ describe('A SimpleResourceStore', (): void => {
     expect(identifier.path.startsWith(base)).toBeTruthy();
     const result = await store.getRepresentation(identifier, { });
     expect(result).toEqual({
-      dataType: 'binary',
+      dataType: DATA_TYPE_BINARY,
       data: expect.any(Readable),
       metadata: {
         profiles: [],
@@ -107,9 +108,9 @@ describe('A SimpleResourceStore', (): void => {
 
   it('can set data.', async(): Promise<void> => {
     await store.setRepresentation({ path: base }, representation);
-    const result = await store.getRepresentation({ path: base }, { type: [{ value: 'internal/quads', weight: 1 }]});
+    const result = await store.getRepresentation({ path: base }, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
     expect(result).toEqual({
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       data: expect.any(Readable),
       metadata: {
         profiles: [],

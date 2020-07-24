@@ -1,4 +1,5 @@
 import { BodyParser } from './BodyParser';
+import { DATA_TYPE_QUAD } from '../../util/ContentTypes';
 import { HttpRequest } from '../../server/HttpRequest';
 import { PassThrough } from 'stream';
 import { QuadRepresentation } from '../representation/QuadRepresentation';
@@ -53,7 +54,7 @@ export class SimpleBodyParser extends BodyParser {
     data.on('error', (error): boolean => errorStream.emit('error', new UnsupportedHttpError(error.message)));
 
     return {
-      dataType: 'quad',
+      dataType: DATA_TYPE_QUAD,
       data: errorStream,
       metadata,
     };
