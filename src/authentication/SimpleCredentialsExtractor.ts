@@ -14,5 +14,6 @@ export class SimpleCredentialsExtractor extends CredentialsExtractor {
     if (input.headers.authorization) {
       return { webID: input.headers.authorization };
     }
+    return {};
   }
 }

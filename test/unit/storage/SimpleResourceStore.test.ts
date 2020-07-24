@@ -2,6 +2,7 @@ import arrayifyStream from 'arrayify-stream';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { QuadRepresentation } from '../../../src/ldp/representation/QuadRepresentation';
 import { Readable } from 'stream';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -24,15 +25,15 @@ describe('A SimpleResourceStore', (): void => {
     representation = {
       data: streamifyArray([ quad ]),
       dataType: 'quad',
-      metadata: null,
+      metadata: {} as RepresentationMetadata,
     };
   });
 
   it('errors if a resource was not found.', async(): Promise<void> => {
     await expect(store.getRepresentation({ path: `${base}wrong` }, {})).rejects.toThrow(NotFoundHttpError);
-    await expect(store.addResource({ path: 'http://wrong.com/wrong' }, null)).rejects.toThrow(NotFoundHttpError);
+    await expect(store.addResource({ path: 'http://wrong.com/wrong' }, representation)).rejects.toThrow(NotFoundHttpError);
     await expect(store.deleteResource({ path: 'wrong' })).rejects.toThrow(NotFoundHttpError);
-    await expect(store.setRepresentation({ path: 'http://wrong.com/' }, null)).rejects.toThrow(NotFoundHttpError);
+    await expect(store.setRepresentation({ path: 'http://wrong.com/' }, representation)).rejects.toThrow(NotFoundHttpError);
   });
 
   it('errors when modifying resources.', async(): Promise<void> => {

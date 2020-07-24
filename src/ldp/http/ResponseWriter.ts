@@ -6,4 +6,4 @@ import { ResponseDescription } from '../operations/ResponseDescription';
  * Writes to the HttpResponse.
  * Response depends on the operation result and potentially which errors was thrown.
  */
-export abstract class ResponseWriter extends AsyncHandler<{ response: HttpResponse; description?: ResponseDescription; error?: Error }> {}
+export abstract class ResponseWriter extends AsyncHandler<{ response: HttpResponse; result: ResponseDescription | Error }> {}

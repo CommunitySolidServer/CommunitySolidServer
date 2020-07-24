@@ -41,7 +41,7 @@ describe('A SimpleBodyparser', (): void => {
   it('returns a stream of quads if there was data.', async(): Promise<void> => {
     const input = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
     input.headers = { 'content-type': 'text/turtle' };
-    const result = await bodyParser.handle(input);
+    const result = (await bodyParser.handle(input))!;
     expect(result).toEqual({
       data: expect.any(Readable),
       dataType: 'quad',
@@ -61,7 +61,7 @@ describe('A SimpleBodyparser', (): void => {
   it('throws an UnsupportedHttpError on invalid triple data when reading the stream.', async(): Promise<void> => {
     const input = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>' ]) as HttpRequest;
     input.headers = { 'content-type': 'text/turtle' };
-    const result = await bodyParser.handle(input);
+    const result = (await bodyParser.handle(input))!;
     await expect(arrayifyStream(result.data)).rejects.toThrow(UnsupportedHttpError);
   });
 });

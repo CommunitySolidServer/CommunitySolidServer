@@ -118,7 +118,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation>([
+    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
       new SimpleBodyParser(),
       new SimpleSparqlUpdateBodyParser(),
     ]);

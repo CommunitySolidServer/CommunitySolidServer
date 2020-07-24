@@ -39,8 +39,8 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
     }
 
     const def = defaultGraph();
-    const deletes = op.delete || [];
-    const inserts = op.insert || [];
+    const deletes = op.delete ?? [];
+    const inserts = op.insert ?? [];
 
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
       throw new UnsupportedHttpError('GRAPH statements are not supported.');
@@ -48,7 +48,7 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
     if (!inserts.every((pattern): boolean => pattern.graph.equals(def))) {
       throw new UnsupportedHttpError('GRAPH statements are not supported.');
     }
-    if (op.where || deletes.some((pattern): boolean => someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
+    if (op.where ?? deletes.some((pattern): boolean => someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
       throw new UnsupportedHttpError('WHERE statements are not supported.');
     }
 

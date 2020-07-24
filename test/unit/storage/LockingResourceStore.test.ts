@@ -1,5 +1,7 @@
 import { Lock } from '../../../src/storage/Lock';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
+import { Patch } from '../../../src/ldp/http/Patch';
+import { Representation } from '../../../src/ldp/representation/Representation';
 import { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
 
@@ -40,7 +42,7 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('acquires a lock on the resource when getting it.', async(): Promise<void> => {
-    await store.getRepresentation({ path: 'path' }, null);
+    await store.getRepresentation({ path: 'path' }, {});
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
@@ -49,7 +51,7 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('acquires a lock on the container when adding a representation.', async(): Promise<void> => {
-    await store.addResource({ path: 'path' }, null);
+    await store.addResource({ path: 'path' }, {} as Representation);
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.addResource).toHaveBeenCalledTimes(1);
@@ -58,7 +60,7 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('acquires a lock on the resource when setting its representation.', async(): Promise<void> => {
-    await store.setRepresentation({ path: 'path' }, null);
+    await store.setRepresentation({ path: 'path' }, {} as Representation);
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
@@ -76,7 +78,7 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('acquires a lock on the resource when modifying its representation.', async(): Promise<void> => {
-    await store.modifyResource({ path: 'path' }, null);
+    await store.modifyResource({ path: 'path' }, {} as Patch);
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
@@ -88,7 +90,7 @@ describe('A LockingResourceStore', (): void => {
     source.getRepresentation = async(): Promise<any> => {
       throw new Error('dummy');
     };
-    await expect(store.getRepresentation({ path: 'path' }, null)).rejects.toThrow('dummy');
+    await expect(store.getRepresentation({ path: 'path' }, {})).rejects.toThrow('dummy');
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(lock.release).toHaveBeenCalledTimes(1);

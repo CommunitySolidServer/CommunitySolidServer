@@ -19,9 +19,9 @@ export interface SimpleRequestParserArgs {
  * of a {@link TargetExtractor}, {@link PreferenceParser}, and {@link BodyParser}.
  */
 export class SimpleRequestParser extends RequestParser {
-  private readonly targetExtractor: TargetExtractor;
-  private readonly preferenceParser: PreferenceParser;
-  private readonly bodyParser: BodyParser;
+  private readonly targetExtractor!: TargetExtractor;
+  private readonly preferenceParser!: PreferenceParser;
+  private readonly bodyParser!: BodyParser;
 
   public constructor(args: SimpleRequestParserArgs) {
     super();
@@ -42,6 +42,9 @@ export class SimpleRequestParser extends RequestParser {
     const preferences = await this.preferenceParser.handleSafe(input);
     const body = await this.bodyParser.handleSafe(input);
 
+    if (!input.method) {
+      throw new Error('Missing method.');
+    }
     return { method: input.method, target, preferences, body };
   }
 }

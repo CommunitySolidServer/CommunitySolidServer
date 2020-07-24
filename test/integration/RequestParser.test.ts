@@ -44,7 +44,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
     });
 
-    await expect(arrayifyStream(result.body.data)).resolves.toEqualRdfQuadArray([ triple(
+    await expect(arrayifyStream(result.body!.data)).resolves.toEqualRdfQuadArray([ triple(
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),
       namedNode('http://test.com/o'),
