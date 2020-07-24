@@ -24,11 +24,16 @@ describe('A LockingResourceStore', (): void => {
     };
 
     source = {
-      getRepresentation: jest.fn(async(): Promise<any> => new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation'))),
-      addResource: jest.fn(async(): Promise<any> => new Promise((resolve): any => delayedResolve(resolve, 'addResource'))),
-      setRepresentation: jest.fn(async(): Promise<any> => new Promise((resolve): any => delayedResolve(resolve, 'setRepresentation'))),
-      deleteResource: jest.fn(async(): Promise<any> => new Promise((resolve): any => delayedResolve(resolve, 'deleteResource'))),
-      modifyResource: jest.fn(async(): Promise<any> => new Promise((resolve): any => delayedResolve(resolve, 'modifyResource'))),
+      getRepresentation: jest.fn(async(): Promise<any> =>
+        new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation'))),
+      addResource: jest.fn(async(): Promise<any> =>
+        new Promise((resolve): any => delayedResolve(resolve, 'addResource'))),
+      setRepresentation: jest.fn(async(): Promise<any> =>
+        new Promise((resolve): any => delayedResolve(resolve, 'setRepresentation'))),
+      deleteResource: jest.fn(async(): Promise<any> =>
+        new Promise((resolve): any => delayedResolve(resolve, 'deleteResource'))),
+      modifyResource: jest.fn(async(): Promise<any> =>
+        new Promise((resolve): any => delayedResolve(resolve, 'modifyResource'))),
     };
     release = jest.fn(async(): Promise<any> => order.push('release'));
     locker = {

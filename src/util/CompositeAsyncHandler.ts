@@ -46,7 +46,8 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
   }
 
   /**
-   * Identical to {@link AsyncHandler.handleSafe} but optimized for composite by only needing 1 canHandle call on members.
+   * Identical to {@link AsyncHandler.handleSafe} but optimized for composite
+   * by only needing 1 canHandle call on members.
    * @param input - The input data.
    *
    * @returns A promise corresponding to the handle call of a handler that supports the input.

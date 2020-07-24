@@ -17,7 +17,8 @@ describe('A SimpleDeleteOperationHandler', (): void => {
   });
 
   it('deletes the resource from the store and returns its identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }} as Operation)).resolves.toEqual({ identifier: { path: 'url' }});
+    await expect(handler.handle({ target: { path: 'url' }} as Operation))
+      .resolves.toEqual({ identifier: { path: 'url' }});
     expect(store.deleteResource).toHaveBeenCalledTimes(1);
     expect(store.deleteResource).toHaveBeenLastCalledWith({ path: 'url' });
   });

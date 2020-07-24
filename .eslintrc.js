@@ -19,6 +19,7 @@ module.exports = {
     'comma-dangle': ['error', 'always-multiline'],
     'dot-location': ['error', 'property'],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+    'max-len': ['error', { code: 120, ignoreUrls: true }],
     'no-underscore-dangle': 'off', // conflicts with external libraries
     'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',

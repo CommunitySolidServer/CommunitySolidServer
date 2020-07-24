@@ -48,12 +48,14 @@ export class SimpleSparqlUpdatePatchHandler extends PatchHandler {
     if (!inserts.every((pattern): boolean => pattern.graph.equals(def))) {
       throw new UnsupportedHttpError('GRAPH statements are not supported.');
     }
-    if (op.where ?? deletes.some((pattern): boolean => someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
+    if (op.where ?? deletes.some((pattern): boolean =>
+      someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
       throw new UnsupportedHttpError('WHERE statements are not supported.');
     }
 
     const lock = await this.locker.acquire(input.identifier);
-    const quads = await this.source.getRepresentation(input.identifier, { type: [{ value: 'internal/quads', weight: 1 }]});
+    const quads = await this.source.getRepresentation(input.identifier,
+      { type: [{ value: 'internal/quads', weight: 1 }]});
     const store = new Store<BaseQuad>();
     const importEmitter = store.import(quads.data);
     await new Promise((resolve, reject): void => {

@@ -25,7 +25,9 @@ describe('AcceptParser', (): void => {
     });
 
     it('parses complex Accept headers.', async(): Promise<void> => {
-      expect(parseAccept('text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4,text/x-dvi; q=0.8; mxb=100000; mxt')).toEqual([
+      expect(parseAccept(
+        'text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4,text/x-dvi; q=0.8; mxb=100000; mxt',
+      )).toEqual([
         { range: 'text/html', weight: 1, parameters: { mediaType: { level: '1' }, extension: {}}},
         { range: 'text/x-dvi', weight: 0.8, parameters: { mediaType: {}, extension: { mxb: '100000', mxt: '' }}},
         { range: 'text/html', weight: 0.7, parameters: { mediaType: {}, extension: {}}},
@@ -35,7 +37,9 @@ describe('AcceptParser', (): void => {
 
     it('parses Accept headers with double quoted values.', async(): Promise<void> => {
       expect(parseAccept('audio/basic; param1="val" ; q=0.5 ;param2="\\\\\\"valid"')).toEqual([
-        { range: 'audio/basic', weight: 0.5, parameters: { mediaType: { param1: '"val"' }, extension: { param2: '"\\\\\\"valid"' }}},
+        { range: 'audio/basic',
+          weight: 0.5,
+          parameters: { mediaType: { param1: '"val"' }, extension: { param2: '"\\\\\\"valid"' }}},
       ]);
     });
 

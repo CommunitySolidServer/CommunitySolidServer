@@ -53,7 +53,8 @@ describe('ExpressHttpServer', (): void => {
       'access-control-allow-origin': '*',
       'access-control-allow-headers': 'content-type',
     }));
-    const corsMethods = res.header['access-control-allow-methods'].split(',').map((method: string): string => method.trim());
+    const corsMethods = res.header['access-control-allow-methods'].split(',')
+      .map((method: string): string => method.trim());
     const allowedMethods = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ];
     expect(corsMethods).toEqual(expect.arrayContaining(allowedMethods));
     expect(corsMethods.length).toBe(allowedMethods.length);

@@ -64,7 +64,8 @@ export class SimpleResourceStore implements ResourceStore {
    *
    * @returns The corresponding Representation.
    */
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences): Promise<Representation> {
+  public async getRepresentation(identifier: ResourceIdentifier,
+    preferences: RepresentationPreferences): Promise<Representation> {
     const path = this.parseIdentifier(identifier);
     return this.generateRepresentation(this.store[path], preferences);
   }

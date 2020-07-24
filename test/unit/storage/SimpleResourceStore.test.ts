@@ -31,9 +31,11 @@ describe('A SimpleResourceStore', (): void => {
 
   it('errors if a resource was not found.', async(): Promise<void> => {
     await expect(store.getRepresentation({ path: `${base}wrong` }, {})).rejects.toThrow(NotFoundHttpError);
-    await expect(store.addResource({ path: 'http://wrong.com/wrong' }, representation)).rejects.toThrow(NotFoundHttpError);
+    await expect(store.addResource({ path: 'http://wrong.com/wrong' }, representation))
+      .rejects.toThrow(NotFoundHttpError);
     await expect(store.deleteResource({ path: 'wrong' })).rejects.toThrow(NotFoundHttpError);
-    await expect(store.setRepresentation({ path: 'http://wrong.com/' }, representation)).rejects.toThrow(NotFoundHttpError);
+    await expect(store.setRepresentation({ path: 'http://wrong.com/' }, representation))
+      .rejects.toThrow(NotFoundHttpError);
   });
 
   it('errors when modifying resources.', async(): Promise<void> => {

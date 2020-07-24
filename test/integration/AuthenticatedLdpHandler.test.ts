@@ -31,7 +31,8 @@ import { createResponse, MockResponse } from 'node-mocks-http';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
 
-const call = async(handler: HttpHandler, requestUrl: url.URL, method: string, headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
+const call = async(handler: HttpHandler, requestUrl: url.URL, method: string,
+  headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
   const request = streamifyArray(data) as HttpRequest;
   request.url = requestUrl.pathname;
   request.method = method;
