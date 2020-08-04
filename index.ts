@@ -55,6 +55,11 @@ export * from './src/server/HttpHandler';
 export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';
 
+// Storage/Conversion
+export * from './src/storage/conversion/QuadToTurtleConverter';
+export * from './src/storage/conversion/RepresentationConverter';
+export * from './src/storage/conversion/TurtleToQuadConverter';
+
 // Storage/Patch
 export * from './src/storage/patch/PatchHandler';
 export * from './src/storage/patch/SimpleSparqlUpdatePatchHandler';
@@ -64,8 +69,9 @@ export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
+export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
-export * from './src/storage/RepresentationConverter';
+export * from './src/storage/RepresentationConvertingStore';
 export * from './src/storage/ResourceLocker';
 export * from './src/storage/ResourceMapper';
 export * from './src/storage/ResourceStore';
