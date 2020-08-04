@@ -120,8 +120,8 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
   describe('with simple PATCH handlers', (): void => {
     const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-      new SimpleBodyParser(),
       new SimpleSparqlUpdateBodyParser(),
+      new SimpleBodyParser(),
     ]);
     const requestParser = new SimpleRequestParser({
       targetExtractor: new SimpleTargetExtractor(),
