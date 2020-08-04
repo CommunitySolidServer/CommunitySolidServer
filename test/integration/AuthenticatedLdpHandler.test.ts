@@ -9,7 +9,9 @@ import { IncomingHttpHeaders } from 'http';
 import { Operation } from '../../src/ldp/operations/Operation';
 import { Parser } from 'n3';
 import { PatchingStore } from '../../src/storage/PatchingStore';
+import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { Representation } from '../../src/ldp/representation/Representation';
+import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
 import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
@@ -27,6 +29,7 @@ import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSp
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
 import streamifyArray from 'streamify-array';
+import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
 import { createResponse, MockResponse } from 'node-mocks-http';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
@@ -134,9 +137,14 @@ describe('An AuthenticatedLdpHandler', (): void => {
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore('http://test.com/');
+    const converter = new CompositeAsyncHandler([
+      new QuadToTurtleConverter(),
+      new TurtleToQuadConverter(),
+    ]);
+    const convertingStore = new RepresentationConvertingStore(store, converter);
     const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(store, locker);
-    const patchingStore = new PatchingStore(store, patcher);
+    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
+    const patchingStore = new PatchingStore(convertingStore, patcher);
 
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(patchingStore),

@@ -1,13 +1,12 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_QUAD } from '../../src/util/ContentTypes';
+import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { Readable } from 'stream';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import streamifyArray from 'streamify-array';
-import { namedNode, triple } from '@rdfjs/data-model';
 
 describe('A SimpleRequestParser with simple input parsers', (): void => {
   const targetExtractor = new SimpleTargetExtractor();
@@ -36,7 +35,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
       body: {
         data: expect.any(Readable),
-        dataType: DATA_TYPE_QUAD,
+        dataType: DATA_TYPE_BINARY,
         metadata: {
           contentType: 'text/turtle',
           profiles: [],
@@ -45,10 +44,8 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
     });
 
-    await expect(arrayifyStream(result.body!.data)).resolves.toEqualRdfQuadArray([ triple(
-      namedNode('http://test.com/s'),
-      namedNode('http://test.com/p'),
-      namedNode('http://test.com/o'),
-    ) ]);
+    await expect(arrayifyStream(result.body!.data)).resolves.toEqual(
+      [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
+    );
   });
 });

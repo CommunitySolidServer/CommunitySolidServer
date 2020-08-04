@@ -1,37 +1,22 @@
+import { BinaryRepresentation } from '../representation/BinaryRepresentation';
 import { BodyParser } from './BodyParser';
-import { DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpRequest } from '../../server/HttpRequest';
-import { PassThrough } from 'stream';
-import { QuadRepresentation } from '../representation/QuadRepresentation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
-import { StreamParser } from 'n3';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 
 /**
- * Parses the incoming {@link HttpRequest} if there is no body or if it contains turtle (or similar) RDF data.
- * Naively parses the content-type header to determine the body type.
+ * Converts incoming {@link HttpRequest} to a Representation without any further parsing.
+ * Naively parses the mediatype from the content-type header.
+ * Metadata is not generated (yet).
  */
 export class SimpleBodyParser extends BodyParser {
-  private static readonly contentTypes = [
-    'application/n-quads',
-    'application/trig',
-    'application/n-triples',
-    'text/turtle',
-    'text/n3',
-  ];
-
-  public async canHandle(input: HttpRequest): Promise<void> {
-    const contentType = input.headers['content-type'];
-
-    if (contentType && !SimpleBodyParser.contentTypes.some((type): boolean => contentType.includes(type))) {
-      throw new UnsupportedMediaTypeHttpError('This parser only supports RDF data.');
-    }
+  public async canHandle(): Promise<void> {
+    // Default BodyParser supports all content-types
   }
 
   // Note that the only reason this is a union is in case the body is empty.
   // If this check gets moved away from the BodyParsers this union could be removed
-  public async handle(input: HttpRequest): Promise<QuadRepresentation | undefined> {
+  public async handle(input: HttpRequest): Promise<BinaryRepresentation | undefined> {
     const contentType = input.headers['content-type'];
 
     if (!contentType) {
@@ -46,16 +31,9 @@ export class SimpleBodyParser extends BodyParser {
       contentType: mediaType,
     };
 
-    // Catch parsing errors and emit correct error
-    // Node 10 requires both writableObjectMode and readableObjectMode
-    const errorStream = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    const data = input.pipe(new StreamParser());
-    data.pipe(errorStream);
-    data.on('error', (error): boolean => errorStream.emit('error', new UnsupportedHttpError(error.message)));
-
     return {
-      dataType: DATA_TYPE_QUAD,
-      data: errorStream,
+      dataType: DATA_TYPE_BINARY,
+      data: input,
       metadata,
     };
   }

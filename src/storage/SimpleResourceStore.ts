@@ -1,24 +1,18 @@
 import arrayifyStream from 'arrayify-stream';
-import { BinaryRepresentation } from '../ldp/representation/BinaryRepresentation';
+import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { ensureTrailingSlash } from '../util/Util';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { Quad } from 'rdf-js';
-import { QuadRepresentation } from '../ldp/representation/QuadRepresentation';
 import { Representation } from '../ldp/representation/Representation';
-import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
 import streamifyArray from 'streamify-array';
-import { StreamWriter } from 'n3';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
 
 /**
- * Resource store storing its data as Quads in an in-memory map.
+ * Resource store storing its data in an in-memory map.
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class SimpleResourceStore implements ResourceStore {
-  private readonly store: { [id: string]: Quad[] } = { '': []};
+  private readonly store: { [id: string]: Representation };
   private readonly base: string;
   private index = 0;
 
@@ -27,13 +21,22 @@ export class SimpleResourceStore implements ResourceStore {
    */
   public constructor(base: string) {
     this.base = base;
+
+    this.store = {
+      // Default root entry (what you get when the identifier is equal to the base)
+      '': {
+        dataType: DATA_TYPE_BINARY,
+        data: streamifyArray([]),
+        metadata: { raw: [], profiles: []},
+      },
+    };
   }
 
   /**
    * Stores the incoming data under a new URL corresponding to `container.path + number`.
    * Slash added when needed.
    * @param container - The identifier to store the new data under.
-   * @param representation - Data to store. Only Quad streams are supported.
+   * @param representation - Data to store.
    *
    * @returns The newly generated identifier.
    */
@@ -41,7 +44,7 @@ export class SimpleResourceStore implements ResourceStore {
     const containerPath = this.parseIdentifier(container);
     const newPath = `${ensureTrailingSlash(containerPath)}${this.index}`;
     this.index += 1;
-    this.store[newPath] = await this.parseRepresentation(representation);
+    this.store[newPath] = await this.copyRepresentation(representation);
     return { path: `${this.base}${newPath}` };
   }
 
@@ -57,18 +60,15 @@ export class SimpleResourceStore implements ResourceStore {
 
   /**
    * Returns the stored representation for the given identifier.
-   * The only preference that is supported is `type === 'text/turtle'`.
-   * In all other cases a stream of Quads will be returned.
+   * Preferences will be ignored, data will be returned as it was received.
    *
    * @param identifier - Identifier to retrieve.
-   * @param preferences - Preferences for resulting Representation.
    *
    * @returns The corresponding Representation.
    */
-  public async getRepresentation(identifier: ResourceIdentifier,
-    preferences: RepresentationPreferences): Promise<Representation> {
+  public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     const path = this.parseIdentifier(identifier);
-    return this.generateRepresentation(this.store[path], preferences);
+    return this.generateRepresentation(path);
   }
 
   /**
@@ -85,7 +85,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
     const path = this.parseIdentifier(identifier);
-    this.store[path] = await this.parseRepresentation(representation);
+    this.store[path] = await this.copyRepresentation(representation);
   }
 
   /**
@@ -106,66 +106,36 @@ export class SimpleResourceStore implements ResourceStore {
   }
 
   /**
-   * Converts the Representation to an array of Quads.
-   * @param representation - Incoming Representation.
-   * @throws {@link UnsupportedMediaTypeHttpError}
-   * If the representation is not a Quad stream.
+   * Copies the Representation by draining the original data stream and creating a new one.
    *
-   * @returns Promise of array of Quads pulled from the stream.
+   * @param data - Incoming Representation.
    */
-  private async parseRepresentation(representation: Representation): Promise<Quad[]> {
-    if (representation.dataType !== DATA_TYPE_QUAD) {
-      throw new UnsupportedMediaTypeHttpError('SimpleResourceStore only supports quad representations.');
-    }
-    return arrayifyStream(representation.data);
-  }
-
-  /**
-   * Converts an array of Quads to a Representation.
-   * If preferences.type contains 'text/turtle' the result will be a stream of turtle strings,
-   * otherwise a stream of Quads.
-   *
-   * Note that in general this should be done by resource store specifically made for converting to turtle,
-   * this is just here to make this simple resource store work.
-   *
-   * @param data - Quads to transform.
-   * @param preferences - Requested preferences.
-   *
-   * @returns The resulting Representation.
-   */
-  private generateRepresentation(data: Quad[], preferences: RepresentationPreferences): Representation {
-    // Always return turtle unless explicitly asked for quads
-    if (preferences.type?.some((preference): boolean => preference.value.includes(CONTENT_TYPE_QUADS))) {
-      return this.generateQuadRepresentation(data);
-    }
-    return this.generateBinaryRepresentation(data);
-  }
-
-  /**
-   * Creates a {@link BinaryRepresentation} of the incoming Quads.
-   * @param data - Quads to transform to text/turtle.
-   *
-   * @returns The resulting binary Representation.
-   */
-  private generateBinaryRepresentation(data: Quad[]): BinaryRepresentation {
+  private async copyRepresentation(source: Representation): Promise<Representation> {
+    const arr = await arrayifyStream(source.data);
     return {
-      dataType: DATA_TYPE_BINARY,
-      data: streamifyArray([ ...data ]).pipe(new StreamWriter({ format: 'text/turtle' })),
-      metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
+      dataType: source.dataType,
+      data: streamifyArray([ ...arr ]),
+      metadata: source.metadata,
     };
   }
 
   /**
-   * Creates a {@link QuadRepresentation} of the incoming Quads.
-   * @param data - Quads to transform to a stream of Quads.
+   * Generates a Representation that is identical to the one stored,
+   * but makes sure to duplicate the data stream so it stays readable for later calls.
    *
-   * @returns The resulting quad Representation.
+   * @param path - Path in store of Representation.
+   *
+   * @returns The resulting Representation.
    */
-  private generateQuadRepresentation(data: Quad[]): QuadRepresentation {
+  private async generateRepresentation(path: string): Promise<Representation> {
+    const source = this.store[path];
+    const arr = await arrayifyStream(source.data);
+    source.data = streamifyArray([ ...arr ]);
+
     return {
-      dataType: DATA_TYPE_QUAD,
-      data: streamifyArray([ ...data ]),
-      metadata: { raw: [], profiles: []},
+      dataType: source.dataType,
+      data: streamifyArray([ ...arr ]),
+      metadata: source.metadata,
     };
   }
 }

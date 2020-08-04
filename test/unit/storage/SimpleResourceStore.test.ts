@@ -1,37 +1,31 @@
 import arrayifyStream from 'arrayify-stream';
+import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
+import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { QuadRepresentation } from '../../../src/ldp/representation/QuadRepresentation';
 import { Readable } from 'stream';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
 import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
-import { namedNode, triple } from '@rdfjs/data-model';
 
 const base = 'http://test.com/';
 
 describe('A SimpleResourceStore', (): void => {
   let store: SimpleResourceStore;
-  let representation: QuadRepresentation;
-  const quad = triple(
-    namedNode('http://test.com/s'),
-    namedNode('http://test.com/p'),
-    namedNode('http://test.com/o'),
-  );
+  let representation: BinaryRepresentation;
+  const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
     store = new SimpleResourceStore(base);
 
     representation = {
-      data: streamifyArray([ quad ]),
-      dataType: DATA_TYPE_QUAD,
+      data: streamifyArray([ dataString ]),
+      dataType: DATA_TYPE_BINARY,
       metadata: {} as RepresentationMetadata,
     };
   });
 
   it('errors if a resource was not found.', async(): Promise<void> => {
-    await expect(store.getRepresentation({ path: `${base}wrong` }, {})).rejects.toThrow(NotFoundHttpError);
+    await expect(store.getRepresentation({ path: `${base}wrong` })).rejects.toThrow(NotFoundHttpError);
     await expect(store.addResource({ path: 'http://wrong.com/wrong' }, representation))
       .rejects.toThrow(NotFoundHttpError);
     await expect(store.deleteResource({ path: 'wrong' })).rejects.toThrow(NotFoundHttpError);
@@ -43,85 +37,38 @@ describe('A SimpleResourceStore', (): void => {
     await expect(store.modifyResource()).rejects.toThrow(Error);
   });
 
-  it('errors for wrong input data types.', async(): Promise<void> => {
-    (representation as any).dataType = DATA_TYPE_BINARY;
-    await expect(store.addResource({ path: base }, representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
-  });
-
   it('can write and read data.', async(): Promise<void> => {
     const identifier = await store.addResource({ path: base }, representation);
     expect(identifier.path.startsWith(base)).toBeTruthy();
-    const result = await store.getRepresentation(identifier, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
+    const result = await store.getRepresentation(identifier);
     expect(result).toEqual({
-      dataType: DATA_TYPE_QUAD,
+      dataType: representation.dataType,
       data: expect.any(Readable),
-      metadata: {
-        profiles: [],
-        raw: [],
-      },
+      metadata: representation.metadata,
     });
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ quad ]);
+    await expect(arrayifyStream(result.data)).resolves.toEqual([ dataString ]);
   });
 
   it('can add resources to previously added resources.', async(): Promise<void> => {
     const identifier = await store.addResource({ path: base }, representation);
-    representation.data = streamifyArray([ quad ]);
+    representation.data = streamifyArray([ ]);
     const childIdentifier = await store.addResource(identifier, representation);
     expect(childIdentifier.path).toContain(identifier.path);
   });
 
-  it('can read binary data.', async(): Promise<void> => {
-    const identifier = await store.addResource({ path: base }, representation);
-    expect(identifier.path.startsWith(base)).toBeTruthy();
-    const result = await store.getRepresentation(identifier, { type: [{ value: 'text/turtle', weight: 1 }]});
-    expect(result).toEqual({
-      dataType: DATA_TYPE_BINARY,
-      data: expect.any(Readable),
-      metadata: {
-        profiles: [],
-        raw: [],
-        contentType: 'text/turtle',
-      },
-    });
-    await expect(arrayifyStream(result.data)).resolves.toContain(
-      `<${quad.subject.value}> <${quad.predicate.value}> <${quad.object.value}>`,
-    );
-  });
-
-  it('returns turtle data if no preference was set.', async(): Promise<void> => {
-    const identifier = await store.addResource({ path: base }, representation);
-    expect(identifier.path.startsWith(base)).toBeTruthy();
-    const result = await store.getRepresentation(identifier, { });
-    expect(result).toEqual({
-      dataType: DATA_TYPE_BINARY,
-      data: expect.any(Readable),
-      metadata: {
-        profiles: [],
-        raw: [],
-        contentType: 'text/turtle',
-      },
-    });
-    await expect(arrayifyStream(result.data)).resolves.toContain(
-      `<${quad.subject.value}> <${quad.predicate.value}> <${quad.object.value}>`,
-    );
-  });
-
   it('can set data.', async(): Promise<void> => {
     await store.setRepresentation({ path: base }, representation);
-    const result = await store.getRepresentation({ path: base }, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
+    const result = await store.getRepresentation({ path: base });
     expect(result).toEqual({
-      dataType: DATA_TYPE_QUAD,
+      dataType: representation.dataType,
       data: expect.any(Readable),
-      metadata: {
-        profiles: [],
-        raw: [],
-      },
+      metadata: representation.metadata,
     });
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ quad ]);
+    await expect(arrayifyStream(result.data)).resolves.toEqual([ dataString ]);
   });
 
   it('can delete data.', async(): Promise<void> => {
     await store.deleteResource({ path: base });
-    await expect(store.getRepresentation({ path: base }, {})).rejects.toThrow(NotFoundHttpError);
+    await expect(store.getRepresentation({ path: base })).rejects.toThrow(NotFoundHttpError);
   });
 });
