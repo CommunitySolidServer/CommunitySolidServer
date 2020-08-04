@@ -2,14 +2,13 @@ import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
   AuthenticatedLdpHandler,
-  BodyParser,
   CompositeAsyncHandler,
   ExpressHttpServer,
   HttpRequest,
-  Operation,
   PatchingStore,
+  QuadToTurtleConverter,
   Representation,
-  ResponseDescription,
+  RepresentationConvertingStore,
   SimpleAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
@@ -25,6 +24,7 @@ import {
   SimpleSparqlUpdatePatchHandler,
   SimpleTargetExtractor,
   SingleThreadedResourceLocker,
+  TurtleToQuadConverter,
 } from '..';
 
 const { argv } = yargs
@@ -37,9 +37,9 @@ const { argv } = yargs
 const { port } = argv;
 
 // This is instead of the dependency injection that still needs to be added
-const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-  new SimpleBodyParser(),
+const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
   new SimpleSparqlUpdateBodyParser(),
+  new SimpleBodyParser(),
 ]);
 const requestParser = new SimpleRequestParser({
   targetExtractor: new SimpleTargetExtractor(),
@@ -53,11 +53,16 @@ const authorizer = new SimpleAuthorizer();
 
 // Will have to see how to best handle this
 const store = new SimpleResourceStore(`http://localhost:${port}/`);
+const converter = new CompositeAsyncHandler([
+  new TurtleToQuadConverter(),
+  new QuadToTurtleConverter(),
+]);
+const convertingStore = new RepresentationConvertingStore(store, converter);
 const locker = new SingleThreadedResourceLocker();
-const patcher = new SimpleSparqlUpdatePatchHandler(store, locker);
-const patchingStore = new PatchingStore(store, patcher);
+const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
+const patchingStore = new PatchingStore(convertingStore, patcher);
 
-const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
+const operationHandler = new CompositeAsyncHandler([
   new SimpleDeleteOperationHandler(patchingStore),
   new SimpleGetOperationHandler(patchingStore),
   new SimplePatchOperationHandler(patchingStore),
