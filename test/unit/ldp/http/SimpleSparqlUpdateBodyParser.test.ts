@@ -1,4 +1,6 @@
 import { Algebra } from 'sparqlalgebrajs';
+import arrayifyStream from 'arrayify-stream';
+import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
 import { HttpRequest } from '../../../../src/server/HttpRequest';
 import { SimpleSparqlUpdateBodyParser } from '../../../../src/ldp/http/SimpleSparqlUpdateBodyParser';
 import streamifyArray from 'streamify-array';
@@ -32,13 +34,16 @@ describe('A SimpleSparqlUpdateBodyParser', (): void => {
       namedNode('http://test.com/p'),
       namedNode('http://test.com/o'),
     ) ]);
-    expect(result.dataType).toBe('sparql-algebra');
-    expect(result.raw).toBe('DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o>}');
+    expect(result.dataType).toBe(DATA_TYPE_BINARY);
     expect(result.metadata).toEqual({
       raw: [],
       profiles: [],
       contentType: 'application/sparql-update',
     });
-    expect((): any => result.data).toThrow('Body already parsed');
+
+    // Workaround for Node 10 not exposing objectMode
+    expect((await arrayifyStream(result.data)).join('')).toEqual(
+      'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o>}',
+    );
   });
 });
