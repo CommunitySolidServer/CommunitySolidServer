@@ -1,5 +1,6 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
+import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
 import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
@@ -17,7 +18,6 @@ import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCrede
 import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
 import { SimpleExtensionAclManager } from '../../src/authorization/SimpleExtensionAclManager';
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
-import { SimplePermissionsExtractor } from '../../src/ldp/permissions/SimplePermissionsExtractor';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
 import { SimplePutOperationHandler } from '../../src/ldp/operations/SimplePutOperationHandler';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
@@ -88,7 +88,7 @@ describe('A server with authorization', (): void => {
   const convertingStore = new RepresentationConvertingStore(store, converter);
 
   const credentialsExtractor = new SimpleCredentialsExtractor();
-  const permissionsExtractor = new SimplePermissionsExtractor();
+  const permissionsExtractor = new BasePermissionsExtractor();
   const authorizer = new SimpleAclAuthorizer(
     new SimpleExtensionAclManager(),
     new UrlContainerManager('http://test.com/'),

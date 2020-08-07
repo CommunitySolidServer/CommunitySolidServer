@@ -5,6 +5,7 @@ import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
   AuthenticatedLdpHandler,
+  BasePermissionsExtractor,
   CompositeAsyncHandler,
   ExpressHttpServer,
   HttpRequest,
@@ -19,7 +20,6 @@ import {
   SimpleExtensionAclManager,
   SimpleGetOperationHandler,
   SimplePatchOperationHandler,
-  SimplePermissionsExtractor,
   SimplePostOperationHandler,
   SimplePutOperationHandler,
   SimpleRequestParser,
@@ -29,6 +29,7 @@ import {
   SimpleSparqlUpdatePatchHandler,
   SimpleTargetExtractor,
   SingleThreadedResourceLocker,
+  SparqlPatchPermissionsExtractor,
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
@@ -56,7 +57,10 @@ const requestParser = new SimpleRequestParser({
 });
 
 const credentialsExtractor = new SimpleCredentialsExtractor();
-const permissionsExtractor = new SimplePermissionsExtractor();
+const permissionsExtractor = new CompositeAsyncHandler([
+  new BasePermissionsExtractor(),
+  new SparqlPatchPermissionsExtractor(),
+]);
 
 // Will have to see how to best handle this
 const store = new SimpleResourceStore(base);
