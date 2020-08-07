@@ -11,7 +11,7 @@ describe('A SimpleDeleteOperationHandler', (): void => {
     store.deleteResource = jest.fn(async(): Promise<void> => {});
   });
 
-  it('only supports GET operations.', async(): Promise<void> => {
+  it('only supports DELETE operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'DELETE' } as Operation)).resolves.toBeUndefined();
     await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
