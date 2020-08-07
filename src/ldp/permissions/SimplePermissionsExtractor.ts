@@ -11,11 +11,12 @@ export class SimplePermissionsExtractor extends PermissionsExtractor {
   }
 
   public async handle(input: Operation): Promise<PermissionSet> {
-    return {
+    const result = {
       read: input.method === 'GET',
       append: false,
-      write: input.method === 'POST' || input.method === 'PUT',
-      delete: input.method === 'DELETE',
+      write: input.method === 'POST' || input.method === 'PUT' || input.method === 'DELETE',
     };
+    result.append = result.write;
+    return result;
   }
 }
