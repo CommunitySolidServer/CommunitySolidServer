@@ -42,10 +42,12 @@ export class SimpleResourceStore implements ResourceStore {
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
     const containerPath = this.parseIdentifier(container);
-    const newPath = `${ensureTrailingSlash(containerPath)}${this.index}`;
+    this.checkPath(containerPath);
+    const newID = { path: `${ensureTrailingSlash(container.path)}${this.index}` };
+    const newPath = this.parseIdentifier(newID);
     this.index += 1;
     this.store[newPath] = await this.copyRepresentation(representation);
-    return { path: `${this.base}${newPath}` };
+    return newID;
   }
 
   /**
@@ -54,6 +56,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     const path = this.parseIdentifier(identifier);
+    this.checkPath(path);
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.store[path];
   }
@@ -68,6 +71,7 @@ export class SimpleResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     const path = this.parseIdentifier(identifier);
+    this.checkPath(path);
     return this.generateRepresentation(path);
   }
 
@@ -79,7 +83,7 @@ export class SimpleResourceStore implements ResourceStore {
   }
 
   /**
-   * Replaces the stored Representation with the new one for the given identifier.
+   * Puts the given data in the given location.
    * @param identifier - Identifier to replace.
    * @param representation - New Representation.
    */
@@ -89,20 +93,33 @@ export class SimpleResourceStore implements ResourceStore {
   }
 
   /**
-   * Strips the base from the identifier and checks if it is in the store.
+   * Strips the base from the identifier and checks if it is valid.
    * @param identifier - Incoming identifier.
    *
    * @throws {@link NotFoundHttpError}
-   * If the identifier is not in the store.
+   * If the identifier doesn't start with the base ID.
    *
    * @returns A string representing the relative path.
    */
   private parseIdentifier(identifier: ResourceIdentifier): string {
     const path = identifier.path.slice(this.base.length);
-    if (!this.store[path] || !identifier.path.startsWith(this.base)) {
+    if (!identifier.path.startsWith(this.base)) {
       throw new NotFoundHttpError();
     }
     return path;
+  }
+
+  /**
+   * Checks if the relative path is in the store.
+   * @param identifier - Incoming identifier.
+   *
+   * @throws {@link NotFoundHttpError}
+   * If the path is not in the store.
+   */
+  private checkPath(path: string): void {
+    if (!this.store[path]) {
+      throw new NotFoundHttpError();
+    }
   }
 
   /**
