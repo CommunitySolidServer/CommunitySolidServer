@@ -13,34 +13,30 @@ describe('A SimplePermissionsExtractor', (): void => {
       read: true,
       append: false,
       write: false,
-      delete: false,
     });
   });
 
   it('requires write for POST operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'POST' } as Operation)).resolves.toEqual({
       read: false,
-      append: false,
+      append: true,
       write: true,
-      delete: false,
     });
   });
 
   it('requires write for PUT operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'PUT' } as Operation)).resolves.toEqual({
       read: false,
-      append: false,
+      append: true,
       write: true,
-      delete: false,
     });
   });
 
-  it('requires delete for DELETE operations.', async(): Promise<void> => {
+  it('requires write for DELETE operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'DELETE' } as Operation)).resolves.toEqual({
       read: false,
-      append: false,
-      write: false,
-      delete: true,
+      append: true,
+      write: true,
     });
   });
 });
