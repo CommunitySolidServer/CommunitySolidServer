@@ -38,7 +38,8 @@ export * from './src/ldp/operations/SimplePutOperationHandler';
 // LDP/Permissions
 export * from './src/ldp/permissions/PermissionSet';
 export * from './src/ldp/permissions/PermissionsExtractor';
-export * from './src/ldp/permissions/SimplePermissionsExtractor';
+export * from './src/ldp/permissions/BasePermissionsExtractor';
+export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
 export * from './src/ldp/representation/BinaryRepresentation';

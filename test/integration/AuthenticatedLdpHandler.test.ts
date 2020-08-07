@@ -1,5 +1,6 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
+import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
 import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
@@ -18,7 +19,6 @@ import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCrede
 import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
 import { SimplePatchOperationHandler } from '../../src/ldp/operations/SimplePatchOperationHandler';
-import { SimplePermissionsExtractor } from '../../src/ldp/permissions/SimplePermissionsExtractor';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
@@ -27,6 +27,7 @@ import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpd
 import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
+import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
@@ -40,7 +41,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     });
 
     const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new SimplePermissionsExtractor();
+    const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore('http://test.com/');
@@ -108,7 +109,10 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     });
 
     const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new SimplePermissionsExtractor();
+    const permissionsExtractor = new CompositeAsyncHandler([
+      new BasePermissionsExtractor(),
+      new SparqlPatchPermissionsExtractor(),
+    ]);
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore('http://test.com/');
