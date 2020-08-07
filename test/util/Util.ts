@@ -1,0 +1,28 @@
+import { EventEmitter } from 'events';
+import { HttpHandler } from '../../src/server/HttpHandler';
+import { HttpRequest } from '../../src/server/HttpRequest';
+import { IncomingHttpHeaders } from 'http';
+import streamifyArray from 'streamify-array';
+import { createResponse, MockResponse } from 'node-mocks-http';
+
+export const call = async(handler: HttpHandler, requestUrl: URL, method: string,
+  headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
+  const request = streamifyArray(data) as HttpRequest;
+  request.url = requestUrl.pathname;
+  request.method = method;
+  request.headers = headers;
+  request.headers.host = requestUrl.host;
+  const response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
+
+  const endPromise = new Promise((resolve): void => {
+    response.on('end', (): void => {
+      expect(response._isEndCalled()).toBeTruthy();
+      resolve();
+    });
+  });
+
+  await handler.handleSafe({ request, response });
+  await endPromise;
+
+  return response;
+};

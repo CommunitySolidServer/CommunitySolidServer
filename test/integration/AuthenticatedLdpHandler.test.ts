@@ -1,11 +1,10 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
+import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { EventEmitter } from 'events';
-import { HttpHandler } from '../../src/server/HttpHandler';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { IncomingHttpHeaders } from 'http';
+import { MockResponse } from 'node-mocks-http';
 import { Operation } from '../../src/ldp/operations/Operation';
 import { Parser } from 'n3';
 import { PatchingStore } from '../../src/storage/PatchingStore';
@@ -28,35 +27,11 @@ import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpd
 import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
-import streamifyArray from 'streamify-array';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
-import { createResponse, MockResponse } from 'node-mocks-http';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
 
-const call = async(handler: HttpHandler, requestUrl: url.URL, method: string,
-  headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
-  const request = streamifyArray(data) as HttpRequest;
-  request.url = requestUrl.pathname;
-  request.method = method;
-  request.headers = headers;
-  request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
-
-  const endPromise = new Promise((resolve): void => {
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      resolve();
-    });
-  });
-
-  await handler.handleSafe({ request, response });
-  await endPromise;
-
-  return response;
-};
-
-describe('An AuthenticatedLdpHandler', (): void => {
+describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
     const requestParser = new SimpleRequestParser({
       targetExtractor: new SimpleTargetExtractor(),
@@ -88,7 +63,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
-      let requestUrl = new url.URL('http://test.com/');
+      let requestUrl = new URL('http://test.com/');
       let response: MockResponse<any> = await call(
         handler,
         requestUrl,
@@ -102,7 +77,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(id).toContain(url.format(requestUrl));
 
       // GET
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toContain('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
@@ -166,7 +141,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
-      let requestUrl = new url.URL('http://test.com/');
+      let requestUrl = new URL('http://test.com/');
       let response: MockResponse<any> = await call(
         handler,
         requestUrl,
@@ -181,7 +156,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(id).toContain(url.format(requestUrl));
 
       // PATCH
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(
         handler,
         requestUrl,
@@ -196,7 +171,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(response._getHeaders().location).toBe(id);
 
       // GET
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toContain('<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.');
