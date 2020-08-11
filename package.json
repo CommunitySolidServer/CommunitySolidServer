@@ -32,6 +32,7 @@
     "@types/async-lock": "^1.1.2",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
+    "@types/mime-types": "^2.1.0",
     "@types/n3": "^1.4.0",
     "@types/node": "^14.0.1",
     "@types/rdf-js": "^3.0.0",
@@ -42,6 +43,7 @@
     "n3": "^1.4.0",
     "rdf-terms": "^1.5.1",
     "sparqlalgebrajs": "^2.3.1",
+    "uuidv4": "^6.2.2",
     "yargs": "^15.4.1"
   },
   "devDependencies": {

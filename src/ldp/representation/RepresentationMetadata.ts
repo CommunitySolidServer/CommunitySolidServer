@@ -35,4 +35,14 @@ export interface RepresentationMetadata {
    * Optional timestamp of the representation.
    */
   dateTime?: Date;
+  /**
+   * Optional link type of the representation.
+   * E.g. LINK_TYPE_LDP_C
+   */
+  linkType?: string;
+  /**
+   * Optional slug of the representation.
+   * Used to suggest the URI for the resource created.
+   */
+  slug?: string;
 }
