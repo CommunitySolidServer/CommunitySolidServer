@@ -1,9 +1,8 @@
 import arrayifyStream from 'arrayify-stream';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { contentType } from 'mime-types';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
-import { ensureTrailingSlash } from '../util/Util';
-import { InternalServerError } from '../util/errors/InternalServerError';
+import fsPromises from 'fs/promises';
+import { contentType as getContentTypeFromExtension } from 'mime-types';
+import { InteractionController } from '../util/InteractionController';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { Readable } from 'stream';
@@ -13,9 +12,11 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
-import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
-import { DataFactory, StreamWriter } from 'n3';
-import { InteractionHandler, RequestAction } from '../util/InteractionHandler';
+import { createReadStream, createWriteStream, Stats } from 'fs';
+import { DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
+import { DataFactory, StreamParser, StreamWriter } from 'n3';
+import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { LDP, RDF, STAT, TERMS, XML } from '../util/Prefixes';
 import { NamedNode, Quad } from 'rdf-js';
 
 /**
@@ -23,47 +24,35 @@ import { NamedNode, Quad } from 'rdf-js';
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class FileResourceStore implements ResourceStore {
-  private readonly base: string;
-  private readonly root: string;
-  private readonly interactionHandler: InteractionHandler;
-
-  private readonly rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
-  private readonly ldp = 'http://www.w3.org/ns/ldp#';
-  private readonly terms = 'http://purl.org/dc/terms/';
-  private readonly xml = 'http://www.w3.org/2001/XMLSchema#';
-  private readonly stat = 'http://www.w3.org/ns/posix/stat#';
+  private readonly baseRequestURI: string;
+  private readonly rootFilepath: string;
+  private readonly interactionController: InteractionController;
 
   private readonly predicates = {
-    aType: DataFactory.namedNode(`${this.rdf}type`),
-    modified: DataFactory.namedNode(`${this.terms}modified`),
-    contains: DataFactory.namedNode(`${this.ldp}contains`),
-    mtime: DataFactory.namedNode(`${this.stat}mtime`),
-    size: DataFactory.namedNode(`${this.stat}size`),
+    aType: DataFactory.namedNode(`${RDF}type`),
+    modified: DataFactory.namedNode(`${TERMS}modified`),
+    contains: DataFactory.namedNode(`${LDP}contains`),
+    mtime: DataFactory.namedNode(`${STAT}mtime`),
+    size: DataFactory.namedNode(`${STAT}size`),
   };
 
   private readonly objects = {
-    container: DataFactory.namedNode(`${this.ldp}Container`),
-    basicContainer: DataFactory.namedNode(`${this.ldp}BasicContainer`),
-    ldpResource: DataFactory.namedNode(`${this.ldp}Resource`),
-    dateTime: DataFactory.namedNode(`${this.xml}dateTime`),
+    container: DataFactory.namedNode(`${LDP}Container`),
+    basicContainer: DataFactory.namedNode(`${LDP}BasicContainer`),
+    ldpResource: DataFactory.namedNode(`${LDP}Resource`),
+    dateTime: DataFactory.namedNode(`${XML}dateTime`),
   };
 
   /**
-   * @param base - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative path.
-   * @param root - Root filepath in which the resources and containers will be saved as files and directories.
+   * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
+   * path.
+   * @param rootFilepath - Root filepath in which the resources and containers will be saved as files and directories.
+   * @param interactionController - Instance of InteractionController to use.
    */
-  public constructor(base: string, root: string) {
-    this.base = base;
-    while (this.base.endsWith('/')) {
-      this.base = this.base.slice(0, -1);
-    }
-
-    this.root = root;
-    while (this.root.endsWith('/')) {
-      this.root = this.root.slice(0, -1);
-    }
-
-    this.interactionHandler = new InteractionHandler();
+  public constructor(baseRequestURI: string, rootFilepath: string, interactionController: InteractionController) {
+    this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
+    this.rootFilepath = trimTrailingSlashes(rootFilepath);
+    this.interactionController = interactionController;
   }
 
   /**
@@ -79,71 +68,70 @@ export class FileResourceStore implements ResourceStore {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
     const path = this.parseIdentifier(container);
-    const { slug, linkType, raw } = representation.metadata;
+    const { slug, raw } = representation.metadata;
+    const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
-    if (raw && raw.length > 0) {
-      metadata = streamifyArray(raw);
+    if (raw.length > 0) {
+      metadata = streamifyArray(raw).pipe(new StreamWriter({ format: 'text/turtle' }));
     }
 
-    const resultingAction = this.interactionHandler.getResultingAction(path, slug, linkType);
-    if (resultingAction.requestAction === RequestAction.CREATE_RESOURCE) {
+    const parentContainer = this.interactionController.getContainer(path);
+    const isContainer = this.interactionController.isContainer(slug, linkTypes);
+    const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
+    if (!isContainer) {
       // Create a file for the resource with as filepath the parent container.
-      return this.createFile(`${this.root}${resultingAction.parentContainer}`,
-        resultingAction.newIdentifier,
-        representation.data,
-        path.endsWith('/'),
-        metadata);
+      return this.createFile(parentContainer, newIdentifier, representation.data, path.endsWith('/'), metadata);
     }
 
     // Create a new container as subdirectory of the parent container.
-    return this.createContainer(`${this.root}${resultingAction.parentContainer}`,
-      resultingAction.newIdentifier,
-      path.endsWith('/'),
-      metadata);
+    return this.createContainer(parentContainer, newIdentifier, path.endsWith('/'), metadata);
   }
 
+  /**
+   * Deletes the given resource.
+   * @param identifier - Identifier of resource to delete.
+   */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     let path = this.parseIdentifier(identifier);
     if (path === '' || ensureTrailingSlash(path) === '/') {
-      throw new MethodNotAllowedHttpError('Cannot delete root container.');
+      throw new MethodNotAllowedHttpError('Cannot delete rootFilepath container.');
     }
-    path = `${this.root}${path}`;
-    return new Promise(async(resolve, reject): Promise<any> => {
-      try {
-        const stats = await fsPromises.lstat(path);
-        if (stats.isFile()) {
-          await fsPromises.unlink(path);
-          try {
-            await fsPromises.unlink(`${path}.metadata`);
-          } catch (_) {
-            // It's ok if there was no metadata file.
-          }
-          resolve();
-        } else if (stats.isDirectory()) {
-          path = ensureTrailingSlash(path);
-          const files = await fsPromises.readdir(path);
-          let match = files.find((file): any => !file.startsWith('.'));
-          if (match !== undefined) {
-            reject(new ConflictHttpError('Container is not empty.'));
-          }
-
-          match = files.find((file): any => file.startsWith('.'));
-          while (match) {
-            await fsPromises.unlink(`${path}${match}`);
-            const matchedFile = match;
-            files.filter((file): any => file !== matchedFile);
-            match = files.find((file): any => file.startsWith('.'));
-          }
-
-          await fsPromises.rmdir(path);
-          resolve();
-        } else {
-          reject(new NotFoundHttpError());
+    path = `${this.rootFilepath}${path}`;
+    try {
+      const stats = await fsPromises.lstat(path);
+      if (stats.isFile()) {
+        await fsPromises.unlink(path);
+        try {
+          await fsPromises.unlink(`${path}.metadata`);
+        } catch (_) {
+          // It's ok if there was no metadata file.
         }
-      } catch (error) {
-        reject(new NotFoundHttpError());
+      } else if (stats.isDirectory()) {
+        path = ensureTrailingSlash(path);
+        const files = await fsPromises.readdir(path);
+        let match = files.find((file): any => !file.startsWith('.metadata'));
+        if (match !== undefined) {
+          throw new ConflictHttpError('Container is not empty.');
+        }
+
+        match = files.find((file): any => file.startsWith('.metadata'));
+        while (match) {
+          await fsPromises.unlink(`${path}${match}`);
+          const matchedFile = match;
+          files.filter((file): any => file !== matchedFile);
+          match = files.find((file): any => file.startsWith('.metadata'));
+        }
+
+        await fsPromises.rmdir(path);
+      } else {
+        throw new NotFoundHttpError();
       }
-    });
+    } catch (error) {
+      if (error instanceof ConflictHttpError) {
+        throw new ConflictHttpError('Container is not empty.');
+      }
+      throw new NotFoundHttpError();
+    }
   }
 
   /**
@@ -154,17 +142,17 @@ export class FileResourceStore implements ResourceStore {
    * @returns The corresponding Representation.
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
-    let path = `${this.root}${this.parseIdentifier(identifier)}`;
+    let path = `${this.rootFilepath}${this.parseIdentifier(identifier)}`;
     return new Promise(async(resolve, reject): Promise<any> => {
       try {
         const stats = await fsPromises.lstat(path);
         if (stats.isFile()) {
           const readStream = createReadStream(path);
-          const _contentType = contentType(path);
+          const contentType = getContentTypeFromExtension(path);
           let rawMetadata: Quad[] = [];
           try {
             const readMetadataStream = createReadStream(`${path}.metadata`);
-            rawMetadata = await arrayifyStream(readMetadataStream);
+            rawMetadata = await arrayifyStream(readMetadataStream.pipe(new StreamParser({ format: 'text/turtle' })));
           } catch (_) {
             // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
           }
@@ -174,8 +162,8 @@ export class FileResourceStore implements ResourceStore {
             dateTime: stats.mtime,
             byteSize: stats.size,
           };
-          if (_contentType && _contentType !== path) {
-            metadata.contentType = _contentType;
+          if (contentType && contentType !== path) {
+            metadata.contentType = contentType;
           }
           resolve({ metadata, data: readStream, dataType: DATA_TYPE_BINARY });
         } else if (stats.isDirectory()) {
@@ -208,16 +196,16 @@ export class FileResourceStore implements ResourceStore {
           } catch (_) {
             // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
           }
-          return {
-            dataType: DATA_TYPE_BINARY,
-            data: streamifyArray(quads).pipe(new StreamWriter({ format: 'text/turtle' })),
+
+          resolve({
+            dataType: DATA_TYPE_QUAD,
+            data: streamifyArray(quads),
             metadata: {
               raw: rawMetadata,
               profiles: [],
-              contentType: 'text/turtle',
               dateTime: stats.mtime,
             },
-          };
+          });
         } else {
           reject(new ConflictHttpError('Not a valid resource.'));
         }
@@ -243,28 +231,27 @@ export class FileResourceStore implements ResourceStore {
     if (representation.dataType !== DATA_TYPE_BINARY) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
-    const _path = this.parseIdentifier(identifier);
-    const { linkType, raw } = representation.metadata;
+    const [ , path, slug ] = /(?<path>.*\/)(?<slug>[^/]*\/?)/u.exec(this.parseIdentifier(identifier)) ?? [];
+    const { raw } = representation.metadata;
+    const linkTypes = representation.metadata.linkRel?.type;
     let metadata: Readable | undefined;
     if (raw && raw.length > 0) {
       metadata = streamifyArray(raw);
     }
 
-    const i = _path.slice(0, -1).lastIndexOf('/') + 1;
-    const path = _path.slice(0, i);
-    const slug = _path.slice(i);
-
-    const resultingAction = this.interactionHandler.getResultingAction(path, slug, linkType);
-    if (resultingAction.requestAction === RequestAction.CREATE_RESOURCE) {
+    const parentContainer = this.interactionController.getContainer(path);
+    const isContainer = this.interactionController.isContainer(slug, linkTypes);
+    const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
+    if (!isContainer) {
       // (Re)write file for the resource if no container with that identifier exists.
       return new Promise(async(resolve, reject): Promise<any> => {
         try {
           const stats = await fsPromises.lstat(
-            `${this.root}${resultingAction.parentContainer}${resultingAction.newIdentifier}`,
+            `${this.rootFilepath}${parentContainer}${newIdentifier}`,
           );
           if (stats.isFile()) {
-            await this.createFile(`${this.root}${resultingAction.parentContainer}`,
-              resultingAction.newIdentifier,
+            await this.createFile(parentContainer,
+              newIdentifier,
               representation.data,
               true,
               metadata).then((): any => resolve()).catch((error): any => {
@@ -274,8 +261,8 @@ export class FileResourceStore implements ResourceStore {
             reject(new ConflictHttpError('Container with that identifier already exists.'));
           }
         } catch (error) {
-          await this.createFile(`${this.root}${resultingAction.parentContainer}`,
-            resultingAction.newIdentifier,
+          await this.createFile(parentContainer,
+            newIdentifier,
             representation.data,
             true,
             metadata).then((): any => resolve()).catch((error_): any => {
@@ -288,12 +275,14 @@ export class FileResourceStore implements ResourceStore {
     // Create a container if the identifier doesn't exist yet.
     return new Promise(async(resolve, reject): Promise<any> => {
       try {
-        await fsPromises.access(`${this.root}${resultingAction.parentContainer}${resultingAction.newIdentifier}`);
+        await fsPromises.access(
+          `${this.rootFilepath}${parentContainer}${newIdentifier}`,
+        );
         reject(new ConflictHttpError('Resource with that identifier already exists.'));
       } catch (error) {
         // Identifier doesn't exist yet so we can create a container.
-        await this.createContainer(`${this.root}${resultingAction.parentContainer}`,
-          resultingAction.newIdentifier,
+        await this.createContainer(parentContainer,
+          newIdentifier,
           true,
           metadata)
           .then((): any => resolve())
@@ -305,32 +294,31 @@ export class FileResourceStore implements ResourceStore {
   }
 
   /**
-   * Strips the base from the identifier and checks if it is in the store.
+   * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.
    * @param identifier - Incoming identifier.
    *
    * @throws {@link NotFoundHttpError}
-   * If the identifier does not match the base path of the store.
+   * If the identifier does not match the baseRequestURI path of the store.
    */
   private parseIdentifier(identifier: ResourceIdentifier): string {
-    const path = identifier.path.slice(this.base.length);
-    if (!identifier.path.startsWith(this.base)) {
+    if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
-    return path;
+    return identifier.path.slice(this.baseRequestURI.length);
   }
 
   /**
-   * Strips the root path from the filepath and adds the base in front of it.
+   * Strips the rootFilepath path from the filepath and adds the baseRequestURI in front of it.
    * @param path - The filepath.
    *
-   * @throws {@Link InternalServerError}
-   * If the filepath does not match the root path of the store.
+   * @throws {@Link Error}
+   * If the filepath does not match the rootFilepath path of the store.
    */
   private mapFilepathToUrl(path: string): string {
-    if (!path.startsWith(this.root)) {
-      throw new InternalServerError('Cannot map filepath to URL.');
+    if (!path.startsWith(this.rootFilepath)) {
+      throw new Error('Cannot map filepath to URL.');
     }
-    return this.base + path.slice(this.root.length);
+    return this.baseRequestURI + path.slice(this.rootFilepath.length);
   }
 
   /**
@@ -350,21 +338,27 @@ export class FileResourceStore implements ResourceStore {
     }
     return new Promise(async(resolve, reject): Promise<any> => {
       try {
-        const stats = await fsPromises.lstat(path);
+        const stats = await fsPromises.lstat(`${this.rootFilepath}${path}`);
         if (!stats.isDirectory()) {
           reject(new MethodNotAllowedHttpError('The given path is not a valid container.'));
         } else {
           if (metadata) {
-            this.createMetadata(`${path}${resourceName}.metadata`, metadata, reject);
+            try {
+              await this.createDataFile(`${this.rootFilepath}${path}${resourceName}.metadata`, metadata);
+            } catch (error) {
+              reject(error);
+              return;
+            }
           }
-          const writeStream = createWriteStream(path + resourceName);
-
-          data.on('data', (chunk): any => writeStream.write(chunk));
-          data.on('error', reject);
-          data.on('end', (): any => writeStream.end());
-
-          writeStream.on('error', reject);
-          writeStream.on('finish', (): any => resolve({ path: this.mapFilepathToUrl(path + resourceName) }));
+          try {
+            await this.createDataFile(this.rootFilepath + path + resourceName, data);
+            resolve({ path: this.mapFilepathToUrl(this.rootFilepath + path + resourceName) });
+          } catch (error) {
+            // Normal file has not been created so we don't want the metadata file to remain.
+            await fsPromises.unlink(`${this.rootFilepath}${path}${resourceName}.metadata`);
+            reject(error);
+            return;
+          }
         }
       } catch (error) {
         reject(new MethodNotAllowedHttpError());
@@ -375,35 +369,36 @@ export class FileResourceStore implements ResourceStore {
   /**
    * Create a directory to represent a container.
    * @param path - The path to the parent directory in which the new directory should be created.
-   * @param _containerName - The name of the directory to be created.
+   * @param containerName - The name of the directory to be created.
    * @param allowRecursiveCreation - Whether necessary but not existing intermediate containers may be created.
    * @param metadata - Optional metadata that will be stored at `path/_containerName/.metadata` if set.
    *
    * @returns Promise of the identifier of the newly created container.
    */
-  private async createContainer(path: string, _containerName: string,
+  private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
-    const containerName = ensureTrailingSlash(_containerName);
+    const fullPath = ensureTrailingSlash(this.rootFilepath + path + containerName);
     return new Promise(async(resolve, reject): Promise<any> => {
       try {
-        if (allowRecursiveCreation) {
-          await fsPromises.mkdir(path + containerName, { recursive: true });
-          if (metadata) {
-            this.createMetadata(`${path}${containerName}.metadata`, metadata, reject);
-          }
-          resolve({ path: this.mapFilepathToUrl(path + containerName) });
-        } else {
-          const stats = await fsPromises.lstat(path);
+        if (!allowRecursiveCreation) {
+          const stats = await fsPromises.lstat(this.rootFilepath + path);
           if (!stats.isDirectory()) {
             reject(new MethodNotAllowedHttpError('The given path is not a valid container.'));
-          } else {
-            await fsPromises.mkdir(path + containerName, { recursive: false });
-            if (metadata) {
-              this.createMetadata(`${path}${containerName}.metadata`, metadata, reject);
-            }
-            resolve({ path: this.mapFilepathToUrl(path + containerName) });
+            return;
           }
         }
+        await fsPromises.mkdir(fullPath, { recursive: allowRecursiveCreation });
+        if (metadata) {
+          try {
+            await this.createDataFile(`${fullPath}.metadata`, metadata);
+          } catch (error) {
+            // Failed to create the metadata file so remove the created directory.
+            await fsPromises.rmdir(fullPath);
+            reject(error);
+            return;
+          }
+        }
+        resolve({ path: this.mapFilepathToUrl(fullPath) });
       } catch (error) {
         reject(new MethodNotAllowedHttpError());
       }
@@ -411,19 +406,19 @@ export class FileResourceStore implements ResourceStore {
   }
 
   /**
-   * Helper function without extra validation checking to create a metadata file.
+   * Helper function without extra validation checking to create a data file.
    * @param path - The filepath of the file to be created.
-   * @param metadata - The data to be put in the file.
-   * @param reject - The function to call when an error occur.
+   * @param data - The data to be put in the file.
    */
-  private createMetadata(path: string, metadata: Readable, reject: (reason?: any) => void): void {
-    const writeStreamMetadata = createWriteStream(path);
+  private async createDataFile(path: string, data: Readable): Promise<void> {
+    return new Promise((resolve, reject): any => {
+      const writeStream = createWriteStream(path);
+      data.pipe(writeStream);
+      data.on('error', reject);
 
-    metadata.on('data', (chunk): any => writeStreamMetadata.write(chunk));
-    metadata.on('error', reject);
-    metadata.on('end', (): any => writeStreamMetadata.end());
-
-    writeStreamMetadata.on('error', reject);
+      writeStream.on('error', reject);
+      writeStream.on('finish', resolve);
+    });
   }
 
   /**
