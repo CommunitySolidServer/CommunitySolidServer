@@ -128,7 +128,7 @@ export class FileResourceStore implements ResourceStore {
       }
     } catch (error) {
       if (error instanceof ConflictHttpError) {
-        throw new ConflictHttpError('Container is not empty.');
+        throw error;
       }
       throw new NotFoundHttpError();
     }
@@ -143,76 +143,77 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     let path = `${this.rootFilepath}${this.parseIdentifier(identifier)}`;
-    return new Promise(async(resolve, reject): Promise<any> => {
-      try {
-        const stats = await fsPromises.lstat(path);
-        if (stats.isFile()) {
-          const readStream = createReadStream(path);
-          const contentType = getContentTypeFromExtension(path);
-          let rawMetadata: Quad[] = [];
+    try {
+      const stats = await fsPromises.lstat(path);
+      if (stats.isFile()) {
+        const readStream = createReadStream(path);
+        const contentType = getContentTypeFromExtension(path);
+        let rawMetadata: Quad[] = [];
+        try {
+          const readMetadataStream = createReadStream(`${path}.metadata`);
+          rawMetadata = await arrayifyStream(readMetadataStream.pipe(new StreamParser({ format: 'text/turtle' })));
+        } catch (_) {
+          // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+        }
+        const metadata: RepresentationMetadata = {
+          raw: rawMetadata,
+          profiles: [],
+          dateTime: stats.mtime,
+          byteSize: stats.size,
+        };
+        if (contentType && contentType !== path) {
+          metadata.contentType = contentType;
+        }
+        return { metadata, data: readStream, dataType: DATA_TYPE_BINARY };
+      }
+      if (stats.isDirectory()) {
+        path = ensureTrailingSlash(path);
+        const files = await fsPromises.readdir(path);
+        const quads: Quad[] = [];
+
+        const containerSubj: NamedNode = DataFactory.namedNode(path);
+
+        quads.push(...this.generateResourceQuads(containerSubj, stats));
+
+        for (const childName of files) {
           try {
-            const readMetadataStream = createReadStream(`${path}.metadata`);
-            rawMetadata = await arrayifyStream(readMetadataStream.pipe(new StreamParser({ format: 'text/turtle' })));
+            const childSubj: NamedNode = DataFactory.namedNode(`${path}${childName}`);
+            const childStats = await fsPromises.lstat(path + childName);
+            if (!childStats.isFile() && !childStats.isDirectory()) {
+              continue;
+            }
+
+            quads.push(DataFactory.quad(containerSubj, this.predicates.contains, childSubj));
+            quads.push(...this.generateResourceQuads(childSubj, childStats));
           } catch (_) {
-            // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+            // Skip the child if there is an error.
           }
-          const metadata: RepresentationMetadata = {
+        }
+        let rawMetadata: Quad[] = [];
+        try {
+          const readMetadataStream = createReadStream(`${path}.metadata`);
+          rawMetadata = await arrayifyStream(readMetadataStream);
+        } catch (_) {
+          // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+        }
+
+        return {
+          dataType: DATA_TYPE_QUAD,
+          data: streamifyArray(quads),
+          metadata: {
             raw: rawMetadata,
             profiles: [],
             dateTime: stats.mtime,
-            byteSize: stats.size,
-          };
-          if (contentType && contentType !== path) {
-            metadata.contentType = contentType;
-          }
-          resolve({ metadata, data: readStream, dataType: DATA_TYPE_BINARY });
-        } else if (stats.isDirectory()) {
-          path = ensureTrailingSlash(path);
-          const files = await fsPromises.readdir(path);
-          const quads: Quad[] = [];
-
-          const containerSubj: NamedNode = DataFactory.namedNode(path);
-
-          quads.push(...this.generateResourceQuads(containerSubj, stats));
-
-          for (const childName of files) {
-            try {
-              const childSubj: NamedNode = DataFactory.namedNode(`${path}${childName}`);
-              const childStats = await fsPromises.lstat(path + childName);
-              if (!childStats.isFile() && !childStats.isDirectory()) {
-                continue;
-              }
-
-              quads.push(DataFactory.quad(containerSubj, this.predicates.contains, childSubj));
-              quads.push(...this.generateResourceQuads(childSubj, childStats));
-            } catch (_) {
-              // Skip the child if there is an error.
-            }
-          }
-          let rawMetadata: Quad[] = [];
-          try {
-            const readMetadataStream = createReadStream(`${path}.metadata`);
-            rawMetadata = await arrayifyStream(readMetadataStream);
-          } catch (_) {
-            // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-          }
-
-          resolve({
-            dataType: DATA_TYPE_QUAD,
-            data: streamifyArray(quads),
-            metadata: {
-              raw: rawMetadata,
-              profiles: [],
-              dateTime: stats.mtime,
-            },
-          });
-        } else {
-          reject(new ConflictHttpError('Not a valid resource.'));
-        }
-      } catch (error) {
-        reject(new NotFoundHttpError());
+          },
+        };
       }
-    });
+      throw new ConflictHttpError('Not a valid resource.');
+    } catch (error) {
+      if (error instanceof ConflictHttpError) {
+        throw error;
+      }
+      throw new NotFoundHttpError();
+    }
   }
 
   /**
@@ -244,53 +245,36 @@ export class FileResourceStore implements ResourceStore {
     const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
     if (!isContainer) {
       // (Re)write file for the resource if no container with that identifier exists.
-      return new Promise(async(resolve, reject): Promise<any> => {
-        try {
-          const stats = await fsPromises.lstat(
-            `${this.rootFilepath}${parentContainer}${newIdentifier}`,
-          );
-          if (stats.isFile()) {
-            await this.createFile(parentContainer,
-              newIdentifier,
-              representation.data,
-              true,
-              metadata).then((): any => resolve()).catch((error): any => {
-              reject(error);
-            });
-          } else {
-            reject(new ConflictHttpError('Container with that identifier already exists.'));
-          }
-        } catch (error) {
-          await this.createFile(parentContainer,
-            newIdentifier,
-            representation.data,
-            true,
-            metadata).then((): any => resolve()).catch((error_): any => {
-            reject(error_);
-          });
-        }
-      });
+      let stats;
+      try {
+        stats = await fsPromises.lstat(
+          `${this.rootFilepath}${parentContainer}${newIdentifier}`,
+        );
+      } catch (error) {
+        await this.createFile(parentContainer, newIdentifier, representation.data, true, metadata);
+        return;
+      }
+      if (stats.isFile()) {
+        await this.createFile(parentContainer, newIdentifier, representation.data, true, metadata);
+        return;
+      }
+      throw new ConflictHttpError('Container with that identifier already exists.');
     }
 
     // Create a container if the identifier doesn't exist yet.
-    return new Promise(async(resolve, reject): Promise<any> => {
-      try {
-        await fsPromises.access(
-          `${this.rootFilepath}${parentContainer}${newIdentifier}`,
-        );
-        reject(new ConflictHttpError('Resource with that identifier already exists.'));
-      } catch (error) {
-        // Identifier doesn't exist yet so we can create a container.
-        await this.createContainer(parentContainer,
-          newIdentifier,
-          true,
-          metadata)
-          .then((): any => resolve())
-          .catch((error_): any => {
-            reject(error_);
-          });
+    try {
+      await fsPromises.access(
+        `${this.rootFilepath}${parentContainer}${newIdentifier}`,
+      );
+      throw new ConflictHttpError('Resource with that identifier already exists.');
+    } catch (error) {
+      if (error instanceof ConflictHttpError) {
+        throw error;
       }
-    });
+
+      // Identifier doesn't exist yet so we can create a container.
+      await this.createContainer(parentContainer, newIdentifier, true, metadata);
+    }
   }
 
   /**
@@ -336,34 +320,27 @@ export class FileResourceStore implements ResourceStore {
     if (allowRecursiveCreation) {
       await this.createContainer(path, '', true);
     }
-    return new Promise(async(resolve, reject): Promise<any> => {
-      try {
-        const stats = await fsPromises.lstat(`${this.rootFilepath}${path}`);
-        if (!stats.isDirectory()) {
-          reject(new MethodNotAllowedHttpError('The given path is not a valid container.'));
-        } else {
-          if (metadata) {
-            try {
-              await this.createDataFile(`${this.rootFilepath}${path}${resourceName}.metadata`, metadata);
-            } catch (error) {
-              reject(error);
-              return;
-            }
-          }
-          try {
-            await this.createDataFile(this.rootFilepath + path + resourceName, data);
-            resolve({ path: this.mapFilepathToUrl(this.rootFilepath + path + resourceName) });
-          } catch (error) {
-            // Normal file has not been created so we don't want the metadata file to remain.
-            await fsPromises.unlink(`${this.rootFilepath}${path}${resourceName}.metadata`);
-            reject(error);
-            return;
-          }
-        }
-      } catch (error) {
-        reject(new MethodNotAllowedHttpError());
+    let stats;
+    try {
+      stats = await fsPromises.lstat(`${this.rootFilepath}${path}`);
+    } catch (error) {
+      throw new MethodNotAllowedHttpError();
+    }
+    if (!stats.isDirectory()) {
+      throw new MethodNotAllowedHttpError('The given path is not a valid container.');
+    } else {
+      if (metadata) {
+        await this.createDataFile(`${this.rootFilepath}${path}${resourceName}.metadata`, metadata);
       }
-    });
+      try {
+        await this.createDataFile(this.rootFilepath + path + resourceName, data);
+        return { path: this.mapFilepathToUrl(this.rootFilepath + path + resourceName) };
+      } catch (error) {
+        // Normal file has not been created so we don't want the metadata file to remain.
+        await fsPromises.unlink(`${this.rootFilepath}${path}${resourceName}.metadata`);
+        throw error;
+      }
+    }
   }
 
   /**
@@ -378,31 +355,30 @@ export class FileResourceStore implements ResourceStore {
   private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
     const fullPath = ensureTrailingSlash(this.rootFilepath + path + containerName);
-    return new Promise(async(resolve, reject): Promise<any> => {
-      try {
-        if (!allowRecursiveCreation) {
-          const stats = await fsPromises.lstat(this.rootFilepath + path);
-          if (!stats.isDirectory()) {
-            reject(new MethodNotAllowedHttpError('The given path is not a valid container.'));
-            return;
-          }
+    try {
+      if (!allowRecursiveCreation) {
+        const stats = await fsPromises.lstat(this.rootFilepath + path);
+        if (!stats.isDirectory()) {
+          throw new MethodNotAllowedHttpError('The given path is not a valid container.');
         }
-        await fsPromises.mkdir(fullPath, { recursive: allowRecursiveCreation });
-        if (metadata) {
-          try {
-            await this.createDataFile(`${fullPath}.metadata`, metadata);
-          } catch (error) {
-            // Failed to create the metadata file so remove the created directory.
-            await fsPromises.rmdir(fullPath);
-            reject(error);
-            return;
-          }
-        }
-        resolve({ path: this.mapFilepathToUrl(fullPath) });
-      } catch (error) {
-        reject(new MethodNotAllowedHttpError());
       }
-    });
+      await fsPromises.mkdir(fullPath, { recursive: allowRecursiveCreation });
+    } catch (error) {
+      if (error instanceof MethodNotAllowedHttpError) {
+        throw error;
+      }
+      throw new MethodNotAllowedHttpError();
+    }
+    if (metadata) {
+      try {
+        await this.createDataFile(`${fullPath}.metadata`, metadata);
+      } catch (error) {
+        // Failed to create the metadata file so remove the created directory.
+        await fsPromises.rmdir(fullPath);
+        throw error;
+      }
+    }
+    return { path: this.mapFilepathToUrl(fullPath) };
   }
 
   /**
