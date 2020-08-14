@@ -1,6 +1,5 @@
 import arrayifyStream from 'arrayify-stream';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import fsPromises from 'fs/promises';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { InteractionController } from '../util/InteractionController';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
@@ -13,7 +12,7 @@ import { ResourceStore } from './ResourceStore';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { createReadStream, createWriteStream, Stats } from 'fs';
+import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import { extname, join as joinPath } from 'path';
@@ -347,7 +346,7 @@ export class FileResourceStore implements ResourceStore {
    * @param path - The path to the parent directory in which the new directory should be created.
    * @param containerName - The name of the directory to be created.
    * @param allowRecursiveCreation - Whether necessary but not existing intermediate containers may be created.
-   * @param metadata - Optional metadata that will be stored at `path/_containerName/.metadata` if set.
+   * @param metadata - Optional metadata that will be stored at `path/containerName/.metadata` if set.
    *
    * @returns Promise of the identifier of the newly created container.
    */

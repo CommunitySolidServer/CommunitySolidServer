@@ -3,7 +3,6 @@ import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepr
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { DataFactory } from 'n3';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
-import fsPromises from 'fs/promises';
 import { InteractionController } from '../../../src/util/InteractionController';
 import { join as joinPath } from 'path';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
@@ -13,7 +12,7 @@ import { RepresentationMetadata } from '../../../src/ldp/representation/Represen
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
-import fs, { Stats } from 'fs';
+import fs, { promises as fsPromises, Stats } from 'fs';
 import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
 import { literal, namedNode, quad as quadRDF, triple } from '@rdfjs/data-model';
@@ -21,7 +20,12 @@ import { literal, namedNode, quad as quadRDF, triple } from '@rdfjs/data-model';
 const base = 'http://test.com/';
 const root = '/Users/default/home/public/';
 
-jest.mock('fs/promises');
+fsPromises.rmdir = jest.fn();
+fsPromises.lstat = jest.fn();
+fsPromises.readdir = jest.fn();
+fsPromises.mkdir = jest.fn();
+fsPromises.unlink = jest.fn();
+fsPromises.access = jest.fn();
 
 describe('A FileResourceStore', (): void => {
   let store: FileResourceStore;
