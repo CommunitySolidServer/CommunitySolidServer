@@ -1,5 +1,5 @@
-import { uuid } from 'uuidv4';
-import { ensureLeadingSlash, ensureTrailingSlash, trimTrailingSlashes } from './Util';
+import { trimTrailingSlashes } from './Util';
+import { v4 as uuid } from 'uuid';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPC } from './LinkTypes';
 
 export class InteractionController {
@@ -9,13 +9,10 @@ export class InteractionController {
    * @param link - Incoming link header.
    */
   public isContainer(slug?: string, link?: Set<string>): boolean {
-    if (!slug) {
+    if (!slug || !slug.endsWith('/')) {
       return link !== undefined && (link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC));
     }
-    if (slug.endsWith('/')) {
-      return !link || link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC);
-    }
-    return link !== undefined && (link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC));
+    return !link || link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC);
   }
 
   /**
@@ -25,16 +22,8 @@ export class InteractionController {
    */
   public generateIdentifier(isContainer: boolean, slug?: string): string {
     if (!slug) {
-      return uuid() + (isContainer ? '/' : '');
+      return String(uuid()) + (isContainer ? '/' : '');
     }
     return trimTrailingSlashes(slug) + (isContainer ? '/' : '');
-  }
-
-  /**
-   * Makes sure that the input path has exactly 1 slash at the beginning and ending.
-   * @param requestURI - Incoming URI of the request.
-   */
-  public getContainer(requestURI: string): string {
-    return ensureLeadingSlash(ensureTrailingSlash(requestURI));
   }
 }
