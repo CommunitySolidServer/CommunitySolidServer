@@ -80,9 +80,9 @@ describe('A SimpleSparqlUpdatePatchHandler', (): void => {
 
   it('only accepts SPARQL updates.', async(): Promise<void> => {
     const input = { identifier: { path: 'path' },
-      patch: { dataType: 'sparql-algebra', algebra: {}} as SparqlUpdatePatch };
+      patch: { algebra: {}} as SparqlUpdatePatch };
     await expect(handler.canHandle(input)).resolves.toBeUndefined();
-    input.patch.dataType = 'notAlgebra';
+    delete input.patch.algebra;
     await expect(handler.canHandle(input)).rejects.toThrow(UnsupportedHttpError);
   });
 

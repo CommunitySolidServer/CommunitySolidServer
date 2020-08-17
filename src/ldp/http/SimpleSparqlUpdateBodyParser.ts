@@ -1,6 +1,7 @@
 import { BodyParser } from './BodyParser';
+import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpRequest } from '../../server/HttpRequest';
-import { Readable } from 'stream';
+import { PassThrough } from 'stream';
 import { readableToString } from '../../util/Util';
 import { SparqlUpdatePatch } from './SparqlUpdatePatch';
 import { translate } from 'sparqlalgebrajs';
@@ -23,17 +24,21 @@ export class SimpleSparqlUpdateBodyParser extends BodyParser {
 
   public async handle(input: HttpRequest): Promise<SparqlUpdatePatch> {
     try {
-      const sparql = await readableToString(input);
+      // Note that readableObjectMode is only defined starting from Node 12
+      // It is impossible to check if object mode is enabled in Node 10 (without accessing private variables)
+      const options = { objectMode: input.readableObjectMode };
+      const toAlgebraStream = new PassThrough(options);
+      const dataCopy = new PassThrough(options);
+      input.pipe(toAlgebraStream);
+      input.pipe(dataCopy);
+      const sparql = await readableToString(toAlgebraStream);
       const algebra = translate(sparql, { quads: true });
 
       // Prevent body from being requested again
       return {
         algebra,
-        dataType: 'sparql-algebra',
-        raw: sparql,
-        get data(): Readable {
-          throw new Error('Body already parsed');
-        },
+        dataType: DATA_TYPE_BINARY,
+        data: dataCopy,
         metadata: {
           raw: [],
           profiles: [],
