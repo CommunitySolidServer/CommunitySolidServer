@@ -318,8 +318,7 @@ describe('A FileResourceStore', (): void => {
 
   it('errors 404 when accessing non resource (file/directory), e.g. special files.', async(): Promise<void> => {
     // Mock the fs functions.
-    (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
-    (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
+    (fsPromises.lstat as jest.Mock).mockReturnValue(stats);
 
     // Tests
     await expect(store.deleteResource({ path: `${base}dev/pts/14` })).rejects.toThrow(NotFoundHttpError);

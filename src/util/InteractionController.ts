@@ -10,7 +10,7 @@ export class InteractionController {
    */
   public isContainer(slug?: string, link?: Set<string>): boolean {
     if (!slug || !slug.endsWith('/')) {
-      return link !== undefined && (link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC));
+      return Boolean(link?.has(LINK_TYPE_LDPC)) || Boolean(link?.has(LINK_TYPE_LDP_BC));
     }
     return !link || link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC);
   }
@@ -22,8 +22,8 @@ export class InteractionController {
    */
   public generateIdentifier(isContainer: boolean, slug?: string): string {
     if (!slug) {
-      return String(uuid()) + (isContainer ? '/' : '');
+      return `${uuid()}${isContainer ? '/' : ''}`;
     }
-    return trimTrailingSlashes(slug) + (isContainer ? '/' : '');
+    return `${trimTrailingSlashes(slug)}${isContainer ? '/' : ''}`;
   }
 }

@@ -65,15 +65,11 @@ export class FileResourceStore implements ResourceStore {
       metadata = this.metadataController.generateReadableFromQuads(raw);
     }
 
+    // Create a new container or resource in the parent container with a specific name based on the incoming headers.
     const isContainer = this.interactionController.isContainer(slug, linkTypes);
     const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
-
     return isContainer ?
-
-      // Create a new container as subdirectory of the parent container.
       this.createContainer(path, newIdentifier, path.endsWith('/'), metadata) :
-
-      // Create a file for the resource with as filepath the parent container.
       this.createFile(path, newIdentifier, representation.data, path.endsWith('/'), metadata);
   }
 
@@ -87,6 +83,7 @@ export class FileResourceStore implements ResourceStore {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
 
+    // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
     path = joinPath(this.rootFilepath, path);
     let stats;
     try {
@@ -95,6 +92,7 @@ export class FileResourceStore implements ResourceStore {
       throw new NotFoundHttpError();
     }
 
+    // Delete as file or as directory according to the status.
     if (stats.isFile()) {
       await this.deleteFile(path);
     } else if (stats.isDirectory()) {
@@ -112,6 +110,7 @@ export class FileResourceStore implements ResourceStore {
    * @returns The corresponding Representation.
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
+    // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
     const path = joinPath(this.rootFilepath, this.parseIdentifier(identifier));
     let stats;
     try {
@@ -119,6 +118,8 @@ export class FileResourceStore implements ResourceStore {
     } catch (error) {
       throw new NotFoundHttpError();
     }
+
+    // Get the file or directory representation of the path according to its status.
     if (stats.isFile()) {
       return await this.getFileRepresentation(path, stats);
     }
@@ -158,9 +159,9 @@ export class FileResourceStore implements ResourceStore {
       metadata = streamifyArray(raw);
     }
 
+    // Create a new container or resource in the parent container with a specific name based on the incoming headers.
     const isContainer = this.interactionController.isContainer(slug, linkTypes);
     const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
-
     return isContainer ?
       await this.setDirectoryRepresentation(path, newIdentifier, metadata) :
       await this.setFileRepresentation(path, newIdentifier, representation.data, metadata);
@@ -189,7 +190,7 @@ export class FileResourceStore implements ResourceStore {
    */
   private mapFilepathToUrl(path: string): string {
     if (!path.startsWith(this.rootFilepath)) {
-      throw new Error('Cannot map filepath to URL.');
+      throw new Error(`File ${path} is not part of the file storage at ${this.rootFilepath}.`);
     }
     return this.baseRequestURI + path.slice(this.rootFilepath.length);
   }
@@ -385,21 +386,29 @@ export class FileResourceStore implements ResourceStore {
    */
   private async createFile(path: string, resourceName: string, data: Readable,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
+    // Create the intermediate containers if `allowRecursiveCreation` is true.
     if (allowRecursiveCreation) {
       await this.createContainer(path, '', true);
     }
+
+    // Get the file status of the filepath of the directory where the file is to be created.
     let stats;
     try {
       stats = await fsPromises.lstat(joinPath(this.rootFilepath, path));
     } catch (error) {
       throw new MethodNotAllowedHttpError();
     }
+
+    // Only create the file if the provided filepath is a valid directory.
     if (!stats.isDirectory()) {
       throw new MethodNotAllowedHttpError('The given path is not a valid container.');
     } else {
+      // If metadata is specified, save it in a corresponding metadata file.
       if (metadata) {
         await this.createDataFile(joinPath(this.rootFilepath, path, `${resourceName}.metadata`), metadata);
       }
+
+      // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
         await this.createDataFile(joinPath(this.rootFilepath, path, resourceName), data);
         return { path: this.mapFilepathToUrl(joinPath(this.rootFilepath, path, resourceName)) };
@@ -423,6 +432,8 @@ export class FileResourceStore implements ResourceStore {
   private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
     const fullPath = ensureTrailingSlash(joinPath(this.rootFilepath, path, containerName));
+
+    // If recursive creation is not allowed, check if the parent container exists and then create the child directory.
     try {
       if (!allowRecursiveCreation) {
         const stats = await fsPromises.lstat(joinPath(this.rootFilepath, path));
@@ -437,6 +448,9 @@ export class FileResourceStore implements ResourceStore {
       }
       throw new MethodNotAllowedHttpError();
     }
+
+    // If no error thrown from above, indicating failed container creation, create a corresponding metadata file in the
+    // new directory if applicable.
     if (metadata) {
       try {
         await this.createDataFile(joinPath(fullPath, '.metadata'), metadata);
