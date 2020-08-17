@@ -12,9 +12,9 @@ export interface RepresentationMetadata {
    */
   raw: Quad[];
   /**
-   * The metadata profiles.
+   * Optional metadata profiles.
    */
-  profiles: string[];
+  profiles?: string[];
   /**
    * Optional size of the representation.
    */
