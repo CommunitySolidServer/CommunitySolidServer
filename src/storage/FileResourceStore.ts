@@ -149,7 +149,7 @@ export class FileResourceStore implements ResourceStore {
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
     const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
-    if ((path === undefined || normalizePath(path) === '/') && slug === undefined) {
+    if ((typeof path === 'undefined' || normalizePath(path) === '/') && typeof slug === 'undefined') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
     const { raw } = representation.metadata;
@@ -217,7 +217,7 @@ export class FileResourceStore implements ResourceStore {
   private async deleteDirectory(path: string): Promise<void> {
     const files = await fsPromises.readdir(path);
     const match = files.find((file): any => !file.startsWith('.metadata'));
-    if (match !== undefined) {
+    if (typeof match !== 'undefined') {
       throw new ConflictHttpError('Container is not empty.');
     }
 
