@@ -4,6 +4,8 @@ import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 /**
  * Handler that combines several other handlers,
  * thereby allowing other classes that depend on a single handler to still use multiple.
+ * The handlers will be checked in the order they appear in the input array,
+ * allowing for more fine-grained handlers to check before catch-all handlers.
  */
 export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   private readonly handlers: AsyncHandler<TIn, TOut>[];

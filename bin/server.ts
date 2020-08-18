@@ -1,23 +1,27 @@
+#!/usr/bin/env node
+import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
+import streamifyArray from 'streamify-array';
 import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
   AuthenticatedLdpHandler,
-  BodyParser,
+  BasePermissionsExtractor,
   CompositeAsyncHandler,
   ExpressHttpServer,
   HttpRequest,
-  Operation,
   PatchingStore,
+  QuadToTurtleConverter,
   Representation,
-  ResponseDescription,
-  SimpleAuthorizer,
+  RepresentationConvertingStore,
+  SimpleAclAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
   SimpleDeleteOperationHandler,
+  SimpleExtensionAclManager,
   SimpleGetOperationHandler,
   SimplePatchOperationHandler,
-  SimplePermissionsExtractor,
   SimplePostOperationHandler,
+  SimplePutOperationHandler,
   SimpleRequestParser,
   SimpleResourceStore,
   SimpleResponseWriter,
@@ -25,6 +29,9 @@ import {
   SimpleSparqlUpdatePatchHandler,
   SimpleTargetExtractor,
   SingleThreadedResourceLocker,
+  SparqlPatchPermissionsExtractor,
+  TurtleToQuadConverter,
+  UrlContainerManager,
 } from '..';
 
 const { argv } = yargs
@@ -36,10 +43,12 @@ const { argv } = yargs
 
 const { port } = argv;
 
+const base = `http://localhost:${port}/`;
+
 // This is instead of the dependency injection that still needs to be added
-const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-  new SimpleBodyParser(),
+const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
   new SimpleSparqlUpdateBodyParser(),
+  new SimpleBodyParser(),
 ]);
 const requestParser = new SimpleRequestParser({
   targetExtractor: new SimpleTargetExtractor(),
@@ -48,20 +57,32 @@ const requestParser = new SimpleRequestParser({
 });
 
 const credentialsExtractor = new SimpleCredentialsExtractor();
-const permissionsExtractor = new SimplePermissionsExtractor();
-const authorizer = new SimpleAuthorizer();
+const permissionsExtractor = new CompositeAsyncHandler([
+  new BasePermissionsExtractor(),
+  new SparqlPatchPermissionsExtractor(),
+]);
 
 // Will have to see how to best handle this
-const store = new SimpleResourceStore(`http://localhost:${port}/`);
+const store = new SimpleResourceStore(base);
+const converter = new CompositeAsyncHandler([
+  new TurtleToQuadConverter(),
+  new QuadToTurtleConverter(),
+]);
+const convertingStore = new RepresentationConvertingStore(store, converter);
 const locker = new SingleThreadedResourceLocker();
-const patcher = new SimpleSparqlUpdatePatchHandler(store, locker);
-const patchingStore = new PatchingStore(store, patcher);
+const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
+const patchingStore = new PatchingStore(convertingStore, patcher);
 
-const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
+const aclManager = new SimpleExtensionAclManager();
+const containerManager = new UrlContainerManager(base);
+const authorizer = new SimpleAclAuthorizer(aclManager, containerManager, patchingStore);
+
+const operationHandler = new CompositeAsyncHandler([
   new SimpleDeleteOperationHandler(patchingStore),
   new SimpleGetOperationHandler(patchingStore),
   new SimplePatchOperationHandler(patchingStore),
   new SimplePostOperationHandler(patchingStore),
+  new SimplePutOperationHandler(patchingStore),
 ]);
 
 const responseWriter = new SimpleResponseWriter();
@@ -77,6 +98,40 @@ const httpHandler = new AuthenticatedLdpHandler({
 
 const httpServer = new ExpressHttpServer(httpHandler);
 
-httpServer.listen(port);
+// Set up acl so everything can still be done by default
+// Note that this will need to be adapted to go through all the correct channels later on
+const aclSetup = async(): Promise<void> => {
+  const acl = `@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
+@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.
 
-process.stdout.write(`Running at http://localhost:${port}/\n`);
+<#authorization>
+    a               acl:Authorization;
+    acl:agentClass  foaf:Agent;
+    acl:mode        acl:Read;
+    acl:mode        acl:Write;
+    acl:mode        acl:Append;
+    acl:mode        acl:Delete;
+    acl:mode        acl:Control;
+    acl:accessTo    <${base}>;
+    acl:default     <${base}>.`;
+  await store.setRepresentation(
+    await aclManager.getAcl({ path: base }),
+    {
+      dataType: DATA_TYPE_BINARY,
+      data: streamifyArray([ acl ]),
+      metadata: {
+        raw: [],
+        profiles: [],
+        contentType: 'text/turtle',
+      },
+    },
+  );
+};
+aclSetup().then((): void => {
+  httpServer.listen(port);
+
+  process.stdout.write(`Running at ${base}\n`);
+}).catch((error): void => {
+  process.stderr.write(`${error}\n`);
+  process.exit(1);
+});

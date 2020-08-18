@@ -81,6 +81,10 @@ describe('ExpressHttpServer', (): void => {
     handler.handle = async(): Promise<void> => {
       throw new Error('dummyError');
     };
+
+    // Prevent test from writing to stderr
+    jest.spyOn(process.stderr, 'write').mockImplementation((): boolean => true);
+
     const res = await request(server).get('/').expect(500);
     expect(res.text).toContain('dummyError');
   });
