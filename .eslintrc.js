@@ -23,5 +23,6 @@ module.exports = {
     'no-underscore-dangle': 'off', // conflicts with external libraries
     'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',
+    'prefer-named-capture-group': 'off',
   },
 };

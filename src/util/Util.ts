@@ -21,6 +21,15 @@ export const ensureTrailingSlash = (path: string): string => path.replace(/\/*$/
 export const readableToString = async(stream: Readable): Promise<string> => (await arrayifyStream(stream)).join('');
 
 /**
+ * Makes sure the input path has no slashes at the end.
+ *
+ * @param path - Path to check.
+ *
+ * @returns The potentially changed path.
+ */
+export const trimTrailingSlashes = (path: string): string => path.replace(/\/+$/u, '');
+
+/**
  * Checks if the given two media types/ranges match each other.
  * Takes wildcards into account.
  * @param mediaA - Media type to match.

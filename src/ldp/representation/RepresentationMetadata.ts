@@ -12,9 +12,9 @@ export interface RepresentationMetadata {
    */
   raw: Quad[];
   /**
-   * The metadata profiles.
+   * Optional metadata profiles.
    */
-  profiles: string[];
+  profiles?: string[];
   /**
    * Optional size of the representation.
    */
@@ -35,4 +35,13 @@ export interface RepresentationMetadata {
    * Optional timestamp of the representation.
    */
   dateTime?: Date;
+  /**
+   * Optional link relationships of the representation.
+   */
+  linkRel?: { [id: string]: Set<string> };
+  /**
+   * Optional slug of the representation.
+   * Used to suggest the URI for the resource created.
+   */
+  slug?: string;
 }
