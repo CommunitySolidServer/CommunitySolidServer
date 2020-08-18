@@ -1,9 +1,7 @@
-import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
 import { Lock } from '../../../src/storage/Lock';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import { Patch } from '../../../src/ldp/http/Patch';
 import { Representation } from '../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
 import streamifyArray from 'streamify-array';
@@ -110,24 +108,18 @@ describe('A LockingResourceStore', (): void => {
     const readable = streamifyArray([ 1, 2, 3 ]);
 
     source.getRepresentation = jest.fn(async(): Promise<any> =>
-      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', {
-        data: readable,
-        dataType: DATA_TYPE_BINARY,
-        metadata: { raw: [], linkRel: { type: new Set() }, profiles: []} as RepresentationMetadata,
-      })));
+      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', { data: readable } as
+        Representation)));
 
     const representation = await store.getRepresentation({ path: 'path' }, {});
-    const waitForMe = new Promise((resolve): any => {
+    const drainData = new Promise((resolve): any => {
       representation.data.on('data', (): any => readable);
       representation.data.prependListener('end', (): any => {
-        if (!order.includes('end')) {
-          order.push('end');
-        }
+        order.push('end');
         resolve();
-        return readable;
       });
     });
-    await waitForMe;
+    await drainData;
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
@@ -139,25 +131,19 @@ describe('A LockingResourceStore', (): void => {
     const readable = streamifyArray([ 1, 2, 3 ]);
 
     source.getRepresentation = jest.fn(async(): Promise<any> =>
-      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', {
-        data: readable,
-        dataType: DATA_TYPE_BINARY,
-        metadata: { raw: [], linkRel: { type: new Set() }, profiles: []} as RepresentationMetadata,
-      })));
+      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', { data: readable } as
+        Representation)));
 
     const representation = await store.getRepresentation({ path: 'path' }, {});
-    const waitForMe = new Promise((resolve): any => {
+    const drainDataAndHandleError = new Promise((resolve): any => {
       representation.data.on('data', (): any => readable);
       representation.data.prependListener('error', (): any => {
-        if (!order.includes('error')) {
-          order.push('error');
-        }
+        order.push('error');
         resolve();
-        return readable;
       });
     });
     representation.data.destroy(new Error('Error on the Readable :('));
-    await waitForMe;
+    await drainDataAndHandleError;
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);

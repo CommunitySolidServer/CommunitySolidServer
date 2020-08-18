@@ -32,8 +32,7 @@ export class LockingResourceStore implements AtomicResourceStore {
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
-    return this.lockedRunGet(identifier,
-      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
+    return this.lockedRunGet(identifier, preferences, conditions);
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
@@ -56,14 +55,14 @@ export class LockingResourceStore implements AtomicResourceStore {
     }
   }
 
-  private async lockedRunGet(identifier: ResourceIdentifier, func: () => Promise<Representation>):
-  Promise<Representation> {
+  private async lockedRunGet(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+    conditions?: Conditions): Promise<Representation> {
     const lock = await this.locks.acquire(identifier);
 
-    // Execute the function and returns the resulting Representation.
+    // Execute the getRepresentation function and return the resulting Representation.
     let result;
     try {
-      result = await func();
+      result = await this.source.getRepresentation(identifier, preferences, conditions);
       return result;
     } finally {
       // Wait for the end or error event to be called to release the lock if the result contains a valid Readable.
