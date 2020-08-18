@@ -32,7 +32,7 @@ export class LockingResourceStore implements AtomicResourceStore {
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
-    return this.lockedRun(identifier,
+    return this.lockedRunGet(identifier,
       async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
   }
 
@@ -53,6 +53,26 @@ export class LockingResourceStore implements AtomicResourceStore {
       return await func();
     } finally {
       await lock.release();
+    }
+  }
+
+  private async lockedRunGet(identifier: ResourceIdentifier, func: () => Promise<Representation>):
+  Promise<Representation> {
+    const lock = await this.locks.acquire(identifier);
+
+    // Execute the function and returns the resulting Representation.
+    let result;
+    try {
+      result = await func();
+      return result;
+    } finally {
+      // Wait for the end or error event to be called to release the lock if the result contains a valid Readable.
+      if (!result || !result.data) {
+        await lock.release();
+      } else {
+        result.data.on('end', async(): Promise<void> => lock.release());
+        result.data.on('error', async(): Promise<void> => lock.release());
+      }
     }
   }
 }

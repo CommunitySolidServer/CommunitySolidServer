@@ -1,9 +1,12 @@
+import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
 import { Lock } from '../../../src/storage/Lock';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import { Patch } from '../../../src/ldp/http/Patch';
 import { Representation } from '../../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
+import streamifyArray from 'streamify-array';
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
@@ -12,14 +15,15 @@ describe('A LockingResourceStore', (): void => {
   let release: () => Promise<void>;
   let source: ResourceStore;
   let order: string[];
+  let delayedResolve: Function;
 
   beforeEach(async(): Promise<void> => {
     order = [];
-    const delayedResolve = (resolve: () => void, name: string): void => {
+    delayedResolve = (resolve: (resolveParams: any) => void, name: string, resolveParams?: any): void => {
       // `setImmediate` is introduced to make sure the promise doesn't execute immediately
       setImmediate((): void => {
         order.push(name);
-        resolve();
+        resolve(resolveParams);
       });
     };
 
@@ -100,5 +104,64 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(lock.release).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'release' ]);
+  });
+
+  it('releases the lock on the resource when data has been read.', async(): Promise<void> => {
+    const readable = streamifyArray([ 1, 2, 3 ]);
+
+    source.getRepresentation = jest.fn(async(): Promise<any> =>
+      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', {
+        data: readable,
+        dataType: DATA_TYPE_BINARY,
+        metadata: { raw: [], linkRel: { type: new Set() }, profiles: []} as RepresentationMetadata,
+      })));
+
+    const representation = await store.getRepresentation({ path: 'path' }, {});
+    const waitForMe = new Promise((resolve): any => {
+      representation.data.on('data', (): any => readable);
+      representation.data.prependListener('end', (): any => {
+        if (!order.includes('end')) {
+          order.push('end');
+        }
+        resolve();
+        return readable;
+      });
+    });
+    await waitForMe;
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(lock.release).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'release' ]);
+  });
+
+  it('releases the lock on the resource when readable errors.', async(): Promise<void> => {
+    const readable = streamifyArray([ 1, 2, 3 ]);
+
+    source.getRepresentation = jest.fn(async(): Promise<any> =>
+      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', {
+        data: readable,
+        dataType: DATA_TYPE_BINARY,
+        metadata: { raw: [], linkRel: { type: new Set() }, profiles: []} as RepresentationMetadata,
+      })));
+
+    const representation = await store.getRepresentation({ path: 'path' }, {});
+    const waitForMe = new Promise((resolve): any => {
+      representation.data.on('data', (): any => readable);
+      representation.data.prependListener('error', (): any => {
+        if (!order.includes('error')) {
+          order.push('error');
+        }
+        resolve();
+        return readable;
+      });
+    });
+    representation.data.destroy(new Error('Error on the Readable :('));
+    await waitForMe;
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(lock.release).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'error', 'release' ]);
   });
 });
