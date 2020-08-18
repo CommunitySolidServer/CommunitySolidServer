@@ -4,8 +4,11 @@ export * from './src/authentication/CredentialsExtractor';
 export * from './src/authentication/SimpleCredentialsExtractor';
 
 // Authorization
+export * from './src/authorization/AclManager';
 export * from './src/authorization/Authorizer';
+export * from './src/authorization/SimpleAclAuthorizer';
 export * from './src/authorization/SimpleAuthorizer';
+export * from './src/authorization/SimpleExtensionAclManager';
 
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
@@ -30,11 +33,13 @@ export * from './src/ldp/operations/SimpleDeleteOperationHandler';
 export * from './src/ldp/operations/SimpleGetOperationHandler';
 export * from './src/ldp/operations/SimplePatchOperationHandler';
 export * from './src/ldp/operations/SimplePostOperationHandler';
+export * from './src/ldp/operations/SimplePutOperationHandler';
 
 // LDP/Permissions
 export * from './src/ldp/permissions/PermissionSet';
 export * from './src/ldp/permissions/PermissionsExtractor';
-export * from './src/ldp/permissions/SimplePermissionsExtractor';
+export * from './src/ldp/permissions/BasePermissionsExtractor';
+export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
 export * from './src/ldp/representation/BinaryRepresentation';
@@ -67,6 +72,7 @@ export * from './src/storage/patch/SimpleSparqlUpdatePatchHandler';
 // Storage
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
+export * from './src/storage/ContainerManager';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
@@ -77,10 +83,13 @@ export * from './src/storage/ResourceMapper';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/SimpleResourceStore';
+export * from './src/storage/UrlContainerManager';
 
 // Util/Errors
+export * from './src/util/errors/ForbiddenHttpError';
 export * from './src/util/errors/HttpError';
 export * from './src/util/errors/NotFoundHttpError';
+export * from './src/util/errors/UnauthorizedHttpError';
 export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 

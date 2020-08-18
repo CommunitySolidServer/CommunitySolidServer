@@ -5,5 +5,4 @@ export interface PermissionSet {
   read: boolean;
   append: boolean;
   write: boolean;
-  delete: boolean;
 }

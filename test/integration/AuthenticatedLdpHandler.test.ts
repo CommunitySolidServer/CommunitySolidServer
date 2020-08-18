@@ -1,11 +1,11 @@
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
+import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
+import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { EventEmitter } from 'events';
-import { HttpHandler } from '../../src/server/HttpHandler';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { IncomingHttpHeaders } from 'http';
+import { MockResponse } from 'node-mocks-http';
 import { Operation } from '../../src/ldp/operations/Operation';
 import { Parser } from 'n3';
 import { PatchingStore } from '../../src/storage/PatchingStore';
@@ -19,7 +19,6 @@ import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCrede
 import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
 import { SimplePatchOperationHandler } from '../../src/ldp/operations/SimplePatchOperationHandler';
-import { SimplePermissionsExtractor } from '../../src/ldp/permissions/SimplePermissionsExtractor';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
@@ -28,35 +27,12 @@ import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpd
 import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
 import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
-import streamifyArray from 'streamify-array';
+import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
-import { createResponse, MockResponse } from 'node-mocks-http';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
 
-const call = async(handler: HttpHandler, requestUrl: url.URL, method: string,
-  headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
-  const request = streamifyArray(data) as HttpRequest;
-  request.url = requestUrl.pathname;
-  request.method = method;
-  request.headers = headers;
-  request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
-
-  const endPromise = new Promise((resolve): void => {
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      resolve();
-    });
-  });
-
-  await handler.handleSafe({ request, response });
-  await endPromise;
-
-  return response;
-};
-
-describe('An AuthenticatedLdpHandler', (): void => {
+describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
     const requestParser = new SimpleRequestParser({
       targetExtractor: new SimpleTargetExtractor(),
@@ -65,7 +41,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
     });
 
     const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new SimplePermissionsExtractor();
+    const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore('http://test.com/');
@@ -88,7 +64,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
-      let requestUrl = new url.URL('http://test.com/');
+      let requestUrl = new URL('http://test.com/');
       let response: MockResponse<any> = await call(
         handler,
         requestUrl,
@@ -102,7 +78,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(id).toContain(url.format(requestUrl));
 
       // GET
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toContain('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
@@ -133,7 +109,10 @@ describe('An AuthenticatedLdpHandler', (): void => {
     });
 
     const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new SimplePermissionsExtractor();
+    const permissionsExtractor = new CompositeAsyncHandler([
+      new BasePermissionsExtractor(),
+      new SparqlPatchPermissionsExtractor(),
+    ]);
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore('http://test.com/');
@@ -166,7 +145,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
-      let requestUrl = new url.URL('http://test.com/');
+      let requestUrl = new URL('http://test.com/');
       let response: MockResponse<any> = await call(
         handler,
         requestUrl,
@@ -181,7 +160,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(id).toContain(url.format(requestUrl));
 
       // PATCH
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(
         handler,
         requestUrl,
@@ -196,7 +175,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
       expect(response._getHeaders().location).toBe(id);
 
       // GET
-      requestUrl = new url.URL(id);
+      requestUrl = new URL(id);
       response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toContain('<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.');
