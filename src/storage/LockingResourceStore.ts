@@ -63,6 +63,8 @@ export class LockingResourceStore implements AtomicResourceStore {
   /**
    * Acquires a lock for the identifier that should return a representation with Readable data and releases it when the
    * Readable is read, closed or results in an error.
+   * When using this function, it is required to close the Readable stream when you are ready.
+   *
    * @param identifier - Identifier that should be locked.
    * @param preferences - Representation preferences.
    * @param conditions - Optional conditions.
