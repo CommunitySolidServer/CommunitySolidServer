@@ -4,7 +4,6 @@ import { Patch } from '../../../src/ldp/http/Patch';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
-import { SingleThreadedResourceLocker } from '../../../src/storage/SingleThreadedResourceLocker';
 import streamifyArray from 'streamify-array';
 
 describe('A LockingResourceStore', (): void => {
@@ -162,11 +161,5 @@ describe('A LockingResourceStore', (): void => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(lock.release).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
-  });
-
-  it('releases the lock without error when called twice.', async(): Promise<void> => {
-    const dummyLock = await new SingleThreadedResourceLocker().acquire({ path: 'dummyIdentifier' });
-    await dummyLock.release();
-    await dummyLock.release();
   });
 });

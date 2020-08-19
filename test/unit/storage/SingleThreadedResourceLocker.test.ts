@@ -65,4 +65,10 @@ describe('A SingleThreadedResourceLocker', (): void => {
     });
     expect(results).toEqual([ 2, 3, 1 ]);
   });
+
+  it('releases the lock without error when called twice.', async(): Promise<void> => {
+    const lock = await locker.acquire({ path: 'path' });
+    await expect(lock.release()).resolves.toBeUndefined();
+    await expect(lock.release()).resolves.toBeUndefined();
+  });
 });
