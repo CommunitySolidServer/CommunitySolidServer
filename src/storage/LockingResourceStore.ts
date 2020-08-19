@@ -72,21 +72,21 @@ export class LockingResourceStore implements AtomicResourceStore {
   protected async lockedRepresentationRun(identifier: ResourceIdentifier, func: () => Promise<Representation>):
   Promise<Representation> {
     const lock = await this.locks.acquire(identifier);
-
-    // Execute the function and release the lock only when the returned representation has been consumed.
     let representation;
     try {
       representation = await func();
       return representation;
     } finally {
       // If the representation contains a valid Readable, wait for it to be consumed.
-      if (!representation?.data) {
+      const data = representation?.data;
+      if (!data) {
         await lock.release();
       } else {
-        const callback = (): any => lock.release();
-        representation.data.on('end', callback);
-        representation.data.on('close', callback);
-        representation.data.on('error', callback);
+        new Promise((resolve): void => {
+          data.on('end', resolve);
+          data.on('close', resolve);
+          data.on('error', resolve);
+        }).then((): any => lock.release(), null);
       }
     }
   }
