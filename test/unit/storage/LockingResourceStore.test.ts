@@ -103,6 +103,12 @@ describe('A LockingResourceStore', (): void => {
       representation.data.on('data', (): any => true);
       representation.data.prependListener('end', (): any => {
         order.push('end');
+
+        // Close the stream when all the data has been read.
+        representation.data.destroy();
+      });
+      representation.data.prependListener('close', (): any => {
+        order.push('close');
         resolve();
       });
     });
@@ -112,8 +118,10 @@ describe('A LockingResourceStore', (): void => {
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'release' ]);
+
+    // Both the end and the close event will be invoked.
+    expect(lock.release).toHaveBeenCalledTimes(2);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'release', 'close', 'release' ]);
   });
 
   it('releases the lock on the resource when readable errors.', async(): Promise<void> => {
