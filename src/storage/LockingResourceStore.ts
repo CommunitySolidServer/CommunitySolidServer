@@ -1,11 +1,15 @@
 import { AtomicResourceStore } from './AtomicResourceStore';
 import { Conditions } from './Conditions';
 import { Patch } from '../ldp/http/Patch';
+import { Readable } from 'stream';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceLocker } from './ResourceLocker';
 import { ResourceStore } from './ResourceStore';
+
+/** Time in ms after which reading a representation times out, causing the lock to be released. */
+const READ_TIMEOUT = 1000;
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -74,8 +78,9 @@ export class LockingResourceStore implements AtomicResourceStore {
     const lock = await this.locks.acquire(identifier);
     let representation;
     try {
+      // Make the resource time out to ensure that the lock is always released eventually.
       representation = await func();
-      return representation;
+      return this.createExpiringRepresentation(representation);
     } finally {
       // If the representation contains a valid Readable, wait for it to be consumed.
       const data = representation?.data;
@@ -89,5 +94,44 @@ export class LockingResourceStore implements AtomicResourceStore {
         }).then((): any => lock.release(), null);
       }
     }
+  }
+
+  /**
+   * Wraps a representation to make it time out when nothing is read for a certain amount of time.
+   *
+   * @param source - The representation to wrap
+   */
+  protected createExpiringRepresentation(source: Representation): Representation {
+    return Object.create(source, {
+      data: { value: this.createExpiringReadable(source.data) },
+    });
+  }
+
+  /**
+   * Wraps a readable to make it time out when nothing is read for a certain amount of time.
+   *
+   * @param source - The readable to wrap
+   */
+  protected createExpiringReadable(source: Readable): Readable {
+    // Destroy the source when a timeout occurs.
+    const destroySource = (): void =>
+      source.destroy(new Error(`Stream reading timout of ${READ_TIMEOUT}ms exceeded`));
+    let timeout = setTimeout(destroySource, READ_TIMEOUT);
+
+    // Cancel the timeout when the source terminates by itself.
+    const cancelTimeout = (): void => clearTimeout(timeout);
+    source.on('error', cancelTimeout);
+    source.on('end', cancelTimeout);
+
+    // Spy on the source to reset the timeout on read.
+    return Object.create(source, {
+      read: {
+        value(size: number): any {
+          cancelTimeout();
+          timeout = setTimeout(destroySource, READ_TIMEOUT);
+          return source.read(size);
+        },
+      },
+    });
   }
 }

@@ -165,4 +165,58 @@ describe('A LockingResourceStore', (): void => {
     expect(lock.release).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'close', 'release' ]);
   });
+
+  it('destroys the stream when nothing is read after 1000ms.', async(): Promise<void> => {
+    jest.useFakeTimers();
+    const representation = await store.getRepresentation({ path: 'path' }, {});
+    const errorCallback = jest.fn();
+    representation.data.on('error', errorCallback);
+
+    // Wait 1000ms and read
+    jest.advanceTimersByTime(1000);
+    expect(representation.data.read()).toBe(null);
+    await registerEventOrder(representation.data, 'close');
+
+    // Verify a timeout error was thrown
+    expect(errorCallback).toHaveBeenCalledTimes(1);
+    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout of 1000ms exceeded'));
+
+    // Verify the lock was acquired and released at the right time
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(lock.release).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
+  });
+
+  it('destroys the stream when pauses between reads exceed 1000ms.', async(): Promise<void> => {
+    jest.useFakeTimers();
+    const representation = await store.getRepresentation({ path: 'path' }, {});
+    const errorCallback = jest.fn();
+    representation.data.on('error', errorCallback);
+
+    // Wait 750ms and read
+    jest.advanceTimersByTime(750);
+    expect(representation.data.read()).toBe(1);
+
+    // Wait 750ms and read
+    jest.advanceTimersByTime(750);
+    expect(representation.data.read()).toBe(2);
+
+    // Wait 1000ms and watch the stream be destroyed
+    jest.advanceTimersByTime(1000);
+    expect(representation.data.read()).toBe(null);
+    await registerEventOrder(representation.data, 'close');
+
+    // Verify a timeout error was thrown
+    expect(errorCallback).toHaveBeenCalledTimes(1);
+    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout of 1000ms exceeded'));
+
+    // Verify the lock was acquired and released at the right time
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(lock.release).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
+  });
 });
