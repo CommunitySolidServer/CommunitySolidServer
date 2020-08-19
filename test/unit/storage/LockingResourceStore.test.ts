@@ -13,11 +13,10 @@ describe('A LockingResourceStore', (): void => {
   let release: () => Promise<void>;
   let source: ResourceStore;
   let order: string[];
-  let delayedResolve: Function;
 
   beforeEach(async(): Promise<void> => {
     order = [];
-    delayedResolve = (resolve: (resolveParams: any) => void, name: string, resolveParams?: any): void => {
+    const delayedResolve = (resolve: (resolveParams: any) => void, name: string, resolveParams?: any): void => {
       // `setImmediate` is introduced to make sure the promise doesn't execute immediately
       setImmediate((): void => {
         order.push(name);
@@ -25,9 +24,11 @@ describe('A LockingResourceStore', (): void => {
       });
     };
 
+    const readable = streamifyArray([ 1, 2, 3 ]);
     source = {
       getRepresentation: jest.fn(async(): Promise<any> =>
-        new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation'))),
+        new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', { data: readable } as
+          Representation))),
       addResource: jest.fn(async(): Promise<any> =>
         new Promise((resolve): any => delayedResolve(resolve, 'addResource'))),
       setRepresentation: jest.fn(async(): Promise<any> =>
@@ -46,15 +47,6 @@ describe('A LockingResourceStore', (): void => {
       }),
     };
     store = new LockingResourceStore(source, locker);
-  });
-
-  it('acquires a lock on the resource when getting it.', async(): Promise<void> => {
-    await store.getRepresentation({ path: 'path' }, {});
-    expect(locker.acquire).toHaveBeenCalledTimes(1);
-    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
-    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'release' ]);
   });
 
   it('acquires a lock on the container when adding a representation.', async(): Promise<void> => {
@@ -105,15 +97,9 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('releases the lock on the resource when data has been read.', async(): Promise<void> => {
-    const readable = streamifyArray([ 1, 2, 3 ]);
-
-    source.getRepresentation = jest.fn(async(): Promise<any> =>
-      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', { data: readable } as
-        Representation)));
-
     const representation = await store.getRepresentation({ path: 'path' }, {});
     const drainData = new Promise((resolve): any => {
-      representation.data.on('data', (): any => readable);
+      representation.data.on('data', (): any => true);
       representation.data.prependListener('end', (): any => {
         order.push('end');
         resolve();
@@ -128,22 +114,15 @@ describe('A LockingResourceStore', (): void => {
   });
 
   it('releases the lock on the resource when readable errors.', async(): Promise<void> => {
-    const readable = streamifyArray([ 1, 2, 3 ]);
-
-    source.getRepresentation = jest.fn(async(): Promise<any> =>
-      new Promise((resolve): any => delayedResolve(resolve, 'getRepresentation', { data: readable } as
-        Representation)));
-
     const representation = await store.getRepresentation({ path: 'path' }, {});
-    const drainDataAndHandleError = new Promise((resolve): any => {
-      representation.data.on('data', (): any => readable);
+    const handleError = new Promise((resolve): any => {
       representation.data.prependListener('error', (): any => {
         order.push('error');
         resolve();
       });
     });
     representation.data.destroy(new Error('Error on the Readable :('));
-    await drainDataAndHandleError;
+    await handleError;
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
