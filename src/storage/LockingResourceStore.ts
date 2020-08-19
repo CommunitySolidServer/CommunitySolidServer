@@ -87,10 +87,13 @@ export class LockingResourceStore implements AtomicResourceStore {
       if (!data) {
         await lock.release();
       } else {
+        // When an error occurs, destroy the readable so the lock is released safely.
+        data.on('error', (): void => data.destroy());
+
+        // An `end` and/or `close` event signals that the readable has been consumed.
         new Promise((resolve): void => {
           data.on('end', resolve);
           data.on('close', resolve);
-          data.on('error', resolve);
         }).then((): any => lock.release(), null);
       }
     }

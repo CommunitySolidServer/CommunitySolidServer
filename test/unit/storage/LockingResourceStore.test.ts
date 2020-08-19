@@ -120,18 +120,20 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'release' ]);
   });
 
-  it('releases the lock on the resource when readable errors.', async(): Promise<void> => {
+  it('destroys the resource and releases the lock when the readable errors.', async(): Promise<void> => {
     // Make the representation error
     const representation = await store.getRepresentation({ path: 'path' }, {});
-    representation.data.destroy(new Error('Error on the Readable :('));
+    Promise.resolve().then((): any =>
+      representation.data.emit('error', new Error('Error on the readable')), null);
     await registerEventOrder(representation.data, 'error');
+    await registerEventOrder(representation.data, 'close');
 
     // Verify the lock was acquired and released at the right time
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'error', 'release' ]);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'error', 'close', 'release' ]);
   });
 
   it('releases the lock on the resource when readable is destroyed.', async(): Promise<void> => {
