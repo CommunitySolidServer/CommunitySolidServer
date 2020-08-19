@@ -20,30 +20,31 @@ export class LockingResourceStore implements AtomicResourceStore {
     this.locks = locks;
   }
 
+  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+    conditions?: Conditions): Promise<Representation> {
+    return this.lockedRepresentationRun(identifier,
+      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
+  }
+
   public async addResource(container: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier> {
     return this.lockedRun(container,
       async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier, async(): Promise<void> => this.source.deleteResource(identifier, conditions));
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<void> {
+    return this.lockedRun(identifier,
+      async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
-    return this.lockedRunReadable(identifier, preferences, conditions);
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
+    return this.lockedRun(identifier, async(): Promise<void> => this.source.deleteResource(identifier, conditions));
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
     return this.lockedRun(identifier,
       async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
-  }
-
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier,
-      async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
   /**
@@ -66,27 +67,26 @@ export class LockingResourceStore implements AtomicResourceStore {
    * When using this function, it is required to close the Readable stream when you are ready.
    *
    * @param identifier - Identifier that should be locked.
-   * @param preferences - Representation preferences.
-   * @param conditions - Optional conditions.
+   * @param func - Function to be executed.
    */
-  protected async lockedRunReadable(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
+  protected async lockedRepresentationRun(identifier: ResourceIdentifier, func: () => Promise<Representation>):
+  Promise<Representation> {
     const lock = await this.locks.acquire(identifier);
 
-    // Execute the getRepresentation function and return the resulting Representation.
-    let result;
+    // Execute the function and release the lock only when the returned representation has been consumed.
+    let representation;
     try {
-      result = await this.source.getRepresentation(identifier, preferences, conditions);
-      return result;
+      representation = await func();
+      return representation;
     } finally {
-      // Wait for the end or error event to be called to release the lock if the result contains a valid Readable.
-      if (!result || !result.data) {
+      // If the representation contains a valid Readable, wait for it to be consumed.
+      if (!representation?.data) {
         await lock.release();
       } else {
         const callback = (): any => lock.release();
-        result.data.on('end', callback);
-        result.data.on('close', callback);
-        result.data.on('error', callback);
+        representation.data.on('end', callback);
+        representation.data.on('close', callback);
+        representation.data.on('error', callback);
       }
     }
   }
