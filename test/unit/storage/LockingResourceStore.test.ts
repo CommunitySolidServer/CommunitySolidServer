@@ -4,6 +4,7 @@ import { Patch } from '../../../src/ldp/http/Patch';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
+import { SingleThreadedResourceLocker } from '../../../src/storage/SingleThreadedResourceLocker';
 import streamifyArray from 'streamify-array';
 
 describe('A LockingResourceStore', (): void => {
@@ -105,7 +106,9 @@ describe('A LockingResourceStore', (): void => {
         resolve();
       });
     });
+
     await drainData;
+
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
@@ -121,12 +124,41 @@ describe('A LockingResourceStore', (): void => {
         resolve();
       });
     });
+
     representation.data.destroy(new Error('Error on the Readable :('));
+
+    await handleError;
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+
+    // Both the end and the close event will be invoked.
+    expect(lock.release).toHaveBeenCalledTimes(2);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'error', 'release', 'release' ]);
+  });
+
+  it('releases the lock on the resource when readable is destroyed.', async(): Promise<void> => {
+    const representation = await store.getRepresentation({ path: 'path' }, {});
+    const handleError = new Promise((resolve): any => {
+      representation.data.prependListener('close', (): any => {
+        order.push('close');
+        resolve();
+      });
+    });
+
+    representation.data.destroy();
+
     await handleError;
     expect(locker.acquire).toHaveBeenCalledTimes(1);
     expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'error', 'release' ]);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
+  });
+
+  it('releases the lock without error when called twice.', async(): Promise<void> => {
+    const dummyLock = await new SingleThreadedResourceLocker().acquire({ path: 'dummyIdentifier' });
+    await dummyLock.release();
+    await dummyLock.release();
   });
 });

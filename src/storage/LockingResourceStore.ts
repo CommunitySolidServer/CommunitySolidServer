@@ -32,7 +32,7 @@ export class LockingResourceStore implements AtomicResourceStore {
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
-    return this.lockedRunGet(identifier, preferences, conditions);
+    return this.lockedRunReadable(identifier, preferences, conditions);
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
@@ -46,7 +46,12 @@ export class LockingResourceStore implements AtomicResourceStore {
       async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
-  private async lockedRun<T>(identifier: ResourceIdentifier, func: () => Promise<T>): Promise<T> {
+  /**
+   * Acquires a lock for the identifier and releases it when the function is executed.
+   * @param identifier - Identifier that should be locked.
+   * @param func - Function to be executed.
+   */
+  protected async lockedRun<T>(identifier: ResourceIdentifier, func: () => Promise<T>): Promise<T> {
     const lock = await this.locks.acquire(identifier);
     try {
       return await func();
@@ -55,7 +60,14 @@ export class LockingResourceStore implements AtomicResourceStore {
     }
   }
 
-  private async lockedRunGet(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+  /**
+   * Acquires a lock for the identifier that should return a representation with Readable data and releases it when the
+   * Readable is read, closed or results in an error.
+   * @param identifier - Identifier that should be locked.
+   * @param preferences - Representation preferences.
+   * @param conditions - Optional conditions.
+   */
+  protected async lockedRunReadable(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     const lock = await this.locks.acquire(identifier);
 
@@ -69,8 +81,10 @@ export class LockingResourceStore implements AtomicResourceStore {
       if (!result || !result.data) {
         await lock.release();
       } else {
-        result.data.on('end', async(): Promise<void> => lock.release());
-        result.data.on('error', async(): Promise<void> => lock.release());
+        const callback = (): any => lock.release();
+        result.data.on('end', callback);
+        result.data.on('close', callback);
+        result.data.on('error', callback);
       }
     }
   }
