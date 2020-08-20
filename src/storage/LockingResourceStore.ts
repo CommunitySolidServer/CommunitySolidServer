@@ -1,11 +1,15 @@
 import { AtomicResourceStore } from './AtomicResourceStore';
 import { Conditions } from './Conditions';
 import { Patch } from '../ldp/http/Patch';
+import { Readable } from 'stream';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceLocker } from './ResourceLocker';
 import { ResourceStore } from './ResourceStore';
+
+/** Time in ms after which reading a representation times out, causing the lock to be released. */
+const READ_TIMEOUT = 1000;
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -20,25 +24,16 @@ export class LockingResourceStore implements AtomicResourceStore {
     this.locks = locks;
   }
 
+  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
+    conditions?: Conditions): Promise<Representation> {
+    return this.lockedRepresentationRun(identifier,
+      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
+  }
+
   public async addResource(container: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier> {
     return this.lockedRun(container,
       async(): Promise<ResourceIdentifier> => this.source.addResource(container, representation, conditions));
-  }
-
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier, async(): Promise<void> => this.source.deleteResource(identifier, conditions));
-  }
-
-  public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
-    conditions?: Conditions): Promise<Representation> {
-    return this.lockedRun(identifier,
-      async(): Promise<Representation> => this.source.getRepresentation(identifier, preferences, conditions));
-  }
-
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
-    return this.lockedRun(identifier,
-      async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
@@ -47,12 +42,99 @@ export class LockingResourceStore implements AtomicResourceStore {
       async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
-  private async lockedRun<T>(identifier: ResourceIdentifier, func: () => Promise<T>): Promise<T> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
+    return this.lockedRun(identifier, async(): Promise<void> => this.source.deleteResource(identifier, conditions));
+  }
+
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
+    return this.lockedRun(identifier,
+      async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
+  }
+
+  /**
+   * Acquires a lock for the identifier and releases it when the function is executed.
+   * @param identifier - Identifier that should be locked.
+   * @param func - Function to be executed.
+   */
+  protected async lockedRun<T>(identifier: ResourceIdentifier, func: () => Promise<T>): Promise<T> {
     const lock = await this.locks.acquire(identifier);
     try {
       return await func();
     } finally {
       await lock.release();
     }
+  }
+
+  /**
+   * Acquires a lock for the identifier that should return a representation with Readable data and releases it when the
+   * Readable is read, closed or results in an error.
+   * When using this function, it is required to close the Readable stream when you are ready.
+   *
+   * @param identifier - Identifier that should be locked.
+   * @param func - Function to be executed.
+   */
+  protected async lockedRepresentationRun(identifier: ResourceIdentifier, func: () => Promise<Representation>):
+  Promise<Representation> {
+    const lock = await this.locks.acquire(identifier);
+    let representation;
+    try {
+      // Make the resource time out to ensure that the lock is always released eventually.
+      representation = await func();
+      return this.createExpiringRepresentation(representation);
+    } finally {
+      // If the representation contains a valid Readable, wait for it to be consumed.
+      const data = representation?.data;
+      if (!data) {
+        await lock.release();
+      } else {
+        // When an error occurs, destroy the readable so the lock is released safely.
+        data.on('error', (): void => data.destroy());
+
+        // An `end` and/or `close` event signals that the readable has been consumed.
+        new Promise((resolve): void => {
+          data.on('end', resolve);
+          data.on('close', resolve);
+        }).then((): any => lock.release(), null);
+      }
+    }
+  }
+
+  /**
+   * Wraps a representation to make it time out when nothing is read for a certain amount of time.
+   *
+   * @param source - The representation to wrap
+   */
+  protected createExpiringRepresentation(source: Representation): Representation {
+    return Object.create(source, {
+      data: { value: this.createExpiringReadable(source.data) },
+    });
+  }
+
+  /**
+   * Wraps a readable to make it time out when nothing is read for a certain amount of time.
+   *
+   * @param source - The readable to wrap
+   */
+  protected createExpiringReadable(source: Readable): Readable {
+    // Destroy the source when a timeout occurs.
+    const destroySource = (): void =>
+      source.destroy(new Error(`Stream reading timout of ${READ_TIMEOUT}ms exceeded`));
+    let timeout = setTimeout(destroySource, READ_TIMEOUT);
+
+    // Cancel the timeout when the source terminates by itself.
+    const cancelTimeout = (): void => clearTimeout(timeout);
+    source.on('error', cancelTimeout);
+    source.on('end', cancelTimeout);
+
+    // Spy on the source to reset the timeout on read.
+    return Object.create(source, {
+      read: {
+        value(size: number): any {
+          cancelTimeout();
+          timeout = setTimeout(destroySource, READ_TIMEOUT);
+          return source.read(size);
+        },
+      },
+    });
   }
 }
