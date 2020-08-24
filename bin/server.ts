@@ -96,6 +96,7 @@ const httpHandler = new AuthenticatedLdpHandler({
   responseWriter,
 });
 
+// This should go to a server config file
 const httpServer = new ExpressHttpServer(httpHandler);
 
 // Set up acl so everything can still be done by default
