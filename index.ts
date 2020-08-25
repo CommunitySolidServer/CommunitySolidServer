@@ -10,6 +10,9 @@ export * from './src/authorization/SimpleAclAuthorizer';
 export * from './src/authorization/SimpleAuthorizer';
 export * from './src/authorization/SimpleExtensionAclManager';
 
+// Init
+export * from './src/init/Setup';
+
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
 export * from './src/ldp/http/BodyParser';
