@@ -5,17 +5,20 @@ import {
   AclManager,
   AuthenticatedLdpHandler,
   BasePermissionsExtractor,
+  BodyParser,
   CompositeAsyncHandler,
   ExpressHttpServer,
   HttpHandler,
   HttpRequest,
+  Operation,
   PatchingStore,
   QuadToTurtleConverter,
   Representation,
   RepresentationConvertingStore,
   ResourceStore,
+  ResponseDescription,
   ServerConfig,
-  SimpleAclAuthorizer,
+  SimpleAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
   SimpleDeleteOperationHandler,
@@ -23,7 +26,6 @@ import {
   SimpleGetOperationHandler,
   SimplePatchOperationHandler,
   SimplePostOperationHandler,
-  SimplePutOperationHandler,
   SimpleRequestParser,
   SimpleResourceStore,
   SimpleResponseWriter,
@@ -33,12 +35,11 @@ import {
   SingleThreadedResourceLocker,
   SparqlPatchPermissionsExtractor,
   TurtleToQuadConverter,
-  UrlContainerManager,
 } from '..';
 
 // This is the configuration from bin/server.ts
 
-export class DefaultServerConfig implements ServerConfig {
+export class SimplePatchTestConfig implements ServerConfig {
   public base: string;
   public port: number;
   public store: ResourceStore;
@@ -47,7 +48,7 @@ export class DefaultServerConfig implements ServerConfig {
   public constructor(port: number) {
     this.port = port;
     this.base = `http://localhost:${port}/`;
-    this.store = new SimpleResourceStore(this.base);
+    this.store = new SimpleResourceStore('http://test.com/');
     this.aclManager = new SimpleExtensionAclManager();
   }
 
@@ -88,8 +89,7 @@ export class DefaultServerConfig implements ServerConfig {
   }
 
   public getHandler(): HttpHandler {
-    // This is instead of the dependency injection that still needs to be added
-    const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
+    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
       new SimpleSparqlUpdateBodyParser(),
       new SimpleBodyParser(),
     ]);
@@ -104,33 +104,28 @@ export class DefaultServerConfig implements ServerConfig {
       new BasePermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
+    const authorizer = new SimpleAuthorizer();
 
-    // Will have to see how to best handle this
-    // const store = new SimpleResourceStore(this.base);
+    const store = new SimpleResourceStore('http://test.com/');
     const converter = new CompositeAsyncHandler([
-      new TurtleToQuadConverter(),
       new QuadToTurtleConverter(),
+      new TurtleToQuadConverter(),
     ]);
-    const convertingStore = new RepresentationConvertingStore(this.store, converter);
+    const convertingStore = new RepresentationConvertingStore(store, converter);
     const locker = new SingleThreadedResourceLocker();
     const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
     const patchingStore = new PatchingStore(convertingStore, patcher);
 
-    // Const aclManager = new SimpleExtensionAclManager();
-    const containerManager = new UrlContainerManager(this.base);
-    const authorizer = new SimpleAclAuthorizer(this.aclManager, containerManager, patchingStore);
-
-    const operationHandler = new CompositeAsyncHandler([
-      new SimpleDeleteOperationHandler(patchingStore),
+    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
       new SimplePostOperationHandler(patchingStore),
-      new SimplePutOperationHandler(patchingStore),
+      new SimpleDeleteOperationHandler(patchingStore),
+      new SimplePatchOperationHandler(patchingStore),
     ]);
 
     const responseWriter = new SimpleResponseWriter();
 
-    const httpHandler = new AuthenticatedLdpHandler({
+    const handler = new AuthenticatedLdpHandler({
       requestParser,
       credentialsExtractor,
       permissionsExtractor,
@@ -139,6 +134,6 @@ export class DefaultServerConfig implements ServerConfig {
       responseWriter,
     });
 
-    return httpHandler;
+    return handler;
   }
 }

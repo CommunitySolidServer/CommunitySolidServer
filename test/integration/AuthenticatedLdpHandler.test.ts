@@ -1,66 +1,14 @@
-import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
-import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
-import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
-import { BodyParser } from '../../src/ldp/http/BodyParser';
 import { call } from '../util/Util';
-import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { HttpRequest } from '../../src/server/HttpRequest';
 import { MockResponse } from 'node-mocks-http';
-import { Operation } from '../../src/ldp/operations/Operation';
 import { Parser } from 'n3';
-import { PatchingStore } from '../../src/storage/PatchingStore';
-import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
-import { Representation } from '../../src/ldp/representation/Representation';
-import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
-import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
-import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
-import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
-import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
-import { SimplePatchOperationHandler } from '../../src/ldp/operations/SimplePatchOperationHandler';
-import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
-import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
-import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpdateBodyParser';
-import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
-import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
-import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
-import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
+import { SimplePatchTestConfig } from '../../configs/SimplePatchTestConfig';
+import { SimpleTestConfig } from '../../configs/SimpleTestConfig';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
-      preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new SimpleBodyParser(),
-    });
-
-    const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new BasePermissionsExtractor();
-    const authorizer = new SimpleAuthorizer();
-
-    const store = new SimpleResourceStore('http://test.com/');
-    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(store),
-      new SimplePostOperationHandler(store),
-      new SimpleDeleteOperationHandler(store),
-    ]);
-
-    const responseWriter = new SimpleResponseWriter();
-
-    const handler = new AuthenticatedLdpHandler({
-      requestParser,
-      credentialsExtractor,
-      permissionsExtractor,
-      authorizer,
-      operationHandler,
-      responseWriter,
-    });
+    const handler = new SimpleTestConfig(3000).getHandler();
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
@@ -98,50 +46,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-      new SimpleSparqlUpdateBodyParser(),
-      new SimpleBodyParser(),
-    ]);
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
-      preferenceParser: new AcceptPreferenceParser(),
-      bodyParser,
-    });
-
-    const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
-      new SparqlPatchPermissionsExtractor(),
-    ]);
-    const authorizer = new SimpleAuthorizer();
-
-    const store = new SimpleResourceStore('http://test.com/');
-    const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
-    ]);
-    const convertingStore = new RepresentationConvertingStore(store, converter);
-    const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
-    const patchingStore = new PatchingStore(convertingStore, patcher);
-
-    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(patchingStore),
-      new SimplePostOperationHandler(patchingStore),
-      new SimpleDeleteOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
-    ]);
-
-    const responseWriter = new SimpleResponseWriter();
-
-    const handler = new AuthenticatedLdpHandler({
-      requestParser,
-      credentialsExtractor,
-      permissionsExtractor,
-      authorizer,
-      operationHandler,
-      responseWriter,
-    });
+    const handler = new SimplePatchTestConfig(3000).getHandler();
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
