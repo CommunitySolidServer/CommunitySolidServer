@@ -1,0 +1,99 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:my:HttpHandler",
+      "@type": "AuthenticatedLdpHandler",
+
+      "AuthenticatedLdpHandler:_requestParser": {
+        "@type": "SimpleRequestParser",
+        "SimpleRequestParser:_targetExtractor": {
+          "@type": "SimpleTargetExtractor"
+        },
+        "SimpleRequestParser:_preferenceParser": {
+          "@type": "AcceptPreferenceParser"
+        },
+        "SimpleRequestParser:_bodyParser": {
+          "@type": "CompositeAsyncHandler",
+          "CompositeAsyncHandler:_handlers": [
+            {
+              "@type": "SimpleSparqlUpdateBodyParser"
+            },
+            {
+              "@type": "SimpleBodyParser"
+            }
+          ]
+        }
+      },
+
+      "AuthenticatedLdpHandler:_credentialsExtractor": {
+        "@type": "SimpleCredentialsExtractor"
+      },
+
+      "AuthenticatedLdpHandler:_permissionsExtractor": {
+        "@type": "CompositeAsyncHandler",
+        "CompositeAsyncHandler:_handlers": [
+          {
+            "@type": "BasePermissionsExtractor"
+          },
+          {
+            "@type": "SparqlPatchPermissionsExtractor"
+          }
+        ]
+      },
+
+      "AuthenticatedLdpHandler:_authorizer": {
+        "@type": "SimpleAclAuthorizer",
+        "SimpleAclAuthorizer:_aclManager": {
+          "@id": "urn:solid-server:my:AclManager"
+        },
+        "SimpleAclAuthorizer:_containerManager": {
+          "@id": "urn:solid-server:my:UrlContainerManager"
+        },
+        "SimpleAclAuthorizer:_resourceStore": {
+          "@id": "urn:solid-server:my:ResourceStore"
+        }
+      },
+
+      "AuthenticatedLdpHandler:_operationHandler": {
+        "@type": "CompositeAsyncHandler",
+        "CompositeAsyncHandler:_handlers": [
+          {
+            "@type": "SimpleDeleteOperationHandler",
+            "SimpleDeleteOperationHandler:_store": {
+              "@id": "urn:solid-server:my:ResourceStore"
+            }
+          },
+          {
+            "@type": "SimpleGetOperationHandler",
+            "SimpleGetOperationHandler:_store": {
+              "@id": "urn:solid-server:my:ResourceStore"
+            }
+          },
+          {
+            "@type": "SimplePatchOperationHandler",
+            "SimplePatchOperationHandler:_store": {
+              "@id": "urn:solid-server:my:ResourceStore"
+            }
+          },
+          {
+            "@type": "SimplePostOperationHandler",
+            "SimplePostOperationHandler:_store": {
+              "@id": "urn:solid-server:my:ResourceStore"
+            }
+          },
+          {
+            "@type": "SimplePutOperationHandler",
+            "SimplePutOperationHandler:_store": {
+              "@id": "urn:solid-server:my:ResourceStore"
+            }
+          }
+        ]
+      },
+
+      "AuthenticatedLdpHandler:_responseWriter": {
+        "@type": "SimpleResponseWriter"
+      }
+    }
+  ]
+}
