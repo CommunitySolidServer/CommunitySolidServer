@@ -1,4 +1,5 @@
-import { Setup } from '../src/init/Setup';
+import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
+import streamifyArray from 'streamify-array';
 import {
   AcceptPreferenceParser,
   AuthenticatedLdpHandler,
@@ -95,9 +96,36 @@ export class DefaultServerConfig implements ServerConfig {
 
     const httpServer = new ExpressHttpServer(httpHandler);
 
-    const setup = new Setup(httpServer, store, aclManager);
-    await setup.setup(this.port, this.base);
+    // Set up acl so everything can still be done by default
+    // Note that this will need to be adapted to go through all the correct channels later on
+    const aclSetup = async(): Promise<void> => {
+      const acl = `@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
+    @prefix  foaf:  <http://xmlns.com/foaf/0.1/>.
 
+    <#authorization>
+        a               acl:Authorization;
+        acl:agentClass  foaf:Agent;
+        acl:mode        acl:Read;
+        acl:mode        acl:Write;
+        acl:mode        acl:Append;
+        acl:mode        acl:Delete;
+        acl:mode        acl:Control;
+        acl:accessTo    <${this.base}>;
+        acl:default     <${this.base}>.`;
+      await store.setRepresentation(
+        await aclManager.getAcl({ path: this.base }),
+        {
+          dataType: DATA_TYPE_BINARY,
+          data: streamifyArray([ acl ]),
+          metadata: {
+            raw: [],
+            profiles: [],
+            contentType: 'text/turtle',
+          },
+        },
+      );
+    };
+    await aclSetup();
     return httpServer;
   }
 }
