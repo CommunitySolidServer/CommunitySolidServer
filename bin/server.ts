@@ -11,7 +11,6 @@ import {
   QuadToTurtleConverter,
   Representation,
   RepresentationConvertingStore,
-  Setup,
   SimpleAclAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
@@ -32,6 +31,7 @@ import {
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
+import { Setup } from '../src/init/Setup';
 
 const { argv } = yargs
   .usage('node ./bin/server.js [args]')
