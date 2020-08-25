@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:my:HttpServer",
+      "@type": "ExpressHttpServer",
+      "ExpressHttpServer:_handler": {
+        "@id": "urn:solid-server:my:HttpHandler"
+      }
+    }
+  ]
+}

@@ -1,11 +1,22 @@
 {
   "name": "@solid/community-server",
   "version": "0.0.1",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/"
+  },
   "main": "index.js",
   "license": "MIT",
   "bin": "bin/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:ts && npm run build:components",
+    "build:ts": "tsc",
+    "build:components": "componentsjs-generator -s src",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "eslint . --ext .ts",
     "prepare": "npm run build",
@@ -24,7 +35,9 @@
     "bin/*.js",
     "bin/*.d.ts",
     "src/**/*.js",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "components/**/*.jsonld",
+    "config/**/*.json"
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.1.2",
@@ -38,6 +51,7 @@
     "@types/uuid": "^8.3.0",
     "@types/yargs": "^15.0.5",
     "async-lock": "^1.2.4",
+    "componentsjs": "^3.4.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mime-types": "^2.1.27",
@@ -56,6 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "arrayify-stream": "^1.0.0",
+    "componentjs-generator": "^1.0.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.0.0",
     "eslint-config-es": "^3.19.61",
