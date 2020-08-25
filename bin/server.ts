@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
-import streamifyArray from 'streamify-array';
 import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
@@ -13,6 +11,7 @@ import {
   QuadToTurtleConverter,
   Representation,
   RepresentationConvertingStore,
+  Setup,
   SimpleAclAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
@@ -98,38 +97,8 @@ const httpHandler = new AuthenticatedLdpHandler({
 
 const httpServer = new ExpressHttpServer(httpHandler);
 
-// Set up acl so everything can still be done by default
-// Note that this will need to be adapted to go through all the correct channels later on
-const aclSetup = async(): Promise<void> => {
-  const acl = `@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
-@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.
-
-<#authorization>
-    a               acl:Authorization;
-    acl:agentClass  foaf:Agent;
-    acl:mode        acl:Read;
-    acl:mode        acl:Write;
-    acl:mode        acl:Append;
-    acl:mode        acl:Delete;
-    acl:mode        acl:Control;
-    acl:accessTo    <${base}>;
-    acl:default     <${base}>.`;
-  await store.setRepresentation(
-    await aclManager.getAcl({ path: base }),
-    {
-      dataType: DATA_TYPE_BINARY,
-      data: streamifyArray([ acl ]),
-      metadata: {
-        raw: [],
-        profiles: [],
-        contentType: 'text/turtle',
-      },
-    },
-  );
-};
-aclSetup().then((): void => {
-  httpServer.listen(port);
-
+const setup = new Setup(httpServer, store, aclManager);
+setup.setup(port, base).then((): void => {
   process.stdout.write(`Running at ${base}\n`);
 }).catch((error): void => {
   process.stderr.write(`${error}\n`);
