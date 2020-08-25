@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { Setup } from '../src/init/Setup';
 import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
@@ -31,7 +32,6 @@ import {
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
-import { Setup } from '../src/init/Setup';
 
 const { argv } = yargs
   .usage('node ./bin/server.js [args]')

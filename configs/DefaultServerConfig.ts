@@ -1,3 +1,4 @@
+import { Setup } from '../src/init/Setup';
 import {
   AcceptPreferenceParser,
   AuthenticatedLdpHandler,
@@ -30,9 +31,8 @@ import {
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
-import { Setup } from '../src/init/Setup';
 
-export class SimpleServerConfiguration implements ServerConfig {
+export class DefaultServerConfig implements ServerConfig {
   public base: string;
   public port: number;
 

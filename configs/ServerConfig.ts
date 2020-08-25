@@ -2,6 +2,6 @@ import { ExpressHttpServer } from '..';
 
 export interface ServerConfig {
   base: string;
-  port: Number;
+  port: number;
   getHttpServer(): Promise<ExpressHttpServer>;
 }

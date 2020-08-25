@@ -105,5 +105,5 @@ export * from './src/util/Util';
 
 // Config
 export * from './configs/ServerConfig';
-export * from './configs/SimpleServerConfiguration';
+export * from './configs/DefaultServerConfig';
 
