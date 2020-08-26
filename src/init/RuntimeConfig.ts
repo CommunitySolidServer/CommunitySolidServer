@@ -6,6 +6,7 @@
 export class RuntimeConfig implements RuntimeConfigData {
   private pport!: number;
   private pbase!: string;
+  private prootFilepath!: string;
 
   public constructor(data: RuntimeConfigData = {}) {
     this.reset(data);
@@ -14,6 +15,7 @@ export class RuntimeConfig implements RuntimeConfigData {
   public reset(data: RuntimeConfigData): void {
     this.pport = data.port ?? 3000;
     this.pbase = data.base ?? `http://localhost:${this.port}/`;
+    this.prootFilepath = data.rootFilepath ?? process.cwd();
   }
 
   public get base(): string {
@@ -23,9 +25,14 @@ export class RuntimeConfig implements RuntimeConfigData {
   public get port(): number {
     return this.pport;
   }
+
+  public get rootFilepath(): string {
+    return this.prootFilepath;
+  }
 }
 
 export interface RuntimeConfigData {
   port?: number;
   base?: string;
+  rootFilepath?: string;
 }
