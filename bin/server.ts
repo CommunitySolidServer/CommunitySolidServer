@@ -45,10 +45,10 @@ const { port } = argv;
 const base = `http://localhost:${port}/`;
 
 // This is instead of the dependency injection that still needs to be added
-const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-  new SimpleSparqlUpdateBodyParser(),
-  new SimpleBodyParser(),
-]);
+const bodyParser = new CompositeAsyncHandler<
+HttpRequest,
+Representation | undefined
+>([ new SimpleSparqlUpdateBodyParser(), new SimpleBodyParser() ]);
 const requestParser = new SimpleRequestParser({
   targetExtractor: new SimpleTargetExtractor(),
   preferenceParser: new AcceptPreferenceParser(),
@@ -74,7 +74,11 @@ const patchingStore = new PatchingStore(convertingStore, patcher);
 
 const aclManager = new SimpleExtensionAclManager();
 const containerManager = new UrlContainerManager(base);
-const authorizer = new SimpleAclAuthorizer(aclManager, containerManager, patchingStore);
+const authorizer = new SimpleAclAuthorizer(
+  aclManager,
+  containerManager,
+  patchingStore,
+);
 
 const operationHandler = new CompositeAsyncHandler([
   new SimpleDeleteOperationHandler(patchingStore),
@@ -97,10 +101,33 @@ const httpHandler = new AuthenticatedLdpHandler({
 
 const httpServer = new ExpressHttpServer(httpHandler);
 
+//import fs from 'fs';
+//
+//async function importer(): Promise<any> {
+//  const configFiles: string[] = [];
+//  const testRegex = new RegExp('^[^.]+.ts$');
+//
+//  fs.readdir('./configs', (err, files): void => {
+//    if (!err) {
+//      files.forEach((file: string): void => {
+//        if (testRegex.test(file)) {
+//          configFiles.push(file);
+//        }
+//      });
+//    }
+//		import(`../configs/${configFiles[0]}`).then((imp) => console.log(imp))
+//  })
+//}
+//
+//importer();
+
 const setup = new Setup(httpServer, store, aclManager);
-setup.setup(port, base).then((): void => {
-  process.stdout.write(`Running at ${base}\n`);
-}).catch((error): void => {
-  process.stderr.write(`${error}\n`);
-  process.exit(1);
-});
+setup
+  .setup(port, base)
+  .then((): void => {
+    process.stdout.write(`Running at ${base}\n`);
+  })
+  .catch((error): void => {
+    process.stderr.write(`${error}\n`);
+    process.exit(1);
+  });
