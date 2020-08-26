@@ -26,6 +26,7 @@ import {
   SimpleGetOperationHandler,
   SimplePatchOperationHandler,
   SimplePostOperationHandler,
+  SimplePutOperationHandler,
   SimpleRequestParser,
   SimpleResourceStore,
   SimpleResponseWriter,
@@ -39,7 +40,7 @@ import {
 
 // This is the configuration from bin/server.ts
 
-export class SimplePatchTestConfig implements ServerConfig {
+export class SimpleHandlersTestConfig implements ServerConfig {
   public base: string;
   public port: number;
   public store: ResourceStore;
@@ -121,6 +122,7 @@ export class SimplePatchTestConfig implements ServerConfig {
       new SimplePostOperationHandler(patchingStore),
       new SimpleDeleteOperationHandler(patchingStore),
       new SimplePatchOperationHandler(patchingStore),
+      new SimplePutOperationHandler(patchingStore),
     ]);
 
     const responseWriter = new SimpleResponseWriter();

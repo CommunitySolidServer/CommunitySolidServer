@@ -1,7 +1,7 @@
 import { call } from '../util/Util';
 import { MockResponse } from 'node-mocks-http';
 import { Parser } from 'n3';
-import { SimplePatchTestConfig } from '../../configs/SimplePatchTestConfig';
+import { SimpleHandlersTestConfig } from '../../configs/SimpleHandlersTestConfig';
 import { SimpleTestConfig } from '../../configs/SimpleTestConfig';
 import { namedNode, quad } from '@rdfjs/data-model';
 import * as url from 'url';
@@ -62,7 +62,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const handler = new SimplePatchTestConfig(3000).getHandler();
+    const handler = new SimpleHandlersTestConfig(3000).getHandler();
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
@@ -131,53 +131,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PUT handlers', (): void => {
-    const bodyParser: BodyParser = new CompositeAsyncHandler<
-    HttpRequest,
-    Representation | undefined
-    >([ new SimpleSparqlUpdateBodyParser(), new SimpleBodyParser() ]);
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
-      preferenceParser: new AcceptPreferenceParser(),
-      bodyParser,
-    });
-
-    const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
-      new SparqlPatchPermissionsExtractor(),
-    ]);
-    const authorizer = new SimpleAuthorizer();
-
-    const store = new SimpleResourceStore('http://test.com/');
-    const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
-    ]);
-    const convertingStore = new RepresentationConvertingStore(store, converter);
-    const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
-    const patchingStore = new PatchingStore(convertingStore, patcher);
-
-    const operationHandler = new CompositeAsyncHandler<
-    Operation,
-    ResponseDescription
-    >([
-      new SimpleGetOperationHandler(patchingStore),
-      new SimplePostOperationHandler(patchingStore),
-      new SimpleDeleteOperationHandler(patchingStore),
-      new SimplePutOperationHandler(patchingStore),
-    ]);
-
-    const responseWriter = new SimpleResponseWriter();
-
-    const handler = new AuthenticatedLdpHandler({
-      requestParser,
-      credentialsExtractor,
-      permissionsExtractor,
-      authorizer,
-      operationHandler,
-      responseWriter,
-    });
+    const handler = new SimpleHandlersTestConfig(3000).getHandler();
 
     it('should overwrite the content on PUT request.', async(): Promise<void> => {
       // POST
