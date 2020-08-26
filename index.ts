@@ -11,6 +11,7 @@ export * from './src/authorization/SimpleAuthorizer';
 export * from './src/authorization/SimpleExtensionAclManager';
 
 // Init
+export * from './src/init/RuntimeConfig';
 export * from './src/init/Setup';
 
 // LDP/HTTP

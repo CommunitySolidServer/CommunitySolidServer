@@ -1,3 +1,4 @@
+import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Setup } from '../../../src/init/Setup';
 
 describe('Setup', (): void => {
@@ -15,16 +16,16 @@ describe('Setup', (): void => {
     httpServer = {
       listen: jest.fn(),
     };
-    setup = new Setup(httpServer, store, aclManager);
+    setup = new Setup(httpServer, store, aclManager, new RuntimeConfig());
   });
 
   it('starts an HTTP server.', async(): Promise<void> => {
-    await setup.setup(3000, 'http://localhost:3000/');
+    await setup.setup();
     expect(httpServer.listen).toHaveBeenCalledWith(3000);
   });
 
   it('invokes ACL initialization.', async(): Promise<void> => {
-    await setup.setup(3000, 'http://localhost:3000/');
+    await setup.setup();
     expect(aclManager.getAcl).toHaveBeenCalledWith({ path: 'http://localhost:3000/' });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
   });
