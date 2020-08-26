@@ -101,26 +101,6 @@ const httpHandler = new AuthenticatedLdpHandler({
 
 const httpServer = new ExpressHttpServer(httpHandler);
 
-//import fs from 'fs';
-//
-//async function importer(): Promise<any> {
-//  const configFiles: string[] = [];
-//  const testRegex = new RegExp('^[^.]+.ts$');
-//
-//  fs.readdir('./configs', (err, files): void => {
-//    if (!err) {
-//      files.forEach((file: string): void => {
-//        if (testRegex.test(file)) {
-//          configFiles.push(file);
-//        }
-//      });
-//    }
-//		import(`../configs/${configFiles[0]}`).then((imp) => console.log(imp))
-//  })
-//}
-//
-//importer();
-
 const setup = new Setup(httpServer, store, aclManager);
 setup
   .setup(port, base)
