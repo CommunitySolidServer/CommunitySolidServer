@@ -40,7 +40,7 @@ export class FileResourceStoreConfig implements ServerConfig {
     this.store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
-        rootFilepath: '/home/thor/work/community-server/test/uploads/',
+        rootFilepath: 'uploads/',
       }),
       new InteractionController(),
       new MetadataController(),

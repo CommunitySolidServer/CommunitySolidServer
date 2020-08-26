@@ -29,7 +29,7 @@ export const call = async(handler: HttpHandler, requestUrl: URL, method: string,
 
 export const callFile = async(handler: HttpHandler, requestUrl: URL, method: string,
   headers: IncomingHttpHeaders, data: Buffer): Promise<MockResponse<any>> => {
-  //const request = streamifyArray(data) as HttpRequest;
+  // Const request = streamifyArray(data) as HttpRequest;
 
   const request = streamifyArray([ data ]) as HttpRequest;
   request.url = requestUrl.pathname;

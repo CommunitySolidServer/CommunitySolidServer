@@ -59,7 +59,6 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
-    console.log('addResource')
     if (representation.dataType !== DATA_TYPE_BINARY) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
@@ -118,7 +117,6 @@ export class FileResourceStore implements ResourceStore {
    * @returns The corresponding Representation.
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
-    console.log('getRepresentation')
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
     const path = joinPath(this.rootFilepath, this.parseIdentifier(identifier));
     let stats;
@@ -251,13 +249,19 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-    let rawMetadata: Quad[] = [];
-    try {
+
+    const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
-    } catch (_) {
-      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-    }
+      readMetadataStream.on('error', (): void => {
+        // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+        resolve([]);
+      })
+        .on('open', async(): Promise<void> => {
+          resolve(await this.metadataController.generateQuadsFromReadable(readMetadataStream));
+        });
+    });
+
+    const rawMetadata: Quad[] = await rawMetadataPromise;
     const metadata: RepresentationMetadata = {
       raw: rawMetadata,
       dateTime: stats.mtime,

@@ -1,14 +1,14 @@
-import { call, callFile } from '../util/Util';
 import { FileResourceStoreConfig } from '../../configs/FileResourceStoreConfig';
 import { MockResponse } from 'node-mocks-http';
+import { call, callFile } from '../util/Util';
 import * as fs from 'fs';
 import * as url from 'url';
 
-describe('An integrated AuthenticatedLdpHandler', (): void => {
+describe('A server using a FileResourceStore', (): void => {
   describe('with simple handlers', (): void => {
     const handler = new FileResourceStoreConfig().getHandler();
 
-    it('can add, read and delete data based on incoming requests.', async(): Promise<
+    it('can add a file to the store, and read it.', async(): Promise<
     void
     > => {
       // POST
