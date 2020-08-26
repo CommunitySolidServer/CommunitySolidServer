@@ -13,6 +13,7 @@ import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtle
 import { Representation } from '../../src/ldp/representation/Representation';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
+import { RuntimeConfig } from '../../src/init/RuntimeConfig';
 import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
 import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
@@ -44,7 +45,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
-    const store = new SimpleResourceStore('http://test.com/');
+    const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(store),
       new SimplePostOperationHandler(store),
@@ -115,7 +116,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     ]);
     const authorizer = new SimpleAuthorizer();
 
-    const store = new SimpleResourceStore('http://test.com/');
+    const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),

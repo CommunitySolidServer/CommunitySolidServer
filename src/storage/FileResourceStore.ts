@@ -12,6 +12,7 @@ import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
@@ -25,24 +26,28 @@ const { extname, join: joinPath, normalize: normalizePath } = posix;
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class FileResourceStore implements ResourceStore {
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
 
   /**
-   * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
-   * path.
-   * @param rootFilepath - Root filepath in which the resources and containers will be saved as files and directories.
+   * @param runtimeConfig - The runtime config.
    * @param interactionController - Instance of InteractionController to use.
    * @param metadataController - Instance of MetadataController to use.
    */
-  public constructor(baseRequestURI: string, rootFilepath: string, interactionController: InteractionController,
+  public constructor(runtimeConfig: RuntimeConfig, interactionController: InteractionController,
     metadataController: MetadataController) {
-    this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
-    this.rootFilepath = trimTrailingSlashes(rootFilepath);
+    this.runtimeConfig = runtimeConfig;
     this.interactionController = interactionController;
     this.metadataController = metadataController;
+  }
+
+  public get baseRequestURI(): string {
+    return trimTrailingSlashes(this.runtimeConfig.base);
+  }
+
+  public get rootFilepath(): string {
+    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**
