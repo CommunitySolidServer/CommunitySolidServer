@@ -5,12 +5,14 @@ import { BodyParser } from '../../src/ldp/http/BodyParser';
 import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
 import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
+import { InteractionController } from '../../src/util/InteractionController';
 import { MockResponse } from 'node-mocks-http';
 import { Operation } from '../../src/ldp/operations/Operation';
 import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
 import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 import { ResourceStore } from '../../src/storage/ResourceStore';
+import { ResourceStoreController } from '../../src/util/ResourceStoreController';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
 import { SimpleAclAuthorizer } from '../../src/authorization/SimpleAclAuthorizer';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
@@ -80,7 +82,9 @@ describe('A server with authorization', (): void => {
     bodyParser,
   });
 
-  const store = new SimpleResourceStore('http://test.com/');
+  const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
+    new InteractionController(),
+    new Set([ DATA_TYPE_BINARY ])));
   const converter = new CompositeAsyncHandler([
     new QuadToTurtleConverter(),
     new TurtleToQuadConverter(),

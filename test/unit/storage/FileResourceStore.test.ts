@@ -10,6 +10,7 @@ import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAll
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { Readable } from 'stream';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
 import streamifyArray from 'streamify-array';
 import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
@@ -46,7 +47,9 @@ describe('A FileResourceStore', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
 
-    store = new FileResourceStore(base, root, new InteractionController(), new MetadataController());
+    store = new FileResourceStore(base, root, new MetadataController(), new ResourceStoreController(base,
+      new InteractionController(),
+      new Set([ DATA_TYPE_BINARY ])));
 
     representation = {
       data: streamifyArray([ rawData ]),

@@ -1,7 +1,6 @@
 import arrayifyStream from 'arrayify-stream';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
-import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
@@ -11,12 +10,12 @@ import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
+import { ResourceStoreController } from '../util/ResourceStoreController';
 import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
-import { extname, join as joinPath, normalize as normalizePath } from 'path';
+import { extname, join as joinPath } from 'path';
 
 /**
  * Resource store storing its data in the file system backend.
@@ -25,22 +24,22 @@ import { extname, join as joinPath, normalize as normalizePath } from 'path';
 export class FileResourceStore implements ResourceStore {
   private readonly baseRequestURI: string;
   private readonly rootFilepath: string;
-  private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
+  private readonly resourceStoreController: ResourceStoreController;
 
   /**
    * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
    * path.
    * @param rootFilepath - Root filepath in which the resources and containers will be saved as files and directories.
-   * @param interactionController - Instance of InteractionController to use.
    * @param metadataController - Instance of MetadataController to use.
+   * @param resourceStoreController - Instance of ResourceStoreController to use.
    */
-  public constructor(baseRequestURI: string, rootFilepath: string, interactionController: InteractionController,
-    metadataController: MetadataController) {
+  public constructor(baseRequestURI: string, rootFilepath: string, metadataController: MetadataController,
+    resourceStoreController: ResourceStoreController) {
     this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
     this.rootFilepath = trimTrailingSlashes(rootFilepath);
-    this.interactionController = interactionController;
     this.metadataController = metadataController;
+    this.resourceStoreController = resourceStoreController;
   }
 
   /**
@@ -52,22 +51,18 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
-      throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
-    }
+    // Get the expected behaviour based on the incoming identifier and representation.
+    const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourAddResource(container,
+      representation);
 
-    // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.parseIdentifier(container);
-    const { slug, raw } = representation.metadata;
-    const linkTypes = representation.metadata.linkRel?.type;
+    // Get all metadata triples if any.
+    const { raw } = representation.metadata;
     let metadata;
     if (raw.length > 0) {
       metadata = this.metadataController.generateReadableFromQuads(raw);
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    const isContainer = this.interactionController.isContainer(slug, linkTypes);
-    const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
     return isContainer ?
       this.createContainer(path, newIdentifier, path.endsWith('/'), metadata) :
       this.createFile(path, newIdentifier, representation.data, path.endsWith('/'), metadata);
@@ -78,10 +73,8 @@ export class FileResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to delete.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    let path = this.parseIdentifier(identifier);
-    if (path === '' || ensureTrailingSlash(path) === '/') {
-      throw new MethodNotAllowedHttpError('Cannot delete root container.');
-    }
+    let path = this.resourceStoreController.parseIdentifier(identifier);
+    this.resourceStoreController.validateDeletePath(path);
 
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
     path = joinPath(this.rootFilepath, path);
@@ -111,7 +104,7 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = joinPath(this.rootFilepath, this.parseIdentifier(identifier));
+    const path = joinPath(this.rootFilepath, this.resourceStoreController.parseIdentifier(identifier));
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -142,43 +135,21 @@ export class FileResourceStore implements ResourceStore {
    * @param representation - New Representation.
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
-      throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
-    }
+    // Get the expected behaviour based on the incoming identifier and representation.
+    const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourSetRepresentation(identifier,
+      representation);
 
-    // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
-    // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
-    if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
-      throw new ConflictHttpError('Container with that identifier already exists (root).');
-    }
+    // Get all metadata triples if any.
     const { raw } = representation.metadata;
-    const linkTypes = representation.metadata.linkRel?.type;
-    let metadata: Readable | undefined;
+    let metadata;
     if (raw.length > 0) {
-      metadata = streamifyArray(raw);
+      metadata = this.metadataController.generateReadableFromQuads(raw);
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    const isContainer = this.interactionController.isContainer(slug, linkTypes);
-    const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
     return isContainer ?
       await this.setDirectoryRepresentation(path, newIdentifier, metadata) :
       await this.setFileRepresentation(path, newIdentifier, representation.data, metadata);
-  }
-
-  /**
-   * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.
-   * @param identifier - Incoming identifier.
-   *
-   * @throws {@link NotFoundHttpError}
-   * If the identifier does not match the baseRequestURI path of the store.
-   */
-  private parseIdentifier(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.baseRequestURI)) {
-      throw new NotFoundHttpError();
-    }
-    return identifier.path.slice(this.baseRequestURI.length);
   }
 
   /**
