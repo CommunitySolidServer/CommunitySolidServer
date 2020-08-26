@@ -1,6 +1,6 @@
-import { BodyParser } from './BodyParser';
 import { HttpRequest } from '../../server/HttpRequest';
 import { Operation } from '../operations/Operation';
+import { BodyParser } from './BodyParser';
 import { PreferenceParser } from './PreferenceParser';
 import { RequestParser } from './RequestParser';
 import { TargetExtractor } from './TargetExtractor';

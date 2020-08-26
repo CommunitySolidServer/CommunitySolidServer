@@ -1,12 +1,12 @@
-import { Algebra } from 'sparqlalgebrajs';
+import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
-import { HttpRequest } from '../../../../src/server/HttpRequest';
-import { SimpleSparqlUpdateBodyParser } from '../../../../src/ldp/http/SimpleSparqlUpdateBodyParser';
+import { Algebra } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
+import { SimpleSparqlUpdateBodyParser } from '../../../../src/ldp/http/SimpleSparqlUpdateBodyParser';
+import { HttpRequest } from '../../../../src/server/HttpRequest';
+import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { namedNode, quad } from '@rdfjs/data-model';
 
 describe('A SimpleSparqlUpdateBodyParser', (): void => {
   const bodyParser = new SimpleSparqlUpdateBodyParser();

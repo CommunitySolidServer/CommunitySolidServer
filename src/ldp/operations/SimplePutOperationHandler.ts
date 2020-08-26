@@ -1,8 +1,8 @@
+import { ResourceStore } from '../../storage/ResourceStore';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 /**
  * Handles PUT {@link Operation}s.

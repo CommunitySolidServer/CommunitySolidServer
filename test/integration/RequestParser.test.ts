@@ -1,12 +1,12 @@
-import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
-import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
-import { HttpRequest } from '../../src/server/HttpRequest';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
+import streamifyArray from 'streamify-array';
+import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
 import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
 import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
-import streamifyArray from 'streamify-array';
+import { HttpRequest } from '../../src/server/HttpRequest';
+import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 
 describe('A SimpleRequestParser with simple input parsers', (): void => {
   const targetExtractor = new SimpleTargetExtractor();

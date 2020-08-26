@@ -1,14 +1,14 @@
-import { Authorizer } from '../../../src/authorization/Authorizer';
 import { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
-import { HttpRequest } from '../../../src/server/HttpRequest';
-import { HttpResponse } from '../../../src/server/HttpResponse';
+import { Authorizer } from '../../../src/authorization/Authorizer';
+import { AuthenticatedLdpHandler, AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
+import { RequestParser } from '../../../src/ldp/http/RequestParser';
+import { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import { Operation } from '../../../src/ldp/operations/Operation';
 import { OperationHandler } from '../../../src/ldp/operations/OperationHandler';
 import { PermissionsExtractor } from '../../../src/ldp/permissions/PermissionsExtractor';
-import { RequestParser } from '../../../src/ldp/http/RequestParser';
-import { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
+import { HttpRequest } from '../../../src/server/HttpRequest';
+import { HttpResponse } from '../../../src/server/HttpResponse';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
-import { AuthenticatedLdpHandler, AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
 
 describe('An AuthenticatedLdpHandler', (): void => {
   let args: AuthenticatedLdpHandlerArgs;

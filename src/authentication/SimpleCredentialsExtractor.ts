@@ -1,6 +1,6 @@
+import { HttpRequest } from '../server/HttpRequest';
 import { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
-import { HttpRequest } from '../server/HttpRequest';
 
 /**
  * Credentials extractor which simply interprets the contents of the Authorization header as a webID.

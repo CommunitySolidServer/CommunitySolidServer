@@ -1,6 +1,6 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { SimplePutOperationHandler } from '../../../../src/ldp/operations/SimplePutOperationHandler';
+import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimplePutOperationHandler', (): void => {

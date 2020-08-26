@@ -1,23 +1,23 @@
-import arrayifyStream from 'arrayify-stream';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { contentType as getContentTypeFromExtension } from 'mime-types';
-import { InteractionController } from '../util/InteractionController';
-import { MetadataController } from '../util/MetadataController';
-import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
-import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
+import { contentType as getContentTypeFromExtension } from 'mime-types';
+import { Quad } from 'rdf-js';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ResourceStore } from './ResourceStore';
-import { RuntimeConfig } from '../init/RuntimeConfig';
-import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
+import { InteractionController } from '../util/InteractionController';
+import { MetadataController } from '../util/MetadataController';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { ResourceStore } from './ResourceStore';
 
 const { extname, join: joinPath, normalize: normalizePath } = posix;
 
