@@ -14,6 +14,7 @@ import {
   Representation,
   RepresentationConvertingStore,
   ResourceStore,
+  RuntimeConfig,
   ServerConfig,
   SimpleAclAuthorizer,
   SimpleBodyParser,
@@ -40,14 +41,14 @@ import {
 
 export class DefaultServerConfig implements ServerConfig {
   public base: string;
-  public port: number;
   public store: ResourceStore;
   public aclManager: AclManager;
+  public runtimeConfig: RuntimeConfig;
 
-  public constructor(port: number) {
-    this.port = port;
-    this.base = `http://localhost:${port}/`;
-    this.store = new SimpleResourceStore(this.base);
+  public constructor() {
+    this.base = `http://localhost:3000/`;
+    this.runtimeConfig = new RuntimeConfig();
+    this.store = new SimpleResourceStore(this.runtimeConfig);
     this.aclManager = new SimpleExtensionAclManager();
   }
 
@@ -117,7 +118,7 @@ export class DefaultServerConfig implements ServerConfig {
     const patchingStore = new PatchingStore(convertingStore, patcher);
 
     // Const aclManager = new SimpleExtensionAclManager();
-    const containerManager = new UrlContainerManager(this.base);
+    const containerManager = new UrlContainerManager(this.runtimeConfig);
     const authorizer = new SimpleAclAuthorizer(this.aclManager, containerManager, patchingStore);
 
     const operationHandler = new CompositeAsyncHandler([

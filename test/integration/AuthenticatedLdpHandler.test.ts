@@ -8,7 +8,7 @@ import * as url from 'url';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
-    const handler = new SimpleTestConfig(3000).getHandler();
+    const handler = new SimpleTestConfig().getHandler();
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<
     void
@@ -62,7 +62,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const handler = new SimpleHandlersTestConfig(3000).getHandler();
+    const handler = new SimpleHandlersTestConfig().getHandler();
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
@@ -131,7 +131,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PUT handlers', (): void => {
-    const handler = new SimpleHandlersTestConfig(3000).getHandler();
+    const handler = new SimpleHandlersTestConfig().getHandler();
 
     it('should overwrite the content on PUT request.', async(): Promise<void> => {
       // POST

@@ -4,6 +4,7 @@ import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { Readable } from 'stream';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
 import streamifyArray from 'streamify-array';
 
@@ -15,7 +16,7 @@ describe('A SimpleResourceStore', (): void => {
   const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
-    store = new SimpleResourceStore(base);
+    store = new SimpleResourceStore(new RuntimeConfig({ base }));
 
     representation = {
       data: streamifyArray([ dataString ]),

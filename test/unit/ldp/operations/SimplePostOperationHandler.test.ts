@@ -18,10 +18,6 @@ describe('A SimplePostOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
-  it('errors if no body is present.', async(): Promise<void> => {
-    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
-  });
-
   it('adds the given representation to the store and returns the new identifier.', async(): Promise<void> => {
     await expect(handler.handle({ method: 'POST', body: { dataType: 'test' }} as Operation))
       .resolves.toEqual({ identifier: { path: 'newPath' }});
