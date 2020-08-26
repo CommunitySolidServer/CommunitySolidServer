@@ -1,7 +1,7 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
+import { SimplePostOperationHandler } from '../../../../src/ldp/operations/SimplePostOperationHandler';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { SimplePostOperationHandler } from '../../../../src/ldp/operations/SimplePostOperationHandler';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimplePostOperationHandler', (): void => {

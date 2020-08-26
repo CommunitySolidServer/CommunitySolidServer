@@ -1,5 +1,5 @@
-import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.

@@ -1,6 +1,6 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { SimplePatchOperationHandler } from '../../../../src/ldp/operations/SimplePatchOperationHandler';
+import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimplePatchOperationHandler', (): void => {

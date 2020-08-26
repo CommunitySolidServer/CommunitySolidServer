@@ -1,8 +1,8 @@
-import { BinaryRepresentation } from '../representation/BinaryRepresentation';
-import { BodyParser } from './BodyParser';
-import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpRequest } from '../../server/HttpRequest';
+import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
+import { BinaryRepresentation } from '../representation/BinaryRepresentation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
+import { BodyParser } from './BodyParser';
 
 /**
  * Converts incoming {@link HttpRequest} to a Representation without any further parsing.

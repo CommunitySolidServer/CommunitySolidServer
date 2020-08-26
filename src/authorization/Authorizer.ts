@@ -1,7 +1,7 @@
-import { AsyncHandler } from '../util/AsyncHandler';
 import { Credentials } from '../authentication/Credentials';
 import { PermissionSet } from '../ldp/permissions/PermissionSet';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { AsyncHandler } from '../util/AsyncHandler';
 
 /**
  * Verifies if the given credentials have access to the given permissions on the given resource.

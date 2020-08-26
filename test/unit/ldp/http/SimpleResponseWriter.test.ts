@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
-import { Quad } from 'rdf-js';
-import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
-import { SimpleResponseWriter } from '../../../../src/ldp/http/SimpleResponseWriter';
-import streamifyArray from 'streamify-array';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { createResponse, MockResponse } from 'node-mocks-http';
+import { Quad } from 'rdf-js';
+import streamifyArray from 'streamify-array';
+import { SimpleResponseWriter } from '../../../../src/ldp/http/SimpleResponseWriter';
+import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
 import { DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
+import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimpleResponseWriter', (): void => {
   const writer = new SimpleResponseWriter();

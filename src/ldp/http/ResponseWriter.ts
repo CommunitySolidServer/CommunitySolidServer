@@ -1,5 +1,5 @@
-import { AsyncHandler } from '../../util/AsyncHandler';
 import { HttpResponse } from '../../server/HttpResponse';
+import { AsyncHandler } from '../../util/AsyncHandler';
 import { ResponseDescription } from '../operations/ResponseDescription';
 
 /**

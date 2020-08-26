@@ -1,12 +1,12 @@
 import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
-import { ensureTrailingSlash } from '../util/Util';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { DATA_TYPE_BINARY } from '../util/ContentTypes';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { ensureTrailingSlash } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
-import { RuntimeConfig } from '../init/RuntimeConfig';
-import streamifyArray from 'streamify-array';
 
 /**
  * Resource store storing its data in an in-memory map.

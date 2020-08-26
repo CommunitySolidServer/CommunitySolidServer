@@ -7,10 +7,22 @@ module.exports = {
   },
   plugins: [
     'eslint-plugin-tsdoc',
+    'eslint-plugin-import',
+    'eslint-plugin-unused-imports'
   ],
   extends: [
     'es/node',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript'
   ],
+  settings: {
+    'import/resolver': {
+      'typescript': {
+        'alwaysTryTypes': true // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/rdf-js`
+      },
+    }
+  },
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-unnecessary-condition': 'off', // problems with optional parameters
@@ -24,5 +36,15 @@ module.exports = {
     'padding-line-between-statements': 'off',
     'tsdoc/syntax': 'error',
     'prefer-named-capture-group': 'off',
+
+    // Import
+    'sort-imports': 'off', // Disabled in favor of eslint-plugin-import
+    'import/order': ['error', {
+      alphabetize: {
+        order: 'asc',
+        caseInsensitive: true
+      }
+    }],
+    'unused-imports/no-unused-imports-ts': 'error',
   },
 };
