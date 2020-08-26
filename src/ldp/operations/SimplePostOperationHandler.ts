@@ -26,10 +26,7 @@ export class SimplePostOperationHandler extends OperationHandler {
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    if (!input.body) {
-      throw new UnsupportedHttpError('POST operations require a body.');
-    }
-    const identifier = await this.store.addResource(input.target, input.body);
+    const identifier = await this.store.addResource(input.target, input.body!);
     return { identifier };
   }
 }

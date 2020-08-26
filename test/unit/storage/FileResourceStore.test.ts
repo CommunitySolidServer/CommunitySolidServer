@@ -4,10 +4,10 @@ import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { DataFactory } from 'n3';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
 import { InteractionController } from '../../../src/util/InteractionController';
-import { join as joinPath } from 'path';
 import { MetadataController } from '../../../src/util/MetadataController';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { posix } from 'path';
 import { Readable } from 'stream';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
@@ -18,6 +18,8 @@ import fs, { promises as fsPromises, Stats, WriteStream } from 'fs';
 import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
 import { literal, namedNode, quad as quadRDF, triple } from '@rdfjs/data-model';
+
+const { join: joinPath } = posix;
 
 const base = 'http://test.com/';
 const root = '/Users/default/home/public/';

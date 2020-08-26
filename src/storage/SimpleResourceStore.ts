@@ -28,7 +28,7 @@ export class SimpleResourceStore implements ResourceStore {
       '/': {
         dataType: DATA_TYPE_BINARY,
         data: streamifyArray([]),
-        metadata: { raw: [], profiles: []},
+        metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
       },
     };
   }

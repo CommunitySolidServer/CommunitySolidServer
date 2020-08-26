@@ -4,6 +4,7 @@ import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { MetadataController } from '../util/MetadataController';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { posix } from 'path';
 import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
 import { Representation } from '../ldp/representation/Representation';
@@ -15,7 +16,7 @@ import streamifyArray from 'streamify-array';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
-import { extname, join as joinPath } from 'path';
+const { extname, join: joinPath } = posix;
 
 /**
  * Resource store storing its data in the file system backend.
