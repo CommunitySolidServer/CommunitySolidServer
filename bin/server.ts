@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { Setup } from '../src/init/Setup';
 import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
@@ -12,6 +11,8 @@ import {
   QuadToTurtleConverter,
   Representation,
   RepresentationConvertingStore,
+  RuntimeConfig,
+  Setup,
   SimpleAclAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
@@ -36,19 +37,17 @@ import {
 const { argv } = yargs
   .usage('node ./bin/server.js [args]')
   .options({
-    port: { type: 'number', alias: 'p', default: 3000 },
+    port: { type: 'number', alias: 'p' },
   })
   .help();
 
-const { port } = argv;
-
-const base = `http://localhost:${port}/`;
-
 // This is instead of the dependency injection that still needs to be added
-const bodyParser = new CompositeAsyncHandler<
-HttpRequest,
-Representation | undefined
->([ new SimpleSparqlUpdateBodyParser(), new SimpleBodyParser() ]);
+const runtimeConfig = new RuntimeConfig();
+
+const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
+  new SimpleSparqlUpdateBodyParser(),
+  new SimpleBodyParser(),
+]);
 const requestParser = new SimpleRequestParser({
   targetExtractor: new SimpleTargetExtractor(),
   preferenceParser: new AcceptPreferenceParser(),
@@ -62,7 +61,7 @@ const permissionsExtractor = new CompositeAsyncHandler([
 ]);
 
 // Will have to see how to best handle this
-const store = new SimpleResourceStore(base);
+const store = new SimpleResourceStore(runtimeConfig);
 const converter = new CompositeAsyncHandler([
   new TurtleToQuadConverter(),
   new QuadToTurtleConverter(),
@@ -73,12 +72,8 @@ const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
 const patchingStore = new PatchingStore(convertingStore, patcher);
 
 const aclManager = new SimpleExtensionAclManager();
-const containerManager = new UrlContainerManager(base);
-const authorizer = new SimpleAclAuthorizer(
-  aclManager,
-  containerManager,
-  patchingStore,
-);
+const containerManager = new UrlContainerManager(runtimeConfig);
+const authorizer = new SimpleAclAuthorizer(aclManager, containerManager, patchingStore);
 
 const operationHandler = new CompositeAsyncHandler([
   new SimpleDeleteOperationHandler(patchingStore),
@@ -101,13 +96,12 @@ const httpHandler = new AuthenticatedLdpHandler({
 
 const httpServer = new ExpressHttpServer(httpHandler);
 
-const setup = new Setup(httpServer, store, aclManager);
-setup
-  .setup(port, base)
-  .then((): void => {
-    process.stdout.write(`Running at ${base}\n`);
-  })
-  .catch((error): void => {
-    process.stderr.write(`${error}\n`);
-    process.exit(1);
-  });
+const setup = new Setup(httpServer, store, aclManager, runtimeConfig);
+
+runtimeConfig.reset({ port: argv.port });
+setup.setup().then((): void => {
+  process.stdout.write(`Running at ${runtimeConfig.base}\n`);
+}).catch((error): void => {
+  process.stderr.write(`${error}\n`);
+  process.exit(1);
+});

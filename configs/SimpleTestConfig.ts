@@ -11,6 +11,7 @@ import {
   Operation,
   ResourceStore,
   ResponseDescription,
+  RuntimeConfig,
   ServerConfig,
   SimpleAuthorizer,
   SimpleBodyParser,
@@ -29,14 +30,12 @@ import {
 
 export class SimpleTestConfig implements ServerConfig {
   public base: string;
-  public port: number;
   public store: ResourceStore;
   public aclManager: AclManager;
 
-  public constructor(port: number) {
-    this.port = port;
-    this.base = `http://localhost:${port}/`;
-    this.store = new SimpleResourceStore('http://test.com/');
+  public constructor() {
+    this.base = `http://test.com/`;
+    this.store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     this.aclManager = new SimpleExtensionAclManager();
   }
 
