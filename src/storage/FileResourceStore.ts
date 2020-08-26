@@ -59,6 +59,7 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
+    console.log('addResource')
     if (representation.dataType !== DATA_TYPE_BINARY) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
@@ -117,6 +118,7 @@ export class FileResourceStore implements ResourceStore {
    * @returns The corresponding Representation.
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
+    console.log('getRepresentation')
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
     const path = joinPath(this.rootFilepath, this.parseIdentifier(identifier));
     let stats;
