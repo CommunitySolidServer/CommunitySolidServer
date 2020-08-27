@@ -5,18 +5,16 @@ import {
   AclManager,
   AuthenticatedLdpHandler,
   BasePermissionsExtractor,
-  BodyParser,
   CompositeAsyncHandler,
   ExpressHttpServer,
+  FileResourceStore,
   HttpHandler,
-  HttpRequest,
+  InteractionController,
+  MetadataController,
   Operation,
-  PatchingStore,
-  QuadToTurtleConverter,
-  Representation,
-  RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
+  RuntimeConfig,
   ServerConfig,
   SimpleAuthorizer,
   SimpleBodyParser,
@@ -24,31 +22,29 @@ import {
   SimpleDeleteOperationHandler,
   SimpleExtensionAclManager,
   SimpleGetOperationHandler,
-  SimplePatchOperationHandler,
   SimplePostOperationHandler,
   SimpleRequestParser,
-  SimpleResourceStore,
   SimpleResponseWriter,
-  SimpleSparqlUpdateBodyParser,
-  SimpleSparqlUpdatePatchHandler,
   SimpleTargetExtractor,
-  SingleThreadedResourceLocker,
-  SparqlPatchPermissionsExtractor,
-  TurtleToQuadConverter,
 } from '..';
 
 // This is the configuration from bin/server.ts
 
-export class SimplePatchTestConfig implements ServerConfig {
+export class FileResourceStoreConfig implements ServerConfig {
   public base: string;
-  public port: number;
   public store: ResourceStore;
   public aclManager: AclManager;
 
-  public constructor(port: number) {
-    this.port = port;
-    this.base = `http://localhost:${port}/`;
-    this.store = new SimpleResourceStore('http://test.com/');
+  public constructor() {
+    this.base = `http://test.com/`;
+    this.store = new FileResourceStore(
+      new RuntimeConfig({
+        base: 'http://test.com',
+        rootFilepath: 'uploads/',
+      }),
+      new InteractionController(),
+      new MetadataController(),
+    );
     this.aclManager = new SimpleExtensionAclManager();
   }
 
@@ -89,38 +85,23 @@ export class SimplePatchTestConfig implements ServerConfig {
   }
 
   public getHandler(): HttpHandler {
-    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-      new SimpleSparqlUpdateBodyParser(),
-      new SimpleBodyParser(),
-    ]);
     const requestParser = new SimpleRequestParser({
       targetExtractor: new SimpleTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
-      bodyParser,
+      bodyParser: new SimpleBodyParser(),
     });
 
     const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
-      new SparqlPatchPermissionsExtractor(),
-    ]);
+    const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
-    const store = new SimpleResourceStore('http://test.com/');
-    const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
-    ]);
-    const convertingStore = new RepresentationConvertingStore(store, converter);
-    const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
-    const patchingStore = new PatchingStore(convertingStore, patcher);
-
-    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(patchingStore),
-      new SimplePostOperationHandler(patchingStore),
-      new SimpleDeleteOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
+    const operationHandler = new CompositeAsyncHandler<
+    Operation,
+    ResponseDescription
+    >([
+      new SimpleGetOperationHandler(this.store),
+      new SimplePostOperationHandler(this.store),
+      new SimpleDeleteOperationHandler(this.store),
     ]);
 
     const responseWriter = new SimpleResponseWriter();

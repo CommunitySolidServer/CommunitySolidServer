@@ -29,10 +29,6 @@ describe('A SimpleRequestParser', (): void => {
     await expect(requestParser.canHandle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
   });
 
-  it('errors if called without method.', async(): Promise<void> => {
-    await expect(requestParser.handle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
-  });
-
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {
     await expect(requestParser.handle({ url: 'url', method: 'GET' } as any)).resolves.toEqual({
       method: 'GET',

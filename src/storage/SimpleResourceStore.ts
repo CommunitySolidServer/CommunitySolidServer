@@ -5,6 +5,7 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import streamifyArray from 'streamify-array';
 
 /**
@@ -13,21 +14,22 @@ import streamifyArray from 'streamify-array';
  */
 export class SimpleResourceStore implements ResourceStore {
   private readonly store: { [id: string]: Representation };
-  private readonly base: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private index = 0;
 
   /**
-   * @param base - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative path.
+   * @param runtimeConfig - Config containing base that will be stripped of all incoming URIs
+   *                        and added to all outgoing ones to find the relative path.
    */
-  public constructor(base: string) {
-    this.base = base;
+  public constructor(runtimeConfig: RuntimeConfig) {
+    this.runtimeConfig = runtimeConfig;
 
     this.store = {
       // Default root entry (what you get when the identifier is equal to the base)
       '': {
         dataType: DATA_TYPE_BINARY,
         data: streamifyArray([]),
-        metadata: { raw: [], profiles: []},
+        metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
       },
     };
   }
@@ -102,8 +104,8 @@ export class SimpleResourceStore implements ResourceStore {
    * @returns A string representing the relative path.
    */
   private parseIdentifier(identifier: ResourceIdentifier): string {
-    const path = identifier.path.slice(this.base.length);
-    if (!identifier.path.startsWith(this.base)) {
+    const path = identifier.path.slice(this.runtimeConfig.base.length);
+    if (!identifier.path.startsWith(this.runtimeConfig.base)) {
       throw new NotFoundHttpError();
     }
     return path;

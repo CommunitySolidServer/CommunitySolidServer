@@ -5,18 +5,21 @@ import {
   AclManager,
   AuthenticatedLdpHandler,
   BasePermissionsExtractor,
+  BodyParser,
   CompositeAsyncHandler,
   ExpressHttpServer,
   HttpHandler,
   HttpRequest,
+  Operation,
   PatchingStore,
   QuadToTurtleConverter,
   Representation,
   RepresentationConvertingStore,
   ResourceStore,
+  ResponseDescription,
   RuntimeConfig,
   ServerConfig,
-  SimpleAclAuthorizer,
+  SimpleAuthorizer,
   SimpleBodyParser,
   SimpleCredentialsExtractor,
   SimpleDeleteOperationHandler,
@@ -34,21 +37,18 @@ import {
   SingleThreadedResourceLocker,
   SparqlPatchPermissionsExtractor,
   TurtleToQuadConverter,
-  UrlContainerManager,
 } from '..';
 
 // This is the configuration from bin/server.ts
 
-export class DefaultServerConfig implements ServerConfig {
+export class SimpleHandlersTestConfig implements ServerConfig {
   public base: string;
   public store: ResourceStore;
   public aclManager: AclManager;
-  public runtimeConfig: RuntimeConfig;
 
   public constructor() {
-    this.base = `http://localhost:3000/`;
-    this.runtimeConfig = new RuntimeConfig();
-    this.store = new SimpleResourceStore(this.runtimeConfig);
+    this.base = `http://test.com/`;
+    this.store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     this.aclManager = new SimpleExtensionAclManager();
   }
 
@@ -89,8 +89,7 @@ export class DefaultServerConfig implements ServerConfig {
   }
 
   public getHandler(): HttpHandler {
-    // This is instead of the dependency injection that still needs to be added
-    const bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
+    const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
       new SimpleSparqlUpdateBodyParser(),
       new SimpleBodyParser(),
     ]);
@@ -105,33 +104,28 @@ export class DefaultServerConfig implements ServerConfig {
       new BasePermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
+    const authorizer = new SimpleAuthorizer();
 
-    // Will have to see how to best handle this
-    // const store = new SimpleResourceStore(this.base);
     const converter = new CompositeAsyncHandler([
-      new TurtleToQuadConverter(),
       new QuadToTurtleConverter(),
+      new TurtleToQuadConverter(),
     ]);
     const convertingStore = new RepresentationConvertingStore(this.store, converter);
     const locker = new SingleThreadedResourceLocker();
     const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
     const patchingStore = new PatchingStore(convertingStore, patcher);
 
-    // Const aclManager = new SimpleExtensionAclManager();
-    const containerManager = new UrlContainerManager(this.runtimeConfig);
-    const authorizer = new SimpleAclAuthorizer(this.aclManager, containerManager, patchingStore);
-
-    const operationHandler = new CompositeAsyncHandler([
-      new SimpleDeleteOperationHandler(patchingStore),
+    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
       new SimplePostOperationHandler(patchingStore),
+      new SimpleDeleteOperationHandler(patchingStore),
+      new SimplePatchOperationHandler(patchingStore),
       new SimplePutOperationHandler(patchingStore),
     ]);
 
     const responseWriter = new SimpleResponseWriter();
 
-    const httpHandler = new AuthenticatedLdpHandler({
+    const handler = new AuthenticatedLdpHandler({
       requestParser,
       credentialsExtractor,
       permissionsExtractor,
@@ -140,6 +134,6 @@ export class DefaultServerConfig implements ServerConfig {
       responseWriter,
     });
 
-    return httpHandler;
+    return handler;
   }
 }

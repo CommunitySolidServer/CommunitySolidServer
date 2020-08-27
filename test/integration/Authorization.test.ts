@@ -12,6 +12,7 @@ import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtle
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 import { ResourceStore } from '../../src/storage/ResourceStore';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
+import { RuntimeConfig } from '../../src/init/RuntimeConfig';
 import { SimpleAclAuthorizer } from '../../src/authorization/SimpleAclAuthorizer';
 import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
 import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
@@ -80,7 +81,7 @@ describe('A server with authorization', (): void => {
     bodyParser,
   });
 
-  const store = new SimpleResourceStore('http://test.com/');
+  const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
   const converter = new CompositeAsyncHandler([
     new QuadToTurtleConverter(),
     new TurtleToQuadConverter(),
@@ -91,7 +92,7 @@ describe('A server with authorization', (): void => {
   const permissionsExtractor = new BasePermissionsExtractor();
   const authorizer = new SimpleAclAuthorizer(
     new SimpleExtensionAclManager(),
-    new UrlContainerManager('http://test.com/'),
+    new UrlContainerManager(new RuntimeConfig({ base: 'http://test.com/' })),
     convertingStore,
   );
 

@@ -11,6 +11,7 @@ export * from './src/authorization/SimpleAuthorizer';
 export * from './src/authorization/SimpleExtensionAclManager';
 
 // Init
+export * from './src/init/RuntimeConfig';
 export * from './src/init/Setup';
 
 // LDP/HTTP
@@ -46,7 +47,6 @@ export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
 export * from './src/ldp/representation/BinaryRepresentation';
-export * from './src/ldp/representation/NamedRepresentation';
 export * from './src/ldp/representation/QuadRepresentation';
 export * from './src/ldp/representation/Representation';
 export * from './src/ldp/representation/RepresentationMetadata';
@@ -76,6 +76,7 @@ export * from './src/storage/patch/SimpleSparqlUpdatePatchHandler';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
+export * from './src/storage/FileResourceStore';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
@@ -100,7 +101,8 @@ export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 export * from './src/util/AcceptParser';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
-export * from './src/util/TypedReadable';
+export * from './src/util/InteractionController';
+export * from './src/util/MetadataController';
 export * from './src/util/Util';
 
 // Config
