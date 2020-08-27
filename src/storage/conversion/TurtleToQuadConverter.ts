@@ -1,10 +1,10 @@
-import { checkRequest } from './ConversionUtil';
 import { PassThrough } from 'stream';
+import { StreamParser } from 'n3';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { StreamParser } from 'n3';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
 /**

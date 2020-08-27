@@ -1,8 +1,8 @@
 import { BodyParser } from '../../../../src/ldp/http/BodyParser';
 import { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
 import { SimpleRequestParser } from '../../../../src/ldp/http/SimpleRequestParser';
-import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 import { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
+import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A SimpleRequestParser', (): void => {
   let targetExtractor: TargetExtractor;
@@ -27,10 +27,6 @@ describe('A SimpleRequestParser', (): void => {
 
   it('rejects input with no method.', async(): Promise<void> => {
     await expect(requestParser.canHandle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
-  });
-
-  it('errors if called without method.', async(): Promise<void> => {
-    await expect(requestParser.handle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
   });
 
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {

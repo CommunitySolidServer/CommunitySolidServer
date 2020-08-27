@@ -10,6 +10,10 @@ export * from './src/authorization/SimpleAclAuthorizer';
 export * from './src/authorization/SimpleAuthorizer';
 export * from './src/authorization/SimpleExtensionAclManager';
 
+// Init
+export * from './src/init/RuntimeConfig';
+export * from './src/init/Setup';
+
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
 export * from './src/ldp/http/BodyParser';
@@ -43,7 +47,6 @@ export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
 export * from './src/ldp/representation/BinaryRepresentation';
-export * from './src/ldp/representation/NamedRepresentation';
 export * from './src/ldp/representation/QuadRepresentation';
 export * from './src/ldp/representation/Representation';
 export * from './src/ldp/representation/RepresentationMetadata';
@@ -97,5 +100,4 @@ export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 export * from './src/util/AcceptParser';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
-export * from './src/util/TypedReadable';
 export * from './src/util/Util';

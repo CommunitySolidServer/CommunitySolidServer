@@ -1,9 +1,9 @@
-import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
-import { HttpRequest } from '../../../../src/server/HttpRequest';
 import { Readable } from 'stream';
-import { SimpleBodyParser } from '../../../../src/ldp/http/SimpleBodyParser';
+import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
+import { SimpleBodyParser } from '../../../../src/ldp/http/SimpleBodyParser';
+import { HttpRequest } from '../../../../src/server/HttpRequest';
+import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
 import 'jest-rdf';
 
 describe('A SimpleBodyparser', (): void => {

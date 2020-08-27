@@ -1,7 +1,7 @@
-import { AsyncHandler } from '../../util/AsyncHandler';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { AsyncHandler } from '../../util/AsyncHandler';
 
 export interface RepresentationConverterArgs {
   /**

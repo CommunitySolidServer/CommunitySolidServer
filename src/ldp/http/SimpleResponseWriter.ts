@@ -1,9 +1,9 @@
+import { HttpResponse } from '../../server/HttpResponse';
 import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
-import { HttpResponse } from '../../server/HttpResponse';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { ResponseDescription } from '../operations/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 /**
  * Writes to an {@link HttpResponse} based on the incoming {@link ResponseDescription} or error.

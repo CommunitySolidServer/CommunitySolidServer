@@ -1,8 +1,8 @@
+import { ResourceStore } from '../../storage/ResourceStore';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 /**
  * Handles POST {@link Operation}s.
@@ -26,10 +26,7 @@ export class SimplePostOperationHandler extends OperationHandler {
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    if (!input.body) {
-      throw new UnsupportedHttpError('POST operations require a body.');
-    }
-    const identifier = await this.store.addResource(input.target, input.body);
+    const identifier = await this.store.addResource(input.target, input.body!);
     return { identifier };
   }
 }

@@ -1,6 +1,6 @@
-import { PassthroughStore } from '../../../src/storage/PassthroughStore';
 import { Patch } from '../../../src/ldp/http/Patch';
 import { Representation } from '../../../src/ldp/representation/Representation';
+import { PassthroughStore } from '../../../src/storage/PassthroughStore';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
 
 describe('A PassthroughStore', (): void => {

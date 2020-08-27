@@ -1,7 +1,7 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
+import { SimplePostOperationHandler } from '../../../../src/ldp/operations/SimplePostOperationHandler';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { SimplePostOperationHandler } from '../../../../src/ldp/operations/SimplePostOperationHandler';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimplePostOperationHandler', (): void => {
@@ -16,10 +16,6 @@ describe('A SimplePostOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'GET', body: { dataType: 'test' }} as Operation))
       .rejects.toThrow(UnsupportedHttpError);
     await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
-  });
-
-  it('errors if no body is present.', async(): Promise<void> => {
-    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
   it('adds the given representation to the store and returns the new identifier.', async(): Promise<void> => {

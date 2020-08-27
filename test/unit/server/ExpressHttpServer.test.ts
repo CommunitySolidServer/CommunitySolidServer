@@ -1,9 +1,9 @@
+import { Server } from 'http';
+import request from 'supertest';
 import { ExpressHttpServer } from '../../../src/server/ExpressHttpServer';
 import { HttpHandler } from '../../../src/server/HttpHandler';
 import { HttpRequest } from '../../../src/server/HttpRequest';
 import { HttpResponse } from '../../../src/server/HttpResponse';
-import request from 'supertest';
-import { Server } from 'http';
 
 const handle = async(input: { request: HttpRequest; response: HttpResponse }): Promise<void> => {
   input.response.writeHead(200);

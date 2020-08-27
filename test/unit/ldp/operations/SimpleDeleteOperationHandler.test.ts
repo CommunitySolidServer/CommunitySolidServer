@@ -1,6 +1,6 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { SimpleDeleteOperationHandler } from '../../../../src/ldp/operations/SimpleDeleteOperationHandler';
+import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimpleDeleteOperationHandler', (): void => {

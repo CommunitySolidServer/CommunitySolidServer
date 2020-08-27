@@ -1,6 +1,6 @@
-import { BodyParser } from './BodyParser';
 import { HttpRequest } from '../../server/HttpRequest';
 import { Operation } from '../operations/Operation';
+import { BodyParser } from './BodyParser';
 import { PreferenceParser } from './PreferenceParser';
 import { RequestParser } from './RequestParser';
 import { TargetExtractor } from './TargetExtractor';
@@ -42,9 +42,6 @@ export class SimpleRequestParser extends RequestParser {
     const preferences = await this.preferenceParser.handleSafe(input);
     const body = await this.bodyParser.handleSafe(input);
 
-    if (!input.method) {
-      throw new Error('Missing method.');
-    }
-    return { method: input.method, target, preferences, body };
+    return { method: input.method!, target, preferences, body };
   }
 }

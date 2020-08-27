@@ -1,13 +1,13 @@
-import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'stream';
+import { namedNode, triple } from '@rdfjs/data-model';
+import arrayifyStream from 'arrayify-stream';
+import streamifyArray from 'streamify-array';
 import { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
-import streamifyArray from 'streamify-array';
 import { TurtleToQuadConverter } from '../../../../src/storage/conversion/TurtleToQuadConverter';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
-import { namedNode, triple } from '@rdfjs/data-model';
+import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A TurtleToQuadConverter', (): void => {
   const converter = new TurtleToQuadConverter();

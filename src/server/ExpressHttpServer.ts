@@ -1,7 +1,7 @@
+import { Server } from 'http';
 import cors from 'cors';
 import express from 'express';
 import { HttpHandler } from './HttpHandler';
-import { Server } from 'http';
 
 export class ExpressHttpServer {
   private readonly handler: HttpHandler;
