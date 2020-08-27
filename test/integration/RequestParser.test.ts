@@ -38,7 +38,6 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
         dataType: DATA_TYPE_BINARY,
         metadata: {
           contentType: 'text/turtle',
-          profiles: [],
           raw: [],
         },
       },
