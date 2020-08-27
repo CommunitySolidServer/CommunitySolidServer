@@ -23,6 +23,7 @@ import {
   SimpleExtensionAclManager,
   SimpleGetOperationHandler,
   SimplePostOperationHandler,
+  SimplePutOperationHandler,
   SimpleRequestParser,
   SimpleResponseWriter,
   SimpleTargetExtractor,
@@ -102,6 +103,7 @@ export class FileResourceStoreConfig implements ServerConfig {
       new SimpleGetOperationHandler(this.store),
       new SimplePostOperationHandler(this.store),
       new SimpleDeleteOperationHandler(this.store),
+      new SimplePutOperationHandler(this.store),
     ]);
 
     const responseWriter = new SimpleResponseWriter();
