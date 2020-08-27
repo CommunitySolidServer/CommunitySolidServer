@@ -205,7 +205,8 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    (fs.createReadStream as jest.Mock).mockImplementationOnce((): any => new Error('Metadata file does not exist.'));
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(new Readable()
+      .destroy(new Error('Metadata file does not exist.')));
 
     // Tests
     await store.setRepresentation({ path: `${base}file.txt` }, representation);
@@ -488,7 +489,8 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    (fs.createReadStream as jest.Mock).mockImplementationOnce((): any => new Error('Metadata file does not exist.'));
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(new Readable()
+      .destroy(new Error('Metadata file does not exist.')));
 
     const result = await store.getRepresentation({ path: `${base}.htaccess` });
     expect(result).toEqual({

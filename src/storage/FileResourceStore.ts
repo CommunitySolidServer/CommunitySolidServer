@@ -249,13 +249,19 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-    let rawMetadata: Quad[] = [];
-    try {
+
+    const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
-    } catch (_) {
-      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-    }
+      readMetadataStream.on('error', (): void => {
+        // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+        resolve([]);
+      })
+        .on('open', async(): Promise<void> => {
+          resolve(await this.metadataController.generateQuadsFromReadable(readMetadataStream));
+        });
+    });
+
+    const rawMetadata: Quad[] = await rawMetadataPromise;
     const metadata: RepresentationMetadata = {
       raw: rawMetadata,
       dateTime: stats.mtime,
