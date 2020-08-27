@@ -205,8 +205,15 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    (fs.createReadStream as jest.Mock).mockReturnValueOnce(new Readable()
-      .destroy(new Error('Metadata file does not exist.')));
+    const readable = streamifyArray([]);
+    readable.on('newListener', (event): void => {
+      if (event === 'open') {
+        setImmediate((): void => {
+          readable.emit('open');
+        });
+      }
+    });
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(readable);
 
     // Tests
     await store.setRepresentation({ path: `${base}file.txt` }, representation);
