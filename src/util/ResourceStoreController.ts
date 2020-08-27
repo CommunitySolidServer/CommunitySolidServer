@@ -3,7 +3,6 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { ConflictHttpError } from './errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from './errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from './errors/NotFoundHttpError';
-import { UnsupportedMediaTypeHttpError } from './errors/UnsupportedMediaTypeHttpError';
 import type { InteractionController } from './InteractionController';
 import { ensureTrailingSlash, trimTrailingSlashes } from './Util';
 
@@ -27,19 +26,15 @@ export interface SetBehaviour {
 export class ResourceStoreController {
   private readonly baseRequestURI: string;
   private readonly interactionController: InteractionController;
-  private readonly supportedDataTypes: Set<string>;
 
   /**
    * @param baseRequestURI - The base from the store. Will be stripped of all incoming URIs and added to all outgoing
    * ones to find the relative path.
    * @param interactionController - Instance of InteractionController to use.
-   * @param supportedDataTypes - All supported data types by the store.
    */
-  public constructor(baseRequestURI: string, interactionController: InteractionController,
-    supportedDataTypes: Set<string>) {
+  public constructor(baseRequestURI: string, interactionController: InteractionController) {
     this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
     this.interactionController = interactionController;
-    this.supportedDataTypes = supportedDataTypes;
   }
 
   /**
@@ -77,12 +72,6 @@ export class ResourceStoreController {
    * @param representation - Incoming representation.
    */
   public getBehaviourAddResource(container: ResourceIdentifier, representation: Representation): SetBehaviour {
-    // Throw an error if the data type is not supported by the store.
-    if (!this.supportedDataTypes.has(representation.dataType)) {
-      throw new UnsupportedMediaTypeHttpError(`This ResourceStore only supports
-       ${[ ...this.supportedDataTypes ].join(', ')} representations.`);
-    }
-
     // Get the path from the request URI, and the Slug and Link header values.
     const path = this.parseIdentifier(container);
     const { slug } = representation.metadata;
@@ -100,15 +89,9 @@ export class ResourceStoreController {
    * @param representation - Incoming representation.
    */
   public getBehaviourSetRepresentation(identifier: ResourceIdentifier, representation: Representation): SetBehaviour {
-    // Throw an error if the data type is not supported by the store.
-    if (!this.supportedDataTypes.has(representation.dataType)) {
-      throw new UnsupportedMediaTypeHttpError(`This ResourceStore only supports
-       ${[ ...this.supportedDataTypes ].join(', ')} representations.`);
-    }
-
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
+    const [ , path, slug ] = /^(.*\/)([^/]+\/?)$/u.exec(this.parseIdentifier(identifier)) ?? [];
     if ((typeof path !== 'string' || ensureTrailingSlash(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
