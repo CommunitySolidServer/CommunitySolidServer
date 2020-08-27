@@ -5,14 +5,21 @@ import { IncomingHttpHeaders } from 'http';
 import streamifyArray from 'streamify-array';
 import { createResponse, MockResponse } from 'node-mocks-http';
 
-export const call = async(handler: HttpHandler, requestUrl: URL, method: string,
-  headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {
+export const call = async(
+  handler: HttpHandler,
+  requestUrl: URL,
+  method: string,
+  headers: IncomingHttpHeaders,
+  data: string[],
+): Promise<MockResponse<any>> => {
   const request = streamifyArray(data) as HttpRequest;
   request.url = requestUrl.pathname;
   request.method = method;
   request.headers = headers;
   request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
+  const response: MockResponse<any> = createResponse({
+    eventEmitter: EventEmitter,
+  });
 
   const endPromise = new Promise((resolve): void => {
     response.on('end', (): void => {
@@ -27,16 +34,26 @@ export const call = async(handler: HttpHandler, requestUrl: URL, method: string,
   return response;
 };
 
-export const callFile = async(handler: HttpHandler, requestUrl: URL, method: string,
-  headers: IncomingHttpHeaders, data: Buffer): Promise<MockResponse<any>> => {
+export const callFile = async(
+  handler: HttpHandler,
+  requestUrl: URL,
+  method: string,
+  headers: IncomingHttpHeaders,
+  data?: Buffer,
+): Promise<MockResponse<any>> => {
   // Const request = streamifyArray(data) as HttpRequest;
 
-  const request = streamifyArray([ data ]) as HttpRequest;
+  const request = data ?
+    (streamifyArray([ data ]) as HttpRequest) :
+    streamifyArray([]) as HttpRequest;
+
   request.url = requestUrl.pathname;
   request.method = method;
   request.headers = headers;
   request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({ eventEmitter: EventEmitter });
+  const response: MockResponse<any> = createResponse({
+    eventEmitter: EventEmitter,
+  });
 
   const endPromise = new Promise((resolve): void => {
     response.on('end', (): void => {
