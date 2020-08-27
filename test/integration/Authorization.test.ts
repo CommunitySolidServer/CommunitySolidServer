@@ -83,8 +83,7 @@ describe('A server with authorization', (): void => {
   });
 
   const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
-    new InteractionController(),
-    new Set([ DATA_TYPE_BINARY ])));
+    new InteractionController()));
   const converter = new CompositeAsyncHandler([
     new QuadToTurtleConverter(),
     new TurtleToQuadConverter(),

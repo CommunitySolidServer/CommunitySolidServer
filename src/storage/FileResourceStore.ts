@@ -13,6 +13,7 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
 import { ResourceStoreController } from '../util/ResourceStoreController';
 import streamifyArray from 'streamify-array';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
@@ -52,6 +53,9 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
+    // Check if the representation has a valid dataType.
+    this.ensureValidDataType(representation);
+
     // Get the expected behaviour based on the incoming identifier and representation.
     const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourAddResource(container,
       representation);
@@ -136,6 +140,9 @@ export class FileResourceStore implements ResourceStore {
    * @param representation - New Representation.
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
+    // Check if the representation has a valid dataType.
+    this.ensureValidDataType(representation);
+
     // Get the expected behaviour based on the incoming identifier and representation.
     const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourSetRepresentation(identifier,
       representation);
@@ -165,6 +172,19 @@ export class FileResourceStore implements ResourceStore {
       throw new Error(`File ${path} is not part of the file storage at ${this.rootFilepath}.`);
     }
     return this.baseRequestURI + path.slice(this.rootFilepath.length);
+  }
+
+  /**
+   * Check if the representation has a valid dataType.
+   * @param representation - Incoming Representation.
+   *
+   * @throws {@link UnsupportedMediaTypeHttpError}
+   * If the incoming dataType does not match the store's supported dataType.
+   */
+  private ensureValidDataType(representation: Representation): void {
+    if (representation.dataType !== DATA_TYPE_BINARY) {
+      throw new UnsupportedMediaTypeHttpError('The FileResourceStore only supports binary representations.');
+    }
   }
 
   /**

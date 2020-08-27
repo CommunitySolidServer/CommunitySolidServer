@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
 import { InteractionController } from '../src/util/InteractionController';
 import { ResourceStoreController } from '../src/util/ResourceStoreController';
 import yargs from 'yargs';
@@ -65,9 +64,7 @@ const permissionsExtractor = new CompositeAsyncHandler([
 ]);
 
 // Will have to see how to best handle this
-const store = new SimpleResourceStore(new ResourceStoreController(base, new InteractionController(), new Set(
-  [ DATA_TYPE_BINARY ],
-)));
+const store = new SimpleResourceStore(new ResourceStoreController(base, new InteractionController()));
 const converter = new CompositeAsyncHandler([
   new TurtleToQuadConverter(),
   new QuadToTurtleConverter(),

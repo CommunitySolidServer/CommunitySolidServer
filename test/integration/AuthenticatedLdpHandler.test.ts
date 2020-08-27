@@ -4,7 +4,6 @@ import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissi
 import { BodyParser } from '../../src/ldp/http/BodyParser';
 import { call } from '../util/Util';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { InteractionController } from '../../src/util/InteractionController';
 import { MockResponse } from 'node-mocks-http';
@@ -48,8 +47,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
-      new InteractionController(),
-      new Set([ DATA_TYPE_BINARY ])));
+      new InteractionController()));
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(store),
       new SimplePostOperationHandler(store),
@@ -121,8 +119,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     const authorizer = new SimpleAuthorizer();
 
     const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
-      new InteractionController(),
-      new Set([ DATA_TYPE_BINARY ])));
+      new InteractionController()));
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),

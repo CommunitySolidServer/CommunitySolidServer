@@ -50,8 +50,7 @@ describe('A FileResourceStore', (): void => {
     jest.clearAllMocks();
 
     store = new FileResourceStore(base, root, new MetadataController(), new ResourceStoreController(base,
-      new InteractionController(),
-      new Set([ DATA_TYPE_BINARY ])));
+      new InteractionController()));
 
     representation = {
       data: streamifyArray([ rawData ]),

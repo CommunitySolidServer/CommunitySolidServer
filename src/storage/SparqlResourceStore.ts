@@ -1,8 +1,8 @@
 import arrayifyStream from 'arrayify-stream';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { ContainerManager } from './ContainerManager';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { Patch } from '../ldp/http/Patch';
 import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
 import { Representation } from '../ldp/representation/Representation';
@@ -10,11 +10,21 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
 import { ResourceStoreController } from '../util/ResourceStoreController';
 import streamifyArray from 'streamify-array';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { Util } from 'n3';
-import { AskQuery, ConstructQuery, Generator, GraphPattern, SparqlQuery, Update } from 'sparqljs';
+import {
+  AskQuery,
+  ConstructQuery,
+  Generator,
+  GraphPattern,
+  SelectQuery,
+  SparqlQuery,
+  Update,
+  Wildcard,
+} from 'sparqljs';
 import { CONTAINER_OBJECT, CONTAINS_PREDICATE, RESOURCE_OBJECT, TYPE_PREDICATE } from '../util/MetadataController';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { ensureTrailingSlash, readableToString, trimTrailingSlashes } from '../util/Util';
+import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import { fetch, Request } from 'cross-fetch';
 import { LINK_TYPE_LDPC, LINK_TYPE_LDPR } from '../util/LinkTypes';
 import { namedNode, quad, variable } from '@rdfjs/data-model';
@@ -28,17 +38,21 @@ export class SparqlResourceStore implements ResourceStore {
   private readonly baseRequestURI: string;
   private readonly sparqlEndpoint: string;
   private readonly resourceStoreController: ResourceStoreController;
+  private readonly containerManager: ContainerManager;
 
   /**
    * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
    * path.
    * @param sparqlEndpoint - URL of the SPARQL endpoint to use.
    * @param resourceStoreController - Instance of ResourceStoreController to use.
+   * @param containerManager - Instance of ContainerManager to use.
    */
-  public constructor(baseRequestURI: string, sparqlEndpoint: string, resourceStoreController: ResourceStoreController) {
+  public constructor(baseRequestURI: string, sparqlEndpoint: string, resourceStoreController: ResourceStoreController,
+    containerManager: ContainerManager) {
     this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
     this.sparqlEndpoint = sparqlEndpoint;
     this.resourceStoreController = resourceStoreController;
+    this.containerManager = containerManager;
   }
 
   /**
@@ -49,14 +63,16 @@ export class SparqlResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
+    // Check if the representation has a valid dataType.
+    this.ensureValidDataType(representation);
+
     // Get the expected behaviour based on the incoming identifier and representation.
     const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourAddResource(container,
       representation);
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    return this.handleCreation(path, newIdentifier, path.endsWith('/'), isContainer ?
-      undefined :
-      representation.data, representation.metadata.raw, path.endsWith('/'));
+    return this.handleCreation(path, newIdentifier, path.endsWith('/'), path.endsWith('/'), isContainer, representation
+      .data, representation.metadata.raw);
   }
 
   /**
@@ -71,7 +87,7 @@ export class SparqlResourceStore implements ResourceStore {
     const URI = identifier.path;
     const type = await this.getSparqlResourceType(URI);
     if (type === LINK_TYPE_LDPR) {
-      await this.deleteSparqlResource(URI);
+      await this.deleteSparqlDocument(URI);
     } else if (type === LINK_TYPE_LDPC) {
       await this.deleteSparqlContainer(URI);
     } else {
@@ -105,10 +121,16 @@ export class SparqlResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to update.
    * @param patch - Description of which parts to update.
    */
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch): Promise<void> {
+  public async modifyResource(): Promise<void> {
+    throw new Error('This has not yet been fully implemented correctly.');
+
     // The incoming SPARQL query (patch.data) still needs to be modified to work on the graph that corresponds to the
     // identifier!
-    return this.sendSparqlUpdate(await readableToString(patch.data));
+    // if (patch.metadata.contentType !== CONTENT_TYPE_SPARQL_UPDATE || !('algebra' in patch)) {
+    //  throw new UnsupportedMediaTypeHttpError('This ResourceStore only supports SPARQL UPDATE data.');
+    // }
+    // const { data } = patch;
+    // return this.sendSparqlUpdate(await readableToString(data));
   }
 
   /**
@@ -117,14 +139,16 @@ export class SparqlResourceStore implements ResourceStore {
    * @param representation - New Representation.
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
+    // Check if the representation has a valid dataType.
+    this.ensureValidDataType(representation);
+
     // Get the expected behaviour based on the incoming identifier and representation.
     const { isContainer, path, newIdentifier } = this.resourceStoreController.getBehaviourSetRepresentation(identifier,
       representation);
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    await this.handleCreation(path, newIdentifier, true, isContainer ?
-      undefined :
-      representation.data, representation.metadata.raw, false);
+    await this.handleCreation(path, newIdentifier, true, false, isContainer, representation.data, representation
+      .metadata.raw);
   }
 
   /**
@@ -133,17 +157,18 @@ export class SparqlResourceStore implements ResourceStore {
    * @param path - The stripped path without the base of the store.
    * @param newIdentifier - The name of the resource to be created or overwritten.
    * @param allowRecursiveCreation - Whether necessary but not existing intermediate containers may be created.
+   * @param isContainer - Whether a new container or a resource should be created based on the given parameters.
    * @param data - Data of the resource. None for a container.
-   * @param metadata - Optional metadata to be stored in the metadata graph.
    * @param overwriteMetadata - Whether metadata for an already existing container may be overwritten with the provided
    * metadata.
+   * @param metadata - Optional metadata to be stored in the metadata graph.
    */
   private async handleCreation(path: string, newIdentifier: string, allowRecursiveCreation: boolean,
-    data?: Readable, metadata?: Quad[], overwriteMetadata = false): Promise<ResourceIdentifier> {
+    overwriteMetadata: boolean, isContainer: boolean, data?: Readable, metadata?: Quad[]): Promise<ResourceIdentifier> {
     await this.ensureValidContainerPath(path, allowRecursiveCreation);
     const URI = `${this.baseRequestURI}${ensureTrailingSlash(path)}${newIdentifier}`;
-    return typeof data === 'undefined' ?
-      await this.handleContainerCreation(URI, metadata, overwriteMetadata) :
+    return isContainer || typeof data === 'undefined' ?
+      await this.handleContainerCreation(URI, overwriteMetadata, metadata) :
       await this.handleResourceCreation(URI, data, metadata);
   }
 
@@ -169,14 +194,14 @@ export class SparqlResourceStore implements ResourceStore {
   /**
    * Helper function to create a container.
    * @param containerURI - The URI of the container.
-   * @param metadata - Optional metadata to be stored in the metadata graph.
    * @param overwriteMetadata - Whether metadata may be overwritten with the provided metadata if the container already
    * exists.
+   * @param metadata - Optional metadata to be stored in the metadata graph.
    *
    * @throws {@link ConflictHttpError}
    * If a resource or container with that identifier already exists.
    */
-  private async handleContainerCreation(containerURI: string, metadata?: Quad[], overwriteMetadata = false):
+  private async handleContainerCreation(containerURI: string, overwriteMetadata: boolean, metadata?: Quad[]):
   Promise<ResourceIdentifier> {
     const type = await this.getSparqlResourceType(containerURI);
     if (type === LINK_TYPE_LDPR) {
@@ -204,11 +229,11 @@ export class SparqlResourceStore implements ResourceStore {
    */
   private async ensureValidContainerPath(path: string, allowRecursiveCreation: boolean): Promise<void> {
     const parentContainers = path.split('/').filter((container): any => container);
-    let currentContainerURI = `${this.baseRequestURI}/`;
+    let currentContainerURI = ensureTrailingSlash(this.baseRequestURI);
 
     // Check each intermediate container one by one.
     while (parentContainers.length) {
-      currentContainerURI = `${currentContainerURI}${parentContainers.shift()}/`;
+      currentContainerURI = ensureTrailingSlash(`${currentContainerURI}${parentContainers.shift()}`);
       const type = await this.getSparqlResourceType(currentContainerURI);
       if (typeof type === 'undefined') {
         if (allowRecursiveCreation) {
@@ -230,39 +255,33 @@ export class SparqlResourceStore implements ResourceStore {
    */
   private async getSparqlResourceType(URI: string): Promise<string | undefined> {
     // Check for container first, because a container also contains ldp:Resource.
-    const containerQuery = {
-      queryType: 'ASK',
+    const typeQuery = {
+      queryType: 'SELECT',
+      variables: [ new Wildcard() ],
       where: [
         {
-          type: 'graph',
-          name: namedNode(`${ensureTrailingSlash(URI)}.metadata`),
-          triples: [
-            quad(variable('p'), TYPE_PREDICATE, CONTAINER_OBJECT),
+          type: 'union',
+          patterns: [
+            this.generateGraphObject(`${ensureTrailingSlash(URI)}.metadata`,
+              [ quad(namedNode(ensureTrailingSlash(URI)), TYPE_PREDICATE, variable('type')) ]),
+            this.generateGraphObject(`${trimTrailingSlashes(URI)}.metadata`,
+              [ quad(namedNode(trimTrailingSlashes(URI)), TYPE_PREDICATE, variable('type')) ]),
           ],
         },
       ],
       type: 'query',
-    } as unknown as AskQuery;
-    if ((await this.sendSparqlQuery(containerQuery)).boolean === true) {
-      return LINK_TYPE_LDPC;
-    }
+    } as unknown as SelectQuery;
 
-    // Check that the URI matches a resource, if it was not a container.
-    const resourceQuery = {
-      queryType: 'ASK',
-      where: [
-        {
-          type: 'graph',
-          name: namedNode(`${trimTrailingSlashes(URI)}.metadata`),
-          triples: [
-            quad(variable('p'), TYPE_PREDICATE, RESOURCE_OBJECT),
-          ],
-        },
-      ],
-      type: 'query',
-    } as unknown as AskQuery;
-    if ((await this.sendSparqlQuery(resourceQuery)).boolean === true) {
-      return LINK_TYPE_LDPR;
+    const result = await this.sendSparqlQuery(typeQuery);
+    if (result && result.results && result.results.bindings) {
+      const types = result.results.bindings
+        .map((obj: { type: { value: any } }): any => obj.type.value);
+      if (types.includes(LINK_TYPE_LDPC)) {
+        return LINK_TYPE_LDPC;
+      }
+      if (types.includes(LINK_TYPE_LDPR)) {
+        return LINK_TYPE_LDPR;
+      }
     }
     return undefined;
   }
@@ -275,7 +294,7 @@ export class SparqlResourceStore implements ResourceStore {
   private async createContainer(containerURI: string, metadata?: Quad[]): Promise<void> {
     // Verify the metadata quads to be saved and get the URI from the parent container.
     const metadataQuads = this.ensureValidQuads('metadata', metadata);
-    const parentContainerURI = this.getParentContainer(containerURI);
+    const parentContainerURI = (await this.containerManager.getContainer({ path: containerURI })).path;
 
     // First create containerURI/.metadata graph with `containerURI a ldp:Container, ldp:Resource` and metadata triples.
     // Then create containerURI graph with `containerURI contains containerURI/.metadata` triple.
@@ -285,29 +304,15 @@ export class SparqlResourceStore implements ResourceStore {
         {
           updateType: 'insert',
           insert: [
-            {
-              type: 'graph',
-              name: namedNode(`${containerURI}.metadata`),
-              triples: [
-                quad(namedNode(containerURI), TYPE_PREDICATE, CONTAINER_OBJECT),
-                quad(namedNode(containerURI), TYPE_PREDICATE, RESOURCE_OBJECT),
-                ...metadataQuads,
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(containerURI),
-              triples: [
-                quad(namedNode(containerURI), CONTAINS_PREDICATE, namedNode(`${containerURI}.metadata`)),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(parentContainerURI),
-              triples: [
-                quad(namedNode(parentContainerURI), CONTAINS_PREDICATE, namedNode(containerURI)),
-              ],
-            },
+            this.generateGraphObject(`${containerURI}.metadata`, [
+              quad(namedNode(containerURI), TYPE_PREDICATE, CONTAINER_OBJECT),
+              quad(namedNode(containerURI), TYPE_PREDICATE, RESOURCE_OBJECT),
+              ...metadataQuads,
+            ]),
+            this.generateGraphObject(containerURI,
+              [ quad(namedNode(containerURI), CONTAINS_PREDICATE, namedNode(`${containerURI}.metadata`)) ]),
+            this.generateGraphObject(parentContainerURI,
+              [ quad(namedNode(parentContainerURI), CONTAINS_PREDICATE, namedNode(containerURI)) ]),
           ],
         },
       ],
@@ -329,34 +334,15 @@ export class SparqlResourceStore implements ResourceStore {
       updates: [
         {
           updateType: 'insertdelete',
-          delete: [
-            {
-              type: 'graph',
-              name: namedNode(`${containerURI}.metadata`),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
-          insert: [
-            {
-              type: 'graph',
-              name: namedNode(`${containerURI}.metadata`),
-              triples: [
-                quad(namedNode(containerURI), TYPE_PREDICATE, CONTAINER_OBJECT),
-                quad(namedNode(containerURI), TYPE_PREDICATE, RESOURCE_OBJECT),
-                ...metadata,
-              ],
-            },
-          ],
-          where: [
-            {
-              type: 'bgp',
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
+          delete: [ this.generateGraphObject(`${containerURI}.metadata`,
+            [ quad(variable('s'), variable('p'), variable('o')) ]) ],
+          insert: [ this.generateGraphObject(`${containerURI}.metadata`, [
+            quad(namedNode(containerURI), TYPE_PREDICATE, CONTAINER_OBJECT),
+            quad(namedNode(containerURI), TYPE_PREDICATE, RESOURCE_OBJECT),
+            ...metadata,
+          ]) ],
+          where: [ this.generateGraphObject(`${containerURI}.metadata`,
+            [ quad(variable('s'), variable('p'), variable('o')) ]) ],
         },
       ],
       type: 'update',
@@ -387,53 +373,18 @@ export class SparqlResourceStore implements ResourceStore {
         {
           updateType: 'insertdelete',
           delete: [
-            {
-              type: 'graph',
-              name: namedNode(`${resourceURI}.metadata`),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(resourceURI),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
+            this.generateGraphObject(`${resourceURI}.metadata`,
+              [ quad(variable('s'), variable('p'), variable('o')) ]),
+            this.generateGraphObject(resourceURI, [ quad(variable('s'), variable('p'), variable('o')) ]),
           ],
           insert: [
-            {
-              type: 'graph',
-              name: namedNode(`${resourceURI}.metadata`),
-              triples: [
-                quad(namedNode(resourceURI), TYPE_PREDICATE, RESOURCE_OBJECT),
-                ...metadataQuads,
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(resourceURI),
-              triples: [
-                ...dataQuads,
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(containerURI),
-              triples: [
-                quad(namedNode(containerURI), CONTAINS_PREDICATE, namedNode(resourceURI)),
-              ],
-            },
+            this.generateGraphObject(`${resourceURI}.metadata`,
+              [ quad(namedNode(resourceURI), TYPE_PREDICATE, RESOURCE_OBJECT), ...metadataQuads ]),
+            this.generateGraphObject(resourceURI, [ ...dataQuads ]),
+            this.generateGraphObject(containerURI,
+              [ quad(namedNode(containerURI), CONTAINS_PREDICATE, namedNode(resourceURI)) ]),
           ],
-          where: [
-            {
-              type: 'bgp',
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
+          where: [{ type: 'bgp', triples: [ quad(variable('s'), variable('p'), variable('o')) ]}],
         },
       ],
       type: 'update',
@@ -443,57 +394,14 @@ export class SparqlResourceStore implements ResourceStore {
   }
 
   /**
-   * Helper function to delete a resource.
+   * Helper function to delete a document resource.
    * @param resourceURI - Identifier of resource to delete.
    */
-  private async deleteSparqlResource(resourceURI: string): Promise<void> {
+  private async deleteSparqlDocument(resourceURI: string): Promise<void> {
     // Get the container URI that contains the resource corresponding to the URI.
     const containerURI = ensureTrailingSlash(resourceURI.slice(0, resourceURI.lastIndexOf('/')));
 
-    // First remove `resourceURI/.metadata` graph. Then remove resourceURI graph and finally remove
-    // `containerURI contains resourceURI` triple.
-    const deleteResourceQuery = {
-      updates: [
-        {
-          updateType: 'insertdelete',
-          delete: [
-            {
-              type: 'graph',
-              name: namedNode(`${resourceURI}.metadata`),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(resourceURI),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(containerURI),
-              triples: [
-                quad(namedNode(containerURI), CONTAINS_PREDICATE, namedNode(resourceURI)),
-              ],
-            },
-          ],
-          insert: [],
-          where: [
-            {
-              type: 'bgp',
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
-        },
-      ],
-      type: 'update',
-      prefixes: {},
-    } as Update;
-    return this.sendSparqlUpdate(deleteResourceQuery);
+    return this.deleteSparqlResource(containerURI, resourceURI);
   }
 
   /**
@@ -507,46 +415,33 @@ export class SparqlResourceStore implements ResourceStore {
     }
 
     // Get the parent container from the specified container to remove the containment triple.
-    const parentContainerURI = this.getParentContainer(containerURI);
+    const parentContainerURI = (await this.containerManager.getContainer({ path: containerURI })).path;
 
-    // First remove `containerURI/.metadata` graph. Then remove containerURI graph and finally remove
-    // `parentContainerURI contains containerURI` triple from parentContainerURI graph.
+    return this.deleteSparqlResource(parentContainerURI, containerURI);
+  }
+
+  /**
+   * Helper function without extra validation to delete a container resource.
+   * @param parentURI - Identifier of parent container to delete.
+   * @param childURI - Identifier of container or resource to delete.
+   */
+  private async deleteSparqlResource(parentURI: string, childURI: string): Promise<void> {
+    // First remove `childURI/.metadata` graph. Then remove childURI graph and finally remove
+    // `parentURI contains childURI` triple from parentURI graph.
     const deleteContainerQuery = {
       updates: [
         {
           updateType: 'insertdelete',
           delete: [
-            {
-              type: 'graph',
-              name: namedNode(`${containerURI}.metadata`),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(containerURI),
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-            {
-              type: 'graph',
-              name: namedNode(parentContainerURI),
-              triples: [
-                quad(namedNode(parentContainerURI), CONTAINS_PREDICATE, namedNode(containerURI)),
-              ],
-            },
+            this.generateGraphObject(`${childURI}.metadata`,
+              [ quad(variable('s'), variable('p'), variable('o')) ]),
+            this.generateGraphObject(childURI,
+              [ quad(variable('s'), variable('p'), variable('o')) ]),
+            this.generateGraphObject(parentURI,
+              [ quad(namedNode(parentURI), CONTAINS_PREDICATE, namedNode(childURI)) ]),
           ],
           insert: [],
-          where: [
-            {
-              type: 'bgp',
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
+          where: [{ type: 'bgp', triples: [ quad(variable('s'), variable('p'), variable('o')) ]}],
         },
       ],
       type: 'update',
@@ -564,24 +459,17 @@ export class SparqlResourceStore implements ResourceStore {
     const containerQuery = {
       queryType: 'ASK',
       where: [
-        {
-          type: 'graph',
-          name: namedNode(containerURI),
-          triples: [
-            quad(namedNode(containerURI), CONTAINS_PREDICATE, variable('o')),
-            {
-              type: 'filter',
-              expression: {
-                type: 'operation',
-                operator: '!=',
-                args: [
-                  variable('o'),
-                  namedNode(`${containerURI}.metadata`),
-                ],
-              },
+        this.generateGraphObject(containerURI, [
+          quad(namedNode(containerURI), CONTAINS_PREDICATE, variable('o')),
+          {
+            type: 'filter',
+            expression: {
+              type: 'operation',
+              operator: '!=',
+              args: [ variable('o'), namedNode(`${containerURI}.metadata`) ],
             },
-          ],
-        },
+          },
+        ]),
       ],
       type: 'query',
     } as unknown as AskQuery;
@@ -603,14 +491,7 @@ export class SparqlResourceStore implements ResourceStore {
         {
           type: 'graph',
           name: namedNode(URI),
-          patterns: [
-            {
-              type: 'bgp',
-              triples: [
-                quad(variable('s'), variable('p'), variable('o')),
-              ],
-            },
-          ],
+          patterns: [{ type: 'bgp', triples: [ quad(variable('s'), variable('p'), variable('o')) ]}],
         } as GraphPattern,
       ],
       type: 'query',
@@ -630,14 +511,8 @@ export class SparqlResourceStore implements ResourceStore {
 
     // Only include the triples of the resource graph in the data readable.
     const readableData = streamifyArray([ ...data ]);
-    return {
-      dataType: DATA_TYPE_QUAD,
-      data: readableData,
-      metadata: {
-        raw: metadata,
-        contentType: CONTENT_TYPE_QUADS,
-      },
-    };
+
+    return this.generateReturningRepresentation(readableData, metadata);
   }
 
   /**
@@ -649,16 +524,11 @@ export class SparqlResourceStore implements ResourceStore {
     const data: Quad[] = await this.getSparqlRepresentation(containerURI);
     const metadata: Quad[] = await this.getSparqlRepresentation(`${containerURI}.metadata`);
 
-    // Include both the triples of the resource graph and the metadata graph in the data readable.
+    // Include both the triples of the resource graph and the metadata graph in the data readable to be consistent with
+    // the existing solid implementation.
     const readableData = streamifyArray([ ...data, ...metadata ]);
-    return {
-      dataType: DATA_TYPE_QUAD,
-      data: readableData,
-      metadata: {
-        raw: metadata,
-        contentType: CONTENT_TYPE_QUADS,
-      },
-    };
+
+    return this.generateReturningRepresentation(readableData, metadata);
   }
 
   /**
@@ -681,15 +551,45 @@ export class SparqlResourceStore implements ResourceStore {
   }
 
   /**
-   * Helper function to get the parent container URI of a container URI.
-   * @param containerURI - Incoming container URI.
+   * Check if the representation has a valid dataType.
+   * @param representation - Incoming Representation.
+   *
+   * @throws {@link UnsupportedMediaTypeHttpError}
+   * If the incoming dataType does not match the store's supported dataType.
    */
-  private getParentContainer(containerURI: string): string {
-    const [ , parentContainerURI ] = /^(.*\/)[^/]+\/$/u.exec(containerURI) ?? [];
-    if (typeof parentContainerURI !== 'string') {
-      throw new Error('Invalid containerURI passed.');
+  private ensureValidDataType(representation: Representation): void {
+    if (representation.dataType !== DATA_TYPE_QUAD) {
+      throw new UnsupportedMediaTypeHttpError('The SparqlResourceStore only supports quad representations.');
     }
-    return parentContainerURI;
+  }
+
+  /**
+   * Generate a graph object from his URI and triples.
+   * @param URI - URI of the graph.
+   * @param triples - Triples of the graph.
+   */
+  private generateGraphObject(URI: string, triples: any): any {
+    return {
+      type: 'graph',
+      name: namedNode(URI),
+      triples,
+    };
+  }
+
+  /**
+   * Helper function to get the resulting Representation.
+   * @param readable - Outgoing data.
+   * @param quads - Outgoing metadata.
+   */
+  private generateReturningRepresentation(readable: Readable, quads: Quad[]): Representation {
+    return {
+      dataType: DATA_TYPE_QUAD,
+      data: readable,
+      metadata: {
+        raw: quads,
+        contentType: CONTENT_TYPE_QUADS,
+      },
+    };
   }
 
   /**
@@ -714,9 +614,7 @@ export class SparqlResourceStore implements ResourceStore {
     const response = await fetch(request, init);
 
     // Check if the server returned an error and return the json representation of the result.
-    if (response.status >= 400) {
-      throw new Error('Bad response from server');
-    }
+    this.handleServerResponseStatus(response);
     return response.json();
   }
 
@@ -746,8 +644,19 @@ export class SparqlResourceStore implements ResourceStore {
     const response = await fetch(request, init);
 
     // Check if the server returned an error.
+    this.handleServerResponseStatus(response);
+  }
+
+  /**
+   * Check if the server returned an error.
+   * @param response - Response from the server.
+   *
+   * @throws {@link Error}
+   * If the server returned an error.
+   */
+  private handleServerResponseStatus(response: Response): void {
     if (response.status >= 400) {
-      throw new Error('Bad response from server');
+      throw new Error(`Bad response from server: ${response.statusText}`);
     }
   }
 }

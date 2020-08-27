@@ -17,9 +17,7 @@ describe('A SimpleResourceStore', (): void => {
   const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
-    store = new SimpleResourceStore(new ResourceStoreController(base, new InteractionController(), new Set(
-      [ DATA_TYPE_BINARY ],
-    )));
+    store = new SimpleResourceStore(new ResourceStoreController(base, new InteractionController()));
 
     representation = {
       data: streamifyArray([ dataString ]),
