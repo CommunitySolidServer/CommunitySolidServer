@@ -1,5 +1,5 @@
-import { AsyncHandler } from '../../util/AsyncHandler';
 import { HttpRequest } from '../../server/HttpRequest';
+import { AsyncHandler } from '../../util/AsyncHandler';
 import { RepresentationPreferences } from '../representation/RepresentationPreferences';
 
 /**

@@ -1,17 +1,17 @@
-import { Algebra } from 'sparqlalgebrajs';
-import { BaseQuad } from 'rdf-js';
-import { defaultGraph } from '@rdfjs/data-model';
-import { PatchHandler } from './PatchHandler';
 import { Readable } from 'stream';
+import { defaultGraph } from '@rdfjs/data-model';
+import { Store } from 'n3';
+import { BaseQuad } from 'rdf-js';
+import { someTerms } from 'rdf-terms';
+import { Algebra } from 'sparqlalgebrajs';
+import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { Representation } from '../../ldp/representation/Representation';
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { ResourceLocker } from '../ResourceLocker';
 import { ResourceStore } from '../ResourceStore';
-import { someTerms } from 'rdf-terms';
-import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
-import { Store } from 'n3';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { PatchHandler } from './PatchHandler';
 
 /**
  * PatchHandler that supports specific types of SPARQL updates.

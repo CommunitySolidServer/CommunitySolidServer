@@ -1,7 +1,7 @@
-import { ContainerManager } from './ContainerManager';
-import { ensureTrailingSlash } from '../util/Util';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { RuntimeConfig } from '../init/RuntimeConfig';
+import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { ensureTrailingSlash } from '../util/Util';
+import { ContainerManager } from './ContainerManager';
 
 /**
  * Determines containers based on URL decomposition.

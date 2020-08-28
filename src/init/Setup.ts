@@ -1,9 +1,9 @@
+import streamifyArray from 'streamify-array';
 import { AclManager } from '../authorization/AclManager';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { ExpressHttpServer } from '../server/ExpressHttpServer';
 import { ResourceStore } from '../storage/ResourceStore';
+import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { RuntimeConfig } from './RuntimeConfig';
-import streamifyArray from 'streamify-array';
 
 /**
  * Invokes all logic to setup a server.

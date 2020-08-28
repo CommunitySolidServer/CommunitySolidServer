@@ -1,23 +1,23 @@
-import arrayifyStream from 'arrayify-stream';
-import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
-import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
-import { DataFactory } from 'n3';
-import { FileResourceStore } from '../../../src/storage/FileResourceStore';
-import { InteractionController } from '../../../src/util/InteractionController';
-import { MetadataController } from '../../../src/util/MetadataController';
-import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import fs, { promises as fsPromises, Stats, WriteStream } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
-import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
-import fs, { promises as fsPromises, Stats, WriteStream } from 'fs';
-import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
-import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
 import { literal, namedNode, quad as quadRDF, triple } from '@rdfjs/data-model';
+import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
+import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { FileResourceStore } from '../../../src/storage/FileResourceStore';
+import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
+import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import { InteractionController } from '../../../src/util/InteractionController';
+import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
+import { MetadataController } from '../../../src/util/MetadataController';
+import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
 
 const { join: joinPath } = posix;
 
@@ -205,8 +205,16 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    (fs.createReadStream as jest.Mock).mockReturnValueOnce(new Readable()
-      .destroy(new Error('Metadata file does not exist.')));
+
+    const readable = streamifyArray([]);
+    readable.on('newListener', (event): void => {
+      if (event === 'open') {
+        setImmediate((): void => {
+          readable.emit('open');
+        });
+      }
+    });
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(readable);
 
     // Tests
     await store.setRepresentation({ path: `${base}file.txt` }, representation);

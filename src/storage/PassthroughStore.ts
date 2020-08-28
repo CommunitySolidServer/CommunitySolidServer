@@ -1,8 +1,8 @@
-import { Conditions } from './Conditions';
 import { Patch } from '../ldp/http/Patch';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { Conditions } from './Conditions';
 import { ResourceStore } from './ResourceStore';
 
 /**
