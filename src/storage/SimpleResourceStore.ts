@@ -1,9 +1,9 @@
 import arrayifyStream from 'arrayify-stream';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
-import { ensureTrailingSlash } from '../util/Util';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { DATA_TYPE_BINARY } from '../util/ContentTypes';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { ensureTrailingSlash } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
 import { ResourceStoreController } from '../util/ResourceStoreController';
 import streamifyArray from 'streamify-array';
@@ -18,6 +18,7 @@ export class SimpleResourceStore implements ResourceStore {
   private readonly resourceStoreController: ResourceStoreController;
 
   /**
+<<<<<<< HEAD
    * @param resourceStoreController - Instance of ResourceStoreController to use.
    */
   public constructor(resourceStoreController: ResourceStoreController) {

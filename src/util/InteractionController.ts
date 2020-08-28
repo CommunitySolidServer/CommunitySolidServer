@@ -1,6 +1,6 @@
-import { trimTrailingSlashes } from './Util';
 import { v4 as uuid } from 'uuid';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPC } from './LinkTypes';
+import { trimTrailingSlashes } from './Util';
 
 export class InteractionController {
   /**

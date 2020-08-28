@@ -1,27 +1,28 @@
-import arrayifyStream from 'arrayify-stream';
-import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
-import { CONTAINS_PREDICATE } from '../../../src/util/MetadataController';
-import { DataFactory } from 'n3';
-import { fetch } from 'cross-fetch';
-import { InteractionController } from '../../../src/util/InteractionController';
-import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { QuadRepresentation } from '../../../src/ldp/representation/QuadRepresentation';
 import { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
-import { SparqlResourceStore } from '../../../src/storage/SparqlResourceStore';
+import { namedNode, triple } from '@rdfjs/data-model';
+import arrayifyStream from 'arrayify-stream';
+import { fetch } from 'cross-fetch';
+import { DataFactory } from 'n3';
 import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { UrlContainerManager } from '../../../src/storage/UrlContainerManager';
 import { v4 as uuid } from 'uuid';
+import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
+import { QuadRepresentation } from '../../../src/ldp/representation/QuadRepresentation';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { SparqlResourceStore } from '../../../src/storage/SparqlResourceStore';
+import { UrlContainerManager } from '../../../src/storage/UrlContainerManager';
 import {
   CONTENT_TYPE_QUADS,
   DATA_TYPE_BINARY,
   DATA_TYPE_QUAD,
 } from '../../../src/util/ContentTypes';
+import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import { InteractionController } from '../../../src/util/InteractionController';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
-import { namedNode, triple } from '@rdfjs/data-model';
+import { CONTAINS_PREDICATE } from '../../../src/util/MetadataController';
+import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
 
 const base = 'http://test.com/';
 const sparqlEndpoint = 'http://localhost:8889/bigdata/sparql';
@@ -49,8 +50,9 @@ describe('A SparqlResourceStore', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
 
-    store = new SparqlResourceStore(base, sparqlEndpoint, new ResourceStoreController(base,
-      new InteractionController()), new UrlContainerManager(base));
+    const runtimeConfig = new RuntimeConfig({ base });
+    store = new SparqlResourceStore(runtimeConfig, sparqlEndpoint, new ResourceStoreController(runtimeConfig,
+      new InteractionController()), new UrlContainerManager(runtimeConfig));
 
     representation = {
       data: streamifyArray([ quad ]),

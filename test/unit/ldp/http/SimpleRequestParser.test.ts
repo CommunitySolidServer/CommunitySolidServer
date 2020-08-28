@@ -1,8 +1,8 @@
 import { BodyParser } from '../../../../src/ldp/http/BodyParser';
 import { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
 import { SimpleRequestParser } from '../../../../src/ldp/http/SimpleRequestParser';
-import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 import { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
+import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A SimpleRequestParser', (): void => {
   let targetExtractor: TargetExtractor;

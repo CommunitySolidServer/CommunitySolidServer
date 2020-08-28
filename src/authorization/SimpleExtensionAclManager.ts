@@ -1,5 +1,5 @@
-import { AclManager } from './AclManager';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { AclManager } from './AclManager';
 
 /**
  * Generates acl URIs by adding an .acl file extension.

@@ -1,13 +1,14 @@
-import arrayifyStream from 'arrayify-stream';
-import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
-import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
-import { InteractionController } from '../../../src/util/InteractionController';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
-import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
+import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
+import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { SimpleResourceStore } from '../../../src/storage/SimpleResourceStore';
+import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { InteractionController } from '../../../src/util/InteractionController';
+import { ResourceStoreController } from '../../../src/util/ResourceStoreController';
 
 const base = 'http://test.com/';
 
@@ -17,7 +18,8 @@ describe('A SimpleResourceStore', (): void => {
   const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
-    store = new SimpleResourceStore(new ResourceStoreController(base, new InteractionController()));
+    store = new SimpleResourceStore(new ResourceStoreController(new RuntimeConfig({ base }),
+      new InteractionController()));
 
     representation = {
       data: streamifyArray([ dataString ]),

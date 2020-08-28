@@ -1,16 +1,16 @@
-import { AclManager } from '../../../src/authorization/AclManager';
-import { ContainerManager } from '../../../src/storage/ContainerManager';
+import { namedNode, quad } from '@rdfjs/data-model';
+import streamifyArray from 'streamify-array';
 import { Credentials } from '../../../src/authentication/Credentials';
-import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { AclManager } from '../../../src/authorization/AclManager';
+import { SimpleAclAuthorizer } from '../../../src/authorization/SimpleAclAuthorizer';
 import { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import { ContainerManager } from '../../../src/storage/ContainerManager';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
-import { SimpleAclAuthorizer } from '../../../src/authorization/SimpleAclAuthorizer';
-import streamifyArray from 'streamify-array';
+import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
-import { namedNode, quad } from '@rdfjs/data-model';
 
 const nn = namedNode;
 

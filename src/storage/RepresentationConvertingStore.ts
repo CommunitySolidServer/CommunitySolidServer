@@ -1,10 +1,10 @@
-import { Conditions } from './Conditions';
-import { matchingMediaType } from '../util/Util';
-import { PassthroughStore } from './PassthroughStore';
 import { Representation } from '../ldp/representation/Representation';
-import { RepresentationConverter } from './conversion/RepresentationConverter';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { matchingMediaType } from '../util/Util';
+import { Conditions } from './Conditions';
+import { RepresentationConverter } from './conversion/RepresentationConverter';
+import { PassthroughStore } from './PassthroughStore';
 import { ResourceStore } from './ResourceStore';
 
 /**

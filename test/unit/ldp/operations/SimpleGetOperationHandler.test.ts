@@ -1,8 +1,8 @@
-import { DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 import { Operation } from '../../../../src/ldp/operations/Operation';
+import { SimpleGetOperationHandler } from '../../../../src/ldp/operations/SimpleGetOperationHandler';
 import { Representation } from '../../../../src/ldp/representation/Representation';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { SimpleGetOperationHandler } from '../../../../src/ldp/operations/SimpleGetOperationHandler';
+import { DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimpleGetOperationHandler', (): void => {
