@@ -1,10 +1,10 @@
-import { call } from '../util/Util';
-import { MockResponse } from 'node-mocks-http';
+import * as url from 'url';
+import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
+import { MockResponse } from 'node-mocks-http';
 import { SimpleHandlersTestConfig } from '../../configs/SimpleHandlersTestConfig';
 import { SimpleTestConfig } from '../../configs/SimpleTestConfig';
-import { namedNode, quad } from '@rdfjs/data-model';
-import * as url from 'url';
+import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {

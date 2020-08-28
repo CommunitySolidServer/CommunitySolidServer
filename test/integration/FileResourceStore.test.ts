@@ -1,8 +1,8 @@
-import { FileResourceStoreConfig } from '../../configs/FileResourceStoreConfig';
-import { MockResponse } from 'node-mocks-http';
-import { call, callFile } from '../util/Util';
 import * as fs from 'fs';
 import * as url from 'url';
+import { MockResponse } from 'node-mocks-http';
+import { FileResourceStoreConfig } from '../../configs/FileResourceStoreConfig';
+import { call, callFile } from '../util/Util';
 
 describe('A server using a FileResourceStore', (): void => {
   describe('without acl', (): void => {
@@ -75,7 +75,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getHeaders().location).toBe(id);
 
       // PUT
-      fileData = fs.readFileSync('test/testfiles/testfile2.txt');
+      fileData = fs.readFileSync('test/testfiles/testfile3.txt');
       response = await callFile(
         handler,
         requestUrl,
@@ -92,19 +92,15 @@ describe('A server using a FileResourceStore', (): void => {
       response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
-      console.log('aa')
-      console.log(response._getData())
-      console.log('bb')
-      expect(response._getData()).toContain('TESTFILE3')
-
+      expect(response._getBuffer().toString()).toContain('TESTFILE3');
     });
 
     it('can create a folder and delete it.', async(): Promise<void> => {
-      // This tests succeeds but is not good, the metadata Link does not get parsed so the 
-      // store does not know that we want to make a folder. The result current reslult is 
+      // This tests succeeds but is not good, the metadata Link does not get parsed so the
+      // store does not know that we want to make a folder. The result current reslult is
       // that a folder gets made with a empty file, this file gets deleted instead
       // of the folder thats why the last GET receives a 200 statuscode
-      
+
       // POST
       let requestUrl = new URL('http://test.com/secondfolder/');
 
@@ -142,7 +138,4 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getData()).toContain('NotFoundHttpError');
     });
   });
-
-
-
 });

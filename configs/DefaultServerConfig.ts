@@ -1,4 +1,3 @@
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
 import streamifyArray from 'streamify-array';
 import {
   AcceptPreferenceParser,
@@ -36,6 +35,7 @@ import {
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
+import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
 
 // This is the configuration from bin/server.ts
 
