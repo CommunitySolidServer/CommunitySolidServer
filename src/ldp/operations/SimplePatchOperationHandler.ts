@@ -1,9 +1,9 @@
+import { ResourceStore } from '../../storage/ResourceStore';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { Patch } from '../http/Patch';
 import { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import { Patch } from '../http/Patch';
-import { ResourceStore } from '../../storage/ResourceStore';
 import { ResponseDescription } from './ResponseDescription';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 export class SimplePatchOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;

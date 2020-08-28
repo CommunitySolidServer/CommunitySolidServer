@@ -1,34 +1,35 @@
-import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
-import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
-import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
-import { BodyParser } from '../../src/ldp/http/BodyParser';
-import { call } from '../util/Util';
-import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
-import { InteractionController } from '../../src/util/InteractionController';
 import { MockResponse } from 'node-mocks-http';
-import { Operation } from '../../src/ldp/operations/Operation';
-import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
-import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
-import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
-import { ResourceStore } from '../../src/storage/ResourceStore';
-import { ResourceStoreController } from '../../src/util/ResourceStoreController';
-import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { SimpleAclAuthorizer } from '../../src/authorization/SimpleAclAuthorizer';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
+import streamifyArray from 'streamify-array';
 import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
-import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
+import { SimpleAclAuthorizer } from '../../src/authorization/SimpleAclAuthorizer';
 import { SimpleExtensionAclManager } from '../../src/authorization/SimpleExtensionAclManager';
+import { RuntimeConfig } from '../../src/init/RuntimeConfig';
+import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
+import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
+import { BodyParser } from '../../src/ldp/http/BodyParser';
+import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
+import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
+import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
+import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
+import { Operation } from '../../src/ldp/operations/Operation';
+import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
+import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
 import { SimplePutOperationHandler } from '../../src/ldp/operations/SimplePutOperationHandler';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
-import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
-import streamifyArray from 'streamify-array';
+import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
+import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
+import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
+import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
+import { ResourceStore } from '../../src/storage/ResourceStore';
+import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
 import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
+import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
+import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
+import { InteractionController } from '../../src/util/InteractionController';
+import { ResourceStoreController } from '../../src/util/ResourceStoreController';
+import { call } from '../util/Util';
 
 const setAcl = async(store: ResourceStore, id: string, permissions: PermissionSet, control: boolean,
   access: boolean, def: boolean, agent?: string, agentClass?: 'agent' | 'authenticated'): Promise<void> => {
@@ -82,7 +83,7 @@ describe('A server with authorization', (): void => {
     bodyParser,
   });
 
-  const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
+  const store = new SimpleResourceStore(new ResourceStoreController(new RuntimeConfig({ base: 'http://test.com/' }),
     new InteractionController()));
   const converter = new CompositeAsyncHandler([
     new QuadToTurtleConverter(),
@@ -94,7 +95,7 @@ describe('A server with authorization', (): void => {
   const permissionsExtractor = new BasePermissionsExtractor();
   const authorizer = new SimpleAclAuthorizer(
     new SimpleExtensionAclManager(),
-    new UrlContainerManager('http://test.com/'),
+    new UrlContainerManager(new RuntimeConfig({ base: 'http://test.com/' })),
     convertingStore,
   );
 

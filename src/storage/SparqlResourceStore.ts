@@ -1,17 +1,9 @@
-import arrayifyStream from 'arrayify-stream';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { ContainerManager } from './ContainerManager';
-import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
-import { Representation } from '../ldp/representation/Representation';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ResourceStore } from './ResourceStore';
-import { ResourceStoreController } from '../util/ResourceStoreController';
-import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
+import { namedNode, quad, variable } from '@rdfjs/data-model';
+import arrayifyStream from 'arrayify-stream';
+import { fetch, Request } from 'cross-fetch';
 import { Util } from 'n3';
+import { Quad } from 'rdf-js';
 import {
   AskQuery,
   ConstructQuery,
@@ -22,12 +14,21 @@ import {
   Update,
   Wildcard,
 } from 'sparqljs';
-import { CONTAINER_OBJECT, CONTAINS_PREDICATE, RESOURCE_OBJECT, TYPE_PREDICATE } from '../util/MetadataController';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../init/RuntimeConfig';
+import { Representation } from '../ldp/representation/Representation';
+import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
-import { fetch, Request } from 'cross-fetch';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { LINK_TYPE_LDPC, LINK_TYPE_LDPR } from '../util/LinkTypes';
-import { namedNode, quad, variable } from '@rdfjs/data-model';
+import { CONTAINER_OBJECT, CONTAINS_PREDICATE, RESOURCE_OBJECT, TYPE_PREDICATE } from '../util/MetadataController';
+import { ResourceStoreController } from '../util/ResourceStoreController';
+import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { ContainerManager } from './ContainerManager';
+import { ResourceStore } from './ResourceStore';
 import inDefaultGraph = Util.inDefaultGraph;
 
 /**
@@ -35,21 +36,20 @@ import inDefaultGraph = Util.inDefaultGraph;
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class SparqlResourceStore implements ResourceStore {
-  private readonly baseRequestURI: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly sparqlEndpoint: string;
   private readonly resourceStoreController: ResourceStoreController;
   private readonly containerManager: ContainerManager;
 
   /**
-   * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
-   * path.
+   * @param runtimeConfig - The runtime config.
    * @param sparqlEndpoint - URL of the SPARQL endpoint to use.
    * @param resourceStoreController - Instance of ResourceStoreController to use.
    * @param containerManager - Instance of ContainerManager to use.
    */
-  public constructor(baseRequestURI: string, sparqlEndpoint: string, resourceStoreController: ResourceStoreController,
-    containerManager: ContainerManager) {
-    this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
+  public constructor(runtimeConfig: RuntimeConfig, sparqlEndpoint: string,
+    resourceStoreController: ResourceStoreController, containerManager: ContainerManager) {
+    this.runtimeConfig = runtimeConfig;
     this.sparqlEndpoint = sparqlEndpoint;
     this.resourceStoreController = resourceStoreController;
     this.containerManager = containerManager;
@@ -166,7 +166,7 @@ export class SparqlResourceStore implements ResourceStore {
   private async handleCreation(path: string, newIdentifier: string, allowRecursiveCreation: boolean,
     overwriteMetadata: boolean, isContainer: boolean, data?: Readable, metadata?: Quad[]): Promise<ResourceIdentifier> {
     await this.ensureValidContainerPath(path, allowRecursiveCreation);
-    const URI = `${this.baseRequestURI}${ensureTrailingSlash(path)}${newIdentifier}`;
+    const URI = new URL(newIdentifier, new URL(path, this.runtimeConfig.base)).toString();
     return isContainer || typeof data === 'undefined' ?
       await this.handleContainerCreation(URI, overwriteMetadata, metadata) :
       await this.handleResourceCreation(URI, data, metadata);
@@ -229,7 +229,7 @@ export class SparqlResourceStore implements ResourceStore {
    */
   private async ensureValidContainerPath(path: string, allowRecursiveCreation: boolean): Promise<void> {
     const parentContainers = path.split('/').filter((container): any => container);
-    let currentContainerURI = ensureTrailingSlash(this.baseRequestURI);
+    let currentContainerURI = ensureTrailingSlash(this.runtimeConfig.base);
 
     // Check each intermediate container one by one.
     while (parentContainers.length) {

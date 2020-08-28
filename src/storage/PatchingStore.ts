@@ -1,8 +1,8 @@
+import { Patch } from '../ldp/http/Patch';
+import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
-import { Patch } from '../ldp/http/Patch';
 import { PatchHandler } from './patch/PatchHandler';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ResourceStore } from './ResourceStore';
 
 /**

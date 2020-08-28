@@ -1,7 +1,7 @@
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { Operation } from '../operations/Operation';
 import { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 /**
  * Generates permissions for the base set of methods that always require the same permissions.

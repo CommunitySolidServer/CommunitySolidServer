@@ -1,5 +1,5 @@
-import { BasePermissionsExtractor } from '../../../../src/ldp/permissions/BasePermissionsExtractor';
 import { Operation } from '../../../../src/ldp/operations/Operation';
+import { BasePermissionsExtractor } from '../../../../src/ldp/permissions/BasePermissionsExtractor';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A BasePermissionsExtractor', (): void => {

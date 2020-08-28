@@ -1,15 +1,15 @@
+import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
-import { Lock } from '../../../../src/storage/Lock';
 import { Quad } from 'rdf-js';
+import { translate } from 'sparqlalgebrajs';
+import streamifyArray from 'streamify-array';
+import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
+import { Lock } from '../../../../src/storage/Lock';
+import { SimpleSparqlUpdatePatchHandler } from '../../../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
 import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { SimpleSparqlUpdatePatchHandler } from '../../../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
-import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
-import streamifyArray from 'streamify-array';
-import { translate } from 'sparqlalgebrajs';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
-import { namedNode, quad } from '@rdfjs/data-model';
+import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SimpleSparqlUpdatePatchHandler', (): void => {
   let handler: SimpleSparqlUpdatePatchHandler;

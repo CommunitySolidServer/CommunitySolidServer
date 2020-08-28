@@ -1,17 +1,17 @@
-import { AclManager } from './AclManager';
-import { ContainerManager } from '../storage/ContainerManager';
-import { CONTENT_TYPE_QUADS } from '../util/ContentTypes';
+import { Quad, Store, Term } from 'n3';
 import { Credentials } from '../authentication/Credentials';
-import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { PermissionSet } from '../ldp/permissions/PermissionSet';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { ContainerManager } from '../storage/ContainerManager';
 import { ResourceStore } from '../storage/ResourceStore';
+import { CONTENT_TYPE_QUADS } from '../util/ContentTypes';
+import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import { ACL, FOAF } from './AclConstants';
+import { AclManager } from './AclManager';
 import { Authorizer, AuthorizerArgs } from './Authorizer';
-import { Quad, Store, Term } from 'n3';
 
 /**
  * Handles most web access control predicates such as

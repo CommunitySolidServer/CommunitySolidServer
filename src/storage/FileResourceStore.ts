@@ -1,22 +1,24 @@
-import arrayifyStream from 'arrayify-stream';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { contentType as getContentTypeFromExtension } from 'mime-types';
-import { MetadataController } from '../util/MetadataController';
-import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
-import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
+import { contentType as getContentTypeFromExtension } from 'mime-types';
+import { Quad } from 'rdf-js';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ResourceStore } from './ResourceStore';
-import { ResourceStoreController } from '../util/ResourceStoreController';
-import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
+import { MetadataController } from '../util/MetadataController';
+import { ResourceStoreController } from '../util/ResourceStoreController';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { ResourceStore } from './ResourceStore';
+
 const { extname, join: joinPath } = posix;
 
 /**
@@ -24,24 +26,24 @@ const { extname, join: joinPath } = posix;
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class FileResourceStore implements ResourceStore {
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly metadataController: MetadataController;
   private readonly resourceStoreController: ResourceStoreController;
 
   /**
-   * @param baseRequestURI - Will be stripped of all incoming URIs and added to all outgoing ones to find the relative
-   * path.
-   * @param rootFilepath - Root filepath in which the resources and containers will be saved as files and directories.
+   * @param runtimeConfig - The runtime config.
    * @param metadataController - Instance of MetadataController to use.
    * @param resourceStoreController - Instance of ResourceStoreController to use.
    */
-  public constructor(baseRequestURI: string, rootFilepath: string, metadataController: MetadataController,
+  public constructor(runtimeConfig: RuntimeConfig, metadataController: MetadataController,
     resourceStoreController: ResourceStoreController) {
-    this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
-    this.rootFilepath = trimTrailingSlashes(rootFilepath);
+    this.runtimeConfig = runtimeConfig;
     this.metadataController = metadataController;
     this.resourceStoreController = resourceStoreController;
+  }
+
+  public get rootFilepath(): string {
+    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**
@@ -171,7 +173,7 @@ export class FileResourceStore implements ResourceStore {
     if (!path.startsWith(this.rootFilepath)) {
       throw new Error(`File ${path} is not part of the file storage at ${this.rootFilepath}.`);
     }
-    return this.baseRequestURI + path.slice(this.rootFilepath.length);
+    return new URL(path.slice(this.rootFilepath.length), this.runtimeConfig.base).toString();
   }
 
   /**

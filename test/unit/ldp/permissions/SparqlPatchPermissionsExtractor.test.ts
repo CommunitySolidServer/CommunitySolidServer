@@ -1,7 +1,7 @@
 import { Factory } from 'sparqlalgebrajs';
+import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import { Operation } from '../../../../src/ldp/operations/Operation';
 import { SparqlPatchPermissionsExtractor } from '../../../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
-import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SparqlPatchPermissionsExtractor', (): void => {

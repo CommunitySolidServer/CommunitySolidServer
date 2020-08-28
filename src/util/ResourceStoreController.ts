@@ -1,10 +1,11 @@
-import { ConflictHttpError } from './errors/ConflictHttpError';
-import { InteractionController } from './InteractionController';
-import { MethodNotAllowedHttpError } from './errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from './errors/NotFoundHttpError';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ensureTrailingSlash, trimTrailingSlashes } from './Util';
+import { ConflictHttpError } from './errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from './errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from './errors/NotFoundHttpError';
+import { InteractionController } from './InteractionController';
+import { ensureLeadingSlash, ensureTrailingSlash, trimTrailingSlashes } from './Util';
 
 export interface SetBehaviour {
   /**
@@ -24,16 +25,16 @@ export interface SetBehaviour {
 }
 
 export class ResourceStoreController {
-  private readonly baseRequestURI: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly interactionController: InteractionController;
 
   /**
-   * @param baseRequestURI - The base from the store. Will be stripped of all incoming URIs and added to all outgoing
-   * ones to find the relative path.
+   * @param runtimeConfig - Config containing base that will be stripped of all incoming URIs
+   *                        and added to all outgoing ones to find the relative path.
    * @param interactionController - Instance of InteractionController to use.
    */
-  public constructor(baseRequestURI: string, interactionController: InteractionController) {
-    this.baseRequestURI = trimTrailingSlashes(baseRequestURI);
+  public constructor(runtimeConfig: RuntimeConfig, interactionController: InteractionController) {
+    this.runtimeConfig = runtimeConfig;
     this.interactionController = interactionController;
   }
 
@@ -47,10 +48,14 @@ export class ResourceStoreController {
    * @returns A string representing the relative path.
    */
   public parseIdentifier(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.baseRequestURI)) {
+    if (!identifier.path.startsWith(trimTrailingSlashes(this.runtimeConfig.base))) {
       throw new NotFoundHttpError();
     }
-    return identifier.path.slice(this.baseRequestURI.length);
+    const path = identifier.path.slice(this.runtimeConfig.base.length);
+    if (path === '') {
+      return '/';
+    }
+    return path;
   }
 
   /**
@@ -73,7 +78,7 @@ export class ResourceStoreController {
    */
   public getBehaviourAddResource(container: ResourceIdentifier, representation: Representation): SetBehaviour {
     // Get the path from the request URI, and the Slug and Link header values.
-    const path = this.parseIdentifier(container);
+    const path = ensureLeadingSlash(this.parseIdentifier(container));
     const { slug } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
 
@@ -91,7 +96,7 @@ export class ResourceStoreController {
   public getBehaviourSetRepresentation(identifier: ResourceIdentifier, representation: Representation): SetBehaviour {
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)$/u.exec(this.parseIdentifier(identifier)) ?? [];
+    const [ , path, slug ] = /^(.*\/)([^/]+\/?)$/u.exec(ensureLeadingSlash(this.parseIdentifier(identifier))) ?? [];
     if ((typeof path !== 'string' || ensureTrailingSlash(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }

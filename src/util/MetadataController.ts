@@ -1,10 +1,10 @@
-import arrayifyStream from 'arrayify-stream';
-import { Readable } from 'stream';
 import { Stats } from 'fs';
-import streamifyArray from 'streamify-array';
+import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
-import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';
 import { NamedNode, Quad } from 'rdf-js';
+import streamifyArray from 'streamify-array';
+import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';
 
 export const TYPE_PREDICATE = DataFactory.namedNode(`${RDF}type`);
 export const MODIFIED_PREDICATE = DataFactory.namedNode(`${TERMS}modified`);

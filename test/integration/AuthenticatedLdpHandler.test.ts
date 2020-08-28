@@ -1,38 +1,39 @@
-import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
-import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
-import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
-import { BodyParser } from '../../src/ldp/http/BodyParser';
-import { call } from '../util/Util';
-import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { HttpRequest } from '../../src/server/HttpRequest';
-import { InteractionController } from '../../src/util/InteractionController';
-import { MockResponse } from 'node-mocks-http';
-import { Operation } from '../../src/ldp/operations/Operation';
+import * as url from 'url';
+import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
-import { PatchingStore } from '../../src/storage/PatchingStore';
-import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
-import { Representation } from '../../src/ldp/representation/Representation';
-import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
-import { ResourceStoreController } from '../../src/util/ResourceStoreController';
-import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
+import { MockResponse } from 'node-mocks-http';
 import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
+import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
+import { RuntimeConfig } from '../../src/init/RuntimeConfig';
+import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
+import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
+import { BodyParser } from '../../src/ldp/http/BodyParser';
+import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
+import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
+import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
+import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpdateBodyParser';
+import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
+import { Operation } from '../../src/ldp/operations/Operation';
+import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
 import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
 import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
 import { SimplePatchOperationHandler } from '../../src/ldp/operations/SimplePatchOperationHandler';
 import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
-import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
-import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpdateBodyParser';
-import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
-import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
+import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
+import { Representation } from '../../src/ldp/representation/Representation';
+import { HttpRequest } from '../../src/server/HttpRequest';
+import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
-import { namedNode, quad } from '@rdfjs/data-model';
-import * as url from 'url';
+import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
+import { PatchingStore } from '../../src/storage/PatchingStore';
+import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
+import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
+import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
+import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
+import { InteractionController } from '../../src/util/InteractionController';
+import { ResourceStoreController } from '../../src/util/ResourceStoreController';
+import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
@@ -46,7 +47,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
-    const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
+    const store = new SimpleResourceStore(new ResourceStoreController(new RuntimeConfig({ base: 'http://test.com/' }),
       new InteractionController()));
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
       new SimpleGetOperationHandler(store),
@@ -118,7 +119,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     ]);
     const authorizer = new SimpleAuthorizer();
 
-    const store = new SimpleResourceStore(new ResourceStoreController('http://test.com/',
+    const store = new SimpleResourceStore(new ResourceStoreController(new RuntimeConfig({ base: 'http://test.com/' }),
       new InteractionController()));
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),

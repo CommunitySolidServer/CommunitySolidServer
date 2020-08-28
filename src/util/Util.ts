@@ -1,5 +1,5 @@
-import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -11,6 +11,17 @@ import { Readable } from 'stream';
  * @returns The potentially changed path.
  */
 export const ensureTrailingSlash = (path: string): string => path.replace(/\/*$/u, '/');
+
+/**
+ * Makes sure the input path has exactly 1 slash at the beginning.
+ * Multiple slashes will get merged into one.
+ * If there is no slash it will be added.
+ *
+ * @param path - Path to check.
+ *
+ * @returns The potentially changed path.
+ */
+export const ensureLeadingSlash = (path: string): string => path.replace(/^\/*/u, '/');
 
 /**
  * Joins all strings of a stream.
