@@ -11,6 +11,8 @@ import {
   InteractionController,
   MetadataController,
   Operation,
+  QuadToTurtleConverter,
+  RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
@@ -26,6 +28,7 @@ import {
   SimpleRequestParser,
   SimpleResponseWriter,
   SimpleTargetExtractor,
+  TurtleToQuadConverter,
 } from '..';
 import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
 
@@ -38,13 +41,23 @@ export class FileResourceStoreConfig implements ServerConfig {
 
   public constructor() {
     this.base = `http://test.com/`;
-    this.store = new FileResourceStore(
+    const converter = new CompositeAsyncHandler([
+      new QuadToTurtleConverter(),
+      new TurtleToQuadConverter(),
+    ]);
+
+    const store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
         rootFilepath: 'uploads/',
       }),
       new InteractionController(),
       new MetadataController(),
+    );
+
+    this.store = new RepresentationConvertingStore(
+      store,
+      converter,
     );
     this.aclManager = new SimpleExtensionAclManager();
   }
