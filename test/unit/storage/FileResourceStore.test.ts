@@ -205,6 +205,7 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
+
     const readable = streamifyArray([]);
     readable.on('newListener', (event): void => {
       if (event === 'open') {

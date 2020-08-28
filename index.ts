@@ -76,6 +76,7 @@ export * from './src/storage/patch/SimpleSparqlUpdatePatchHandler';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
+export * from './src/storage/FileResourceStore';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
@@ -100,6 +101,8 @@ export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 export * from './src/util/AcceptParser';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
+export * from './src/util/InteractionController';
+export * from './src/util/MetadataController';
 export * from './src/util/Util';
 
 // Config

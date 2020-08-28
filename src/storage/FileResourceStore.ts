@@ -249,6 +249,7 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
+
     const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
       const readMetadataStream = createReadStream(`${path}.metadata`);
       readMetadataStream.on('open', async(): Promise<void> => {
