@@ -15,7 +15,7 @@ export class UrlContainerManager implements ContainerManager {
 
   public async getContainer(id: ResourceIdentifier): Promise<ResourceIdentifier> {
     const path = this.canonicalUrl(id.path);
-    if (this.canonicalUrl(this.runtimeConfig.base) === path) {
+    if (this.runtimeConfig.base === path) {
       throw new Error('Root does not have a container.');
     }
 
@@ -30,6 +30,6 @@ export class UrlContainerManager implements ContainerManager {
   }
 
   private canonicalUrl(path: string): string {
-    return ensureTrailingSlash(new URL(path).toString());
+    return ensureTrailingSlash(path.toString());
   }
 }
