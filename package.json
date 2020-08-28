@@ -70,7 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "arrayify-stream": "^1.0.0",
-    "componentjs-generator": "^1.0.0",
+    "componentjs-generator": "^1.0.1",
     "coveralls": "^3.1.0",
     "eslint": "^7.0.0",
     "eslint-config-es": "^3.19.61",
