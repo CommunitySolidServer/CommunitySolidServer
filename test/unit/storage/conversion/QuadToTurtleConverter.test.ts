@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
@@ -29,8 +28,7 @@ describe('A QuadToTurtleConverter', (): void => {
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
-    expect(result).toEqual({
-      data: expect.any(Readable),
+    expect(result).toMatchObject({
       dataType: DATA_TYPE_BINARY,
       metadata: {
         contentType: 'text/turtle',
