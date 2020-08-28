@@ -1,12 +1,12 @@
 import arrayifyStream from 'arrayify-stream';
+import streamifyArray from 'streamify-array';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { ResourceStoreController } from '../util/ResourceStoreController';
 import { ensureTrailingSlash } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
-import { ResourceStoreController } from '../util/ResourceStoreController';
-import streamifyArray from 'streamify-array';
 
 /**
  * Resource store storing its data in an in-memory map.
@@ -18,7 +18,6 @@ export class SimpleResourceStore implements ResourceStore {
   private readonly resourceStoreController: ResourceStoreController;
 
   /**
-<<<<<<< HEAD
    * @param resourceStoreController - Instance of ResourceStoreController to use.
    */
   public constructor(resourceStoreController: ResourceStoreController) {

@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import { InteractionController } from '../src/util/InteractionController';
-import { ResourceStoreController } from '../src/util/ResourceStoreController';
 import yargs from 'yargs';
 import {
   AcceptPreferenceParser,
@@ -35,6 +33,8 @@ import {
   TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
+import { InteractionController } from '../src/util/InteractionController';
+import { ResourceStoreController } from '../src/util/ResourceStoreController';
 
 const { argv } = yargs
   .usage('node ./bin/server.js [args]')
