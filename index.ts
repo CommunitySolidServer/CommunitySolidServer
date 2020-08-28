@@ -101,3 +101,8 @@ export * from './src/util/AcceptParser';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
 export * from './src/util/Util';
+
+// Config
+export * from './configs/ServerConfig';
+export * from './configs/DefaultServerConfig';
+

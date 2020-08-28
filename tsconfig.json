@@ -16,7 +16,8 @@
     "index.ts",
     "bin/**/*.ts",
     "src/**/*.ts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "configs/**/*.ts",
   ],
   "exclude": [
     "node_modules"

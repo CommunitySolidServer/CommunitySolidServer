@@ -57,7 +57,7 @@
     "@typescript-eslint/parser": "^2.33.0",
     "arrayify-stream": "^1.0.0",
     "coveralls": "^3.1.0",
-    "eslint": "^7.0.0",
+    "eslint": "^7.7.0",
     "eslint-config-es": "^3.19.61",
     "eslint-plugin-tsdoc": "^0.2.4",
     "eslint-import-resolver-typescript": "^2.2.1",
