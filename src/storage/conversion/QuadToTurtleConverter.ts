@@ -1,8 +1,8 @@
-import { checkRequest } from './ConversionUtil';
+import { StreamWriter } from 'n3';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { StreamWriter } from 'n3';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../util/ContentTypes';
+import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
 /**

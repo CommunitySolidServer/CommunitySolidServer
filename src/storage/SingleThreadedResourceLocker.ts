@@ -1,6 +1,6 @@
 import AsyncLock from 'async-lock';
-import { Lock } from './Lock';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { Lock } from './Lock';
 import { ResourceLocker } from './ResourceLocker';
 
 /**

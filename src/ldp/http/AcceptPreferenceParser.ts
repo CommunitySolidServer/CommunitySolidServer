@@ -1,7 +1,4 @@
 import { HttpRequest } from '../../server/HttpRequest';
-import { PreferenceParser } from './PreferenceParser';
-import { RepresentationPreference } from '../representation/RepresentationPreference';
-import { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import {
   AcceptHeader,
   parseAccept,
@@ -9,6 +6,9 @@ import {
   parseAcceptEncoding,
   parseAcceptLanguage,
 } from '../../util/AcceptParser';
+import { RepresentationPreference } from '../representation/RepresentationPreference';
+import { RepresentationPreferences } from '../representation/RepresentationPreferences';
+import { PreferenceParser } from './PreferenceParser';
 
 /**
  * Extracts preferences from the accept-* headers from an incoming {@link HttpRequest}.

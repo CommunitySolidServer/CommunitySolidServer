@@ -1,23 +1,23 @@
-import arrayifyStream from 'arrayify-stream';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { contentType as getContentTypeFromExtension } from 'mime-types';
-import { InteractionController } from '../util/InteractionController';
-import { MetadataController } from '../util/MetadataController';
-import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
-import { Quad } from 'rdf-js';
 import { Readable } from 'stream';
+import arrayifyStream from 'arrayify-stream';
+import { contentType as getContentTypeFromExtension } from 'mime-types';
+import { Quad } from 'rdf-js';
+import streamifyArray from 'streamify-array';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ResourceStore } from './ResourceStore';
-import { RuntimeConfig } from '../init/RuntimeConfig';
-import streamifyArray from 'streamify-array';
-import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
-import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
+import { InteractionController } from '../util/InteractionController';
+import { MetadataController } from '../util/MetadataController';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { ResourceStore } from './ResourceStore';
 
 const { extname, join: joinPath, normalize: normalizePath } = posix;
 
@@ -249,13 +249,18 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-    let rawMetadata: Quad[] = [];
-    try {
+    const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
-    } catch (_) {
-      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-    }
+      readMetadataStream.on('open', async(): Promise<void> => {
+        resolve(this.metadataController.generateQuadsFromReadable(readMetadataStream));
+      })
+        .on('error', (): void => {
+          // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+          resolve([]);
+        });
+    });
+
+    const rawMetadata: Quad[] = await rawMetadataPromise;
     const metadata: RepresentationMetadata = {
       raw: rawMetadata,
       dateTime: stats.mtime,

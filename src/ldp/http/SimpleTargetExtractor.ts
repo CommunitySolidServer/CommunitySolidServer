@@ -1,8 +1,8 @@
+import { TLSSocket } from 'tls';
 import { format } from 'url';
 import { HttpRequest } from '../../server/HttpRequest';
 import { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
-import { TLSSocket } from 'tls';
 
 /**
  * Extracts an identifier from an incoming {@link HttpRequest}.

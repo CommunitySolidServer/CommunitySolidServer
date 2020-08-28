@@ -1,10 +1,10 @@
 import { Algebra } from 'sparqlalgebrajs';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
 import { Operation } from '../operations/Operation';
+import { Representation } from '../representation/Representation';
 import { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
-import { Representation } from '../representation/Representation';
-import { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 
 /**
  * Generates permissions for a SPARQL DELETE/INSERT patch.

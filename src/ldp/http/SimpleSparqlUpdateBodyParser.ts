@@ -1,12 +1,12 @@
-import { BodyParser } from './BodyParser';
-import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
-import { HttpRequest } from '../../server/HttpRequest';
 import { PassThrough } from 'stream';
-import { readableToString } from '../../util/Util';
-import { SparqlUpdatePatch } from './SparqlUpdatePatch';
 import { translate } from 'sparqlalgebrajs';
+import { HttpRequest } from '../../server/HttpRequest';
+import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
+import { readableToString } from '../../util/Util';
+import { BodyParser } from './BodyParser';
+import { SparqlUpdatePatch } from './SparqlUpdatePatch';
 
 /**
  * {@link BodyParser} that supports `application/sparql-update` content.

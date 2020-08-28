@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
+import { IncomingHttpHeaders } from 'http';
+import { createResponse, MockResponse } from 'node-mocks-http';
+import streamifyArray from 'streamify-array';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { IncomingHttpHeaders } from 'http';
-import streamifyArray from 'streamify-array';
-import { createResponse, MockResponse } from 'node-mocks-http';
 
 export const call = async(handler: HttpHandler, requestUrl: URL, method: string,
   headers: IncomingHttpHeaders, data: string[]): Promise<MockResponse<any>> => {

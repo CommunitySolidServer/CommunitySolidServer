@@ -1,5 +1,5 @@
-import { HttpRequest } from '../../../src/server/HttpRequest';
 import { SimpleCredentialsExtractor } from '../../../src/authentication/SimpleCredentialsExtractor';
+import { HttpRequest } from '../../../src/server/HttpRequest';
 
 describe('A SimpleCredentialsExtractor', (): void => {
   const extractor = new SimpleCredentialsExtractor();
