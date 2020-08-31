@@ -1,0 +1,54 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:my:ResourceLocker",
+      "@type": "SingleThreadedResourceLocker"
+    },
+
+    {
+      "@id": "urn:solid-server:my:ResourceStore_Patching",
+      "@type": "PatchingStore",
+      "PatchingStore:_source": {
+        "@id": "urn:solid-server:my:ResourceStore_Converting"
+      },
+      "PatchingStore:_patcher": {
+        "@id": "urn:solid-server:my:PatchHandler",
+        "@type": "SimpleSparqlUpdatePatchHandler",
+        "SimpleSparqlUpdatePatchHandler:_source": {
+          "@id": "urn:solid-server:my:ResourceStore_Converting"
+        },
+        "SimpleSparqlUpdatePatchHandler:_locker": {
+          "@id": "urn:solid-server:my:ResourceLocker"
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:my:ResourceStore_Converting",
+      "@type": "RepresentationConvertingStore",
+      "RepresentationConvertingStore:_source": {
+        "@id": "urn:solid-server:my:ResourceStore"
+      },
+      "RepresentationConvertingStore:_converter": {
+        "@type": "CompositeAsyncHandler",
+        "CompositeAsyncHandler:_handlers": [
+          {
+            "@type": "RdfToQuadConverter"
+          },
+          {
+            "@type": "QuadToTurtleConverter"
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:my:UrlContainerManager",
+      "@type": "UrlContainerManager",
+      "UrlContainerManager:_runtimeConfig": {
+        "@id": "urn:solid-server:my:RuntimeConfig"
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@
     "files-scs:config/presets/ldp/permissions-extractor.json",
     "files-scs:config/presets/ldp/request-parser.json",
     "files-scs:config/presets/setup.json",
-    "files-scs:config/presets/storage.json"
+    "files-scs:config/presets/storage.json",
+    "files-scs:config/presets/storage_wrapper.json"
   ]
 }

@@ -15,7 +15,7 @@
         "@id": "urn:solid-server:my:UrlContainerManager"
       },
       "SimpleAclAuthorizer:_resourceStore": {
-        "@id": "urn:solid-server:my:ResourceStore"
+        "@id": "urn:solid-server:my:ResourceStore_Patching"
       }
     }
   ]
