@@ -4,6 +4,19 @@
     {
       "@id": "urn:solid-server:my:AclManager",
       "@type": "SimpleExtensionAclManager"
+    },
+    {
+      "@id": "urn:solid-server:my:AclAuthorizer",
+      "@type": "SimpleAclAuthorizer",
+      "SimpleAclAuthorizer:_aclManager": {
+        "@id": "urn:solid-server:my:AclManager"
+      },
+      "SimpleAclAuthorizer:_containerManager": {
+        "@id": "urn:solid-server:my:UrlContainerManager"
+      },
+      "SimpleAclAuthorizer:_resourceStore": {
+        "@id": "urn:solid-server:my:ResourceStore"
+      }
     }
   ]
 }
