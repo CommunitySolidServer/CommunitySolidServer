@@ -42,6 +42,7 @@
     "express": "^4.17.1",
     "mime-types": "^2.1.27",
     "n3": "^1.4.0",
+    "rdf-parse": "^1.5.0",
     "rdf-terms": "^1.5.1",
     "sparqlalgebrajs": "^2.3.1",
     "uuid": "^8.3.0",
