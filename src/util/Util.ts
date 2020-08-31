@@ -1,6 +1,7 @@
 import { Readable, Duplex } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
+
 /**
  * Makes sure the input path has exactly 1 slash at the end.
  * Multiple slashes will get merged into one.

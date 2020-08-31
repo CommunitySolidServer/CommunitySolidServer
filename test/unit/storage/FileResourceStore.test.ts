@@ -205,15 +205,7 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    const readable = streamifyArray([]);
-    readable.on('newListener', (event): void => {
-      if (event === 'open') {
-        setImmediate((): void => {
-          readable.emit('open');
-        });
-      }
-    });
-    (fs.createReadStream as jest.Mock).mockReturnValueOnce(readable);
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([]));
 
     // Tests
     await store.setRepresentation({ path: `${base}file.txt` }, representation);
