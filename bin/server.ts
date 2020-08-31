@@ -6,6 +6,7 @@ import {
   BasePermissionsExtractor,
   CompositeAsyncHandler,
   ExpressHttpServer,
+  RdfToQuadConverter,
   HttpRequest,
   PatchingStore,
   QuadToTurtleConverter,
@@ -30,7 +31,6 @@ import {
   SimpleTargetExtractor,
   SingleThreadedResourceLocker,
   SparqlPatchPermissionsExtractor,
-  TurtleToQuadConverter,
   UrlContainerManager,
 } from '..';
 
@@ -63,7 +63,7 @@ const permissionsExtractor = new CompositeAsyncHandler([
 // Will have to see how to best handle this
 const store = new SimpleResourceStore(runtimeConfig);
 const converter = new CompositeAsyncHandler([
-  new TurtleToQuadConverter(),
+  new RdfToQuadConverter(),
   new QuadToTurtleConverter(),
 ]);
 const convertingStore = new RepresentationConvertingStore(store, converter);

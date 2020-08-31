@@ -64,6 +64,7 @@ export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';
 
 // Storage/Conversion
+export * from './src/storage/conversion/RdfToQuadConverter';
 export * from './src/storage/conversion/QuadToTurtleConverter';
 export * from './src/storage/conversion/RepresentationConverter';
 export * from './src/storage/conversion/TurtleToQuadConverter';
