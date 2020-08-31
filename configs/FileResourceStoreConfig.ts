@@ -42,12 +42,7 @@ export class FileResourceStoreConfig implements ServerConfig {
   public constructor() {
     this.base = `http://test.com/`;
 
-    const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
-    ]);
-
-    const store = new FileResourceStore(
+    this.store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
         rootFilepath: 'uploads/',
@@ -56,10 +51,6 @@ export class FileResourceStoreConfig implements ServerConfig {
       new MetadataController(),
     );
 
-    this.store = new RepresentationConvertingStore(
-      store,
-      converter,
-    );
     this.aclManager = new SimpleExtensionAclManager();
   }
 
@@ -110,14 +101,20 @@ export class FileResourceStoreConfig implements ServerConfig {
     const permissionsExtractor = new BasePermissionsExtractor();
     const authorizer = new SimpleAuthorizer();
 
+    const converter = new CompositeAsyncHandler([
+      new QuadToTurtleConverter(),
+      new TurtleToQuadConverter(),
+    ]);
+    const convertingStore = new RepresentationConvertingStore(this.store, converter);
+
     const operationHandler = new CompositeAsyncHandler<
     Operation,
     ResponseDescription
     >([
-      new SimpleGetOperationHandler(this.store),
-      new SimplePostOperationHandler(this.store),
-      new SimpleDeleteOperationHandler(this.store),
-      new SimplePutOperationHandler(this.store),
+      new SimpleGetOperationHandler(convertingStore),
+      new SimplePostOperationHandler(convertingStore),
+      new SimpleDeleteOperationHandler(convertingStore),
+      new SimplePutOperationHandler(convertingStore),
     ]);
 
     const responseWriter = new SimpleResponseWriter();
