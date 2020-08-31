@@ -1,6 +1,5 @@
 {
   "name": "@solid/community-server",
-  "private": true,
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
@@ -43,6 +42,7 @@
     "express": "^4.17.1",
     "mime-types": "^2.1.27",
     "n3": "^1.4.0",
+    "rdf-parse": "^1.5.0",
     "rdf-terms": "^1.5.1",
     "sparqlalgebrajs": "^2.3.1",
     "uuid": "^8.3.0",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/arrayify-stream": "^1.0.0",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.0",
     "@types/streamify-array": "^1.0.0",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
