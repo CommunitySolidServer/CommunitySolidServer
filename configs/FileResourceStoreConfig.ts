@@ -41,6 +41,7 @@ export class FileResourceStoreConfig implements ServerConfig {
 
   public constructor() {
     this.base = `http://test.com/`;
+
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),

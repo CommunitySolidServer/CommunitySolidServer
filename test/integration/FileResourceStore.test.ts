@@ -31,7 +31,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
 
@@ -42,7 +42,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getHeaders().location).toBe(url.format(requestUrl));
 
       // GET
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(404);
       expect(response._getData()).toContain('NotFoundHttpError');
     });
@@ -70,7 +70,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
 
@@ -89,7 +89,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE3');
@@ -122,7 +122,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
 
@@ -133,7 +133,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getHeaders().location).toBe(url.format(requestUrl));
 
       // GET
-      response = await call(handler, requestUrl, 'GET', { accept: '*/*' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
       expect(response.statusCode).toBe(404);
       expect(response._getData()).toContain('NotFoundHttpError');
     });
