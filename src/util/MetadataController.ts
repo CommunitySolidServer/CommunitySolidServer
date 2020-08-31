@@ -6,6 +6,7 @@ import { NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';
+import { pipeStreams } from './Util';
 
 export const TYPE_PREDICATE = DataFactory.namedNode(`${RDF}type`);
 export const MODIFIED_PREDICATE = DataFactory.namedNode(`${TERMS}modified`);
@@ -70,7 +71,7 @@ export class MetadataController {
    * @returns The Readable object.
    */
   public generateReadableFromQuads(quads: Quad[]): Readable {
-    return streamifyArray(quads).pipe(new StreamWriter({ format: TEXT_TURTLE }));
+    return pipeStreams(streamifyArray(quads), new StreamWriter({ format: TEXT_TURTLE }));
   }
 
   /**
@@ -80,6 +81,6 @@ export class MetadataController {
    * @returns A promise containing the array of quads.
    */
   public async generateQuadsFromReadable(readable: Readable): Promise<Quad[]> {
-    return arrayifyStream(readable.pipe(new StreamParser({ format: TEXT_TURTLE })));
+    return await arrayifyStream(pipeStreams(readable, new StreamParser({ format: TEXT_TURTLE })));
   }
 }

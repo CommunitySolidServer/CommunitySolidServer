@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import arrayifyStream from 'arrayify-stream';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
@@ -249,18 +248,13 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-    const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
+    let rawMetadata: Quad[] = [];
+    try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      readMetadataStream.on('open', async(): Promise<void> => {
-        resolve(this.metadataController.generateQuadsFromReadable(readMetadataStream));
-      })
-        .on('error', (): void => {
-          // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-          resolve([]);
-        });
-    });
-
-    const rawMetadata: Quad[] = await rawMetadataPromise;
+      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
+    } catch (_) {
+      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+    }
     const metadata: RepresentationMetadata = {
       raw: rawMetadata,
       dateTime: stats.mtime,
@@ -294,7 +288,7 @@ export class FileResourceStore implements ResourceStore {
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(joinPath(path, '.metadata'));
-      rawMetadata = await arrayifyStream(readMetadataStream);
+      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
     } catch (_) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
