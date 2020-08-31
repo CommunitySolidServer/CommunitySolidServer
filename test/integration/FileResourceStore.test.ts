@@ -20,7 +20,7 @@ describe('A server using a FileResourceStore', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', Slug: 'testfile1.txt' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt' },
         fileData,
       );
 
@@ -31,7 +31,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
 
@@ -42,7 +42,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getHeaders().location).toBe(url.format(requestUrl));
 
       // GET
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
       expect(response.statusCode).toBe(404);
       expect(response._getData()).toContain('NotFoundHttpError');
     });
@@ -59,7 +59,7 @@ describe('A server using a FileResourceStore', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', Slug: 'testfile1.txt' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt' },
         fileData,
       );
 
@@ -70,7 +70,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
 
@@ -89,7 +89,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE3');
@@ -110,8 +110,8 @@ describe('A server using a FileResourceStore', (): void => {
         'POST',
         {
           'content-type': 'application/octet-stream',
-          Slug: 'secondfolder/',
-          Link: '<http://www.w3.org/ns/ldp#Container>; rel"type"',
+          slug: 'secondfolder/',
+          link: '<http://www.w3.org/ns/ldp#Container>; rel"type"',
         },
       );
 
