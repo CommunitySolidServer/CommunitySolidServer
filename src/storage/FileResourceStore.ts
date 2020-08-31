@@ -66,7 +66,6 @@ export class FileResourceStore implements ResourceStore {
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
     const path = this.parseIdentifier(container);
     const { slug, raw } = representation.metadata;
-    console.log(`adding resource ${container.path}: path = ${path}; slug = ${slug}`);
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
     if (raw.length > 0) {
@@ -157,7 +156,6 @@ export class FileResourceStore implements ResourceStore {
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
     const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
-    console.log(`setting representation: path = ${path}; slug = ${slug}`);
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
@@ -251,7 +249,6 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-    console.log(`CONTENT TYPE: ${contentType} from ${path}`);
 
     const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
       const readMetadataStream = createReadStream(`${path}.metadata`);

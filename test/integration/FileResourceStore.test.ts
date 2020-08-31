@@ -31,9 +31,10 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
+      expect(response._getBuffer().toString()).toContain('TESTFILE1');
 
       // DELETE
       response = await call(handler, requestUrl, 'DELETE', {}, []);
@@ -42,7 +43,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getHeaders().location).toBe(url.format(requestUrl));
 
       // GET
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(404);
       expect(response._getData()).toContain('NotFoundHttpError');
     });
@@ -70,9 +71,10 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
+      expect(response._getBuffer().toString()).toContain('TESTFILE1');
 
       // PUT
       fileData = fs.readFileSync('test/testfiles/testfile3.txt');
@@ -89,7 +91,7 @@ describe('A server using a FileResourceStore', (): void => {
 
       // GET
       requestUrl = new URL(id);
-      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE3');
