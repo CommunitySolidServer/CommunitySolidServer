@@ -37,7 +37,7 @@
             "@type": "RdfToQuadConverter"
           },
           {
-            "@type": "QuadToTurtleConverter"
+            "@type": "QuadToRdfConverter"
           }
         ]
       }
