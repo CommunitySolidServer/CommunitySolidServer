@@ -1,4 +1,5 @@
 import { namedNode, triple } from '@rdfjs/data-model';
+import rdfSerializer from 'rdf-serialize';
 import stringifyStream from 'stream-to-string';
 import streamifyArray from 'streamify-array';
 import { Representation } from '../../../../src/ldp/representation/Representation';
@@ -10,6 +11,14 @@ import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../../../src/util/Conte
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
+
+  it('supports parsing quads.', async(): Promise<void> => {
+    await expect(converter.getInputTypes()).resolves.toEqual({ [CONTENT_TYPE_QUADS]: 1 });
+  });
+
+  it('supports serializing as the same types as rdfSerializer.', async(): Promise<void> => {
+    await expect(converter.getOutputTypes()).resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
+  });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
     const representation = { metadata: { contentType: CONTENT_TYPE_QUADS }} as Representation;

@@ -5,12 +5,21 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { checkRequest, matchingTypes } from './ConversionUtil';
-import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
+import { RepresentationConverterArgs } from './RepresentationConverter';
+import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * Converts `internal/quads` to most major RDF serializations.
  */
-export class QuadToRdfConverter extends RepresentationConverter {
+export class QuadToRdfConverter extends TypedRepresentationConverter {
+  public async getInputTypes(): Promise<{ [contentType: string]: number }> {
+    return { [CONTENT_TYPE_QUADS]: 1 };
+  }
+
+  public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
+    return rdfSerializer.getContentTypesPrioritized();
+  }
+
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
     checkRequest(input, [ CONTENT_TYPE_QUADS ], await rdfSerializer.getContentTypes());
   }

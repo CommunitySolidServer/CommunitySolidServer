@@ -2,34 +2,40 @@ import { Representation } from '../../../../src/ldp/representation/Representatio
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { checkRequest } from '../../../../src/storage/conversion/ConversionUtil';
-import {
-  RepresentationConverter,
-  RepresentationConverterArgs,
-} from '../../../../src/storage/conversion/RepresentationConverter';
+import { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
+import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 
-class DummyConverter extends RepresentationConverter {
-  private readonly inType: string;
-  private readonly outType: string;
+class DummyConverter extends TypedRepresentationConverter {
+  private readonly inTypes: { [contentType: string]: number };
+  private readonly outTypes: { [contentType: string]: number };
 
-  public constructor(inType: string, outType: string) {
+  public constructor(inTypes: { [contentType: string]: number }, outTypes: { [contentType: string]: number }) {
     super();
-    this.inType = inType;
-    this.outType = outType;
+    this.inTypes = inTypes;
+    this.outTypes = outTypes;
+  }
+
+  public async getInputTypes(): Promise<{ [contentType: string]: number }> {
+    return this.inTypes;
+  }
+
+  public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
+    return this.outTypes;
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, [ this.inType ], [ this.outType ]);
+    checkRequest(input, Object.keys(this.inTypes), Object.keys(this.outTypes));
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
     const representation: Representation = { ...input.representation };
-    representation.metadata = { ...input.representation.metadata, contentType: this.outType };
+    representation.metadata = { ...input.representation.metadata, contentType: input.preferences.type![0].value };
     return representation;
   }
 }
 
 describe('A ChainedConverter', (): void => {
-  let converters: RepresentationConverter[];
+  let converters: TypedRepresentationConverter[];
   let converter: ChainedConverter;
   let representation: Representation;
   let preferences: RepresentationPreferences;
@@ -37,24 +43,30 @@ describe('A ChainedConverter', (): void => {
 
   beforeEach(async(): Promise<void> => {
     converters = [
-      new DummyConverter('text/turtle', 'chain/1'),
-      new DummyConverter('chain/1', 'chain/2'),
-      new DummyConverter('chain/2', 'internal/quads'),
+      new DummyConverter({ 'text/turtle': 1 }, { 'chain/1': 0.9, 'chain/x': 0.5 }),
+      new DummyConverter({ 'chain/*': 1, 'chain/x': 0.5 }, { 'chain/2': 1 }),
+      new DummyConverter({ 'chain/2': 1 }, { 'internal/quads': 1 }),
     ];
-    converter = new ChainedConverter(converters, [ 'chain/1', 'chain/2' ]);
+    converter = new ChainedConverter(converters);
 
     representation = { metadata: { contentType: 'text/turtle' } as any } as Representation;
     preferences = { type: [{ value: 'internal/quads', weight: 1 }]};
     args = { representation, preferences, identifier: { path: 'path' }};
   });
 
-  it('needs at least 2 converter and n-1 chains.', async(): Promise<void> => {
-    expect((): any => new ChainedConverter([], [])).toThrow('At least 2 converters are required.');
-    expect((): any => new ChainedConverter([ converters[0] ], [])).toThrow('At least 2 converters are required.');
-    expect((): any => new ChainedConverter([ converters[0], converters[1] ], []))
-      .toThrow('1 type is required per converter chain.');
-    expect(new ChainedConverter([ converters[0], converters[1] ], [ 'apple' ]))
+  it('needs at least 2 converters.', async(): Promise<void> => {
+    expect((): any => new ChainedConverter([])).toThrow('At least 2 converters are required.');
+    expect((): any => new ChainedConverter([ converters[0] ])).toThrow('At least 2 converters are required.');
+    expect(new ChainedConverter([ converters[0], converters[1] ]))
       .toBeInstanceOf(ChainedConverter);
+  });
+
+  it('supports the same inputs as the first converter of the chain.', async(): Promise<void> => {
+    await expect(converter.getInputTypes()).resolves.toEqual(await converters[0].getInputTypes());
+  });
+
+  it('supports the same outputs as the last converter of the chain.', async(): Promise<void> => {
+    await expect(converter.getOutputTypes()).resolves.toEqual(await converters[2].getOutputTypes());
   });
 
   it('can handle requests with the correct in- and output.', async(): Promise<void> => {
@@ -81,5 +93,14 @@ describe('A ChainedConverter', (): void => {
     expect((converters[0] as any).handle).toHaveBeenCalledTimes(1);
     expect((converters[1] as any).handle).toHaveBeenCalledTimes(1);
     expect((converters[2] as any).handle).toHaveBeenCalledTimes(1);
+  });
+
+  it('errors if there is no valid chain at runtime.', async(): Promise<void> => {
+    converters = [
+      new DummyConverter({ 'text/turtle': 1 }, { 'chain/1': 0.9, 'chain/x': 0.5 }),
+      new DummyConverter({ 'chain/2': 1 }, { 'internal/quads': 1 }),
+    ];
+    converter = new ChainedConverter(converters);
+    await expect(converter.handle(args)).rejects.toThrow();
   });
 });
