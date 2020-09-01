@@ -65,11 +65,13 @@ export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';
 
 // Storage/Conversion
+export * from './src/storage/conversion/ChainedConverter';
 export * from './src/storage/conversion/QuadToRdfConverter';
-export * from './src/storage/conversion/RdfToQuadConverter';
 export * from './src/storage/conversion/QuadToTurtleConverter';
+export * from './src/storage/conversion/RdfToQuadConverter';
 export * from './src/storage/conversion/RepresentationConverter';
 export * from './src/storage/conversion/TurtleToQuadConverter';
+export * from './src/storage/conversion/TypedRepresentationConverter';
 
 // Storage/Patch
 export * from './src/storage/patch/PatchHandler';

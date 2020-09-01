@@ -25,6 +25,29 @@
     },
 
     {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad",
+      "@type": "RdfToQuadConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf",
+      "@type": "QuadToRdfConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_Chained",
+      "@type": "ChainedConverter",
+      "ChainedConverter:_converters": [
+        {
+          "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad"
+        },
+        {
+          "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf"
+        }
+      ]
+    },
+
+    {
       "@id": "urn:solid-server:default:ResourceStore_Converting",
       "@type": "RepresentationConvertingStore",
       "RepresentationConvertingStore:_source": {
@@ -34,10 +57,13 @@
         "@type": "CompositeAsyncHandler",
         "CompositeAsyncHandler:_handlers": [
           {
-            "@type": "RdfToQuadConverter"
+            "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad"
           },
           {
-            "@type": "QuadToRdfConverter"
+            "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf"
+          },
+          {
+            "@id": "urn:solid-server:default:ResourceStore_Converting_Chained"
           }
         ]
       }
