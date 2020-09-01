@@ -9,6 +9,7 @@ script:
  - npm run lint
  - npm run validate
  - npm run test
+ - .travis/validate-package.sh
 after_success:
  - npm run coveralls
 cache: npm
