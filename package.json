@@ -24,11 +24,12 @@
     "prepare": "npm run build",
     "start": "node ./bin/server.js -p 3000",
     "test": "jest",
+    "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json > /dev/null",
     "watch": "nodemon --watch \"src/**/*.js\" --watch \"bin/**/*.js\" --exec npm start"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build && npm run lint && npm run test"
+      "pre-commit": "npm run build && npm run lint && npm run validate && npm run test"
     }
   },
   "files": [
