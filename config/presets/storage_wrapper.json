@@ -2,33 +2,33 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:my:ResourceLocker",
+      "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "SingleThreadedResourceLocker"
     },
 
     {
-      "@id": "urn:solid-server:my:ResourceStore_Patching",
+      "@id": "urn:solid-server:default:ResourceStore_Patching",
       "@type": "PatchingStore",
       "PatchingStore:_source": {
-        "@id": "urn:solid-server:my:ResourceStore_Converting"
+        "@id": "urn:solid-server:default:ResourceStore_Converting"
       },
       "PatchingStore:_patcher": {
-        "@id": "urn:solid-server:my:PatchHandler",
+        "@id": "urn:solid-server:default:PatchHandler",
         "@type": "SimpleSparqlUpdatePatchHandler",
         "SimpleSparqlUpdatePatchHandler:_source": {
-          "@id": "urn:solid-server:my:ResourceStore_Converting"
+          "@id": "urn:solid-server:default:ResourceStore_Converting"
         },
         "SimpleSparqlUpdatePatchHandler:_locker": {
-          "@id": "urn:solid-server:my:ResourceLocker"
+          "@id": "urn:solid-server:default:ResourceLocker"
         }
       }
     },
 
     {
-      "@id": "urn:solid-server:my:ResourceStore_Converting",
+      "@id": "urn:solid-server:default:ResourceStore_Converting",
       "@type": "RepresentationConvertingStore",
       "RepresentationConvertingStore:_source": {
-        "@id": "urn:solid-server:my:ResourceStore"
+        "@id": "urn:solid-server:default:ResourceStore"
       },
       "RepresentationConvertingStore:_converter": {
         "@type": "CompositeAsyncHandler",
@@ -44,10 +44,10 @@
     },
 
     {
-      "@id": "urn:solid-server:my:UrlContainerManager",
+      "@id": "urn:solid-server:default:UrlContainerManager",
       "@type": "UrlContainerManager",
       "UrlContainerManager:_runtimeConfig": {
-        "@id": "urn:solid-server:my:RuntimeConfig"
+        "@id": "urn:solid-server:default:RuntimeConfig"
       }
     }
   ]
