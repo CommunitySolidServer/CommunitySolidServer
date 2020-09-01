@@ -12,7 +12,9 @@
   },
   "main": "index.js",
   "license": "MIT",
-  "bin": "bin/server.js",
+  "bin": {
+    "community-solid-server": "bin/server.js"
+  },
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc",
