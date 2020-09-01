@@ -68,6 +68,12 @@ $ curl -H "Accept: text/turtle" \
   http://localhost:3000/myfile.ttl
 ```
 
+Retrieve a turtle file in a different serialization:
+```bash
+$ curl -H "Accept: application/ld+json" \
+  http://localhost:3000/myfile.ttl
+```
+
 ### `DELETE`: Deleting resources
 
 ```bash
