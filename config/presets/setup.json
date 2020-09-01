@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:my",
+      "@id": "urn:solid-server:default",
       "@type": "Setup",
       "Setup:_httpServer": {
         "@id": "urn:solid-server:default:HttpServer"

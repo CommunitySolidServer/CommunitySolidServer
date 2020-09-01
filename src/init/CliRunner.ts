@@ -38,7 +38,7 @@ export const runCustom = function(
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
     const setup: Setup = await loader
-      .instantiateFromUrl('urn:solid-server:my', configPath);
+      .instantiateFromUrl('urn:solid-server:default', configPath);
     resolve(await setup.setup({ port: argv.port }));
   }).then((runtimeConfig: RuntimeConfig): void => {
     stdout.write(`Running at ${runtimeConfig.base}\n`);
