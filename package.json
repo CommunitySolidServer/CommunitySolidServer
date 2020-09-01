@@ -29,7 +29,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build && npm run lint && npm run validate && npm run test"
+      "pre-commit": "npm run build && npm run lint && npm run test"
     }
   },
   "files": [
