@@ -5,16 +5,16 @@
       "@id": "urn:solid-server:my",
       "@type": "Setup",
       "Setup:_httpServer": {
-        "@id": "urn:solid-server:my:HttpServer"
+        "@id": "urn:solid-server:default:HttpServer"
       },
       "Setup:_store": {
-        "@id": "urn:solid-server:my:ResourceStore_Patching"
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
       },
       "Setup:_aclManager": {
-        "@id": "urn:solid-server:my:AclManager"
+        "@id": "urn:solid-server:default:AclManager"
       },
       "Setup:_runtimeConfig": {
-        "@id": "urn:solid-server:my:RuntimeConfig",
+        "@id": "urn:solid-server:default:RuntimeConfig",
         "@type": "RuntimeConfig",
         "RuntimeConfigData:_port": 3000
       }

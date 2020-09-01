@@ -2,22 +2,22 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:my:HttpHandler",
+      "@id": "urn:solid-server:default:HttpHandler",
       "@type": "AuthenticatedLdpHandler",
       "AuthenticatedLdpHandler:_requestParser": {
-        "@id": "urn:solid-server:my:RequestParser"
+        "@id": "urn:solid-server:default:RequestParser"
       },
       "AuthenticatedLdpHandler:_credentialsExtractor": {
-        "@id": "urn:solid-server:my:CredentialsExtractor"
+        "@id": "urn:solid-server:default:CredentialsExtractor"
       },
       "AuthenticatedLdpHandler:_permissionsExtractor": {
-        "@id": "urn:solid-server:my:PermissionsExtractor"
+        "@id": "urn:solid-server:default:PermissionsExtractor"
       },
       "AuthenticatedLdpHandler:_authorizer": {
-        "@id": "urn:solid-server:my:AclAuthorizer"
+        "@id": "urn:solid-server:default:AclAuthorizer"
       },
       "AuthenticatedLdpHandler:_operationHandler": {
-        "@id": "urn:solid-server:my:OperationHandler"
+        "@id": "urn:solid-server:default:OperationHandler"
       },
       "AuthenticatedLdpHandler:_responseWriter": {
         "@type": "SimpleResponseWriter"
