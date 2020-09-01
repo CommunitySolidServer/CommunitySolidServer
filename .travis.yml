@@ -8,6 +8,7 @@ script:
  - npm run build
  - npm run lint
  - npm run test
+ - .travis/validate-package.sh
 after_success:
  - npm run coveralls
 cache: npm
