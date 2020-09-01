@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import rdfParser from 'rdf-parse';
 import streamifyArray from 'streamify-array';
 import { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
@@ -12,6 +13,14 @@ import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHtt
 describe('A RdfToQuadConverter.test.ts', (): void => {
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
+
+  it('supports parsing the same types as rdfParser.', async(): Promise<void> => {
+    await expect(converter.getInputTypes()).resolves.toEqual(await rdfParser.getContentTypesPrioritized());
+  });
+
+  it('supports serializing as quads.', async(): Promise<void> => {
+    await expect(converter.getOutputTypes()).resolves.toEqual({ [CONTENT_TYPE_QUADS]: 1 });
+  });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
     const representation = { metadata: { contentType: 'text/turtle' }} as Representation;
