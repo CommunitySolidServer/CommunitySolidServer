@@ -6,32 +6,32 @@
       "@type": "CompositeAsyncHandler",
       "CompositeAsyncHandler:_handlers": [
         {
-          "@type": "SimpleDeleteOperationHandler",
-          "SimpleDeleteOperationHandler:_store": {
+          "@type": "DeleteOperationHandler",
+          "DeleteOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
           }
         },
         {
-          "@type": "SimpleGetOperationHandler",
-          "SimpleGetOperationHandler:_store": {
+          "@type": "GetOperationHandler",
+          "GetOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
           }
         },
         {
-          "@type": "SimplePatchOperationHandler",
-          "SimplePatchOperationHandler:_store": {
+          "@type": "PatchOperationHandler",
+          "PatchOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
           }
         },
         {
-          "@type": "SimplePostOperationHandler",
-          "SimplePostOperationHandler:_store": {
+          "@type": "PostOperationHandler",
+          "PostOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
           }
         },
         {
-          "@type": "SimplePutOperationHandler",
-          "SimplePutOperationHandler:_store": {
+          "@type": "PutOperationHandler",
+          "PutOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
           }
         }

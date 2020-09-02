@@ -14,11 +14,11 @@
       },
       "PatchingStore:_patcher": {
         "@id": "urn:solid-server:default:PatchHandler",
-        "@type": "SimpleSparqlUpdatePatchHandler",
-        "SimpleSparqlUpdatePatchHandler:_source": {
+        "@type": "SparqlUpdatePatchHandler",
+        "SparqlUpdatePatchHandler:_source": {
           "@id": "urn:solid-server:default:ResourceStore_Converting"
         },
-        "SimpleSparqlUpdatePatchHandler:_locker": {
+        "SparqlUpdatePatchHandler:_locker": {
           "@id": "urn:solid-server:default:ResourceLocker"
         }
       }

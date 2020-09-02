@@ -3,18 +3,18 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:AclManager",
-      "@type": "SimpleExtensionAclManager"
+      "@type": "UrlBasedAclManager"
     },
     {
       "@id": "urn:solid-server:default:AclAuthorizer",
-      "@type": "SimpleAclAuthorizer",
-      "SimpleAclAuthorizer:_aclManager": {
+      "@type": "WebAclAuthorizer",
+      "WebAclAuthorizer:_aclManager": {
         "@id": "urn:solid-server:default:AclManager"
       },
-      "SimpleAclAuthorizer:_containerManager": {
+      "WebAclAuthorizer:_containerManager": {
         "@id": "urn:solid-server:default:UrlContainerManager"
       },
-      "SimpleAclAuthorizer:_resourceStore": {
+      "WebAclAuthorizer:_resourceStore": {
         "@id": "urn:solid-server:default:ResourceStore_Patching"
       }
     }

@@ -3,21 +3,21 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:RequestParser",
-      "@type": "SimpleRequestParser",
-      "SimpleRequestParser:_targetExtractor": {
-        "@type": "SimpleTargetExtractor"
+      "@type": "BasicRequestParser",
+      "BasicRequestParser:_targetExtractor": {
+        "@type": "BasicTargetExtractor"
       },
-      "SimpleRequestParser:_preferenceParser": {
+      "BasicRequestParser:_preferenceParser": {
         "@type": "AcceptPreferenceParser"
       },
-      "SimpleRequestParser:_bodyParser": {
+      "BasicRequestParser:_bodyParser": {
         "@type": "CompositeAsyncHandler",
         "CompositeAsyncHandler:_handlers": [
           {
-            "@type": "SimpleSparqlUpdateBodyParser"
+            "@type": "SparqlUpdateBodyParser"
           },
           {
-            "@type": "SimpleBodyParser"
+            "@type": "RawBodyParser"
           }
         ]
       }

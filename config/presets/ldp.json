@@ -20,7 +20,7 @@
         "@id": "urn:solid-server:default:OperationHandler"
       },
       "AuthenticatedLdpHandler:_responseWriter": {
-        "@type": "SimpleResponseWriter"
+        "@type": "BasicResponseWriter"
       }
     }
   ]
