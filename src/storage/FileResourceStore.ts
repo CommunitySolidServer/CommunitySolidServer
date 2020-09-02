@@ -9,7 +9,7 @@ import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { CONTENT_TYPE_QUADS } from '../util/ContentTypes';
+import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
@@ -300,7 +300,7 @@ export class FileResourceStore implements ResourceStore {
       metadata: {
         raw: rawMetadata,
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     };
   }

@@ -1,7 +1,7 @@
 import { StreamWriter } from 'n3';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -10,7 +10,7 @@ import { RepresentationConverter, RepresentationConverterArgs } from './Represen
  */
 export class QuadToTurtleConverter extends RepresentationConverter {
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, [ CONTENT_TYPE_QUADS ], [ 'text/turtle' ]);
+    checkRequest(input, [ INTERNAL_QUADS ], [ 'text/turtle' ]);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

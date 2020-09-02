@@ -2,7 +2,7 @@ import { PassThrough } from 'stream';
 import rdfParser from 'rdf-parse';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverterArgs } from './RepresentationConverter';
@@ -17,11 +17,11 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
-    return { [CONTENT_TYPE_QUADS]: 1 };
+    return { [INTERNAL_QUADS]: 1 };
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, await rdfParser.getContentTypes(), [ CONTENT_TYPE_QUADS ]);
+    checkRequest(input, await rdfParser.getContentTypes(), [ INTERNAL_QUADS ]);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -29,7 +29,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   private rdfToQuads(representation: Representation, baseIRI: string): Representation {
-    const metadata: RepresentationMetadata = { ...representation.metadata, contentType: CONTENT_TYPE_QUADS };
+    const metadata: RepresentationMetadata = { ...representation.metadata, contentType: INTERNAL_QUADS };
 
     // Catch parsing errors and emit correct error
     // Node 10 requires both writableObjectMode and readableObjectMode

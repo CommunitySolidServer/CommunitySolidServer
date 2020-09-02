@@ -7,7 +7,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { Representation } from '../../ldp/representation/Representation';
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { ResourceLocker } from '../ResourceLocker';
 import { ResourceStore } from '../ResourceStore';
@@ -56,7 +56,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
     const lock = await this.locker.acquire(input.identifier);
     const quads = await this.source.getRepresentation(input.identifier,
-      { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
+      { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
     const store = new Store<BaseQuad>();
     const importEmitter = store.import(quads.data);
     await new Promise((resolve, reject): void => {
@@ -71,7 +71,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       metadata: {
         raw: [],
         profiles: [],
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     };
     await this.source.setRepresentation(input.identifier, representation);

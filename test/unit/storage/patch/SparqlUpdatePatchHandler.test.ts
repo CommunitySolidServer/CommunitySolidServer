@@ -8,7 +8,7 @@ import { Lock } from '../../../../src/storage/Lock';
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
 import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { CONTENT_TYPE_QUADS } from '../../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
@@ -65,7 +65,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   const basicChecks = async(quads: Quad[]): Promise<void> => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
-      { path: 'path' }, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]},
+      { path: 'path' }, { type: [{ value: INTERNAL_QUADS, weight: 1 }]},
     );
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'setRepresentation', 'release' ]);
@@ -73,7 +73,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     expect(setParams[0]).toEqual({ path: 'path' });
     expect(setParams[1]).toEqual(expect.objectContaining({
       binary: false,
-      metadata: { raw: [], profiles: [], contentType: CONTENT_TYPE_QUADS },
+      metadata: { raw: [], profiles: [], contentType: INTERNAL_QUADS },
     }));
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
   };
