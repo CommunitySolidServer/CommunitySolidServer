@@ -20,13 +20,15 @@ export class ExpressHttpServer {
       methods: [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ],
     }));
 
-    app.use(async(request, response): Promise<void> => {
+    app.use(async(request, response, done): Promise<void> => {
       try {
         await this.handler.handleSafe({ request, response });
       } catch (error) {
         const errMsg = `${error.name}: ${error.message}\n${error.stack}`;
         process.stderr.write(errMsg);
         response.status(500).contentType('text/plain').send(errMsg);
+      } finally {
+        done();
       }
     });
     return app.listen(port);
