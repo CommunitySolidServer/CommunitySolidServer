@@ -77,6 +77,13 @@ describe('ExpressHttpServer', (): void => {
     });
   });
 
+  it('returns a 404 when the handler does not do anything.', async(): Promise<void> => {
+    handler.handle = async(input): Promise<void> => {
+      expect(input).toBeDefined();
+    };
+    await request(server).get('/').expect(404);
+  });
+
   it('catches errors thrown by its handler.', async(): Promise<void> => {
     handler.handle = async(): Promise<void> => {
       throw new Error('dummyError');
