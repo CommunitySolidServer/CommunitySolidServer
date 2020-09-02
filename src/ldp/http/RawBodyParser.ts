@@ -1,7 +1,6 @@
 import { HttpRequest } from '../../server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { BinaryRepresentation } from '../representation/BinaryRepresentation';
+import { Representation } from '../representation/Representation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
 
@@ -17,13 +16,13 @@ export class RawBodyParser extends BodyParser {
 
   // Note that the only reason this is a union is in case the body is empty.
   // If this check gets moved away from the BodyParsers this union could be removed
-  public async handle(input: HttpRequest): Promise<BinaryRepresentation | undefined> {
+  public async handle(input: HttpRequest): Promise<Representation | undefined> {
     if (!input.headers['content-type']) {
       return;
     }
 
     return {
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: input,
       metadata: this.parseMetadata(input),
     };

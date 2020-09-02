@@ -17,10 +17,10 @@ describe('A PutOperationHandler', (): void => {
   });
 
   it('sets the representation in the store and returns its identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }, body: { dataType: 'test' }} as Operation))
+    await expect(handler.handle({ target: { path: 'url' }, body: {}} as Operation))
       .resolves.toEqual({ identifier: { path: 'url' }});
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, { dataType: 'test' });
+    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, {});
   });
 
   it('errors when there is no body.', async(): Promise<void> => {

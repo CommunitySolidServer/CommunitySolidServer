@@ -16,9 +16,9 @@ describe('A PatchOperationHandler', (): void => {
   });
 
   it('deletes the resource from the store and returns its identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }, body: { dataType: 'patch' }} as Operation))
+    await expect(handler.handle({ target: { path: 'url' }, body: { binary: false }} as Operation))
       .resolves.toEqual({ identifier: { path: 'url' }});
     expect(store.modifyResource).toHaveBeenCalledTimes(1);
-    expect(store.modifyResource).toHaveBeenLastCalledWith({ path: 'url' }, { dataType: 'patch' });
+    expect(store.modifyResource).toHaveBeenLastCalledWith({ path: 'url' }, { binary: false });
   });
 });

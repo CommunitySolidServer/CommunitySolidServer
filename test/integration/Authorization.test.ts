@@ -26,7 +26,6 @@ import { RepresentationConvertingStore } from '../../src/storage/RepresentationC
 import { ResourceStore } from '../../src/storage/ResourceStore';
 import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 import { call } from '../util/Util';
 
 const setAcl = async(store: ResourceStore, id: string, permissions: PermissionSet, control: boolean,
@@ -61,8 +60,8 @@ const setAcl = async(store: ResourceStore, id: string, permissions: PermissionSe
   acl.push('.');
 
   const representation = {
+    binary: true,
     data: streamifyArray(acl),
-    dataType: DATA_TYPE_BINARY,
     metadata: {
       raw: [],
       profiles: [],

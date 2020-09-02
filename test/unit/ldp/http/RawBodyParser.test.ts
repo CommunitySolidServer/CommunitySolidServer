@@ -2,7 +2,6 @@ import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RawBodyParser } from '../../../../src/ldp/http/RawBodyParser';
 import { HttpRequest } from '../../../../src/server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import 'jest-rdf';
 
@@ -22,8 +21,8 @@ describe('A RawBodyparser', (): void => {
     input.headers = { 'content-type': 'text/turtle' };
     const result = (await bodyParser.handle(input))!;
     expect(result).toEqual({
+      binary: true,
       data: input,
-      dataType: DATA_TYPE_BINARY,
       metadata: {
         contentType: 'text/turtle',
         raw: [],

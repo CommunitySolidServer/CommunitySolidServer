@@ -3,7 +3,6 @@ import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
@@ -27,7 +26,7 @@ export class InMemoryResourceStore implements ResourceStore {
     this.store = {
       // Default root entry (what you get when the identifier is equal to the base)
       '': {
-        dataType: DATA_TYPE_BINARY,
+        binary: true,
         data: streamifyArray([]),
         metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
       },
@@ -132,7 +131,7 @@ export class InMemoryResourceStore implements ResourceStore {
   private async copyRepresentation(source: Representation): Promise<Representation> {
     const arr = await arrayifyStream(source.data);
     return {
-      dataType: source.dataType,
+      binary: source.binary,
       data: streamifyArray([ ...arr ]),
       metadata: source.metadata,
     };
@@ -152,7 +151,7 @@ export class InMemoryResourceStore implements ResourceStore {
     source.data = streamifyArray([ ...arr ]);
 
     return {
-      dataType: source.dataType,
+      binary: source.binary,
       data: streamifyArray([ ...arr ]),
       metadata: source.metadata,
     };

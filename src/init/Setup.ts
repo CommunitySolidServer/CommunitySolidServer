@@ -2,7 +2,6 @@ import streamifyArray from 'streamify-array';
 import { AclManager } from '../authorization/AclManager';
 import { ExpressHttpServer } from '../server/ExpressHttpServer';
 import { ResourceStore } from '../storage/ResourceStore';
-import { DATA_TYPE_BINARY } from '../util/ContentTypes';
 import { RuntimeConfig, RuntimeConfigData } from './RuntimeConfig';
 
 /**
@@ -52,7 +51,7 @@ export class Setup {
       await this.store.setRepresentation(
         await this.aclManager.getAcl({ path: this.runtimeConfig.base }),
         {
-          dataType: DATA_TYPE_BINARY,
+          binary: true,
           data: streamifyArray([ acl ]),
           metadata: {
             raw: [],

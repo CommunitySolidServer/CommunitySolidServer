@@ -2,7 +2,7 @@ import { PassThrough } from 'stream';
 import { StreamParser } from 'n3';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
@@ -30,7 +30,7 @@ export class TurtleToQuadConverter extends RepresentationConverter {
     data.on('error', (error): boolean => errorStream.emit('error', new UnsupportedHttpError(error.message)));
 
     return {
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       data: errorStream,
       metadata,
     };

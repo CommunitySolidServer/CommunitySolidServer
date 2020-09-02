@@ -9,7 +9,7 @@ import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
@@ -59,7 +59,7 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
+    if (!representation.binary) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
 
@@ -149,7 +149,7 @@ export class FileResourceStore implements ResourceStore {
    * @param representation - New Representation.
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
+    if (!representation.binary) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
 
@@ -264,7 +264,7 @@ export class FileResourceStore implements ResourceStore {
     if (contentType) {
       metadata.contentType = contentType;
     }
-    return { metadata, data: readStream, dataType: DATA_TYPE_BINARY };
+    return { metadata, data: readStream, binary: true };
   }
 
   /**
@@ -295,7 +295,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     return {
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       data: streamifyArray(quads),
       metadata: {
         raw: rawMetadata,

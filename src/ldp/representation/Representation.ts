@@ -14,7 +14,8 @@ export interface Representation {
    */
   data: Readable;
   /**
-   * The data type of the contents in the data stream.
+   * Whether the data stream consists of binary/string chunks
+   * (as opposed to complex objects).
    */
-  dataType: string;
+  binary: boolean;
 }
