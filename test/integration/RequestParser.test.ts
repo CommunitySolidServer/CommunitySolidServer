@@ -7,7 +7,7 @@ import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { HttpRequest } from '../../src/server/HttpRequest';
 
-describe('A SimpleRequestParser with simple input parsers', (): void => {
+describe('A BasicRequestParser with simple input parsers', (): void => {
   const targetExtractor = new BasicTargetExtractor();
   const bodyParser = new RawBodyParser();
   const preferenceParser = new AcceptPreferenceParser();
@@ -21,6 +21,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       accept: 'text/turtle; q=0.8',
       'accept-language': 'en-gb, en;q=0.5',
       'content-type': 'text/turtle',
+      'transfer-encoding': 'chunked',
       host: 'test.com',
     };
 

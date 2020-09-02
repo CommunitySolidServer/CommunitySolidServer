@@ -17,8 +17,16 @@ export class RawBodyParser extends BodyParser {
   // Note that the only reason this is a union is in case the body is empty.
   // If this check gets moved away from the BodyParsers this union could be removed
   public async handle(input: HttpRequest): Promise<Representation | undefined> {
-    if (!input.headers['content-type']) {
+    // RFC7230, §3.3: The presence of a message body in a request
+    // is signaled by a Content-Length or Transfer-Encoding header field.
+    if (!input.headers['content-length'] && !input.headers['transfer-encoding']) {
       return;
+    }
+
+    // While RFC7231 allows treating a body without content type as an octet stream,
+    // such an omission likely signals a mistake, so force clients to make this explicit.
+    if (!input.headers['content-type']) {
+      throw new Error('An HTTP request body was passed without Content-Type header');
     }
 
     return {
@@ -29,11 +37,11 @@ export class RawBodyParser extends BodyParser {
   }
 
   private parseMetadata(input: HttpRequest): RepresentationMetadata {
-    const mediaType = input.headers['content-type']!.split(';')[0];
+    const contentType = /^[^;]*/u.exec(input.headers['content-type']!)![0];
 
     const metadata: RepresentationMetadata = {
       raw: [],
-      contentType: mediaType,
+      contentType,
     };
 
     const { link, slug } = input.headers;
