@@ -3,6 +3,7 @@ import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
@@ -28,7 +29,7 @@ export class InMemoryResourceStore implements ResourceStore {
       '': {
         binary: true,
         data: streamifyArray([]),
-        metadata: { raw: [], profiles: [], contentType: 'text/turtle' },
+        metadata: { raw: [], profiles: [], contentType: TEXT_TURTLE },
       },
     };
   }
