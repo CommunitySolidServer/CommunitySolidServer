@@ -2,6 +2,7 @@ import streamifyArray from 'streamify-array';
 import { AclManager } from '../authorization/AclManager';
 import { ExpressHttpServer } from '../server/ExpressHttpServer';
 import { ResourceStore } from '../storage/ResourceStore';
+import { TEXT_TURTLE } from '../util/ContentTypes';
 import { RuntimeConfig, RuntimeConfigData } from './RuntimeConfig';
 
 /**
@@ -56,7 +57,7 @@ export class Setup {
           metadata: {
             raw: [],
             profiles: [],
-            contentType: 'text/turtle',
+            contentType: TEXT_TURTLE,
           },
         },
       );
