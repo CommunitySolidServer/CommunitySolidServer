@@ -20,13 +20,13 @@ export class PutOperationHandler extends OperationHandler {
     if (input.method !== 'PUT') {
       throw new UnsupportedHttpError('This handler only supports PUT operations.');
     }
-    if (typeof input.body !== 'object') {
-      throw new UnsupportedHttpError('PUT operations require a body.');
-    }
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    await this.store.setRepresentation(input.target, input.body!);
+    if (typeof input.body !== 'object') {
+      throw new UnsupportedHttpError('PUT operations require a body.');
+    }
+    await this.store.setRepresentation(input.target, input.body);
     return { identifier: input.target };
   }
 }

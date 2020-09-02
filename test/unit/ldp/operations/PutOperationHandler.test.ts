@@ -11,10 +11,9 @@ describe('A PutOperationHandler', (): void => {
     store.setRepresentation = jest.fn(async(): Promise<void> => {});
   });
 
-  it('only supports PUT operations with a body.', async(): Promise<void> => {
-    await expect(handler.canHandle({ method: 'PUT' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+  it('only supports PUT operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(UnsupportedHttpError);
-    await expect(handler.canHandle({ method: 'PUT', body: { dataType: 'test' }} as Operation)).resolves.toBeUndefined();
+    await expect(handler.canHandle({ method: 'PUT' } as Operation)).resolves.toBeUndefined();
   });
 
   it('sets the representation in the store and returns its identifier.', async(): Promise<void> => {
@@ -22,5 +21,9 @@ describe('A PutOperationHandler', (): void => {
       .resolves.toEqual({ identifier: { path: 'url' }});
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, { dataType: 'test' });
+  });
+
+  it('errors when there is no body.', async(): Promise<void> => {
+    await expect(handler.handle({ method: 'PUT' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 });
