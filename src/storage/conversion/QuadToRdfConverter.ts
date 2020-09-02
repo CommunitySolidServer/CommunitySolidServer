@@ -3,7 +3,7 @@ import rdfSerializer from 'rdf-serialize';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
-import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { checkRequest, matchingTypes } from './ConversionUtil';
 import { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -13,7 +13,7 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  */
 export class QuadToRdfConverter extends TypedRepresentationConverter {
   public async getInputTypes(): Promise<{ [contentType: string]: number }> {
-    return { [CONTENT_TYPE_QUADS]: 1 };
+    return { [INTERNAL_QUADS]: 1 };
   }
 
   public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
@@ -21,7 +21,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, [ CONTENT_TYPE_QUADS ], await rdfSerializer.getContentTypes());
+    checkRequest(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

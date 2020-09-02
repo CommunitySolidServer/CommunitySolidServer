@@ -6,14 +6,14 @@ import { Representation } from '../../../../src/ldp/representation/Representatio
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
-import { CONTENT_TYPE_QUADS } from '../../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
 
   it('supports parsing quads.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ [CONTENT_TYPE_QUADS]: 1 });
+    await expect(converter.getInputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
   });
 
   it('supports serializing as the same types as rdfSerializer.', async(): Promise<void> => {
@@ -21,13 +21,13 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
-    const representation = { metadata: { contentType: CONTENT_TYPE_QUADS }} as Representation;
+    const representation = { metadata: { contentType: INTERNAL_QUADS }} as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle quad to JSON-LD conversions.', async(): Promise<void> => {
-    const representation = { metadata: { contentType: CONTENT_TYPE_QUADS }} as Representation;
+    const representation = { metadata: { contentType: INTERNAL_QUADS }} as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
@@ -39,7 +39,7 @@ describe('A QuadToRdfConverter', (): void => {
         namedNode('http://test.com/p'),
         namedNode('http://test.com/o'),
       ) ]),
-      metadata: { contentType: CONTENT_TYPE_QUADS },
+      metadata: { contentType: INTERNAL_QUADS },
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
@@ -62,7 +62,7 @@ describe('A QuadToRdfConverter', (): void => {
         namedNode('http://test.com/p'),
         namedNode('http://test.com/o'),
       ) ]),
-      metadata: { contentType: CONTENT_TYPE_QUADS },
+      metadata: { contentType: INTERNAL_QUADS },
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });

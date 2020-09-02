@@ -5,7 +5,7 @@ import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ContainerManager } from '../storage/ContainerManager';
 import { ResourceStore } from '../storage/ResourceStore';
-import { CONTENT_TYPE_QUADS } from '../util/ContentTypes';
+import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
@@ -111,7 +111,7 @@ export class WebAclAuthorizer extends Authorizer {
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
     try {
       const acl = await this.aclManager.getAcl(id);
-      const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: CONTENT_TYPE_QUADS, weight: 1 }]});
+      const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
       return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
     } catch (error) {
       if (!(error instanceof NotFoundHttpError)) {

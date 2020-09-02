@@ -9,7 +9,7 @@ import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
-import { CONTENT_TYPE_QUADS } from '../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
@@ -147,7 +147,7 @@ describe('A FileResourceStore', (): void => {
       metadata: {
         raw: [],
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toBeDefined();
@@ -370,7 +370,7 @@ describe('A FileResourceStore', (): void => {
       metadata: {
         raw: [],
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray(quads);
