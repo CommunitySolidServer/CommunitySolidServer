@@ -129,7 +129,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'POST',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(200);
@@ -140,7 +140,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'PUT',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(200);
@@ -162,7 +162,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'POST',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(401);
@@ -173,7 +173,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'PUT',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(401);
