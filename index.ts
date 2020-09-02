@@ -1,14 +1,14 @@
 // Authentication
 export * from './src/authentication/Credentials';
 export * from './src/authentication/CredentialsExtractor';
-export * from './src/authentication/SimpleCredentialsExtractor';
+export * from './src/authentication/UnsecureWebIdExtractor';
 
 // Authorization
+export * from './src/authorization/AllowEverythingAuthorizer';
 export * from './src/authorization/AclManager';
 export * from './src/authorization/Authorizer';
-export * from './src/authorization/SimpleAclAuthorizer';
-export * from './src/authorization/SimpleAuthorizer';
-export * from './src/authorization/SimpleExtensionAclManager';
+export * from './src/authorization/UrlBasedAclManager';
+export * from './src/authorization/WebAclAuthorizer';
 
 // Init
 export * from './src/init/CliRunner';
@@ -17,28 +17,28 @@ export * from './src/init/Setup';
 
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
+export * from './src/ldp/http/BasicRequestParser';
+export * from './src/ldp/http/BasicResponseWriter';
+export * from './src/ldp/http/BasicTargetExtractor';
 export * from './src/ldp/http/BodyParser';
 export * from './src/ldp/http/Patch';
 export * from './src/ldp/http/PreferenceParser';
+export * from './src/ldp/http/RawBodyParser';
 export * from './src/ldp/http/RequestParser';
 export * from './src/ldp/http/ResponseWriter';
-export * from './src/ldp/http/SimpleBodyParser';
-export * from './src/ldp/http/SimpleRequestParser';
-export * from './src/ldp/http/SimpleResponseWriter';
-export * from './src/ldp/http/SimpleSparqlUpdateBodyParser';
-export * from './src/ldp/http/SimpleTargetExtractor';
+export * from './src/ldp/http/SparqlUpdateBodyParser';
 export * from './src/ldp/http/SparqlUpdatePatch';
 export * from './src/ldp/http/TargetExtractor';
 
 // LDP/Operations
+export * from './src/ldp/operations/DeleteOperationHandler';
+export * from './src/ldp/operations/GetOperationHandler';
 export * from './src/ldp/operations/Operation';
 export * from './src/ldp/operations/OperationHandler';
+export * from './src/ldp/operations/PatchOperationHandler';
+export * from './src/ldp/operations/PostOperationHandler';
+export * from './src/ldp/operations/PutOperationHandler';
 export * from './src/ldp/operations/ResponseDescription';
-export * from './src/ldp/operations/SimpleDeleteOperationHandler';
-export * from './src/ldp/operations/SimpleGetOperationHandler';
-export * from './src/ldp/operations/SimplePatchOperationHandler';
-export * from './src/ldp/operations/SimplePostOperationHandler';
-export * from './src/ldp/operations/SimplePutOperationHandler';
 
 // LDP/Permissions
 export * from './src/ldp/permissions/PermissionSet';
@@ -75,12 +75,13 @@ export * from './src/storage/conversion/TypedRepresentationConverter';
 
 // Storage/Patch
 export * from './src/storage/patch/PatchHandler';
-export * from './src/storage/patch/SimpleSparqlUpdatePatchHandler';
+export * from './src/storage/patch/SparqlUpdatePatchHandler';
 
 // Storage
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
+export * from './src/storage/InMemoryResourceStore';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
@@ -90,7 +91,6 @@ export * from './src/storage/ResourceLocker';
 export * from './src/storage/ResourceMapper';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
-export * from './src/storage/SimpleResourceStore';
 export * from './src/storage/UrlContainerManager';
 
 // Util/Errors

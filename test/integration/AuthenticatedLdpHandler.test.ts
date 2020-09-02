@@ -2,57 +2,57 @@ import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import { MockResponse } from 'node-mocks-http';
-import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
-import { SimpleAuthorizer } from '../../src/authorization/SimpleAuthorizer';
+import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
+import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
 import { RuntimeConfig } from '../../src/init/RuntimeConfig';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
+import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
-import { SimpleSparqlUpdateBodyParser } from '../../src/ldp/http/SimpleSparqlUpdateBodyParser';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
+import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
+import { SparqlUpdateBodyParser } from '../../src/ldp/http/SparqlUpdateBodyParser';
+import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
 import { Operation } from '../../src/ldp/operations/Operation';
+import { PatchOperationHandler } from '../../src/ldp/operations/PatchOperationHandler';
+import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
-import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
-import { SimplePatchOperationHandler } from '../../src/ldp/operations/SimplePatchOperationHandler';
-import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
 import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
 import { Representation } from '../../src/ldp/representation/Representation';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
-import { SimpleSparqlUpdatePatchHandler } from '../../src/storage/patch/SimpleSparqlUpdatePatchHandler';
+import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
+import { SparqlUpdatePatchHandler } from '../../src/storage/patch/SparqlUpdatePatchHandler';
 import { PatchingStore } from '../../src/storage/PatchingStore';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
-import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
 import { SingleThreadedResourceLocker } from '../../src/storage/SingleThreadedResourceLocker';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
 import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
+    const requestParser = new BasicRequestParser({
+      targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new SimpleBodyParser(),
+      bodyParser: new RawBodyParser(),
     });
 
-    const credentialsExtractor = new SimpleCredentialsExtractor();
+    const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new BasePermissionsExtractor();
-    const authorizer = new SimpleAuthorizer();
+    const authorizer = new AllowEverythingAuthorizer();
 
-    const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
+    const store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(store),
-      new SimplePostOperationHandler(store),
-      new SimpleDeleteOperationHandler(store),
+      new GetOperationHandler(store),
+      new PostOperationHandler(store),
+      new DeleteOperationHandler(store),
     ]);
 
-    const responseWriter = new SimpleResponseWriter();
+    const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,
@@ -100,40 +100,40 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
   describe('with simple PATCH handlers', (): void => {
     const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-      new SimpleSparqlUpdateBodyParser(),
-      new SimpleBodyParser(),
+      new SparqlUpdateBodyParser(),
+      new RawBodyParser(),
     ]);
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
+    const requestParser = new BasicRequestParser({
+      targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
       bodyParser,
     });
 
-    const credentialsExtractor = new SimpleCredentialsExtractor();
+    const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
       new BasePermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
-    const authorizer = new SimpleAuthorizer();
+    const authorizer = new AllowEverythingAuthorizer();
 
-    const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
+    const store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),
     ]);
     const convertingStore = new RepresentationConvertingStore(store, converter);
     const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
+    const patcher = new SparqlUpdatePatchHandler(convertingStore, locker);
     const patchingStore = new PatchingStore(convertingStore, patcher);
 
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(patchingStore),
-      new SimplePostOperationHandler(patchingStore),
-      new SimpleDeleteOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
+      new GetOperationHandler(patchingStore),
+      new PostOperationHandler(patchingStore),
+      new DeleteOperationHandler(patchingStore),
+      new PatchOperationHandler(patchingStore),
     ]);
 
-    const responseWriter = new SimpleResponseWriter();
+    const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,
