@@ -42,6 +42,13 @@ describe('ExpressHttpServer', (): void => {
     server.close();
   });
 
+  it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      'x-powered-by': 'Community Solid Server',
+    }));
+  });
+
   it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
     const res = await request(server)
       .options('/')
