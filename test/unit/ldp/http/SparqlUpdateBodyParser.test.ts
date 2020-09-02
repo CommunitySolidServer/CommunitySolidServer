@@ -4,7 +4,6 @@ import { Algebra } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
 import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBodyParser';
 import { HttpRequest } from '../../../../src/server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 
@@ -34,7 +33,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
       namedNode('http://test.com/p'),
       namedNode('http://test.com/o'),
     ) ]);
-    expect(result.dataType).toBe(DATA_TYPE_BINARY);
+    expect(result.binary).toBe(true);
     expect(result.metadata).toEqual({
       raw: [],
       profiles: [],

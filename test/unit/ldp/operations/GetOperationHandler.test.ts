@@ -2,12 +2,11 @@ import { GetOperationHandler } from '../../../../src/ldp/operations/GetOperation
 import { Operation } from '../../../../src/ldp/operations/Operation';
 import { Representation } from '../../../../src/ldp/representation/Representation';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A GetOperationHandler', (): void => {
   const store = {
-    getRepresentation: async(): Promise<Representation> => ({ dataType: DATA_TYPE_QUAD } as Representation),
+    getRepresentation: async(): Promise<Representation> => ({ binary: false } as Representation),
   } as unknown as ResourceStore;
   const handler = new GetOperationHandler(store);
 
@@ -18,7 +17,7 @@ describe('A GetOperationHandler', (): void => {
 
   it('returns the representation from the store with the input identifier.', async(): Promise<void> => {
     await expect(handler.handle({ target: { path: 'url' }} as Operation)).resolves.toEqual(
-      { identifier: { path: 'url' }, body: { dataType: DATA_TYPE_QUAD }},
+      { identifier: { path: 'url' }, body: { binary: false }},
     );
   });
 });

@@ -4,7 +4,6 @@ import { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
 import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
-import { DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A BasicResponseWriter', (): void => {
@@ -16,9 +15,9 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('requires the description body to be a string or binary stream if present.', async(): Promise<void> => {
-    await expect(writer.canHandle({ response, result: { body: { dataType: DATA_TYPE_QUAD }} as ResponseDescription }))
+    await expect(writer.canHandle({ response, result: { body: { binary: false }} as ResponseDescription }))
       .rejects.toThrow(UnsupportedHttpError);
-    await expect(writer.canHandle({ response, result: { body: { dataType: DATA_TYPE_BINARY }} as ResponseDescription }))
+    await expect(writer.canHandle({ response, result: { body: { binary: true }} as ResponseDescription }))
       .resolves.toBeUndefined();
   });
 
@@ -31,8 +30,8 @@ describe('A BasicResponseWriter', (): void => {
 
   it('responds with a body if the description has a body.', async(done): Promise<void> => {
     const body = {
+      binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      dataType: DATA_TYPE_BINARY,
       metadata: {
         raw: [] as Quad[],
         profiles: [] as string[],
@@ -52,8 +51,8 @@ describe('A BasicResponseWriter', (): void => {
 
   it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
     const body = {
+      binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      dataType: DATA_TYPE_BINARY,
       metadata: {
         raw: [] as Quad[],
         profiles: [] as string[],

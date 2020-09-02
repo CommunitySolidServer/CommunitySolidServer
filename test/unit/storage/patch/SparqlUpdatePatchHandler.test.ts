@@ -8,7 +8,7 @@ import { Lock } from '../../../../src/storage/Lock';
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
 import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../../../src/util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
@@ -72,7 +72,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
     expect(setParams[0]).toEqual({ path: 'path' });
     expect(setParams[1]).toEqual(expect.objectContaining({
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       metadata: { raw: [], profiles: [], contentType: CONTENT_TYPE_QUADS },
     }));
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);

@@ -47,8 +47,6 @@ export * from './src/ldp/permissions/BasePermissionsExtractor';
 export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
-export * from './src/ldp/representation/BinaryRepresentation';
-export * from './src/ldp/representation/QuadRepresentation';
 export * from './src/ldp/representation/Representation';
 export * from './src/ldp/representation/RepresentationMetadata';
 export * from './src/ldp/representation/RepresentationPreference';

@@ -3,7 +3,6 @@ import { Representation } from '../../src/ldp/representation/Representation';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 import { readableToString } from '../../src/util/Util';
 
 describe('A ChainedConverter', (): void => {
@@ -15,7 +14,7 @@ describe('A ChainedConverter', (): void => {
 
   it('can convert from JSON-LD to turtle.', async(): Promise<void> => {
     const representation: Representation = {
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
       metadata: { raw: [], contentType: 'application/ld+json' },
     };
@@ -32,7 +31,7 @@ describe('A ChainedConverter', (): void => {
 
   it('can convert from turtle to JSON-LD.', async(): Promise<void> => {
     const representation: Representation = {
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
       metadata: { raw: [], contentType: 'text/turtle' },
     };

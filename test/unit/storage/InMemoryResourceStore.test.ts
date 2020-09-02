@@ -2,25 +2,24 @@ import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
-import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
+import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryResourceStore } from '../../../src/storage/InMemoryResourceStore';
-import { DATA_TYPE_BINARY } from '../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 
 const base = 'http://test.com/';
 
 describe('A InMemoryResourceStore', (): void => {
   let store: InMemoryResourceStore;
-  let representation: BinaryRepresentation;
+  let representation: Representation;
   const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
     store = new InMemoryResourceStore(new RuntimeConfig({ base }));
 
     representation = {
+      binary: true,
       data: streamifyArray([ dataString ]),
-      dataType: DATA_TYPE_BINARY,
       metadata: {} as RepresentationMetadata,
     };
   });
@@ -43,7 +42,7 @@ describe('A InMemoryResourceStore', (): void => {
     expect(identifier.path.startsWith(base)).toBeTruthy();
     const result = await store.getRepresentation(identifier);
     expect(result).toEqual({
-      dataType: representation.dataType,
+      binary: true,
       data: expect.any(Readable),
       metadata: representation.metadata,
     });
@@ -61,7 +60,7 @@ describe('A InMemoryResourceStore', (): void => {
     await store.setRepresentation({ path: base }, representation);
     const result = await store.getRepresentation({ path: base });
     expect(result).toEqual({
-      dataType: representation.dataType,
+      binary: true,
       data: expect.any(Readable),
       metadata: representation.metadata,
     });

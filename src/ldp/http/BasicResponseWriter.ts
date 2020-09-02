@@ -1,5 +1,4 @@
 import { HttpResponse } from '../../server/HttpResponse';
-import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { ResponseDescription } from '../operations/ResponseDescription';
@@ -12,8 +11,7 @@ import { ResponseWriter } from './ResponseWriter';
 export class BasicResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error)) {
-      const dataType = input.result.body?.dataType;
-      if (dataType && dataType !== DATA_TYPE_BINARY) {
+      if (input.result.body && !input.result.body.binary) {
         throw new UnsupportedHttpError('Only binary results are supported.');
       }
     }

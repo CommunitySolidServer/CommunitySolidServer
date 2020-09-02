@@ -1,7 +1,6 @@
 import { PassThrough } from 'stream';
 import { translate } from 'sparqlalgebrajs';
 import { HttpRequest } from '../../server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { readableToString } from '../../util/Util';
@@ -37,7 +36,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       // Prevent body from being requested again
       return {
         algebra,
-        dataType: DATA_TYPE_BINARY,
+        binary: true,
         data: dataCopy,
         metadata: {
           raw: [],

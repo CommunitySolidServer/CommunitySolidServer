@@ -7,7 +7,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { Representation } from '../../ldp/representation/Representation';
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { ResourceLocker } from '../ResourceLocker';
 import { ResourceStore } from '../ResourceStore';
@@ -66,8 +66,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     store.removeQuads(deletes);
     store.addQuads(inserts);
     const representation: Representation = {
+      binary: false,
       data: store.match() as Readable,
-      dataType: DATA_TYPE_QUAD,
       metadata: {
         raw: [],
         profiles: [],

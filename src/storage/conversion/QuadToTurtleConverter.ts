@@ -1,7 +1,7 @@
 import { StreamWriter } from 'n3';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../../util/ContentTypes';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -20,7 +20,7 @@ export class QuadToTurtleConverter extends RepresentationConverter {
   private quadsToTurtle(quads: Representation): Representation {
     const metadata: RepresentationMetadata = { ...quads.metadata, contentType: 'text/turtle' };
     return {
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: quads.data.pipe(new StreamWriter({ format: 'text/turtle' })),
       metadata,
     };

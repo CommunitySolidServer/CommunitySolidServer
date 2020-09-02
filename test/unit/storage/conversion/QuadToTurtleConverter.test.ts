@@ -5,7 +5,7 @@ import { Representation } from '../../../../src/ldp/representation/Representatio
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToTurtleConverter } from '../../../../src/storage/conversion/QuadToTurtleConverter';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
+import { CONTENT_TYPE_QUADS } from '../../../../src/util/ContentTypes';
 
 describe('A QuadToTurtleConverter', (): void => {
   const converter = new QuadToTurtleConverter();
@@ -29,7 +29,7 @@ describe('A QuadToTurtleConverter', (): void => {
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       metadata: {
         contentType: 'text/turtle',
       },

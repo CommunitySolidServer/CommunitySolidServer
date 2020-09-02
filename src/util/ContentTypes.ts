@@ -1,4 +1,2 @@
-export const DATA_TYPE_BINARY = 'binary';
-export const DATA_TYPE_QUAD = 'quad';
-
+// Internal (non-exposed) content types
 export const CONTENT_TYPE_QUADS = 'internal/quads';

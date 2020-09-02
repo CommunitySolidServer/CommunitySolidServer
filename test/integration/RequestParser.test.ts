@@ -6,7 +6,6 @@ import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
 import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 
 describe('A SimpleRequestParser with simple input parsers', (): void => {
   const targetExtractor = new BasicTargetExtractor();
@@ -35,7 +34,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
       body: {
         data: expect.any(Readable),
-        dataType: DATA_TYPE_BINARY,
+        binary: true,
         metadata: {
           contentType: 'text/turtle',
           raw: [],
