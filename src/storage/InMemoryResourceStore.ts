@@ -1,3 +1,4 @@
+import { PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
@@ -113,7 +114,7 @@ export class InMemoryResourceStore implements ResourceStore {
 
   /**
    * Checks if the relative path is in the store.
-   * @param identifier - Incoming identifier.
+   * @param path - Incoming identifier.
    *
    * @throws {@link NotFoundHttpError}
    * If the path is not in the store.
@@ -127,7 +128,7 @@ export class InMemoryResourceStore implements ResourceStore {
   /**
    * Copies the Representation by draining the original data stream and creating a new one.
    *
-   * @param data - Incoming Representation.
+   * @param source - Incoming Representation.
    */
   private async copyRepresentation(source: Representation): Promise<Representation> {
     const arr = await arrayifyStream(source.data);
@@ -147,13 +148,19 @@ export class InMemoryResourceStore implements ResourceStore {
    * @returns The resulting Representation.
    */
   private async generateRepresentation(path: string): Promise<Representation> {
+    // Note: when converting to a complete ResourceStore and using readable-stream
+    // object mode should be set correctly here (now fixed due to Node 10)
     const source = this.store[path];
-    const arr = await arrayifyStream(source.data);
-    source.data = streamifyArray([ ...arr ]);
+    const streamInternal = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    const streamOutput = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    source.data.pipe(streamInternal);
+    source.data.pipe(streamOutput);
+
+    source.data = streamInternal;
 
     return {
       binary: source.binary,
-      data: streamifyArray([ ...arr ]),
+      data: streamOutput,
       metadata: source.metadata,
     };
   }
