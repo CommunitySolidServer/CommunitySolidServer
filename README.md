@@ -3,16 +3,18 @@
 [![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 
-**An open and modular implementation of the [Solid specifications](https://solid.github.io/specification/)**
+**An open and modular implementation of the
+[Solid](https://solidproject.org/)
+[specifications](https://solid.github.io/specification/)**
 
 - Community Solid Server is open software
-to provide people with their own [Solid](https://solidproject.org/) Pod.
+to provide people with their own Solid Pod.
 
 - It will give developers an environment
 to create and test new Solid applications.
 
-- Its modular architecture will allows us
-to try out new ideas on the server side
+- Its modular architecture allows
+trying out new ideas on the server side
 and thereby shape the future of Solid.
 
 ## Current status
