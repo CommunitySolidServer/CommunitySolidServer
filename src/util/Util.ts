@@ -59,7 +59,7 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
  * @param readable - Initial readable stream.
  * @param destination - The destination for writing data.
  *
- * @returns destination as a Readable.
+ * @returns The destination stream.
  */
 export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T): T => {
   readable.pipe(destination);
