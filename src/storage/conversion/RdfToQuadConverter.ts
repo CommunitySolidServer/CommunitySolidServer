@@ -3,7 +3,7 @@ import rdfParser from 'rdf-parse';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { CONTENT_TYPE_QUADS, DATA_TYPE_QUAD } from '../../util/ContentTypes';
-import { pipeStreams } from '../../util/Util';
+import { pipeStreamsAndErrors } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -21,18 +21,19 @@ export class RdfToQuadConverter extends RepresentationConverter {
 
   private rdfToQuads(representation: Representation, baseIRI: string): Representation {
     const metadata: RepresentationMetadata = { ...representation.metadata, contentType: CONTENT_TYPE_QUADS };
-
-    // Catch parsing errors and emit correct error
-    // Node 10 requires both writableObjectMode and readableObjectMode
-    const errorStream = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    const data = rdfParser.parse(representation.data, {
+    const rawQuads = rdfParser.parse(representation.data, {
       contentType: representation.metadata.contentType as string,
       baseIRI,
     });
 
+    // Wrap the stream such that errors are transformed
+    // (Node 10 requires both writableObjectMode and readableObjectMode)
+    const data = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    pipeStreamsAndErrors(rawQuads, data);
+
     return {
       dataType: DATA_TYPE_QUAD,
-      data: pipeStreams(data, errorStream),
+      data,
       metadata,
     };
   }
