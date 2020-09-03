@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 * [fix: Move dependencies to production](https://github.com/solid/community-server/commit/80aad8ab07811ef5070cadfb3b0aabdc6f4214c9)
 
 <a name="v0.1.0"></a>
-## [v0.1.0] - 2020-09-03
+## [v0.1.0](https://github.com/solid/community-server/compare/b949b6cf...v0.1.0) - 2020-09-03
 
 ### Added
 * [feat: Send server identification](https://github.com/solid/community-server/commit/4965b476c9eb6405932d8e0b51039ac64e983525)
