@@ -1,9 +1,12 @@
 # Community Solid Server
+[![Build Status](https://travis-ci.com/solid/community-server.svg?branch=master)](https://travis-ci.com/solid/community-server)
+[![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
+[![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 
-An open and modular implementation of the [Solid specifications](https://solid.github.io/specification/) 
+**An open and modular implementation of the [Solid specifications](https://solid.github.io/specification/)**
 
 - Community Solid Server is open software
-to provide people with their own data pod.
+to provide people with their own [Solid](https://solidproject.org/) Pod.
 
 - It will give developers an environment
 to create and test new Solid applications.
@@ -19,6 +22,9 @@ which means it is **too early for use with Solid apps**.
 However, you can already boot up the server,
 play around with it,
 and check how it is made.
+<br>
+The [architectural diagram](https://github.com/RubenVerborgh/solid-server-architecture)
+can help you find your way.
 
 ## Running locally
 
