@@ -1,10 +1,24 @@
-# community-server
+# Community Solid Server
 
-Implementation of the Solid server.
+An open and modular implementation of the [Solid specifications](https://solid.github.io/specification/) 
 
-The architecture is based on the description [here](https://github.com/RubenVerborgh/solid-server-architecture).
-We follow the Inrupt [coding standards](https://github.com/inrupt/public-documentation/blob/master/coding-conventions/javascript-coding-standards.md) where feasible.
-An initial dummy implementation with some examples can be found [here](https://github.com/RubenVerborgh/solid-server-ts).
+- Community Solid Server is open software
+to provide people with their own data pod.
+
+- It will give developers an environment
+to create and test new Solid applications.
+
+- Its modular architecture will allows us
+to try out new ideas on the server side
+and thereby shape the future of Solid.
+
+## Current status
+This software is in **alpha status**,
+which means it is **too early for use with Solid apps**.
+
+However, you can already boot up the server,
+play around with it,
+and check how it is made.
 
 ## Running locally
 
