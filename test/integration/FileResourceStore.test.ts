@@ -6,11 +6,22 @@ import { call, callFile } from '../util/Util';
 
 describe('A server using a FileResourceStore', (): void => {
   describe('without acl', (): void => {
-    const handler = new FileResourceStoreConfig().getHandler();
+    const config = new FileResourceStoreConfig();
+    const handler = config.getHandler();
+    // const { store } = config;
 
     it('can add a file to the store, read it and delete it.', async(): Promise<
     void
     > => {
+      /*await setAcl(store,
+        'http://test.com/',
+        { read: true, write: true, append: true },
+        true,
+        true,
+        true,
+        undefined,
+        'agent');*/
+
       // POST
       let requestUrl = new URL('http://test.com/');
 
@@ -23,7 +34,7 @@ describe('A server using a FileResourceStore', (): void => {
         { 'content-type': 'application/octet-stream', slug: 'testfile1.txt' },
         fileData,
       );
-
+      console.log(response._getData());
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toHaveLength(0);
       const id = response._getHeaders().location;
