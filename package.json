@@ -15,11 +15,11 @@
   "bin": {
     "community-solid-server": "bin/server.js"
   },
-  "repository": "git@github.com:solid/community-server.js.git",
+  "repository": "git@github.com:solid/community-server.git",
   "bugs": {
-    "url": "https://github.com/solid/community-server.js/issues"
+    "url": "https://github.com/solid/community-server/issues"
   },
-  "homepage": "https://github.com/solid/community-server.js#readme",
+  "homepage": "https://github.com/solid/community-server#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:ts": "tsc",
