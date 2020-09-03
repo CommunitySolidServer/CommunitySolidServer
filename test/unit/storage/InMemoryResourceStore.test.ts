@@ -1,11 +1,11 @@
 import { Readable } from 'stream';
-import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryResourceStore } from '../../../src/storage/InMemoryResourceStore';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { readableToString } from '../../../src/util/Util';
 
 const base = 'http://test.com/';
 
@@ -46,7 +46,7 @@ describe('A InMemoryResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: representation.metadata,
     });
-    await expect(arrayifyStream(result.data)).resolves.toEqual([ dataString ]);
+    await expect(readableToString(result.data)).resolves.toEqual(dataString);
   });
 
   it('can add resources to previously added resources.', async(): Promise<void> => {
@@ -64,7 +64,7 @@ describe('A InMemoryResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: representation.metadata,
     });
-    await expect(arrayifyStream(result.data)).resolves.toEqual([ dataString ]);
+    await expect(readableToString(result.data)).resolves.toEqual(dataString);
   });
 
   it('can delete data.', async(): Promise<void> => {
