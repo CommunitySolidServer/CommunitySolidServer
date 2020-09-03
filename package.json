@@ -1,6 +1,11 @@
 {
   "name": "@solid/community-server",
   "version": "0.1.0",
+  "contributors": [
+    "Joachim Van Herwegen <joachim.vanherwegen@ugent.be>",
+    "Ruben Taelman <ruben.taelman@ugent.be> (https://www.rubensworks.net/)",
+    "Ruben Verborgh <ruben.verborgh@ugent.be> (https://ruben.verborgh.org/)"
+  ],
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
