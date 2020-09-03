@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
 import { FileResourceStoreConfig } from '../../configs/FileResourceStoreConfig';
@@ -14,7 +14,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = fs.readFileSync('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -54,7 +54,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      let fileData = fs.readFileSync('test/testfiles/testfile1.txt');
+      let fileData = await fs.readFile('test/testfiles/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -77,7 +77,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getBuffer().toString()).toContain('TESTFILE1');
 
       // PUT
-      fileData = fs.readFileSync('test/testfiles/testfile3.txt');
+      fileData = await fs.readFile('test/testfiles/testfile3.txt');
       response = await callFile(
         handler,
         requestUrl,
