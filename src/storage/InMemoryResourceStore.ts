@@ -151,10 +151,11 @@ export class InMemoryResourceStore implements ResourceStore {
     // Note: when converting to a complete ResourceStore and using readable-stream
     // object mode should be set correctly here (now fixed due to Node 10)
     const source = this.store[path];
-    const streamInternal = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    const streamOutput = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    source.data.pipe(streamInternal);
+    const objectMode = { writableObjectMode: true, readableObjectMode: true };
+    const streamOutput = new PassThrough(objectMode);
+    const streamInternal = new PassThrough({ ...objectMode, highWaterMark: Number.MAX_SAFE_INTEGER });
     source.data.pipe(streamOutput);
+    source.data.pipe(streamInternal);
 
     source.data = streamInternal;
 
