@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import arrayifyStream from 'arrayify-stream';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
@@ -69,7 +68,7 @@ export class FileResourceStore implements ResourceStore {
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
     if (raw.length > 0) {
-      metadata = this.metadataController.generateReadableFromQuads(raw);
+      metadata = this.metadataController.serializeQuads(raw);
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
@@ -252,7 +251,7 @@ export class FileResourceStore implements ResourceStore {
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      rawMetadata = await this.metadataController.generateQuadsFromReadable(readMetadataStream);
+      rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
     } catch (_) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
@@ -289,7 +288,7 @@ export class FileResourceStore implements ResourceStore {
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(joinPath(path, '.metadata'));
-      rawMetadata = await arrayifyStream(readMetadataStream);
+      rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
     } catch (_) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }

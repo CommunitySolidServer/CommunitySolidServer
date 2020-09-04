@@ -3,7 +3,7 @@ import rdfParser from 'rdf-parse';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { pipeStreamsAndErrors } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -30,20 +30,19 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
 
   private rdfToQuads(representation: Representation, baseIRI: string): Representation {
     const metadata: RepresentationMetadata = { ...representation.metadata, contentType: INTERNAL_QUADS };
-
-    // Catch parsing errors and emit correct error
-    // Node 10 requires both writableObjectMode and readableObjectMode
-    const errorStream = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    const data = rdfParser.parse(representation.data, {
+    const rawQuads = rdfParser.parse(representation.data, {
       contentType: representation.metadata.contentType as string,
       baseIRI,
     });
-    data.pipe(errorStream);
-    data.on('error', (error): boolean => errorStream.emit('error', new UnsupportedHttpError(error.message)));
+
+    // Wrap the stream such that errors are transformed
+    // (Node 10 requires both writableObjectMode and readableObjectMode)
+    const data = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    pipeStreamsAndErrors(rawQuads, data);
 
     return {
       binary: false,
-      data: errorStream,
+      data,
       metadata,
     };
   }

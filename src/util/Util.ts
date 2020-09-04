@@ -1,5 +1,6 @@
-import { Readable } from 'stream';
+import { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -50,4 +51,18 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
     return true;
   }
   return subTypeA === subTypeB;
+};
+
+/**
+ * Pipes one stream into another.
+ * Makes sure an error of the first stream gets passed to the second.
+ * @param readable - Initial readable stream.
+ * @param destination - The destination for writing data.
+ *
+ * @returns The destination stream.
+ */
+export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T): T => {
+  readable.pipe(destination);
+  readable.on('error', (error): boolean => destination.emit('error', new UnsupportedHttpError(error.message)));
+  return destination;
 };
