@@ -6,10 +6,10 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
-import { BinaryRepresentation } from '../../../src/ldp/representation/BinaryRepresentation';
+import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
@@ -33,7 +33,7 @@ fsPromises.access = jest.fn();
 
 describe('A FileResourceStore', (): void => {
   let store: FileResourceStore;
-  let representation: BinaryRepresentation;
+  let representation: Representation;
   let readableMock: Readable;
   let stats: Stats;
   let writeStream: WriteStream;
@@ -56,8 +56,8 @@ describe('A FileResourceStore', (): void => {
     );
 
     representation = {
+      binary: true,
       data: streamifyArray([ rawData ]),
-      dataType: DATA_TYPE_BINARY,
       metadata: { raw: [], linkRel: { type: new Set() }} as RepresentationMetadata,
     };
 
@@ -116,7 +116,7 @@ describe('A FileResourceStore', (): void => {
   });
 
   it('errors for wrong input data types.', async(): Promise<void> => {
-    (representation as any).dataType = DATA_TYPE_QUAD;
+    (representation as any).binary = false;
     await expect(store.addResource({ path: base }, representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     await expect(store.setRepresentation({ path: `${base}foo` }, representation)).rejects
       .toThrow(UnsupportedMediaTypeHttpError);
@@ -142,12 +142,12 @@ describe('A FileResourceStore', (): void => {
     // Read container
     const result = await store.getRepresentation(identifier);
     expect(result).toEqual({
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       data: expect.any(Readable),
       metadata: {
         raw: [],
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toBeDefined();
@@ -205,23 +205,14 @@ describe('A FileResourceStore', (): void => {
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-
-    const readable = streamifyArray([]);
-    readable.on('newListener', (event): void => {
-      if (event === 'open') {
-        setImmediate((): void => {
-          readable.emit('open');
-        });
-      }
-    });
-    (fs.createReadStream as jest.Mock).mockReturnValueOnce(readable);
+    (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([]));
 
     // Tests
     await store.setRepresentation({ path: `${base}file.txt` }, representation);
     expect(fs.createWriteStream as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'file.txt'));
     const result = await store.getRepresentation({ path: `${base}file.txt` });
     expect(result).toEqual({
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: expect.any(Readable),
       metadata: {
         raw: [],
@@ -374,12 +365,12 @@ describe('A FileResourceStore', (): void => {
     ];
     const result = await store.getRepresentation({ path: `${base}foo/` });
     expect(result).toEqual({
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       data: expect.any(Readable),
       metadata: {
         raw: [],
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray(quads);
@@ -502,7 +493,7 @@ describe('A FileResourceStore', (): void => {
 
     const result = await store.getRepresentation({ path: `${base}.htaccess` });
     expect(result).toEqual({
-      dataType: DATA_TYPE_BINARY,
+      binary: true,
       data: expect.any(Readable),
       metadata: {
         raw: [],

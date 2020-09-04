@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import arrayifyStream from 'arrayify-stream';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
@@ -9,7 +8,7 @@ import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY, DATA_TYPE_QUAD } from '../util/ContentTypes';
+import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
@@ -59,7 +58,7 @@ export class FileResourceStore implements ResourceStore {
    * @returns The newly generated identifier.
    */
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
+    if (!representation.binary) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
 
@@ -69,7 +68,7 @@ export class FileResourceStore implements ResourceStore {
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
     if (raw.length > 0) {
-      metadata = this.metadataController.generateReadableFromQuads(raw);
+      metadata = this.metadataController.serializeQuads(raw);
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
@@ -149,7 +148,7 @@ export class FileResourceStore implements ResourceStore {
    * @param representation - New Representation.
    */
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
-    if (representation.dataType !== DATA_TYPE_BINARY) {
+    if (!representation.binary) {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
 
@@ -249,19 +248,13 @@ export class FileResourceStore implements ResourceStore {
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
     const contentType = getContentTypeFromExtension(extname(path));
-
-    const rawMetadataPromise = new Promise<Quad[]>((resolve): void => {
+    let rawMetadata: Quad[] = [];
+    try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
-      readMetadataStream.on('open', async(): Promise<void> => {
-        resolve(this.metadataController.generateQuadsFromReadable(readMetadataStream));
-      })
-        .on('error', (): void => {
-          // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
-          resolve([]);
-        });
-    });
-
-    const rawMetadata: Quad[] = await rawMetadataPromise;
+      rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
+    } catch (_) {
+      // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
+    }
     const metadata: RepresentationMetadata = {
       raw: rawMetadata,
       dateTime: stats.mtime,
@@ -270,7 +263,7 @@ export class FileResourceStore implements ResourceStore {
     if (contentType) {
       metadata.contentType = contentType;
     }
-    return { metadata, data: readStream, dataType: DATA_TYPE_BINARY };
+    return { metadata, data: readStream, binary: true };
   }
 
   /**
@@ -295,18 +288,18 @@ export class FileResourceStore implements ResourceStore {
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(joinPath(path, '.metadata'));
-      rawMetadata = await arrayifyStream(readMetadataStream);
+      rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
     } catch (_) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
 
     return {
-      dataType: DATA_TYPE_QUAD,
+      binary: false,
       data: streamifyArray(quads),
       metadata: {
         raw: rawMetadata,
         dateTime: stats.mtime,
-        contentType: CONTENT_TYPE_QUADS,
+        contentType: INTERNAL_QUADS,
       },
     };
   }

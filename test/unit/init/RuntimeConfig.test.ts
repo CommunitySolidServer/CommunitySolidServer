@@ -40,4 +40,9 @@ describe('RuntimeConfig', (): void => {
     expect(config.port).toEqual(1234);
     expect(config.base).toEqual('http://example.org/');
   });
+
+  it('ensures trailing slash in base.', async(): Promise<void> => {
+    const config = new RuntimeConfig({ base: 'http://example.org' });
+    expect(config.base).toEqual('http://example.org/');
+  });
 });

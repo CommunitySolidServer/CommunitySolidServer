@@ -6,7 +6,6 @@ import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { HttpRequest } from '../../src/server/HttpRequest';
 import { ResourceStore } from '../../src/storage/ResourceStore';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 
 export const call = async(
   handler: HttpHandler,
@@ -103,8 +102,8 @@ export const setAcl = async(store: ResourceStore, id: string, permissions: Permi
   acl.push('.');
 
   const representation = {
+    binary: true,
     data: streamifyArray(acl),
-    dataType: DATA_TYPE_BINARY,
     metadata: {
       raw: [],
       profiles: [],

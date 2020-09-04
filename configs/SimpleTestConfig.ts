@@ -12,21 +12,18 @@ import {
   ResponseDescription,
   RuntimeConfig,
   ServerConfig,
-  SimpleAuthorizer,
-  SimpleBodyParser,
-  SimpleCredentialsExtractor,
-  SimpleDeleteOperationHandler,
-  SimpleExtensionAclManager,
-  SimpleGetOperationHandler,
-  SimplePostOperationHandler,
-  SimpleRequestParser,
-  SimpleResourceStore,
-  SimpleResponseWriter,
-  SimpleTargetExtractor,
 } from '..';
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
-
-// This is the configuration from bin/server.ts
+import { UnsecureWebIdExtractor } from '../src/authentication/UnsecureWebIdExtractor';
+import { AllowEverythingAuthorizer } from '../src/authorization/AllowEverythingAuthorizer';
+import { UrlBasedAclManager } from '../src/authorization/UrlBasedAclManager';
+import { BasicRequestParser } from '../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../src/ldp/http/BasicTargetExtractor';
+import { RawBodyParser } from '../src/ldp/http/RawBodyParser';
+import { DeleteOperationHandler } from '../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../src/ldp/operations/GetOperationHandler';
+import { PostOperationHandler } from '../src/ldp/operations/PostOperationHandler';
+import { InMemoryResourceStore } from '../src/storage/InMemoryResourceStore';
 
 export class SimpleTestConfig implements ServerConfig {
   public base: string;
@@ -35,8 +32,8 @@ export class SimpleTestConfig implements ServerConfig {
 
   public constructor() {
     this.base = `http://test.com/`;
-    this.store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
-    this.aclManager = new SimpleExtensionAclManager();
+    this.store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
+    this.aclManager = new UrlBasedAclManager();
   }
 
   public async getHttpServer(): Promise<ExpressHttpServer> {
@@ -61,7 +58,7 @@ export class SimpleTestConfig implements ServerConfig {
       await this.store.setRepresentation(
         await this.aclManager.getAcl({ path: this.base }),
         {
-          dataType: DATA_TYPE_BINARY,
+          binary: true,
           data: streamifyArray([ acl ]),
           metadata: {
             raw: [],
@@ -76,23 +73,23 @@ export class SimpleTestConfig implements ServerConfig {
   }
 
   public getHandler(): HttpHandler {
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
+    const requestParser = new BasicRequestParser({
+      targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new SimpleBodyParser(),
+      bodyParser: new RawBodyParser(),
     });
 
-    const credentialsExtractor = new SimpleCredentialsExtractor();
+    const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new BasePermissionsExtractor();
-    const authorizer = new SimpleAuthorizer();
+    const authorizer = new AllowEverythingAuthorizer();
 
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(this.store),
-      new SimplePostOperationHandler(this.store),
-      new SimpleDeleteOperationHandler(this.store),
+      new GetOperationHandler(this.store),
+      new PostOperationHandler(this.store),
+      new DeleteOperationHandler(this.store),
     ]);
 
-    const responseWriter = new SimpleResponseWriter();
+    const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

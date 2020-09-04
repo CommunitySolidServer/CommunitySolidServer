@@ -1,3 +1,5 @@
+import { ensureTrailingSlash } from '../util/Util';
+
 /**
  * This class holds all configuration options that can be defined by the user via the command line.
  *
@@ -14,10 +16,13 @@ export class RuntimeConfig implements RuntimeConfigData {
 
   public reset(data: RuntimeConfigData): void {
     this.pport = data.port ?? 3000;
-    this.pbase = data.base ?? `http://localhost:${this.port}/`;
+    this.pbase = ensureTrailingSlash(data.base ?? `http://localhost:${this.port}/`);
     this.prootFilepath = data.rootFilepath ?? process.cwd();
   }
 
+  /**
+   * The returned URL is ensured to have a trailing slash.
+   */
   public get base(): string {
     return this.pbase;
   }

@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:AclManager",
+      "@type": "UrlBasedAclManager"
+    },
+    {
+      "@id": "urn:solid-server:default:AclAuthorizer",
+      "@type": "WebAclAuthorizer",
+      "WebAclAuthorizer:_aclManager": {
+        "@id": "urn:solid-server:default:AclManager"
+      },
+      "WebAclAuthorizer:_containerManager": {
+        "@id": "urn:solid-server:default:UrlContainerManager"
+      },
+      "WebAclAuthorizer:_resourceStore": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
+      }
+    }
+  ]
+}
