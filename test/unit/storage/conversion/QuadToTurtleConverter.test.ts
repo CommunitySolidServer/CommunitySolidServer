@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
@@ -6,14 +5,14 @@ import { Representation } from '../../../../src/ldp/representation/Representatio
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToTurtleConverter } from '../../../../src/storage/conversion/QuadToTurtleConverter';
-import { CONTENT_TYPE_QUADS, DATA_TYPE_BINARY } from '../../../../src/util/ContentTypes';
+import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 
 describe('A QuadToTurtleConverter', (): void => {
   const converter = new QuadToTurtleConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
-    const representation = { metadata: { contentType: CONTENT_TYPE_QUADS }} as Representation;
+    const representation = { metadata: { contentType: INTERNAL_QUADS }} as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
@@ -25,13 +24,12 @@ describe('A QuadToTurtleConverter', (): void => {
         namedNode('http://test.com/p'),
         namedNode('http://test.com/o'),
       ) ]),
-      metadata: { contentType: CONTENT_TYPE_QUADS },
+      metadata: { contentType: INTERNAL_QUADS },
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
-    expect(result).toEqual({
-      data: expect.any(Readable),
-      dataType: DATA_TYPE_BINARY,
+    expect(result).toMatchObject({
+      binary: true,
       metadata: {
         contentType: 'text/turtle',
       },

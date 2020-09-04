@@ -10,16 +10,14 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
     const handler = new SimpleTestConfig().getHandler();
 
-    it('can add, read and delete data based on incoming requests.', async(): Promise<
-    void
-    > => {
+    it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
       let requestUrl = new URL('http://test.com/');
       let response: MockResponse<any> = await call(
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'text/turtle' },
+        { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
         [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
       );
       expect(response.statusCode).toBe(200);
@@ -71,11 +69,9 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'text/turtle' },
-        [
-          '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-          '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
-        ],
+        { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
+        [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+          '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ],
       );
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toHaveLength(0);
@@ -88,9 +84,8 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         handler,
         requestUrl,
         'PATCH',
-        { 'content-type': 'application/sparql-update' },
-        [
-          'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+        { 'content-type': 'application/sparql-update', 'transfer-encoding': 'chunked' },
+        [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
           'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
           'WHERE {}',
         ],
@@ -140,7 +135,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'text/turtle' },
+        { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
         [
           '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
           '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
@@ -157,7 +152,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         handler,
         requestUrl,
         'PUT',
-        { 'content-type': 'text/turtle' },
+        { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
         [ '<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>.' ],
       );
       expect(response.statusCode).toBe(200);

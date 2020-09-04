@@ -1,0 +1,80 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "SingleThreadedResourceLocker"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Patching",
+      "@type": "PatchingStore",
+      "PatchingStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Converting"
+      },
+      "PatchingStore:_patcher": {
+        "@id": "urn:solid-server:default:PatchHandler",
+        "@type": "SparqlUpdatePatchHandler",
+        "SparqlUpdatePatchHandler:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Converting"
+        },
+        "SparqlUpdatePatchHandler:_locker": {
+          "@id": "urn:solid-server:default:ResourceLocker"
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad",
+      "@type": "RdfToQuadConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf",
+      "@type": "QuadToRdfConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting_Chained",
+      "@type": "ChainedConverter",
+      "ChainedConverter:_converters": [
+        {
+          "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad"
+        },
+        {
+          "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf"
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting",
+      "@type": "RepresentationConvertingStore",
+      "RepresentationConvertingStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      },
+      "RepresentationConvertingStore:_converter": {
+        "@type": "CompositeAsyncHandler",
+        "CompositeAsyncHandler:_handlers": [
+          {
+            "@id": "urn:solid-server:default:ResourceStore_Converting_RdfToQuad"
+          },
+          {
+            "@id": "urn:solid-server:default:ResourceStore_Converting_QuadToRdf"
+          },
+          {
+            "@id": "urn:solid-server:default:ResourceStore_Converting_Chained"
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:UrlContainerManager",
+      "@type": "UrlContainerManager",
+      "UrlContainerManager:_runtimeConfig": {
+        "@id": "urn:solid-server:default:RuntimeConfig"
+      }
+    }
+  ]
+}

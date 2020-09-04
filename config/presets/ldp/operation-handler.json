@@ -1,0 +1,41 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:OperationHandler",
+      "@type": "CompositeAsyncHandler",
+      "CompositeAsyncHandler:_handlers": [
+        {
+          "@type": "DeleteOperationHandler",
+          "DeleteOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        },
+        {
+          "@type": "GetOperationHandler",
+          "GetOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        },
+        {
+          "@type": "PatchOperationHandler",
+          "PatchOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        },
+        {
+          "@type": "PostOperationHandler",
+          "PostOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        },
+        {
+          "@type": "PutOperationHandler",
+          "PutOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        }
+      ]
+    }
+  ]
+}
