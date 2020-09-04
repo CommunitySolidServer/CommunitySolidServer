@@ -8,7 +8,7 @@ import { ResourceStore } from './ResourceStore';
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.
  * If the original store supports the {@link Patch}, behaviour will be identical,
- * otherwise one of the {@link PatchHandler}s supporting the given Patch will be called instead.
+ * otherwise the {@link PatchHandler} will be called instead.
  */
 export class PatchingStore extends PassthroughStore {
   private readonly patcher: PatchHandler;
