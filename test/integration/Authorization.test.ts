@@ -1,61 +1,61 @@
 import { MockResponse } from 'node-mocks-http';
-import { SimpleCredentialsExtractor } from '../../src/authentication/SimpleCredentialsExtractor';
-import { SimpleAclAuthorizer } from '../../src/authorization/SimpleAclAuthorizer';
-import { SimpleExtensionAclManager } from '../../src/authorization/SimpleExtensionAclManager';
+import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
+import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
+import { WebAclAuthorizer } from '../../src/authorization/WebAclAuthorizer';
 import { RuntimeConfig } from '../../src/init/RuntimeConfig';
 import { AuthenticatedLdpHandler } from '../../src/ldp/AuthenticatedLdpHandler';
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
+import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { BodyParser } from '../../src/ldp/http/BodyParser';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleResponseWriter } from '../../src/ldp/http/SimpleResponseWriter';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
+import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
+import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
 import { Operation } from '../../src/ldp/operations/Operation';
+import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
+import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { SimpleDeleteOperationHandler } from '../../src/ldp/operations/SimpleDeleteOperationHandler';
-import { SimpleGetOperationHandler } from '../../src/ldp/operations/SimpleGetOperationHandler';
-import { SimplePostOperationHandler } from '../../src/ldp/operations/SimplePostOperationHandler';
-import { SimplePutOperationHandler } from '../../src/ldp/operations/SimplePutOperationHandler';
 import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
 import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
+import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
-import { SimpleResourceStore } from '../../src/storage/SimpleResourceStore';
 import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
 import { call, setAcl } from '../util/Util';
 
 describe('A server with authorization', (): void => {
-  const bodyParser: BodyParser = new SimpleBodyParser();
-  const requestParser = new SimpleRequestParser({
-    targetExtractor: new SimpleTargetExtractor(),
+  const bodyParser: BodyParser = new RawBodyParser();
+  const requestParser = new BasicRequestParser({
+    targetExtractor: new BasicTargetExtractor(),
     preferenceParser: new AcceptPreferenceParser(),
     bodyParser,
   });
 
-  const store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
+  const store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
   const converter = new CompositeAsyncHandler([
     new QuadToTurtleConverter(),
     new TurtleToQuadConverter(),
   ]);
   const convertingStore = new RepresentationConvertingStore(store, converter);
 
-  const credentialsExtractor = new SimpleCredentialsExtractor();
+  const credentialsExtractor = new UnsecureWebIdExtractor();
   const permissionsExtractor = new BasePermissionsExtractor();
-  const authorizer = new SimpleAclAuthorizer(
-    new SimpleExtensionAclManager(),
+  const authorizer = new WebAclAuthorizer(
+    new UrlBasedAclManager(),
     new UrlContainerManager(new RuntimeConfig({ base: 'http://test.com/' })),
     convertingStore,
   );
 
   const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-    new SimpleGetOperationHandler(convertingStore),
-    new SimplePostOperationHandler(convertingStore),
-    new SimpleDeleteOperationHandler(convertingStore),
-    new SimplePutOperationHandler(convertingStore),
+    new GetOperationHandler(convertingStore),
+    new PostOperationHandler(convertingStore),
+    new DeleteOperationHandler(convertingStore),
+    new PutOperationHandler(convertingStore),
   ]);
 
-  const responseWriter = new SimpleResponseWriter();
+  const responseWriter = new BasicResponseWriter();
 
   const handler = new AuthenticatedLdpHandler({
     requestParser,
@@ -82,7 +82,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'POST',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(200);
@@ -93,7 +93,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'PUT',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(200);
@@ -115,7 +115,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'POST',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(401);
@@ -126,7 +126,7 @@ describe('A server with authorization', (): void => {
       handler,
       requestUrl,
       'PUT',
-      { 'content-type': 'text/turtle' },
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
     expect(response.statusCode).toBe(401);

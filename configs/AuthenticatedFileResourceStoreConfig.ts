@@ -6,7 +6,6 @@ import {
   BasePermissionsExtractor,
   CompositeAsyncHandler,
   ExpressHttpServer,
-  FileResourceStore,
   HttpHandler,
   InteractionController,
   MetadataController,
@@ -17,21 +16,21 @@ import {
   ResponseDescription,
   RuntimeConfig,
   ServerConfig,
-  SimpleBodyParser,
-  SimpleCredentialsExtractor,
-  SimpleDeleteOperationHandler,
-  SimpleExtensionAclManager,
-  SimpleGetOperationHandler,
-  SimplePostOperationHandler,
-  SimplePutOperationHandler,
-  SimpleRequestParser,
-  SimpleResponseWriter,
-  SimpleTargetExtractor,
   TurtleToQuadConverter,
 } from '..';
-import { SimpleAclAuthorizer } from '../src/authorization/SimpleAclAuthorizer';
+import { UnsecureWebIdExtractor } from '../src/authentication/UnsecureWebIdExtractor';
+import { UrlBasedAclManager } from '../src/authorization/UrlBasedAclManager';
+import { WebAclAuthorizer } from '../src/authorization/WebAclAuthorizer';
+import { BasicRequestParser } from '../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../src/ldp/http/BasicTargetExtractor';
+import { RawBodyParser } from '../src/ldp/http/RawBodyParser';
+import { DeleteOperationHandler } from '../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../src/ldp/operations/GetOperationHandler';
+import { PostOperationHandler } from '../src/ldp/operations/PostOperationHandler';
+import { PutOperationHandler } from '../src/ldp/operations/PutOperationHandler';
+import { FileResourceStore } from '../src/storage/FileResourceStore';
 import { UrlContainerManager } from '../src/storage/UrlContainerManager';
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
 
 // This is the configuration from bin/server.ts
 
@@ -60,7 +59,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
     ]);
     this.store = new RepresentationConvertingStore(fileStore, converter);
 
-    this.aclManager = new SimpleExtensionAclManager();
+    this.aclManager = new UrlBasedAclManager();
   }
 
   public async getHttpServer(): Promise<ExpressHttpServer> {
@@ -85,7 +84,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
       await this.store.setRepresentation(
         await this.aclManager.getAcl({ path: this.base }),
         {
-          dataType: DATA_TYPE_BINARY,
+          binary: true,
           data: streamifyArray([ acl ]),
           metadata: {
             raw: [],
@@ -100,28 +99,30 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   }
 
   public getHandler(): HttpHandler {
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
+    const requestParser = new BasicRequestParser({
+      targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new SimpleBodyParser(),
+      bodyParser: new RawBodyParser(),
     });
 
-    const credentialsExtractor = new SimpleCredentialsExtractor();
-    const permissionsExtractor = new BasePermissionsExtractor();
+    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const permissionsExtractor = new CompositeAsyncHandler([
+      new BasePermissionsExtractor(),
+    ]);
 
     const operationHandler = new CompositeAsyncHandler<
     Operation,
     ResponseDescription
     >([
-      new SimpleGetOperationHandler(this.store),
-      new SimplePostOperationHandler(this.store),
-      new SimpleDeleteOperationHandler(this.store),
-      new SimplePutOperationHandler(this.store),
+      new GetOperationHandler(this.store),
+      new PostOperationHandler(this.store),
+      new DeleteOperationHandler(this.store),
+      new PutOperationHandler(this.store),
     ]);
 
-    const responseWriter = new SimpleResponseWriter();
+    const responseWriter = new BasicResponseWriter();
     const containerManager = new UrlContainerManager(this.runtimeConfig);
-    const authorizer = new SimpleAclAuthorizer(this.aclManager, containerManager, this.store);
+    const authorizer = new WebAclAuthorizer(this.aclManager, containerManager, this.store);
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

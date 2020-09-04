@@ -18,28 +18,25 @@ import {
   ResponseDescription,
   RuntimeConfig,
   ServerConfig,
-  SimpleAuthorizer,
-  SimpleBodyParser,
-  SimpleCredentialsExtractor,
-  SimpleDeleteOperationHandler,
-  SimpleExtensionAclManager,
-  SimpleGetOperationHandler,
-  SimplePatchOperationHandler,
-  SimplePostOperationHandler,
-  SimplePutOperationHandler,
-  SimpleRequestParser,
-  SimpleResourceStore,
-  SimpleResponseWriter,
-  SimpleSparqlUpdateBodyParser,
-  SimpleSparqlUpdatePatchHandler,
-  SimpleTargetExtractor,
   SingleThreadedResourceLocker,
   SparqlPatchPermissionsExtractor,
   TurtleToQuadConverter,
 } from '..';
-import { DATA_TYPE_BINARY } from '../src/util/ContentTypes';
-
-// This is the configuration from bin/server.ts
+import { UnsecureWebIdExtractor } from '../src/authentication/UnsecureWebIdExtractor';
+import { AllowEverythingAuthorizer } from '../src/authorization/AllowEverythingAuthorizer';
+import { UrlBasedAclManager } from '../src/authorization/UrlBasedAclManager';
+import { BasicRequestParser } from '../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../src/ldp/http/BasicTargetExtractor';
+import { RawBodyParser } from '../src/ldp/http/RawBodyParser';
+import { SparqlUpdateBodyParser } from '../src/ldp/http/SparqlUpdateBodyParser';
+import { DeleteOperationHandler } from '../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../src/ldp/operations/GetOperationHandler';
+import { PatchOperationHandler } from '../src/ldp/operations/PatchOperationHandler';
+import { PostOperationHandler } from '../src/ldp/operations/PostOperationHandler';
+import { PutOperationHandler } from '../src/ldp/operations/PutOperationHandler';
+import { InMemoryResourceStore } from '../src/storage/InMemoryResourceStore';
+import { SparqlUpdatePatchHandler } from '../src/storage/patch/SparqlUpdatePatchHandler';
 
 export class SimpleHandlersTestConfig implements ServerConfig {
   public base: string;
@@ -48,8 +45,8 @@ export class SimpleHandlersTestConfig implements ServerConfig {
 
   public constructor() {
     this.base = `http://test.com/`;
-    this.store = new SimpleResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
-    this.aclManager = new SimpleExtensionAclManager();
+    this.store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
+    this.aclManager = new UrlBasedAclManager();
   }
 
   public async getHttpServer(): Promise<ExpressHttpServer> {
@@ -74,7 +71,7 @@ export class SimpleHandlersTestConfig implements ServerConfig {
       await this.store.setRepresentation(
         await this.aclManager.getAcl({ path: this.base }),
         {
-          dataType: DATA_TYPE_BINARY,
+          binary: true,
           data: streamifyArray([ acl ]),
           metadata: {
             raw: [],
@@ -90,21 +87,21 @@ export class SimpleHandlersTestConfig implements ServerConfig {
 
   public getHandler(): HttpHandler {
     const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
-      new SimpleSparqlUpdateBodyParser(),
-      new SimpleBodyParser(),
+      new SparqlUpdateBodyParser(),
+      new RawBodyParser(),
     ]);
-    const requestParser = new SimpleRequestParser({
-      targetExtractor: new SimpleTargetExtractor(),
+    const requestParser = new BasicRequestParser({
+      targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
       bodyParser,
     });
 
-    const credentialsExtractor = new SimpleCredentialsExtractor();
+    const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
       new BasePermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
-    const authorizer = new SimpleAuthorizer();
+    const authorizer = new AllowEverythingAuthorizer();
 
     const converter = new CompositeAsyncHandler([
       new QuadToTurtleConverter(),
@@ -112,18 +109,18 @@ export class SimpleHandlersTestConfig implements ServerConfig {
     ]);
     const convertingStore = new RepresentationConvertingStore(this.store, converter);
     const locker = new SingleThreadedResourceLocker();
-    const patcher = new SimpleSparqlUpdatePatchHandler(convertingStore, locker);
+    const patcher = new SparqlUpdatePatchHandler(convertingStore, locker);
     const patchingStore = new PatchingStore(convertingStore, patcher);
 
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new SimpleGetOperationHandler(patchingStore),
-      new SimplePostOperationHandler(patchingStore),
-      new SimpleDeleteOperationHandler(patchingStore),
-      new SimplePatchOperationHandler(patchingStore),
-      new SimplePutOperationHandler(patchingStore),
+      new GetOperationHandler(patchingStore),
+      new PostOperationHandler(patchingStore),
+      new DeleteOperationHandler(patchingStore),
+      new PatchOperationHandler(patchingStore),
+      new PutOperationHandler(patchingStore),
     ]);
 
-    const responseWriter = new SimpleResponseWriter();
+    const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

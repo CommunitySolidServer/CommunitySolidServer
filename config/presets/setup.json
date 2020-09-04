@@ -1,0 +1,23 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default",
+      "@type": "Setup",
+      "Setup:_httpServer": {
+        "@id": "urn:solid-server:default:HttpServer"
+      },
+      "Setup:_store": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
+      },
+      "Setup:_aclManager": {
+        "@id": "urn:solid-server:default:AclManager"
+      },
+      "Setup:_runtimeConfig": {
+        "@id": "urn:solid-server:default:RuntimeConfig",
+        "@type": "RuntimeConfig",
+        "RuntimeConfigData:_port": 3000
+      }
+    }
+  ]
+}

@@ -42,6 +42,13 @@ describe('ExpressHttpServer', (): void => {
     server.close();
   });
 
+  it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      'x-powered-by': 'Community Solid Server',
+    }));
+  });
+
   it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
     const res = await request(server)
       .options('/')
@@ -75,6 +82,13 @@ describe('ExpressHttpServer', (): void => {
       }),
       response: expect.objectContaining({}),
     });
+  });
+
+  it('returns a 404 when the handler does not do anything.', async(): Promise<void> => {
+    handler.handle = async(input): Promise<void> => {
+      expect(input).toBeDefined();
+    };
+    await request(server).get('/').expect(404);
   });
 
   it('catches errors thrown by its handler.', async(): Promise<void> => {

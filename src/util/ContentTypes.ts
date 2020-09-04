@@ -1,4 +1,5 @@
-export const DATA_TYPE_BINARY = 'binary';
-export const DATA_TYPE_QUAD = 'quad';
+// Well-known content types
+export const TEXT_TURTLE = 'text/turtle';
 
-export const CONTENT_TYPE_QUADS = 'internal/quads';
+// Internal (non-exposed) content types
+export const INTERNAL_QUADS = 'internal/quads';

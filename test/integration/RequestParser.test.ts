@@ -2,17 +2,16 @@ import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
-import { SimpleBodyParser } from '../../src/ldp/http/SimpleBodyParser';
-import { SimpleRequestParser } from '../../src/ldp/http/SimpleRequestParser';
-import { SimpleTargetExtractor } from '../../src/ldp/http/SimpleTargetExtractor';
+import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
+import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
+import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { DATA_TYPE_BINARY } from '../../src/util/ContentTypes';
 
-describe('A SimpleRequestParser with simple input parsers', (): void => {
-  const targetExtractor = new SimpleTargetExtractor();
-  const bodyParser = new SimpleBodyParser();
+describe('A BasicRequestParser with simple input parsers', (): void => {
+  const targetExtractor = new BasicTargetExtractor();
+  const bodyParser = new RawBodyParser();
   const preferenceParser = new AcceptPreferenceParser();
-  const requestParser = new SimpleRequestParser({ targetExtractor, bodyParser, preferenceParser });
+  const requestParser = new BasicRequestParser({ targetExtractor, bodyParser, preferenceParser });
 
   it('can parse an incoming request.', async(): Promise<void> => {
     const request = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
@@ -22,6 +21,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       accept: 'text/turtle; q=0.8',
       'accept-language': 'en-gb, en;q=0.5',
       'content-type': 'text/turtle',
+      'transfer-encoding': 'chunked',
       host: 'test.com',
     };
 
@@ -35,7 +35,7 @@ describe('A SimpleRequestParser with simple input parsers', (): void => {
       },
       body: {
         data: expect.any(Readable),
-        dataType: DATA_TYPE_BINARY,
+        binary: true,
         metadata: {
           contentType: 'text/turtle',
           raw: [],

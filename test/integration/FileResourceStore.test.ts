@@ -21,7 +21,7 @@ describe('A server using a FileResourceStore', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt', 'transfer-encoding': 'chunked' },
         fileData,
       );
 
@@ -61,7 +61,7 @@ describe('A server using a FileResourceStore', (): void => {
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt', 'transfer-encoding': 'chunked' },
         fileData,
       );
 
@@ -83,7 +83,7 @@ describe('A server using a FileResourceStore', (): void => {
         handler,
         requestUrl,
         'PUT',
-        { 'content-type': 'application/octet-stream' },
+        { 'content-type': 'application/octet-stream', 'transfer-encoding': 'chunked' },
         fileData,
       );
       expect(response.statusCode).toBe(200);
@@ -115,6 +115,7 @@ describe('A server using a FileResourceStore', (): void => {
           'content-type': 'application/octet-stream',
           slug: 'secondfolder/',
           link: '<http://www.w3.org/ns/ldp#Container>; rel"type"',
+          'transfer-encoding': 'chunked',
         },
       );
 
