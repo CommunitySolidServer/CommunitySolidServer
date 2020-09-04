@@ -14,9 +14,9 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
+import { ResourceMapper } from '../util/ResourceMapper';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
-import { ResourceMapper } from '../util/ResourceMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 
