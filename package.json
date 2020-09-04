@@ -13,6 +13,7 @@
     "Ruben Taelman <ruben.taelman@ugent.be> (https://www.rubensworks.net/)",
     "Ruben Verborgh <ruben.verborgh@ugent.be> (https://ruben.verborgh.org/)"
   ],
+  "license": "MIT",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
@@ -22,10 +23,10 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "components/",
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/"
   },
-  "main": "index.js",
-  "license": "MIT",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "bin": {
-    "community-solid-server": "bin/server.js"
+    "community-solid-server": "./bin/server.js"
   },
   "repository": "git@github.com:solid/community-server.git",
   "bugs": {
