@@ -7,7 +7,7 @@ import { PermissionsExtractor } from './PermissionsExtractor';
  * Generates permissions for the base set of methods that always require the same permissions.
  * Specifically: GET, HEAD, POST, PUT and DELETE.
  */
-export class BasePermissionsExtractor extends PermissionsExtractor {
+export class MethodPermissionsExtractor extends PermissionsExtractor {
   public async canHandle(input: Operation): Promise<void> {
     if (!/^(?:HEAD|GET|POST|PUT|DELETE)$/u.test(input.method)) {
       throw new UnsupportedHttpError(`Unsupported method: ${input.method}`);

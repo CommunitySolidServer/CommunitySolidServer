@@ -6,7 +6,7 @@
       "@type": "CompositeAsyncHandler",
       "CompositeAsyncHandler:_handlers": [
         {
-          "@type": "BasePermissionsExtractor"
+          "@type": "MethodPermissionsExtractor"
         },
         {
           "@type": "SparqlPatchPermissionsExtractor"

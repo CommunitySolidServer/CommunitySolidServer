@@ -19,7 +19,7 @@ import { Operation } from '../../src/ldp/operations/Operation';
 import { PatchOperationHandler } from '../../src/ldp/operations/PatchOperationHandler';
 import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
+import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { SparqlPatchPermissionsExtractor } from '../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
 import { Representation } from '../../src/ldp/representation/Representation';
 import { HttpRequest } from '../../src/server/HttpRequest';
@@ -42,7 +42,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     });
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new BasePermissionsExtractor();
+    const permissionsExtractor = new MethodPermissionsExtractor();
     const authorizer = new AllowEverythingAuthorizer();
 
     const store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
@@ -111,7 +111,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
+      new MethodPermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
     const authorizer = new AllowEverythingAuthorizer();
