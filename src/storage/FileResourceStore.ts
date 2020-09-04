@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import { contentType as getContentTypeFromExtension } from 'mime-types';
 import { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
@@ -17,8 +16,9 @@ import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import { ResourceStore } from './ResourceStore';
+import { ResourceMapper } from '../util/ResourceMapper';
 
-const { extname, join: joinPath, normalize: normalizePath } = posix;
+const { join: joinPath, normalize: normalizePath } = posix;
 
 /**
  * Resource store storing its data in the file system backend.
@@ -28,6 +28,7 @@ export class FileResourceStore implements ResourceStore {
   private readonly runtimeConfig: RuntimeConfig;
   private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
+  private readonly resourceMapper: ResourceMapper;
 
   /**
    * @param runtimeConfig - The runtime config.
@@ -39,6 +40,7 @@ export class FileResourceStore implements ResourceStore {
     this.runtimeConfig = runtimeConfig;
     this.interactionController = interactionController;
     this.metadataController = metadataController;
+    this.resourceMapper = new ResourceMapper();
   }
 
   public get baseRequestURI(): string {
@@ -247,7 +249,7 @@ export class FileResourceStore implements ResourceStore {
    */
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
-    const contentType = getContentTypeFromExtension(extname(path));
+    const contentType = this.resourceMapper.getContentTypeFromExtension(path);
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
