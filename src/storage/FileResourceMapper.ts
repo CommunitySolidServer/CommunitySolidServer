@@ -34,7 +34,7 @@ export class FileResourceMapper implements ResourceMapper {
    * If the identifier does not match the baseRequestURI path of the store.
    */
   public mapUrlToFilePath(identifier: ResourceIdentifier): string {
-    return this.makePath(this.rootFilepath, this.parseIdentifier(identifier));
+    return this.makePath(this.parseIdentifier(identifier));
   }
 
   /**

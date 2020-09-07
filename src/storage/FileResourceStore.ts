@@ -108,7 +108,7 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = this.resourceMapper.makePath(this.resourceMapper.parseIdentifier(identifier));
+    const path = this.resourceMapper.mapUrlToFilePath(identifier);
     let stats;
     try {
       stats = await fsPromises.lstat(path);
