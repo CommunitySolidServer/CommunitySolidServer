@@ -34,10 +34,7 @@ export class FileResourceMapper implements ResourceMapper {
    * If the identifier does not match the baseRequestURI path of the store.
    */
   public mapUrlToFilePath(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.baseRequestURI)) {
-      throw new NotFoundHttpError();
-    }
-    return identifier.path.slice(this.baseRequestURI.length);
+    return this.makePath(this.rootFilepath, this.parseIdentifier(identifier));
   }
 
   /**
@@ -61,5 +58,12 @@ export class FileResourceMapper implements ResourceMapper {
 
   public makePath(path: string, identifier = ''): string {
     return joinPath(this.rootFilepath, path, identifier);
+  }
+
+  public parseIdentifier(identifier: ResourceIdentifier): string {
+    if (!identifier.path.startsWith(this.baseRequestURI)) {
+      throw new NotFoundHttpError();
+    }
+    return identifier.path.slice(this.baseRequestURI.length);
   }
 }

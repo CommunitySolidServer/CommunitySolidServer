@@ -54,7 +54,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.resourceMapper.mapUrlToFilePath(container);
+    const path = this.resourceMapper.parseIdentifier(container);
     const { slug, raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
@@ -75,7 +75,7 @@ export class FileResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to delete.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    let path = this.resourceMapper.mapUrlToFilePath(identifier);
+    let path = this.resourceMapper.parseIdentifier(identifier);
     if (path === '' || ensureTrailingSlash(path) === '/') {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
@@ -108,7 +108,7 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = this.resourceMapper.makePath(this.resourceMapper.mapUrlToFilePath(identifier));
+    const path = this.resourceMapper.makePath(this.resourceMapper.parseIdentifier(identifier));
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -145,7 +145,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.resourceMapper.mapUrlToFilePath(identifier)) ?? [];
+    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.resourceMapper.parseIdentifier(identifier)) ?? [];
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
