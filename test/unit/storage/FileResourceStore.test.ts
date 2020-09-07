@@ -18,6 +18,7 @@ import { InteractionController } from '../../../src/util/InteractionController';
 import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
 import { MetadataController } from '../../../src/util/MetadataController';
 import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
+import { FileResourceMapper } from '../../../src/storage/FileResourceMapper';
 
 const { join: joinPath } = posix;
 
@@ -50,7 +51,7 @@ describe('A FileResourceStore', (): void => {
     jest.clearAllMocks();
 
     store = new FileResourceStore(
-      new RuntimeConfig({ base, rootFilepath }),
+      new FileResourceMapper(new RuntimeConfig({ base, rootFilepath })),
       new InteractionController(),
       new MetadataController(),
     );

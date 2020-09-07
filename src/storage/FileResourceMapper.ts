@@ -1,16 +1,28 @@
 import { types } from 'mime-types';
+import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { FileResourceStore } from './FileResourceStore';
+import { trimTrailingSlashes } from '../util/Util';
 import { ResourceMapper } from './ResourceMapper';
+import { posix } from 'path';
+
+const { join: joinPath } = posix;
 
 export class FileResourceMapper implements ResourceMapper {
-  private readonly fileStore: FileResourceStore;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly types: Record<string, any>;
 
-  public constructor(fileStore: FileResourceStore, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
-    this.fileStore = fileStore;
+  public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
+    this.runtimeConfig = runtimeConfig;
     this.types = { ...types, ...overrideTypes };
+  }
+
+  public get baseRequestURI(): string {
+    return trimTrailingSlashes(this.runtimeConfig.base);
+  }
+
+  public get rootFilepath(): string {
+    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**
@@ -21,10 +33,10 @@ export class FileResourceMapper implements ResourceMapper {
    * If the identifier does not match the baseRequestURI path of the store.
    */
   public mapUrlToFilePath(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.fileStore.baseRequestURI)) {
+    if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
-    return identifier.path.slice(this.fileStore.baseRequestURI.length);
+    return identifier.path.slice(this.baseRequestURI.length);
   }
 
   /**
@@ -35,14 +47,18 @@ export class FileResourceMapper implements ResourceMapper {
    * If the filepath does not match the rootFilepath path of the store.
    */
   public mapFilePathToUrl(path: string): string {
-    if (!path.startsWith(this.fileStore.rootFilepath)) {
-      throw new Error(`File ${path} is not part of the file storage at ${this.fileStore.rootFilepath}.`);
+    if (!path.startsWith(this.rootFilepath)) {
+      throw new Error(`File ${path} is not part of the file storage at ${this.rootFilepath}.`);
     }
-    return this.fileStore.baseRequestURI + path.slice(this.fileStore.rootFilepath.length);
+    return this.baseRequestURI + path.slice(this.rootFilepath.length);
   }
 
   public getContentTypeFromExtension(path: string): string {
     const extension = /\.([^./]+)$/u.exec(path);
     return (extension && this.types[extension[1].toLowerCase()]) || false;
+  }
+
+  public makePath(path: string, identifier = ''): string {
+    return joinPath(this.rootFilepath, path, identifier);
   }
 }
