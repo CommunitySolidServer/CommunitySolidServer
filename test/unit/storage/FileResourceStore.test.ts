@@ -218,7 +218,7 @@ describe('A FileResourceStore', (): void => {
         raw: [],
         dateTime: stats.mtime,
         byteSize: stats.size,
-        contentType: 'text/plain; charset=utf-8',
+        contentType: 'text/plain',
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toEqual([ rawData ]);
