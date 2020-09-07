@@ -54,6 +54,30 @@ describe('A server using a FileResourceStore', (): void => {
       }
     },
   );
+  afterAll(
+    async(): Promise<void> => {
+      await setAcl(
+        store,
+        'http://test.com/',
+        { read: true, write: true, append: true },
+        true,
+        true,
+        true,
+        undefined,
+        'agent',
+      );
+
+      const requestUrl = new URL('http://test.com/permanent.txt');
+      const response = await call(
+        handler,
+        requestUrl,
+        'DELETE',
+        {},
+        [],
+      );
+      expect(response.statusCode).toBe(200);
+    },
+  );
   describe('with acl', (): void => {
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void

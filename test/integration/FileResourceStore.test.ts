@@ -96,6 +96,17 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE3');
+
+      // DELETE
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+
+      // GET
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
+      expect(response.statusCode).toBe(404);
+      expect(response._getData()).toContain('NotFoundHttpError');
     });
 
     it('can create a folder and delete it.', async(): Promise<void> => {
