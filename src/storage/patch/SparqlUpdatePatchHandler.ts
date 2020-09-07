@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { defaultGraph } from '@rdfjs/data-model';
 import { Store } from 'n3';
-import { BaseQuad } from 'rdf-js';
+import type { BaseQuad } from 'rdf-js';
 import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
