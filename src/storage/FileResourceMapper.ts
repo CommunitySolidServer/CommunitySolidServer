@@ -33,8 +33,8 @@ export class FileResourceMapper implements ResourceMapper {
    * @throws {@link NotFoundHttpError}
    * If the identifier does not match the baseRequestURI path of the store.
    */
-  public mapUrlToFilePath(identifier: ResourceIdentifier): string {
-    return this.getAbsolutePath(this.parseIdentifier(identifier));
+  public mapUrlToFilePath(identifier: ResourceIdentifier, id = ''): string {
+    return this.getAbsolutePath(this.parseIdentifier(identifier), id);
   }
 
   /**
@@ -65,5 +65,9 @@ export class FileResourceMapper implements ResourceMapper {
       throw new NotFoundHttpError();
     }
     return identifier.path.slice(this.baseRequestURI.length);
+  }
+
+  public parseIdentifierNormalized(identifier: ResourceIdentifier): string[] {
+    return /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
   }
 }

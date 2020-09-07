@@ -145,7 +145,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.resourceMapper.parseIdentifier(identifier)) ?? [];
+    const [ , path, slug ] = this.resourceMapper.parseIdentifierNormalized(identifier);
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
