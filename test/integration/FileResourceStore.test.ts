@@ -99,13 +99,8 @@ describe('A server using a FileResourceStore', (): void => {
     });
 
     it('can create a folder and delete it.', async(): Promise<void> => {
-      // This tests succeeds but is not good, the metadata Link does not get parsed so the
-      // store does not know that we want to make a folder. The result current reslult is
-      // that a folder gets made with a empty file, this file gets deleted instead
-      // of the folder thats why the last GET receives a 200 statuscode
-
       // POST
-      let requestUrl = new URL('http://test.com/secondfolder/');
+      let requestUrl = new URL('http://test.com');
 
       let response: MockResponse<any> = await callFile(
         handler,
