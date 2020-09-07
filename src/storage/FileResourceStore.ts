@@ -2,7 +2,7 @@ import { createReadStream, createWriteStream, promises as fsPromises, Stats } fr
 import { posix } from 'path';
 import { Readable } from 'stream';
 import { contentType as getContentTypeFromExtension } from 'mime-types';
-import { Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
