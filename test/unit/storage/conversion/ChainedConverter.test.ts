@@ -1,9 +1,11 @@
 import { Representation } from '../../../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { checkRequest } from '../../../../src/storage/conversion/ConversionUtil';
 import { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
+import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 class DummyConverter extends TypedRepresentationConverter {
   private readonly inTypes: { [contentType: string]: number };
@@ -28,9 +30,10 @@ class DummyConverter extends TypedRepresentationConverter {
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
-    const representation: Representation = { ...input.representation };
-    representation.metadata = { ...input.representation.metadata, contentType: input.preferences.type![0].value };
-    return representation;
+    const oldMeta = input.representation.metadata;
+    const metadata = new RepresentationMetadata(oldMeta.identifier, oldMeta.quads());
+    metadata.set(CONTENT_TYPE, input.preferences.type![0].value);
+    return { ...input.representation, metadata };
   }
 }
 
@@ -49,7 +52,9 @@ describe('A ChainedConverter', (): void => {
     ];
     converter = new ChainedConverter(converters);
 
-    representation = { metadata: { contentType: 'text/turtle' } as any } as Representation;
+    const metadata = new RepresentationMetadata();
+    metadata.set(CONTENT_TYPE, 'text/turtle');
+    representation = { metadata } as Representation;
     preferences = { type: [{ value: 'internal/quads', weight: 1 }]};
     args = { representation, preferences, identifier: { path: 'path' }};
   });
@@ -74,7 +79,7 @@ describe('A ChainedConverter', (): void => {
   });
 
   it('errors if the start of the chain does not support the representation type.', async(): Promise<void> => {
-    representation.metadata.contentType = 'bad/type';
+    representation.metadata.set(CONTENT_TYPE, 'bad/type');
     await expect(converter.canHandle(args)).rejects.toThrow();
   });
 
@@ -89,7 +94,7 @@ describe('A ChainedConverter', (): void => {
     jest.spyOn(converters[2], 'handle');
 
     const result = await converter.handle(args);
-    expect(result.metadata.contentType).toEqual('internal/quads');
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('internal/quads');
     expect((converters[0] as any).handle).toHaveBeenCalledTimes(1);
     expect((converters[1] as any).handle).toHaveBeenCalledTimes(1);
     expect((converters[2] as any).handle).toHaveBeenCalledTimes(1);

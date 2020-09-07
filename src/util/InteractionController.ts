@@ -8,11 +8,11 @@ export class InteractionController {
    * @param slug - Incoming slug header.
    * @param link - Incoming link header.
    */
-  public isContainer(slug?: string, link?: Set<string>): boolean {
+  public isContainer(slug?: string, link?: string): boolean {
     if (!slug || !slug.endsWith('/')) {
-      return Boolean(link?.has(LINK_TYPE_LDPC)) || Boolean(link?.has(LINK_TYPE_LDP_BC));
+      return Boolean(link === LINK_TYPE_LDPC) || Boolean(link === LINK_TYPE_LDP_BC);
     }
-    return !link || link.has(LINK_TYPE_LDPC) || link.has(LINK_TYPE_LDP_BC);
+    return !link || link === LINK_TYPE_LDPC || link === LINK_TYPE_LDP_BC;
   }
 
   /**

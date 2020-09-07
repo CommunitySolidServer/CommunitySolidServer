@@ -1,10 +1,11 @@
 import { EventEmitter } from 'events';
 import { createResponse, MockResponse } from 'node-mocks-http';
-import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
 import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A BasicResponseWriter', (): void => {
   const writer = new BasicResponseWriter();
@@ -32,10 +33,7 @@ describe('A BasicResponseWriter', (): void => {
     const body = {
       binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      metadata: {
-        raw: [] as Quad[],
-        profiles: [] as string[],
-      },
+      metadata: new RepresentationMetadata(),
     };
 
     response.on('end', (): void => {
@@ -50,14 +48,12 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    metadata.add(CONTENT_TYPE, 'text/turtle');
     const body = {
       binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      metadata: {
-        raw: [] as Quad[],
-        profiles: [] as string[],
-        contentType: 'text/turtle',
-      },
+      metadata,
     };
 
     response.on('end', (): void => {

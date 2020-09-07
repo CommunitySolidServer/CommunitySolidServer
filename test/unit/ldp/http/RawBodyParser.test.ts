@@ -1,9 +1,11 @@
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RawBodyParser } from '../../../../src/ldp/http/RawBodyParser';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import 'jest-rdf';
+import { CONTENT_TYPE, SLUG, TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A RawBodyparser', (): void => {
   const bodyParser = new RawBodyParser();
@@ -39,11 +41,9 @@ describe('A RawBodyparser', (): void => {
     expect(result).toEqual({
       binary: true,
       data: input,
-      metadata: {
-        contentType: 'text/turtle',
-        raw: [],
-      },
+      metadata: expect.any(RepresentationMetadata),
     });
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
     await expect(arrayifyStream(result.data)).resolves.toEqual(
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
@@ -53,11 +53,8 @@ describe('A RawBodyparser', (): void => {
     const input = {} as HttpRequest;
     input.headers = { 'transfer-encoding': 'chunked', 'content-type': 'text/turtle', slug: 'slugText' };
     const result = (await bodyParser.handle(input))!;
-    expect(result.metadata).toEqual({
-      contentType: 'text/turtle',
-      raw: [],
-      slug: 'slugText',
-    });
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.get(SLUG)?.value).toEqual('slugText');
   });
 
   it('errors if there are multiple slugs.', async(): Promise<void> => {
@@ -68,33 +65,23 @@ describe('A RawBodyparser', (): void => {
     await expect(bodyParser.handle(input)).rejects.toThrow(UnsupportedHttpError);
   });
 
-  it('adds the link headers to the metadata.', async(): Promise<void> => {
+  it('adds the link type headers to the metadata.', async(): Promise<void> => {
     const input = {} as HttpRequest;
     input.headers = { 'transfer-encoding': 'chunked',
       'content-type': 'text/turtle',
       link: '<http://www.w3.org/ns/ldp#Container>; rel="type"' };
     const result = (await bodyParser.handle(input))!;
-    expect(result.metadata).toEqual({
-      contentType: 'text/turtle',
-      raw: [],
-      linkRel: { type: new Set([ 'http://www.w3.org/ns/ldp#Container' ]) },
-    });
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.get(TYPE)?.value).toEqual('http://www.w3.org/ns/ldp#Container');
   });
 
-  it('supports multiple link headers.', async(): Promise<void> => {
+  it('ignores unknown link headers.', async(): Promise<void> => {
     const input = {} as HttpRequest;
     input.headers = { 'transfer-encoding': 'chunked',
       'content-type': 'text/turtle',
-      link: [ '<http://www.w3.org/ns/ldp#Container>; rel="type"',
-        '<http://www.w3.org/ns/ldp#Resource>; rel="type"',
-        '<unrelatedLink>',
-        'badLink',
-      ]};
+      link: [ '<unrelatedLink>', 'badLink' ]};
     const result = (await bodyParser.handle(input))!;
-    expect(result.metadata).toEqual({
-      contentType: 'text/turtle',
-      raw: [],
-      linkRel: { type: new Set([ 'http://www.w3.org/ns/ldp#Container', 'http://www.w3.org/ns/ldp#Resource' ]) },
-    });
+    expect(result.metadata.quads()).toHaveLength(1);
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
   });
 });

@@ -1,5 +1,6 @@
 import { HttpRequest } from '../../server/HttpRequest';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE, SLUG, TYPE } from '../../util/MetadataTypes';
 import { Representation } from '../representation/Representation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
@@ -39,10 +40,8 @@ export class RawBodyParser extends BodyParser {
   private parseMetadata(input: HttpRequest): RepresentationMetadata {
     const contentType = /^[^;]*/u.exec(input.headers['content-type']!)![0];
 
-    const metadata: RepresentationMetadata = {
-      raw: [],
-      contentType,
-    };
+    const metadata: RepresentationMetadata = new RepresentationMetadata();
+    metadata.set(CONTENT_TYPE, contentType);
 
     const { link, slug } = input.headers;
 
@@ -50,12 +49,11 @@ export class RawBodyParser extends BodyParser {
       if (Array.isArray(slug)) {
         throw new UnsupportedHttpError('At most 1 slug header is allowed.');
       }
-      metadata.slug = slug;
+      metadata.set(SLUG, slug);
     }
 
     // There are similarities here to Accept header parsing so that library should become more generic probably
     if (link) {
-      metadata.linkRel = {};
       const linkArray = Array.isArray(link) ? link : [ link ];
       const parsedLinks = linkArray.map((entry): { url: string; rel: string } => {
         const [ , url, rest ] = /^<([^>]*)>(.*)$/u.exec(entry) ?? [];
@@ -63,11 +61,8 @@ export class RawBodyParser extends BodyParser {
         return { url, rel };
       });
       parsedLinks.forEach((entry): void => {
-        if (entry.rel) {
-          if (!metadata.linkRel![entry.rel]) {
-            metadata.linkRel![entry.rel] = new Set();
-          }
-          metadata.linkRel![entry.rel].add(entry.url);
+        if (entry.rel === 'type') {
+          metadata.set(TYPE, entry.url);
         }
       });
     }

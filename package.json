@@ -90,6 +90,7 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "@microsoft/tsdoc-config": "^0.13.6",
     "@types/jest": "^26.0.0",
     "@types/rimraf": "^3.0.0",
     "@types/supertest": "^2.0.10",

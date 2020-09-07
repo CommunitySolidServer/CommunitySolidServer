@@ -3,7 +3,9 @@ import { translate } from 'sparqlalgebrajs';
 import { HttpRequest } from '../../server/HttpRequest';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
+import { CONTENT_TYPE } from '../../util/MetadataTypes';
 import { readableToString } from '../../util/Util';
+import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
 import { SparqlUpdatePatch } from './SparqlUpdatePatch';
 
@@ -33,16 +35,15 @@ export class SparqlUpdateBodyParser extends BodyParser {
       const sparql = await readableToString(toAlgebraStream);
       const algebra = translate(sparql, { quads: true });
 
+      const metadata = new RepresentationMetadata();
+      metadata.add(CONTENT_TYPE, 'application/sparql-update');
+
       // Prevent body from being requested again
       return {
         algebra,
         binary: true,
         data: dataCopy,
-        metadata: {
-          raw: [],
-          profiles: [],
-          contentType: 'application/sparql-update',
-        },
+        metadata,
       };
     } catch (error) {
       throw new UnsupportedHttpError(error);
