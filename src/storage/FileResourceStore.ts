@@ -81,7 +81,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    path = this.resourceMapper.makePath(path);
+    path = this.resourceMapper.getAbsolutePath(path);
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -306,7 +306,7 @@ export class FileResourceStore implements ResourceStore {
     let stats;
     try {
       stats = await fsPromises.lstat(
-        this.resourceMapper.makePath(path, newIdentifier),
+        this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
     } catch (error) {
       await this.createFile(path, newIdentifier, data, true, metadata);
@@ -329,7 +329,7 @@ export class FileResourceStore implements ResourceStore {
     // Create a container if the identifier doesn't exist yet.
     try {
       await fsPromises.access(
-        this.resourceMapper.makePath(path, newIdentifier),
+        this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
       throw new ConflictHttpError('Resource with that identifier already exists.');
     } catch (error) {
@@ -362,7 +362,7 @@ export class FileResourceStore implements ResourceStore {
     // Get the file status of the filepath of the directory where the file is to be created.
     let stats;
     try {
-      stats = await fsPromises.lstat(this.resourceMapper.makePath(path));
+      stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
     } catch (error) {
       throw new MethodNotAllowedHttpError();
     }
@@ -373,16 +373,16 @@ export class FileResourceStore implements ResourceStore {
     } else {
       // If metadata is specified, save it in a corresponding metadata file.
       if (metadata) {
-        await this.createDataFile(this.resourceMapper.makePath(path, `${resourceName}.metadata`), metadata);
+        await this.createDataFile(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`), metadata);
       }
 
       // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
-        await this.createDataFile(this.resourceMapper.makePath(path, resourceName), data);
-        return { path: this.resourceMapper.mapFilePathToUrl(this.resourceMapper.makePath(path, resourceName)) };
+        await this.createDataFile(this.resourceMapper.getAbsolutePath(path, resourceName), data);
+        return { path: this.resourceMapper.mapFilePathToUrl(this.resourceMapper.getAbsolutePath(path, resourceName)) };
       } catch (error) {
         // Normal file has not been created so we don't want the metadata file to remain.
-        await fsPromises.unlink(this.resourceMapper.makePath(path, `${resourceName}.metadata`));
+        await fsPromises.unlink(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`));
         throw error;
       }
     }
@@ -399,12 +399,12 @@ export class FileResourceStore implements ResourceStore {
    */
   private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
-    const fullPath = ensureTrailingSlash(this.resourceMapper.makePath(path, containerName));
+    const fullPath = ensureTrailingSlash(this.resourceMapper.getAbsolutePath(path, containerName));
 
     // If recursive creation is not allowed, check if the parent container exists and then create the child directory.
     try {
       if (!allowRecursiveCreation) {
-        const stats = await fsPromises.lstat(this.resourceMapper.makePath(path));
+        const stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
         if (!stats.isDirectory()) {
           throw new MethodNotAllowedHttpError('The given path is not a valid container.');
         }
