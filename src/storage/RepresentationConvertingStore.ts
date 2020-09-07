@@ -1,6 +1,7 @@
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { CONTENT_TYPE } from '../util/MetadataTypes';
 import { matchingMediaType } from '../util/Util';
 import { Conditions } from './Conditions';
 import { RepresentationConverter } from './conversion/RepresentationConverter';
@@ -37,11 +38,12 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     if (!preferences.type) {
       return true;
     }
+    const contentType = representation.metadata.get(CONTENT_TYPE);
     return Boolean(
-      representation.metadata.contentType &&
+      contentType &&
       preferences.type.some((type): boolean =>
         type.weight > 0 &&
-        matchingMediaType(type.value, representation.metadata.contentType!)),
+        matchingMediaType(type.value, contentType.value)),
     );
   }
 }

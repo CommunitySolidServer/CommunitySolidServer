@@ -1,8 +1,10 @@
 import streamifyArray from 'streamify-array';
 import { Representation } from '../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
+import { CONTENT_TYPE } from '../../src/util/MetadataTypes';
 import { readableToString } from '../../src/util/Util';
 
 describe('A ChainedConverter', (): void => {
@@ -13,10 +15,12 @@ describe('A ChainedConverter', (): void => {
   const converter = new ChainedConverter(converters);
 
   it('can convert from JSON-LD to turtle.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    metadata.set(CONTENT_TYPE, 'application/ld+json');
     const representation: Representation = {
       binary: true,
       data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
-      metadata: { raw: [], contentType: 'application/ld+json' },
+      metadata,
     };
 
     const result = await converter.handleSafe({
@@ -26,14 +30,16 @@ describe('A ChainedConverter', (): void => {
     });
 
     await expect(readableToString(result.data)).resolves.toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.\n');
-    expect(result.metadata.contentType).toEqual('text/turtle');
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
   });
 
   it('can convert from turtle to JSON-LD.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    metadata.set(CONTENT_TYPE, 'text/turtle');
     const representation: Representation = {
       binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      metadata: { raw: [], contentType: 'text/turtle' },
+      metadata,
     };
 
     const result = await converter.handleSafe({
@@ -45,6 +51,6 @@ describe('A ChainedConverter', (): void => {
     expect(JSON.parse(await readableToString(result.data))).toEqual(
       [{ '@id': 'http://test.com/s', 'http://test.com/p': [{ '@id': 'http://test.com/o' }]}],
     );
-    expect(result.metadata.contentType).toEqual('application/ld+json');
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('application/ld+json');
   });
 });

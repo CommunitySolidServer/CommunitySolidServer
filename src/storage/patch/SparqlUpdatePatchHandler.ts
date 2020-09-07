@@ -6,9 +6,11 @@ import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { Representation } from '../../ldp/representation/Representation';
+import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE } from '../../util/MetadataTypes';
 import { ResourceLocker } from '../ResourceLocker';
 import { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
@@ -65,14 +67,12 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     });
     store.removeQuads(deletes);
     store.addQuads(inserts);
+    const metadata = new RepresentationMetadata(input.identifier.path);
+    metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
     const representation: Representation = {
       binary: false,
       data: store.match() as Readable,
-      metadata: {
-        raw: [],
-        profiles: [],
-        contentType: INTERNAL_QUADS,
-      },
+      metadata,
     };
     await this.source.setRepresentation(input.identifier, representation);
 

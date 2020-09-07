@@ -4,12 +4,14 @@ import type { Quad } from 'rdf-js';
 import { translate } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
 import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { Lock } from '../../../../src/storage/Lock';
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
 import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
   let handler: SparqlUpdatePatchHandler;
@@ -73,8 +75,9 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     expect(setParams[0]).toEqual({ path: 'path' });
     expect(setParams[1]).toEqual(expect.objectContaining({
       binary: false,
-      metadata: { raw: [], profiles: [], contentType: INTERNAL_QUADS },
+      metadata: expect.any(RepresentationMetadata),
     }));
+    expect(setParams[1].metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
   };
 

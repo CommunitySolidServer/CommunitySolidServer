@@ -1,4 +1,5 @@
 import { Setup } from '../../../src/init/Setup';
+import { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 
 describe('Setup', (): void => {
   let httpServer: any;
@@ -10,7 +11,7 @@ describe('Setup', (): void => {
       setRepresentation: jest.fn(async(): Promise<void> => undefined),
     };
     aclManager = {
-      getAcl: jest.fn(async(): Promise<void> => undefined),
+      getAcl: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'http://test.com/.acl' })),
     };
     httpServer = {
       listen: jest.fn(),

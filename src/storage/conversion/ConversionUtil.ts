@@ -1,6 +1,7 @@
 import { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { CONTENT_TYPE } from '../../util/MetadataTypes';
 import { matchingMediaType } from '../../util/Util';
 import { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -34,11 +35,11 @@ RepresentationPreference[] => {
  */
 export const checkRequest = (request: RepresentationConverterArgs, supportedIn: string[], supportedOut: string[]):
 void => {
-  const inType = request.representation.metadata.contentType;
+  const inType = request.representation.metadata.get(CONTENT_TYPE);
   if (!inType) {
     throw new UnsupportedHttpError('Input type required for conversion.');
   }
-  if (!supportedIn.some((type): boolean => matchingMediaType(inType, type))) {
+  if (!supportedIn.some((type): boolean => matchingMediaType(inType.value, type))) {
     throw new UnsupportedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
   if (matchingTypes(request.preferences, supportedOut).length <= 0) {

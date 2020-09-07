@@ -4,7 +4,7 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
-import { TEXT_TURTLE } from '../util/ContentTypes';
+import { TEXT_TURTLE } from './ContentTypes';
 import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';
 import { pipeStreamsAndErrors } from './Util';
 

@@ -3,14 +3,18 @@ import rdfSerializer from 'rdf-serialize';
 import stringifyStream from 'stream-to-string';
 import streamifyArray from 'streamify-array';
 import { Representation } from '../../../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
+import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
+  const metadata = new RepresentationMetadata();
+  metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
 
   it('supports parsing quads.', async(): Promise<void> => {
     await expect(converter.getInputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
@@ -21,13 +25,13 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
-    const representation = { metadata: { contentType: INTERNAL_QUADS }} as Representation;
+    const representation = { metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle quad to JSON-LD conversions.', async(): Promise<void> => {
-    const representation = { metadata: { contentType: INTERNAL_QUADS }} as Representation;
+    const representation = { metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
@@ -39,16 +43,15 @@ describe('A QuadToRdfConverter', (): void => {
         namedNode('http://test.com/p'),
         namedNode('http://test.com/o'),
       ) ]),
-      metadata: { contentType: INTERNAL_QUADS },
+      metadata,
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
       binary: true,
-      metadata: {
-        contentType: 'text/turtle',
-      },
+      metadata: expect.any(RepresentationMetadata),
     });
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
 `,
@@ -56,22 +59,22 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('converts quads to JSON-LD.', async(): Promise<void> => {
+    metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
     const representation = {
       data: streamifyArray([ triple(
         namedNode('http://test.com/s'),
         namedNode('http://test.com/p'),
         namedNode('http://test.com/o'),
       ) ]),
-      metadata: { contentType: INTERNAL_QUADS },
+      metadata,
     } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
       binary: true,
-      metadata: {
-        contentType: 'application/ld+json',
-      },
+      metadata: expect.any(RepresentationMetadata),
     });
+    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('application/ld+json');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `[
   {
