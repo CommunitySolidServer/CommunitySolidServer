@@ -1,10 +1,11 @@
+import { posix } from 'path';
 import { types } from 'mime-types';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { APPLICATION_OCTET_STREAM } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
 import { ResourceMapper } from './ResourceMapper';
-import { posix } from 'path';
 
 const { join: joinPath } = posix;
 
@@ -55,7 +56,7 @@ export class FileResourceMapper implements ResourceMapper {
 
   public getContentTypeFromExtension(path: string): string {
     const extension = /\.([^./]+)$/u.exec(path);
-    return (extension && this.types[extension[1].toLowerCase()]) || false;
+    return (extension && this.types[extension[1].toLowerCase()]) || APPLICATION_OCTET_STREAM;
   }
 
   public makePath(path: string, identifier = ''): string {

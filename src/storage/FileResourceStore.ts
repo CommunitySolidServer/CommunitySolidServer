@@ -29,7 +29,7 @@ export class FileResourceStore implements ResourceStore {
   private readonly resourceMapper: FileResourceMapper;
 
   /**
-   * @param runtimeConfig - The runtime config.
+   * @param resourceMapper - The file resource mapper.
    * @param interactionController - Instance of InteractionController to use.
    * @param metadataController - Instance of MetadataController to use.
    */
@@ -222,10 +222,9 @@ export class FileResourceStore implements ResourceStore {
       raw: rawMetadata,
       dateTime: stats.mtime,
       byteSize: stats.size,
+      contentType,
     };
-    if (contentType) {
-      metadata.contentType = contentType;
-    }
+
     return { metadata, data: readStream, binary: true };
   }
 
