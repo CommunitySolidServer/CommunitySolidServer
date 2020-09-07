@@ -10,10 +10,10 @@ import { ResourceStore } from './ResourceStore';
  * If the original store supports the {@link Patch}, behaviour will be identical,
  * otherwise the {@link PatchHandler} will be called instead.
  */
-export class PatchingStore extends PassthroughStore {
+export class PatchingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   private readonly patcher: PatchHandler;
 
-  public constructor(source: ResourceStore, patcher: PatchHandler) {
+  public constructor(source: T, patcher: PatchHandler) {
     super(source);
     this.patcher = patcher;
   }
