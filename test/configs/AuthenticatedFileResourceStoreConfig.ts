@@ -3,6 +3,9 @@ import {
   AclManager,
   AuthenticatedLdpHandler,
   BasePermissionsExtractor,
+  BasicRequestParser,
+  BasicResponseWriter,
+  BasicTargetExtractor,
   CompositeAsyncHandler,
   HttpHandler,
   InteractionController,
@@ -13,22 +16,19 @@ import {
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
-  ServerConfig,
   TurtleToQuadConverter,
-} from '..';
-import { UnsecureWebIdExtractor } from '../src/authentication/UnsecureWebIdExtractor';
-import { UrlBasedAclManager } from '../src/authorization/UrlBasedAclManager';
-import { WebAclAuthorizer } from '../src/authorization/WebAclAuthorizer';
-import { BasicRequestParser } from '../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../src/ldp/operations/PutOperationHandler';
-import { FileResourceStore } from '../src/storage/FileResourceStore';
-import { UrlContainerManager } from '../src/storage/UrlContainerManager';
+  UrlBasedAclManager,
+  WebAclAuthorizer,
+} from '../..';
+import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
+import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
+import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
+import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
+import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
+import { FileResourceStore } from '../../src/storage/FileResourceStore';
+import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
+import { ServerConfig } from '../configs/ServerConfig';
 
 // This is the configuration from bin/server.ts
 

@@ -15,26 +15,26 @@ import {
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
-  ServerConfig,
   SingleThreadedResourceLocker,
   SparqlPatchPermissionsExtractor,
   TurtleToQuadConverter,
-} from '..';
-import { UnsecureWebIdExtractor } from '../src/authentication/UnsecureWebIdExtractor';
-import { AllowEverythingAuthorizer } from '../src/authorization/AllowEverythingAuthorizer';
-import { UrlBasedAclManager } from '../src/authorization/UrlBasedAclManager';
-import { BasicRequestParser } from '../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../src/ldp/http/RawBodyParser';
-import { SparqlUpdateBodyParser } from '../src/ldp/http/SparqlUpdateBodyParser';
-import { DeleteOperationHandler } from '../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../src/ldp/operations/GetOperationHandler';
-import { PatchOperationHandler } from '../src/ldp/operations/PatchOperationHandler';
-import { PostOperationHandler } from '../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../src/ldp/operations/PutOperationHandler';
-import { InMemoryResourceStore } from '../src/storage/InMemoryResourceStore';
-import { SparqlUpdatePatchHandler } from '../src/storage/patch/SparqlUpdatePatchHandler';
+} from '../..';
+import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
+import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
+import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
+import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
+import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
+import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
+import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
+import { SparqlUpdateBodyParser } from '../../src/ldp/http/SparqlUpdateBodyParser';
+import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
+import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
+import { PatchOperationHandler } from '../../src/ldp/operations/PatchOperationHandler';
+import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
+import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
+import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
+import { SparqlUpdatePatchHandler } from '../../src/storage/patch/SparqlUpdatePatchHandler';
+import { ServerConfig } from '../configs/ServerConfig';
 
 export class SimpleHandlersTestConfig implements ServerConfig {
   public store: ResourceStore;

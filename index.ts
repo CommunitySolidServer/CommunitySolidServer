@@ -106,6 +106,3 @@ export * from './src/util/CompositeAsyncHandler';
 export * from './src/util/InteractionController';
 export * from './src/util/MetadataController';
 export * from './src/util/Util';
-
-// Config
-export * from './configs/ServerConfig';

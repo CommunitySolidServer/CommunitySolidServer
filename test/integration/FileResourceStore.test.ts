@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
-import { FileResourceStoreConfig } from '../../configs/FileResourceStoreConfig';
+import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
 import { call, callFile } from '../util/Util';
 
 describe('A server using a FileResourceStore', (): void => {

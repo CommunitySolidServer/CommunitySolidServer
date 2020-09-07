@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
 import { HttpHandler, ResourceStore } from '../..';
-import { AuthenticatedFileResourceStoreConfig } from '../../configs/AuthenticatedFileResourceStoreConfig';
+import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { call, callFile, setAcl } from '../util/Util';
 
 describe('A server using a FileResourceStore', (): void => {
