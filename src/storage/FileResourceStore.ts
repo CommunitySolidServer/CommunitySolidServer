@@ -1,7 +1,6 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import { contentType as getContentTypeFromExtension } from 'mime-types';
 import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
@@ -16,9 +15,10 @@ import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTy
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
+import { FileResourceMapper } from './FileResourceMapper';
 import { ResourceStore } from './ResourceStore';
 
-const { extname, join: joinPath, normalize: normalizePath } = posix;
+const { join: joinPath, normalize: normalizePath } = posix;
 
 /**
  * Resource store storing its data in the file system backend.
@@ -28,6 +28,7 @@ export class FileResourceStore implements ResourceStore {
   private readonly runtimeConfig: RuntimeConfig;
   private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
+  public resourceMapper: FileResourceMapper;
 
   /**
    * @param runtimeConfig - The runtime config.
@@ -39,6 +40,7 @@ export class FileResourceStore implements ResourceStore {
     this.runtimeConfig = runtimeConfig;
     this.interactionController = interactionController;
     this.metadataController = metadataController;
+    this.resourceMapper = new FileResourceMapper(this);
   }
 
   public get baseRequestURI(): string {
@@ -63,7 +65,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.parseIdentifier(container);
+    const path = this.resourceMapper.mapUrlToFilePath(container);
     const { slug, raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
@@ -84,7 +86,7 @@ export class FileResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to delete.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    let path = this.parseIdentifier(identifier);
+    let path = this.resourceMapper.mapUrlToFilePath(identifier);
     if (path === '' || ensureTrailingSlash(path) === '/') {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
@@ -117,7 +119,7 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = joinPath(this.rootFilepath, this.parseIdentifier(identifier));
+    const path = joinPath(this.rootFilepath, this.resourceMapper.mapUrlToFilePath(identifier));
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -154,7 +156,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
+    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.resourceMapper.mapUrlToFilePath(identifier)) ?? [];
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
@@ -171,34 +173,6 @@ export class FileResourceStore implements ResourceStore {
     return isContainer ?
       await this.setDirectoryRepresentation(path, newIdentifier, metadata) :
       await this.setFileRepresentation(path, newIdentifier, representation.data, metadata);
-  }
-
-  /**
-   * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.
-   * @param identifier - Incoming identifier.
-   *
-   * @throws {@link NotFoundHttpError}
-   * If the identifier does not match the baseRequestURI path of the store.
-   */
-  private parseIdentifier(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.baseRequestURI)) {
-      throw new NotFoundHttpError();
-    }
-    return identifier.path.slice(this.baseRequestURI.length);
-  }
-
-  /**
-   * Strips the rootFilepath path from the filepath and adds the baseRequestURI in front of it.
-   * @param path - The filepath.
-   *
-   * @throws {@Link Error}
-   * If the filepath does not match the rootFilepath path of the store.
-   */
-  private mapFilepathToUrl(path: string): string {
-    if (!path.startsWith(this.rootFilepath)) {
-      throw new Error(`File ${path} is not part of the file storage at ${this.rootFilepath}.`);
-    }
-    return this.baseRequestURI + path.slice(this.rootFilepath.length);
   }
 
   /**
@@ -247,7 +221,7 @@ export class FileResourceStore implements ResourceStore {
    */
   private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
     const readStream = createReadStream(path);
-    const contentType = getContentTypeFromExtension(extname(path));
+    const contentType = this.resourceMapper.getContentTypeFromExtension(path);
     let rawMetadata: Quad[] = [];
     try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
@@ -280,7 +254,7 @@ export class FileResourceStore implements ResourceStore {
     const files = await fsPromises.readdir(path);
     const quads: Quad[] = [];
 
-    const containerURI = this.mapFilepathToUrl(path);
+    const containerURI = this.resourceMapper.mapFilePathToUrl(path);
 
     quads.push(...this.metadataController.generateResourceQuads(containerURI, stats));
     quads.push(...await this.getDirChildrenQuadRepresentation(files, path, containerURI));
@@ -316,7 +290,7 @@ export class FileResourceStore implements ResourceStore {
     const quads: Quad[] = [];
     for (const childName of files) {
       try {
-        const childURI = this.mapFilepathToUrl(joinPath(path, childName));
+        const childURI = this.resourceMapper.mapFilePathToUrl(joinPath(path, childName));
         const childStats = await fsPromises.lstat(joinPath(path, childName));
         if (!childStats.isFile() && !childStats.isDirectory()) {
           continue;
@@ -417,7 +391,7 @@ export class FileResourceStore implements ResourceStore {
       // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
         await this.createDataFile(joinPath(this.rootFilepath, path, resourceName), data);
-        return { path: this.mapFilepathToUrl(joinPath(this.rootFilepath, path, resourceName)) };
+        return { path: this.resourceMapper.mapFilePathToUrl(joinPath(this.rootFilepath, path, resourceName)) };
       } catch (error) {
         // Normal file has not been created so we don't want the metadata file to remain.
         await fsPromises.unlink(joinPath(this.rootFilepath, path, `${resourceName}.metadata`));
@@ -466,7 +440,7 @@ export class FileResourceStore implements ResourceStore {
         throw error;
       }
     }
-    return { path: this.mapFilepathToUrl(fullPath) };
+    return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
   }
 
   /**

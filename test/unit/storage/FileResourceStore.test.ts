@@ -218,7 +218,7 @@ describe('A FileResourceStore', (): void => {
         raw: [],
         dateTime: stats.mtime,
         byteSize: stats.size,
-        contentType: 'text/plain; charset=utf-8',
+        contentType: 'text/plain',
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toEqual([ rawData ]);
@@ -429,11 +429,11 @@ describe('A FileResourceStore', (): void => {
   it('errors when mapping a filepath that does not match the rootFilepath of the store.', async(): Promise<void> => {
     expect((): any => {
       // eslint-disable-next-line dot-notation
-      store['mapFilepathToUrl']('http://wrong.com/wrong');
+      store.resourceMapper['mapFilePathToUrl']('http://wrong.com/wrong');
     }).toThrowError();
     expect((): any => {
       // eslint-disable-next-line dot-notation
-      store['mapFilepathToUrl'](`${base}file.txt`);
+      store.resourceMapper['mapFilePathToUrl'](`${base}file.txt`);
     }).toThrowError();
   });
 

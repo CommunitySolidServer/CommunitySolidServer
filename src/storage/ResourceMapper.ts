@@ -1,22 +1,28 @@
-import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
  * Supports mapping a file to an URL and back.
  */
 export interface ResourceMapper {
   /**
-   * Maps the given file to an URL.
-   * @param file - The input file.
+   * Maps the given file path to an URL.
+   * @param file - The input file path.
    *
-   * @returns A promise resolving to the corresponding URL and metadata of the representation.
+   * @returns The URL as a string.
    */
-  mapFilePathToUrl: (file: File) => Promise<{ url: URL; metadata: RepresentationMetadata }>;
+  mapFilePathToUrl: (filePath: string) => string;
   /**
-   * Maps the given URL and metadata to a file.
+   * Maps the given resource identifier / URL to a file path.
    * @param url - The input URL.
-   * @param metadata - The representation metadata.
    *
-   * @returns A promise resolving to the corresponding file.
+   * @returns The file path as a string.
    */
-  mapUrlToFilePath: (url: URL, metadata: RepresentationMetadata) => Promise<File>;
+  mapUrlToFilePath: (identifier: ResourceIdentifier) => string;
+  /**
+   * Maps the given path to a contentType;
+   * @param path - The input file path.
+   *
+   * @returns The content type as a string.
+   */
+  getContentTypeFromExtension: (path: string) => string;
 }
