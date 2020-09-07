@@ -10,10 +10,10 @@ import { ResourceStore } from './ResourceStore';
  * Can be extended by stores that do not want to override all functions
  * by implementing a decorator pattern.
  */
-export class PassthroughStore implements ResourceStore {
-  protected readonly source: ResourceStore;
+export class PassthroughStore<T extends ResourceStore = ResourceStore> implements ResourceStore {
+  protected readonly source: T;
 
-  public constructor(source: ResourceStore) {
+  public constructor(source: T) {
     this.source = source;
   }
 
