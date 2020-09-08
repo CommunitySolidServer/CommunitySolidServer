@@ -1,7 +1,7 @@
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
-import { CONTENT_TYPE } from '../../util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
 import { matchingMediaType } from '../../util/Util';
 import { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -53,8 +53,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
     const idx = this.converters.length - 1;
     const lastChain = await this.getMatchingType(this.converters[idx - 1], this.converters[idx]);
     const oldMeta = input.representation.metadata;
-    const metadata = new RepresentationMetadata(oldMeta.identifier, oldMeta.quads());
-    metadata.set(CONTENT_TYPE, lastChain);
+    const metadata = new RepresentationMetadata(oldMeta, { [MA_CONTENT_TYPE]: lastChain });
     const representation: Representation = { ...input.representation, metadata };
     await this.last.canHandle({ ...input, representation });
   }

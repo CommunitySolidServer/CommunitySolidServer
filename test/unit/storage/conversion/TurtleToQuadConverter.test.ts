@@ -9,13 +9,12 @@ import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceI
 import { TurtleToQuadConverter } from '../../../../src/storage/conversion/TurtleToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A TurtleToQuadConverter', (): void => {
   const converter = new TurtleToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata();
-  metadata.add(CONTENT_TYPE, 'text/turtle');
+  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
@@ -35,7 +34,7 @@ describe('A TurtleToQuadConverter', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),
@@ -55,7 +54,7 @@ describe('A TurtleToQuadConverter', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).rejects.toThrow(UnsupportedHttpError);
   });
 });

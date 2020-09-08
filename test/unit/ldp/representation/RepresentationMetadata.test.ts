@@ -1,6 +1,7 @@
 import { literal, namedNode, quad } from '@rdfjs/data-model';
-import { Literal, NamedNode, Quad } from 'rdf-js';
+import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A RepresentationMetadata', (): void => {
   let metadata: RepresentationMetadata;
@@ -30,15 +31,47 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
     });
 
-    it('stores input quads.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata(identifier, inputQuads);
-      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads);
+    it('copies an other metadata object.', async(): Promise<void> => {
+      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      metadata = new RepresentationMetadata(other);
+      expect(metadata.identifier).toEqualRdfTerm(namedNode('otherId'));
+      expect(metadata.quads()).toBeRdfIsomorphic([
+        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal')) ]);
+    });
+
+    it('takes overrides for specific predicates.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata({ predVal: 'objVal' });
+      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+
+      metadata = new RepresentationMetadata({ predVal: literal('objVal') });
+      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+
+      metadata = new RepresentationMetadata({ predVal: [ 'objVal1', literal('objVal2') ], predVal2: 'objVal3' });
+      expect(metadata.getAll('predVal')).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
+      expect(metadata.get('predVal2')).toEqualRdfTerm(literal('objVal3'));
+    });
+
+    it('can combine overrides with an identifier.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata(identifier, { predVal: 'objVal' });
+      expect(metadata.quads()).toBeRdfIsomorphic([
+        quad(identifier, namedNode('predVal'), literal('objVal')) ]);
+    });
+
+    it('can combine overrides with other metadata.', async(): Promise<void> => {
+      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      metadata = new RepresentationMetadata(other, { 'test:pred': 'objVal2' });
+      expect(metadata.quads()).toBeRdfIsomorphic([
+        quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal2')) ]);
     });
   });
 
   describe('instantiated', (): void => {
     beforeEach(async(): Promise<void> => {
-      metadata = new RepresentationMetadata(identifier, inputQuads);
+      metadata = new RepresentationMetadata(identifier).addQuads(inputQuads);
+    });
+
+    it('can get all quads.', async(): Promise<void> => {
+      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads);
     });
 
     it('can change the stored identifier.', async(): Promise<void> => {
@@ -55,6 +88,28 @@ describe('A RepresentationMetadata', (): void => {
       });
       expect(metadata.identifier).toEqualRdfTerm(newIdentifier);
       expect(metadata.quads()).toBeRdfIsomorphic(newQuads);
+    });
+
+    it('can copy metadata.', async(): Promise<void> => {
+      const other = new RepresentationMetadata(identifier, { 'test:pred': 'objVal' });
+      metadata.setMetadata(other);
+
+      expect(metadata.identifier).toEqual(other.identifier);
+      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.concat([
+        quad(identifier, namedNode('test:pred'), literal('objVal')) ]));
+    });
+
+    it('updates its identifier when copying metadata.', async(): Promise<void> => {
+      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      metadata.setMetadata(other);
+
+      // `setMetadata` should have the same result as the following
+      const expectedMetadata = new RepresentationMetadata(identifier).addQuads(inputQuads);
+      expectedMetadata.identifier = namedNode('otherId');
+      expectedMetadata.add('test:pred', 'objVal');
+
+      expect(metadata.identifier).toEqual(other.identifier);
+      expect(metadata.quads()).toBeRdfIsomorphic(expectedMetadata.quads());
     });
 
     it('can add quads.', async(): Promise<void> => {
@@ -100,6 +155,10 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.quads()).toBeRdfIsomorphic(updatedNodes);
     });
 
+    it('can get all values for a predicate.', async(): Promise<void> => {
+      expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray([ literal('data'), literal('moreData') ]);
+    });
+
     it('can get the single value for a predicate.', async(): Promise<void> => {
       expect(metadata.get(namedNode('hasOne'))).toEqualRdfTerm(literal('otherData'));
     });
@@ -110,11 +169,27 @@ describe('A RepresentationMetadata', (): void => {
 
     it('errors if there are multiple values when getting a value.', async(): Promise<void> => {
       expect((): any => metadata.get(namedNode('has'))).toThrow(Error);
+      expect((): any => metadata.get('has')).toThrow(Error);
     });
 
-    it('can set the value of predicate.', async(): Promise<void> => {
+    it('can set the value of a predicate.', async(): Promise<void> => {
       metadata.set(namedNode('has'), literal('singleValue'));
       expect(metadata.get(namedNode('has'))).toEqualRdfTerm(literal('singleValue'));
+    });
+
+    it('has a shorthand for content-type.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      metadata.contentType = 'a/b';
+      expect(metadata.get(MA_CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
+      expect(metadata.contentType).toEqual('a/b');
+      metadata.contentType = undefined;
+      expect(metadata.contentType).toBeUndefined();
+    });
+
+    it('errors if a shorthand has multiple values.', async(): Promise<void> => {
+      metadata.add(MA_CONTENT_TYPE, 'a/b');
+      metadata.add(MA_CONTENT_TYPE, 'c/d');
+      expect((): any => metadata.contentType).toThrow();
     });
   });
 });

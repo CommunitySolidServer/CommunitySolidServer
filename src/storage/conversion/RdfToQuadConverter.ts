@@ -3,7 +3,7 @@ import rdfParser from 'rdf-parse';
 import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { CONTENT_TYPE } from '../../util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
 import { pipeStreamsAndErrors } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverterArgs } from './RepresentationConverter';
@@ -30,10 +30,9 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   private rdfToQuads(representation: Representation, baseIRI: string): Representation {
-    const metadata = new RepresentationMetadata(representation.metadata.identifier, representation.metadata.quads());
-    metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
+    const metadata = new RepresentationMetadata(representation.metadata, { [MA_CONTENT_TYPE]: INTERNAL_QUADS });
     const rawQuads = rdfParser.parse(representation.data, {
-      contentType: representation.metadata.get(CONTENT_TYPE)!.value,
+      contentType: representation.metadata.contentType!,
       baseIRI,
     });
 

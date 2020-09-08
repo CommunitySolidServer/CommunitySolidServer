@@ -1,9 +1,13 @@
-import { quad as createQuad, literal, namedNode } from '@rdfjs/data-model';
+import { quad as createQuad, namedNode } from '@rdfjs/data-model';
 import { Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
+import { getObjectTerm, getPredicateTerm, isTerm } from './MetadataUtil';
+
+export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 
 /**
  * Stores the metadata triples and provides methods for easy access.
+ * Most functions return the metadata object to allow for chaining.
  */
 export class RepresentationMetadata {
   private store: Store;
@@ -13,20 +17,58 @@ export class RepresentationMetadata {
    * @param identifier - Identifier of the resource relevant to this metadata.
    *                     A blank node will be generated if none is provided.
    *                     Strings will be converted to named nodes. @ignored
-   * @param quads - Quads to fill the metadata with. @ignored
+   * @param overrides - Key/value map of extra values that need to be added to the metadata. @ignored
    *
-   * `@ignored` tags are necessary for Components-Generator.js
+   * `@ignored` tag is necessary for Components-Generator.js
    */
-  public constructor(identifier?: NamedNode | BlankNode | string, quads?: Quad[]) {
-    this.store = new Store(quads);
-    if (identifier) {
-      if (typeof identifier === 'string') {
-        this.id = namedNode(identifier);
-      } else {
-        this.id = identifier;
-      }
+  public constructor(identifier?: NamedNode | BlankNode | string, overrides?: { [pred: string]: MetadataOverrideValue});
+
+  /**
+   * @param metadata - Starts as a copy of the input metadata.
+   * @param overrides - Key/value map of extra values that need to be added to the metadata.
+   *                    Will override values that were set by the input metadata.
+   */
+  public constructor(metadata?: RepresentationMetadata, overrides?: { [pred: string]: MetadataOverrideValue});
+
+  /**
+   * @param overrides - Key/value map of extra values that need to be added to the metadata.
+   */
+  public constructor(overrides?: { [pred: string]: MetadataOverrideValue});
+
+  public constructor(
+    input?: NamedNode | BlankNode | string | RepresentationMetadata | { [pred: string]: MetadataOverrideValue},
+    overrides?: { [pred: string]: MetadataOverrideValue},
+  ) {
+    this.store = new Store();
+    if (typeof input === 'string') {
+      this.id = namedNode(input);
+    } else if (isTerm(input)) {
+      this.id = input;
+    } else if (input instanceof RepresentationMetadata) {
+      this.id = input.identifier;
+      this.addQuads(input.quads());
     } else {
+      overrides = input;
       this.id = this.store.createBlankNode();
+    }
+
+    if (overrides) {
+      this.setOverrides(overrides);
+    }
+  }
+
+  private setOverrides(overrides: { [pred: string]: MetadataOverrideValue}): void {
+    for (const predicate of Object.keys(overrides)) {
+      const namedPredicate = getPredicateTerm(predicate);
+      this.removeAll(namedPredicate);
+
+      let objects = overrides[predicate];
+      if (!Array.isArray(objects)) {
+        objects = [ objects ];
+      }
+      for (const object of objects.map(getObjectTerm)) {
+        this.store.addQuad(this.id, namedPredicate, object);
+      }
     }
   }
 
@@ -46,31 +88,47 @@ export class RepresentationMetadata {
   }
 
   public set identifier(id: NamedNode | BlankNode) {
-    const quads = this.quads().map((quad): Quad => {
-      if (quad.subject.equals(this.id)) {
-        return createQuad(id, quad.predicate, quad.object, quad.graph);
-      }
-      if (quad.object.equals(this.id)) {
-        return createQuad(quad.subject, quad.predicate, id, quad.graph);
-      }
-      return quad;
-    });
-    this.store = new Store(quads);
-    this.id = id;
+    if (!id.equals(this.id)) {
+      // Convert all instances of the old identifier to the new identifier in the stored quads
+      const quads = this.quads().map((quad): Quad => {
+        if (quad.subject.equals(this.id)) {
+          return createQuad(id, quad.predicate, quad.object, quad.graph);
+        }
+        if (quad.object.equals(this.id)) {
+          return createQuad(quad.subject, quad.predicate, id, quad.graph);
+        }
+        return quad;
+      });
+      this.store = new Store(quads);
+      this.id = id;
+    }
+  }
+
+  /**
+   * Helper function to import all entries from the given metadata.
+   * If the new metadata has a different identifier the internal one will be updated.
+   * @param metadata - Metadata to import.
+   */
+  public setMetadata(metadata: RepresentationMetadata): this {
+    this.identifier = metadata.identifier;
+    this.addQuads(metadata.quads());
+    return this;
   }
 
   /**
    * @param quads - Quads to add to the metadata.
    */
-  public addQuads(quads: Quad[]): void {
+  public addQuads(quads: Quad[]): this {
     this.store.addQuads(quads);
+    return this;
   }
 
   /**
    * @param quads - Quads to remove from the metadata.
    */
-  public removeQuads(quads: Quad[]): void {
+  public removeQuads(quads: Quad[]): this {
     this.store.removeQuads(quads);
+    return this;
   }
 
   /**
@@ -78,8 +136,9 @@ export class RepresentationMetadata {
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value to add.
    */
-  public add(predicate: NamedNode, object: NamedNode | Literal | string): void {
-    this.store.addQuad(this.id, predicate, typeof object === 'string' ? literal(object) : object);
+  public add(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
+    this.store.addQuad(this.id, getPredicateTerm(predicate), getObjectTerm(object));
+    return this;
   }
 
   /**
@@ -87,16 +146,29 @@ export class RepresentationMetadata {
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value to remove.
    */
-  public remove(predicate: NamedNode, object: NamedNode | Literal | string): void {
-    this.store.removeQuad(this.id, predicate, typeof object === 'string' ? literal(object) : object);
+  public remove(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
+    this.store.removeQuad(this.id, getPredicateTerm(predicate), getObjectTerm(object));
+    return this;
   }
 
   /**
    * Removes all values linked through the given predicate.
    * @param predicate - Predicate to remove.
    */
-  public removeAll(predicate: NamedNode): void {
-    this.removeQuads(this.store.getQuads(this.id, predicate, null, null));
+  public removeAll(predicate: NamedNode | string): this {
+    this.removeQuads(this.store.getQuads(this.id, getPredicateTerm(predicate), null, null));
+    return this;
+  }
+
+  /**
+   * Finds all object values matching the given predicate.
+   * @param predicate - Predicate to get the values for.
+   *
+   * @returns An array with all matches.
+   */
+  public getAll(predicate: NamedNode | string): Term[] {
+    return this.store.getQuads(this.id, getPredicateTerm(predicate), null, null)
+      .map((quad): Term => quad.object);
   }
 
   /**
@@ -107,24 +179,41 @@ export class RepresentationMetadata {
    *
    * @returns The corresponding value. Undefined if there is no match
    */
-  public get(predicate: NamedNode): Term | undefined {
-    const quads = this.store.getQuads(this.id, predicate, null, null);
-    if (quads.length === 0) {
+  public get(predicate: NamedNode | string): Term | undefined {
+    const terms = this.getAll(predicate);
+    if (terms.length === 0) {
       return;
     }
-    if (quads.length > 1) {
-      throw new Error(`Multiple results for ${predicate.value}`);
+    if (terms.length > 1) {
+      throw new Error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
     }
-    return quads[0].object;
+    return terms[0];
   }
 
   /**
    * Sets the value for the given predicate, removing all other instances.
+   * In case the object is undefined this is identical to `removeAll(predicate)`.
    * @param predicate - Predicate linking to the value.
    * @param object - Value to set.
    */
-  public set(predicate: NamedNode, object: NamedNode | Literal | string): void {
+  public set(predicate: NamedNode | string, object?: NamedNode | Literal | string): this {
     this.removeAll(predicate);
-    this.add(predicate, object);
+    if (object) {
+      this.add(predicate, object);
+    }
+    return this;
+  }
+
+  // Syntactic sugar for common predicates
+
+  /**
+   * Shorthand for the CONTENT_TYPE predicate.
+   */
+  public get contentType(): string | undefined {
+    return this.get(getPredicateTerm('contentType'))?.value;
+  }
+
+  public set contentType(input) {
+    this.set(getPredicateTerm('contentType'), input);
   }
 }

@@ -5,7 +5,7 @@ import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWrite
 import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A BasicResponseWriter', (): void => {
   const writer = new BasicResponseWriter();
@@ -48,8 +48,7 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.add(CONTENT_TYPE, 'text/turtle');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
     const body = {
       binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),

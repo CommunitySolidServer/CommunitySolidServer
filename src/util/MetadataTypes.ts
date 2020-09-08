@@ -1,9 +1,11 @@
-import { namedNode } from '@rdfjs/data-model';
-import { NamedNode } from 'rdf-js';
+export const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
-export const TYPE: NamedNode = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-export const CONTENT_TYPE: NamedNode = namedNode('http://www.w3.org/ns/ma-ont#format');
-export const SLUG: NamedNode = namedNode('http://example.com/slug');
-export const LAST_CHANGED: NamedNode = namedNode('http://example.com/lastChanged');
-export const BYTE_SIZE: NamedNode = namedNode('http://example.com/byteSize');
-export const ACL_RESOURCE: NamedNode = namedNode('http://example.com/acl');
+export const ACL_RESOURCE = 'urn:solid:acl:resource';
+
+export const MA_CONTENT_TYPE = 'http://www.w3.org/ns/ma-ont#format';
+export const HTTP_SLUG = 'urn:solid:http:slug';
+export const HTTP_LAST_CHANGED = 'urn:solid:http:lastChanged';
+export const HTTP_BYTE_SIZE = 'urn:solid:http:byteSize';
+
+export const XSD_DATE_TIME = 'http://www.w3.org/2001/XMLSchema#dateTime';
+export const XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer';

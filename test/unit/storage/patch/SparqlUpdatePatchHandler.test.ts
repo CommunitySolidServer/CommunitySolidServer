@@ -11,7 +11,6 @@ import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
   let handler: SparqlUpdatePatchHandler;
@@ -77,7 +76,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
       binary: false,
       metadata: expect.any(RepresentationMetadata),
     }));
-    expect(setParams[1].metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(setParams[1].metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
   };
 

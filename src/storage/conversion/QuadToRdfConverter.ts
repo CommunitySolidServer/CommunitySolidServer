@@ -4,7 +4,7 @@ import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { CONTENT_TYPE } from '../../util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
 import { checkRequest, matchingTypes } from './ConversionUtil';
 import { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -31,8 +31,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
 
   private async quadsToRdf(quads: Representation, preferences: RepresentationPreferences): Promise<Representation> {
     const contentType = matchingTypes(preferences, await rdfSerializer.getContentTypes())[0].value;
-    const metadata = new RepresentationMetadata(quads.metadata.identifier, quads.metadata.quads());
-    metadata.set(CONTENT_TYPE, contentType);
+    const metadata = new RepresentationMetadata(quads.metadata, { [MA_CONTENT_TYPE]: contentType });
     return {
       binary: true,
       data: rdfSerializer.serialize(quads.data, { contentType }) as Readable,
