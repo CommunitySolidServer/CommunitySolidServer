@@ -86,7 +86,7 @@ export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
 export * from './src/storage/RepresentationConvertingStore';
 export * from './src/storage/ResourceLocker';
-export * from './src/storage/ResourceMapper';
+export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/UrlContainerManager';

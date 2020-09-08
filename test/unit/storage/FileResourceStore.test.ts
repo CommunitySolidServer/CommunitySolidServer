@@ -8,7 +8,7 @@ import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { FileResourceMapper } from '../../../src/storage/FileResourceMapper';
+import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
@@ -51,7 +51,7 @@ describe('A FileResourceStore', (): void => {
     jest.clearAllMocks();
 
     store = new FileResourceStore(
-      new FileResourceMapper(new RuntimeConfig({ base, rootFilepath })),
+      new ExtensionBasedMapper(new RuntimeConfig({ base, rootFilepath })),
       new InteractionController(),
       new MetadataController(),
     );

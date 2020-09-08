@@ -14,7 +14,7 @@ import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTy
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
 import { ensureTrailingSlash } from '../util/Util';
-import { FileResourceMapper } from './FileResourceMapper';
+import { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import { ResourceStore } from './ResourceStore';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -26,14 +26,14 @@ const { join: joinPath, normalize: normalizePath } = posix;
 export class FileResourceStore implements ResourceStore {
   private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
-  private readonly resourceMapper: FileResourceMapper;
+  private readonly resourceMapper: ExtensionBasedMapper;
 
   /**
    * @param resourceMapper - The file resource mapper.
    * @param interactionController - Instance of InteractionController to use.
    * @param metadataController - Instance of MetadataController to use.
    */
-  public constructor(resourceMapper: FileResourceMapper, interactionController: InteractionController,
+  public constructor(resourceMapper: ExtensionBasedMapper, interactionController: InteractionController,
     metadataController: MetadataController) {
     this.interactionController = interactionController;
     this.metadataController = metadataController;

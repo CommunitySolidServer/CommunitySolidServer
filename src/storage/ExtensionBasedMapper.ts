@@ -5,25 +5,19 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
-import { ResourceMapper } from './ResourceMapper';
+import { FileIdentifierMapper } from './FileIdentifierMapper';
 
 const { join: joinPath } = posix;
 
-export class FileResourceMapper implements ResourceMapper {
-  private readonly runtimeConfig: RuntimeConfig;
+export class ExtensionBasedMapper implements FileIdentifierMapper {
+  private readonly baseRequestURI: string;
+  private readonly rootFilepath: string;
   private readonly types: Record<string, any>;
 
   public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
-    this.runtimeConfig = runtimeConfig;
+    this.baseRequestURI = trimTrailingSlashes(runtimeConfig.base);
+    this.rootFilepath = trimTrailingSlashes(runtimeConfig.rootFilepath);
     this.types = { ...types, ...overrideTypes };
-  }
-
-  public get baseRequestURI(): string {
-    return trimTrailingSlashes(this.runtimeConfig.base);
-  }
-
-  public get rootFilepath(): string {
-    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**

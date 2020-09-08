@@ -3,7 +3,7 @@ import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 /**
  * Supports mapping a file to an URL and back.
  */
-export interface ResourceMapper {
+export interface FileIdentifierMapper {
   /**
    * Maps the given file path to an URL.
    * @param file - The input file path.
@@ -18,11 +18,4 @@ export interface ResourceMapper {
    * @returns The file path as a string.
    */
   mapUrlToFilePath: (identifier: ResourceIdentifier) => string;
-  /**
-   * Maps the given path to a contentType;
-   * @param path - The input file path.
-   *
-   * @returns The content type as a string.
-   */
-  getContentTypeFromExtension: (path: string) => string;
 }
