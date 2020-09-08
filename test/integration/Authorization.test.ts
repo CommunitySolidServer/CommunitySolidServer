@@ -16,7 +16,7 @@ import { Operation } from '../../src/ldp/operations/Operation';
 import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
 import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
 import { ResponseDescription } from '../../src/ldp/operations/ResponseDescription';
-import { BasePermissionsExtractor } from '../../src/ldp/permissions/BasePermissionsExtractor';
+import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { QuadToTurtleConverter } from '../../src/storage/conversion/QuadToTurtleConverter';
 import { TurtleToQuadConverter } from '../../src/storage/conversion/TurtleToQuadConverter';
 import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
@@ -41,7 +41,7 @@ describe('A server with authorization', (): void => {
   const convertingStore = new RepresentationConvertingStore(store, converter);
 
   const credentialsExtractor = new UnsecureWebIdExtractor();
-  const permissionsExtractor = new BasePermissionsExtractor();
+  const permissionsExtractor = new MethodPermissionsExtractor();
   const authorizer = new WebAclAuthorizer(
     new UrlBasedAclManager(),
     new UrlContainerManager(new RuntimeConfig({ base: 'http://test.com/' })),

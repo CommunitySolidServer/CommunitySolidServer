@@ -1,6 +1,6 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
-import { Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import { translate } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
 import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';

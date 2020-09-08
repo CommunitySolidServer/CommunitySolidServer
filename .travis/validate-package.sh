@@ -1,31 +1,32 @@
 #!/usr/bin/env bash
 # Script to validate our packed package
 
+echo "Building and installing package"
 npm pack
-tar -xzf solid-community-server-*.tgz
-pushd package
-
-# Check if our server can start at a given port
-node bin/server.js -p 8888 &
-pid=$!
-i=0
-EXITCODE=0
-until curl -s localhost:8888; do
-  sleep 1
-
-  # Try for at most 10 seconds, assume failure otherwise
-  let i++
-  if [ $i -gt 10 ]; then
-    echo "Server start timeout"
-    echo "  Server may have failed to start, or is running at an unexpected port."
-    kill -9 $pid
-    EXITCODE=1
-    break;
-  fi
-done > /dev/null
-kill -9 $pid
-
-popd
-rm -r package
+npm install -g solid-community-server-*.tgz
 rm solid-community-server-*.tgz
-exit $EXITCODE
+
+echo "Starting the server"
+community-solid-server -p 8888 &
+PID=$!
+
+echo "Attempting access over HTTP"
+FAILURE=1
+if [ -z $PID ]; then
+  echo "Server failed to start"
+else
+  for i in {1..10}; do
+    sleep 1
+    if curl -s localhost:8888; then
+      echo "Server reached"
+      FAILURE=0
+      break
+    fi
+  done
+  kill -9 $PID
+fi
+
+echo "Uninstalling package"
+npm uninstall -g @solid/community-server
+
+exit $FAILURE

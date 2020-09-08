@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
-import { Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';

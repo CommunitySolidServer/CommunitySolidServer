@@ -1,9 +1,9 @@
 import { Operation } from '../../../../src/ldp/operations/Operation';
-import { BasePermissionsExtractor } from '../../../../src/ldp/permissions/BasePermissionsExtractor';
+import { MethodPermissionsExtractor } from '../../../../src/ldp/permissions/MethodPermissionsExtractor';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
-describe('A BasePermissionsExtractor', (): void => {
-  const extractor = new BasePermissionsExtractor();
+describe('A MethodPermissionsExtractor', (): void => {
+  const extractor = new MethodPermissionsExtractor();
 
   it('can handle HEAD/GET/POST/PUT/DELETE.', async(): Promise<void> => {
     await expect(extractor.canHandle({ method: 'HEAD' } as Operation)).resolves.toBeUndefined();

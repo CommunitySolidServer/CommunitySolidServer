@@ -1,7 +1,7 @@
 /**
  * Contains metadata relevant to a representation.
  */
-import { Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 
 /**
  * Metadata corresponding to a {@link Representation}.

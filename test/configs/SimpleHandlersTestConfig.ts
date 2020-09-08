@@ -2,7 +2,6 @@ import {
   AcceptPreferenceParser,
   AclManager,
   AuthenticatedLdpHandler,
-  BasePermissionsExtractor,
   BodyParser,
   CompositeAsyncHandler,
   HttpHandler,
@@ -32,6 +31,7 @@ import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandle
 import { PatchOperationHandler } from '../../src/ldp/operations/PatchOperationHandler';
 import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
 import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
+import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { SparqlUpdatePatchHandler } from '../../src/storage/patch/SparqlUpdatePatchHandler';
 import { ServerConfig } from '../configs/ServerConfig';
@@ -58,7 +58,7 @@ export class SimpleHandlersTestConfig implements ServerConfig {
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
+      new MethodPermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
     const authorizer = new AllowEverythingAuthorizer();

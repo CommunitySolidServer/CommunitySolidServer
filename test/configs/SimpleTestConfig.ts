@@ -2,7 +2,6 @@ import {
   AcceptPreferenceParser,
   AclManager,
   AuthenticatedLdpHandler,
-  BasePermissionsExtractor,
   CompositeAsyncHandler,
   HttpHandler,
   Operation,
@@ -20,6 +19,7 @@ import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
 import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
 import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
+import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { ServerConfig } from '../configs/ServerConfig';
 
@@ -40,7 +40,7 @@ export class SimpleTestConfig implements ServerConfig {
     });
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new BasePermissionsExtractor();
+    const permissionsExtractor = new MethodPermissionsExtractor();
     const authorizer = new AllowEverythingAuthorizer();
 
     const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([

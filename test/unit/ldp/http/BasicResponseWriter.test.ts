@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { createResponse, MockResponse } from 'node-mocks-http';
-import { Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
 import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
