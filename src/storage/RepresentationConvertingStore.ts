@@ -41,7 +41,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
       representation.metadata.contentType &&
       preferences.type.some((type): boolean =>
         type.weight > 0 &&
-        matchingMediaType(type.value, representation.metadata.contentType)),
+        matchingMediaType(type.value, representation.metadata.contentType as string)),
     );
   }
 }

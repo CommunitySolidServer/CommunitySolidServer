@@ -427,18 +427,6 @@ describe('A FileResourceStore', (): void => {
     expect(fsPromises.access as jest.Mock).toBeCalledTimes(1);
   });
 
-  //
-  // it('errors when mapping a filepath that does not match the rootFilepath of the store.', async(): Promise<void> => {
-  // expect((): any => {
-  //     // eslint-disable-next-line dot-notation
-  //     store.resourceMapper['mapFilePathToUrl']('http://wrong.com/wrong');
-  // }).toThrowError();
-  // expect((): any => {
-  //     // eslint-disable-next-line dot-notation
-  //     store.resourceMapper['mapFilePathToUrl'](`${base}file.txt`);
-  // }).toThrowError();
-  // });
-
   it('undoes metadata file creation when resource creation fails.', async(): Promise<void> => {
     // Mock the fs functions.
     (fsPromises.mkdir as jest.Mock).mockReturnValueOnce(true);

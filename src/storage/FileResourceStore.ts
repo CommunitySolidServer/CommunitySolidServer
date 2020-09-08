@@ -378,8 +378,9 @@ export class FileResourceStore implements ResourceStore {
 
       // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
-        await this.createDataFile(this.resourceMapper.getAbsolutePath(path, resourceName), data);
-        return { path: this.resourceMapper.mapFilePathToUrl(this.resourceMapper.getAbsolutePath(path, resourceName)) };
+        const fullPath = this.resourceMapper.getAbsolutePath(path, resourceName);
+        await this.createDataFile(fullPath, data);
+        return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
       } catch (error) {
         // Normal file has not been created so we don't want the metadata file to remain.
         await fsPromises.unlink(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`));

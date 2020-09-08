@@ -31,7 +31,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   private rdfToQuads(representation: Representation, baseIRI: string): Representation {
     const metadata: RepresentationMetadata = { ...representation.metadata, contentType: INTERNAL_QUADS };
     const rawQuads = rdfParser.parse(representation.data, {
-      contentType: representation.metadata.contentType,
+      contentType: representation.metadata.contentType as string,
       baseIRI,
     });
 
