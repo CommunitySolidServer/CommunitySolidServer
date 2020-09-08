@@ -27,6 +27,7 @@ describe('A server using a FileResourceStore', (): void => {
         'agent',
       );
 
+      // Check if permanent file exists, if not make one
       let requestUrl = new URL('http://test.com/permanent.txt');
       let response = await call(
         handler,
@@ -67,6 +68,7 @@ describe('A server using a FileResourceStore', (): void => {
         'agent',
       );
 
+      // Delete permanente file
       const requestUrl = new URL('http://test.com/permanent.txt');
       const response = await call(
         handler,
@@ -76,6 +78,9 @@ describe('A server using a FileResourceStore', (): void => {
         [],
       );
       expect(response.statusCode).toBe(200);
+
+      // Delete .acl file
+      await store.deleteResource({ path: 'http://test.com/.acl' });
     },
   );
   describe('with acl', (): void => {
