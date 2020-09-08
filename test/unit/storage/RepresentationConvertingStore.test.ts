@@ -2,15 +2,14 @@ import { RepresentationMetadata } from '../../../src/ldp/representation/Represen
 import { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
-import { CONTENT_TYPE } from '../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../src/util/MetadataTypes';
 
 describe('A RepresentationConvertingStore', (): void => {
   let store: RepresentationConvertingStore;
   let source: ResourceStore;
   let handleSafeFn: jest.Mock<Promise<void>, []>;
   let converter: RepresentationConverter;
-  const metadata = new RepresentationMetadata();
-  metadata.add(CONTENT_TYPE, 'text/turtle');
+  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
 
   beforeEach(async(): Promise<void> => {
     source = {
@@ -31,7 +30,7 @@ describe('A RepresentationConvertingStore', (): void => {
       data: 'data',
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.contentType).toEqual('text/turtle');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, { type: [{ value: 'text/*', weight: 0 }, { value: 'text/turtle', weight: 1 }]}, undefined,
@@ -45,7 +44,7 @@ describe('A RepresentationConvertingStore', (): void => {
       data: 'data',
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.contentType).toEqual('text/turtle');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, {}, undefined,

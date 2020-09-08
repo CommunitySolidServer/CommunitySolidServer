@@ -6,7 +6,6 @@ import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBod
 import { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
@@ -35,7 +34,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
       namedNode('http://test.com/o'),
     ) ]);
     expect(result.binary).toBe(true);
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('application/sparql-update');
+    expect(result.metadata.contentType).toEqual('application/sparql-update');
 
     // Workaround for Node 10 not exposing objectMode
     expect((await arrayifyStream(result.data)).join('')).toEqual(

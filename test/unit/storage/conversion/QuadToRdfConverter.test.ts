@@ -8,13 +8,12 @@ import { RepresentationPreferences } from '../../../../src/ldp/representation/Re
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata();
-  metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
+  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: INTERNAL_QUADS });
 
   it('supports parsing quads.', async(): Promise<void> => {
     await expect(converter.getInputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
@@ -51,7 +50,7 @@ describe('A QuadToRdfConverter', (): void => {
       binary: true,
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.contentType).toEqual('text/turtle');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
 `,
@@ -59,7 +58,7 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('converts quads to JSON-LD.', async(): Promise<void> => {
-    metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
+    metadata.contentType = INTERNAL_QUADS;
     const representation = {
       data: streamifyArray([ triple(
         namedNode('http://test.com/s'),
@@ -74,7 +73,7 @@ describe('A QuadToRdfConverter', (): void => {
       binary: true,
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('application/ld+json');
+    expect(result.metadata.contentType).toEqual('application/ld+json');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `[
   {

@@ -7,13 +7,12 @@ import { RepresentationPreferences } from '../../../../src/ldp/representation/Re
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToTurtleConverter } from '../../../../src/storage/conversion/QuadToTurtleConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A QuadToTurtleConverter', (): void => {
   const converter = new QuadToTurtleConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata();
-  metadata.add(CONTENT_TYPE, INTERNAL_QUADS);
+  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: INTERNAL_QUADS });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
@@ -36,7 +35,7 @@ describe('A QuadToTurtleConverter', (): void => {
       binary: true,
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.metadata.contentType).toEqual('text/turtle');
     await expect(arrayifyStream(result.data)).resolves.toContain(
       '<http://test.com/s> <http://test.com/p> <http://test.com/o>',
     );

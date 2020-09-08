@@ -4,7 +4,7 @@ import { RepresentationMetadata } from '../ldp/representation/RepresentationMeta
 import { ExpressHttpServer } from '../server/ExpressHttpServer';
 import { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
-import { CONTENT_TYPE } from '../util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../util/MetadataTypes';
 
 /**
  * Invokes all logic to setup a server.
@@ -50,11 +50,10 @@ export class Setup {
     acl:mode        acl:Control;
     acl:accessTo    <${this.base}>;
     acl:default     <${this.base}>.`;
-      const aclId = await this.aclManager.getAcl({ path: this.base });
-      const metadata = new RepresentationMetadata(aclId.path);
-      metadata.set(CONTENT_TYPE, TEXT_TURTLE);
+      const baseAclId = await this.aclManager.getAcl({ path: this.base });
+      const metadata = new RepresentationMetadata(baseAclId.path, { [MA_CONTENT_TYPE]: TEXT_TURTLE });
       await this.store.setRepresentation(
-        aclId,
+        baseAclId,
         {
           binary: true,
           data: streamifyArray([ acl ]),

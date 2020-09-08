@@ -10,7 +10,7 @@ import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceI
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A RdfToQuadConverter.test.ts', (): void => {
   const converter = new RdfToQuadConverter();
@@ -25,24 +25,21 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
   });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.set(CONTENT_TYPE, 'text/turtle');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
     const representation = { metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle JSON-LD to quad conversions.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.set(CONTENT_TYPE, 'application/ld+json');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'application/ld+json' });
     const representation = { metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('converts turtle to quads.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.set(CONTENT_TYPE, 'text/turtle');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
     const representation = {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
       metadata,
@@ -54,7 +51,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),
@@ -63,8 +60,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
   });
 
   it('converts JSON-LD to quads.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.set(CONTENT_TYPE, 'application/ld+json');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'application/ld+json' });
     const representation = {
       data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
       metadata,
@@ -76,7 +72,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray([ triple(
       namedNode('http://test.com/s'),
       namedNode('http://test.com/p'),
@@ -85,8 +81,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
   });
 
   it('throws an UnsupportedHttpError on invalid triple data.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata();
-    metadata.set(CONTENT_TYPE, 'text/turtle');
+    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
     const representation = {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.co' ]),
       metadata,
@@ -98,7 +93,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(CONTENT_TYPE)?.value).toEqual(INTERNAL_QUADS);
+    expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).rejects.toThrow(UnsupportedHttpError);
   });
 });

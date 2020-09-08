@@ -14,7 +14,15 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
-import { BYTE_SIZE, CONTENT_TYPE, LAST_CHANGED, SLUG, TYPE } from '../util/MetadataTypes';
+import {
+  HTTP_BYTE_SIZE,
+  HTTP_LAST_CHANGED,
+  HTTP_SLUG,
+  MA_CONTENT_TYPE,
+  RDF_TYPE,
+  XSD_DATE_TIME,
+  XSD_INTEGER,
+} from '../util/MetadataTypes';
 import { ensureTrailingSlash } from '../util/Util';
 import { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import { ResourceStore } from './ResourceStore';
@@ -57,11 +65,11 @@ export class FileResourceStore implements ResourceStore {
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
     const path = this.resourceMapper.getRelativePath(container);
-    const slug = representation.metadata.get(SLUG)?.value;
-    const type = representation.metadata.get(TYPE)?.value;
+    const slug = representation.metadata.get(HTTP_SLUG)?.value;
+    const types = representation.metadata.getAll(RDF_TYPE);
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    const isContainer = this.interactionController.isContainer(slug, type);
+    const isContainer = this.interactionController.isContainer(slug, types);
     const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
     let metadata;
     // eslint-disable-next-line no-param-reassign
@@ -154,14 +162,14 @@ export class FileResourceStore implements ResourceStore {
     // eslint-disable-next-line no-param-reassign
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
     const raw = representation.metadata.quads();
-    const type = representation.metadata.get(TYPE)?.value;
+    const types = representation.metadata.getAll(RDF_TYPE);
     let metadata: Readable | undefined;
     if (raw.length > 0) {
-      metadata = streamifyArray(raw);
+      metadata = this.metadataController.serializeQuads(raw);
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    const isContainer = this.interactionController.isContainer(documentName, type);
+    const isContainer = this.interactionController.isContainer(documentName, types);
     const newIdentifier = this.interactionController.generateIdentifier(isContainer, documentName);
     return isContainer ?
       await this.setDirectoryRepresentation(containerPath, newIdentifier, metadata) :
@@ -222,10 +230,10 @@ export class FileResourceStore implements ResourceStore {
     } catch (_) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
-    const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path), rawMetadata);
-    metadata.set(LAST_CHANGED, stats.mtime.toISOString());
-    metadata.set(BYTE_SIZE, DataFactory.literal(stats.size));
-    metadata.set(CONTENT_TYPE, contentType);
+    const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path)).addQuads(rawMetadata)
+      .set(HTTP_LAST_CHANGED, DataFactory.literal(stats.mtime.toISOString(), XSD_DATE_TIME))
+      .set(HTTP_BYTE_SIZE, DataFactory.literal(stats.size, XSD_INTEGER));
+    metadata.contentType = contentType;
     return { metadata, data: readStream, binary: true };
   }
 
@@ -256,9 +264,9 @@ export class FileResourceStore implements ResourceStore {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
 
-    const metadata = new RepresentationMetadata(containerURI, rawMetadata);
-    metadata.set(LAST_CHANGED, stats.mtime.toISOString());
-    metadata.set(CONTENT_TYPE, INTERNAL_QUADS);
+    const metadata = new RepresentationMetadata(containerURI).addQuads(rawMetadata)
+      .set(HTTP_LAST_CHANGED, DataFactory.literal(stats.mtime.toISOString(), XSD_DATE_TIME))
+      .set(MA_CONTENT_TYPE, INTERNAL_QUADS);
 
     return {
       binary: false,

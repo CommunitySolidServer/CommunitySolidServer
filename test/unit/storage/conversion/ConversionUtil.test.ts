@@ -3,7 +3,6 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { checkRequest, matchingTypes } from '../../../../src/storage/conversion/ConversionUtil';
-import { CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
 
 describe('A ConversionUtil', (): void => {
   const identifier: ResourceIdentifier = { path: 'path' };
@@ -23,21 +22,21 @@ describe('A ConversionUtil', (): void => {
     });
 
     it('requires a matching input type.', async(): Promise<void> => {
-      metadata.add(CONTENT_TYPE, 'a/x');
+      metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
       expect((): any => checkRequest({ identifier, representation, preferences }, [ 'c/x' ], [ '*/*' ]))
         .toThrow('Can only convert from c/x to */*.');
     });
 
     it('requires a matching output type.', async(): Promise<void> => {
-      metadata.add(CONTENT_TYPE, 'a/x');
+      metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
       expect((): any => checkRequest({ identifier, representation, preferences }, [ '*/*' ], [ 'c/x' ]))
         .toThrow('Can only convert from */* to c/x.');
     });
 
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
-      metadata.add(CONTENT_TYPE, 'a/x');
+      metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
       expect(checkRequest({ identifier, representation, preferences }, [ '*/*' ], [ '*/*' ]))
         .toBeUndefined();

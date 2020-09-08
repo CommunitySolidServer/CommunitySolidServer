@@ -7,7 +7,6 @@ import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { CONTENT_TYPE } from '../../src/util/MetadataTypes';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
   const targetExtractor = new BasicTargetExtractor();
@@ -41,7 +40,7 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
         metadata: expect.any(RepresentationMetadata),
       },
     });
-    expect(result.body?.metadata.get(CONTENT_TYPE)?.value).toEqual('text/turtle');
+    expect(result.body?.metadata.contentType).toEqual('text/turtle');
 
     await expect(arrayifyStream(result.body!.data)).resolves.toEqual(
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
