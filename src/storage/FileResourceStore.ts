@@ -3,7 +3,6 @@ import { posix } from 'path';
 import { Readable } from 'stream';
 import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
-import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
@@ -14,8 +13,8 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
-import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
-import { FileResourceMapper } from './FileResourceMapper';
+import { ensureTrailingSlash } from '../util/Util';
+import { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import { ResourceStore } from './ResourceStore';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -25,30 +24,20 @@ const { join: joinPath, normalize: normalizePath } = posix;
  * All requests will throw an {@link NotFoundHttpError} if unknown identifiers get passed.
  */
 export class FileResourceStore implements ResourceStore {
-  private readonly runtimeConfig: RuntimeConfig;
   private readonly interactionController: InteractionController;
   private readonly metadataController: MetadataController;
-  public resourceMapper: FileResourceMapper;
+  private readonly resourceMapper: ExtensionBasedMapper;
 
   /**
-   * @param runtimeConfig - The runtime config.
+   * @param resourceMapper - The file resource mapper.
    * @param interactionController - Instance of InteractionController to use.
    * @param metadataController - Instance of MetadataController to use.
    */
-  public constructor(runtimeConfig: RuntimeConfig, interactionController: InteractionController,
+  public constructor(resourceMapper: ExtensionBasedMapper, interactionController: InteractionController,
     metadataController: MetadataController) {
-    this.runtimeConfig = runtimeConfig;
     this.interactionController = interactionController;
     this.metadataController = metadataController;
-    this.resourceMapper = new FileResourceMapper(this);
-  }
-
-  public get baseRequestURI(): string {
-    return trimTrailingSlashes(this.runtimeConfig.base);
-  }
-
-  public get rootFilepath(): string {
-    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
+    this.resourceMapper = resourceMapper;
   }
 
   /**
@@ -65,7 +54,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.resourceMapper.mapUrlToFilePath(container);
+    const path = this.resourceMapper.parseIdentifier(container);
     const { slug, raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
@@ -86,13 +75,13 @@ export class FileResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to delete.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    let path = this.resourceMapper.mapUrlToFilePath(identifier);
+    let path = this.resourceMapper.parseIdentifier(identifier);
     if (path === '' || ensureTrailingSlash(path) === '/') {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
 
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    path = joinPath(this.rootFilepath, path);
+    path = this.resourceMapper.getAbsolutePath(path);
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -119,7 +108,7 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = joinPath(this.rootFilepath, this.resourceMapper.mapUrlToFilePath(identifier));
+    const path = this.resourceMapper.mapUrlToFilePath(identifier);
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -156,7 +145,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.resourceMapper.mapUrlToFilePath(identifier)) ?? [];
+    const [ , path, slug ] = this.resourceMapper.parseIdentifierNormalized(identifier);
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
@@ -233,10 +222,9 @@ export class FileResourceStore implements ResourceStore {
       raw: rawMetadata,
       dateTime: stats.mtime,
       byteSize: stats.size,
+      contentType,
     };
-    if (contentType) {
-      metadata.contentType = contentType;
-    }
+
     return { metadata, data: readStream, binary: true };
   }
 
@@ -318,7 +306,7 @@ export class FileResourceStore implements ResourceStore {
     let stats;
     try {
       stats = await fsPromises.lstat(
-        joinPath(this.rootFilepath, path, newIdentifier),
+        this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
     } catch (error) {
       await this.createFile(path, newIdentifier, data, true, metadata);
@@ -341,7 +329,7 @@ export class FileResourceStore implements ResourceStore {
     // Create a container if the identifier doesn't exist yet.
     try {
       await fsPromises.access(
-        joinPath(this.rootFilepath, path, newIdentifier),
+        this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
       throw new ConflictHttpError('Resource with that identifier already exists.');
     } catch (error) {
@@ -374,7 +362,7 @@ export class FileResourceStore implements ResourceStore {
     // Get the file status of the filepath of the directory where the file is to be created.
     let stats;
     try {
-      stats = await fsPromises.lstat(joinPath(this.rootFilepath, path));
+      stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
     } catch (error) {
       throw new MethodNotAllowedHttpError();
     }
@@ -385,16 +373,17 @@ export class FileResourceStore implements ResourceStore {
     } else {
       // If metadata is specified, save it in a corresponding metadata file.
       if (metadata) {
-        await this.createDataFile(joinPath(this.rootFilepath, path, `${resourceName}.metadata`), metadata);
+        await this.createDataFile(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`), metadata);
       }
 
       // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
-        await this.createDataFile(joinPath(this.rootFilepath, path, resourceName), data);
-        return { path: this.resourceMapper.mapFilePathToUrl(joinPath(this.rootFilepath, path, resourceName)) };
+        const fullPath = this.resourceMapper.getAbsolutePath(path, resourceName);
+        await this.createDataFile(fullPath, data);
+        return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
       } catch (error) {
         // Normal file has not been created so we don't want the metadata file to remain.
-        await fsPromises.unlink(joinPath(this.rootFilepath, path, `${resourceName}.metadata`));
+        await fsPromises.unlink(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`));
         throw error;
       }
     }
@@ -411,12 +400,12 @@ export class FileResourceStore implements ResourceStore {
    */
   private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
-    const fullPath = ensureTrailingSlash(joinPath(this.rootFilepath, path, containerName));
+    const fullPath = ensureTrailingSlash(this.resourceMapper.getAbsolutePath(path, containerName));
 
     // If recursive creation is not allowed, check if the parent container exists and then create the child directory.
     try {
       if (!allowRecursiveCreation) {
-        const stats = await fsPromises.lstat(joinPath(this.rootFilepath, path));
+        const stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
         if (!stats.isDirectory()) {
           throw new MethodNotAllowedHttpError('The given path is not a valid container.');
         }
