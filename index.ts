@@ -43,7 +43,7 @@ export * from './src/ldp/operations/ResponseDescription';
 // LDP/Permissions
 export * from './src/ldp/permissions/PermissionSet';
 export * from './src/ldp/permissions/PermissionsExtractor';
-export * from './src/ldp/permissions/BasePermissionsExtractor';
+export * from './src/ldp/permissions/MethodPermissionsExtractor';
 export * from './src/ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation

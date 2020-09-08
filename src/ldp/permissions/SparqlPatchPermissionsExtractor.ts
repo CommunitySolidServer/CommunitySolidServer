@@ -12,31 +12,29 @@ import { PermissionsExtractor } from './PermissionsExtractor';
  * while DELETEs require write permissions as well.
  */
 export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
-  public async canHandle(input: Operation): Promise<void> {
-    if (input.method !== 'PATCH') {
-      throw new UnsupportedHttpError('Only PATCH operations are supported.');
+  public async canHandle({ method, body }: Operation): Promise<void> {
+    if (method !== 'PATCH') {
+      throw new UnsupportedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
     }
-    if (!input.body) {
-      throw new UnsupportedHttpError('PATCH body is required to determine permissions.');
+    if (!body) {
+      throw new UnsupportedHttpError('Cannot determine permissions of PATCH operations without a body.');
     }
-    if (!this.isSparql(input.body)) {
-      throw new UnsupportedHttpError('Only SPARQL update PATCHes are supported.');
+    if (!this.isSparql(body)) {
+      throw new UnsupportedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }
-    if (!this.isDeleteInsert(input.body.algebra)) {
-      throw new UnsupportedHttpError('Only DELETE/INSERT SPARQL update operations are supported.');
+    if (!this.isDeleteInsert(body.algebra)) {
+      throw new UnsupportedHttpError('Cannot determine permissions of a PATCH without DELETE/INSERT.');
     }
   }
 
-  public async handle(input: Operation): Promise<PermissionSet> {
+  public async handle({ body }: Operation): Promise<PermissionSet> {
     // Verified in `canHandle` call
-    const op = (input.body as SparqlUpdatePatch).algebra as Algebra.DeleteInsert;
-
-    const read = false;
-    const write = this.needsWrite(op);
+    const update = (body as SparqlUpdatePatch).algebra as Algebra.DeleteInsert;
 
     // Since `append` is a specific type of write, it is true if `write` is true.
-    const append = write || this.needsAppend(op);
-
+    const read = false;
+    const write = this.needsWrite(update);
+    const append = write || this.needsAppend(update);
     return { read, write, append };
   }
 

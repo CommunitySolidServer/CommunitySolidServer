@@ -2,7 +2,7 @@ import { Stats } from 'fs';
 import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
-import { NamedNode, Quad } from 'rdf-js';
+import type { NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';

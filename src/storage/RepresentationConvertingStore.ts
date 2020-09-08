@@ -16,10 +16,10 @@ import { ResourceStore } from './ResourceStore';
  * Even if there is a match with the output from the store,
  * if there is a low weight for that type conversions might still be preferred.
  */
-export class RepresentationConvertingStore extends PassthroughStore {
+export class RepresentationConvertingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   private readonly converter: RepresentationConverter;
 
-  public constructor(source: ResourceStore, converter: RepresentationConverter) {
+  public constructor(source: T, converter: RepresentationConverter) {
     super(source);
     this.converter = converter;
   }

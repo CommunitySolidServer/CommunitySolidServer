@@ -8,12 +8,12 @@ import { ResourceStore } from './ResourceStore';
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.
  * If the original store supports the {@link Patch}, behaviour will be identical,
- * otherwise one of the {@link PatchHandler}s supporting the given Patch will be called instead.
+ * otherwise the {@link PatchHandler} will be called instead.
  */
-export class PatchingStore extends PassthroughStore {
+export class PatchingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   private readonly patcher: PatchHandler;
 
-  public constructor(source: ResourceStore, patcher: PatchHandler) {
+  public constructor(source: T, patcher: PatchHandler) {
     super(source);
     this.patcher = patcher;
   }
