@@ -1,8 +1,0 @@
-@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
-@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.
-<http://test.com/#auth> a acl:Authorization;
- acl:mode acl:Read;
- acl:mode acl:Control;
- acl:accessTo <http://test.com/>;
- acl:default <http://test.com/>;
- acl:agentClass foaf:Agent.

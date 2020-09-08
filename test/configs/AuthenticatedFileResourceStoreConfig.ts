@@ -2,7 +2,6 @@ import {
   AcceptPreferenceParser,
   AclManager,
   AuthenticatedLdpHandler,
-  BasePermissionsExtractor,
   BasicRequestParser,
   BasicResponseWriter,
   BasicTargetExtractor,
@@ -26,6 +25,7 @@ import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperation
 import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
 import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
 import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
+import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { FileResourceStore } from '../../src/storage/FileResourceStore';
 import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { ServerConfig } from '../configs/ServerConfig';
@@ -67,7 +67,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
-      new BasePermissionsExtractor(),
+      new MethodPermissionsExtractor(),
     ]);
 
     const operationHandler = new CompositeAsyncHandler<
