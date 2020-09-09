@@ -9,50 +9,14 @@ describe('A server using a FileResourceStore', (): void => {
   let config: AuthenticatedFileResourceStoreConfig;
   let handler: HttpHandler;
   let store: ResourceStore;
-
   beforeAll(
     async(): Promise<void> => {
       config = new AuthenticatedFileResourceStoreConfig();
       handler = config.getHandler();
       ({ store } = config);
 
-      await setAcl(
-        store,
-        'http://test.com/',
-        { read: true, write: true, append: true },
-        true,
-        true,
-        true,
-        undefined,
-        'agent',
-      );
-
-      // Check if permanent file exists, if not make one
-      let requestUrl = new URL('http://test.com/permanent.txt');
-      let response = await call(
-        handler,
-        requestUrl,
-        'GET',
-        { accept: 'text/*' },
-        [],
-      );
-      if (response.statusCode !== 200) {
-        requestUrl = new URL('http://test.com/');
-        const fileData = await fs.readFile('test/assets/permanent.txt');
-
-        response = await callFile(
-          handler,
-          requestUrl,
-          'POST',
-          {
-            'content-type': 'application/octet-stream',
-            slug: 'permanent.txt',
-            'transfer-encoding': 'chunked',
-          },
-          fileData,
-        );
-        expect(response.statusCode).toBe(200);
-      }
+      const root = config.runtimeConfig.rootFilepath;
+      await fs.copyFile('test/assets/permanent.txt', `${root}/permanent.txt`);
     },
   );
   afterAll(
