@@ -6,28 +6,28 @@ import {
   BasicResponseWriter,
   BasicTargetExtractor,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  FileResourceStore,
+  GetOperationHandler,
   HttpHandler,
   InteractionController,
   MetadataController,
+  MethodPermissionsExtractor,
   Operation,
+  PostOperationHandler,
+  PutOperationHandler,
   QuadToTurtleConverter,
+  RawBodyParser,
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
   TurtleToQuadConverter,
   UrlBasedAclManager,
+  UrlContainerManager,
+  UnsecureWebIdExtractor,
   WebAclAuthorizer,
 } from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { FileResourceStore } from '../../src/storage/FileResourceStore';
-import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { ServerConfig } from '../configs/ServerConfig';
 
 // This is the configuration from bin/server.ts
