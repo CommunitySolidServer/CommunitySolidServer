@@ -1,26 +1,26 @@
 import {
   AcceptPreferenceParser,
   AclManager,
+  AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  BasicRequestParser,
+  BasicResponseWriter,
+  BasicTargetExtractor,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  GetOperationHandler,
   HttpHandler,
+  InMemoryResourceStore,
+  MethodPermissionsExtractor,
   Operation,
+  PostOperationHandler,
+  RawBodyParser,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
+  UrlBasedAclManager,
+  UnsecureWebIdExtractor,
 } from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
-import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
-import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class SimpleTestConfig implements ServerConfig {

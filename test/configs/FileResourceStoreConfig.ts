@@ -1,32 +1,32 @@
 import {
   AcceptPreferenceParser,
+  AllowEverythingAuthorizer,
   AclManager,
   AuthenticatedLdpHandler,
+  BasicRequestParser,
+  BasicResponseWriter,
+  BasicTargetExtractor,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  FileResourceStore,
+  GetOperationHandler,
   HttpHandler,
   InteractionController,
   MetadataController,
+  MethodPermissionsExtractor,
   Operation,
+  PostOperationHandler,
+  PutOperationHandler,
   QuadToTurtleConverter,
+  RawBodyParser,
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
   TurtleToQuadConverter,
+  UrlBasedAclManager,
+  UnsecureWebIdExtractor,
 } from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
-import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
-import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { FileResourceStore } from '../../src/storage/FileResourceStore';
 import { ServerConfig } from '../configs/ServerConfig';
 
 // This is the configuration from bin/server.ts
