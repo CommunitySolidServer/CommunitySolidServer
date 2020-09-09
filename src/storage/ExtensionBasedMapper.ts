@@ -3,21 +3,43 @@ import { types } from 'mime-types';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM } from '../util/ContentTypes';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
 import { FileIdentifierMapper } from './FileIdentifierMapper';
 
-const { join: joinPath } = posix;
+const { join: joinPath, normalize: normalizePath } = posix;
+
+export interface PathAbstraction {
+
+  /**
+   * The parent directory path of the file.
+   */
+  path: string;
+
+  /**
+   * The name/slug of the file.
+   */
+  slug?: string;
+}
 
 export class ExtensionBasedMapper implements FileIdentifierMapper {
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly types: Record<string, any>;
 
   public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
-    this.baseRequestURI = trimTrailingSlashes(runtimeConfig.base);
-    this.rootFilepath = trimTrailingSlashes(runtimeConfig.rootFilepath);
+    this.runtimeConfig = runtimeConfig;
     this.types = { ...types, ...overrideTypes };
+  }
+
+  // Using getters because the values of runtimeConfig get filled in at runtime (so they are still empty at
+  // construction time until issue #106 gets resolved.)
+  public get baseRequestURI(): string {
+    return trimTrailingSlashes(this.runtimeConfig.base);
+  }
+
+  public get rootFilepath(): string {
+    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**
@@ -26,17 +48,21 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    *
    * @throws {@link NotFoundHttpError}
    * If the identifier does not match the baseRequestURI path of the store.
+   *
+   * @returns Absolute path of the file.
    */
   public mapUrlToFilePath(identifier: ResourceIdentifier, id = ''): string {
-    return this.getAbsolutePath(this.parseIdentifier(identifier), id);
+    return this.getAbsolutePath(this.getRelativePath(identifier), id);
   }
 
   /**
    * Strips the rootFilepath path from the filepath and adds the baseRequestURI in front of it.
-   * @param path - The filepath.
+   * @param path - The file path.
    *
    * @throws {@Link Error}
-   * If the filepath does not match the rootFilepath path of the store.
+   * If the file path does not match the rootFilepath path of the store.
+   *
+   * @returns Url of the file.
    */
   public mapFilePathToUrl(path: string): string {
     if (!path.startsWith(this.rootFilepath)) {
@@ -45,23 +71,59 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     return this.baseRequestURI + path.slice(this.rootFilepath.length);
   }
 
+  /**
+   * Get the content type from a file path, using its extension.
+   * @param path - The file path.
+   *
+   * @returns Content type of the file.
+   */
   public getContentTypeFromExtension(path: string): string {
     const extension = /\.([^./]+)$/u.exec(path);
     return (extension && this.types[extension[1].toLowerCase()]) || APPLICATION_OCTET_STREAM;
   }
 
+  /**
+   * Get the absolute file path based on the rootFilepath of the store.
+   * @param path - The relative file path.
+   * @param identifier - Optional identifier to add to the path.
+   *
+   * @returns Absolute path of the file.
+   */
   public getAbsolutePath(path: string, identifier = ''): string {
     return joinPath(this.rootFilepath, path, identifier);
   }
 
-  public parseIdentifier(identifier: ResourceIdentifier): string {
+  /**
+   * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.
+   * @param identifier - Incoming identifier.
+   *
+   * @throws {@link NotFoundHttpError}
+   * If the identifier does not match the baseRequestURI path of the store.
+   *
+   * @returns A string representing the relative path.
+   */
+  public getRelativePath(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
     return identifier.path.slice(this.baseRequestURI.length);
   }
 
-  public parseIdentifierNormalized(identifier: ResourceIdentifier): string[] {
-    return /^(.*\/)([^/]+\/?)?$/u.exec(this.parseIdentifier(identifier)) ?? [];
+  /**
+   * Splits the identifier into the parent directory and its own file name.
+   * If the identifier specifies a directory, slug will be undefined.
+   * @param identifier - Incoming identifier.
+   *
+   * @throws {@link ConflictHttpError}
+   * If the root identifier is passed.
+   *
+   * @returns A PathAbstraction object containing path and (optional) slug fields.
+   */
+  public parseIdentifier(identifier: ResourceIdentifier): PathAbstraction {
+    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
+    if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
+      throw new ConflictHttpError('Container with that identifier already exists (root).');
+    }
+    return { path, slug };
   }
 }

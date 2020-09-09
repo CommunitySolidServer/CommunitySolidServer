@@ -17,7 +17,7 @@ import { ensureTrailingSlash } from '../util/Util';
 import { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import { ResourceStore } from './ResourceStore';
 
-const { join: joinPath, normalize: normalizePath } = posix;
+const { join: joinPath } = posix;
 
 /**
  * Resource store storing its data in the file system backend.
@@ -54,7 +54,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.resourceMapper.parseIdentifier(container);
+    const path = this.resourceMapper.getRelativePath(container);
     const { slug, raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata;
@@ -75,7 +75,7 @@ export class FileResourceStore implements ResourceStore {
    * @param identifier - Identifier of resource to delete.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    let path = this.resourceMapper.parseIdentifier(identifier);
+    let path = this.resourceMapper.getRelativePath(identifier);
     if (path === '' || ensureTrailingSlash(path) === '/') {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
@@ -145,10 +145,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
     // to call the InteractionController in the same way.
-    const [ , path, slug ] = this.resourceMapper.parseIdentifierNormalized(identifier);
-    if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
-      throw new ConflictHttpError('Container with that identifier already exists (root).');
-    }
+    const { path, slug } = this.resourceMapper.parseIdentifier(identifier);
     const { raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata: Readable | undefined;
