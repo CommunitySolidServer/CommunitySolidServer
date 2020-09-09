@@ -29,9 +29,7 @@ import {
 } from '../..';
 import { ServerConfig } from '../configs/ServerConfig';
 
-// This is the configuration from bin/server.ts
-
-export class LockingResourceStore implements ServerConfig {
+export class LockingResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
 
