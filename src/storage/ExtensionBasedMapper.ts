@@ -10,14 +10,20 @@ import { FileIdentifierMapper } from './FileIdentifierMapper';
 const { join: joinPath } = posix;
 
 export class ExtensionBasedMapper implements FileIdentifierMapper {
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
+  private readonly runtimeConfig: RuntimeConfig;
   private readonly types: Record<string, any>;
 
   public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
-    this.baseRequestURI = trimTrailingSlashes(runtimeConfig.base);
-    this.rootFilepath = trimTrailingSlashes(runtimeConfig.rootFilepath);
+    this.runtimeConfig = runtimeConfig;
     this.types = { ...types, ...overrideTypes };
+  }
+
+  public get baseRequestURI(): string {
+    return trimTrailingSlashes(this.runtimeConfig.base);
+  }
+
+  public get rootFilepath(): string {
+    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
   }
 
   /**
