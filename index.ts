@@ -79,6 +79,7 @@ export * from './src/storage/patch/SparqlUpdatePatchHandler';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
+export * from './src/storage/FileResourceStore';
 export * from './src/storage/InMemoryResourceStore';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
