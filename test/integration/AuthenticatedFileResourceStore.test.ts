@@ -38,7 +38,7 @@ describe('A server using a FileResourceStore', (): void => {
       );
       if (response.statusCode !== 200) {
         requestUrl = new URL('http://test.com/');
-        const fileData = await fs.readFile('test/testfiles/permanent.txt');
+        const fileData = await fs.readFile('test/assets/permanent.txt');
 
         response = await callFile(
           handler,
@@ -101,7 +101,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -167,7 +167,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       const requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       const response: MockResponse<any> = await callFile(
         handler,
@@ -200,7 +200,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
