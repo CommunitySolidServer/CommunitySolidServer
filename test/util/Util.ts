@@ -123,19 +123,3 @@ export const setAcl = async(
 
   return store.setRepresentation({ path: `${id}.acl` }, representation);
 };
-
-export const multipleRequest = async(
-  handler: HttpHandler,
-  requestUrl: URL,
-  methods: string[],
-  headers: IncomingHttpHeaders[],
-  data: Buffer,
-): Promise<void> => {
-  call(handler, requestUrl, methods[0], headers[0], [])
-    .then(result => console.log(result.statusCode))
-    .catch(error => console.log(error));
-
-  callFile(handler, requestUrl, methods[1], headers[1], data)
-    .then(result => console.log(result.statusCode))
-    .catch(error => console.log(error));
-};
