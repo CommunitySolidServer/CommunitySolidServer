@@ -3,10 +3,10 @@ import { types } from 'mime-types';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM } from '../util/ContentTypes';
+import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
 import { FileIdentifierMapper } from './FileIdentifierMapper';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 
@@ -106,11 +106,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
-    const path = identifier.path.slice(this.baseRequestURI.length);
-    if (path === '') {
-      return '/';
-    }
-    return path;
+    return identifier.path.slice(this.baseRequestURI.length);
   }
 
   /**
@@ -124,7 +120,6 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    * @returns A PathAbstraction object containing path and (optional) slug fields.
    */
   public parseIdentifier(identifier: ResourceIdentifier): PathAbstraction {
-    console.log(/^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? []);
     const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
