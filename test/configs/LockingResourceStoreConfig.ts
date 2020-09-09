@@ -12,6 +12,7 @@ import {
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
+  SingleThreadedResourceLocker,
   TurtleToQuadConverter,
 } from '../..';
 import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
@@ -27,11 +28,12 @@ import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHand
 import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
 import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
 import { FileResourceStore } from '../../src/storage/FileResourceStore';
+import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import { ServerConfig } from '../configs/ServerConfig';
 
 // This is the configuration from bin/server.ts
 
-export class LockingResourceStore implements ServerConfig {
+export class LockingResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
 
@@ -65,16 +67,25 @@ export class LockingResourceStore implements ServerConfig {
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),
     ]);
-    const convertingStore = new RepresentationConvertingStore(this.store, converter);
+
+    const convertingStore = new RepresentationConvertingStore(
+      this.store,
+      converter,
+    );
+
+    const lockingStore = new LockingResourceStore(
+      convertingStore,
+      new SingleThreadedResourceLocker(),
+    );
 
     const operationHandler = new CompositeAsyncHandler<
     Operation,
     ResponseDescription
     >([
-      new GetOperationHandler(convertingStore),
-      new PostOperationHandler(convertingStore),
-      new DeleteOperationHandler(convertingStore),
-      new PutOperationHandler(convertingStore),
+      new GetOperationHandler(lockingStore),
+      new PostOperationHandler(lockingStore),
+      new DeleteOperationHandler(lockingStore),
+      new PutOperationHandler(lockingStore),
     ]);
 
     const responseWriter = new BasicResponseWriter();
