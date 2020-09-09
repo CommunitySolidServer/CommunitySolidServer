@@ -30,8 +30,6 @@ import {
 } from '../..';
 import { ServerConfig } from '../configs/ServerConfig';
 
-// This is the configuration from bin/server.ts
-
 export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
