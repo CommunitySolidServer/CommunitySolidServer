@@ -23,7 +23,7 @@ import {
 } from '../..';
 import { ServerConfig } from '../configs/ServerConfig';
 
-export class SimpleTestConfig implements ServerConfig {
+export class BasicConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
 

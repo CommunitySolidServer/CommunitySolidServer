@@ -36,7 +36,7 @@ import {
 } from '../..';
 import { ServerConfig } from '../configs/ServerConfig';
 
-export class SimpleHandlersTestConfig implements ServerConfig {
+export class BasicHandlersConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
 
