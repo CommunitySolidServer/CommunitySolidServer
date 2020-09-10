@@ -26,7 +26,7 @@ import {
   TurtleToQuadConverter,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class LockingResourceStoreConfig implements ServerConfig {

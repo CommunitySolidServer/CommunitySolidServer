@@ -20,7 +20,7 @@ import {
   RuntimeConfig,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class BasicConfig implements ServerConfig {

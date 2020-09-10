@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
-import { HttpHandler, ResourceStore } from '../..';
+import { HttpHandler, ResourceStore } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { call, callFile, setAcl } from '../util/Util';
 

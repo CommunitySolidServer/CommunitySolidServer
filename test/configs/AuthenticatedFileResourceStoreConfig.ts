@@ -27,7 +27,7 @@ import {
   UrlContainerManager,
   UnsecureWebIdExtractor,
   WebAclAuthorizer,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
