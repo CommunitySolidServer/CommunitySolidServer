@@ -148,11 +148,141 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getData()).toContain('NotFoundHttpError');
     });
 
-    it('can upload and delete a image.', async(): Promise<void> => {
+    it('can make a folder and put a file in it.', async(): Promise<void> => {
       // POST
       let requestUrl = new URL('http://test.com');
-      const fileData = await fs.readFile('test/assets/testimage.png');
+
+      // Create folder
       let response: MockResponse<any> = await callFile(
+        handler,
+        requestUrl,
+        'POST',
+        {
+          'content-type': 'application/octet-stream',
+          slug: 'testfolder0/',
+          link: '<http://www.w3.org/ns/ldp#Container>; rel"type"',
+          'transfer-encoding': 'chunked',
+        },
+      );
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      let id = response._getHeaders().location;
+      expect(id).toContain(url.format(requestUrl));
+
+      // Create file
+      const fileData = await fs.readFile('test/assets/testfile0.txt');
+      response = await callFile(
+        handler,
+        requestUrl,
+        'POST',
+        {
+          'content-type': 'application/octet-stream',
+          slug: 'testfolder0/testfile0.txt',
+          'transfer-encoding': 'chunked',
+        },
+        fileData,
+      );
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      id = response._getHeaders().location;
+      expect(id).toContain(url.format(requestUrl));
+
+      // GET File
+      requestUrl = new URL(id);
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getHeaders().location).toBe(id);
+
+      // DELETE File
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+
+      // GET File again
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/plain' }, []);
+      expect(response.statusCode).toBe(404);
+      expect(response._getData()).toContain('NotFoundHttpError');
+
+      // DELETE folder
+      requestUrl = new URL('http://test.com/testfolder0/');
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+
+      // GET folder
+      response = await call(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+      expect(response.statusCode).toBe(404);
+      expect(response._getData()).toContain('NotFoundHttpError');
+    });
+
+    it('cannot remove a folder when the folder contains a file.', async(): Promise<void> => {
+      // POST
+      let requestUrl = new URL('http://test.com');
+
+      // Create folder
+      let response: MockResponse<any> = await callFile(
+        handler,
+        requestUrl,
+        'POST',
+        {
+          'content-type': 'application/octet-stream',
+          slug: 'testfolder0/',
+          link: '<http://www.w3.org/ns/ldp#Container>; rel"type"',
+          'transfer-encoding': 'chunked',
+        },
+      );
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      let id = response._getHeaders().location;
+      expect(id).toContain(url.format(requestUrl));
+
+      // Create file
+      const fileData = await fs.readFile('test/assets/testfile0.txt');
+      response = await callFile(
+        handler,
+        requestUrl,
+        'POST',
+        {
+          'content-type': 'application/octet-stream',
+          slug: 'testfolder0/testfile0.txt',
+          'transfer-encoding': 'chunked',
+        },
+        fileData,
+      );
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      id = response._getHeaders().location;
+      expect(id).toContain(url.format(requestUrl));
+
+      // Try DELETE folder
+      requestUrl = new URL('http://test.com/testfolder0/');
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(409);
+      expect(response._getData()).toContain('ConflictHttpError: Container is not empty.')
+
+      // DELETE File
+      requestUrl = new URL('http://test.com/testfolder0/testfile0.txt');
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+
+      // DELETE FOLDER
+      requestUrl = new URL('http://test.com/testfolder0/');
+      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+    });
+
+    it('can upload and delete a image.', async(): Promise<void> => {
+      let requestUrl = new URL('http://test.com');
+
+      // POST
+      const fileData = await fs.readFile('test/assets/testimage.png');
+      let response = await callFile(
         handler,
         requestUrl,
         'POST',
@@ -163,7 +293,6 @@ describe('A server using a FileResourceStore', (): void => {
         },
         fileData,
       );
-
       expect(response.statusCode).toBe(200);
       expect(response._getData()).toHaveLength(0);
       const id = response._getHeaders().location;
