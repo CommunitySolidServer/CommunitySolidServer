@@ -7,7 +7,7 @@ import { call, callFile } from '../util/Util';
 describe('A server using a FileResourceStore', (): void => {
   describe('without acl', (): void => {
     const config = new FileResourceStoreConfig();
-    const handler = config.getHandler();
+    const handler = config.getHttpHandler();
 
     it('can add a file to the store, read it and delete it.', async(): Promise<
     void

@@ -1,19 +1,23 @@
 import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
-import { HttpHandler, ResourceStore } from '../..';
+import { HttpHandler, ResourceStore } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
-import { call, callFile, setAcl } from '../util/Util';
+import { AclTestHelper } from '../util/TestHelpers';
+import { call, callFile } from '../util/Util';
 
-describe('A server using a FileResourceStore', (): void => {
+describe('A server using a AuthenticatedFileResourceStore', (): void => {
   let config: AuthenticatedFileResourceStoreConfig;
   let handler: HttpHandler;
   let store: ResourceStore;
+  let aclHelper: AclTestHelper;
+
   beforeAll(
     async(): Promise<void> => {
       config = new AuthenticatedFileResourceStoreConfig();
-      handler = config.getHandler();
+      handler = config.getHttpHandler();
       ({ store } = config);
+      aclHelper = new AclTestHelper(store, 'http://test.com/');
 
       const root = config.runtimeConfig.rootFilepath;
       await fs.copyFile('test/assets/permanent.txt', `${root}/permanent.txt`);
@@ -21,16 +25,7 @@ describe('A server using a FileResourceStore', (): void => {
   );
   afterAll(
     async(): Promise<void> => {
-      await setAcl(
-        store,
-        'http://test.com/',
-        { read: true, write: true, append: true },
-        true,
-        true,
-        true,
-        undefined,
-        'agent',
-      );
+      await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
       // Delete permanente file
       const requestUrl = new URL('http://test.com/permanent.txt');
@@ -51,16 +46,7 @@ describe('A server using a FileResourceStore', (): void => {
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void
     > => {
-      await setAcl(
-        store,
-        'http://test.com/',
-        { read: true, write: true, append: true },
-        true,
-        true,
-        true,
-        undefined,
-        'agent',
-      );
+      await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
       // POST
       let requestUrl = new URL('http://test.com/');
@@ -117,16 +103,7 @@ describe('A server using a FileResourceStore', (): void => {
     it('can not add a file to the store if not allowed.', async(): Promise<
     void
     > => {
-      await setAcl(
-        store,
-        'http://test.com/',
-        { read: true, write: true, append: true },
-        true,
-        true,
-        true,
-        undefined,
-        'authenticated',
-      );
+      await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
       // POST
       const requestUrl = new URL('http://test.com/');
@@ -150,16 +127,7 @@ describe('A server using a FileResourceStore', (): void => {
     it('can not add/delete, but only read files if allowed.', async(): Promise<
     void
     > => {
-      await setAcl(
-        store,
-        'http://test.com/',
-        { read: true, write: false, append: false },
-        true,
-        true,
-        true,
-        undefined,
-        'agent',
-      );
+      await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
 
       // POST
       let requestUrl = new URL('http://test.com/');

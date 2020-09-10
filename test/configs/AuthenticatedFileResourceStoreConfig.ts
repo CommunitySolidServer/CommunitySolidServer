@@ -27,7 +27,7 @@ import {
   UrlContainerManager,
   UnsecureWebIdExtractor,
   WebAclAuthorizer,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
@@ -38,7 +38,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   public constructor() {
     this.runtimeConfig = new RuntimeConfig({
       base: 'http://test.com',
-      rootFilepath: 'uploads/',
+      rootFilepath: 'uploads',
     });
 
     const fileStore = new FileResourceStore(
@@ -56,7 +56,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const requestParser = new BasicRequestParser({
       targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),

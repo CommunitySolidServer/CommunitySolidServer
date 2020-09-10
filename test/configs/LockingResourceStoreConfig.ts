@@ -12,6 +12,7 @@ import {
   GetOperationHandler,
   HttpHandler,
   InteractionController,
+  LockingResourceStore,
   MetadataController,
   MethodPermissionsExtractor,
   Operation,
@@ -23,10 +24,11 @@ import {
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
+  SingleThreadedResourceLocker,
   TurtleToQuadConverter,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class LockingResourceStoreConfig implements ServerConfig {
@@ -37,7 +39,7 @@ export class LockingResourceStoreConfig implements ServerConfig {
     this.store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
-        rootFilepath: 'uploads/',
+        rootFilepath: 'uploads',
       }),
       new InteractionController(),
       new MetadataController(),
@@ -46,7 +48,7 @@ export class LockingResourceStoreConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const requestParser = new BasicRequestParser({
       targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
@@ -63,16 +65,25 @@ export class LockingResourceStoreConfig implements ServerConfig {
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),
     ]);
-    const convertingStore = new RepresentationConvertingStore(this.store, converter);
+
+    const convertingStore = new RepresentationConvertingStore(
+      this.store,
+      converter,
+    );
+
+    const lockingStore = new LockingResourceStore(
+      convertingStore,
+      new SingleThreadedResourceLocker(),
+    );
 
     const operationHandler = new CompositeAsyncHandler<
     Operation,
     ResponseDescription
     >([
-      new GetOperationHandler(convertingStore),
-      new PostOperationHandler(convertingStore),
-      new DeleteOperationHandler(convertingStore),
-      new PutOperationHandler(convertingStore),
+      new GetOperationHandler(lockingStore),
+      new PostOperationHandler(lockingStore),
+      new DeleteOperationHandler(lockingStore),
+      new PutOperationHandler(lockingStore),
     ]);
 
     const responseWriter = new BasicResponseWriter();

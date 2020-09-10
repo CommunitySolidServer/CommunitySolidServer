@@ -33,7 +33,7 @@ import {
   SingleThreadedResourceLocker,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
-} from '../..';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
 export class BasicHandlersConfig implements ServerConfig {
@@ -45,7 +45,7 @@ export class BasicHandlersConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
       new SparqlUpdateBodyParser(),
       new RawBodyParser(),
