@@ -19,8 +19,9 @@ import {
   PatchingStore,
   PostOperationHandler,
   PutOperationHandler,
-  QuadToTurtleConverter,
+  QuadToRdfConverter,
   RawBodyParser,
+  RdfToQuadConverter,
   Representation,
   RepresentationConvertingStore,
   ResourceStore,
@@ -30,7 +31,6 @@ import {
   SparqlUpdatePatchHandler,
   SparqlPatchPermissionsExtractor,
   SingleThreadedResourceLocker,
-  TurtleToQuadConverter,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
 } from '../../index';
@@ -64,8 +64,8 @@ export class BasicHandlersConfig implements ServerConfig {
     const authorizer = new AllowEverythingAuthorizer();
 
     const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
+      new QuadToRdfConverter(),
+      new RdfToQuadConverter(),
     ]);
     const convertingStore = new RepresentationConvertingStore(this.store, converter);
     const locker = new SingleThreadedResourceLocker();

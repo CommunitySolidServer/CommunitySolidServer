@@ -15,13 +15,13 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile0.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt', 'transfer-encoding': 'chunked' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile0.txt', 'transfer-encoding': 'chunked' },
         fileData,
       );
 
@@ -35,7 +35,7 @@ describe('A server using a FileResourceStore', (): void => {
       response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
-      expect(response._getBuffer().toString()).toContain('TESTFILE1');
+      expect(response._getBuffer().toString()).toContain('TESTFILE0');
 
       // DELETE
       response = await call(handler, requestUrl, 'DELETE', {}, []);
@@ -55,13 +55,13 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      let fileData = await fs.readFile('test/assets/testfile1.txt');
+      let fileData = await fs.readFile('test/assets/testfile0.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
         requestUrl,
         'POST',
-        { 'content-type': 'application/octet-stream', slug: 'testfile1.txt', 'transfer-encoding': 'chunked' },
+        { 'content-type': 'application/octet-stream', slug: 'testfile0.txt', 'transfer-encoding': 'chunked' },
         fileData,
       );
 
@@ -75,10 +75,10 @@ describe('A server using a FileResourceStore', (): void => {
       response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
-      expect(response._getBuffer().toString()).toContain('TESTFILE1');
+      expect(response._getBuffer().toString()).toContain('TESTFILE0');
 
       // PUT
-      fileData = await fs.readFile('test/assets/testfile3.txt');
+      fileData = await fs.readFile('test/assets/testfile1.txt');
       response = await callFile(
         handler,
         requestUrl,
@@ -95,7 +95,7 @@ describe('A server using a FileResourceStore', (): void => {
       response = await call(handler, requestUrl, 'GET', { accept: 'text/*' }, []);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
-      expect(response._getBuffer().toString()).toContain('TESTFILE3');
+      expect(response._getBuffer().toString()).toContain('TESTFILE1');
 
       // DELETE
       response = await call(handler, requestUrl, 'DELETE', {}, []);

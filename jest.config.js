@@ -1,7 +1,7 @@
 module.exports = {
   "globals": {
     "ts-jest": {
-      "tsConfig": "tsconfig.json"
+      "tsConfig": "tsconfig.json",
     }
   },
   "transform": {
@@ -16,14 +16,16 @@ module.exports = {
   "setupFilesAfterEnv": ["jest-rdf"],
   "collectCoverage": true,
   "coveragePathIgnorePatterns": [
-    "/node_modules/"
+    "/node_modules/",
+    "/src/init/CliRunner.ts"
   ],
   "coverageThreshold": {
     "./src": {
-      "branches": 97,
-      "functions": 97,
-      "lines": 97,
-      "statements": 97
+      "branches": 100,
+      "functions": 100,
+      "lines": 100,
+      "statements": 100
     }
-  }
+  },
+  "globalTeardown": "<rootDir>/test/teardown.ts"
 };

@@ -20,6 +20,9 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       aclHelper = new AclTestHelper(store, 'http://test.com/');
 
       const root = config.runtimeConfig.rootFilepath;
+
+      // Make sure the root directory exists
+      await fs.mkdir(root, { recursive: true });
       await fs.copyFile('test/assets/permanent.txt', `${root}/permanent.txt`);
     },
   );
@@ -51,7 +54,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile2.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -59,7 +62,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
         'POST',
         {
           'content-type': 'application/octet-stream',
-          slug: 'testfile1.txt',
+          slug: 'testfile2.txt',
           'transfer-encoding': 'chunked',
         },
         fileData,
@@ -80,7 +83,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       );
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
-      expect(response._getBuffer().toString()).toContain('TESTFILE1');
+      expect(response._getBuffer().toString()).toContain('TESTFILE2');
 
       // DELETE
       response = await call(handler, requestUrl, 'DELETE', {}, []);
@@ -108,7 +111,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       const requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile2.txt');
 
       const response: MockResponse<any> = await callFile(
         handler,
@@ -116,7 +119,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
         'POST',
         {
           'content-type': 'application/octet-stream',
-          slug: 'testfile1.txt',
+          slug: 'testfile2.txt',
           'transfer-encoding': 'chunked',
         },
         fileData,
@@ -132,7 +135,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile2.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -140,7 +143,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
         'POST',
         {
           'content-type': 'application/octet-stream',
-          slug: 'testfile1.txt',
+          slug: 'testfile2.txt',
           'transfer-encoding': 'chunked',
         },
         fileData,
