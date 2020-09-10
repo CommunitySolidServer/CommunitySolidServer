@@ -110,7 +110,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   }
 
   /**
-   * Splits the identifier into the parent directory and its own file name.
+   * Splits the identifier into the parent directory and its own file name/slug.
    * If the identifier specifies a directory, slug will be undefined.
    * @param identifier - Incoming identifier.
    *
@@ -119,7 +119,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    *
    * @returns A PathAbstraction object containing path and (optional) slug fields.
    */
-  public parseIdentifier(identifier: ResourceIdentifier): PathAbstraction {
+  public extractSlug(identifier: ResourceIdentifier): PathAbstraction {
     const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
