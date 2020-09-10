@@ -1,51 +1,32 @@
 import {
   AcceptPreferenceParser,
   AllowEverythingAuthorizer,
-  AclManager,
   AuthenticatedLdpHandler,
   BasicRequestParser,
   BasicResponseWriter,
   BasicTargetExtractor,
   CompositeAsyncHandler,
-  DeleteOperationHandler,
-  FileResourceStore,
-  GetOperationHandler,
   HttpHandler,
-  InteractionController,
-  MetadataController,
   MethodPermissionsExtractor,
-  Operation,
-  PostOperationHandler,
-  PutOperationHandler,
   QuadToTurtleConverter,
   RawBodyParser,
-  RepresentationConvertingStore,
   ResourceStore,
-  ResponseDescription,
-  RuntimeConfig,
   TurtleToQuadConverter,
-  UrlBasedAclManager,
   UnsecureWebIdExtractor,
 } from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
+import { getFileResourceStore, getOperationHandler, getConvertingStore } from './Util';
 
 // This is the configuration from bin/server.ts
 
 export class FileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
-  public aclManager: AclManager;
 
   public constructor() {
-    this.store = new FileResourceStore(
-      new RuntimeConfig({
-        base: 'http://test.com',
-        rootFilepath: 'uploads',
-      }),
-      new InteractionController(),
-      new MetadataController(),
+    this.store = getConvertingStore(
+      getFileResourceStore(),
+      [ new QuadToTurtleConverter(), new TurtleToQuadConverter() ],
     );
-
-    this.aclManager = new UrlBasedAclManager();
   }
 
   public getHttpHandler(): HttpHandler {
@@ -61,22 +42,7 @@ export class FileResourceStoreConfig implements ServerConfig {
     ]);
     const authorizer = new AllowEverythingAuthorizer();
 
-    const converter = new CompositeAsyncHandler([
-      new QuadToTurtleConverter(),
-      new TurtleToQuadConverter(),
-    ]);
-    const convertingStore = new RepresentationConvertingStore(this.store, converter);
-
-    const operationHandler = new CompositeAsyncHandler<
-    Operation,
-    ResponseDescription
-    >([
-      new GetOperationHandler(convertingStore),
-      new PostOperationHandler(convertingStore),
-      new DeleteOperationHandler(convertingStore),
-      new PutOperationHandler(convertingStore),
-    ]);
-
+    const operationHandler = getOperationHandler(this.store);
     const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
