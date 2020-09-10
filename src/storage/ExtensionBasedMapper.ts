@@ -2,7 +2,7 @@ import { posix } from 'path';
 import { types } from 'mime-types';
 import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { APPLICATION_OCTET_STREAM } from '../util/ContentTypes';
+import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
@@ -27,7 +27,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   private readonly runtimeConfig: RuntimeConfig;
   private readonly types: Record<string, any>;
 
-  public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: 'text/turtle', metadata: 'text/turtle' }) {
+  public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: TEXT_TURTLE, metadata: TEXT_TURTLE }) {
     this.runtimeConfig = runtimeConfig;
     this.types = { ...types, ...overrideTypes };
   }
