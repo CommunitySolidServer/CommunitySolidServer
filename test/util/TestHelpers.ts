@@ -1,5 +1,5 @@
 import streamifyArray from 'streamify-array';
-import { ResourceStore } from '../..';
+import { ResourceStore } from '../../index';
 import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
 
 export class AclTestHelper {

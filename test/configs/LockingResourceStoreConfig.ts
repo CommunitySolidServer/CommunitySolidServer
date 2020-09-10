@@ -12,6 +12,7 @@ import {
   GetOperationHandler,
   HttpHandler,
   InteractionController,
+  LockingResourceStore,
   MetadataController,
   MethodPermissionsExtractor,
   Operation,
