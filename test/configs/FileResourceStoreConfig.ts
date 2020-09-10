@@ -39,7 +39,7 @@ export class FileResourceStoreConfig implements ServerConfig {
     this.store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
-        rootFilepath: 'uploads/',
+        rootFilepath: 'uploads',
       }),
       new InteractionController(),
       new MetadataController(),

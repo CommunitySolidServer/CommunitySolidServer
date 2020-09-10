@@ -38,7 +38,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   public constructor() {
     this.runtimeConfig = new RuntimeConfig({
       base: 'http://test.com',
-      rootFilepath: 'uploads/',
+      rootFilepath: 'uploads',
     });
 
     const fileStore = new FileResourceStore(
