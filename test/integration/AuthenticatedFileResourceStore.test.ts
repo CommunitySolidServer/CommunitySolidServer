@@ -12,7 +12,7 @@ describe('A server using a FileResourceStore', (): void => {
   beforeAll(
     async(): Promise<void> => {
       config = new AuthenticatedFileResourceStoreConfig();
-      handler = config.getHandler();
+      handler = config.getHttpHandler();
       ({ store } = config);
 
       const root = config.runtimeConfig.rootFilepath;

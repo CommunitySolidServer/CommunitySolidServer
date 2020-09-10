@@ -32,7 +32,7 @@ export class BasicConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const requestParser = new BasicRequestParser({
       targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
