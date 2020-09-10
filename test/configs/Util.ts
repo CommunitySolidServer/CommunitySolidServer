@@ -14,6 +14,7 @@ import {
   RuntimeConfig,
 } from '../../index';
 import { RepresentationConverter } from '../../src/storage/conversion/RepresentationConverter';
+import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 
 export const getFileResourceStore = (base = 'http://test.com', rootFilepath = 'uploads'): FileResourceStore =>
@@ -23,12 +24,15 @@ export const getFileResourceStore = (base = 'http://test.com', rootFilepath = 'u
     new MetadataController(),
   );
 
+export const getInMemoryResourceStore = (base = 'http://test.com'): InMemoryResourceStore =>
+  new InMemoryResourceStore(new RuntimeConfig({ base }));
+
 export const getOperationHandler = (store: ResourceStore,
-  operations = { get: true,
-    post: true,
-    put: true,
-    patch: true,
-    delete: true }): CompositeAsyncHandler<Operation, ResponseDescription> => {
+  operations: { get?: boolean;
+    post?: boolean;
+    put?: boolean;
+    patch?: boolean;
+    delete?: boolean; }): CompositeAsyncHandler<Operation, ResponseDescription> => {
   const handlers = [];
   if (operations.get) {
     handlers.push(new GetOperationHandler(store));

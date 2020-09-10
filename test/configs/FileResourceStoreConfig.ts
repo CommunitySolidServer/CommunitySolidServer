@@ -17,7 +17,12 @@ import {
 import { ServerConfig } from '../configs/ServerConfig';
 import { getFileResourceStore, getOperationHandler, getConvertingStore } from './Util';
 
-// This is the configuration from bin/server.ts
+/**
+ * FileResourceStoreConfig works with
+ * - an AllowEverythingAuthorizer (no acl)
+ * - a FileResourceStore wrapped in a converting store (turtle to quad & quad to turtle)
+ * - GET, POST, PUT & DELETE operation handlers
+ */
 
 export class FileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
@@ -42,7 +47,7 @@ export class FileResourceStoreConfig implements ServerConfig {
     ]);
     const authorizer = new AllowEverythingAuthorizer();
 
-    const operationHandler = getOperationHandler(this.store);
+    const operationHandler = getOperationHandler(this.store, { get: true, put: true, post: true, delete: true });
     const responseWriter = new BasicResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({

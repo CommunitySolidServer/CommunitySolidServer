@@ -1,35 +1,33 @@
 import {
   AcceptPreferenceParser,
-  AclManager,
+
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   BasicRequestParser,
   BasicResponseWriter,
   BasicTargetExtractor,
-  CompositeAsyncHandler,
-  DeleteOperationHandler,
-  GetOperationHandler,
   HttpHandler,
-  InMemoryResourceStore,
+
   MethodPermissionsExtractor,
-  Operation,
-  PostOperationHandler,
   RawBodyParser,
   ResourceStore,
-  ResponseDescription,
-  RuntimeConfig,
-  UrlBasedAclManager,
   UnsecureWebIdExtractor,
 } from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
+import { getOperationHandler, getInMemoryResourceStore } from './Util';
+
+/**
+ * BasicConfig works with
+ * - an AllowEverythingAuthorizer (no acl)
+ * - an InMemoryResourceStore
+ * - GET, POST & DELETE operation handlers
+ */
 
 export class BasicConfig implements ServerConfig {
   public store: ResourceStore;
-  public aclManager: AclManager;
 
   public constructor() {
-    this.store = new InMemoryResourceStore(new RuntimeConfig({ base: 'http://test.com/' }));
-    this.aclManager = new UrlBasedAclManager();
+    this.store = getInMemoryResourceStore();
   }
 
   public getHttpHandler(): HttpHandler {
@@ -43,11 +41,7 @@ export class BasicConfig implements ServerConfig {
     const permissionsExtractor = new MethodPermissionsExtractor();
     const authorizer = new AllowEverythingAuthorizer();
 
-    const operationHandler = new CompositeAsyncHandler<Operation, ResponseDescription>([
-      new GetOperationHandler(this.store),
-      new PostOperationHandler(this.store),
-      new DeleteOperationHandler(this.store),
-    ]);
+    const operationHandler = getOperationHandler(this.store, { get: true, post: true, delete: true });
 
     const responseWriter = new BasicResponseWriter();
 
