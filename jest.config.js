@@ -1,7 +1,7 @@
 module.exports = {
   "globals": {
     "ts-jest": {
-      "tsConfig": "tsconfig.json"
+      "tsConfig": "tsconfig.json",
     }
   },
   "transform": {
@@ -25,5 +25,6 @@ module.exports = {
       "lines": 97,
       "statements": 97
     }
-  }
+  },
+  "globalTeardown": "<rootDir>/test/teardown.ts"
 };
