@@ -43,8 +43,6 @@ export const callFile = async(
   headers: IncomingHttpHeaders,
   data?: Buffer,
 ): Promise<MockResponse<any>> => {
-  // Const request = streamifyArray(data) as HttpRequest;
-
   const request = data ?
     (streamifyArray([ data ]) as HttpRequest) :
     streamifyArray([]) as HttpRequest;
@@ -70,8 +68,16 @@ export const callFile = async(
   return response;
 };
 
-export const setAcl = async(store: ResourceStore, id: string, permissions: PermissionSet, control: boolean,
-  access: boolean, def: boolean, agent?: string, agentClass?: 'agent' | 'authenticated'): Promise<void> => {
+export const setAcl = async(
+  store: ResourceStore,
+  id: string,
+  permissions: PermissionSet,
+  control: boolean,
+  access: boolean,
+  def: boolean,
+  agent?: string,
+  agentClass?: 'agent' | 'authenticated',
+): Promise<void> => {
   const acl: string[] = [
     '@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.\n',
     '@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.\n',
@@ -96,7 +102,11 @@ export const setAcl = async(store: ResourceStore, id: string, permissions: Permi
     acl.push(`;\n acl:agent <${agent}>`);
   }
   if (agentClass) {
-    acl.push(`;\n acl:agentClass ${agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'}`);
+    acl.push(
+      `;\n acl:agentClass ${
+        agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'
+      }`,
+    );
   }
 
   acl.push('.');

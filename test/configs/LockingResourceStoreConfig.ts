@@ -23,6 +23,7 @@ import {
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
+  SingleThreadedResourceLocker,
   TurtleToQuadConverter,
   UrlBasedAclManager,
   UnsecureWebIdExtractor,
@@ -63,16 +64,25 @@ export class LockingResourceStoreConfig implements ServerConfig {
       new QuadToTurtleConverter(),
       new TurtleToQuadConverter(),
     ]);
-    const convertingStore = new RepresentationConvertingStore(this.store, converter);
+
+    const convertingStore = new RepresentationConvertingStore(
+      this.store,
+      converter,
+    );
+
+    const lockingStore = new LockingResourceStore(
+      convertingStore,
+      new SingleThreadedResourceLocker(),
+    );
 
     const operationHandler = new CompositeAsyncHandler<
     Operation,
     ResponseDescription
     >([
-      new GetOperationHandler(convertingStore),
-      new PostOperationHandler(convertingStore),
-      new DeleteOperationHandler(convertingStore),
-      new PutOperationHandler(convertingStore),
+      new GetOperationHandler(lockingStore),
+      new PostOperationHandler(lockingStore),
+      new DeleteOperationHandler(lockingStore),
+      new PutOperationHandler(lockingStore),
     ]);
 
     const responseWriter = new BasicResponseWriter();
