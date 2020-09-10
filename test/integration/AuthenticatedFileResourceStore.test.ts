@@ -23,7 +23,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       const root = config.runtimeConfig.rootFilepath;
 
       // Make sure the root directory exists
-      await fs.mkdir(root, { recursive: true });
+      await fs.mkdir(join(__dirname, '../../uploads'), { recursive: true });
       await fs.copyFile(join(__dirname, '../assets/permanent.txt'), join(__dirname, `../../${root}/permanent.txt`));
     },
   );
