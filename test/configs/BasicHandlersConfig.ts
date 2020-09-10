@@ -1,42 +1,42 @@
 import {
   AcceptPreferenceParser,
   AclManager,
+  AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  BasicRequestParser,
+  BasicResponseWriter,
+  BasicTargetExtractor,
   BodyParser,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  GetOperationHandler,
   HttpHandler,
   HttpRequest,
+  InMemoryResourceStore,
+  MethodPermissionsExtractor,
   Operation,
+  PatchOperationHandler,
   PatchingStore,
+  PostOperationHandler,
+  PutOperationHandler,
   QuadToTurtleConverter,
+  RawBodyParser,
   Representation,
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
-  SingleThreadedResourceLocker,
+  SparqlUpdateBodyParser,
+  SparqlUpdatePatchHandler,
   SparqlPatchPermissionsExtractor,
+  SingleThreadedResourceLocker,
   TurtleToQuadConverter,
-} from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
-import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
-import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { SparqlUpdateBodyParser } from '../../src/ldp/http/SparqlUpdateBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PatchOperationHandler } from '../../src/ldp/operations/PatchOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
-import { SparqlUpdatePatchHandler } from '../../src/storage/patch/SparqlUpdatePatchHandler';
+  UrlBasedAclManager,
+  UnsecureWebIdExtractor,
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
-export class SimpleHandlersTestConfig implements ServerConfig {
+export class BasicHandlersConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;
 
@@ -45,7 +45,7 @@ export class SimpleHandlersTestConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const bodyParser: BodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>([
       new SparqlUpdateBodyParser(),
       new RawBodyParser(),

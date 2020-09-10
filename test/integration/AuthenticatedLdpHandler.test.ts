@@ -2,13 +2,13 @@ import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import { MockResponse } from 'node-mocks-http';
-import { SimpleHandlersTestConfig } from '../configs/SimpleHandlersTestConfig';
-import { SimpleTestConfig } from '../configs/SimpleTestConfig';
+import { BasicConfig } from '../configs/BasicConfig';
+import { BasicHandlersConfig } from '../configs/BasicHandlersConfig';
 import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
-    const handler = new SimpleTestConfig().getHandler();
+    const handler = new BasicConfig().getHttpHandler();
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
@@ -60,7 +60,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const handler = new SimpleHandlersTestConfig().getHandler();
+    const handler = new BasicHandlersConfig().getHttpHandler();
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
@@ -126,7 +126,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PUT handlers', (): void => {
-    const handler = new SimpleHandlersTestConfig().getHandler();
+    const handler = new BasicHandlersConfig().getHttpHandler();
 
     it('should overwrite the content on PUT request.', async(): Promise<void> => {
       // POST

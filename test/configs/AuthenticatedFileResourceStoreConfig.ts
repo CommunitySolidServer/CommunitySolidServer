@@ -6,31 +6,29 @@ import {
   BasicResponseWriter,
   BasicTargetExtractor,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  FileResourceStore,
+  GetOperationHandler,
   HttpHandler,
   InteractionController,
   MetadataController,
+  MethodPermissionsExtractor,
   Operation,
+  PostOperationHandler,
+  PutOperationHandler,
   QuadToTurtleConverter,
+  RawBodyParser,
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
   TurtleToQuadConverter,
   UrlBasedAclManager,
+  UrlContainerManager,
+  UnsecureWebIdExtractor,
   WebAclAuthorizer,
-} from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { FileResourceStore } from '../../src/storage/FileResourceStore';
-import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
-
-// This is the configuration from bin/server.ts
 
 export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
@@ -40,7 +38,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
   public constructor() {
     this.runtimeConfig = new RuntimeConfig({
       base: 'http://test.com',
-      rootFilepath: 'uploads/',
+      rootFilepath: 'uploads',
     });
 
     const fileStore = new FileResourceStore(
@@ -58,7 +56,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const requestParser = new BasicRequestParser({
       targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),

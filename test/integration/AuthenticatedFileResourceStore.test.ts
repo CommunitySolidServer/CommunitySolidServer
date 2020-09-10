@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
-import { HttpHandler, ResourceStore } from '../..';
+import { HttpHandler, ResourceStore } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call, callFile } from '../util/Util';
@@ -15,39 +15,11 @@ describe('A server using a FileResourceStore', (): void => {
   beforeAll(
     async(): Promise<void> => {
       config = new AuthenticatedFileResourceStoreConfig();
-      handler = config.getHandler();
+      handler = config.getHttpHandler();
       ({ store } = config);
 
-      aclHelper = new AclTestHelper(store, 'http://test.com/');
-
-      await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
-
-      // Check if permanent file exists, if not make one
-      let requestUrl = new URL('http://test.com/permanent.txt');
-      let response = await call(
-        handler,
-        requestUrl,
-        'GET',
-        { accept: 'text/*' },
-        [],
-      );
-      if (response.statusCode !== 200) {
-        requestUrl = new URL('http://test.com/');
-        const fileData = await fs.readFile('test/testfiles/permanent.txt');
-
-        response = await callFile(
-          handler,
-          requestUrl,
-          'POST',
-          {
-            'content-type': 'application/octet-stream',
-            slug: 'permanent.txt',
-            'transfer-encoding': 'chunked',
-          },
-          fileData,
-        );
-        expect(response.statusCode).toBe(200);
-      }
+      const root = config.runtimeConfig.rootFilepath;
+      await fs.copyFile('test/assets/permanent.txt', `${root}/permanent.txt`);
     },
   );
   afterAll(
@@ -78,7 +50,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -135,7 +107,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       const requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       const response: MockResponse<any> = await callFile(
         handler,
@@ -159,7 +131,7 @@ describe('A server using a FileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/testfiles/testfile1.txt');
+      const fileData = await fs.readFile('test/assets/testfile1.txt');
 
       let response: MockResponse<any> = await callFile(
         handler,

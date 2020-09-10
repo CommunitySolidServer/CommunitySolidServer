@@ -1,37 +1,34 @@
 import {
   AcceptPreferenceParser,
   AclManager,
+  AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  BasicRequestParser,
+  BasicResponseWriter,
+  BasicTargetExtractor,
   CompositeAsyncHandler,
+  DeleteOperationHandler,
+  FileResourceStore,
+  GetOperationHandler,
   HttpHandler,
   InteractionController,
   MetadataController,
+  MethodPermissionsExtractor,
   Operation,
+  PostOperationHandler,
+  PutOperationHandler,
   QuadToTurtleConverter,
+  RawBodyParser,
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
   RuntimeConfig,
   SingleThreadedResourceLocker,
   TurtleToQuadConverter,
-} from '../..';
-import { UnsecureWebIdExtractor } from '../../src/authentication/UnsecureWebIdExtractor';
-import { AllowEverythingAuthorizer } from '../../src/authorization/AllowEverythingAuthorizer';
-import { UrlBasedAclManager } from '../../src/authorization/UrlBasedAclManager';
-import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
-import { BasicResponseWriter } from '../../src/ldp/http/BasicResponseWriter';
-import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
-import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
-import { DeleteOperationHandler } from '../../src/ldp/operations/DeleteOperationHandler';
-import { GetOperationHandler } from '../../src/ldp/operations/GetOperationHandler';
-import { PostOperationHandler } from '../../src/ldp/operations/PostOperationHandler';
-import { PutOperationHandler } from '../../src/ldp/operations/PutOperationHandler';
-import { MethodPermissionsExtractor } from '../../src/ldp/permissions/MethodPermissionsExtractor';
-import { FileResourceStore } from '../../src/storage/FileResourceStore';
-import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
+  UrlBasedAclManager,
+  UnsecureWebIdExtractor,
+} from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
-
-// This is the configuration from bin/server.ts
 
 export class LockingResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
@@ -41,7 +38,7 @@ export class LockingResourceStoreConfig implements ServerConfig {
     this.store = new FileResourceStore(
       new RuntimeConfig({
         base: 'http://test.com',
-        rootFilepath: 'uploads/',
+        rootFilepath: 'uploads',
       }),
       new InteractionController(),
       new MetadataController(),
@@ -50,7 +47,7 @@ export class LockingResourceStoreConfig implements ServerConfig {
     this.aclManager = new UrlBasedAclManager();
   }
 
-  public getHandler(): HttpHandler {
+  public getHttpHandler(): HttpHandler {
     const requestParser = new BasicRequestParser({
       targetExtractor: new BasicTargetExtractor(),
       preferenceParser: new AcceptPreferenceParser(),
