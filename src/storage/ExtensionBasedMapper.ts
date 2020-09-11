@@ -10,15 +10,15 @@ import { FileIdentifierMapper } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 
-export interface PathAbstraction {
+export interface ResourcePath {
 
   /**
-   * The parent directory path of the file.
+   * The path of the parent directory of the resource.
    */
   path: string;
 
   /**
-   * The name/slug of the file.
+   * The slug of the file.
    */
   slug?: string;
 }
@@ -110,20 +110,20 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   }
 
   /**
-   * Splits the identifier into the parent directory and its own file name/slug.
+   * Splits the identifier into the parent directory and slug.
    * If the identifier specifies a directory, slug will be undefined.
    * @param identifier - Incoming identifier.
    *
    * @throws {@link ConflictHttpError}
    * If the root identifier is passed.
    *
-   * @returns A PathAbstraction object containing path and (optional) slug fields.
+   * @returns A ResourcePath object containing path and (optional) slug fields.
    */
-  public extractSlug(identifier: ResourceIdentifier): PathAbstraction {
+  public extractSlug(identifier: ResourceIdentifier): ResourcePath {
     const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
     if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
-    return { path, slug };
+    return { path: normalizePath(path), slug };
   }
 }
