@@ -10,7 +10,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
+import { CONTENT_TYPE } from '../../util/UriConstants';
 import { ResourceLocker } from '../ResourceLocker';
 import { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
@@ -67,7 +67,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     });
     store.removeQuads(deletes);
     store.addQuads(inserts);
-    const metadata = new RepresentationMetadata(input.identifier.path, { [MA_CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(input.identifier.path, { [CONTENT_TYPE]: INTERNAL_QUADS });
     const representation: Representation = {
       binary: false,
       data: store.match() as Readable,

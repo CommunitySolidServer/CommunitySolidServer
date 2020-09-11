@@ -3,7 +3,7 @@ import { translate } from 'sparqlalgebrajs';
 import { HttpRequest } from '../../server/HttpRequest';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
+import { CONTENT_TYPE } from '../../util/UriConstants';
 import { readableToString } from '../../util/Util';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
@@ -35,7 +35,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       const sparql = await readableToString(toAlgebraStream);
       const algebra = translate(sparql, { quads: true });
 
-      const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'application/sparql-update' });
+      const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/sparql-update' });
 
       // Prevent body from being requested again
       return {

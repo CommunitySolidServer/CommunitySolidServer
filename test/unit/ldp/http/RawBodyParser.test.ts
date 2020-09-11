@@ -5,7 +5,7 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import 'jest-rdf';
-import { HTTP_SLUG, RDF_TYPE } from '../../../../src/util/MetadataTypes';
+import { HTTP, RDF } from '../../../../src/util/UriConstants';
 
 describe('A RawBodyparser', (): void => {
   const bodyParser = new RawBodyParser();
@@ -54,7 +54,7 @@ describe('A RawBodyparser', (): void => {
     input.headers = { 'transfer-encoding': 'chunked', 'content-type': 'text/turtle', slug: 'slugText' };
     const result = (await bodyParser.handle(input))!;
     expect(result.metadata.contentType).toEqual('text/turtle');
-    expect(result.metadata.get(HTTP_SLUG)?.value).toEqual('slugText');
+    expect(result.metadata.get(HTTP.slug)?.value).toEqual('slugText');
   });
 
   it('errors if there are multiple slugs.', async(): Promise<void> => {
@@ -72,7 +72,7 @@ describe('A RawBodyparser', (): void => {
       link: '<http://www.w3.org/ns/ldp#Container>; rel="type"' };
     const result = (await bodyParser.handle(input))!;
     expect(result.metadata.contentType).toEqual('text/turtle');
-    expect(result.metadata.get(RDF_TYPE)?.value).toEqual('http://www.w3.org/ns/ldp#Container');
+    expect(result.metadata.get(RDF.type)?.value).toEqual('http://www.w3.org/ns/ldp#Container');
   });
 
   it('ignores unknown link headers.', async(): Promise<void> => {

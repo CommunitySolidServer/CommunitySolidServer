@@ -9,7 +9,7 @@ import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
-import { ACL, FOAF } from './AclConstants';
+import { ACL, FOAF } from '../util/UriConstants';
 import { AclManager } from './AclManager';
 import { Authorizer, AuthorizerArgs } from './Authorizer';
 

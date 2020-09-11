@@ -2,22 +2,13 @@ import { Stats } from 'fs';
 import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
-import type { NamedNode, Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
+import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { TEXT_TURTLE } from './ContentTypes';
-import { LDP, RDF, STAT, TERMS, XML } from './Prefixes';
+import { DCTERMS, LDP, POSIX, RDF, XSD } from './UriConstants';
+import { getNamedNode, getTypedLiteral } from './UriUtil';
 import { pipeStreamsAndErrors } from './Util';
-
-export const TYPE_PREDICATE = DataFactory.namedNode(`${RDF}type`);
-export const MODIFIED_PREDICATE = DataFactory.namedNode(`${TERMS}modified`);
-export const CONTAINS_PREDICATE = DataFactory.namedNode(`${LDP}contains`);
-export const MTIME_PREDICATE = DataFactory.namedNode(`${STAT}mtime`);
-export const SIZE_PREDICATE = DataFactory.namedNode(`${STAT}size`);
-
-export const CONTAINER_OBJECT = DataFactory.namedNode(`${LDP}Container`);
-export const BASIC_CONTAINER_OBJECT = DataFactory.namedNode(`${LDP}BasicContainer`);
-export const RESOURCE_OBJECT = DataFactory.namedNode(`${LDP}Resource`);
-export const DATETIME_OBJECT = DataFactory.namedNode(`${XML}dateTime`);
 
 export class MetadataController {
   /**
@@ -28,40 +19,28 @@ export class MetadataController {
    * @returns The generated quads.
    */
   public generateResourceQuads(URI: string, stats: Stats): Quad[] {
-    const subject: NamedNode = DataFactory.namedNode(URI);
-    const quads: Quad[] = [];
-
+    const metadata = new RepresentationMetadata(URI);
     if (stats.isDirectory()) {
-      quads.push(DataFactory.quad(subject, TYPE_PREDICATE, CONTAINER_OBJECT));
-      quads.push(DataFactory.quad(subject, TYPE_PREDICATE, BASIC_CONTAINER_OBJECT));
+      metadata.add(RDF.type, getNamedNode(LDP.Container));
+      metadata.add(RDF.type, getNamedNode(LDP.BasicContainer));
     }
-    quads.push(DataFactory.quad(subject, TYPE_PREDICATE, RESOURCE_OBJECT));
-    quads.push(DataFactory.quad(subject, SIZE_PREDICATE, DataFactory.literal(stats.size)));
-    quads.push(DataFactory.quad(
-      subject,
-      MODIFIED_PREDICATE,
-      DataFactory.literal(stats.mtime.toUTCString(), DATETIME_OBJECT),
-    ));
-    quads.push(DataFactory.quad(
-      subject,
-      MTIME_PREDICATE,
-      DataFactory.literal(stats.mtime.getTime() / 100),
-    ));
+    metadata.add(RDF.type, getNamedNode(LDP.Resource));
+    metadata.add(POSIX.size, getTypedLiteral(stats.size, XSD.integer));
+    metadata.add(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime));
+    metadata.add(POSIX.mtime, getTypedLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.integer));
 
-    return quads;
+    return metadata.quads();
   }
 
   /**
-   * Helper function to generate the quad describing that the resource URI is a child of the container URI.
+   * Helper function to generate the quads describing that the resource URIs are children of the container URI.
    * @param containerURI - The URI of the container.
-   * @param childURI - The URI of the child resource.
+   * @param childURIs - The URI of the child resources.
    *
-   * @returns The generated quad.
+   * @returns The generated quads.
    */
-  public generateContainerContainsResourceQuad(containerURI: string, childURI: string): Quad {
-    return DataFactory.quad(DataFactory.namedNode(containerURI), CONTAINS_PREDICATE, DataFactory.namedNode(
-      childURI,
-    ));
+  public generateContainerContainsResourceQuads(containerURI: string, childURIs: string[]): Quad[] {
+    return new RepresentationMetadata(containerURI, { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
   }
 
   /**

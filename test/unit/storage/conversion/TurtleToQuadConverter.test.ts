@@ -9,12 +9,12 @@ import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceI
 import { TurtleToQuadConverter } from '../../../../src/storage/conversion/TurtleToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
-import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 describe('A TurtleToQuadConverter', (): void => {
   const converter = new TurtleToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
+  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;

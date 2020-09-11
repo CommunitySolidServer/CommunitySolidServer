@@ -1,7 +1,6 @@
-import { quad as createQuad, namedNode } from '@rdfjs/data-model';
-import { Store } from 'n3';
+import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
-import { getObjectTerm, getPredicateTerm, isTerm } from './MetadataUtil';
+import { getObjectTerm, getNamedNode, isTerm } from '../../util/UriUtil';
 
 export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 
@@ -41,7 +40,7 @@ export class RepresentationMetadata {
   ) {
     this.store = new Store();
     if (typeof input === 'string') {
-      this.id = namedNode(input);
+      this.id = DataFactory.namedNode(input);
     } else if (isTerm(input)) {
       this.id = input;
     } else if (input instanceof RepresentationMetadata) {
@@ -59,7 +58,7 @@ export class RepresentationMetadata {
 
   private setOverrides(overrides: { [pred: string]: MetadataOverrideValue}): void {
     for (const predicate of Object.keys(overrides)) {
-      const namedPredicate = getPredicateTerm(predicate);
+      const namedPredicate = getNamedNode(predicate);
       this.removeAll(namedPredicate);
 
       let objects = overrides[predicate];
@@ -92,10 +91,10 @@ export class RepresentationMetadata {
       // Convert all instances of the old identifier to the new identifier in the stored quads
       const quads = this.quads().map((quad): Quad => {
         if (quad.subject.equals(this.id)) {
-          return createQuad(id, quad.predicate, quad.object, quad.graph);
+          return DataFactory.quad(id, quad.predicate, quad.object, quad.graph);
         }
         if (quad.object.equals(this.id)) {
-          return createQuad(quad.subject, quad.predicate, id, quad.graph);
+          return DataFactory.quad(quad.subject, quad.predicate, id, quad.graph);
         }
         return quad;
       });
@@ -137,7 +136,7 @@ export class RepresentationMetadata {
    * @param object - Value to add.
    */
   public add(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.addQuad(this.id, getPredicateTerm(predicate), getObjectTerm(object));
+    this.store.addQuad(this.id, getNamedNode(predicate), getObjectTerm(object));
     return this;
   }
 
@@ -147,7 +146,7 @@ export class RepresentationMetadata {
    * @param object - Value to remove.
    */
   public remove(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.removeQuad(this.id, getPredicateTerm(predicate), getObjectTerm(object));
+    this.store.removeQuad(this.id, getNamedNode(predicate), getObjectTerm(object));
     return this;
   }
 
@@ -156,7 +155,7 @@ export class RepresentationMetadata {
    * @param predicate - Predicate to remove.
    */
   public removeAll(predicate: NamedNode | string): this {
-    this.removeQuads(this.store.getQuads(this.id, getPredicateTerm(predicate), null, null));
+    this.removeQuads(this.store.getQuads(this.id, getNamedNode(predicate), null, null));
     return this;
   }
 
@@ -167,7 +166,7 @@ export class RepresentationMetadata {
    * @returns An array with all matches.
    */
   public getAll(predicate: NamedNode | string): Term[] {
-    return this.store.getQuads(this.id, getPredicateTerm(predicate), null, null)
+    return this.store.getQuads(this.id, getNamedNode(predicate), null, null)
       .map((quad): Term => quad.object);
   }
 
@@ -210,10 +209,10 @@ export class RepresentationMetadata {
    * Shorthand for the CONTENT_TYPE predicate.
    */
   public get contentType(): string | undefined {
-    return this.get(getPredicateTerm('contentType'))?.value;
+    return this.get(getNamedNode('contentType'))?.value;
   }
 
   public set contentType(input) {
-    this.set(getPredicateTerm('contentType'), input);
+    this.set(getNamedNode('contentType'), input);
   }
 }

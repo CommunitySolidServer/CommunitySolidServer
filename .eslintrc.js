@@ -33,6 +33,7 @@ module.exports = {
     'dot-location': ['error', 'property'],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-len': ['error', { code: 120, ignoreUrls: true }],
+    'new-cap': 'off', // used for RDF constants
     'no-param-reassign': 'off', // necessary in constructor overloading
     'no-underscore-dangle': 'off', // conflicts with external libraries
     'padding-line-between-statements': 'off',

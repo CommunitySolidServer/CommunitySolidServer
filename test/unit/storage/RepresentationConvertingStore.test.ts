@@ -2,14 +2,14 @@ import { RepresentationMetadata } from '../../../src/ldp/representation/Represen
 import { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import { ResourceStore } from '../../../src/storage/ResourceStore';
-import { MA_CONTENT_TYPE } from '../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../src/util/UriConstants';
 
 describe('A RepresentationConvertingStore', (): void => {
   let store: RepresentationConvertingStore;
   let source: ResourceStore;
   let handleSafeFn: jest.Mock<Promise<void>, []>;
   let converter: RepresentationConverter;
-  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
+  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
 
   beforeEach(async(): Promise<void> => {
     source = {

@@ -9,7 +9,7 @@ import { RepresentationMetadata, ResourceStore } from '../../index';
 import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { HttpRequest } from '../../src/server/HttpRequest';
-import { MA_CONTENT_TYPE } from '../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { call } from './Util';
 
 export class AclTestHelper {
@@ -50,7 +50,7 @@ export class AclTestHelper {
     const representation = {
       binary: true,
       data: streamifyArray(acl),
-      metadata: new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' }),
+      metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' }),
     };
 
     return this.store.setRepresentation(
@@ -184,7 +184,8 @@ export class FileTestHelper {
   public async getFolder(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
-    return await this.simpleCall(getUrl, 'GET', { accept: 'text/turtle' });
+    // `n-quads` allow for easy testing if a triple is present
+    return await this.simpleCall(getUrl, 'GET', { accept: 'application/n-quads' });
   }
 
   public async deleteFolder(requestUrl: string): Promise<MockResponse<any>> {
