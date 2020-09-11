@@ -153,7 +153,7 @@ export class FileTestHelper {
     return response;
   }
 
-  public async uploadFile(fileLocation: string, slug: string): Promise<MockResponse<any>> {
+  public async createFile(fileLocation: string, slug: string): Promise<MockResponse<any>> {
     if (!fileLocation.startsWith('..')) {
       throw new Error(`${fileLocation} is not a relative path`);
     }
@@ -175,6 +175,29 @@ export class FileTestHelper {
     return response;
   }
 
+  public async overwriteFile(fileLocation: string, requestUrl: string | URL): Promise<MockResponse<any>> {
+    if (!fileLocation.startsWith('..')) {
+      throw new Error(`${fileLocation} is not a relative path`);
+    }
+    const fileData = await fs.readFile(
+      join(__dirname, fileLocation),
+    );
+
+    const putUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response: MockResponse<any> = await this.callWithFile(
+      putUrl,
+      'PUT',
+      { 'content-type': 'application/octet-stream', 'transfer-encoding': 'chunked' },
+      fileData,
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response._getData()).toHaveLength(0);
+    expect(response._getHeaders().location).toContain(url.format(putUrl));
+    return response;
+  }
+
   public async getFile(requestUrl: string | URL): Promise<MockResponse<any>> {
     const getUrl =
       typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
@@ -184,6 +207,42 @@ export class FileTestHelper {
   }
 
   public async deleteFile(requestUrl: string | URL): Promise<MockResponse<any>> {
+    const deleteUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response = await this.call(deleteUrl, 'DELETE', {});
+    expect(response.statusCode).toBe(200);
+    expect(response._getData()).toHaveLength(0);
+    expect(response._getHeaders().location).toBe(url.format(requestUrl));
+    return response;
+  }
+
+  public async createFolder(slug: string): Promise<MockResponse<any>> {
+    const response: MockResponse<any> = await this.call(
+      this.baseUrl,
+      'POST',
+      {
+        slug,
+        link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
+        'content-type': 'text/plain',
+        'transfer-encoding': 'chunked',
+      },
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response._getData()).toHaveLength(0);
+    expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
+    return response;
+  }
+
+  public async getFolder(requestUrl: string | URL): Promise<MockResponse<any>> {
+    const getUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response = await this.call(getUrl, 'GET', { accept: 'text/turtle' });
+    return response;
+  }
+
+  public async deleteFolder(requestUrl: string | URL): Promise<MockResponse<any>> {
     const deleteUrl =
       typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
 
