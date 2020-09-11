@@ -13,14 +13,14 @@ const { join: joinPath, normalize: normalizePath } = posix;
 export interface ResourcePath {
 
   /**
-   * The path of the parent directory of the resource.
+   * The path of the container.
    */
-  path: string;
+  containerPath: string;
 
   /**
-   * The slug of the file.
+   * The document name.
    */
-  slug?: string;
+  documentName?: string;
 }
 
 export class ExtensionBasedMapper implements FileIdentifierMapper {
@@ -120,10 +120,16 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    * @returns A ResourcePath object containing path and (optional) slug fields.
    */
   public extractSlug(identifier: ResourceIdentifier): ResourcePath {
-    const [ , path, slug ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
-    if ((typeof path !== 'string' || normalizePath(path) === '/') && typeof slug !== 'string') {
+    const [ , containerPath, documentName ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
+    if (
+      (typeof containerPath !== 'string' || normalizePath(containerPath) === '/') && typeof documentName !== 'string') {
       throw new ConflictHttpError('Container with that identifier already exists (root).');
     }
-    return { path: normalizePath(path), slug };
+    return {
+      containerPath: normalizePath(containerPath),
+
+      // If documentName is not undefined, return normalized documentName
+      documentName: typeof documentName === 'string' ? normalizePath(documentName) : undefined,
+    };
   }
 }

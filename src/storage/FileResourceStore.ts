@@ -143,9 +143,9 @@ export class FileResourceStore implements ResourceStore {
       throw new UnsupportedMediaTypeHttpError('FileResourceStore only supports binary representations.');
     }
 
-    // Break up the request URI in the different parts `path` and `slug` as we know their semantics from addResource
-    // to call the InteractionController in the same way.
-    const { path, slug } = this.resourceMapper.extractSlug(identifier);
+    // Break up the request URI in the different parts `containerPath` and `documentName` as we know their semantics
+    // from addResource to call the InteractionController in the same way.
+    const { containerPath, documentName } = this.resourceMapper.extractSlug(identifier);
     const { raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata: Readable | undefined;
@@ -154,11 +154,11 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
-    const isContainer = this.interactionController.isContainer(slug, linkTypes);
-    const newIdentifier = this.interactionController.generateIdentifier(isContainer, slug);
+    const isContainer = this.interactionController.isContainer(documentName, linkTypes);
+    const newIdentifier = this.interactionController.generateIdentifier(isContainer, documentName);
     return isContainer ?
-      await this.setDirectoryRepresentation(path, newIdentifier, metadata) :
-      await this.setFileRepresentation(path, newIdentifier, representation.data, metadata);
+      await this.setDirectoryRepresentation(containerPath, newIdentifier, metadata) :
+      await this.setFileRepresentation(containerPath, newIdentifier, representation.data, metadata);
   }
 
   /**
