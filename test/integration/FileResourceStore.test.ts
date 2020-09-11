@@ -396,8 +396,8 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response.statusCode).toBe(200);
       id = response._getHeaders().location;
       expect(response._getHeaders().location).toBe(id);
-      expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder2/subfolder0>.');
-      expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder2/testfile0.txt>.');
+      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder2/subfolder0>.');
+      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder2/testfile0.txt>.');
 
       // DELETE File
       requestUrl = new URL('http://test.com/testfolder2/testfile0.txt');
