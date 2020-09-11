@@ -153,7 +153,7 @@ export class FileTestHelper {
     return response;
   }
 
-  public async createFile(fileLocation: string, slug: string): Promise<MockResponse<any>> {
+  public async createFile(fileLocation: string, slug: string, mayFail = false): Promise<MockResponse<any>> {
     if (!fileLocation.startsWith('..')) {
       throw new Error(`${fileLocation} is not a relative path`);
     }
@@ -169,9 +169,11 @@ export class FileTestHelper {
         'transfer-encoding': 'chunked' },
       fileData,
     );
-    expect(response.statusCode).toBe(200);
-    expect(response._getData()).toHaveLength(0);
-    expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
+    if (!mayFail) {
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
+    }
     return response;
   }
 
@@ -206,14 +208,16 @@ export class FileTestHelper {
     return response;
   }
 
-  public async deleteFile(requestUrl: string | URL): Promise<MockResponse<any>> {
+  public async deleteFile(requestUrl: string | URL, mayFail = true): Promise<MockResponse<any>> {
     const deleteUrl =
       typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
 
     const response = await this.call(deleteUrl, 'DELETE', {});
-    expect(response.statusCode).toBe(200);
-    expect(response._getData()).toHaveLength(0);
-    expect(response._getHeaders().location).toBe(url.format(requestUrl));
+    if (!mayFail) {
+      expect(response.statusCode).toBe(200);
+      expect(response._getData()).toHaveLength(0);
+      expect(response._getHeaders().location).toBe(url.format(requestUrl));
+    }
     return response;
   }
 

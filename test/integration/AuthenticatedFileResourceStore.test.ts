@@ -1,18 +1,16 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import * as url from 'url';
-import { MockResponse } from 'node-mocks-http';
 import { HttpHandler, ResourceStore } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { RUNTIMECONFIG } from '../configs/Util';
-import { AclTestHelper } from '../util/TestHelpers';
-import { call, callFile } from '../util/Util';
+import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
 describe('A server using a AuthenticatedFileResourceStore', (): void => {
   let config: AuthenticatedFileResourceStoreConfig;
   let handler: HttpHandler;
   let store: ResourceStore;
   let aclHelper: AclTestHelper;
+  let fileHelper: FileTestHelper;
 
   beforeAll(
     async(): Promise<void> => {
@@ -20,6 +18,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       handler = config.getHttpHandler();
       ({ store } = config);
       aclHelper = new AclTestHelper(store, RUNTIMECONFIG.base);
+      fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
 
       const root = RUNTIMECONFIG.rootFilepath;
 
@@ -32,122 +31,50 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void
     > => {
+      // Set acl
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
-      // POST
-      let requestUrl = new URL('http://test.com/');
-
-      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
-
-      let response: MockResponse<any> = await callFile(
-        handler,
-        requestUrl,
-        'POST',
-        {
-          'content-type': 'application/octet-stream',
-          slug: 'testfile2.txt',
-          'transfer-encoding': 'chunked',
-        },
-        fileData,
-      );
-      expect(response.statusCode).toBe(200);
-      expect(response._getData()).toHaveLength(0);
+      // Create file
+      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt');
       const id = response._getHeaders().location;
-      expect(id).toContain(url.format(requestUrl));
 
-      // GET
-      requestUrl = new URL(id);
-      response = await call(
-        handler,
-        requestUrl,
-        'GET',
-        { accept: 'text/*' },
-        [],
-      );
+      // Get file
+      response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE2');
 
-      // DELETE
-      response = await call(handler, requestUrl, 'DELETE', {}, []);
-      expect(response.statusCode).toBe(200);
-      expect(response._getData()).toHaveLength(0);
-      expect(response._getHeaders().location).toBe(url.format(requestUrl));
-
-      // GET
-      response = await call(
-        handler,
-        requestUrl,
-        'GET',
-        { accept: 'text/*' },
-        [],
-      );
-      expect(response.statusCode).toBe(404);
-      expect(response._getData()).toContain('NotFoundHttpError');
+      // DELETE file
+      await fileHelper.deleteFile(id);
+      await fileHelper.shouldNotExist(id);
     });
 
     it('can not add a file to the store if not allowed.', async():
     Promise<void> => {
+      // Set acl
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
-      // POST
-      const requestUrl = new URL('http://test.com/');
-
-      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
-
-      const response: MockResponse<any> = await callFile(
-        handler,
-        requestUrl,
-        'POST',
-        {
-          'content-type': 'application/octet-stream',
-          slug: 'testfile2.txt',
-          'transfer-encoding': 'chunked',
-        },
-        fileData,
-      );
+      // Try to create file
+      const response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', true);
       expect(response.statusCode).toBe(401);
     });
 
     it('can not add/delete, but only read files if allowed.', async():
     Promise<void> => {
+      // Set acl
       await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
 
-      // POST
-      let requestUrl = new URL('http://test.com/');
-
-      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
-
-      let response: MockResponse<any> = await callFile(
-        handler,
-        requestUrl,
-        'POST',
-        {
-          'content-type': 'application/octet-stream',
-          slug: 'testfile2.txt',
-          'transfer-encoding': 'chunked',
-        },
-        fileData,
-      );
+      // Try to create file
+      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', true);
       expect(response.statusCode).toBe(401);
 
-      // GET
-      requestUrl = new URL('http://test.com/permanent.txt');
-      response = await call(
-        handler,
-        requestUrl,
-        'GET',
-        { accept: 'text/*' },
-        [],
-      );
-      expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(
-        'http://test.com/permanent.txt',
-      );
+      // GET permanent file
+      response = await fileHelper.getFile('http://test.com/permanent.txt');
+      expect(response._getHeaders().location).toBe('http://test.com/permanent.txt');
       expect(response._getBuffer().toString()).toContain('TEST');
 
-      // DELETE
-      response = await call(handler, requestUrl, 'DELETE', {}, []);
+      // Try to delete permanent file
+      response = await fileHelper.deleteFile('http://test.com/permanent.txt', true);
       expect(response.statusCode).toBe(401);
     });
   });
