@@ -7,8 +7,11 @@ describe('An ExtensionBasedMapper', (): void => {
   const resourceMapper = new ExtensionBasedMapper(new RuntimeConfig({ base, rootFilepath }));
 
   it('returns the correct url of a file.', async(): Promise<void> => {
-    const result = resourceMapper.mapFilePathToUrl('uploads/test.txt');
+    let result = resourceMapper.mapFilePathToUrl(`${rootFilepath}test.txt`);
     expect(result).toEqual(`${base}test.txt`);
+
+    result = resourceMapper.mapFilePathToUrl(`${rootFilepath}image.jpg`);
+    expect(result).toEqual(`${base}image.jpg`);
   });
 
   it('errors when filepath does not contain rootFilepath.', async(): Promise<void> => {

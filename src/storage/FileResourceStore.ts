@@ -145,7 +145,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `containerPath` and `documentName` as we know their semantics
     // from addResource to call the InteractionController in the same way.
-    const { containerPath, documentName } = this.resourceMapper.extractSlug(identifier);
+    const { containerPath, documentName } = this.resourceMapper.exctractDocumentName(identifier);
     const { raw } = representation.metadata;
     const linkTypes = representation.metadata.linkRel?.type;
     let metadata: Readable | undefined;
