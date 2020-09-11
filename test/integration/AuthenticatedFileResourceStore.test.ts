@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { join } from 'path';
 import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
 import { HttpHandler, ResourceStore } from '../../index';
@@ -22,8 +23,8 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       const root = config.runtimeConfig.rootFilepath;
 
       // Make sure the root directory exists
-      await fs.mkdir(root, { recursive: true });
-      await fs.copyFile('test/assets/permanent.txt', `${root}/permanent.txt`);
+      await fs.mkdir(join(__dirname, '../../uploads'), { recursive: true });
+      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), join(__dirname, `../../${root}/permanent.txt`));
     },
   );
   afterAll(
@@ -54,7 +55,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile2.txt');
+      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
 
       let response: MockResponse<any> = await callFile(
         handler,
@@ -111,7 +112,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       const requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile2.txt');
+      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
 
       const response: MockResponse<any> = await callFile(
         handler,
@@ -135,7 +136,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       // POST
       let requestUrl = new URL('http://test.com/');
 
-      const fileData = await fs.readFile('test/assets/testfile2.txt');
+      const fileData = await fs.readFile(join(__dirname, '../assets/testfile2.txt'));
 
       let response: MockResponse<any> = await callFile(
         handler,
