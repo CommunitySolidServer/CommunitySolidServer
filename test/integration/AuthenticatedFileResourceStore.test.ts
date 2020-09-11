@@ -20,11 +20,11 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       aclHelper = new AclTestHelper(store, RUNTIMECONFIG.base);
       fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
 
-      const root = RUNTIMECONFIG.rootFilepath;
+      const runtimeRoot = join(__dirname, `../../${RUNTIMECONFIG.rootFilepath}`);
 
       // Make sure the root directory exists
       await fs.mkdir(join(__dirname, '../../uploads'), { recursive: true });
-      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), join(__dirname, `../../${root}/permanent.txt`));
+      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), `${runtimeRoot}/permanent.txt`);
     },
   );
   describe('with acl', (): void => {
