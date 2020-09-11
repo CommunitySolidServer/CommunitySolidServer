@@ -28,25 +28,6 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       await fs.copyFile(join(__dirname, '../assets/permanent.txt'), join(__dirname, `../../${root}/permanent.txt`));
     },
   );
-  afterAll(
-    async(): Promise<void> => {
-      await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
-
-      // Delete permanente file
-      const requestUrl = new URL('http://test.com/permanent.txt');
-      const response = await call(
-        handler,
-        requestUrl,
-        'DELETE',
-        {},
-        [],
-      );
-      expect(response.statusCode).toBe(200);
-
-      // Delete .acl file
-      await store.deleteResource({ path: 'http://test.com/.acl' });
-    },
-  );
   describe('with acl', (): void => {
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void
