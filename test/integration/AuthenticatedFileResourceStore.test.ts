@@ -86,9 +86,8 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       expect(response._getData()).toContain('NotFoundHttpError');
     });
 
-    it('can not add a file to the store if not allowed.', async(): Promise<
-    void
-    > => {
+    it('can not add a file to the store if not allowed.', async():
+    Promise<void> => {
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
       // POST
@@ -110,9 +109,8 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       expect(response.statusCode).toBe(401);
     });
 
-    it('can not add/delete, but only read files if allowed.', async(): Promise<
-    void
-    > => {
+    it('can not add/delete, but only read files if allowed.', async():
+    Promise<void> => {
       await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
 
       // POST

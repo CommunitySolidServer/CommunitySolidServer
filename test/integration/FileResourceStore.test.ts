@@ -8,9 +8,8 @@ describe('A server using a FileResourceStore', (): void => {
     const baseUrl = new URL('http://test.com/');
     const fileHelper = new FileTestHelper(handler, baseUrl);
 
-    it('can add a file to the store, read it and delete it.', async(): Promise<
-    void
-    > => {
+    it('can add a file to the store, read it and delete it.', async():
+    Promise<void> => {
       // POST
       let response = await fileHelper.createFile('../assets/testfile0.txt', 'testfile0.txt');
       const id = response._getHeaders().location;
@@ -26,9 +25,7 @@ describe('A server using a FileResourceStore', (): void => {
       await fileHelper.shouldNotExist(id);
     });
 
-    it('can add and overwrite a file.', async(): Promise<
-    void
-    > => {
+    it('can add and overwrite a file.', async(): Promise<void> => {
       let response = await fileHelper.createFile('../assets/testfile0.txt', 'file.txt');
       const id = response._getHeaders().location;
 
