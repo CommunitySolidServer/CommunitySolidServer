@@ -23,7 +23,8 @@ import { InMemoryResourceStore } from '../../src/storage/InMemoryResourceStore';
 import { RepresentationConvertingStore } from '../../src/storage/RepresentationConvertingStore';
 import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { CompositeAsyncHandler } from '../../src/util/CompositeAsyncHandler';
-import { call, setAcl } from '../util/Util';
+import { AclTestHelper } from '../util/TestHelpers';
+import { call } from '../util/Util';
 
 describe('A server with authorization', (): void => {
   const bodyParser: BodyParser = new RawBodyParser();
@@ -66,15 +67,10 @@ describe('A server with authorization', (): void => {
     responseWriter,
   });
 
+  const aclHelper = new AclTestHelper(convertingStore, 'http://test.com/');
+
   it('can create new entries.', async(): Promise<void> => {
-    await setAcl(convertingStore,
-      'http://test.com/',
-      { read: true, write: true, append: true },
-      true,
-      true,
-      true,
-      undefined,
-      'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
     // POST
     let requestUrl = new URL('http://test.com/');
@@ -100,14 +96,7 @@ describe('A server with authorization', (): void => {
   });
 
   it('can not create new entries if not allowed.', async(): Promise<void> => {
-    await setAcl(convertingStore,
-      'http://test.com/',
-      { read: true, write: true, append: true },
-      true,
-      true,
-      true,
-      undefined,
-      'authenticated');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
     // POST
     let requestUrl = new URL('http://test.com/');

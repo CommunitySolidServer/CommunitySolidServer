@@ -78,7 +78,7 @@ export class AclTestHelper {
 
   public async setSimpleAcl(
     permissions: PermissionSet,
-    agentClass?: 'agent' | 'authenticated',
+    agentClass: 'agent' | 'authenticated',
   ): Promise<void> {
     return this.setAcl(permissions, true, true, true, undefined, agentClass);
   }
