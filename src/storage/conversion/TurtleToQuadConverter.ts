@@ -4,7 +4,7 @@ import { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { TEXT_TURTLE, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { MA_CONTENT_TYPE } from '../../util/MetadataTypes';
+import { CONTENT_TYPE } from '../../util/UriConstants';
 import { checkRequest } from './ConversionUtil';
 import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -21,7 +21,7 @@ export class TurtleToQuadConverter extends RepresentationConverter {
   }
 
   private turtleToQuads(turtle: Representation, baseIRI: string): Representation {
-    const metadata = new RepresentationMetadata(turtle.metadata, { [MA_CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(turtle.metadata, { [CONTENT_TYPE]: INTERNAL_QUADS });
 
     // Catch parsing errors and emit correct error
     // Node 10 requires both writableObjectMode and readableObjectMode

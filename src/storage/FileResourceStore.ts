@@ -14,15 +14,8 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
 import { InteractionController } from '../util/InteractionController';
 import { MetadataController } from '../util/MetadataController';
-import {
-  HTTP_BYTE_SIZE,
-  HTTP_LAST_CHANGED,
-  HTTP_SLUG,
-  MA_CONTENT_TYPE,
-  RDF_TYPE,
-  XSD_DATE_TIME,
-  XSD_INTEGER,
-} from '../util/MetadataTypes';
+import { CONTENT_TYPE, DCTERMS, HTTP, POSIX, RDF, XSD } from '../util/UriConstants';
+import { getTypedLiteral } from '../util/UriUtil';
 import { ensureTrailingSlash } from '../util/Util';
 import { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import { ResourceStore } from './ResourceStore';
@@ -65,8 +58,8 @@ export class FileResourceStore implements ResourceStore {
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
     const path = this.resourceMapper.getRelativePath(container);
-    const slug = representation.metadata.get(HTTP_SLUG)?.value;
-    const types = representation.metadata.getAll(RDF_TYPE);
+    const slug = representation.metadata.get(HTTP.slug)?.value;
+    const types = representation.metadata.getAll(RDF.type);
 
     // Create a new container or resource in the parent container with a specific name based on the incoming headers.
     const isContainer = this.interactionController.isContainer(slug, types);
@@ -162,7 +155,7 @@ export class FileResourceStore implements ResourceStore {
     // eslint-disable-next-line no-param-reassign
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
     const raw = representation.metadata.quads();
-    const types = representation.metadata.getAll(RDF_TYPE);
+    const types = representation.metadata.getAll(RDF.type);
     let metadata: Readable | undefined;
     if (raw.length > 0) {
       metadata = this.metadataController.serializeQuads(raw);
@@ -231,8 +224,8 @@ export class FileResourceStore implements ResourceStore {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
     const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path)).addQuads(rawMetadata)
-      .set(HTTP_LAST_CHANGED, DataFactory.literal(stats.mtime.toISOString(), XSD_DATE_TIME))
-      .set(HTTP_BYTE_SIZE, DataFactory.literal(stats.size, XSD_INTEGER));
+      .set(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
+      .set(POSIX.size, getTypedLiteral(stats.size, XSD.integer));
     metadata.contentType = contentType;
     return { metadata, data: readStream, binary: true };
   }
@@ -265,8 +258,8 @@ export class FileResourceStore implements ResourceStore {
     }
 
     const metadata = new RepresentationMetadata(containerURI).addQuads(rawMetadata)
-      .set(HTTP_LAST_CHANGED, DataFactory.literal(stats.mtime.toISOString(), XSD_DATE_TIME))
-      .set(MA_CONTENT_TYPE, INTERNAL_QUADS);
+      .set(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
+      .set(CONTENT_TYPE, INTERNAL_QUADS);
 
     return {
       binary: false,
@@ -285,6 +278,7 @@ export class FileResourceStore implements ResourceStore {
    */
   private async getDirChildrenQuadRepresentation(files: string[], path: string, containerURI: string): Promise<Quad[]> {
     const quads: Quad[] = [];
+    const childURIs: string[] = [];
     for (const childName of files) {
       try {
         const childURI = this.resourceMapper.mapFilePathToUrl(joinPath(path, childName));
@@ -293,13 +287,16 @@ export class FileResourceStore implements ResourceStore {
           continue;
         }
 
-        quads.push(this.metadataController.generateContainerContainsResourceQuad(containerURI, childURI));
         quads.push(...this.metadataController.generateResourceQuads(childURI, childStats));
+        childURIs.push(childURI);
       } catch (_) {
         // Skip the child if there is an error.
       }
     }
-    return quads;
+
+    const containsQuads = this.metadataController.generateContainerContainsResourceQuads(containerURI, childURIs);
+
+    return quads.concat(containsQuads);
   }
 
   /**

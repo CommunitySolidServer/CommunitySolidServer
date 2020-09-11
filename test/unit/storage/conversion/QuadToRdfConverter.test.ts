@@ -8,12 +8,12 @@ import { RepresentationPreferences } from '../../../../src/ldp/representation/Re
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: INTERNAL_QUADS });
+  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
 
   it('supports parsing quads.', async(): Promise<void> => {
     await expect(converter.getInputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });

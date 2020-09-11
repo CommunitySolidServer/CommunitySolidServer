@@ -1,7 +1,7 @@
 import { literal, namedNode, quad } from '@rdfjs/data-model';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 describe('A RepresentationMetadata', (): void => {
   let metadata: RepresentationMetadata;
@@ -180,15 +180,15 @@ describe('A RepresentationMetadata', (): void => {
     it('has a shorthand for content-type.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       metadata.contentType = 'a/b';
-      expect(metadata.get(MA_CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
+      expect(metadata.get(CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
       expect(metadata.contentType).toEqual('a/b');
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
     });
 
     it('errors if a shorthand has multiple values.', async(): Promise<void> => {
-      metadata.add(MA_CONTENT_TYPE, 'a/b');
-      metadata.add(MA_CONTENT_TYPE, 'c/d');
+      metadata.add(CONTENT_TYPE, 'a/b');
+      metadata.add(CONTENT_TYPE, 'c/d');
       expect((): any => metadata.contentType).toThrow();
     });
   });

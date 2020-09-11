@@ -15,10 +15,8 @@ import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAll
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { InteractionController } from '../../../src/util/InteractionController';
-import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPR } from '../../../src/util/LinkTypes';
 import { MetadataController } from '../../../src/util/MetadataController';
-import { HTTP_BYTE_SIZE, HTTP_LAST_CHANGED, HTTP_SLUG, RDF_TYPE } from '../../../src/util/MetadataTypes';
-import { LDP, RDF, STAT, TERMS, XML } from '../../../src/util/Prefixes';
+import { DCTERMS, HTTP, LDP, POSIX, RDF, XSD } from '../../../src/util/UriConstants';
 
 const { join: joinPath } = posix;
 
@@ -133,8 +131,8 @@ describe('A FileResourceStore', (): void => {
     (fs.createReadStream as jest.Mock).mockImplementationOnce((): any => new Error('Metadata file does not exist.'));
 
     // Write container (POST)
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
-    representation.metadata.add(HTTP_SLUG, 'myContainer/');
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
+    representation.metadata.add(HTTP.slug, 'myContainer/');
     const identifier = await store.addResource({ path: base }, representation);
     expect(fsPromises.mkdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'myContainer/'), { recursive: true });
     expect(identifier.path).toBe(`${base}myContainer/`);
@@ -146,7 +144,7 @@ describe('A FileResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(HTTP_LAST_CHANGED)?.value).toEqual(stats.mtime.toISOString());
+    expect(result.metadata.get(DCTERMS.modified)?.value).toEqual(stats.mtime.toISOString());
     expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(result.data)).resolves.toBeDefined();
   });
@@ -156,8 +154,8 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
-    representation.metadata.add(HTTP_SLUG, 'myContainer/');
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
+    representation.metadata.add(HTTP.slug, 'myContainer/');
     await expect(store.addResource({ path: `${base}foo` }, representation)).rejects.toThrow(MethodNotAllowedHttpError);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo'));
   });
@@ -173,19 +171,19 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
-    representation.metadata.add(HTTP_SLUG, 'myContainer/');
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
+    representation.metadata.add(HTTP.slug, 'myContainer/');
     await expect(store.addResource({ path: `${base}doesnotexist` }, representation))
       .rejects.toThrow(MethodNotAllowedHttpError);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'doesnotexist'));
 
-    representation.metadata.set(RDF_TYPE, LINK_TYPE_LDPR);
-    representation.metadata.set(HTTP_SLUG, 'file.txt');
+    representation.metadata.set(RDF.type, LDP.Resource);
+    representation.metadata.set(HTTP.slug, 'file.txt');
     await expect(store.addResource({ path: `${base}doesnotexist` }, representation))
       .rejects.toThrow(MethodNotAllowedHttpError);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'doesnotexist'));
 
-    representation.metadata.removeAll(RDF_TYPE);
+    representation.metadata.removeAll(RDF.type);
     await expect(store.addResource({ path: `${base}existingresource` }, representation))
       .rejects.toThrow(MethodNotAllowedHttpError);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'existingresource'));
@@ -217,8 +215,8 @@ describe('A FileResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(HTTP_LAST_CHANGED)?.value).toEqual(stats.mtime.toISOString());
-    expect(result.metadata.get(HTTP_BYTE_SIZE)?.value).toEqual(`${stats.size}`);
+    expect(result.metadata.get(DCTERMS.modified)?.value).toEqual(stats.mtime.toISOString());
+    expect(result.metadata.get(POSIX.size)?.value).toEqual(`${stats.size}`);
     expect(result.metadata.contentType).toEqual('text/plain');
     await expect(arrayifyStream(result.data)).resolves.toEqual([ rawData ]);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'file.txt'));
@@ -254,8 +252,8 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDPR);
-    representation.metadata.add(HTTP_SLUG, 'file.txt');
+    representation.metadata.add(RDF.type, LDP.Resource);
+    representation.metadata.add(HTTP.slug, 'file.txt');
     const identifier = await store.addResource({ path: `${base}doesnotexistyet/` }, representation);
     expect(identifier.path).toBe(`${base}doesnotexistyet/file.txt`);
     expect(fsPromises.mkdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'doesnotexistyet/'),
@@ -280,7 +278,7 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDPR);
+    representation.metadata.add(RDF.type, LDP.Resource);
     representation.data = readableMock;
     await store.addResource({ path: `${base}foo/` }, representation);
     expect(fsPromises.mkdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo/'), { recursive: true });
@@ -350,17 +348,17 @@ describe('A FileResourceStore', (): void => {
     const containerNode = namedNode(`${base}foo/`);
     const fileNode = namedNode(`${base}foo/file.txt`);
     const quads = [
-      quadRDF(containerNode, namedNode(`${RDF}type`), namedNode(`${LDP}Container`)),
-      quadRDF(containerNode, namedNode(`${RDF}type`), namedNode(`${LDP}BasicContainer`)),
-      quadRDF(containerNode, namedNode(`${RDF}type`), namedNode(`${LDP}Resource`)),
-      quadRDF(containerNode, namedNode(`${STAT}size`), DataFactory.literal(stats.size)),
-      quadRDF(containerNode, namedNode(`${TERMS}modified`), literal(stats.mtime.toUTCString(), `${XML}dateTime`)),
-      quadRDF(containerNode, namedNode(`${STAT}mtime`), DataFactory.literal(stats.mtime.getTime() / 100)),
-      quadRDF(containerNode, namedNode(`${LDP}contains`), fileNode),
-      quadRDF(fileNode, namedNode(`${RDF}type`), namedNode(`${LDP}Resource`)),
-      quadRDF(fileNode, namedNode(`${STAT}size`), DataFactory.literal(stats.size)),
-      quadRDF(fileNode, namedNode(`${TERMS}modified`), literal(stats.mtime.toUTCString(), `${XML}dateTime`)),
-      quadRDF(fileNode, namedNode(`${STAT}mtime`), DataFactory.literal(stats.mtime.getTime() / 100)),
+      quadRDF(containerNode, namedNode(RDF.type), namedNode(LDP.Container)),
+      quadRDF(containerNode, namedNode(RDF.type), namedNode(LDP.BasicContainer)),
+      quadRDF(containerNode, namedNode(RDF.type), namedNode(LDP.Resource)),
+      quadRDF(containerNode, namedNode(POSIX.size), DataFactory.literal(stats.size)),
+      quadRDF(containerNode, namedNode(DCTERMS.modified), literal(stats.mtime.toISOString(), namedNode(XSD.dateTime))),
+      quadRDF(containerNode, namedNode(POSIX.mtime), DataFactory.literal(Math.floor(stats.mtime.getTime() / 1000))),
+      quadRDF(containerNode, namedNode(LDP.contains), fileNode),
+      quadRDF(fileNode, namedNode(RDF.type), namedNode(LDP.Resource)),
+      quadRDF(fileNode, namedNode(POSIX.size), DataFactory.literal(stats.size)),
+      quadRDF(fileNode, namedNode(DCTERMS.modified), literal(stats.mtime.toISOString(), namedNode(XSD.dateTime))),
+      quadRDF(fileNode, namedNode(POSIX.mtime), DataFactory.literal(Math.floor(stats.mtime.getTime() / 1000))),
     ];
     const result = await store.getRepresentation({ path: `${base}foo/` });
     expect(result).toEqual({
@@ -368,9 +366,9 @@ describe('A FileResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(HTTP_LAST_CHANGED)?.value).toEqual(stats.mtime.toISOString());
+    expect(result.metadata.get(DCTERMS.modified)?.value).toEqual(stats.mtime.toISOString());
     expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-    await expect(arrayifyStream(result.data)).resolves.toEqualRdfQuadArray(quads);
+    await expect(arrayifyStream(result.data)).resolves.toBeRdfIsomorphic(quads);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo/'));
     expect(fsPromises.readdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo/'));
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo', 'file.txt'));
@@ -387,7 +385,7 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDPR);
+    representation.metadata.add(RDF.type, LDP.Resource);
     await store.setRepresentation({ path: `${base}alreadyexists.txt` }, representation);
     expect(fs.createWriteStream as jest.Mock).toBeCalledTimes(2);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'alreadyexists.txt'));
@@ -403,7 +401,7 @@ describe('A FileResourceStore', (): void => {
     await expect(store.setRepresentation({ path: `${base}alreadyexists` }, representation)).rejects
       .toThrow(ConflictHttpError);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'alreadyexists'));
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
     await expect(store.setRepresentation({ path: `${base}alreadyexists/` }, representation)).rejects
       .toThrow(ConflictHttpError);
     expect(fsPromises.access as jest.Mock).toBeCalledTimes(1);
@@ -417,7 +415,7 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.mkdir as jest.Mock).mockReturnValueOnce(true);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
     await store.setRepresentation({ path: `${base}foo/` }, representation);
     expect(fsPromises.mkdir as jest.Mock).toBeCalledTimes(1);
     expect(fsPromises.access as jest.Mock).toBeCalledTimes(1);
@@ -435,8 +433,8 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.unlink as jest.Mock).mockReturnValueOnce(true);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDPR);
-    representation.metadata.add(HTTP_SLUG, 'file.txt');
+    representation.metadata.add(RDF.type, LDP.Resource);
+    representation.metadata.add(HTTP.slug, 'file.txt');
     await expect(store.addResource({ path: base }, representation)).rejects.toThrow(Error);
     expect(fs.createWriteStream as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'file.txt.metadata'));
     expect(fs.createWriteStream as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'file.txt'));
@@ -452,8 +450,8 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.rmdir as jest.Mock).mockReturnValueOnce(true);
 
     // Tests
-    representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
-    representation.metadata.add(HTTP_SLUG, 'foo/');
+    representation.metadata.add(RDF.type, LDP.BasicContainer);
+    representation.metadata.add(HTTP.slug, 'foo/');
     await expect(store.addResource({ path: base }, representation)).rejects.toThrow(Error);
     expect(fsPromises.rmdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo/'));
   });
@@ -464,7 +462,7 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.mkdir as jest.Mock).mockReturnValueOnce(true);
 
     // Tests
-    representation.metadata.add(HTTP_SLUG, 'myContainer/');
+    representation.metadata.add(HTTP.slug, 'myContainer/');
     const identifier = await store.addResource({ path: base }, representation);
     expect(identifier.path).toBe(`${base}myContainer/`);
     expect(fsPromises.mkdir as jest.Mock).toBeCalledTimes(1);
@@ -485,8 +483,8 @@ describe('A FileResourceStore', (): void => {
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toEqual('application/octet-stream');
-    expect(result.metadata.get(HTTP_LAST_CHANGED)?.value).toEqual(stats.mtime.toISOString());
-    expect(result.metadata.get(HTTP_BYTE_SIZE)?.value).toEqual(`${stats.size}`);
+    expect(result.metadata.get(DCTERMS.modified)?.value).toEqual(stats.mtime.toISOString());
+    expect(result.metadata.get(POSIX.size)?.value).toEqual(`${stats.size}`);
   });
 
   it('errors when performing a PUT on the root path.', async(): Promise<void> => {
@@ -519,8 +517,8 @@ describe('A FileResourceStore', (): void => {
       (fsPromises.mkdir as jest.Mock).mockReturnValue(true);
 
       // Tests
-      representation.metadata.add(RDF_TYPE, LINK_TYPE_LDP_BC);
-      representation.metadata.add(HTTP_SLUG, 'bar');
+      representation.metadata.add(RDF.type, LDP.BasicContainer);
+      representation.metadata.add(HTTP.slug, 'bar');
       const identifier = await store.addResource({ path: `${base}foo` }, representation);
       expect(identifier.path).toBe(`${base}foo/bar/`);
       expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo'));
@@ -552,8 +550,8 @@ describe('A FileResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: expect.any(RepresentationMetadata),
     });
-    expect(result.metadata.get(HTTP_LAST_CHANGED)?.value).toEqual(stats.mtime.toISOString());
-    expect(result.metadata.get(HTTP_BYTE_SIZE)?.value).toEqual(`${stats.size}`);
+    expect(result.metadata.get(DCTERMS.modified)?.value).toEqual(stats.mtime.toISOString());
+    expect(result.metadata.get(POSIX.size)?.value).toEqual(`${stats.size}`);
     await expect(arrayifyStream(result.data)).resolves.toEqual([ rawData ]);
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, name));
     expect(fs.createReadStream as jest.Mock).toBeCalledWith(joinPath(rootFilepath, name));

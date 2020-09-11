@@ -1,6 +1,6 @@
 import type { Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
-import { LINK_TYPE_LDP_BC, LINK_TYPE_LDPC } from './LinkTypes';
+import { LDP } from './UriConstants';
 import { trimTrailingSlashes } from './Util';
 
 export class InteractionController {
@@ -11,7 +11,7 @@ export class InteractionController {
    */
   public isContainer(slug?: string, types?: Term[]): boolean {
     if (types && types.length > 0) {
-      return types.some((type): boolean => type.value === LINK_TYPE_LDPC || type.value === LINK_TYPE_LDP_BC);
+      return types.some((type): boolean => type.value === LDP.Container || type.value === LDP.BasicContainer);
     }
     return Boolean(slug?.endsWith('/'));
   }

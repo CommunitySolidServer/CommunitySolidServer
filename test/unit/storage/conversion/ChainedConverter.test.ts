@@ -5,7 +5,7 @@ import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConv
 import { checkRequest } from '../../../../src/storage/conversion/ConversionUtil';
 import { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
-import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 class DummyConverter extends TypedRepresentationConverter {
   private readonly inTypes: { [contentType: string]: number };
@@ -31,7 +31,7 @@ class DummyConverter extends TypedRepresentationConverter {
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
     const metadata = new RepresentationMetadata(input.representation.metadata,
-      { [MA_CONTENT_TYPE]: input.preferences.type![0].value });
+      { [CONTENT_TYPE]: input.preferences.type![0].value });
     return { ...input.representation, metadata };
   }
 }
@@ -51,7 +51,7 @@ describe('A ChainedConverter', (): void => {
     ];
     converter = new ChainedConverter(converters);
 
-    const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: 'text/turtle' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     representation = { metadata } as Representation;
     preferences = { type: [{ value: 'internal/quads', weight: 1 }]};
     args = { representation, preferences, identifier: { path: 'path' }};

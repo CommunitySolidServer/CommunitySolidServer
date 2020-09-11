@@ -7,12 +7,12 @@ import { RepresentationPreferences } from '../../../../src/ldp/representation/Re
 import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToTurtleConverter } from '../../../../src/storage/conversion/QuadToTurtleConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { MA_CONTENT_TYPE } from '../../../../src/util/MetadataTypes';
+import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 describe('A QuadToTurtleConverter', (): void => {
   const converter = new QuadToTurtleConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata({ [MA_CONTENT_TYPE]: INTERNAL_QUADS });
+  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
