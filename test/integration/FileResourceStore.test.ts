@@ -144,8 +144,8 @@ describe('A server using a FileResourceStore', (): void => {
       response = await fileHelper.getFolder(folderId);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(folderId);
-      expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0>.');
-      expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt>.');
+      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0>.');
+      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt>.');
 
       // DELETE
       await fileHelper.deleteFile(fileId);
