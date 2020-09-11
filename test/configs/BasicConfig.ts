@@ -1,20 +1,14 @@
 import {
-  AcceptPreferenceParser,
-
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  BasicRequestParser,
   BasicResponseWriter,
-  BasicTargetExtractor,
   HttpHandler,
-
   MethodPermissionsExtractor,
-  RawBodyParser,
   ResourceStore,
   UnsecureWebIdExtractor,
 } from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
-import { getOperationHandler, getInMemoryResourceStore } from './Util';
+import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser } from './Util';
 
 /**
  * BasicConfig works with
@@ -31,11 +25,7 @@ export class BasicConfig implements ServerConfig {
   }
 
   public getHttpHandler(): HttpHandler {
-    const requestParser = new BasicRequestParser({
-      targetExtractor: new BasicTargetExtractor(),
-      preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new RawBodyParser(),
-    });
+    const requestParser = getBasicRequestParser();
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new MethodPermissionsExtractor();

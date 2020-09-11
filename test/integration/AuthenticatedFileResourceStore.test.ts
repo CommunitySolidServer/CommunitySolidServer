@@ -3,6 +3,7 @@ import * as url from 'url';
 import { MockResponse } from 'node-mocks-http';
 import { HttpHandler, ResourceStore } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
+import { RUNTIMECONFIG } from '../configs/Util';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call, callFile } from '../util/Util';
 
@@ -17,9 +18,9 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       config = new AuthenticatedFileResourceStoreConfig();
       handler = config.getHttpHandler();
       ({ store } = config);
-      aclHelper = new AclTestHelper(store, 'http://test.com/');
+      aclHelper = new AclTestHelper(store, RUNTIMECONFIG.base);
 
-      const root = config.runtimeConfig.rootFilepath;
+      const root = RUNTIMECONFIG.rootFilepath;
 
       // Make sure the root directory exists
       await fs.mkdir(root, { recursive: true });

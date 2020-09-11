@@ -1,26 +1,23 @@
 import {
-  AcceptPreferenceParser,
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  BasicRequestParser,
   BasicResponseWriter,
-  BasicTargetExtractor,
   CompositeAsyncHandler,
   HttpHandler,
   MethodPermissionsExtractor,
-  QuadToTurtleConverter,
+  QuadToRdfConverter,
   RawBodyParser,
+  RdfToQuadConverter,
   ResourceStore,
-  TurtleToQuadConverter,
   UnsecureWebIdExtractor,
 } from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
-import { getFileResourceStore, getOperationHandler, getConvertingStore } from './Util';
+import { getFileResourceStore, getOperationHandler, getConvertingStore, getBasicRequestParser } from './Util';
 
 /**
  * FileResourceStoreConfig works with
  * - an AllowEverythingAuthorizer (no acl)
- * - a FileResourceStore wrapped in a converting store (turtle to quad & quad to turtle)
+ * - a FileResourceStore wrapped in a converting store (rdf to quad & quad to rdf)
  * - GET, POST, PUT & DELETE operation handlers
  */
 
@@ -30,16 +27,13 @@ export class FileResourceStoreConfig implements ServerConfig {
   public constructor() {
     this.store = getConvertingStore(
       getFileResourceStore(),
-      [ new QuadToTurtleConverter(), new TurtleToQuadConverter() ],
+      [ new QuadToRdfConverter(), new RdfToQuadConverter() ],
     );
   }
 
   public getHttpHandler(): HttpHandler {
-    const requestParser = new BasicRequestParser({
-      targetExtractor: new BasicTargetExtractor(),
-      preferenceParser: new AcceptPreferenceParser(),
-      bodyParser: new RawBodyParser(),
-    });
+    // This is for the sake of test coverage, as it could also be just getBasicRequestParser()
+    const requestParser = getBasicRequestParser([ new RawBodyParser() ]);
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
