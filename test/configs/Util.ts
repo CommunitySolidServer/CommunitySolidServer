@@ -34,6 +34,12 @@ const BASE = 'http://test.com';
 const ROOTFILEPATH = 'uploads';
 export const RUNTIMECONFIG = new RuntimeConfig({ base: BASE, rootFilepath: ROOTFILEPATH });
 
+/**
+ * Gives a file resource store based on (default) runtime config.
+ * @param runtimeConfig - Optional runtime config.
+ *
+ * @returns The file resource store.
+ */
 export const getFileResourceStore = (runtimeConfig = RUNTIMECONFIG): FileResourceStore =>
   new FileResourceStore(
     runtimeConfig,
@@ -41,19 +47,45 @@ export const getFileResourceStore = (runtimeConfig = RUNTIMECONFIG): FileResourc
     new MetadataController(),
   );
 
+/**
+ * Gives an in memory resource store based on (default) base url.
+ * @param base - Optional base parameter for the run time config.
+ *
+ * @returns The in memory resource store.
+ */
 export const getInMemoryResourceStore = (base = BASE): InMemoryResourceStore =>
   new InMemoryResourceStore(new RuntimeConfig({ base }));
 
+/**
+ * Gives a converting store given some converters.
+ * @param store - Initial store.
+ * @param converters - Converters to be used.
+ *
+ * @returns The converting store.
+ */
 export const getConvertingStore =
 (store: ResourceStore, converters: RepresentationConverter[]): RepresentationConvertingStore =>
   new RepresentationConvertingStore(store, new CompositeAsyncHandler(converters));
 
+/**
+ * Gives a patching store based on initial store.
+ * @param store - Inital resource store.
+ *
+ * @returns The patching store.
+ */
 export const getPatchingStore = (store: ResourceStore): PatchingStore => {
   const locker = new SingleThreadedResourceLocker();
   const patcher = new SparqlUpdatePatchHandler(store, locker);
   return new PatchingStore(store, patcher);
 };
 
+/**
+ * Gives an operation handler given a store and the operations it should be able to handle.
+ * @param store - Initial resource store.
+ * @param operations - Operations wanted.
+ *
+ * @returns The operation handler.
+ */
 export const getOperationHandler = (store: ResourceStore,
   operations: { get?: boolean;
     post?: boolean;
@@ -79,6 +111,12 @@ export const getOperationHandler = (store: ResourceStore,
   return new CompositeAsyncHandler<Operation, ResponseDescription>(handlers);
 };
 
+/**
+ * Gives a basic request parser based on some body parses.
+ * @param bodyParsers - Optional list of body parsers, default is RawBodyParser.
+ *
+ * @returns The request parser.
+ */
 export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequestParser => {
   let bodyParser: BodyParser;
   if (bodyParsers.length === 1) {
@@ -96,6 +134,14 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
   });
 };
 
+/**
+ * Gives a web acl authorizer, using a UrlContainerManager & based on a (default) runtimeConfig.
+ * @param store - Initial resource store.
+ * @param aclManager - Optional acl manager, default is UrlBasedAclManager.
+ * @param runtimeConfig - Optional runtime config.
+ *
+ * @returns The acl authorizer.
+ */
 export const getWebAclAuthorizer =
 (store: ResourceStore, aclManager = new UrlBasedAclManager(), runtimeConfig = RUNTIMECONFIG): WebAclAuthorizer => {
   const containerManager = new UrlContainerManager(runtimeConfig);
