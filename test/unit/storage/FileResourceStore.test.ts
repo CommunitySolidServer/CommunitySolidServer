@@ -8,6 +8,7 @@ import streamifyArray from 'streamify-array';
 import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
@@ -50,7 +51,7 @@ describe('A FileResourceStore', (): void => {
     jest.clearAllMocks();
 
     store = new FileResourceStore(
-      new RuntimeConfig({ base, rootFilepath }),
+      new ExtensionBasedMapper(new RuntimeConfig({ base, rootFilepath })),
       new InteractionController(),
       new MetadataController(),
     );
@@ -218,7 +219,7 @@ describe('A FileResourceStore', (): void => {
         raw: [],
         dateTime: stats.mtime,
         byteSize: stats.size,
-        contentType: 'text/plain; charset=utf-8',
+        contentType: 'text/plain',
       },
     });
     await expect(arrayifyStream(result.data)).resolves.toEqual([ rawData ]);
@@ -426,17 +427,6 @@ describe('A FileResourceStore', (): void => {
     expect(fsPromises.access as jest.Mock).toBeCalledTimes(1);
   });
 
-  it('errors when mapping a filepath that does not match the rootFilepath of the store.', async(): Promise<void> => {
-    expect((): any => {
-      // eslint-disable-next-line dot-notation
-      store['mapFilepathToUrl']('http://wrong.com/wrong');
-    }).toThrowError();
-    expect((): any => {
-      // eslint-disable-next-line dot-notation
-      store['mapFilepathToUrl'](`${base}file.txt`);
-    }).toThrowError();
-  });
-
   it('undoes metadata file creation when resource creation fails.', async(): Promise<void> => {
     // Mock the fs functions.
     (fsPromises.mkdir as jest.Mock).mockReturnValueOnce(true);
@@ -483,13 +473,12 @@ describe('A FileResourceStore', (): void => {
     expect(fsPromises.mkdir as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'myContainer/'), { recursive: true });
   });
 
-  it('returns no contentType when unknown for representation.', async(): Promise<void> => {
+  it('returns default contentType when unknown for representation.', async(): Promise<void> => {
     // Mock the fs functions.
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
-    (fs.createReadStream as jest.Mock).mockReturnValueOnce(new Readable()
-      .destroy(new Error('Metadata file does not exist.')));
+    (fs.createReadStream as jest.Mock).mockImplementationOnce((): any => new Error('Metadata file does not exist.'));
 
     const result = await store.getRepresentation({ path: `${base}.htaccess` });
     expect(result).toEqual({
@@ -497,6 +486,7 @@ describe('A FileResourceStore', (): void => {
       data: expect.any(Readable),
       metadata: {
         raw: [],
+        contentType: 'application/octet-stream',
         dateTime: stats.mtime,
         byteSize: stats.size,
       },
