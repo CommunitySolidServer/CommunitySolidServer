@@ -1,6 +1,5 @@
 import { posix } from 'path';
 import { types } from 'mime-types';
-import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
@@ -24,22 +23,22 @@ export interface ResourcePath {
 }
 
 export class ExtensionBasedMapper implements FileIdentifierMapper {
-  private readonly runtimeConfig: RuntimeConfig;
+  private readonly base: string;
+  private readonly prootFilepath: string;
   private readonly types: Record<string, any>;
 
-  public constructor(runtimeConfig: RuntimeConfig, overrideTypes = { acl: TEXT_TURTLE, metadata: TEXT_TURTLE }) {
-    this.runtimeConfig = runtimeConfig;
+  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, metadata: TEXT_TURTLE }) {
+    this.base = base;
+    this.prootFilepath = rootFilepath;
     this.types = { ...types, ...overrideTypes };
   }
 
-  // Using getters because the values of runtimeConfig get filled in at runtime (so they are still empty at
-  // construction time until issue #106 gets resolved.)
   public get baseRequestURI(): string {
-    return trimTrailingSlashes(this.runtimeConfig.base);
+    return trimTrailingSlashes(this.base);
   }
 
   public get rootFilepath(): string {
-    return trimTrailingSlashes(this.runtimeConfig.rootFilepath);
+    return trimTrailingSlashes(this.prootFilepath);
   }
 
   /**

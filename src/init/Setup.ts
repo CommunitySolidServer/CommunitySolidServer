@@ -3,7 +3,6 @@ import { AclManager } from '../authorization/AclManager';
 import { ExpressHttpServer } from '../server/ExpressHttpServer';
 import { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
-import { RuntimeConfig, RuntimeConfigData } from './RuntimeConfig';
 
 /**
  * Invokes all logic to setup a server.
@@ -12,27 +11,27 @@ export class Setup {
   private readonly httpServer: ExpressHttpServer;
   private readonly store: ResourceStore;
   private readonly aclManager: AclManager;
-  private readonly runtimeConfig: RuntimeConfig;
+  private readonly base: string;
+  private readonly port: number;
 
   public constructor(
     httpServer: ExpressHttpServer,
     store: ResourceStore,
     aclManager: AclManager,
-    runtimeConfig: RuntimeConfig,
+    base: string,
+    port: number,
   ) {
     this.httpServer = httpServer;
     this.store = store;
     this.aclManager = aclManager;
-    this.runtimeConfig = runtimeConfig;
+    this.base = base;
+    this.port = port;
   }
 
   /**
-   * Set up a server at the given port and base URL.
-   * @param data - Runtime config data.
+   * Set up a server.
    */
-  public async setup(data: RuntimeConfigData = {}): Promise<RuntimeConfig> {
-    this.runtimeConfig.reset(data);
-
+  public async setup(): Promise<string> {
     // Set up acl so everything can still be done by default
     // Note that this will need to be adapted to go through all the correct channels later on
     const aclSetup = async(): Promise<void> => {
@@ -47,10 +46,10 @@ export class Setup {
     acl:mode        acl:Append;
     acl:mode        acl:Delete;
     acl:mode        acl:Control;
-    acl:accessTo    <${this.runtimeConfig.base}>;
-    acl:default     <${this.runtimeConfig.base}>.`;
+    acl:accessTo    <${this.base}>;
+    acl:default     <${this.base}>.`;
       await this.store.setRepresentation(
-        await this.aclManager.getAcl({ path: this.runtimeConfig.base }),
+        await this.aclManager.getAcl({ path: this.base }),
         {
           binary: true,
           data: streamifyArray([ acl ]),
@@ -64,8 +63,8 @@ export class Setup {
     };
     await aclSetup();
 
-    this.httpServer.listen(this.runtimeConfig.port);
+    this.httpServer.listen(this.port);
 
-    return this.runtimeConfig;
+    return this.base;
   }
 }

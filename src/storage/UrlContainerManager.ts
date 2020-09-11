@@ -1,4 +1,3 @@
-import { RuntimeConfig } from '../init/RuntimeConfig';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ensureTrailingSlash } from '../util/Util';
 import { ContainerManager } from './ContainerManager';
@@ -7,15 +6,15 @@ import { ContainerManager } from './ContainerManager';
  * Determines containers based on URL decomposition.
  */
 export class UrlContainerManager implements ContainerManager {
-  private readonly runtimeConfig: RuntimeConfig;
+  private readonly base: string;
 
-  public constructor(runtimeConfig: RuntimeConfig) {
-    this.runtimeConfig = runtimeConfig;
+  public constructor(base: string) {
+    this.base = base;
   }
 
   public async getContainer(id: ResourceIdentifier): Promise<ResourceIdentifier> {
     const path = this.canonicalUrl(id.path);
-    if (this.runtimeConfig.base === path) {
+    if (this.base === path) {
       throw new Error('Root does not have a container.');
     }
 

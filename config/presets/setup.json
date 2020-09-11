@@ -13,10 +13,11 @@
       "Setup:_aclManager": {
         "@id": "urn:solid-server:default:AclManager"
       },
-      "Setup:_runtimeConfig": {
-        "@id": "urn:solid-server:default:RuntimeConfig",
-        "@type": "RuntimeConfig",
-        "RuntimeConfigData:_port": 3000
+      "Setup:_base": {
+        "@id": "urn:solid-server:default:variable:base"
+      },
+      "Setup:_port": {
+        "@id": "urn:solid-server:default:variable:port"
       }
     }
   ]

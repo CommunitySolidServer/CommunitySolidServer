@@ -72,8 +72,8 @@
     {
       "@id": "urn:solid-server:default:UrlContainerManager",
       "@type": "UrlContainerManager",
-      "UrlContainerManager:_runtimeConfig": {
-        "@id": "urn:solid-server:default:RuntimeConfig"
+      "UrlContainerManager:_base": {
+        "@id": "urn:solid-server:default:variable:base"
       }
     }
   ]

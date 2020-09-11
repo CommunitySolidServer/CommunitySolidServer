@@ -2,7 +2,6 @@ import * as Path from 'path';
 import { ReadStream, WriteStream } from 'tty';
 import { Loader, LoaderProperties } from 'componentsjs';
 import yargs from 'yargs';
-import { RuntimeConfig } from './RuntimeConfig';
 import { Setup } from './Setup';
 
 /**
@@ -23,12 +22,12 @@ export const runCustom = function(
   const { argv } = yargs
     .usage('node ./bin/server.js [args]')
     .options({
-      port: { type: 'number', alias: 'p' },
+      port: { type: 'number', alias: 'p', default: 3000 },
       config: { type: 'string', alias: 'c' },
     })
     .help();
 
-  new Promise<RuntimeConfig>(async(resolve): Promise<void> => {
+  (async(): Promise<string> => {
     // Load provided or default config file
     const configPath = argv.config ?
       Path.join(process.cwd(), argv.config) :
@@ -38,10 +37,16 @@ export const runCustom = function(
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
     const setup: Setup = await loader
-      .instantiateFromUrl('urn:solid-server:default', configPath);
-    resolve(await setup.setup({ port: argv.port }));
-  }).then((runtimeConfig: RuntimeConfig): void => {
-    stdout.write(`Running at ${runtimeConfig.base}\n`);
+      .instantiateFromUrl('urn:solid-server:default', configPath, undefined, {
+        variables: {
+          'urn:solid-server:default:variable:port': argv.port,
+          'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
+          'urn:solid-server:default:variable:rootFilePath': process.cwd(),
+        },
+      });
+    return await setup.setup();
+  })().then((base: string): void => {
+    stdout.write(`Running at ${base}\n`);
   }).catch((error): void => {
     stderr.write(`${error}\n`);
   });

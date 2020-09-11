@@ -1,7 +1,6 @@
 import { PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
-import { RuntimeConfig } from '../init/RuntimeConfig';
 import { Representation } from '../ldp/representation/Representation';
 import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { TEXT_TURTLE } from '../util/ContentTypes';
@@ -15,15 +14,15 @@ import { ResourceStore } from './ResourceStore';
  */
 export class InMemoryResourceStore implements ResourceStore {
   private readonly store: { [id: string]: Representation };
-  private readonly runtimeConfig: RuntimeConfig;
+  private readonly base: string;
   private index = 0;
 
   /**
-   * @param runtimeConfig - Config containing base that will be stripped of all incoming URIs
-   *                        and added to all outgoing ones to find the relative path.
+   * @param base - Base that will be stripped of all incoming URIs
+   *               and added to all outgoing ones to find the relative path.
    */
-  public constructor(runtimeConfig: RuntimeConfig) {
-    this.runtimeConfig = runtimeConfig;
+  public constructor(base: string) {
+    this.base = ensureTrailingSlash(base);
 
     this.store = {
       // Default root entry (what you get when the identifier is equal to the base)
@@ -105,8 +104,8 @@ export class InMemoryResourceStore implements ResourceStore {
    * @returns A string representing the relative path.
    */
   private parseIdentifier(identifier: ResourceIdentifier): string {
-    const path = identifier.path.slice(this.runtimeConfig.base.length);
-    if (!identifier.path.startsWith(this.runtimeConfig.base)) {
+    const path = identifier.path.slice(this.base.length);
+    if (!identifier.path.startsWith(this.base)) {
       throw new NotFoundHttpError();
     }
     return path;
