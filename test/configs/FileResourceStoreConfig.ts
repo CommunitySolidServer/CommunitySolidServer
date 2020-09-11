@@ -29,8 +29,6 @@ import {
 } from '../../index';
 import { ServerConfig } from '../configs/ServerConfig';
 
-// This is the configuration from bin/server.ts
-
 export class FileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
   public aclManager: AclManager;

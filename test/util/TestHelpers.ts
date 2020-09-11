@@ -1,6 +1,14 @@
+import { EventEmitter } from 'events';
+import { promises as fs } from 'fs';
+import { IncomingHttpHeaders } from 'http';
+import { join } from 'path';
+import * as url from 'url';
+import { createResponse, MockResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
 import { ResourceStore } from '../../index';
 import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
+import { HttpHandler } from '../../src/server/HttpHandler';
+import { HttpRequest } from '../../src/server/HttpRequest';
 
 export class AclTestHelper {
   public readonly store: ResourceStore;
@@ -73,5 +81,126 @@ export class AclTestHelper {
     agentClass?: 'agent' | 'authenticated',
   ): Promise<void> {
     return this.setAcl(permissions, true, true, true, undefined, agentClass);
+  }
+}
+
+export class FileTestHelper {
+  public readonly handler: HttpHandler;
+  public readonly baseUrl: URL;
+
+  public constructor(handler: HttpHandler, baseUrl: URL) {
+    this.handler = handler;
+    this.baseUrl = baseUrl;
+  }
+
+  public async call(
+    requestUrl: URL,
+    method: string,
+    headers: IncomingHttpHeaders,
+    data?: string[],
+  ): Promise<MockResponse<any>> {
+    const request = data ?
+      (streamifyArray(data) as HttpRequest) :
+      streamifyArray([]) as HttpRequest;
+
+    request.url = requestUrl.pathname;
+    request.method = method;
+    request.headers = headers;
+    request.headers.host = requestUrl.host;
+    const response: MockResponse<any> = createResponse({
+      eventEmitter: EventEmitter,
+    });
+
+    const endPromise = new Promise((resolve): void => {
+      response.on('end', (): void => {
+        expect(response._isEndCalled()).toBeTruthy();
+        resolve();
+      });
+    });
+
+    await this.handler.handleSafe({ request, response });
+    await endPromise;
+
+    return response;
+  }
+
+  public async callWithFile(
+    requestUrl: URL,
+    method: string,
+    headers: IncomingHttpHeaders,
+    data: Buffer,
+  ): Promise<MockResponse<any>> {
+    const request = streamifyArray([ data ]) as HttpRequest;
+
+    request.url = requestUrl.pathname;
+    request.method = method;
+    request.headers = headers;
+    request.headers.host = requestUrl.host;
+    const response: MockResponse<any> = createResponse({
+      eventEmitter: EventEmitter,
+    });
+
+    const endPromise = new Promise((resolve): void => {
+      response.on('end', (): void => {
+        expect(response._isEndCalled()).toBeTruthy();
+        resolve();
+      });
+    });
+
+    await this.handler.handleSafe({ request, response });
+    await endPromise;
+
+    return response;
+  }
+
+  public async uploadFile(fileLocation: string, slug: string): Promise<MockResponse<any>> {
+    if (!fileLocation.startsWith('..')) {
+      throw new Error(`${fileLocation} is not a relative path`);
+    }
+    const fileData = await fs.readFile(
+      join(__dirname, fileLocation),
+    );
+
+    const response: MockResponse<any> = await this.callWithFile(
+      this.baseUrl,
+      'POST',
+      { 'content-type': 'application/octet-stream',
+        slug,
+        'transfer-encoding': 'chunked' },
+      fileData,
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response._getData()).toHaveLength(0);
+    expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
+    return response;
+  }
+
+  public async getFile(requestUrl: string | URL): Promise<MockResponse<any>> {
+    const getUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response = await this.call(getUrl, 'GET', { accept: '*/*' });
+    return response;
+  }
+
+  public async deleteFile(requestUrl: string | URL): Promise<MockResponse<any>> {
+    const deleteUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response = await this.call(deleteUrl, 'DELETE', {});
+    expect(response.statusCode).toBe(200);
+    expect(response._getData()).toHaveLength(0);
+    expect(response._getHeaders().location).toBe(url.format(requestUrl));
+    return response;
+  }
+
+  public async shouldNotExist(requestUrl: string | URL): Promise<MockResponse<any>> {
+    const getUrl =
+      typeof requestUrl === 'string' ? new URL(requestUrl) : requestUrl;
+
+    const response = await this.call(getUrl, 'GET', { accept: '*/*' });
+    expect(response.statusCode).toBe(404);
+    expect(response._getData()).toContain('NotFoundHttpError');
+    return response;
   }
 }
