@@ -29,6 +29,7 @@ import {
   UrlContainerManager,
   WebAclAuthorizer,
 } from '../../index';
+import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 
 const BASE = 'http://test.com';
 const ROOTFILEPATH = 'uploads';
@@ -42,7 +43,7 @@ export const RUNTIMECONFIG = new RuntimeConfig({ base: BASE, rootFilepath: ROOTF
  */
 export const getFileResourceStore = (runtimeConfig = RUNTIMECONFIG): FileResourceStore =>
   new FileResourceStore(
-    runtimeConfig,
+    new ExtensionBasedMapper(runtimeConfig),
     new InteractionController(),
     new MetadataController(),
   );
