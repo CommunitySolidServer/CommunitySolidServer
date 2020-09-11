@@ -23,7 +23,6 @@ import {
   RepresentationConvertingStore,
   ResourceStore,
   ResponseDescription,
-  RuntimeConfig,
   SingleThreadedResourceLocker,
   SparqlUpdatePatchHandler,
   UrlBasedAclManager,
@@ -32,26 +31,24 @@ import {
 } from '../../index';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 
-const BASE = 'http://test.com';
+export const BASE = 'http://test.com';
 
 /**
  * Creates a RuntimeConfig with its rootFilePath set based on the given subfolder.
  * @param subfolder - Folder to use in the global testData folder.
  */
-export const getRuntimeConfig = (subfolder: string): RuntimeConfig => new RuntimeConfig({
-  base: BASE,
-  rootFilepath: join(__dirname, '../testData', subfolder),
-});
+export const getRootFilePath = (subfolder: string): string => join(__dirname, '../testData', subfolder);
 
 /**
  * Gives a file resource store based on (default) runtime config.
- * @param runtimeConfig - Optional runtime config.
+ * @param base - Base URL.
+ * @param rootFilepath - The root file path.
  *
  * @returns The file resource store.
  */
-export const getFileResourceStore = (runtimeConfig: RuntimeConfig): FileResourceStore =>
+export const getFileResourceStore = (base: string, rootFilepath: string): FileResourceStore =>
   new FileResourceStore(
-    new ExtensionBasedMapper(runtimeConfig),
+    new ExtensionBasedMapper(base, rootFilepath),
     new InteractionController(),
     new MetadataController(),
   );
@@ -63,7 +60,7 @@ export const getFileResourceStore = (runtimeConfig: RuntimeConfig): FileResource
  * @returns The in memory resource store.
  */
 export const getInMemoryResourceStore = (base = BASE): InMemoryResourceStore =>
-  new InMemoryResourceStore(new RuntimeConfig({ base }));
+  new InMemoryResourceStore(base);
 
 /**
  * Gives a converting store given some converters.
@@ -138,6 +135,6 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
  */
 export const getWebAclAuthorizer =
 (store: ResourceStore, base = BASE, aclManager = new UrlBasedAclManager()): WebAclAuthorizer => {
-  const containerManager = new UrlContainerManager(new RuntimeConfig({ base }));
+  const containerManager = new UrlContainerManager(base);
   return new WebAclAuthorizer(aclManager, containerManager, store);
 };

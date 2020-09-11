@@ -1,6 +1,5 @@
 import { Readable } from 'stream';
 import streamifyArray from 'streamify-array';
-import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryResourceStore } from '../../../src/storage/InMemoryResourceStore';
@@ -15,7 +14,7 @@ describe('A InMemoryResourceStore', (): void => {
   const dataString = '<http://test.com/s> <http://test.com/p> <http://test.com/o>.';
 
   beforeEach(async(): Promise<void> => {
-    store = new InMemoryResourceStore(new RuntimeConfig({ base }));
+    store = new InMemoryResourceStore(base);
 
     representation = {
       binary: true,

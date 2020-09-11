@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:variable:port",
+      "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:base",
+      "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:rootFilePath",
+      "@type": "Variable"
+    }
+  ]
+}

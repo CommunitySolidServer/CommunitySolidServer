@@ -4,8 +4,8 @@
     {
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "InMemoryResourceStore",
-      "InMemoryResourceStore:_runtimeConfig": {
-        "@id": "urn:solid-server:default:RuntimeConfig"
+      "InMemoryResourceStore:_base": {
+        "@id": "urn:solid-server:default:variable:base"
       }
     }
   ]

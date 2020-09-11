@@ -1,10 +1,9 @@
-import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
 
 describe('An ExtensionBasedMapper', (): void => {
   const base = 'http://test.com/';
   const rootFilepath = 'uploads/';
-  const resourceMapper = new ExtensionBasedMapper(new RuntimeConfig({ base, rootFilepath }));
+  const resourceMapper = new ExtensionBasedMapper(base, rootFilepath);
 
   it('returns the correct url of a file.', async(): Promise<void> => {
     let result = resourceMapper.mapFilePathToUrl(`${rootFilepath}test.txt`);

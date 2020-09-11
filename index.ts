@@ -12,7 +12,6 @@ export * from './src/authorization/WebAclAuthorizer';
 
 // Init
 export * from './src/init/CliRunner';
-export * from './src/init/RuntimeConfig';
 export * from './src/init/Setup';
 
 // LDP/HTTP

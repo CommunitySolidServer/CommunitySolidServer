@@ -1,9 +1,10 @@
 import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
-import { HttpHandler, ResourceStore, RuntimeConfig } from '../../index';
+import { HttpHandler, ResourceStore } from '../../index';
+import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
-import { getRuntimeConfig } from '../configs/Util';
+import { BASE, getRootFilePath } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
 describe('A server using a AuthenticatedFileResourceStore', (): void => {
@@ -12,24 +13,23 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
   let store: ResourceStore;
   let aclHelper: AclTestHelper;
   let fileHelper: FileTestHelper;
-  let runtimeConfig: RuntimeConfig;
+  let rootFilePath: string;
 
   beforeAll(async(): Promise<void> => {
-    runtimeConfig = getRuntimeConfig('AuthenticatedFileResourceStore');
-    config = new AuthenticatedFileResourceStoreConfig(runtimeConfig);
-    const { base, rootFilepath } = runtimeConfig;
+    rootFilePath = getRootFilePath('AuthenticatedFileResourceStore');
+    config = new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath);
     handler = config.getHttpHandler();
     ({ store } = config);
-    aclHelper = new AclTestHelper(store, base);
-    fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
+    aclHelper = new AclTestHelper(store, ensureTrailingSlash(BASE));
+    fileHelper = new FileTestHelper(handler, new URL(ensureTrailingSlash(BASE)));
 
     // Make sure the root directory exists
-    mkdirSync(rootFilepath, { recursive: true });
-    copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilepath}/permanent.txt`);
+    mkdirSync(rootFilePath, { recursive: true });
+    copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilePath}/permanent.txt`);
   });
 
   afterAll(async(): Promise<void> => {
-    rimraf.sync(runtimeConfig.rootFilepath, { glob: false });
+    rimraf.sync(rootFilePath, { glob: false });
   });
 
   describe('with acl', (): void => {

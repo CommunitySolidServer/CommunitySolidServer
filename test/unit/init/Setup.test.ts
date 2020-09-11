@@ -1,4 +1,3 @@
-import { RuntimeConfig } from '../../../src/init/RuntimeConfig';
 import { Setup } from '../../../src/init/Setup';
 
 describe('Setup', (): void => {
@@ -16,7 +15,7 @@ describe('Setup', (): void => {
     httpServer = {
       listen: jest.fn(),
     };
-    setup = new Setup(httpServer, store, aclManager, new RuntimeConfig());
+    setup = new Setup(httpServer, store, aclManager, 'http://localhost:3000/', 3000);
   });
 
   it('starts an HTTP server.', async(): Promise<void> => {

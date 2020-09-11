@@ -8,7 +8,6 @@ import {
   ResourceStore,
   UnsecureWebIdExtractor,
   QuadToRdfConverter,
-  RuntimeConfig,
 } from '../../index';
 import { ServerConfig } from './ServerConfig';
 import {
@@ -27,13 +26,13 @@ import {
  */
 
 export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
-  private readonly runtimeConfig: RuntimeConfig;
+  public base: string;
   public store: ResourceStore;
 
-  public constructor(runtimeConfig: RuntimeConfig) {
-    this.runtimeConfig = runtimeConfig;
+  public constructor(base: string, rootFilepath: string) {
+    this.base = base;
     this.store = getConvertingStore(
-      getFileResourceStore(runtimeConfig),
+      getFileResourceStore(base, rootFilepath),
       [ new QuadToRdfConverter(),
         new RdfToQuadConverter() ],
     );
@@ -50,7 +49,7 @@ export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
     const operationHandler = getOperationHandler(this.store);
 
     const responseWriter = new BasicResponseWriter();
-    const authorizer = getWebAclAuthorizer(this.store, this.runtimeConfig.base);
+    const authorizer = getWebAclAuthorizer(this.store, this.base);
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,
