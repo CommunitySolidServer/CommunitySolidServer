@@ -14,17 +14,16 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
 
   beforeAll(
     async(): Promise<void> => {
+      const { base, rootFilepath } = RUNTIMECONFIG;
       config = new AuthenticatedFileResourceStoreConfig();
       handler = config.getHttpHandler();
       ({ store } = config);
-      aclHelper = new AclTestHelper(store, RUNTIMECONFIG.base);
+      aclHelper = new AclTestHelper(store, base);
       fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
 
-      const runtimeRoot = join(__dirname, `../../${RUNTIMECONFIG.rootFilepath}`);
-
       // Make sure the root directory exists
-      await fs.mkdir(join(__dirname, '../../uploads'), { recursive: true });
-      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), `${runtimeRoot}/permanent.txt`);
+      await fs.mkdir(rootFilepath, { recursive: true });
+      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), `${rootFilepath}/permanent.txt`);
     },
   );
   describe('with acl', (): void => {

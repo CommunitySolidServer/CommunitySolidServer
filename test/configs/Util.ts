@@ -1,3 +1,4 @@
+import { join } from 'path';
 import {
   AcceptPreferenceParser,
   BasicRequestParser,
@@ -32,8 +33,11 @@ import {
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 
 const BASE = 'http://test.com';
-const ROOTFILEPATH = 'uploads';
-export const RUNTIMECONFIG = new RuntimeConfig({ base: BASE, rootFilepath: ROOTFILEPATH });
+const ROOTFILEPATH = join(__dirname, '../uploads');
+export const RUNTIMECONFIG = new RuntimeConfig({
+  base: BASE,
+  rootFilepath: ROOTFILEPATH,
+});
 
 /**
  * Gives a file resource store based on (default) runtime config.

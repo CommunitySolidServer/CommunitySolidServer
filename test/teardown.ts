@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
+import { RUNTIMECONFIG } from './configs/Util';
 
 module.exports = async function(): Promise<void> {
-  // Removes uploads riectory and makes sure that even if tests fail, all test files get removed.
-  await fs.rmdir('./uploads', { recursive: true });
+  // Remove copied test files
+  await fs.rmdir(RUNTIMECONFIG.rootFilepath, { recursive: true });
 };
