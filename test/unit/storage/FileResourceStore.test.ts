@@ -25,12 +25,18 @@ const { join: joinPath } = posix;
 const base = 'http://test.com/';
 const rootFilepath = '/Users/default/home/public/';
 
-fsPromises.rmdir = jest.fn();
-fsPromises.lstat = jest.fn();
-fsPromises.readdir = jest.fn();
-fsPromises.mkdir = jest.fn();
-fsPromises.unlink = jest.fn();
-fsPromises.access = jest.fn();
+jest.mock('fs', (): any => ({
+  createReadStream: jest.fn(),
+  createWriteStream: jest.fn(),
+  promises: {
+    rmdir: jest.fn(),
+    lstat: jest.fn(),
+    readdir: jest.fn(),
+    mkdir: jest.fn(),
+    unlink: jest.fn(),
+    access: jest.fn(),
+  },
+}));
 
 describe('A FileResourceStore', (): void => {
   let store: FileResourceStore;
@@ -44,8 +50,6 @@ describe('A FileResourceStore', (): void => {
     namedNode('http://test.com/p'),
     namedNode('http://test.com/o'),
   );
-
-  fs.createReadStream = jest.fn();
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
@@ -68,8 +72,6 @@ describe('A FileResourceStore', (): void => {
       mtime: new Date(),
     } as jest.Mocked<Stats>;
 
-    // Mock the fs functions for the createDataFile function.
-    fs.createWriteStream = jest.fn();
     writeStream = {
       on: jest.fn((name: string, func: () => void): any => {
         if (name === 'finish') {
