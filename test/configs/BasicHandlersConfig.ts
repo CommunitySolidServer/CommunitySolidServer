@@ -14,7 +14,7 @@ import {
   UnsecureWebIdExtractor,
 } from '../../index';
 
-import { ServerConfig } from '../configs/ServerConfig';
+import { ServerConfig } from './ServerConfig';
 import { getInMemoryResourceStore,
   getOperationHandler,
   getConvertingStore,

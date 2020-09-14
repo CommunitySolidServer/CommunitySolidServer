@@ -1,12 +1,27 @@
+import * as rimraf from 'rimraf';
+import { RuntimeConfig } from '../../src/init/RuntimeConfig';
+import { HttpHandler } from '../../src/server/HttpHandler';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
+import { getRuntimeConfig } from '../configs/Util';
 import { FileTestHelper } from '../util/TestHelpers';
 
 describe('A server using a FileResourceStore', (): void => {
   describe('without acl', (): void => {
-    const config = new FileResourceStoreConfig();
-    const handler = config.getHttpHandler();
-    const baseUrl = new URL('http://test.com/');
-    const fileHelper = new FileTestHelper(handler, baseUrl);
+    let config: FileResourceStoreConfig;
+    let handler: HttpHandler;
+    let fileHelper: FileTestHelper;
+    let runtimeConfig: RuntimeConfig;
+
+    beforeAll(async(): Promise<void> => {
+      runtimeConfig = getRuntimeConfig('FileResourceStore');
+      config = new FileResourceStoreConfig(runtimeConfig);
+      handler = config.getHttpHandler();
+      fileHelper = new FileTestHelper(handler, new URL(runtimeConfig.base));
+    });
+
+    afterAll(async(): Promise<void> => {
+      rimraf.sync(runtimeConfig.rootFilepath, { glob: false });
+    });
 
     it('can add a file to the store, read it and delete it.', async():
     Promise<void> => {

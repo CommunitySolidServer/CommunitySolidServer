@@ -9,9 +9,10 @@ import {
   RawBodyParser,
   RdfToQuadConverter,
   ResourceStore,
+  RuntimeConfig,
   UnsecureWebIdExtractor,
 } from '../../index';
-import { ServerConfig } from '../configs/ServerConfig';
+import { ServerConfig } from './ServerConfig';
 import { getFileResourceStore, getOperationHandler, getConvertingStore, getBasicRequestParser } from './Util';
 
 /**
@@ -24,9 +25,9 @@ import { getFileResourceStore, getOperationHandler, getConvertingStore, getBasic
 export class FileResourceStoreConfig implements ServerConfig {
   public store: ResourceStore;
 
-  public constructor() {
+  public constructor(runtimeConfig: RuntimeConfig) {
     this.store = getConvertingStore(
-      getFileResourceStore(),
+      getFileResourceStore(runtimeConfig),
       [ new QuadToRdfConverter(), new RdfToQuadConverter() ],
     );
   }

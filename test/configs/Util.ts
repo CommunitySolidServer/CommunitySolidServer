@@ -33,10 +33,14 @@ import {
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 
 const BASE = 'http://test.com';
-const ROOTFILEPATH = join(__dirname, '../uploads');
-export const RUNTIMECONFIG = new RuntimeConfig({
+
+/**
+ * Creates a RuntimeConfig with its rootFilePath set based on the given subfolder.
+ * @param subfolder - Folder to use in the global testData folder.
+ */
+export const getRuntimeConfig = (subfolder: string): RuntimeConfig => new RuntimeConfig({
   base: BASE,
-  rootFilepath: ROOTFILEPATH,
+  rootFilepath: join(__dirname, '../testData', subfolder),
 });
 
 /**
@@ -45,7 +49,7 @@ export const RUNTIMECONFIG = new RuntimeConfig({
  *
  * @returns The file resource store.
  */
-export const getFileResourceStore = (runtimeConfig = RUNTIMECONFIG): FileResourceStore =>
+export const getFileResourceStore = (runtimeConfig: RuntimeConfig): FileResourceStore =>
   new FileResourceStore(
     new ExtensionBasedMapper(runtimeConfig),
     new InteractionController(),
@@ -127,13 +131,13 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
 /**
  * Gives a web acl authorizer, using a UrlContainerManager & based on a (default) runtimeConfig.
  * @param store - Initial resource store.
+ * @param base - Base URI of the pod.
  * @param aclManager - Optional acl manager, default is UrlBasedAclManager.
- * @param runtimeConfig - Optional runtime config.
  *
  * @returns The acl authorizer.
  */
 export const getWebAclAuthorizer =
-(store: ResourceStore, aclManager = new UrlBasedAclManager(), runtimeConfig = RUNTIMECONFIG): WebAclAuthorizer => {
-  const containerManager = new UrlContainerManager(runtimeConfig);
+(store: ResourceStore, base = BASE, aclManager = new UrlBasedAclManager()): WebAclAuthorizer => {
+  const containerManager = new UrlContainerManager(new RuntimeConfig({ base }));
   return new WebAclAuthorizer(aclManager, containerManager, store);
 };

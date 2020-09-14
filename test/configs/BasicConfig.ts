@@ -7,7 +7,7 @@ import {
   ResourceStore,
   UnsecureWebIdExtractor,
 } from '../../index';
-import { ServerConfig } from '../configs/ServerConfig';
+import { ServerConfig } from './ServerConfig';
 import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser } from './Util';
 
 /**

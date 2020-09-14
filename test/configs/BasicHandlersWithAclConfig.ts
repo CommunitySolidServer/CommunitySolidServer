@@ -9,7 +9,7 @@ import {
   UnsecureWebIdExtractor,
   QuadToRdfConverter,
 } from '../../index';
-import { ServerConfig } from '../configs/ServerConfig';
+import { ServerConfig } from './ServerConfig';
 import {
   getInMemoryResourceStore,
   getConvertingStore,

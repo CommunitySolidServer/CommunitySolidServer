@@ -1,8 +1,9 @@
-import { promises as fs } from 'fs';
+import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { HttpHandler, ResourceStore } from '../../index';
+import * as rimraf from 'rimraf';
+import { HttpHandler, ResourceStore, RuntimeConfig } from '../../index';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
-import { RUNTIMECONFIG } from '../configs/Util';
+import { getRuntimeConfig } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
 describe('A server using a AuthenticatedFileResourceStore', (): void => {
@@ -11,21 +12,26 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
   let store: ResourceStore;
   let aclHelper: AclTestHelper;
   let fileHelper: FileTestHelper;
+  let runtimeConfig: RuntimeConfig;
 
-  beforeAll(
-    async(): Promise<void> => {
-      const { base, rootFilepath } = RUNTIMECONFIG;
-      config = new AuthenticatedFileResourceStoreConfig();
-      handler = config.getHttpHandler();
-      ({ store } = config);
-      aclHelper = new AclTestHelper(store, base);
-      fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
+  beforeAll(async(): Promise<void> => {
+    runtimeConfig = getRuntimeConfig('AuthenticatedFileResourceStore');
+    config = new AuthenticatedFileResourceStoreConfig(runtimeConfig);
+    const { base, rootFilepath } = runtimeConfig;
+    handler = config.getHttpHandler();
+    ({ store } = config);
+    aclHelper = new AclTestHelper(store, base);
+    fileHelper = new FileTestHelper(handler, new URL('http://test.com/'));
 
-      // Make sure the root directory exists
-      await fs.mkdir(rootFilepath, { recursive: true });
-      await fs.copyFile(join(__dirname, '../assets/permanent.txt'), `${rootFilepath}/permanent.txt`);
-    },
-  );
+    // Make sure the root directory exists
+    mkdirSync(rootFilepath, { recursive: true });
+    copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilepath}/permanent.txt`);
+  });
+
+  afterAll(async(): Promise<void> => {
+    rimraf.sync(runtimeConfig.rootFilepath, { glob: false });
+  });
+
   describe('with acl', (): void => {
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void
