@@ -46,6 +46,7 @@ module.exports = {
       }
     }],
     'unused-imports/no-unused-imports-ts': 'error',
-    'import/no-extraneous-dependencies': 'error'
+    'import/no-extraneous-dependencies': 'error',
+    'unicorn/import-index': 'off'
   },
 };
