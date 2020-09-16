@@ -151,7 +151,7 @@ export class FileResourceStore implements ResourceStore {
 
     // Break up the request URI in the different parts `containerPath` and `documentName` as we know their semantics
     // from addResource to call the InteractionController in the same way.
-    const { containerPath, documentName } = this.resourceMapper.exctractDocumentName(identifier);
+    const { containerPath, documentName } = this.resourceMapper.extractDocumentName(identifier);
     // eslint-disable-next-line no-param-reassign
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
     const raw = representation.metadata.quads();

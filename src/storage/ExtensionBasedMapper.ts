@@ -118,7 +118,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    *
    * @returns A ResourcePath object containing path and (optional) slug fields.
    */
-  public exctractDocumentName(identifier: ResourceIdentifier): ResourcePath {
+  public extractDocumentName(identifier: ResourceIdentifier): ResourcePath {
     const [ , containerPath, documentName ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
     if (
       (typeof containerPath !== 'string' || normalizePath(containerPath) === '/') && typeof documentName !== 'string') {
