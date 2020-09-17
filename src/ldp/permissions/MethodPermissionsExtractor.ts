@@ -1,6 +1,6 @@
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { Operation } from '../operations/Operation';
-import { PermissionSet } from './PermissionSet';
+import type { Operation } from '../operations/Operation';
+import type { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
 
 const READ_METHODS = new Set([ 'GET', 'HEAD' ]);

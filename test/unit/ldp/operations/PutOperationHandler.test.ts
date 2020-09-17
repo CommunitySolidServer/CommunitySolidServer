@@ -1,6 +1,6 @@
-import { Operation } from '../../../../src/ldp/operations/Operation';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PutOperationHandler } from '../../../../src/ldp/operations/PutOperationHandler';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A PutOperationHandler', (): void => {

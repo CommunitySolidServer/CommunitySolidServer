@@ -1,11 +1,11 @@
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'events';
 import streamifyArray from 'streamify-array';
-import { Patch } from '../../../src/ldp/http/Patch';
-import { Representation } from '../../../src/ldp/representation/Representation';
-import { Lock } from '../../../src/storage/Lock';
+import type { Patch } from '../../../src/ldp/http/Patch';
+import type { Representation } from '../../../src/ldp/representation/Representation';
+import type { Lock } from '../../../src/storage/Lock';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
-import { ResourceLocker } from '../../../src/storage/ResourceLocker';
-import { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ResourceLocker } from '../../../src/storage/ResourceLocker';
+import type { ResourceStore } from '../../../src/storage/ResourceStore';
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;

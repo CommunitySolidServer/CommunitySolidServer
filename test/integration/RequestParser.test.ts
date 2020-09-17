@@ -6,7 +6,7 @@ import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
 import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
-import { HttpRequest } from '../../src/server/HttpRequest';
+import type { HttpRequest } from '../../src/server/HttpRequest';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
   const targetExtractor = new BasicTargetExtractor();

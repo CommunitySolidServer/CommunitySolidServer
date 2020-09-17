@@ -1,8 +1,8 @@
-import { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
-import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
+import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { matchingMediaType } from '../../util/Util';
-import { RepresentationConverterArgs } from './RepresentationConverter';
+import type { RepresentationConverterArgs } from './RepresentationConverter';
 
 /**
  * Filters out the media types from the preferred types that correspond to one of the supported types.

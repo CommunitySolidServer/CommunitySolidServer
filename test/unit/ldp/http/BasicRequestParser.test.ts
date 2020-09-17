@@ -1,7 +1,7 @@
 import { BasicRequestParser } from '../../../../src/ldp/http/BasicRequestParser';
-import { BodyParser } from '../../../../src/ldp/http/BodyParser';
-import { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
-import { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
+import type { BodyParser } from '../../../../src/ldp/http/BodyParser';
+import type { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
+import type { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicRequestParser', (): void => {

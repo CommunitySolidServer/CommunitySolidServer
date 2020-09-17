@@ -1,13 +1,13 @@
-import { HttpRequest } from '../../server/HttpRequest';
+import type { HttpRequest } from '../../server/HttpRequest';
+import type { AcceptHeader } from '../../util/AcceptParser';
 import {
-  AcceptHeader,
   parseAccept,
   parseAcceptCharset,
   parseAcceptEncoding,
   parseAcceptLanguage,
 } from '../../util/AcceptParser';
-import { RepresentationPreference } from '../representation/RepresentationPreference';
-import { RepresentationPreferences } from '../representation/RepresentationPreferences';
+import type { RepresentationPreference } from '../representation/RepresentationPreference';
+import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import { PreferenceParser } from './PreferenceParser';
 
 /**
@@ -26,7 +26,7 @@ export class AcceptPreferenceParser extends PreferenceParser {
   public async handle(input: HttpRequest): Promise<RepresentationPreferences> {
     const result: RepresentationPreferences = {};
     const headers:
-    { [T in keyof RepresentationPreferences]: { val?: string; func: (input: string) => AcceptHeader[] }} = {
+    { [T in keyof RepresentationPreferences]: { val?: string; func: (inp: string) => AcceptHeader[] }} = {
       type: { val: input.headers.accept, func: parseAccept },
       charset: { val: input.headers['accept-charset'] as string, func: parseAcceptCharset },
       encoding: { val: input.headers['accept-encoding'] as string, func: parseAcceptEncoding },

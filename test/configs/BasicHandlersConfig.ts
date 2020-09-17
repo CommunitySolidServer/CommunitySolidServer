@@ -1,20 +1,20 @@
+import type { HttpHandler,
+  ResourceStore } from '../../index';
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   BasicResponseWriter,
   CompositeAsyncHandler,
-  HttpHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
   RdfToQuadConverter,
-  ResourceStore,
   SparqlUpdateBodyParser,
   SparqlPatchPermissionsExtractor,
   UnsecureWebIdExtractor,
 } from '../../index';
 
-import { ServerConfig } from './ServerConfig';
+import type { ServerConfig } from './ServerConfig';
 import { getInMemoryResourceStore,
   getOperationHandler,
   getConvertingStore,

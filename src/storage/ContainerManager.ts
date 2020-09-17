@@ -1,4 +1,4 @@
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
  * Handles the identification of containers in which a resource is contained.

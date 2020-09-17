@@ -1,8 +1,8 @@
-import { ResourceStore } from '../../storage/ResourceStore';
+import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { Operation } from './Operation';
+import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import { ResponseDescription } from './ResponseDescription';
+import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handles GET {@link Operation}s.

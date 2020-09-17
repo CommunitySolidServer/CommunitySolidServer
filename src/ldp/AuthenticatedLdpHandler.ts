@@ -1,16 +1,16 @@
-import { Credentials } from '../authentication/Credentials';
-import { CredentialsExtractor } from '../authentication/CredentialsExtractor';
-import { Authorizer } from '../authorization/Authorizer';
+import type { Credentials } from '../authentication/Credentials';
+import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
+import type { Authorizer } from '../authorization/Authorizer';
 import { HttpHandler } from '../server/HttpHandler';
-import { HttpRequest } from '../server/HttpRequest';
-import { HttpResponse } from '../server/HttpResponse';
-import { RequestParser } from './http/RequestParser';
-import { ResponseWriter } from './http/ResponseWriter';
-import { Operation } from './operations/Operation';
-import { OperationHandler } from './operations/OperationHandler';
-import { ResponseDescription } from './operations/ResponseDescription';
-import { PermissionSet } from './permissions/PermissionSet';
-import { PermissionsExtractor } from './permissions/PermissionsExtractor';
+import type { HttpRequest } from '../server/HttpRequest';
+import type { HttpResponse } from '../server/HttpResponse';
+import type { RequestParser } from './http/RequestParser';
+import type { ResponseWriter } from './http/ResponseWriter';
+import type { Operation } from './operations/Operation';
+import type { OperationHandler } from './operations/OperationHandler';
+import type { ResponseDescription } from './operations/ResponseDescription';
+import type { PermissionSet } from './permissions/PermissionSet';
+import type { PermissionsExtractor } from './permissions/PermissionsExtractor';
 
 /**
  * Collection of handlers needed for {@link AuthenticatedLdpHandler} to function.
@@ -91,8 +91,12 @@ export class AuthenticatedLdpHandler extends HttpHandler {
 
     try {
       writeData = { response: input.response, result: await this.runHandlers(input.request) };
-    } catch (error) {
-      writeData = { response: input.response, result: error };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        writeData = { response: input.response, result: error };
+      } else {
+        throw error;
+      }
     }
 
     await this.responseWriter.handleSafe(writeData);

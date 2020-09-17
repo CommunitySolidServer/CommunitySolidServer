@@ -1,13 +1,13 @@
 import { PassThrough } from 'stream';
 import { translate } from 'sparqlalgebrajs';
-import { HttpRequest } from '../../server/HttpRequest';
+import type { HttpRequest } from '../../server/HttpRequest';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { readableToString } from '../../util/Util';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
-import { SparqlUpdatePatch } from './SparqlUpdatePatch';
+import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
 
 /**
  * {@link BodyParser} that supports `application/sparql-update` content.
@@ -44,8 +44,11 @@ export class SparqlUpdateBodyParser extends BodyParser {
         data: dataCopy,
         metadata,
       };
-    } catch (error) {
-      throw new UnsupportedHttpError(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new UnsupportedHttpError(error.message);
+      }
+      throw new UnsupportedHttpError();
     }
   }
 }

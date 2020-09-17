@@ -1,5 +1,5 @@
 import { Setup } from '../../../src/init/Setup';
-import { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 
 describe('Setup', (): void => {
   let httpServer: any;

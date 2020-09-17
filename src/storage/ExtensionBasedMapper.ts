@@ -1,11 +1,11 @@
 import { posix } from 'path';
 import { types } from 'mime-types';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../util/Util';
-import { FileIdentifierMapper } from './FileIdentifierMapper';
+import type { FileIdentifierMapper } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 

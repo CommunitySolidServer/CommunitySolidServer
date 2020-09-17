@@ -1,8 +1,9 @@
 import * as Path from 'path';
-import { ReadStream, WriteStream } from 'tty';
-import { Loader, LoaderProperties } from 'componentsjs';
+import type { ReadStream, WriteStream } from 'tty';
+import type { LoaderProperties } from 'componentsjs';
+import { Loader } from 'componentsjs';
 import yargs from 'yargs';
-import { Setup } from './Setup';
+import type { Setup } from './Setup';
 
 /**
  * Generic run function for starting the server from a given config
@@ -43,7 +44,7 @@ export const runCustom = function(
           'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
           'urn:solid-server:default:variable:rootFilePath': process.cwd(),
         },
-      });
+      }) as Setup;
     return await setup.setup();
   })().then((base: string): void => {
     stdout.write(`Running at ${base}\n`);

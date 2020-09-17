@@ -1,6 +1,6 @@
-import { Credentials } from '../authentication/Credentials';
-import { PermissionSet } from '../ldp/permissions/PermissionSet';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Credentials } from '../authentication/Credentials';
+import type { PermissionSet } from '../ldp/permissions/PermissionSet';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { AsyncHandler } from '../util/AsyncHandler';
 
 /**

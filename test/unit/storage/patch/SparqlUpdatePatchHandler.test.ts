@@ -3,12 +3,12 @@ import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'rdf-js';
 import { translate } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
-import { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
+import type { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { Lock } from '../../../../src/storage/Lock';
+import type { Lock } from '../../../../src/storage/Lock';
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
-import { ResourceLocker } from '../../../../src/storage/ResourceLocker';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceLocker } from '../../../../src/storage/ResourceLocker';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
@@ -84,7 +84,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     const input = { identifier: { path: 'path' },
       patch: { algebra: {}} as SparqlUpdatePatch };
     await expect(handler.canHandle(input)).resolves.toBeUndefined();
-    delete input.patch.algebra;
+    delete (input.patch as any).algebra;
     await expect(handler.canHandle(input)).rejects.toThrow(UnsupportedHttpError);
   });
 

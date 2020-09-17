@@ -1,17 +1,19 @@
-import { Quad, Store, Term } from 'n3';
-import { Credentials } from '../authentication/Credentials';
-import { PermissionSet } from '../ldp/permissions/PermissionSet';
-import { Representation } from '../ldp/representation/Representation';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { ContainerManager } from '../storage/ContainerManager';
-import { ResourceStore } from '../storage/ResourceStore';
+import type { Quad, Term } from 'n3';
+import { Store } from 'n3';
+import type { Credentials } from '../authentication/Credentials';
+import type { PermissionSet } from '../ldp/permissions/PermissionSet';
+import type { Representation } from '../ldp/representation/Representation';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ContainerManager } from '../storage/ContainerManager';
+import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import { ACL, FOAF } from '../util/UriConstants';
-import { AclManager } from './AclManager';
-import { Authorizer, AuthorizerArgs } from './Authorizer';
+import type { AclManager } from './AclManager';
+import type { AuthorizerArgs } from './Authorizer';
+import { Authorizer } from './Authorizer';
 
 /**
  * Handles most web access control predicates such as
@@ -113,7 +115,7 @@ export class WebAclAuthorizer extends Authorizer {
       const acl = await this.aclManager.getAcl(id);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
       return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
-    } catch (error) {
+    } catch (error: unknown) {
       if (!(error instanceof NotFoundHttpError)) {
         throw error;
       }

@@ -1,11 +1,12 @@
-import fs, { promises as fsPromises, Stats, WriteStream } from 'fs';
+import type { Stats, WriteStream } from 'fs';
+import fs, { promises as fsPromises } from 'fs';
 import { posix } from 'path';
 import { Readable } from 'stream';
 import { literal, namedNode, quad as quadRDF } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import streamifyArray from 'streamify-array';
-import { Representation } from '../../../src/ldp/representation/Representation';
+import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
 import { FileResourceStore } from '../../../src/storage/FileResourceStore';
@@ -60,8 +61,8 @@ describe('A FileResourceStore', (): void => {
     };
 
     stats = {
-      isDirectory: jest.fn((): any => false) as Function,
-      isFile: jest.fn((): any => false) as Function,
+      isDirectory: jest.fn((): any => false) as any,
+      isFile: jest.fn((): any => false) as any,
       mtime: new Date(),
       size: 5,
     } as jest.Mocked<Stats>;
@@ -72,11 +73,11 @@ describe('A FileResourceStore', (): void => {
           func();
         }
         return writeStream;
-      }) as Function,
-      once: jest.fn((): any => writeStream) as Function,
-      emit: jest.fn((): any => true) as Function,
-      write: jest.fn((): any => true) as Function,
-      end: jest.fn() as Function,
+      }) as any,
+      once: jest.fn((): any => writeStream) as any,
+      emit: jest.fn((): any => true) as any,
+      write: jest.fn((): any => true) as any,
+      end: jest.fn() as any,
     } as jest.Mocked<WriteStream>;
     (fs.createWriteStream as jest.Mock).mockReturnValue(writeStream);
 
@@ -86,8 +87,8 @@ describe('A FileResourceStore', (): void => {
           func();
         }
         return readableMock;
-      }) as Function,
-      pipe: jest.fn((): any => readableMock) as Function,
+      }) as any,
+      pipe: jest.fn((): any => readableMock) as any,
     } as jest.Mocked<Readable>;
   });
 

@@ -1,13 +1,13 @@
+import type { HttpHandler,
+  ResourceStore } from '../../index';
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   BasicResponseWriter,
-  HttpHandler,
   MethodPermissionsExtractor,
-  ResourceStore,
   UnsecureWebIdExtractor,
 } from '../../index';
-import { ServerConfig } from './ServerConfig';
+import type { ServerConfig } from './ServerConfig';
 import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser } from './Util';
 
 /**

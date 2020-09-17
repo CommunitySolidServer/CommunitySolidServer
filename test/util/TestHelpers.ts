@@ -1,14 +1,16 @@
 import { EventEmitter } from 'events';
 import { promises as fs } from 'fs';
-import { IncomingHttpHeaders } from 'http';
+import type { IncomingHttpHeaders } from 'http';
 import { join } from 'path';
 import * as url from 'url';
-import { createResponse, MockResponse } from 'node-mocks-http';
+import type { MockResponse } from 'node-mocks-http';
+import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
-import { RepresentationMetadata, ResourceStore } from '../../index';
-import { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
-import { HttpHandler } from '../../src/server/HttpHandler';
-import { HttpRequest } from '../../src/server/HttpRequest';
+import type { ResourceStore } from '../../index';
+import { RepresentationMetadata } from '../../index';
+import type { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
+import type { HttpHandler } from '../../src/server/HttpHandler';
+import type { HttpRequest } from '../../src/server/HttpRequest';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { call } from './Util';
 

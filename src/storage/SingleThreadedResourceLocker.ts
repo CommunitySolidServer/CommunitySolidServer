@@ -1,7 +1,7 @@
 import AsyncLock from 'async-lock';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { Lock } from './Lock';
-import { ResourceLocker } from './ResourceLocker';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Lock } from './Lock';
+import type { ResourceLocker } from './ResourceLocker';
 
 /**
  * A resource locker making use of the `async-lock` library.

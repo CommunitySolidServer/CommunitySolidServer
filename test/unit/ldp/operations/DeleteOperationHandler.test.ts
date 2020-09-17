@@ -1,6 +1,6 @@
 import { DeleteOperationHandler } from '../../../../src/ldp/operations/DeleteOperationHandler';
-import { Operation } from '../../../../src/ldp/operations/Operation';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A DeleteOperationHandler', (): void => {

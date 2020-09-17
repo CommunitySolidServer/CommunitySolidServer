@@ -24,9 +24,13 @@ module.exports = {
     }
   },
   rules: {
+    '@typescript-eslint/lines-between-class-members': [ 'error', { exceptAfterSingleLine: true }],
+    '@typescript-eslint/naming-convention': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-invalid-void-type': 'off', // breaks with default void in Asynchandler 2nd generic
     '@typescript-eslint/no-unnecessary-condition': 'off', // problems with optional parameters
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
+    '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',
     'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
     'comma-dangle': ['error', 'always-multiline'],
@@ -39,7 +43,10 @@ module.exports = {
     'padding-line-between-statements': 'off',
     'prefer-named-capture-group': 'off',
     'tsdoc/syntax': 'error',
+    'unicorn/catch-error-name': 'off',
+    'unicorn/import-index': 'off',
     'unicorn/no-fn-reference-in-iterator': 'off', // this prevents some functional programming paradigms
+    'unicorn/no-object-as-default-parameter': 'off',
 
     // Import
     'sort-imports': 'off', // Disabled in favor of eslint-plugin-import
@@ -49,8 +56,9 @@ module.exports = {
         caseInsensitive: true
       }
     }],
-    'unused-imports/no-unused-imports-ts': 'error',
+    'import/no-duplicates': 'error',
     'import/no-extraneous-dependencies': 'error',
-    'unicorn/import-index': 'off'
+    'no-duplicate-imports': 'off', // doesn't work with type imports
+    'unused-imports/no-unused-imports-ts': 'error'
   },
 };

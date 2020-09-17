@@ -1,9 +1,9 @@
-import { Patch } from '../ldp/http/Patch';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { Conditions } from './Conditions';
+import type { Patch } from '../ldp/http/Patch';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
-import { PatchHandler } from './patch/PatchHandler';
-import { ResourceStore } from './ResourceStore';
+import type { PatchHandler } from './patch/PatchHandler';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * {@link ResourceStore} using decorator pattern for the `modifyResource` function.
@@ -21,7 +21,7 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
-    } catch (error) {
+    } catch {
       return this.patcher.handleSafe({ identifier, patch });
     }
   }

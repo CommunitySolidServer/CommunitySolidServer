@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
-import { createResponse, MockResponse } from 'node-mocks-http';
+import type { MockResponse } from 'node-mocks-http';
+import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
-import { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
+import type { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';

@@ -1,5 +1,5 @@
-import { HttpHandler } from '../../src/server/HttpHandler';
+import type { HttpHandler } from '../../src/server/HttpHandler';
 
 export interface ServerConfig {
-  getHttpHandler(): HttpHandler;
+  getHttpHandler: () => HttpHandler;
 }

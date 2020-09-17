@@ -1,7 +1,8 @@
-import { Server } from 'http';
+import type { Server } from 'http';
 import cors from 'cors';
-import express, { Express } from 'express';
-import { HttpHandler } from './HttpHandler';
+import type { Express } from 'express';
+import express from 'express';
+import type { HttpHandler } from './HttpHandler';
 
 export class ExpressHttpServer {
   private readonly handler: HttpHandler;
@@ -35,8 +36,8 @@ export class ExpressHttpServer {
     app.use(async(request, response, done): Promise<void> => {
       try {
         await this.handler.handleSafe({ request, response });
-      } catch (error) {
-        const errMsg = `${error.name}: ${error.message}\n${error.stack}`;
+      } catch (error: unknown) {
+        const errMsg = error instanceof Error ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';
         process.stderr.write(errMsg);
         response.status(500).contentType('text/plain').send(errMsg);
       } finally {

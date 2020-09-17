@@ -1,7 +1,7 @@
-import { Patch } from '../../../src/ldp/http/Patch';
-import { PatchHandler } from '../../../src/storage/patch/PatchHandler';
+import type { Patch } from '../../../src/ldp/http/Patch';
+import type { PatchHandler } from '../../../src/storage/patch/PatchHandler';
 import { PatchingStore } from '../../../src/storage/PatchingStore';
-import { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../src/storage/ResourceStore';
 
 describe('A PatchingStore', (): void => {
   let store: PatchingStore;

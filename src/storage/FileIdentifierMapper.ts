@@ -1,4 +1,4 @@
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
  * Supports mapping a file to an URL and back.

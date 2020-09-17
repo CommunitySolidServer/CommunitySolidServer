@@ -1,13 +1,14 @@
-import { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
-import { Authorizer } from '../../../src/authorization/Authorizer';
-import { AuthenticatedLdpHandler, AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
-import { RequestParser } from '../../../src/ldp/http/RequestParser';
-import { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
-import { Operation } from '../../../src/ldp/operations/Operation';
-import { OperationHandler } from '../../../src/ldp/operations/OperationHandler';
-import { PermissionsExtractor } from '../../../src/ldp/permissions/PermissionsExtractor';
-import { HttpRequest } from '../../../src/server/HttpRequest';
-import { HttpResponse } from '../../../src/server/HttpResponse';
+import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
+import type { Authorizer } from '../../../src/authorization/Authorizer';
+import type { AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
+import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandler';
+import type { RequestParser } from '../../../src/ldp/http/RequestParser';
+import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
+import type { Operation } from '../../../src/ldp/operations/Operation';
+import type { OperationHandler } from '../../../src/ldp/operations/OperationHandler';
+import type { PermissionsExtractor } from '../../../src/ldp/permissions/PermissionsExtractor';
+import type { HttpRequest } from '../../../src/server/HttpRequest';
+import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('An AuthenticatedLdpHandler', (): void => {
@@ -66,5 +67,14 @@ describe('An AuthenticatedLdpHandler', (): void => {
     const handler = new AuthenticatedLdpHandler(args);
 
     await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toThrow(Error);
+  });
+
+  it('errors an invalid object was thrown by a handler.', async(): Promise< void> => {
+    args.authorizer.handle = async(): Promise<void> => {
+      throw 'apple';
+    };
+    const handler = new AuthenticatedLdpHandler(args);
+
+    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toEqual('apple');
   });
 });

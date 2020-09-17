@@ -1,6 +1,6 @@
-import { HttpRequest } from '../server/HttpRequest';
+import type { HttpRequest } from '../server/HttpRequest';
 import { AsyncHandler } from '../util/AsyncHandler';
-import { Credentials } from './Credentials';
+import type { Credentials } from './Credentials';
 
 /**
  * Responsible for extracting credentials from an incoming request.

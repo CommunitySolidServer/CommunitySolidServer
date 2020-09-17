@@ -1,7 +1,7 @@
 import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
-import { HttpHandler, ResourceStore } from '../../index';
+import type { HttpHandler, ResourceStore } from '../../index';
 import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { BASE, getRootFilePath } from '../configs/Util';

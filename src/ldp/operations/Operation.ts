@@ -1,6 +1,6 @@
-import { Representation } from '../representation/Representation';
-import { RepresentationPreferences } from '../representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../representation/ResourceIdentifier';
+import type { Representation } from '../representation/Representation';
+import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
 /**
  * A single REST operation.

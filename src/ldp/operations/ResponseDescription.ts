@@ -1,5 +1,5 @@
-import { Representation } from '../representation/Representation';
-import { ResourceIdentifier } from '../representation/ResourceIdentifier';
+import type { Representation } from '../representation/Representation';
+import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
 /**
  * The result of executing an operation.

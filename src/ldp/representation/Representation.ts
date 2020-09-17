@@ -1,5 +1,5 @@
-import { Readable } from 'stream';
-import { RepresentationMetadata } from './RepresentationMetadata';
+import type { Readable } from 'stream';
+import type { RepresentationMetadata } from './RepresentationMetadata';
 
 /**
  * A representation of a resource.

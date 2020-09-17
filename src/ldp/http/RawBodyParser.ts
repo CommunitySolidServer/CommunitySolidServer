@@ -1,7 +1,7 @@
-import { HttpRequest } from '../../server/HttpRequest';
+import type { HttpRequest } from '../../server/HttpRequest';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE, HTTP, RDF } from '../../util/UriConstants';
-import { Representation } from '../representation/Representation';
+import type { Representation } from '../representation/Representation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import { BodyParser } from './BodyParser';
 

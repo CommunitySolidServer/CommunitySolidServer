@@ -1,7 +1,7 @@
-import { Operation } from '../../../../src/ldp/operations/Operation';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PostOperationHandler } from '../../../../src/ldp/operations/PostOperationHandler';
-import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A PostOperationHandler', (): void => {

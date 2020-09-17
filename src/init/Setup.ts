@@ -1,8 +1,8 @@
 import streamifyArray from 'streamify-array';
-import { AclManager } from '../authorization/AclManager';
+import type { AclManager } from '../authorization/AclManager';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import { ExpressHttpServer } from '../server/ExpressHttpServer';
-import { ResourceStore } from '../storage/ResourceStore';
+import type { ExpressHttpServer } from '../server/ExpressHttpServer';
+import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { CONTENT_TYPE } from '../util/UriConstants';
 

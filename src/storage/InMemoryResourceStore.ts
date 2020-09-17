@@ -1,14 +1,14 @@
 import { PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
-import { Representation } from '../ldp/representation/Representation';
+import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { CONTENT_TYPE } from '../util/UriConstants';
 import { ensureTrailingSlash } from '../util/Util';
-import { ResourceStore } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * Resource store storing its data in an in-memory map.
@@ -133,10 +133,9 @@ export class InMemoryResourceStore implements ResourceStore {
    * @param source - Incoming Representation.
    */
   private async copyRepresentation(source: Representation): Promise<Representation> {
-    const arr = await arrayifyStream(source.data);
     return {
       binary: source.binary,
-      data: streamifyArray([ ...arr ]),
+      data: streamifyArray(await arrayifyStream(source.data)),
       metadata: source.metadata,
     };
   }

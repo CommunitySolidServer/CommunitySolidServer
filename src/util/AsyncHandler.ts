@@ -9,7 +9,7 @@ export abstract class AsyncHandler<TInput, TOutput = void> {
    *
    * @returns A promise resolving if this input can be handled, rejecting with an Error if not.
    */
-  public abstract canHandle (input: TInput): Promise<void>;
+  public abstract canHandle(input: TInput): Promise<void>;
 
   /**
    * Handles the given input. This should only be done if the {@link canHandle} function returned `true`.
@@ -17,7 +17,7 @@ export abstract class AsyncHandler<TInput, TOutput = void> {
    *
    * @returns A promise resolving when the handling is finished. Return value depends on the given type.
    */
-  public abstract handle (input: TInput): Promise<TOutput>;
+  public abstract handle(input: TInput): Promise<TOutput>;
 
   /**
    * Helper function that first runs the canHandle function followed by the handle function.

@@ -1,4 +1,4 @@
-import { Readable, Writable } from 'stream';
+import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 

@@ -1,5 +1,5 @@
-import { HttpRequest } from '../server/HttpRequest';
-import { Credentials } from './Credentials';
+import type { HttpRequest } from '../server/HttpRequest';
+import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 /**

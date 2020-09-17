@@ -2,7 +2,7 @@ import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { RawBodyParser } from '../../../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { HttpRequest } from '../../../../src/server/HttpRequest';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import 'jest-rdf';
 import { HTTP, RDF } from '../../../../src/util/UriConstants';

@@ -1,11 +1,11 @@
-import { Representation } from '../ldp/representation/Representation';
-import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../ldp/representation/Representation';
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { matchingMediaType } from '../util/Util';
-import { Conditions } from './Conditions';
-import { RepresentationConverter } from './conversion/RepresentationConverter';
+import type { Conditions } from './Conditions';
+import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
-import { ResourceStore } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * Store that overrides the `getRepresentation` function.

@@ -1,24 +1,25 @@
-import { createReadStream, createWriteStream, promises as fsPromises, Stats } from 'fs';
+import type { Stats } from 'fs';
+import { createReadStream, createWriteStream, promises as fsPromises } from 'fs';
 import { posix } from 'path';
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
-import { Representation } from '../ldp/representation/Representation';
+import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTypeHttpError';
-import { InteractionController } from '../util/InteractionController';
-import { MetadataController } from '../util/MetadataController';
+import type { InteractionController } from '../util/InteractionController';
+import type { MetadataController } from '../util/MetadataController';
 import { CONTENT_TYPE, DCTERMS, HTTP, POSIX, RDF, XSD } from '../util/UriConstants';
 import { getTypedLiteral } from '../util/UriUtil';
 import { ensureTrailingSlash } from '../util/Util';
-import { ExtensionBasedMapper } from './ExtensionBasedMapper';
-import { ResourceStore } from './ResourceStore';
+import type { ExtensionBasedMapper } from './ExtensionBasedMapper';
+import type { ResourceStore } from './ResourceStore';
 
 const { join: joinPath } = posix;
 
@@ -91,7 +92,7 @@ export class FileResourceStore implements ResourceStore {
     let stats;
     try {
       stats = await fsPromises.lstat(path);
-    } catch (error) {
+    } catch {
       throw new NotFoundHttpError();
     }
 
@@ -118,7 +119,7 @@ export class FileResourceStore implements ResourceStore {
     let stats;
     try {
       stats = await fsPromises.lstat(path);
-    } catch (error) {
+    } catch {
       throw new NotFoundHttpError();
     }
 
@@ -179,7 +180,7 @@ export class FileResourceStore implements ResourceStore {
     // Only delete the metadata file as auxiliary resource because this is the only file created by this store.
     try {
       await fsPromises.unlink(`${path}.metadata`);
-    } catch (_) {
+    } catch {
       // It's ok if there was no metadata file.
     }
   }
@@ -198,7 +199,7 @@ export class FileResourceStore implements ResourceStore {
     // Only delete the metadata file as auxiliary resource because this is the only file created by this store.
     try {
       await fsPromises.unlink(joinPath(path, '.metadata'));
-    } catch (_) {
+    } catch {
       // It's ok if there was no metadata file.
     }
 
@@ -220,7 +221,7 @@ export class FileResourceStore implements ResourceStore {
     try {
       const readMetadataStream = createReadStream(`${path}.metadata`);
       rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
-    } catch (_) {
+    } catch {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
     const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path)).addQuads(rawMetadata)
@@ -253,7 +254,7 @@ export class FileResourceStore implements ResourceStore {
     try {
       const readMetadataStream = createReadStream(joinPath(path, '.metadata'));
       rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
-    } catch (_) {
+    } catch {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
 
@@ -289,7 +290,7 @@ export class FileResourceStore implements ResourceStore {
 
         quads.push(...this.metadataController.generateResourceQuads(childURI, childStats));
         childURIs.push(childURI);
-      } catch (_) {
+      } catch {
         // Skip the child if there is an error.
       }
     }
@@ -314,7 +315,7 @@ export class FileResourceStore implements ResourceStore {
       stats = await fsPromises.lstat(
         this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
-    } catch (error) {
+    } catch {
       await this.createFile(path, newIdentifier, data, true, metadata);
       return;
     }
@@ -338,7 +339,7 @@ export class FileResourceStore implements ResourceStore {
         this.resourceMapper.getAbsolutePath(path, newIdentifier),
       );
       throw new ConflictHttpError('Resource with that identifier already exists.');
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ConflictHttpError) {
         throw error;
       }
@@ -369,7 +370,7 @@ export class FileResourceStore implements ResourceStore {
     let stats;
     try {
       stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
-    } catch (error) {
+    } catch {
       throw new MethodNotAllowedHttpError();
     }
 
@@ -387,7 +388,7 @@ export class FileResourceStore implements ResourceStore {
         const fullPath = this.resourceMapper.getAbsolutePath(path, resourceName);
         await this.createDataFile(fullPath, data);
         return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
-      } catch (error) {
+      } catch (error: unknown) {
         // Normal file has not been created so we don't want the metadata file to remain.
         await fsPromises.unlink(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`));
         throw error;
@@ -417,7 +418,7 @@ export class FileResourceStore implements ResourceStore {
         }
       }
       await fsPromises.mkdir(fullPath, { recursive: allowRecursiveCreation });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof MethodNotAllowedHttpError) {
         throw error;
       }
@@ -429,7 +430,7 @@ export class FileResourceStore implements ResourceStore {
     if (metadata) {
       try {
         await this.createDataFile(joinPath(fullPath, '.metadata'), metadata);
-      } catch (error) {
+      } catch (error: unknown) {
         // Failed to create the metadata file so remove the created directory.
         await fsPromises.rmdir(fullPath);
         throw error;
