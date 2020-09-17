@@ -13,13 +13,13 @@ import { pipeStreamsAndErrors } from './Util';
 export class MetadataController {
   /**
    * Helper function to generate quads for a Container or Resource.
-   * @param URI - The URI for which the quads should be generated.
+   * @param uri - The URI for which the quads should be generated.
    * @param stats - The Stats of the subject.
    *
    * @returns The generated quads.
    */
-  public generateResourceQuads(URI: string, stats: Stats): Quad[] {
-    const metadata = new RepresentationMetadata(URI);
+  public generateResourceQuads(uri: string, stats: Stats): Quad[] {
+    const metadata = new RepresentationMetadata(uri);
     if (stats.isDirectory()) {
       metadata.add(RDF.type, getNamedNode(LDP.Container));
       metadata.add(RDF.type, getNamedNode(LDP.BasicContainer));

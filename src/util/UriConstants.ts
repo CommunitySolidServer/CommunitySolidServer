@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 const createSuffixFn = (prefix: string): ((suf: string) => string) => (suffix: string): string => `${prefix}${suffix}`;
 
 const ACL_PREFIX = createSuffixFn('http://www.w3.org/ns/auth/acl#');
