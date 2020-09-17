@@ -1,9 +1,10 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import { Algebra } from 'sparqlalgebrajs';
+import * as algebra from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
 import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBodyParser';
-import { HttpRequest } from '../../../../src/server/HttpRequest';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 
@@ -21,6 +22,16 @@ describe('A SparqlUpdateBodyParser', (): void => {
   it('errors when handling invalid SPARQL updates.', async(): Promise<void> => {
     await expect(bodyParser.handle(streamifyArray([ 'VERY INVALID UPDATE' ]) as HttpRequest))
       .rejects.toThrow(UnsupportedHttpError);
+  });
+
+  it('errors when receiving an unexpected error.', async(): Promise<void> => {
+    const mock = jest.spyOn(algebra, 'translate').mockImplementationOnce((): any => {
+      throw 'apple';
+    });
+    await expect(bodyParser.handle(streamifyArray(
+      [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o>}' ],
+    ) as HttpRequest)).rejects.toThrow(UnsupportedHttpError);
+    mock.mockRestore();
   });
 
   it('converts SPARQL updates to algebra.', async(): Promise<void> => {

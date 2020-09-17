@@ -1,6 +1,6 @@
-import { HttpRequest } from '../../server/HttpRequest';
+import type { HttpRequest } from '../../server/HttpRequest';
 import { AsyncHandler } from '../../util/AsyncHandler';
-import { Operation } from '../operations/Operation';
+import type { Operation } from '../operations/Operation';
 
 /**
  * Converts an incoming HttpRequest to an Operation.

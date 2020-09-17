@@ -1,6 +1,6 @@
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { ensureTrailingSlash } from '../util/Util';
-import { ContainerManager } from './ContainerManager';
+import type { ContainerManager } from './ContainerManager';
 
 /**
  * Determines containers based on URL decomposition.

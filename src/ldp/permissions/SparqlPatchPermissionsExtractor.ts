@@ -1,9 +1,9 @@
 import { Algebra } from 'sparqlalgebrajs';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
-import { Operation } from '../operations/Operation';
-import { Representation } from '../representation/Representation';
-import { PermissionSet } from './PermissionSet';
+import type { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
+import type { Operation } from '../operations/Operation';
+import type { Representation } from '../representation/Representation';
+import type { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
 
 /**

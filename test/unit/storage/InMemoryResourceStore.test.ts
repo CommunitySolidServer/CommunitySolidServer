@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import streamifyArray from 'streamify-array';
-import { Representation } from '../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import type { Representation } from '../../../src/ldp/representation/Representation';
+import type { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryResourceStore } from '../../../src/storage/InMemoryResourceStore';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { readableToString } from '../../../src/util/Util';

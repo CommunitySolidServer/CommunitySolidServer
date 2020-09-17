@@ -1,5 +1,5 @@
 import streamifyArray from 'streamify-array';
-import { Representation } from '../../src/ldp/representation/Representation';
+import type { Representation } from '../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';

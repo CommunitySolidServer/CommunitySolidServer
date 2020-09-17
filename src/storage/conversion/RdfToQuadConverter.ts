@@ -1,12 +1,12 @@
 import { PassThrough } from 'stream';
 import rdfParser from 'rdf-parse';
-import { Representation } from '../../ldp/representation/Representation';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { pipeStreamsAndErrors } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
-import { RepresentationConverterArgs } from './RepresentationConverter';
+import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**

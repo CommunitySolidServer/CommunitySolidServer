@@ -1,7 +1,7 @@
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
+import type { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
-import { ResourceStore } from '../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { CONTENT_TYPE } from '../../../src/util/UriConstants';
 
 describe('A RepresentationConvertingStore', (): void => {

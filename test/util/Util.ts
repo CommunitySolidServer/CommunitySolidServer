@@ -1,9 +1,10 @@
 import { EventEmitter } from 'events';
-import { IncomingHttpHeaders } from 'http';
-import { createResponse, MockResponse } from 'node-mocks-http';
+import type { IncomingHttpHeaders } from 'http';
+import type { MockResponse } from 'node-mocks-http';
+import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
-import { HttpHandler } from '../../src/server/HttpHandler';
-import { HttpRequest } from '../../src/server/HttpRequest';
+import type { HttpHandler } from '../../src/server/HttpHandler';
+import type { HttpRequest } from '../../src/server/HttpRequest';
 
 export const call = async(
   handler: HttpHandler,

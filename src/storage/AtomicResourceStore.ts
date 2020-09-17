@@ -1,4 +1,4 @@
-import { ResourceStore } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * A {@link ResourceStore} of which all operations are atomic.

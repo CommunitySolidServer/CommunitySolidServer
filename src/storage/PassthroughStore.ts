@@ -1,9 +1,9 @@
-import { Patch } from '../ldp/http/Patch';
-import { Representation } from '../ldp/representation/Representation';
-import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { Conditions } from './Conditions';
-import { ResourceStore } from './ResourceStore';
+import type { Patch } from '../ldp/http/Patch';
+import type { Representation } from '../ldp/representation/Representation';
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Conditions } from './Conditions';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * Store that calls the corresponding functions of the source Store.

@@ -1,6 +1,6 @@
-import { Operation } from '../../../../src/ldp/operations/Operation';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PatchOperationHandler } from '../../../../src/ldp/operations/PatchOperationHandler';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A PatchOperationHandler', (): void => {

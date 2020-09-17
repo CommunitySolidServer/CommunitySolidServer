@@ -1,10 +1,10 @@
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
-import { Representation } from '../../../../src/ldp/representation/Representation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToTurtleConverter } from '../../../../src/storage/conversion/QuadToTurtleConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';

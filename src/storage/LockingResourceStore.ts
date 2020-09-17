@@ -1,12 +1,12 @@
-import { Readable } from 'stream';
-import { Patch } from '../ldp/http/Patch';
-import { Representation } from '../ldp/representation/Representation';
-import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { AtomicResourceStore } from './AtomicResourceStore';
-import { Conditions } from './Conditions';
-import { ResourceLocker } from './ResourceLocker';
-import { ResourceStore } from './ResourceStore';
+import type { Readable } from 'stream';
+import type { Patch } from '../ldp/http/Patch';
+import type { Representation } from '../ldp/representation/Representation';
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { AtomicResourceStore } from './AtomicResourceStore';
+import type { Conditions } from './Conditions';
+import type { ResourceLocker } from './ResourceLocker';
+import type { ResourceStore } from './ResourceStore';
 
 /** Time in ms after which reading a representation times out, causing the lock to be released. */
 const READ_TIMEOUT = 1000;

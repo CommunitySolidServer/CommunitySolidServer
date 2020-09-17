@@ -104,7 +104,7 @@ const transformQuotedStrings = (input: string): { result: string; replacements: 
   const replacements: { [id: string]: string } = {};
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
-    if (!/^"(?:[\t !\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|(?:\\[\t\u0020-\u007e\u0080-\u00ff]))*"$/u.test(match)) {
+    if (!/^"(?:[\t !\u0023-\u005B\u005D-\u007E\u0080-\u00FF]|(?:\\[\t\u0020-\u007E\u0080-\u00FF]))*"$/u.test(match)) {
       throw new UnsupportedHttpError(
         `Invalid quoted string in Accept header: ${match}. Check which characters are allowed`,
       );
@@ -179,7 +179,7 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
       // Extension parameters appear after the q value
       map = extensionParams;
       testQValue(param);
-      weight = parseFloat(value);
+      weight = Number.parseFloat(value);
     } else {
       // Test replaced string for easier check
       // parameter  = token "=" ( token / quoted-string )
@@ -229,7 +229,7 @@ const parseNoParameters = (input: string): { range: string; weight: number }[] =
     const result = { range, weight: 1 };
     if (qvalue) {
       testQValue(qvalue);
-      result.weight = parseFloat(qvalue.split('=')[1]);
+      result.weight = Number.parseFloat(qvalue.split('=')[1]);
     }
     return result;
   }).sort((left, right): number => right.weight - left.weight);

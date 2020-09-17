@@ -1,9 +1,9 @@
-import { ResourceStore } from '../../storage/ResourceStore';
+import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { Patch } from '../http/Patch';
-import { Operation } from './Operation';
+import type { Patch } from '../http/Patch';
+import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import { ResponseDescription } from './ResponseDescription';
+import type { ResponseDescription } from './ResponseDescription';
 
 export class PatchOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;

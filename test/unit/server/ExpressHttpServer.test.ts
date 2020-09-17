@@ -1,9 +1,10 @@
-import { Server } from 'http';
+import type { Server } from 'http';
 import request from 'supertest';
 import { ExpressHttpServer } from '../../../src/server/ExpressHttpServer';
 import { HttpHandler } from '../../../src/server/HttpHandler';
-import { HttpRequest } from '../../../src/server/HttpRequest';
-import { HttpResponse } from '../../../src/server/HttpResponse';
+import type { HttpRequest } from '../../../src/server/HttpRequest';
+import type { HttpResponse } from '../../../src/server/HttpResponse';
+import SpyInstance = jest.SpyInstance;
 
 const handle = async(input: { request: HttpRequest; response: HttpResponse }): Promise<void> => {
   input.response.writeHead(200);
@@ -25,6 +26,13 @@ describe('ExpressHttpServer', (): void => {
   let canHandleJest: jest.Mock<Promise<void>, []>;
   let handleJest: jest.Mock<Promise<void>, [any]>;
   let handler: SimpleHttpHandler;
+  let mock: SpyInstance;
+
+  beforeAll(async(): Promise<void> => {
+    // Prevent test from writing to stderr
+    mock = jest.spyOn(process.stderr, 'write').mockImplementation((): boolean => true);
+  });
+
   beforeEach(async(): Promise<void> => {
     handler = new SimpleHttpHandler();
     canHandleJest = jest.fn(async(): Promise<void> => undefined);
@@ -40,6 +48,10 @@ describe('ExpressHttpServer', (): void => {
   afterEach(async(): Promise<void> => {
     // Close server
     server.close();
+  });
+
+  afterAll(async(): Promise<void> => {
+    mock.mockReset();
   });
 
   it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
@@ -96,10 +108,16 @@ describe('ExpressHttpServer', (): void => {
       throw new Error('dummyError');
     };
 
-    // Prevent test from writing to stderr
-    jest.spyOn(process.stderr, 'write').mockImplementation((): boolean => true);
-
     const res = await request(server).get('/').expect(500);
     expect(res.text).toContain('dummyError');
+  });
+
+  it('throws unknown errors if its handler throw non-Error objects.', async(): Promise<void> => {
+    handler.handle = async(): Promise<void> => {
+      throw 'apple';
+    };
+
+    const res = await request(server).get('/').expect(500);
+    expect(res.text).toContain('Unknown error.');
   });
 });

@@ -1,7 +1,7 @@
-import { Representation } from '../../../../src/ldp/representation/Representation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { checkRequest, matchingTypes } from '../../../../src/storage/conversion/ConversionUtil';
 
 describe('A ConversionUtil', (): void => {

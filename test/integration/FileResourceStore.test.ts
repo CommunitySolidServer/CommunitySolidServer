@@ -1,5 +1,5 @@
 import * as rimraf from 'rimraf';
-import { HttpHandler } from '../../src/server/HttpHandler';
+import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { FileTestHelper } from '../util/TestHelpers';

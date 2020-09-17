@@ -1,4 +1,4 @@
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
  * Handles where acl files are stored.

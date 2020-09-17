@@ -1,9 +1,9 @@
-import { Representation } from '../../../../src/ldp/representation/Representation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { checkRequest } from '../../../../src/storage/conversion/ConversionUtil';
-import { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
+import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 

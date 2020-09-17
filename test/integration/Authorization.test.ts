@@ -1,4 +1,4 @@
-import { MockResponse } from 'node-mocks-http';
+import type { MockResponse } from 'node-mocks-http';
 import { BasicHandlersWithAclConfig } from '../configs/BasicHandlersWithAclConfig';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call } from '../util/Util';

@@ -1,12 +1,12 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import rdfSerializer from 'rdf-serialize';
-import { Representation } from '../../ldp/representation/Representation';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { checkRequest, matchingTypes } from './ConversionUtil';
-import { RepresentationConverterArgs } from './RepresentationConverter';
+import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**

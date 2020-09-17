@@ -1,5 +1,5 @@
 import { AcceptPreferenceParser } from '../../../../src/ldp/http/AcceptPreferenceParser';
-import { HttpRequest } from '../../../../src/server/HttpRequest';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 
 describe('An AcceptPreferenceParser', (): void => {
   const preferenceParser = new AcceptPreferenceParser();

@@ -1,9 +1,9 @@
-import { HttpRequest } from '../../server/HttpRequest';
-import { Operation } from '../operations/Operation';
-import { BodyParser } from './BodyParser';
-import { PreferenceParser } from './PreferenceParser';
+import type { HttpRequest } from '../../server/HttpRequest';
+import type { Operation } from '../operations/Operation';
+import type { BodyParser } from './BodyParser';
+import type { PreferenceParser } from './PreferenceParser';
 import { RequestParser } from './RequestParser';
-import { TargetExtractor } from './TargetExtractor';
+import type { TargetExtractor } from './TargetExtractor';
 
 /**
  * Input parsers required for a {@link BasicRequestParser}.

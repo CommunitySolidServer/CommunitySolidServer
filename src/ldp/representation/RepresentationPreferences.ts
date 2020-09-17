@@ -1,4 +1,4 @@
-import { RepresentationPreference } from './RepresentationPreference';
+import type { RepresentationPreference } from './RepresentationPreference';
 
 /**
  * Contains the preferences of which kind of representation is requested.

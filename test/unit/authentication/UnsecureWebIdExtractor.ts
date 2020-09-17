@@ -1,5 +1,5 @@
 import { UnsecureWebIdExtractor } from '../../../src/authentication/UnsecureWebIdExtractor';
-import { HttpRequest } from '../../../src/server/HttpRequest';
+import type { HttpRequest } from '../../../src/server/HttpRequest';
 
 describe('An UnsecureWebIdExtractor', (): void => {
   const extractor = new UnsecureWebIdExtractor();

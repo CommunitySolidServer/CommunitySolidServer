@@ -1,4 +1,4 @@
-import { AsyncHandler } from './AsyncHandler';
+import type { AsyncHandler } from './AsyncHandler';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
@@ -40,7 +40,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
 
     try {
       handler = await this.findHandler(input);
-    } catch (error) {
+    } catch {
       throw new Error('All handlers failed. This might be the consequence of calling handle before canHandle.');
     }
 
@@ -77,8 +77,12 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
         await handler.canHandle(input);
 
         return handler;
-      } catch (error) {
-        errors.push(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          errors.push(error);
+        } else {
+          errors.push(new Error('Unknown error.'));
+        }
       }
     }
 

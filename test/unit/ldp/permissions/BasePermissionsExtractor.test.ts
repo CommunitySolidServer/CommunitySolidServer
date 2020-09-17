@@ -1,4 +1,4 @@
-import { Operation } from '../../../../src/ldp/operations/Operation';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { MethodPermissionsExtractor } from '../../../../src/ldp/permissions/MethodPermissionsExtractor';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 

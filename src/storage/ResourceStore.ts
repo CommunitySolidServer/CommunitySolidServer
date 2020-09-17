@@ -1,8 +1,8 @@
-import { Patch } from '../ldp/http/Patch';
-import { Representation } from '../ldp/representation/Representation';
-import { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { Conditions } from './Conditions';
+import type { Patch } from '../ldp/http/Patch';
+import type { Representation } from '../ldp/representation/Representation';
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Conditions } from './Conditions';
 
 /**
  * A ResourceStore represents a collection of resources.

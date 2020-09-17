@@ -1,12 +1,13 @@
 import { PassThrough } from 'stream';
 import { StreamParser } from 'n3';
-import { Representation } from '../../ldp/representation/Representation';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { TEXT_TURTLE, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { checkRequest } from './ConversionUtil';
-import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
+import type { RepresentationConverterArgs } from './RepresentationConverter';
+import { RepresentationConverter } from './RepresentationConverter';
 
 /**
  * Converts `text/turtle` to `internal/quads`.

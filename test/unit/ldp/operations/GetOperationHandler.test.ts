@@ -1,7 +1,7 @@
 import { GetOperationHandler } from '../../../../src/ldp/operations/GetOperationHandler';
-import { Operation } from '../../../../src/ldp/operations/Operation';
-import { Representation } from '../../../../src/ldp/representation/Representation';
-import { ResourceStore } from '../../../../src/storage/ResourceStore';
+import type { Operation } from '../../../../src/ldp/operations/Operation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A GetOperationHandler', (): void => {

@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../../src/util/AsyncHandler';
+import type { AsyncHandler } from '../../../src/util/AsyncHandler';
 import { CompositeAsyncHandler } from '../../../src/util/CompositeAsyncHandler';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
@@ -43,6 +43,15 @@ describe('A CompositeAsyncHandler', (): void => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.canHandle(null)).rejects.toThrow('[Not supported., Not supported.]');
+    });
+
+    it('throws unknown errors if no Error objects are thrown.', async(): Promise<void> => {
+      handlerFalse.canHandle = async(): Promise<void> => {
+        throw 'apple';
+      };
+      const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
+
+      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error., Unknown error.]');
     });
 
     it('handles data if a handler supports it.', async(): Promise<void> => {

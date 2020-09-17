@@ -1,5 +1,5 @@
-import { Algebra } from 'sparqlalgebrajs';
-import { Patch } from './Patch';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { Patch } from './Patch';
 
 /**
  * A specific type of {@link Patch} corresponding to a SPARQL update.

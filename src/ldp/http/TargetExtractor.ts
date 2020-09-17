@@ -1,6 +1,6 @@
-import { HttpRequest } from '../../server/HttpRequest';
+import type { HttpRequest } from '../../server/HttpRequest';
 import { AsyncHandler } from '../../util/AsyncHandler';
-import { ResourceIdentifier } from '../representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
 /**
  * Extracts a {@link ResourceIdentifier} from an incoming {@link HttpRequest}.

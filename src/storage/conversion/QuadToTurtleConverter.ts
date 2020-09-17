@@ -1,10 +1,11 @@
 import { StreamWriter } from 'n3';
-import { Representation } from '../../ldp/representation/Representation';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS, TEXT_TURTLE } from '../../util/ContentTypes';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { checkRequest } from './ConversionUtil';
-import { RepresentationConverter, RepresentationConverterArgs } from './RepresentationConverter';
+import type { RepresentationConverterArgs } from './RepresentationConverter';
+import { RepresentationConverter } from './RepresentationConverter';
 
 /**
  * Converts `internal/quads` to `text/turtle`.

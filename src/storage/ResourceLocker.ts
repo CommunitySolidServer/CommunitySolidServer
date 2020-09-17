@@ -1,5 +1,5 @@
-import { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { Lock } from './Lock';
+import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Lock } from './Lock';
 
 /**
  * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.

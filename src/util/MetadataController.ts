@@ -1,5 +1,5 @@
-import { Stats } from 'fs';
-import { Readable } from 'stream';
+import type { Stats } from 'fs';
+import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
 import type { Quad } from 'rdf-js';

@@ -1,7 +1,7 @@
-import { TLSSocket } from 'tls';
+import type { TLSSocket } from 'tls';
 import { format } from 'url';
-import { HttpRequest } from '../../server/HttpRequest';
-import { ResourceIdentifier } from '../representation/ResourceIdentifier';
+import type { HttpRequest } from '../../server/HttpRequest';
+import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 
 /**

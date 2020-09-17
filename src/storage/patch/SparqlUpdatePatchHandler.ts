@@ -1,18 +1,18 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { defaultGraph } from '@rdfjs/data-model';
 import { Store } from 'n3';
 import type { BaseQuad } from 'rdf-js';
 import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
-import { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
-import { Representation } from '../../ldp/representation/Representation';
+import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { ResourceLocker } from '../ResourceLocker';
-import { ResourceStore } from '../ResourceStore';
+import type { ResourceLocker } from '../ResourceLocker';
+import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
 
 /**

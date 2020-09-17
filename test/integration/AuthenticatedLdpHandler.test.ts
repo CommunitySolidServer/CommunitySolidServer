@@ -1,7 +1,7 @@
 import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
-import { MockResponse } from 'node-mocks-http';
+import type { MockResponse } from 'node-mocks-http';
 import { BasicConfig } from '../configs/BasicConfig';
 import { BasicHandlersConfig } from '../configs/BasicHandlersConfig';
 import { call } from '../util/Util';

@@ -1,15 +1,15 @@
+import type { HttpHandler,
+  ResourceStore } from '../../index';
 import {
   AuthenticatedLdpHandler,
   BasicResponseWriter,
   CompositeAsyncHandler,
-  HttpHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
-  ResourceStore,
   UnsecureWebIdExtractor,
   QuadToRdfConverter,
 } from '../../index';
-import { ServerConfig } from './ServerConfig';
+import type { ServerConfig } from './ServerConfig';
 import {
   getFileResourceStore,
   getConvertingStore,
