@@ -16,7 +16,7 @@ import { UnsupportedMediaTypeHttpError } from '../util/errors/UnsupportedMediaTy
 import type { InteractionController } from '../util/InteractionController';
 import type { MetadataController } from '../util/MetadataController';
 import { CONTENT_TYPE, DCTERMS, HTTP, POSIX, RDF, XSD } from '../util/UriConstants';
-import { getTypedLiteral } from '../util/UriUtil';
+import { toTypedLiteral } from '../util/UriUtil';
 import { ensureTrailingSlash } from '../util/Util';
 import type { ExtensionBasedMapper } from './ExtensionBasedMapper';
 import type { ResourceStore } from './ResourceStore';
@@ -225,8 +225,8 @@ export class FileResourceStore implements ResourceStore {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
     const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path)).addQuads(rawMetadata)
-      .set(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
-      .set(POSIX.size, getTypedLiteral(stats.size, XSD.integer));
+      .set(DCTERMS.modified, toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
+      .set(POSIX.size, toTypedLiteral(stats.size, XSD.integer));
     metadata.contentType = contentType;
     return { metadata, data: readStream, binary: true };
   }
@@ -259,7 +259,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     const metadata = new RepresentationMetadata(containerURI).addQuads(rawMetadata)
-      .set(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
+      .set(DCTERMS.modified, toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
       .set(CONTENT_TYPE, INTERNAL_QUADS);
 
     return {

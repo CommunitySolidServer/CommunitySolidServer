@@ -7,7 +7,7 @@ import streamifyArray from 'streamify-array';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { TEXT_TURTLE } from './ContentTypes';
 import { DCTERMS, LDP, POSIX, RDF, XSD } from './UriConstants';
-import { getNamedNode, getTypedLiteral } from './UriUtil';
+import { toNamedNode, toTypedLiteral } from './UriUtil';
 import { pipeStreamsAndErrors } from './Util';
 
 export class MetadataController {
@@ -21,13 +21,13 @@ export class MetadataController {
   public generateResourceQuads(uri: string, stats: Stats): Quad[] {
     const metadata = new RepresentationMetadata(uri);
     if (stats.isDirectory()) {
-      metadata.add(RDF.type, getNamedNode(LDP.Container));
-      metadata.add(RDF.type, getNamedNode(LDP.BasicContainer));
+      metadata.add(RDF.type, toNamedNode(LDP.Container));
+      metadata.add(RDF.type, toNamedNode(LDP.BasicContainer));
     }
-    metadata.add(RDF.type, getNamedNode(LDP.Resource));
-    metadata.add(POSIX.size, getTypedLiteral(stats.size, XSD.integer));
-    metadata.add(DCTERMS.modified, getTypedLiteral(stats.mtime.toISOString(), XSD.dateTime));
-    metadata.add(POSIX.mtime, getTypedLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.integer));
+    metadata.add(RDF.type, toNamedNode(LDP.Resource));
+    metadata.add(POSIX.size, toTypedLiteral(stats.size, XSD.integer));
+    metadata.add(DCTERMS.modified, toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime));
+    metadata.add(POSIX.mtime, toTypedLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.integer));
 
     return metadata.quads();
   }
