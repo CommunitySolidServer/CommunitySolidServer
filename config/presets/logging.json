@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:LoggerFactory",
+      "@type": "WinstonLoggerFactory",
+      "WinstonLoggerFactory:_level": {
+        "@id": "urn:solid-server:default:variable:loggingLevel"
+      }
+    }
+  ]
+}

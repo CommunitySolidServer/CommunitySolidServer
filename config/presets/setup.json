@@ -13,6 +13,9 @@
       "Setup:_aclManager": {
         "@id": "urn:solid-server:default:AclManager"
       },
+      "Setup:_loggerFactory": {
+        "@id": "urn:solid-server:default:LoggerFactory"
+      },
       "Setup:_base": {
         "@id": "urn:solid-server:default:variable:base"
       },

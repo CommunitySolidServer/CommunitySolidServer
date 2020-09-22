@@ -12,6 +12,10 @@
     {
       "@id": "urn:solid-server:default:variable:rootFilePath",
       "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:loggingLevel",
+      "@type": "Variable"
     }
   ]
 }

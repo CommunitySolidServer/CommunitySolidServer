@@ -3,7 +3,10 @@ import type { ReadStream, WriteStream } from 'tty';
 import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
 import yargs from 'yargs';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { Setup } from './Setup';
+
+const logger = getLoggerFor('CliRunner');
 
 /**
  * Generic run function for starting the server from a given config
@@ -25,6 +28,7 @@ export const runCustom = function(
     .options({
       port: { type: 'number', alias: 'p', default: 3000 },
       config: { type: 'string', alias: 'c' },
+      level: { type: 'string', alias: 'l', default: 'info' },
     })
     .help();
 
@@ -43,12 +47,14 @@ export const runCustom = function(
           'urn:solid-server:default:variable:port': argv.port,
           'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
           'urn:solid-server:default:variable:rootFilePath': process.cwd(),
+          'urn:solid-server:default:variable:loggingLevel': argv.level,
         },
       }) as Setup;
     return await setup.setup();
   })().then((base: string): void => {
-    stdout.write(`Running at ${base}\n`);
+    logger.log('info', `Running at ${base}`);
   }).catch((error): void => {
+    // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);
   });
 };
