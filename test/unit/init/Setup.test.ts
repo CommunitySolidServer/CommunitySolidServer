@@ -1,5 +1,6 @@
 import { Setup } from '../../../src/init/Setup';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 describe('Setup', (): void => {
   let httpServer: any;
@@ -16,7 +17,7 @@ describe('Setup', (): void => {
     httpServer = {
       listen: jest.fn(),
     };
-    setup = new Setup(httpServer, store, aclManager, 'http://localhost:3000/', 3000);
+    setup = new Setup(httpServer, store, aclManager, new VoidLoggerFactory(), 'http://localhost:3000/', 3000);
   });
 
   it('starts an HTTP server.', async(): Promise<void> => {

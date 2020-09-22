@@ -29,6 +29,16 @@ export * from './src/ldp/http/SparqlUpdateBodyParser';
 export * from './src/ldp/http/SparqlUpdatePatch';
 export * from './src/ldp/http/TargetExtractor';
 
+// Logging
+export * from './src/logging/LazyLogger';
+export * from './src/logging/LazyLoggerFactory';
+export * from './src/logging/Logger';
+export * from './src/logging/LoggerFactory';
+export * from './src/logging/LogLevel';
+export * from './src/logging/LogUtil';
+export * from './src/logging/VoidLoggerFactory';
+export * from './src/logging/WinstonLoggerFactory';
+
 // LDP/Operations
 export * from './src/ldp/operations/DeleteOperationHandler';
 export * from './src/ldp/operations/GetOperationHandler';
