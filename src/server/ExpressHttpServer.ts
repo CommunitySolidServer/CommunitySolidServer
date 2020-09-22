@@ -2,9 +2,12 @@ import type { Server } from 'http';
 import cors from 'cors';
 import type { Express } from 'express';
 import express from 'express';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandler } from './HttpHandler';
 
 export class ExpressHttpServer {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly handler: HttpHandler;
 
   public constructor(handler: HttpHandler) {
@@ -35,10 +38,11 @@ export class ExpressHttpServer {
     // Delegate to the main handler
     app.use(async(request, response, done): Promise<void> => {
       try {
+        this.logger.log('info', `Received request for ${request.url}`);
         await this.handler.handleSafe({ request, response });
       } catch (error: unknown) {
         const errMsg = error instanceof Error ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';
-        process.stderr.write(errMsg);
+        this.logger.log('error', errMsg);
         response.status(500).contentType('text/plain').send(errMsg);
       } finally {
         done();
