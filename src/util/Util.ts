@@ -1,5 +1,7 @@
 import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
+import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
@@ -84,3 +86,10 @@ export const decodeUriPathComponents = (path: string): string => path.split('/')
  * Encodes all (non-slash) special characters in a URI path.
  */
 export const encodeUriPathComponents = (path: string): string => path.split('/').map(encodeURIComponent).join('/');
+
+/**
+ * Generates a quad with the given subject/predicate/object and pushes it to the given array.
+ */
+export const pushQuad =
+  (quads: Quad[], subject: NamedNode, predicate: NamedNode, object: NamedNode | Literal): number =>
+    quads.push(DataFactory.quad(subject, predicate, object));
