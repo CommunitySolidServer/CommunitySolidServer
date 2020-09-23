@@ -52,7 +52,7 @@ export const runCustom = function(
       }) as Setup;
     return await setup.setup();
   })().then((base: string): void => {
-    logger.log('info', `Running at ${base}`);
+    logger.info(`Running at ${base}`);
   }).catch((error): void => {
     // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);

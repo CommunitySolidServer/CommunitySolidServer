@@ -1,5 +1,5 @@
 import type { LazyLoggerFactory } from './LazyLoggerFactory';
-import type { Logger } from './Logger';
+import { Logger } from './Logger';
 import type { LogLevel } from './LogLevel';
 
 /**
@@ -8,13 +8,14 @@ import type { LogLevel } from './LogLevel';
  * An error will be thrown if {@link LazyLogger.log} is invoked
  * before a {@link LoggerFactory} is set in {@link LazyLoggerFactory}.
  */
-export class LazyLogger implements Logger {
+export class LazyLogger extends Logger {
   private readonly lazyLoggerFactory: LazyLoggerFactory;
   private readonly label: string;
 
   private logger: Logger | undefined;
 
   public constructor(lazyLoggerFactory: LazyLoggerFactory, label: string) {
+    super();
     this.lazyLoggerFactory = lazyLoggerFactory;
     this.label = label;
   }

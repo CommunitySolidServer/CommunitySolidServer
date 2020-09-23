@@ -71,7 +71,7 @@ export class Setup {
         },
       );
     };
-    this.logger.log('debug', 'Setup default ACL settings');
+    this.logger.debug('Setup default ACL settings');
     await aclSetup();
 
     this.httpServer.listen(this.port);
