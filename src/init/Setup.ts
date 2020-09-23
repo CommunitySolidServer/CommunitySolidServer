@@ -1,9 +1,8 @@
 import streamifyArray from 'streamify-array';
 import type { AclManager } from '../authorization/AclManager';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import { LazyLoggerFactory } from '../logging/LazyLoggerFactory';
 import type { LoggerFactory } from '../logging/LoggerFactory';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor, setGlobalLoggerFactory } from '../logging/LogUtil';
 import type { ExpressHttpServer } from '../server/ExpressHttpServer';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
@@ -42,7 +41,7 @@ export class Setup {
    */
   public async setup(): Promise<string> {
     // Configure the logger factory so that others can statically call it.
-    LazyLoggerFactory.getInstance().setLoggerFactory(this.loggerFactory);
+    setGlobalLoggerFactory(this.loggerFactory);
 
     // Set up acl so everything can still be done by default
     // Note that this will need to be adapted to go through all the correct channels later on

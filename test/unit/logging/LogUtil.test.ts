@@ -1,11 +1,12 @@
 import { LazyLogger } from '../../../src/logging/LazyLogger';
 import { LazyLoggerFactory } from '../../../src/logging/LazyLoggerFactory';
-import { getLoggerFor } from '../../../src/logging/LogUtil';
+import { getLoggerFor, setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
 import { VoidLogger } from '../../../src/logging/VoidLogger';
+import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 describe('LogUtil', (): void => {
   beforeEach(async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().setLoggerFactory(undefined);
+    setGlobalLoggerFactory(undefined);
   });
 
   it('allows creating a lazy logger for a string label.', async(): Promise<void> => {
@@ -16,5 +17,17 @@ describe('LogUtil', (): void => {
   it('allows creating a lazy logger for a class instance.', async(): Promise<void> => {
     expect(getLoggerFor(new VoidLogger())).toBeInstanceOf(LazyLogger);
     expect((getLoggerFor(new VoidLogger()) as any).label).toEqual('VoidLogger');
+  });
+
+  it('allows setting the global logger factory.', async(): Promise<void> => {
+    expect(setGlobalLoggerFactory(new VoidLoggerFactory()));
+    expect(LazyLoggerFactory.getInstance().getLoggerFactoryOrThrow()).toBeInstanceOf(VoidLoggerFactory);
+  });
+
+  it('allows unsetting the global logger factory.', async(): Promise<void> => {
+    expect(setGlobalLoggerFactory(new VoidLoggerFactory()));
+    expect(setGlobalLoggerFactory(undefined));
+    expect((): any => LazyLoggerFactory.getInstance().getLoggerFactoryOrThrow())
+      .toThrow(new Error('Illegal logging during initialization'));
   });
 });
