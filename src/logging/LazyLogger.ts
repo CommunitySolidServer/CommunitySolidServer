@@ -22,8 +22,7 @@ export class LazyLogger extends Logger {
 
   public log(level: LogLevel, message: string, meta: any): Logger {
     if (!this.logger) {
-      this.logger = this.lazyLoggerFactory.getLoggerFactoryOrThrow()
-        .createLogger(this.label);
+      this.logger = this.lazyLoggerFactory.loggerFactory.createLogger(this.label);
     }
     return this.logger.log(level, message, meta);
   }

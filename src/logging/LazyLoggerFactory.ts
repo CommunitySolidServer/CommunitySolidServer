@@ -14,7 +14,7 @@ import type { LoggerFactory } from './LoggerFactory';
 export class LazyLoggerFactory implements LoggerFactory {
   private static readonly instance = new LazyLoggerFactory();
 
-  private loggerFactory: LoggerFactory | undefined;
+  private ploggerFactory: LoggerFactory | undefined;
 
   private constructor() {
     // Singleton instance
@@ -28,14 +28,18 @@ export class LazyLoggerFactory implements LoggerFactory {
     return new LazyLogger(this, label);
   }
 
-  public setLoggerFactory(loggerFactory: LoggerFactory | undefined): void {
-    this.loggerFactory = loggerFactory;
+  public resetLoggerFactory(): void {
+    this.ploggerFactory = undefined;
   }
 
-  public getLoggerFactoryOrThrow(): LoggerFactory {
-    if (!this.loggerFactory) {
+  public get loggerFactory(): LoggerFactory {
+    if (!this.ploggerFactory) {
       throw new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.');
     }
-    return this.loggerFactory;
+    return this.ploggerFactory;
+  }
+
+  public set loggerFactory(loggerFactory: LoggerFactory) {
+    this.ploggerFactory = loggerFactory;
   }
 }
