@@ -6,7 +6,12 @@ import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
-import { decodeUriPathComponents, encodeUriPathComponents, trimTrailingSlashes } from '../util/Util';
+import {
+  decodeUriPathComponents,
+  encodeUriPathComponents,
+  ensureTrailingSlash,
+  trimTrailingSlashes,
+} from '../util/Util';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -137,7 +142,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
       return {
-        identifier: { path: this.baseRequestURI + encodeUriPathComponents(relative) },
+        identifier: { path: ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative)) },
         filePath,
       };
     }
@@ -150,7 +155,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     }
 
     return {
-      identifier: { path: this.baseRequestURI + encodeUriPathComponents(relative) },
+      identifier: { path: trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative)) },
       filePath,
       contentType,
     };

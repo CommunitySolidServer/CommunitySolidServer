@@ -1,3 +1,4 @@
+import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
@@ -13,6 +14,7 @@ describe('A server using a FileResourceStore', (): void => {
 
     beforeAll(async(): Promise<void> => {
       rootFilePath = getRootFilePath('FileResourceStore');
+      mkdirSync(rootFilePath, { recursive: true });
       config = new FileResourceStoreConfig(BASE, rootFilePath);
       handler = config.getHttpHandler();
       fileHelper = new FileTestHelper(handler, new URL(BASE));
@@ -109,7 +111,7 @@ describe('A server using a FileResourceStore', (): void => {
       // Try DELETE folder
       response = await fileHelper.simpleCall(new URL(folderId), 'DELETE', {});
       expect(response.statusCode).toBe(409);
-      expect(response._getData()).toContain('ConflictHttpError: Container is not empty.');
+      expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
       // DELETE
       await fileHelper.deleteFile('http://test.com/testfolder1/testfile0.txt');
@@ -130,7 +132,7 @@ describe('A server using a FileResourceStore', (): void => {
       // Try DELETE folder
       response = await fileHelper.simpleCall(new URL(folderId), 'DELETE', {});
       expect(response.statusCode).toBe(409);
-      expect(response._getData()).toContain('ConflictHttpError: Container is not empty.');
+      expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
       // DELETE
       await fileHelper.deleteFolder(subFolderId);
@@ -145,7 +147,7 @@ describe('A server using a FileResourceStore', (): void => {
       const folderId = response._getHeaders().location;
 
       // Create subfolder
-      response = await fileHelper.createFolder('testfolder3/subfolder0');
+      response = await fileHelper.createFolder('testfolder3/subfolder0/');
       const subFolderId = response._getHeaders().location;
 
       // Create file
@@ -155,7 +157,7 @@ describe('A server using a FileResourceStore', (): void => {
       response = await fileHelper.getFolder(folderId);
       expect(response.statusCode).toBe(200);
       expect(response._getHeaders().location).toBe(folderId);
-      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0> .');
+      expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
       expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
 
       // DELETE

@@ -173,7 +173,7 @@ export class FileTestHelper {
       {
         slug,
         link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
-        'content-type': 'text/plain',
+        'content-type': 'text/turtle',
         'transfer-encoding': 'chunked',
       },
     );
