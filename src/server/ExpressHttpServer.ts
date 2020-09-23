@@ -38,11 +38,11 @@ export class ExpressHttpServer {
     // Delegate to the main handler
     app.use(async(request, response, done): Promise<void> => {
       try {
-        this.logger.log('info', `Received request for ${request.url}`);
+        this.logger.info(`Received request for ${request.url}`);
         await this.handler.handleSafe({ request, response });
       } catch (error: unknown) {
         const errMsg = error instanceof Error ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';
-        this.logger.log('error', errMsg);
+        this.logger.error(errMsg);
         response.status(500).contentType('text/plain').send(errMsg);
       } finally {
         done();
