@@ -28,6 +28,6 @@ describe('LogUtil', (): void => {
     expect(setGlobalLoggerFactory(new VoidLoggerFactory()));
     expect(setGlobalLoggerFactory(undefined));
     expect((): any => LazyLoggerFactory.getInstance().getLoggerFactoryOrThrow())
-      .toThrow(new Error('Illegal logging during initialization'));
+      .toThrow(new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.'));
   });
 });
