@@ -5,7 +5,7 @@ describe('LazyLoggerFactory', (): void => {
   let dummyLogger: any;
   let dummyLoggerFactory: any;
   beforeEach(async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().setLoggerFactory(undefined);
+    LazyLoggerFactory.getInstance().resetLoggerFactory();
     dummyLogger = {
       log: jest.fn((): any => dummyLogger),
     };
@@ -24,23 +24,23 @@ describe('LazyLoggerFactory', (): void => {
   });
 
   it('allows LazyLoggers to be created after an inner factory was set.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().setLoggerFactory(dummyLoggerFactory);
+    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
     const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
     expect(logger).toBeInstanceOf(LazyLogger);
   });
 
   it('throws when retrieving the inner factory if none has been set.', async(): Promise<void> => {
-    expect((): any => LazyLoggerFactory.getInstance().getLoggerFactoryOrThrow())
+    expect((): any => LazyLoggerFactory.getInstance().loggerFactory)
       .toThrow(new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.'));
   });
 
   it('Returns the inner factory if one has been set.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().setLoggerFactory(dummyLoggerFactory);
-    expect(LazyLoggerFactory.getInstance().getLoggerFactoryOrThrow()).toBe(dummyLoggerFactory);
+    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
+    expect(LazyLoggerFactory.getInstance().loggerFactory).toBe(dummyLoggerFactory);
   });
 
   it('allows LazyLoggers to be invoked if a factory has been set beforehand.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().setLoggerFactory(dummyLoggerFactory);
+    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
     const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
     logger.log('debug', 'my message', { abc: true });
 
@@ -50,7 +50,7 @@ describe('LazyLoggerFactory', (): void => {
 
   it('allows LazyLoggers to be invoked if a factory has been after lazy logger creation.', async(): Promise<void> => {
     const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    LazyLoggerFactory.getInstance().setLoggerFactory(dummyLoggerFactory);
+    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
     logger.log('debug', 'my message', { abc: true });
 
     expect(dummyLogger.log).toHaveBeenCalledTimes(1);

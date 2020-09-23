@@ -6,7 +6,7 @@ describe('LazyLogger', (): void => {
   let logger: LazyLogger;
   beforeEach(async(): Promise<void> => {
     lazyLoggerFactory = LazyLoggerFactory.getInstance();
-    lazyLoggerFactory.setLoggerFactory(undefined);
+    lazyLoggerFactory.resetLoggerFactory();
     logger = new LazyLogger(lazyLoggerFactory, 'MyLabel');
   });
 
@@ -22,7 +22,7 @@ describe('LazyLogger', (): void => {
     const dummyLoggerFactory: any = {
       createLogger: jest.fn((): any => dummyLogger),
     };
-    lazyLoggerFactory.setLoggerFactory(dummyLoggerFactory);
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
 
     expect(logger.log('debug', 'my message', { abc: true })).toBe(dummyLogger);
     expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(1);
@@ -38,7 +38,7 @@ describe('LazyLogger', (): void => {
     const dummyLoggerFactory: any = {
       createLogger: jest.fn((): any => dummyLogger),
     };
-    lazyLoggerFactory.setLoggerFactory(dummyLoggerFactory);
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
 
     expect(logger.log('debug', 'my message 1', { abc: true })).toBe(dummyLogger);
     expect(logger.log('debug', 'my message 2', { abc: true })).toBe(dummyLogger);
