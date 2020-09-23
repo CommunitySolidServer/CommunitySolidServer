@@ -17,6 +17,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
 
   beforeAll(async(): Promise<void> => {
     rootFilePath = getRootFilePath('AuthenticatedFileResourceStore');
+    mkdirSync(rootFilePath, { recursive: true });
     config = new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath);
     handler = config.getHttpHandler();
     ({ store } = config);

@@ -195,7 +195,7 @@ export class FileResourceStore implements ResourceStore {
     const files = await fsPromises.readdir(path);
     const match = files.find((file): any => !file.startsWith('.metadata'));
     if (typeof match === 'string') {
-      throw new ConflictHttpError('Container is not empty.');
+      throw new ConflictHttpError('Can only delete empty containers.');
     }
 
     // Only delete the metadata file as auxiliary resource because this is the only file created by this store.
