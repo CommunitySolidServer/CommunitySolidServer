@@ -1,35 +1,31 @@
-import type { Stats } from 'fs';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { TEXT_TURTLE } from './ContentTypes';
-import { DCTERMS, LDP, POSIX, RDF, XSD } from './UriConstants';
-import { toNamedNode, toTypedLiteral } from './UriUtil';
-import { pipeStreamsAndErrors } from './Util';
+import { LDP, RDF } from './UriConstants';
+import { toNamedNode } from './UriUtil';
+import { pipeStreamsAndErrors, pushQuad } from './Util';
 
 export class MetadataController {
   /**
-   * Helper function to generate quads for a Container or Resource.
-   * @param uri - The URI for which the quads should be generated.
-   * @param stats - The Stats of the subject.
+   * Helper function to generate type quads for a Container or Resource.
+   * @param subject - Subject for the new quads.
+   * @param isContainer - If the identifier corresponds to a container.
    *
    * @returns The generated quads.
    */
-  public generateResourceQuads(uri: string, stats: Stats): Quad[] {
-    const metadata = new RepresentationMetadata(uri);
-    if (stats.isDirectory()) {
-      metadata.add(RDF.type, toNamedNode(LDP.Container));
-      metadata.add(RDF.type, toNamedNode(LDP.BasicContainer));
+  public generateResourceQuads(subject: NamedNode, isContainer: boolean): Quad[] {
+    const quads: Quad[] = [];
+    if (isContainer) {
+      pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.Container));
+      pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.BasicContainer));
     }
-    metadata.add(RDF.type, toNamedNode(LDP.Resource));
-    metadata.add(POSIX.size, toTypedLiteral(stats.size, XSD.integer));
-    metadata.add(DCTERMS.modified, toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime));
-    metadata.add(POSIX.mtime, toTypedLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.integer));
+    pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.Resource));
 
-    return metadata.quads();
+    return quads;
   }
 
   /**
@@ -39,7 +35,7 @@ export class MetadataController {
    *
    * @returns The generated quads.
    */
-  public generateContainerContainsResourceQuads(containerURI: string, childURIs: string[]): Quad[] {
+  public generateContainerContainsResourceQuads(containerURI: NamedNode, childURIs: string[]): Quad[] {
     return new RepresentationMetadata(containerURI, { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
   }
 
