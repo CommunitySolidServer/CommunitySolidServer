@@ -2,7 +2,6 @@ import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
-import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -60,12 +59,14 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
  * Makes sure an error of the first stream gets passed to the second.
  * @param readable - Initial readable stream.
  * @param destination - The destination for writing data.
+ * @param mapError - Optional function that takes the error and converts it to a new error.
  *
  * @returns The destination stream.
  */
-export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T): T => {
+export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T,
+  mapError?: (error: Error) => Error): T => {
   readable.pipe(destination);
-  readable.on('error', (error): boolean => destination.emit('error', new UnsupportedHttpError(error.message)));
+  readable.on('error', (error): boolean => destination.emit('error', mapError ? mapError(error) : error));
   return destination;
 };
 
