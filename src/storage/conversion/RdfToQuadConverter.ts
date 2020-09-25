@@ -3,6 +3,7 @@ import rdfParser from 'rdf-parse';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { pipeStreamsAndErrors } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
@@ -39,7 +40,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
     // Wrap the stream such that errors are transformed
     // (Node 10 requires both writableObjectMode and readableObjectMode)
     const data = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    pipeStreamsAndErrors(rawQuads, data);
+    pipeStreamsAndErrors(rawQuads, data, (error): Error => new UnsupportedHttpError(error.message));
 
     return {
       binary: false,
