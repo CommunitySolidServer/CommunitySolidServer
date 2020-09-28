@@ -10,7 +10,7 @@ export interface ResourceLink {
    */
   filePath: string;
   /**
-   * Content-type for a data resource (not defined for containers).
+   * Content-type for a document (not defined for containers).
    */
   contentType?: string;
 }
