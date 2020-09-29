@@ -1,4 +1,3 @@
-import { Readable } from 'stream';
 import streamifyArray from 'streamify-array';
 import { HeadOperationHandler } from '../../../../src/ldp/operations/HeadOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
@@ -20,8 +19,9 @@ describe('A HeadOperationHandler', (): void => {
   });
 
   it('returns the representation from the store with the input identifier and empty data.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }} as Operation)).resolves.toEqual(
-      { identifier: { path: 'url' }, body: { binary: false, data: new Readable() }},
-    );
+    const result = await handler.handle({ target: { path: 'url' }} as Operation);
+    expect(result.identifier.path).toBe('url');
+    expect(result.body?.binary).toBe(false);
+    expect(result.body?.data._read(64)).toBeUndefined();
   });
 });

@@ -42,6 +42,7 @@ export * from './src/logging/WinstonLoggerFactory';
 // LDP/Operations
 export * from './src/ldp/operations/DeleteOperationHandler';
 export * from './src/ldp/operations/GetOperationHandler';
+export * from './src/ldp/operations/HeadOperationHandler';
 export * from './src/ldp/operations/Operation';
 export * from './src/ldp/operations/OperationHandler';
 export * from './src/ldp/operations/PatchOperationHandler';
