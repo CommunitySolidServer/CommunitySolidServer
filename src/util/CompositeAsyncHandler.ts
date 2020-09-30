@@ -1,4 +1,6 @@
 import type { AsyncHandler } from './AsyncHandler';
+import { HttpError } from './errors/HttpError';
+import { InternalServerError } from './errors/InternalServerError';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
@@ -70,7 +72,7 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
    * @returns A promise resolving to a handler that supports the data or otherwise rejecting.
    */
   private async findHandler(input: TIn): Promise<AsyncHandler<TIn, TOut>> {
-    const errors: Error[] = [];
+    const errors: HttpError[] = [];
 
     for (const handler of this.handlers) {
       try {
@@ -78,16 +80,28 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
 
         return handler;
       } catch (error: unknown) {
-        if (error instanceof Error) {
+        if (error instanceof HttpError) {
           errors.push(error);
+        } else if (error instanceof Error) {
+          errors.push(new InternalServerError(error.message));
         } else {
-          errors.push(new Error('Unknown error.'));
+          errors.push(new InternalServerError('Unknown error.'));
         }
       }
     }
 
     const joined = errors.map((error: Error): string => error.message).join(', ');
+    const message = `No handler supports the given input: [${joined}].`;
 
-    throw new UnsupportedHttpError(`No handler supports the given input: [${joined}].`);
+    // Check if all errors have the same status code
+    if (errors.every((error): boolean => error.statusCode === errors[0].statusCode)) {
+      throw new HttpError(errors[0].statusCode, errors[0].name, message);
+    }
+
+    // Find the error range (4xx or 5xx)
+    if (errors.some((error): boolean => error.statusCode >= 500)) {
+      throw new InternalServerError(message);
+    }
+    throw new UnsupportedHttpError(message);
   }
 }

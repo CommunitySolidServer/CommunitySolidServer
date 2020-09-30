@@ -1,5 +1,7 @@
 import type { AsyncHandler } from '../../../src/util/AsyncHandler';
 import { CompositeAsyncHandler } from '../../../src/util/CompositeAsyncHandler';
+import { HttpError } from '../../../src/util/errors/HttpError';
+import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('A CompositeAsyncHandler', (): void => {
@@ -80,6 +82,45 @@ describe('A CompositeAsyncHandler', (): void => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported., Not supported.]');
+    });
+
+    it('throws an error with matching status code if all handlers threw the same.', async(): Promise<void> => {
+      handlerTrue.canHandle = async(): Promise<void> => {
+        throw new HttpError(401, 'UnauthorizedHttpError');
+      };
+      const handler = new CompositeAsyncHandler([ handlerTrue, handlerTrue ]);
+
+      await expect(handler.canHandle(null)).rejects.toMatchObject({
+        statusCode: 401,
+        name: 'UnauthorizedHttpError',
+      });
+    });
+
+    it('throws an internal server error if one of the handlers threw one.', async(): Promise<void> => {
+      handlerTrue.canHandle = async(): Promise<void> => {
+        throw new HttpError(401, 'UnauthorizedHttpError');
+      };
+      handlerFalse.canHandle = async(): Promise<void> => {
+        throw new Error('Server is crashing!');
+      };
+      const handler = new CompositeAsyncHandler([ handlerTrue, handlerFalse ]);
+
+      await expect(handler.canHandle(null)).rejects.toMatchObject({
+        statusCode: 500,
+        name: 'InternalServerError',
+      });
+    });
+
+    it('throws an UnsupportedHttpError if handlers throw different errors.', async(): Promise<void> => {
+      handlerTrue.canHandle = async(): Promise<void> => {
+        throw new HttpError(401, 'UnauthorizedHttpError');
+      };
+      handlerFalse.canHandle = async(): Promise<void> => {
+        throw new HttpError(415, 'UnsupportedMediaTypeHttpError');
+      };
+      const handler = new CompositeAsyncHandler([ handlerTrue, handlerFalse ]);
+
+      await expect(handler.canHandle(null)).rejects.toThrow(UnsupportedHttpError);
     });
   });
 });
