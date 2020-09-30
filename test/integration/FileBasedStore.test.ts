@@ -1,21 +1,32 @@
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import type { HttpHandler } from '../../src/server/HttpHandler';
+import { FileBasedDataAccessorConfig } from '../configs/FileBasedDataAccessorConfig';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
+import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { FileTestHelper } from '../util/TestHelpers';
 
-describe('A server using a FileResourceStore', (): void => {
+const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'FileResourceStore',
+  (rootFilePath: string): ServerConfig => new FileResourceStoreConfig(BASE, rootFilePath),
+];
+const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'FileDataAccessorBasedStore',
+  (rootFilePath: string): ServerConfig => new FileBasedDataAccessorConfig(BASE, rootFilePath),
+];
+
+describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (name, configFn): void => {
   describe('without acl', (): void => {
     let rootFilePath: string;
-    let config: FileResourceStoreConfig;
+    let config: ServerConfig;
     let handler: HttpHandler;
     let fileHelper: FileTestHelper;
 
     beforeAll(async(): Promise<void> => {
-      rootFilePath = getRootFilePath('FileResourceStore');
+      rootFilePath = getRootFilePath(name);
       mkdirSync(rootFilePath, { recursive: true });
-      config = new FileResourceStoreConfig(BASE, rootFilePath);
+      config = configFn(rootFilePath);
       handler = config.getHttpHandler();
       fileHelper = new FileTestHelper(handler, new URL(BASE));
     });
@@ -27,7 +38,7 @@ describe('A server using a FileResourceStore', (): void => {
     it('can add a file to the store, read it and delete it.', async():
     Promise<void> => {
       // POST
-      let response = await fileHelper.createFile('../assets/testfile0.txt', 'testfile0.txt');
+      let response = await fileHelper.createFile('../assets/testfile0.txt', 'testfile0.txt', 'text/plain');
       const id = response._getHeaders().location;
 
       // GET
@@ -42,7 +53,7 @@ describe('A server using a FileResourceStore', (): void => {
     });
 
     it('can add and overwrite a file.', async(): Promise<void> => {
-      let response = await fileHelper.createFile('../assets/testfile0.txt', 'file.txt');
+      let response = await fileHelper.createFile('../assets/testfile0.txt', 'file.txt', 'text/plain');
       const id = response._getHeaders().location;
 
       // GET
@@ -52,7 +63,7 @@ describe('A server using a FileResourceStore', (): void => {
       expect(response._getBuffer().toString()).toContain('TESTFILE0');
 
       // PUT
-      response = await fileHelper.overwriteFile('../assets/testfile1.txt', id);
+      response = await fileHelper.overwriteFile('../assets/testfile1.txt', id, 'text/plain');
 
       // GET
       response = await fileHelper.getFile(id);
@@ -85,7 +96,7 @@ describe('A server using a FileResourceStore', (): void => {
       await fileHelper.createFolder('testfolder0/');
 
       // Create file
-      let response = await fileHelper.createFile('../assets/testfile0.txt', 'testfolder0/testfile0.txt');
+      let response = await fileHelper.createFile('../assets/testfile0.txt', 'testfolder0/testfile0.txt', 'text/plain');
       const id = response._getHeaders().location;
 
       // GET File
@@ -106,7 +117,7 @@ describe('A server using a FileResourceStore', (): void => {
       const folderId = response._getHeaders().location;
 
       // Create file
-      await fileHelper.createFile('../assets/testfile0.txt', 'testfolder1/testfile0.txt');
+      await fileHelper.createFile('../assets/testfile0.txt', 'testfolder1/testfile0.txt', 'text/plain');
 
       // Try DELETE folder
       response = await fileHelper.simpleCall(new URL(folderId), 'DELETE', {});
@@ -151,7 +162,7 @@ describe('A server using a FileResourceStore', (): void => {
       const subFolderId = response._getHeaders().location;
 
       // Create file
-      response = await fileHelper.createFile('../assets/testfile0.txt', 'testfolder3/testfile0.txt');
+      response = await fileHelper.createFile('../assets/testfile0.txt', 'testfolder3/testfile0.txt', 'text/plain');
       const fileId = response._getHeaders().location;
 
       response = await fileHelper.getFolder(folderId);
@@ -170,7 +181,7 @@ describe('A server using a FileResourceStore', (): void => {
     });
 
     it('can upload and delete a image.', async(): Promise<void> => {
-      let response = await fileHelper.createFile('../assets/testimage.png', 'image.png');
+      let response = await fileHelper.createFile('../assets/testimage.png', 'image.png', 'image/png');
       const fileId = response._getHeaders().location;
 
       // GET
