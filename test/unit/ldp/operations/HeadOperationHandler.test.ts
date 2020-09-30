@@ -1,3 +1,4 @@
+import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { HeadOperationHandler } from '../../../../src/ldp/operations/HeadOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
@@ -22,6 +23,6 @@ describe('A HeadOperationHandler', (): void => {
     const result = await handler.handle({ target: { path: 'url' }} as Operation);
     expect(result.identifier.path).toBe('url');
     expect(result.body?.binary).toBe(false);
-    expect(result.body?.data._read(64)).toBeUndefined();
+    await expect(arrayifyStream(result.body?.data ?? streamifyArray([]))).resolves.toEqual([]);
   });
 });
