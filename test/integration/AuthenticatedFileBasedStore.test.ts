@@ -1,39 +1,45 @@
 import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
-import type { HttpHandler, ResourceStore } from '../../index';
 import { ensureTrailingSlash } from '../../src/util/Util';
+import { AuthenticatedFileBasedDataAccessorConfig } from '../configs/AuthenticatedFileBasedDataAccessorConfig';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
+import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
-describe('A server using a AuthenticatedFileResourceStore', (): void => {
-  let config: AuthenticatedFileResourceStoreConfig;
-  let handler: HttpHandler;
-  let store: ResourceStore;
-  let aclHelper: AclTestHelper;
-  let fileHelper: FileTestHelper;
-  let rootFilePath: string;
+const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'FileResourceStore',
+  (rootFilePath: string): ServerConfig => new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath),
+];
+const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'FileDataAccessorBasedStore',
+  (rootFilePath: string): ServerConfig => new AuthenticatedFileBasedDataAccessorConfig(BASE, rootFilePath),
+];
 
-  beforeAll(async(): Promise<void> => {
-    rootFilePath = getRootFilePath('AuthenticatedFileResourceStore');
-    mkdirSync(rootFilePath, { recursive: true });
-    config = new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath);
-    handler = config.getHttpHandler();
-    ({ store } = config);
-    aclHelper = new AclTestHelper(store, ensureTrailingSlash(BASE));
-    fileHelper = new FileTestHelper(handler, new URL(ensureTrailingSlash(BASE)));
-
-    // Make sure the root directory exists
-    mkdirSync(rootFilePath, { recursive: true });
-    copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilePath}/permanent.txt`);
-  });
-
-  afterAll(async(): Promise<void> => {
-    rimraf.sync(rootFilePath, { glob: false });
-  });
-
+describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (name, configFn): void => {
   describe('with acl', (): void => {
+    let config: ServerConfig;
+    let aclHelper: AclTestHelper;
+    let fileHelper: FileTestHelper;
+    let rootFilePath: string;
+
+    beforeAll(async(): Promise<void> => {
+      rootFilePath = getRootFilePath(name);
+      mkdirSync(rootFilePath, { recursive: true });
+      config = configFn(rootFilePath);
+      aclHelper = new AclTestHelper(config.store, ensureTrailingSlash(BASE));
+      fileHelper = new FileTestHelper(config.getHttpHandler(), new URL(ensureTrailingSlash(BASE)));
+
+      // Make sure the root directory exists
+      mkdirSync(rootFilePath, { recursive: true });
+      copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilePath}/permanent.txt`);
+    });
+
+    afterAll(async(): Promise<void> => {
+      rimraf.sync(rootFilePath, { glob: false });
+    });
+
     it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
     void
     > => {
@@ -41,7 +47,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
       // Create file
-      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt');
+      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain');
       const id = response._getHeaders().location;
 
       // Get file
@@ -61,7 +67,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
       // Try to create file
-      const response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', true);
+      const response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true);
       expect(response.statusCode).toBe(401);
     });
 
@@ -71,7 +77,7 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
       await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
 
       // Try to create file
-      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', true);
+      let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true);
       expect(response.statusCode).toBe(401);
 
       // GET permanent file
