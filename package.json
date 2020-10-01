@@ -38,7 +38,7 @@
     "build:ts": "tsc",
     "build:components": "componentsjs-generator -s src",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --cache",
     "prepare": "npm run build",
     "start": "node ./bin/server.js -p 3000",
     "test": "jest",
