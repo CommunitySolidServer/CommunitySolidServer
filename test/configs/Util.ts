@@ -1,9 +1,12 @@
 import { join } from 'path';
-import type { BodyParser,
+import type {
+  BodyParser,
+  DataAccessor,
   Operation,
   RepresentationConverter,
   ResourceStore,
-  ResponseDescription } from '../../index';
+  ResponseDescription,
+} from '../../index';
 import {
   AcceptPreferenceParser,
   BasicMetadataExtractor,
@@ -14,7 +17,6 @@ import {
   DataAccessorBasedStore,
   DeleteOperationHandler,
   ExtensionBasedMapper,
-  FileDataAccessor,
   FileResourceStore,
   GetOperationHandler,
   HeadOperationHandler,
@@ -65,9 +67,9 @@ export const getFileResourceStore = (base: string, rootFilepath: string): FileRe
  *
  * @returns The data accessor based store.
  */
-export const getFileDataAccessorStore = (base: string, rootFilepath: string): DataAccessorBasedStore =>
+export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
   new DataAccessorBasedStore(
-    new FileDataAccessor(new ExtensionBasedMapper(base, rootFilepath), new MetadataController()),
+    dataAccessor,
     base,
     new MetadataController(),
     new UrlContainerManager(base),

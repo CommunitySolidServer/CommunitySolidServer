@@ -1,52 +1,57 @@
-import type { HttpHandler,
-  ResourceStore } from '../../index';
+import type {
+  DataAccessor,
+  HttpHandler,
+  ResourceStore,
+} from '../../index';
 import {
-  AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   BasicResponseWriter,
   CompositeAsyncHandler,
   MethodPermissionsExtractor,
-  QuadToRdfConverter,
-  RawBodyParser,
   RdfToQuadConverter,
   UnsecureWebIdExtractor,
+  QuadToRdfConverter,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
 import {
-  getOperationHandler,
   getConvertingStore,
   getBasicRequestParser,
-  getFileDataAccessorStore,
+  getOperationHandler,
+  getWebAclAuthorizer,
+  getDataAccessorStore,
 } from './Util';
 
 /**
- * FileBasedDataAccessorConfig works with
- * - an AllowEverythingAuthorizer (no acl)
- * - a DataAccessorBasedStore with a FileDataAccessor wrapped in a converting store (rdf to quad & quad to rdf)
+ * AuthenticatedFileResourceStoreConfig works with
+ * - a WebAclAuthorizer
+ * - a FileResourceStore wrapped in a converting store (rdf to quad & quad to rdf)
  * - GET, POST, PUT & DELETE operation handlers
  */
-export class FileBasedDataAccessorConfig implements ServerConfig {
+export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
+  public base: string;
   public store: ResourceStore;
 
-  public constructor(base: string, rootFilepath: string) {
+  public constructor(base: string, dataAccessor: DataAccessor) {
+    this.base = base;
     this.store = getConvertingStore(
-      getFileDataAccessorStore(base, rootFilepath),
-      [ new QuadToRdfConverter(), new RdfToQuadConverter() ],
+      getDataAccessorStore(base, dataAccessor),
+      [ new QuadToRdfConverter(),
+        new RdfToQuadConverter() ],
     );
   }
 
   public getHttpHandler(): HttpHandler {
-    // This is for the sake of test coverage, as it could also be just getBasicRequestParser()
-    const requestParser = getBasicRequestParser([ new RawBodyParser() ]);
+    const requestParser = getBasicRequestParser();
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
     const permissionsExtractor = new CompositeAsyncHandler([
       new MethodPermissionsExtractor(),
     ]);
-    const authorizer = new AllowEverythingAuthorizer();
 
     const operationHandler = getOperationHandler(this.store);
+
     const responseWriter = new BasicResponseWriter();
+    const authorizer = getWebAclAuthorizer(this.store, this.base);
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

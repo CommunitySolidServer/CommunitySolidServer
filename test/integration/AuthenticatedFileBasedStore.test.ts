@@ -1,20 +1,24 @@
 import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
+import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
+import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
+import { MetadataController } from '../../src/util/MetadataController';
 import { ensureTrailingSlash } from '../../src/util/Util';
-import { AuthenticatedFileBasedDataAccessorConfig } from '../configs/AuthenticatedFileBasedDataAccessorConfig';
+import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
 const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'FileResourceStore',
+  'AuthenticatedFileResourceStore',
   (rootFilePath: string): ServerConfig => new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath),
 ];
 const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'FileDataAccessorBasedStore',
-  (rootFilePath: string): ServerConfig => new AuthenticatedFileBasedDataAccessorConfig(BASE, rootFilePath),
+  'AuthenticatedFileDataAccessorBasedStore',
+  (rootFilePath: string): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
+    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath), new MetadataController())),
 ];
 
 describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (name, configFn): void => {

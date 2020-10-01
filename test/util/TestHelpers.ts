@@ -153,7 +153,9 @@ export class FileTestHelper {
   public async getFile(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
-    return this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    const response = await this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    expect(response.statusCode).toBe(200);
+    return response;
   }
 
   public async deleteFile(requestUrl: string, mayFail = false): Promise<MockResponse<any>> {
