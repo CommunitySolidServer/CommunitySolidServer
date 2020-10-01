@@ -1,7 +1,11 @@
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import type { HttpHandler } from '../../src/server/HttpHandler';
-import { FileBasedDataAccessorConfig } from '../configs/FileBasedDataAccessorConfig';
+import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
+import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
+import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
+import { MetadataController } from '../../src/util/MetadataController';
+import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
@@ -11,12 +15,20 @@ const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
   'FileResourceStore',
   (rootFilePath: string): ServerConfig => new FileResourceStoreConfig(BASE, rootFilePath),
 ];
-const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
+const fileDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'FileDataAccessorBasedStore',
-  (rootFilePath: string): ServerConfig => new FileBasedDataAccessorConfig(BASE, rootFilePath),
+  (rootFilePath: string): ServerConfig => new DataAccessorBasedConfig(BASE,
+    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath), new MetadataController())),
+];
+const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'InMemoryDataAccessorBasedStore',
+  (): ServerConfig => new DataAccessorBasedConfig(BASE,
+    new InMemoryDataAccessor(BASE, new MetadataController())),
 ];
 
-describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (name, configFn): void => {
+const configs = [ fileResourceStore, fileDataAccessorStore, inMemoryDataAccessorStore ];
+
+describe.each(configs)('A server using a %s', (name, configFn): void => {
   describe('without acl', (): void => {
     let rootFilePath: string;
     let config: ServerConfig;

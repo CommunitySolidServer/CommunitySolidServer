@@ -83,6 +83,7 @@ export * from './src/server/HttpResponse';
 // Storage/Accessors
 export * from './src/storage/accessors/DataAccessor';
 export * from './src/storage/accessors/FileDataAccessor';
+export * from './src/storage/accessors/InMemoryDataAccessor';
 
 // Storage/Conversion
 export * from './src/storage/conversion/ChainedConverter';
