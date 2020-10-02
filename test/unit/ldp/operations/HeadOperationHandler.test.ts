@@ -23,6 +23,6 @@ describe('A HeadOperationHandler', (): void => {
     const result = await handler.handle({ target: { path: 'url' }} as Operation);
     expect(result.identifier.path).toBe('url');
     expect(result.body?.binary).toBe(false);
-    await expect(arrayifyStream(result.body?.data ?? streamifyArray([]))).resolves.toEqual([]);
+    await expect(arrayifyStream(result.body!.data)).resolves.toEqual([]);
   });
 });
