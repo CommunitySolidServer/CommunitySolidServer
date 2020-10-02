@@ -19,6 +19,7 @@ import { CONTENT_TYPE, DCTERMS, HTTP, POSIX, RDF, XSD } from '../util/UriConstan
 import { toTypedLiteral } from '../util/UriUtil';
 import { ensureTrailingSlash } from '../util/Util';
 import type { ExtensionBasedMapper } from './ExtensionBasedMapper';
+import type { ResourceLink } from './FileIdentifierMapper';
 import type { ResourceStore } from './ResourceStore';
 
 const { join: joinPath } = posix;
@@ -58,7 +59,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the path from the request URI, all metadata triples if any, and the Slug and Link header values.
-    const path = this.resourceMapper.getRelativePath(container);
+    const path = (await this.resourceMapper.mapUrlToFilePath(container)).filePath;
     const slug = representation.metadata.get(HTTP.slug)?.value;
     const types = representation.metadata.getAll(RDF.type);
 
@@ -72,6 +73,7 @@ export class FileResourceStore implements ResourceStore {
     if (raw.length > 0) {
       metadata = this.metadataController.serializeQuads(raw);
     }
+
     return isContainer ?
       this.createContainer(path, newIdentifier, path.endsWith('/'), metadata) :
       this.createFile(path, newIdentifier, representation.data, path.endsWith('/'), metadata);
@@ -88,7 +90,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    path = this.resourceMapper.getAbsolutePath(path);
+    path = (await this.resourceMapper.mapUrlToFilePath(identifier)).filePath;
     let stats;
     try {
       stats = await fsPromises.lstat(path);
@@ -115,20 +117,20 @@ export class FileResourceStore implements ResourceStore {
    */
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     // Get the file status of the path defined by the request URI mapped to the corresponding filepath.
-    const path = this.resourceMapper.mapUrlToFilePath(identifier);
+    const resourceLink = await this.resourceMapper.mapUrlToFilePath(identifier);
     let stats;
     try {
-      stats = await fsPromises.lstat(path);
+      stats = await fsPromises.lstat(resourceLink.filePath);
     } catch {
       throw new NotFoundHttpError();
     }
 
     // Get the file or directory representation of the path according to its status.
     if (stats.isFile()) {
-      return await this.getFileRepresentation(path, stats);
+      return await this.getFileRepresentation(resourceLink, stats);
     }
     if (stats.isDirectory()) {
-      return await this.getDirectoryRepresentation(ensureTrailingSlash(path), stats);
+      return await this.getDirectoryRepresentation(resourceLink, stats);
     }
     throw new NotFoundHttpError();
   }
@@ -209,25 +211,24 @@ export class FileResourceStore implements ResourceStore {
   /**
    * Helper function to get the representation of a file in the file system.
    * It loads the quads from the corresponding metadata file if it exists.
-   * @param path - The path to the file.
+   * @param resourceLink - The path information of the resource.
    * @param stats - The Stats of the file.
    *
    * @returns The corresponding Representation.
    */
-  private async getFileRepresentation(path: string, stats: Stats): Promise<Representation> {
-    const readStream = createReadStream(path);
-    const contentType = this.resourceMapper.getContentTypeFromExtension(path);
+  private async getFileRepresentation(resourceLink: ResourceLink, stats: Stats): Promise<Representation> {
+    const readStream = createReadStream(resourceLink.filePath);
     let rawMetadata: Quad[] = [];
     try {
-      const readMetadataStream = createReadStream(`${path}.metadata`);
+      const readMetadataStream = createReadStream(`${resourceLink.filePath}.metadata`);
       rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
     } catch {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
     }
-    const metadata = new RepresentationMetadata(this.resourceMapper.mapFilePathToUrl(path)).addQuads(rawMetadata)
+    const metadata = new RepresentationMetadata(resourceLink.identifier.path).addQuads(rawMetadata)
       .set(DCTERMS.modified, toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime))
       .set(POSIX.size, toTypedLiteral(stats.size, XSD.integer));
-    metadata.contentType = contentType;
+    metadata.contentType = resourceLink.contentType;
     return { metadata, data: readStream, binary: true };
   }
 
@@ -236,23 +237,23 @@ export class FileResourceStore implements ResourceStore {
    * It loads the quads from the corresponding metadata file if it exists
    * and generates quad representations for all its children.
    *
-   * @param path - The path to the directory.
+   * @param resourceLink - The path information of the resource.
    * @param stats - The Stats of the directory.
    *
    * @returns The corresponding Representation.
    */
-  private async getDirectoryRepresentation(path: string, stats: Stats): Promise<Representation> {
-    const files = await fsPromises.readdir(path);
+  private async getDirectoryRepresentation(resourceLink: ResourceLink, stats: Stats): Promise<Representation> {
+    const files = await fsPromises.readdir(resourceLink.filePath);
     const quads: Quad[] = [];
 
-    const containerURI = this.resourceMapper.mapFilePathToUrl(path);
+    const containerURI = resourceLink.identifier.path;
 
     quads.push(...this.metadataController.generateResourceQuads(containerURI, stats));
-    quads.push(...await this.getDirChildrenQuadRepresentation(files, path, containerURI));
+    quads.push(...await this.getDirChildrenQuadRepresentation(files, resourceLink.filePath, containerURI));
 
     let rawMetadata: Quad[] = [];
     try {
-      const readMetadataStream = createReadStream(joinPath(path, '.metadata'));
+      const readMetadataStream = createReadStream(joinPath(resourceLink.filePath, '.metadata'));
       rawMetadata = await this.metadataController.parseQuads(readMetadataStream);
     } catch {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
@@ -282,14 +283,15 @@ export class FileResourceStore implements ResourceStore {
     const childURIs: string[] = [];
     for (const childName of files) {
       try {
-        const childURI = this.resourceMapper.mapFilePathToUrl(joinPath(path, childName));
         const childStats = await fsPromises.lstat(joinPath(path, childName));
         if (!childStats.isFile() && !childStats.isDirectory()) {
           continue;
         }
+        const childLink = await this.resourceMapper
+          .mapFilePathToUrl(joinPath(path, childName), childStats.isDirectory());
 
-        quads.push(...this.metadataController.generateResourceQuads(childURI, childStats));
-        childURIs.push(childURI);
+        quads.push(...this.metadataController.generateResourceQuads(childLink.identifier.path, childStats));
+        childURIs.push(childLink.identifier.path);
       } catch {
         // Skip the child if there is an error.
       }
@@ -312,9 +314,7 @@ export class FileResourceStore implements ResourceStore {
     // (Re)write file for the resource if no container with that identifier exists.
     let stats;
     try {
-      stats = await fsPromises.lstat(
-        this.resourceMapper.getAbsolutePath(path, newIdentifier),
-      );
+      stats = await fsPromises.lstat(joinPath(path, newIdentifier));
     } catch {
       await this.createFile(path, newIdentifier, data, true, metadata);
       return;
@@ -335,9 +335,7 @@ export class FileResourceStore implements ResourceStore {
   private async setDirectoryRepresentation(path: string, newIdentifier: string, metadata?: Readable): Promise<void> {
     // Create a container if the identifier doesn't exist yet.
     try {
-      await fsPromises.access(
-        this.resourceMapper.getAbsolutePath(path, newIdentifier),
-      );
+      await fsPromises.access(joinPath(path, newIdentifier));
       throw new ConflictHttpError('Resource with that identifier already exists.');
     } catch (error: unknown) {
       if (error instanceof ConflictHttpError) {
@@ -367,12 +365,7 @@ export class FileResourceStore implements ResourceStore {
     }
 
     // Get the file status of the filepath of the directory where the file is to be created.
-    let stats;
-    try {
-      stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
-    } catch {
-      throw new MethodNotAllowedHttpError();
-    }
+    const stats = await fsPromises.lstat(path);
 
     // Only create the file if the provided filepath is a valid directory.
     if (!stats.isDirectory()) {
@@ -380,17 +373,17 @@ export class FileResourceStore implements ResourceStore {
     } else {
       // If metadata is specified, save it in a corresponding metadata file.
       if (metadata) {
-        await this.createDataFile(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`), metadata);
+        await this.createDataFile(joinPath(path, `${resourceName}.metadata`), metadata);
       }
 
       // If no error thrown from above, indicating failed metadata file creation, create the actual resource file.
       try {
-        const fullPath = this.resourceMapper.getAbsolutePath(path, resourceName);
+        const fullPath = joinPath(path, resourceName);
         await this.createDataFile(fullPath, data);
-        return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
+        return (await this.resourceMapper.mapFilePathToUrl(fullPath, false)).identifier;
       } catch (error: unknown) {
         // Normal file has not been created so we don't want the metadata file to remain.
-        await fsPromises.unlink(this.resourceMapper.getAbsolutePath(path, `${resourceName}.metadata`));
+        await fsPromises.unlink(joinPath(path, `${resourceName}.metadata`));
         throw error;
       }
     }
@@ -407,12 +400,12 @@ export class FileResourceStore implements ResourceStore {
    */
   private async createContainer(path: string, containerName: string,
     allowRecursiveCreation: boolean, metadata?: Readable): Promise<ResourceIdentifier> {
-    const fullPath = ensureTrailingSlash(this.resourceMapper.getAbsolutePath(path, containerName));
+    const fullPath = joinPath(path, containerName);
 
     // If recursive creation is not allowed, check if the parent container exists and then create the child directory.
     try {
       if (!allowRecursiveCreation) {
-        const stats = await fsPromises.lstat(this.resourceMapper.getAbsolutePath(path));
+        const stats = await fsPromises.lstat(path);
         if (!stats.isDirectory()) {
           throw new MethodNotAllowedHttpError('The given path is not a valid container.');
         }
@@ -436,7 +429,7 @@ export class FileResourceStore implements ResourceStore {
         throw error;
       }
     }
-    return { path: this.resourceMapper.mapFilePathToUrl(fullPath) };
+    return (await this.resourceMapper.mapFilePathToUrl(fullPath, true)).identifier;
   }
 
   /**

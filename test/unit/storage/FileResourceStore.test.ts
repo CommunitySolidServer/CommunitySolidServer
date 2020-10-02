@@ -47,6 +47,14 @@ describe('A FileResourceStore', (): void => {
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
+    fs.promises = {
+      rmdir: jest.fn(),
+      lstat: jest.fn(),
+      readdir: jest.fn(),
+      mkdir: jest.fn(),
+      unlink: jest.fn(),
+      access: jest.fn(),
+    } as any;
 
     store = new FileResourceStore(
       new ExtensionBasedMapper(base, rootFilepath),
@@ -93,18 +101,18 @@ describe('A FileResourceStore', (): void => {
   });
 
   it('errors if a resource was not found.', async(): Promise<void> => {
-    (fsPromises.lstat as jest.Mock).mockImplementationOnce((): any => {
+    (fsPromises.lstat as jest.Mock).mockImplementation((): any => {
       throw new Error('Path does not exist.');
     });
-    (fsPromises.lstat as jest.Mock).mockImplementationOnce((): any => {
-      throw new Error('Path does not exist.');
-    });
+    (fsPromises.readdir as jest.Mock).mockImplementation((): any => []);
     await expect(store.getRepresentation({ path: 'http://wrong.com/wrong' })).rejects.toThrow(NotFoundHttpError);
     await expect(store.getRepresentation({ path: `${base}wrong` })).rejects.toThrow(NotFoundHttpError);
+    await expect(store.getRepresentation({ path: `${base}wrong/` })).rejects.toThrow(NotFoundHttpError);
     await expect(store.addResource({ path: 'http://wrong.com/wrong' }, representation))
       .rejects.toThrow(NotFoundHttpError);
     await expect(store.deleteResource({ path: 'wrong' })).rejects.toThrow(NotFoundHttpError);
     await expect(store.deleteResource({ path: `${base}wrong` })).rejects.toThrow(NotFoundHttpError);
+    await expect(store.deleteResource({ path: `${base}wrong/` })).rejects.toThrow(NotFoundHttpError);
     await expect(store.setRepresentation({ path: 'http://wrong.com/' }, representation))
       .rejects.toThrow(NotFoundHttpError);
   });
@@ -153,6 +161,7 @@ describe('A FileResourceStore', (): void => {
   it('errors for container creation with path to non container.', async(): Promise<void> => {
     // Mock the fs functions.
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
+    (fsPromises.readdir as jest.Mock).mockReturnValue([ 'foo' ]);
 
     // Tests
     representation.metadata.add(RDF.type, LDP.BasicContainer);
@@ -161,33 +170,39 @@ describe('A FileResourceStore', (): void => {
     expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'foo'));
   });
 
-  it('errors 405 for POST invalid path ending without slash.', async(): Promise<void> => {
+  it('errors 404 for POST invalid path ending without slash and 405 for valid.', async(): Promise<void> => {
     // Mock the fs functions.
-    (fsPromises.lstat as jest.Mock).mockImplementationOnce((): any => {
-      throw new Error('Path does not exist.');
-    });
-    (fsPromises.lstat as jest.Mock).mockImplementationOnce((): any => {
-      throw new Error('Path does not exist.');
-    });
-    (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
+    (fsPromises.readdir as jest.Mock).mockReturnValue([]);
 
     // Tests
     representation.metadata.add(RDF.type, LDP.BasicContainer);
     representation.metadata.add(HTTP.slug, 'myContainer/');
     await expect(store.addResource({ path: `${base}doesnotexist` }, representation))
-      .rejects.toThrow(MethodNotAllowedHttpError);
-    expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'doesnotexist'));
+      .rejects.toThrow(NotFoundHttpError);
+    expect(fsPromises.readdir as jest.Mock).toHaveBeenLastCalledWith(rootFilepath);
 
     representation.metadata.set(RDF.type, LDP.Resource);
     representation.metadata.set(HTTP.slug, 'file.txt');
     await expect(store.addResource({ path: `${base}doesnotexist` }, representation))
-      .rejects.toThrow(MethodNotAllowedHttpError);
-    expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'doesnotexist'));
+      .rejects.toThrow(NotFoundHttpError);
+    expect(fsPromises.readdir as jest.Mock).toHaveBeenLastCalledWith(rootFilepath);
 
+    (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
+    (fsPromises.readdir as jest.Mock).mockReturnValue([ 'existingresource' ]);
     representation.metadata.removeAll(RDF.type);
     await expect(store.addResource({ path: `${base}existingresource` }, representation))
       .rejects.toThrow(MethodNotAllowedHttpError);
-    expect(fsPromises.lstat as jest.Mock).toBeCalledWith(joinPath(rootFilepath, 'existingresource'));
+    expect(fsPromises.lstat as jest.Mock).toHaveBeenLastCalledWith(joinPath(rootFilepath, 'existingresource'));
+
+    (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
+    (fsPromises.mkdir as jest.Mock).mockImplementation((): void => {
+      throw new Error('not a directory');
+    });
+    representation.metadata.removeAll(RDF.type);
+    await expect(store.addResource({ path: `${base}existingresource/container/` }, representation))
+      .rejects.toThrow(MethodNotAllowedHttpError);
+    expect(fsPromises.lstat as jest.Mock)
+      .toHaveBeenLastCalledWith(joinPath(rootFilepath, 'existingresource'));
   });
 
   it('can set data.', async(): Promise<void> => {
@@ -203,6 +218,7 @@ describe('A FileResourceStore', (): void => {
     // Mock: Get
     stats = { ...stats };
     stats.isFile = jest.fn((): any => true);
+    (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ 'file.txt' ]);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([]));
@@ -228,6 +244,7 @@ describe('A FileResourceStore', (): void => {
   it('can delete data.', async(): Promise<void> => {
     // Mock the fs functions.
     // Delete
+    (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ 'file.txt' ]);
     stats.isFile = jest.fn((): any => true);
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fsPromises.unlink as jest.Mock).mockReturnValueOnce(true);
@@ -236,6 +253,7 @@ describe('A FileResourceStore', (): void => {
     });
 
     // Mock: Get
+    (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ ]);
     (fsPromises.lstat as jest.Mock).mockImplementationOnce((): any => {
       throw new Error('Path does not exist.');
     });
@@ -325,6 +343,7 @@ describe('A FileResourceStore', (): void => {
   it('errors 404 when accessing non resource (file/directory), e.g. special files.', async(): Promise<void> => {
     // Mock the fs functions.
     (fsPromises.lstat as jest.Mock).mockReturnValue(stats);
+    (fsPromises.readdir as jest.Mock).mockReturnValue([ '14' ]);
 
     // Tests
     await expect(store.deleteResource({ path: `${base}dev/pts/14` })).rejects.toThrow(NotFoundHttpError);
@@ -476,6 +495,7 @@ describe('A FileResourceStore', (): void => {
     (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
     (fs.createReadStream as jest.Mock).mockReturnValueOnce(streamifyArray([ rawData ]));
     (fs.createReadStream as jest.Mock).mockImplementationOnce((): any => new Error('Metadata file does not exist.'));
+    (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ '.htaccess' ]);
 
     const result = await store.getRepresentation({ path: `${base}.htaccess` });
     expect(result).toEqual({
@@ -516,6 +536,7 @@ describe('A FileResourceStore', (): void => {
       stats.isDirectory = jest.fn((): any => true);
       (fsPromises.lstat as jest.Mock).mockReturnValueOnce(stats);
       (fsPromises.mkdir as jest.Mock).mockReturnValue(true);
+      (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ 'foo' ]);
 
       // Tests
       representation.metadata.add(RDF.type, LDP.BasicContainer);
@@ -545,6 +566,8 @@ describe('A FileResourceStore', (): void => {
     const filePath: string = (fs.createWriteStream as jest.Mock).mock.calls[0][0];
     expect(filePath.startsWith(rootFilepath)).toBeTruthy();
     const name = filePath.slice(rootFilepath.length);
+
+    (fsPromises.readdir as jest.Mock).mockReturnValueOnce([ name ]);
     const result = await store.getRepresentation({ path: `${base}${name}` });
     expect(result).toEqual({
       binary: true,
