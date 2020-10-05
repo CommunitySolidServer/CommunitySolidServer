@@ -10,10 +10,8 @@ import { ResponseWriter } from './ResponseWriter';
  */
 export class BasicResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
-    if (!(input.result instanceof Error)) {
-      if (input.result.body && !input.result.body.binary) {
-        throw new UnsupportedHttpError('Only binary results are supported.');
-      }
+    if (!(input.result instanceof Error) && input.result.body && !input.result.body.binary) {
+      throw new UnsupportedHttpError('Only binary results and errors are supported.');
     }
   }
 

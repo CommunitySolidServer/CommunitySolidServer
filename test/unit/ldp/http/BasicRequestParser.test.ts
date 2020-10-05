@@ -17,16 +17,12 @@ describe('A BasicRequestParser', (): void => {
     requestParser = new BasicRequestParser({ targetExtractor, bodyParser, preferenceParser });
   });
 
-  it('can handle input with both a URL and a method.', async(): Promise<void> => {
-    await expect(requestParser.canHandle({ url: 'url', method: 'GET' } as any)).resolves.toBeUndefined();
+  it('can handle any input.', async(): Promise<void> => {
+    await expect(requestParser.canHandle()).resolves.toBeUndefined();
   });
 
-  it('rejects input with no URL.', async(): Promise<void> => {
-    await expect(requestParser.canHandle({ method: 'GET' } as any)).rejects.toThrow('Missing URL.');
-  });
-
-  it('rejects input with no method.', async(): Promise<void> => {
-    await expect(requestParser.canHandle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
+  it('errors if there is no input.', async(): Promise<void> => {
+    await expect(requestParser.handle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
   });
 
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {

@@ -1,6 +1,7 @@
 import { PassThrough } from 'stream';
 import { translate } from 'sparqlalgebrajs';
 import type { HttpRequest } from '../../server/HttpRequest';
+import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
@@ -16,9 +17,7 @@ import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
  */
 export class SparqlUpdateBodyParser extends BodyParser {
   public async canHandle(input: HttpRequest): Promise<void> {
-    const contentType = input.headers['content-type'];
-
-    if (!contentType || contentType !== 'application/sparql-update') {
+    if (input.headers['content-type'] !== APPLICATION_SPARQL_UPDATE) {
       throw new UnsupportedMediaTypeHttpError('This parser only supports SPARQL UPDATE data.');
     }
   }
@@ -35,7 +34,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       const sparql = await readableToString(toAlgebraStream);
       const algebra = translate(sparql, { quads: true });
 
-      const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/sparql-update' });
+      const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_SPARQL_UPDATE });
 
       // Prevent body from being requested again
       return {

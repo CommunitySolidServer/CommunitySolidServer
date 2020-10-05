@@ -1,8 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
-import { CONTENT_TYPE } from '../../util/UriConstants';
 import { matchingMediaType } from '../../util/Util';
+import { checkRequest } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -44,18 +42,14 @@ export class ChainedConverter extends TypedRepresentationConverter {
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
     // We assume a chain can be constructed, otherwise there would be a configuration issue
-    // Check if the first converter can handle the input
-    const firstChain = await this.getMatchingType(this.converters[0], this.converters[1]);
-    const preferences: RepresentationPreferences = { type: [{ value: firstChain, weight: 1 }]};
-    await this.first.canHandle({ ...input, preferences });
+    // So we only check if the input can be parsed and the preferred type can be written
+    const inTypes = this.filterTypes(await this.first.getInputTypes());
+    const outTypes = this.filterTypes(await this.last.getOutputTypes());
+    checkRequest(input, inTypes, outTypes);
+  }
 
-    // Check if the last converter can produce the output
-    const idx = this.converters.length - 1;
-    const lastChain = await this.getMatchingType(this.converters[idx - 1], this.converters[idx]);
-    const oldMeta = input.representation.metadata;
-    const metadata = new RepresentationMetadata(oldMeta, { [CONTENT_TYPE]: lastChain });
-    const representation: Representation = { ...input.representation, metadata };
-    await this.last.canHandle({ ...input, representation });
+  private filterTypes(typeVals: { [contentType: string]: number }): string[] {
+    return Object.keys(typeVals).filter((name): boolean => typeVals[name] > 0);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

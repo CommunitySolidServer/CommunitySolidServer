@@ -27,7 +27,7 @@ export class RawBodyParser extends BodyParser {
     // While RFC7231 allows treating a body without content type as an octet stream,
     // such an omission likely signals a mistake, so force clients to make this explicit.
     if (!input.headers['content-type']) {
-      throw new Error('An HTTP request body was passed without Content-Type header');
+      throw new UnsupportedHttpError('An HTTP request body was passed without Content-Type header');
     }
 
     return {

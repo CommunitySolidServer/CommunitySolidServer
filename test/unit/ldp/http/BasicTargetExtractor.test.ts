@@ -3,16 +3,16 @@ import { BasicTargetExtractor } from '../../../../src/ldp/http/BasicTargetExtrac
 describe('A BasicTargetExtractor', (): void => {
   const extractor = new BasicTargetExtractor();
 
-  it('can handle input with an URL and host.', async(): Promise<void> => {
-    await expect(extractor.canHandle({ url: 'url', headers: { host: 'test.com' }} as any)).resolves.toBeUndefined();
+  it('can handle any input.', async(): Promise<void> => {
+    await expect(extractor.canHandle()).resolves.toBeUndefined();
   });
 
-  it('rejects input without URL.', async(): Promise<void> => {
-    await expect(extractor.canHandle({ headers: { host: 'test.com' }} as any)).rejects.toThrow('Missing URL.');
+  it('errors if there is no URL.', async(): Promise<void> => {
+    await expect(extractor.handle({ headers: { host: 'test.com' }} as any)).rejects.toThrow('Missing URL.');
   });
 
-  it('rejects input without host.', async(): Promise<void> => {
-    await expect(extractor.canHandle({ url: 'url', headers: {}} as any)).rejects.toThrow('Missing host.');
+  it('errors if there is no host.', async(): Promise<void> => {
+    await expect(extractor.handle({ url: 'url', headers: {}} as any)).rejects.toThrow('Missing host.');
   });
 
   it('returns the input URL.', async(): Promise<void> => {
