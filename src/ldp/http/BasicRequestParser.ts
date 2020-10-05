@@ -28,20 +28,18 @@ export class BasicRequestParser extends RequestParser {
     Object.assign(this, args);
   }
 
-  public async canHandle(input: HttpRequest): Promise<void> {
-    if (!input.url) {
-      throw new Error('Missing URL.');
-    }
-    if (!input.method) {
-      throw new Error('Missing method.');
-    }
+  public async canHandle(): Promise<void> {
+    // Can handle all requests
   }
 
   public async handle(input: HttpRequest): Promise<Operation> {
+    if (!input.method) {
+      throw new Error('Missing method.');
+    }
     const target = await this.targetExtractor.handleSafe(input);
     const preferences = await this.preferenceParser.handleSafe(input);
     const body = await this.bodyParser.handleSafe(input);
 
-    return { method: input.method!, target, preferences, body };
+    return { method: input.method, target, preferences, body };
   }
 }

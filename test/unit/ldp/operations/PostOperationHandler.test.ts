@@ -10,12 +10,15 @@ describe('A PostOperationHandler', (): void => {
   } as unknown as ResourceStore;
   const handler = new PostOperationHandler(store);
 
-  it('only supports POST operations with a body.', async(): Promise<void> => {
+  it('only supports POST operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'POST', body: { }} as Operation))
       .resolves.toBeUndefined();
     await expect(handler.canHandle({ method: 'GET', body: { }} as Operation))
       .rejects.toThrow(UnsupportedHttpError);
-    await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+  });
+
+  it('errors if there is no body.', async(): Promise<void> => {
+    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
   it('adds the given representation to the store and returns the new identifier.', async(): Promise<void> => {

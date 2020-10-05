@@ -20,13 +20,13 @@ export class PostOperationHandler extends OperationHandler {
     if (input.method !== 'POST') {
       throw new UnsupportedHttpError('This handler only supports POST operations.');
     }
-    if (!input.body) {
-      throw new UnsupportedHttpError('POST operations require a body.');
-    }
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    const identifier = await this.store.addResource(input.target, input.body!);
+    if (!input.body) {
+      throw new UnsupportedHttpError('POST operations require a body.');
+    }
+    const identifier = await this.store.addResource(input.target, input.body);
     return { identifier };
   }
 }
