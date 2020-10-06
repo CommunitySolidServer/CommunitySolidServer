@@ -1,22 +1,23 @@
 import { join } from 'path';
 import type { BodyParser,
-  HttpRequest,
   Operation,
-  Representation,
   RepresentationConverter,
   ResourceStore,
   ResponseDescription } from '../../index';
 import {
   AcceptPreferenceParser,
+  BasicMetadataExtractor,
   BasicRequestParser,
   BasicTargetExtractor,
   CompositeAsyncHandler,
+  ContentTypeParser,
   DeleteOperationHandler,
   FileResourceStore,
   GetOperationHandler,
   HeadOperationHandler,
   InMemoryResourceStore,
   InteractionController,
+  LinkTypeParser,
   MetadataController,
   PatchingStore,
   PatchOperationHandler,
@@ -25,6 +26,7 @@ import {
   RawBodyParser,
   RepresentationConvertingStore,
   SingleThreadedResourceLocker,
+  SlugParser,
   SparqlUpdatePatchHandler,
   UrlBasedAclManager,
   UrlContainerManager,
@@ -105,6 +107,15 @@ export const getOperationHandler = (store: ResourceStore): CompositeAsyncHandler
 };
 
 /**
+ * Creates a BasicMetadataExtractor with parsers for content-type, slugs and link types.
+ */
+export const getBasicMetadataExtractor = (): BasicMetadataExtractor => new BasicMetadataExtractor([
+  new ContentTypeParser(),
+  new SlugParser(),
+  new LinkTypeParser(),
+]);
+
+/**
  * Gives a basic request parser based on some body parses.
  * @param bodyParsers - Optional list of body parsers, default is RawBodyParser.
  *
@@ -118,11 +129,12 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
     // If no body parser is given (array is empty), default to RawBodyParser
     bodyParser = new RawBodyParser();
   } else {
-    bodyParser = new CompositeAsyncHandler<HttpRequest, Representation | undefined>(bodyParsers);
+    bodyParser = new CompositeAsyncHandler(bodyParsers);
   }
   return new BasicRequestParser({
     targetExtractor: new BasicTargetExtractor(),
     preferenceParser: new AcceptPreferenceParser(),
+    metadataExtractor: getBasicMetadataExtractor(),
     bodyParser,
   });
 };

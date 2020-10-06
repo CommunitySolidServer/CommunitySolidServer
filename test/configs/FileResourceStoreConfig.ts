@@ -12,7 +12,12 @@ import {
   UnsecureWebIdExtractor,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
-import { getFileResourceStore, getOperationHandler, getConvertingStore, getBasicRequestParser } from './Util';
+import {
+  getFileResourceStore,
+  getOperationHandler,
+  getConvertingStore,
+  getBasicRequestParser,
+} from './Util';
 
 /**
  * FileResourceStoreConfig works with
