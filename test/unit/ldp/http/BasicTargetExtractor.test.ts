@@ -16,12 +16,18 @@ describe('A BasicTargetExtractor', (): void => {
   });
 
   it('returns the input URL.', async(): Promise<void> => {
-    await expect(extractor.handle({ url: 'url', headers: { host: 'test.com' }} as any)).resolves.toEqual({ path: 'http://test.com/url' });
+    await expect(extractor.handle({ url: 'url', headers: { host: 'test.com' }} as any))
+      .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
   it('uses https protocol if the connection is secure.', async(): Promise<void> => {
     await expect(extractor.handle(
       { url: 'url', headers: { host: 'test.com' }, connection: { encrypted: true } as any } as any,
     )).resolves.toEqual({ path: 'https://test.com/url' });
+  });
+
+  it('decodes relevant percent encodings.', async(): Promise<void> => {
+    await expect(extractor.handle({ url: '/a%20path%26/name', headers: { host: 'test.com' }} as any))
+      .resolves.toEqual({ path: 'http://test.com/a%20path&/name' });
   });
 });

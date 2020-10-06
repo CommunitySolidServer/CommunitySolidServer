@@ -1,5 +1,6 @@
 import streamifyArray from 'streamify-array';
-import { ensureTrailingSlash, matchingMediaType, readableToString } from '../../../src/util/Util';
+import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
+import { ensureTrailingSlash, matchingMediaType, readableToString, toCanonicalUrl } from '../../../src/util/Util';
 
 describe('Util function', (): void => {
   describe('ensureTrailingSlash', (): void => {
@@ -29,6 +30,17 @@ describe('Util function', (): void => {
       expect(matchingMediaType('text/*', 'application/*')).toBeFalsy();
       expect(matchingMediaType('text/plain', 'application/*')).toBeFalsy();
       expect(matchingMediaType('text/plain', 'text/turtle')).toBeFalsy();
+    });
+  });
+
+  describe('toCanonicalUrl', (): void => {
+    it('makes sure only the necessary parts are encoded.', async(): Promise<void> => {
+      expect(toCanonicalUrl('http://test.com/a%20path%26/name'))
+        .toEqual('http://test.com/a%20path&/name');
+    });
+
+    it('errors on invalid URLs.', async(): Promise<void> => {
+      expect((): any => toCanonicalUrl('notAnUrl')).toThrow(new UnsupportedHttpError('Invalid URL notAnUrl'));
     });
   });
 });
