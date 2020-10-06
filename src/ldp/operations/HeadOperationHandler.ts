@@ -27,14 +27,11 @@ export class HeadOperationHandler extends OperationHandler {
     const body = await this.store.getRepresentation(input.target, input.preferences);
 
     // Close the Readable as we will not return it.
-    return Promise.resolve()
-      .then((): any => body.data.destroy())
-      .then((): any => {
-        body.data = new Readable();
-        body.data._read = function(): void {
-          body.data.push(null);
-        };
-        return { identifier: input.target, body };
-      });
+    body.data.destroy();
+    body.data = new Readable();
+    body.data._read = function(): void {
+      body.data.push(null);
+    };
+    return { identifier: input.target, body };
   }
 }
