@@ -14,6 +14,7 @@ import {
   DeleteOperationHandler,
   FileResourceStore,
   GetOperationHandler,
+  HeadOperationHandler,
   InMemoryResourceStore,
   InteractionController,
   MetadataController,
@@ -94,6 +95,7 @@ export const getPatchingStore = (store: ResourceStore): PatchingStore => {
 export const getOperationHandler = (store: ResourceStore): CompositeAsyncHandler<Operation, ResponseDescription> => {
   const handlers = [
     new GetOperationHandler(store),
+    new HeadOperationHandler(store),
     new PostOperationHandler(store),
     new PutOperationHandler(store),
     new PatchOperationHandler(store),

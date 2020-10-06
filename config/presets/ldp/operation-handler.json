@@ -18,6 +18,12 @@
           }
         },
         {
+          "@type": "HeadOperationHandler",
+          "HeadOperationHandler:_store": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching"
+          }
+        },
+        {
           "@type": "PatchOperationHandler",
           "PatchOperationHandler:_store": {
             "@id": "urn:solid-server:default:ResourceStore_Patching"
