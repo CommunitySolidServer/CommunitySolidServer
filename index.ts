@@ -14,6 +14,14 @@ export * from './src/authorization/WebAclAuthorizer';
 export * from './src/init/CliRunner';
 export * from './src/init/Setup';
 
+// LDP/HTTP/Metadata
+export * from './src/ldp/http/metadata/BasicMetadataExtractor';
+export * from './src/ldp/http/metadata/ContentTypeParser';
+export * from './src/ldp/http/metadata/LinkTypeParser';
+export * from './src/ldp/http/metadata/MetadataExtractor';
+export * from './src/ldp/http/metadata/MetadataParser';
+export * from './src/ldp/http/metadata/SlugParser';
+
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
 export * from './src/ldp/http/BasicRequestParser';

@@ -4,15 +4,18 @@ import streamifyArray from 'streamify-array';
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
 import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
+import { BasicMetadataExtractor } from '../../src/ldp/http/metadata/BasicMetadataExtractor';
+import { ContentTypeParser } from '../../src/ldp/http/metadata/ContentTypeParser';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
   const targetExtractor = new BasicTargetExtractor();
-  const bodyParser = new RawBodyParser();
   const preferenceParser = new AcceptPreferenceParser();
-  const requestParser = new BasicRequestParser({ targetExtractor, bodyParser, preferenceParser });
+  const metadataExtractor = new BasicMetadataExtractor([ new ContentTypeParser() ]);
+  const bodyParser = new RawBodyParser();
+  const requestParser = new BasicRequestParser({ targetExtractor, preferenceParser, metadataExtractor, bodyParser });
 
   it('can parse an incoming request.', async(): Promise<void> => {
     const request = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;

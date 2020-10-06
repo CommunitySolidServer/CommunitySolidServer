@@ -10,6 +10,9 @@
       "BasicRequestParser:_preferenceParser": {
         "@type": "AcceptPreferenceParser"
       },
+      "BasicRequestParser:_metadataExtractor": {
+        "@id": "urn:solid-server:default:MetadataExtractor"
+      },
       "BasicRequestParser:_bodyParser": {
         "@type": "CompositeAsyncHandler",
         "CompositeAsyncHandler:_handlers": [

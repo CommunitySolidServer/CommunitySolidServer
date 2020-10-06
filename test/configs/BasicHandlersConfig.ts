@@ -15,10 +15,13 @@ import {
 } from '../../index';
 
 import type { ServerConfig } from './ServerConfig';
-import { getInMemoryResourceStore,
+import {
+  getInMemoryResourceStore,
   getOperationHandler,
   getConvertingStore,
-  getPatchingStore, getBasicRequestParser } from './Util';
+  getPatchingStore,
+  getBasicRequestParser,
+} from './Util';
 
 /**
  * BasicHandlersConfig works with

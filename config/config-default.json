@@ -5,6 +5,7 @@
     "files-scs:config/presets/http.json",
     "files-scs:config/presets/ldp.json",
     "files-scs:config/presets/ldp/credentials-extractor.json",
+    "files-scs:config/presets/ldp/metadata-handler.json",
     "files-scs:config/presets/ldp/operation-handler.json",
     "files-scs:config/presets/ldp/permissions-extractor.json",
     "files-scs:config/presets/ldp/request-parser.json",
