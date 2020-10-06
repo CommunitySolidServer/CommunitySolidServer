@@ -109,7 +109,7 @@ export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Util
-export * from './src/util/AcceptParser';
+export * from './src/util/HeaderUtil';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
 export * from './src/util/InteractionController';
