@@ -16,8 +16,7 @@ module.exports = {
   "setupFilesAfterEnv": ["jest-rdf"],
   "collectCoverage": true,
   "coveragePathIgnorePatterns": [
-    "/node_modules/",
-    "/src/init/CliRunner.ts"
+    "/node_modules/"
   ],
   "coverageThreshold": {
     "./src": {
