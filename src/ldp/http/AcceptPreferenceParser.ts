@@ -1,11 +1,11 @@
 import type { HttpRequest } from '../../server/HttpRequest';
-import type { AcceptHeader } from '../../util/AcceptParser';
+import type { AcceptHeader } from '../../util/HeaderUtil';
 import {
   parseAccept,
   parseAcceptCharset,
   parseAcceptEncoding,
   parseAcceptLanguage,
-} from '../../util/AcceptParser';
+} from '../../util/HeaderUtil';
 import type { RepresentationPreference } from '../representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import { PreferenceParser } from './PreferenceParser';

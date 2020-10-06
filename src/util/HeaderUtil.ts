@@ -99,18 +99,18 @@ const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
  *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  */
-const transformQuotedStrings = (input: string): { result: string; replacements: { [id: string]: string } } => {
+export const transformQuotedStrings = (input: string): { result: string; replacements: { [id: string]: string } } => {
   let idx = 0;
   const replacements: { [id: string]: string } = {};
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!/^"(?:[\t !\u0023-\u005B\u005D-\u007E\u0080-\u00FF]|(?:\\[\t\u0020-\u007E\u0080-\u00FF]))*"$/u.test(match)) {
       throw new UnsupportedHttpError(
-        `Invalid quoted string in Accept header: ${match}. Check which characters are allowed`,
+        `Invalid quoted string in header: ${match}. Check which characters are allowed`,
       );
     }
     const replacement = `"${idx}"`;
-    replacements[replacement] = match;
+    replacements[replacement] = match.slice(1, -1);
     idx += 1;
     return replacement;
   });
@@ -122,7 +122,7 @@ const transformQuotedStrings = (input: string): { result: string; replacements: 
  *
  * @param input - Input header string.
  */
-const splitAndClean = (input: string): string[] =>
+export const splitAndClean = (input: string): string[] =>
   input.split(',')
     .map((part): string => part.trim())
     .filter((part): boolean => part.length > 0);
@@ -136,12 +136,46 @@ const splitAndClean = (input: string): string[] =>
  * Thrown on invalid syntax.
  */
 const testQValue = (qvalue: string): void => {
-  if (!/^q=(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
+  if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
     throw new UnsupportedHttpError(
-      `Invalid q value: ${qvalue} does not match ("q=" ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] )).`,
+      `Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`,
     );
   }
 };
+
+/**
+ * Parses a list of split parameters and checks their validity.
+ *
+ * @param parameters - A list of split parameters (token [ "=" ( token / quoted-string ) ])
+ * @param replacements - The double quoted strings that need to be replaced.
+ *
+ *
+ * @throws {@link UnsupportedHttpError}
+ * Thrown on invalid parameter syntax.
+ *
+ * @returns An array of name/value objects corresponding to the parameters.
+ */
+export const parseParameters = (parameters: string[], replacements: { [id: string]: string }):
+{ name: string; value: string }[] => parameters.map((param): { name: string; value: string } => {
+  const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
+
+  // Test replaced string for easier check
+  // parameter  = token "=" ( token / quoted-string )
+  // second part is optional for certain parameters
+  if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
+    throw new UnsupportedHttpError(
+      `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
+      `does not match (token ( "=" ( token / quoted-string ))?). `,
+    );
+  }
+
+  let value = rawValue;
+  if (value in replacements) {
+    value = replacements[rawValue];
+  }
+
+  return { name, value };
+});
 
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
@@ -163,7 +197,7 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
   // No reason to test differently for * since we don't check if the type exists
   const [ type, subtype ] = range.split('/');
   if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
-    throw new Error(
+    throw new UnsupportedHttpError(
       `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
     );
   }
@@ -172,33 +206,19 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
   const mediaTypeParams: { [key: string]: string } = {};
   const extensionParams: { [key: string]: string } = {};
   let map = mediaTypeParams;
-  parameters.forEach((param): void => {
-    const [ name, value ] = param.split('=');
-
+  const parsedParams = parseParameters(parameters, replacements);
+  parsedParams.forEach(({ name, value }): void => {
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
-      testQValue(param);
+      testQValue(value);
       weight = Number.parseFloat(value);
     } else {
-      // Test replaced string for easier check
-      // parameter  = token "=" ( token / quoted-string )
-      // second part is optional for extension parameters
-      if (!token.test(name) ||
-        !((map === extensionParams && !value) || (value && (/^"\d+"$/u.test(value) || token.test(value))))) {
-        throw new UnsupportedHttpError(
-          `Invalid Accept parameter: ${param} does not match (token "=" ( token / quoted-string )). ` +
-          `Second part is optional for extension parameters.`,
-        );
+      if (!value && map !== extensionParams) {
+        throw new UnsupportedHttpError(`Invalid Accept parameter ${name}: ` +
+        `Accept parameter values are not optional when preceding the q value.`);
       }
-
-      let actualValue = value;
-      if (value && value.length > 0 && value.startsWith('"') && replacements[value]) {
-        actualValue = replacements[value];
-      }
-
-      // Value is optional for extension parameters
-      map[name] = actualValue || '';
+      map[name] = value || '';
     }
   });
 
@@ -228,8 +248,12 @@ const parseNoParameters = (input: string): { range: string; weight: number }[] =
     const [ range, qvalue ] = part.split(';').map((param): string => param.trim());
     const result = { range, weight: 1 };
     if (qvalue) {
-      testQValue(qvalue);
-      result.weight = Number.parseFloat(qvalue.split('=')[1]);
+      if (!qvalue.startsWith('q=')) {
+        throw new UnsupportedHttpError(`Only q parameters are allowed in ${input}.`);
+      }
+      const val = qvalue.slice(2);
+      testQValue(val);
+      result.weight = Number.parseFloat(val);
     }
     return result;
   }).sort((left, right): number => right.weight - left.weight);
