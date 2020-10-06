@@ -66,3 +66,16 @@ export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, des
   readable.on('error', (error): boolean => destination.emit('error', new UnsupportedHttpError(error.message)));
   return destination;
 };
+
+/**
+ * Converts a URL string to the "canonical" version that should be used internally for consistency.
+ * Decodes all percent encodings and then makes sure only the necessary characters are encoded again.
+ */
+export const toCanonicalUrl = (url: string): string => {
+  const match = /(\w+:\/\/[^/]+\/)(.*)/u.exec(url);
+  if (!match) {
+    throw new UnsupportedHttpError(`Invalid URL ${url}`);
+  }
+  const [ , domain, path ] = match;
+  return encodeURI(domain + path.split('/').map(decodeURIComponent).join('/'));
+};

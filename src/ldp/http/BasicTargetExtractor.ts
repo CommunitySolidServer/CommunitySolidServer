@@ -1,6 +1,7 @@
 import type { TLSSocket } from 'tls';
 import { format } from 'url';
 import type { HttpRequest } from '../../server/HttpRequest';
+import { toCanonicalUrl } from '../../util/Util';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 
@@ -28,6 +29,6 @@ export class BasicTargetExtractor extends TargetExtractor {
       pathname: input.url,
     });
 
-    return { path: url };
+    return { path: toCanonicalUrl(url) };
   }
 }
