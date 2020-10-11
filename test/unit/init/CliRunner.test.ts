@@ -8,9 +8,7 @@ let calledInstantiateFromUrl: boolean;
 let calledRegisterAvailableModuleResources: boolean;
 let throwError: boolean;
 let outsideResolve: () => void;
-const functionToResolve = new Promise((resolve): any => {
-  outsideResolve = resolve;
-});
+let functionToResolve: Promise<unknown>;
 
 const mockSetup = {
   setup: jest.fn(),
@@ -69,6 +67,9 @@ describe('CliRunner', (): void => {
     calledInstantiateFromUrl = false;
     calledRegisterAvailableModuleResources = false;
     throwError = false;
+    functionToResolve = new Promise((resolve): any => {
+      outsideResolve = resolve;
+    });
   });
 
   it('Runs function for starting the server from the command line.', async(): Promise<void> => {
@@ -85,7 +86,6 @@ describe('CliRunner', (): void => {
     const mockStderr = jest.spyOn(process.stderr, 'write').mockImplementation((): any => {
       outsideResolve();
     });
-
     throwError = true;
 
     runCli(Path.join(__dirname, '..'));
@@ -93,7 +93,6 @@ describe('CliRunner', (): void => {
     await functionToResolve;
 
     expect(mockStderr).toHaveBeenCalledTimes(1);
-
     mockStderr.mockRestore();
   });
 });
