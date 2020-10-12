@@ -14,6 +14,7 @@ const mockSetup = {
   setup: jest.fn(),
 } as unknown as jest.Mocked<Setup>;
 
+// Mock the Loader class.
 jest.mock('componentsjs', (): any => (
   // eslint-disable-next-line @typescript-eslint/naming-convention, object-shorthand
   { Loader: function(): Loader {
@@ -32,10 +33,12 @@ jest.mock('componentsjs', (): any => (
   } }
 ));
 
+// Create a mock for the Logger as this doesn't exist in a testing environment.
 jest.mock('../../../src/logging/LogUtil', (): any => ({
   getLoggerFor(): Logger {
     return {
       info(): any {
+        // The info method will be called when all other code has been executed, so end the waiting function.
         outsideResolve();
       },
     } as unknown as Logger;
@@ -67,6 +70,8 @@ describe('CliRunner', (): void => {
     calledInstantiateFromUrl = false;
     calledRegisterAvailableModuleResources = false;
     throwError = false;
+
+    // Initialize a function that will be resolved as soon as all necessary but asynchronous calls are completed.
     functionToResolve = new Promise((resolve): any => {
       outsideResolve = resolve;
     });
@@ -84,6 +89,7 @@ describe('CliRunner', (): void => {
 
   it('Writes to stderr when an exception occurs.', async(): Promise<void> => {
     const mockStderr = jest.spyOn(process.stderr, 'write').mockImplementation((): any => {
+      // This method will be called when an error has occurred, so end the waiting function.
       outsideResolve();
     });
     throwError = true;
