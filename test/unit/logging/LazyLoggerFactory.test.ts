@@ -31,7 +31,7 @@ describe('LazyLoggerFactory', (): void => {
 
   it('throws when retrieving the inner factory if none has been set.', async(): Promise<void> => {
     expect((): any => LazyLoggerFactory.getInstance().loggerFactory)
-      .toThrow(new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.'));
+      .toThrow(new Error('No logger factory has been set. Can be caused by logger invocation during initialization.'));
   });
 
   it('Returns the inner factory if one has been set.', async(): Promise<void> => {
@@ -60,6 +60,6 @@ describe('LazyLoggerFactory', (): void => {
   it('errors on invoking LazyLoggers if a factory has not been set yet.', async(): Promise<void> => {
     const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
     expect((): any => logger.log('debug', 'my message', { abc: true }))
-      .toThrow(new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.'));
+      .toThrow(new Error('No logger factory has been set. Can be caused by logger invocation during initialization.'));
   });
 });

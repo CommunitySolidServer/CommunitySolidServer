@@ -34,7 +34,7 @@ export class LazyLoggerFactory implements LoggerFactory {
 
   public get loggerFactory(): LoggerFactory {
     if (!this.ploggerFactory) {
-      throw new Error('No logger factory has been set yet. Can be caused logger invocation during initialization.');
+      throw new Error('No logger factory has been set. Can be caused by logger invocation during initialization.');
     }
     return this.ploggerFactory;
   }
