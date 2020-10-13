@@ -1,7 +1,7 @@
 import type { TLSSocket } from 'tls';
 import { format } from 'url';
 import type { HttpRequest } from '../../server/HttpRequest';
-import { toCanonicalUrl } from '../../util/Util';
+import { toCanonicalUriPath } from '../../util/Util';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 
@@ -23,12 +23,12 @@ export class BasicTargetExtractor extends TargetExtractor {
       throw new Error('Missing host.');
     }
     const isHttps = input.connection && (input.connection as TLSSocket).encrypted;
-    const url = format({
+    const path = format({
       protocol: `http${isHttps ? 's' : ''}`,
-      host: input.headers.host,
-      pathname: input.url,
+      host: toCanonicalUriPath(input.headers.host),
+      pathname: toCanonicalUriPath(input.url),
     });
 
-    return { path: toCanonicalUrl(url) };
+    return { path };
   }
 }

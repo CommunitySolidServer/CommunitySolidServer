@@ -68,14 +68,19 @@ export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, des
 };
 
 /**
- * Converts a URL string to the "canonical" version that should be used internally for consistency.
- * Decodes all percent encodings and then makes sure only the necessary characters are encoded again.
+ * Converts a URI path to the canonical version by splitting on slashes,
+ * decoding any percent-based encodings,
+ * and then encoding any special characters.
  */
-export const toCanonicalUrl = (url: string): string => {
-  const match = /(\w+:\/\/[^/]+\/)(.*)/u.exec(url);
-  if (!match) {
-    throw new UnsupportedHttpError(`Invalid URL ${url}`);
-  }
-  const [ , domain, path ] = match;
-  return encodeURI(domain + path.split('/').map(decodeURIComponent).join('/'));
-};
+export const toCanonicalUriPath = (path: string): string => path.split('/').map((part): string =>
+  encodeURIComponent(decodeURIComponent(part))).join('/');
+
+/**
+ * Decodes all components of a URI path.
+ */
+export const decodeUriPathComponents = (path: string): string => path.split('/').map(decodeURIComponent).join('/');
+
+/**
+ * Encodes all (non-slash) special characters in a URI path.
+ */
+export const encodeUriPathComponents = (path: string): string => path.split('/').map(encodeURIComponent).join('/');
