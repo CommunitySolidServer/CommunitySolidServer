@@ -2,7 +2,8 @@ import * as Path from 'path';
 import type { Loader } from 'componentsjs';
 import { runCli } from '../../../src/init/CliRunner';
 import type { Setup } from '../../../src/init/Setup';
-import type { Logger } from '../../../src/logging/Logger';
+import { setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
+import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 let calledInstantiateFromUrl: boolean;
 let calledRegisterAvailableModuleResources: boolean;
@@ -33,18 +34,6 @@ jest.mock('componentsjs', (): any => (
   } }
 ));
 
-// Create a mock for the Logger as this doesn't exist in a testing environment.
-jest.mock('../../../src/logging/LogUtil', (): any => ({
-  getLoggerFor(): Logger {
-    return {
-      info(): any {
-        // The info method will be called when all other code has been executed, so end the waiting function.
-        outsideResolve();
-      },
-    } as unknown as Logger;
-  },
-}));
-
 jest.mock('yargs', (): any => ({
   usage(): any {
     return this;
@@ -66,6 +55,15 @@ jest.mock('yargs', (): any => ({
 }));
 
 describe('CliRunner', (): void => {
+  beforeAll(async(): Promise<void> => {
+    setGlobalLoggerFactory(new VoidLoggerFactory());
+
+    mockSetup.setup.mockImplementation(async(): Promise<any> => {
+      // The info method will be called when all other code has been executed, so end the waiting function.
+      outsideResolve();
+    });
+  });
+
   beforeEach(async(): Promise<void> => {
     calledInstantiateFromUrl = false;
     calledRegisterAvailableModuleResources = false;
