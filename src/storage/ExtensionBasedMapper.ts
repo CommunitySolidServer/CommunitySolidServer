@@ -6,7 +6,7 @@ import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
-import { trimTrailingSlashes } from '../util/Util';
+import { decodeUriPathComponents, encodeUriPathComponents, trimTrailingSlashes } from '../util/Util';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -137,7 +137,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
       return {
-        identifier: { path: encodeURI(this.baseRequestURI + relative) },
+        identifier: { path: this.baseRequestURI + encodeUriPathComponents(relative) },
         filePath,
       };
     }
@@ -150,7 +150,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     }
 
     return {
-      identifier: { path: encodeURI(this.baseRequestURI + relative) },
+      identifier: { path: this.baseRequestURI + encodeUriPathComponents(relative) },
       filePath,
       contentType,
     };
@@ -201,7 +201,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
-    return decodeURI(identifier.path).slice(this.baseRequestURI.length);
+    return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));
   }
 
   /**

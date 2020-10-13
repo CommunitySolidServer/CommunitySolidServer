@@ -1,6 +1,12 @@
 import streamifyArray from 'streamify-array';
-import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
-import { ensureTrailingSlash, matchingMediaType, readableToString, toCanonicalUrl } from '../../../src/util/Util';
+import {
+  decodeUriPathComponents,
+  encodeUriPathComponents,
+  ensureTrailingSlash,
+  matchingMediaType,
+  readableToString,
+  toCanonicalUriPath,
+} from '../../../src/util/Util';
 
 describe('Util function', (): void => {
   describe('ensureTrailingSlash', (): void => {
@@ -33,14 +39,17 @@ describe('Util function', (): void => {
     });
   });
 
-  describe('toCanonicalUrl', (): void => {
-    it('makes sure only the necessary parts are encoded.', async(): Promise<void> => {
-      expect(toCanonicalUrl('http://test.com/a%20path%26/name'))
-        .toEqual('http://test.com/a%20path&/name');
+  describe('UriPath functions', (): void => {
+    it('makes sure only the necessary parts are encoded with toCanonicalUriPath.', async(): Promise<void> => {
+      expect(toCanonicalUriPath('/a%20path&/name')).toEqual('/a%20path%26/name');
     });
 
-    it('errors on invalid URLs.', async(): Promise<void> => {
-      expect((): any => toCanonicalUrl('notAnUrl')).toThrow(new UnsupportedHttpError('Invalid URL notAnUrl'));
+    it('decodes all parts of a path with decodeUriPathComponents.', async(): Promise<void> => {
+      expect(decodeUriPathComponents('/a%20path&/name')).toEqual('/a path&/name');
+    });
+
+    it('encodes all parts of a path with encodeUriPathComponents.', async(): Promise<void> => {
+      expect(encodeUriPathComponents('/a%20path&/name')).toEqual('/a%2520path%26/name');
     });
   });
 });
