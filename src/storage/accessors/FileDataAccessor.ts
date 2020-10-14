@@ -214,12 +214,28 @@ export class FileDataAccessor implements DataAccessor {
     metadata.removeAll(RDF.type);
     metadata.removeAll(CONTENT_TYPE);
     const quads = metadata.quads();
+    const metadataPath = await this.getMetadataPath(link.identifier);
+    let wroteMetadata: boolean;
+
+    // Write metadata to file if there are quads remaining
     if (quads.length > 0) {
       const serializedMetadata = this.metadataController.serializeQuads(quads);
-      await this.writeDataFile(await this.getMetadataPath(link.identifier), serializedMetadata);
-      return true;
+      await this.writeDataFile(metadataPath, serializedMetadata);
+      wroteMetadata = true;
+
+    // Delete (potentially) existing metadata file if no metadata needs to be stored
+    } else {
+      try {
+        await fsPromises.unlink(metadataPath);
+      } catch (error: unknown) {
+        // Metadata file doesn't exist so nothing needs to be removed
+        if (!isSystemError(error) || error.code !== 'ENOENT') {
+          throw error;
+        }
+      }
+      wroteMetadata = false;
     }
-    return false;
+    return wroteMetadata;
   }
 
   /**

@@ -7,6 +7,7 @@ import { ExtensionBasedMapper } from '../../../../src/storage/ExtensionBasedMapp
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import { MetadataController } from '../../../../src/util/MetadataController';
 import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/UriConstants';
@@ -174,6 +175,24 @@ describe('A FileDataAccessor', (): void => {
       expect(cache.data['resource.meta']).toBeUndefined();
     });
 
+    it('deletes existing metadata if nothing new needs to be stored.', async(): Promise<void> => {
+      cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
+      const data = streamifyArray([ 'data' ]);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
+      expect(cache.data.resource).toBe('data');
+      expect(cache.data['resource.meta']).toBeUndefined();
+    });
+
+    it('errors if there is a problem deleting the old metadata file.', async(): Promise<void> => {
+      cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
+      jest.requireMock('fs').promises.unlink = (): any => {
+        throw new Error('error');
+      };
+      const data = streamifyArray([ 'data' ]);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
+        .rejects.toThrow(new Error('error'));
+    });
+
     it('throws if something went wrong writing a file.', async(): Promise<void> => {
       const data = streamifyArray([ 'data' ]);
       data.read = (): any => {
@@ -212,10 +231,13 @@ describe('A FileDataAccessor', (): void => {
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
       jest.requireMock('fs').promises.unlink = (): any => {
-        throw new Error('error');
+        const error = new Error('error') as SystemError;
+        error.code = 'ENOENT';
+        error.syscall = 'unlink';
+        throw error;
       };
 
-      // `unlink` should not be called if the content-type does not change
+      // `unlink` throwing ENOENT should not be an issue if the content-type does not change
       metadata.contentType = 'text/turtle';
       await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
         .resolves.toBeUndefined();
