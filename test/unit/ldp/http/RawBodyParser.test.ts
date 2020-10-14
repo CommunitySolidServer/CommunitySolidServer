@@ -3,12 +3,18 @@ import streamifyArray from 'streamify-array';
 import type { BodyParserArgs } from '../../../../src/ldp/http/BodyParser';
 import { RawBodyParser } from '../../../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import 'jest-rdf';
+import { setGlobalLoggerFactory } from '../../../../src/logging/LogUtil';
+import { VoidLoggerFactory } from '../../../../src/logging/VoidLoggerFactory';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 
 describe('A RawBodyparser', (): void => {
   const bodyParser = new RawBodyParser();
   let input: BodyParserArgs;
+
+  beforeAll(async(): Promise<void> => {
+    setGlobalLoggerFactory(new VoidLoggerFactory());
+  });
 
   beforeEach(async(): Promise<void> => {
     input = { request: { headers: {}} as HttpRequest, metadata: new RepresentationMetadata() };

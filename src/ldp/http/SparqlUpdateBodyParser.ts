@@ -1,6 +1,7 @@
 import { PassThrough } from 'stream';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
@@ -14,8 +15,11 @@ import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
  * Will convert the incoming update string to algebra in a {@link SparqlUpdatePatch}.
  */
 export class SparqlUpdateBodyParser extends BodyParser {
+  protected readonly logger = getLoggerFor(this);
+
   public async canHandle({ request }: BodyParserArgs): Promise<void> {
     if (request.headers['content-type'] !== APPLICATION_SPARQL_UPDATE) {
+      this.logger.warn('This parser only supports SPARQL UPDATE data.');
       throw new UnsupportedMediaTypeHttpError('This parser only supports SPARQL UPDATE data.');
     }
   }
@@ -34,8 +38,10 @@ export class SparqlUpdateBodyParser extends BodyParser {
       algebra = translate(sparql, { quads: true });
     } catch (error: unknown) {
       if (error instanceof Error) {
+        this.logger.warn(`Cannot translate SPARQL query to SPARQL Algebra: ${error.message}`);
         throw new UnsupportedHttpError(error.message);
       }
+      this.logger.warn('Cannot translate SPARQL query to SPARQL Algebra');
       throw new UnsupportedHttpError();
     }
 

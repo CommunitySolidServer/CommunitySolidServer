@@ -1,4 +1,6 @@
 import type { MockResponse } from 'node-mocks-http';
+import { setGlobalLoggerFactory } from '../../src/logging/LogUtil';
+import { VoidLoggerFactory } from '../../src/logging/VoidLoggerFactory';
 import { BasicHandlersWithAclConfig } from '../configs/BasicHandlersWithAclConfig';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call } from '../util/Util';
@@ -8,6 +10,10 @@ describe('A server with authorization', (): void => {
   const handler = config.getHttpHandler();
   const { store } = config;
   const aclHelper = new AclTestHelper(store, 'http://test.com/');
+
+  beforeAll(async(): Promise<void> => {
+    setGlobalLoggerFactory(new VoidLoggerFactory());
+  });
 
   it('can create new entries.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');

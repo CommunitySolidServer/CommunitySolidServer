@@ -2,6 +2,7 @@ import { copyFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
 import type { HttpHandler, ResourceStore } from '../../index';
+import { setGlobalLoggerFactory, VoidLoggerFactory } from '../../index';
 import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
@@ -16,6 +17,8 @@ describe('A server using a AuthenticatedFileResourceStore', (): void => {
   let rootFilePath: string;
 
   beforeAll(async(): Promise<void> => {
+    setGlobalLoggerFactory(new VoidLoggerFactory());
+
     rootFilePath = getRootFilePath('AuthenticatedFileResourceStore');
     config = new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath);
     handler = config.getHttpHandler();

@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpRequest } from '../../server/HttpRequest';
 import type { Operation } from '../operations/Operation';
 import type { BodyParser } from './BodyParser';
@@ -21,6 +22,8 @@ export interface SimpleRequestParserArgs {
  * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataExtractor}, and {@link BodyParser}.
  */
 export class BasicRequestParser extends RequestParser {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly targetExtractor!: TargetExtractor;
   private readonly preferenceParser!: PreferenceParser;
   private readonly metadataExtractor!: MetadataExtractor;
@@ -37,6 +40,7 @@ export class BasicRequestParser extends RequestParser {
 
   public async handle(input: HttpRequest): Promise<Operation> {
     if (!input.method) {
+      this.logger.error('Missing method in HttpRequest.');
       throw new Error('Missing method.');
     }
     const target = await this.targetExtractor.handleSafe(input);

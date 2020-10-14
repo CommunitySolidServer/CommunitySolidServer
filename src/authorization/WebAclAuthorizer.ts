@@ -4,6 +4,7 @@ import type { Credentials } from '../authentication/Credentials';
 import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import type { Representation } from '../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { ContainerManager } from '../storage/ContainerManager';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -21,6 +22,8 @@ import { Authorizer } from './Authorizer';
  * Does not support `acl:agentGroup`, `acl:origin` and `acl:trustedApp` yet.
  */
 export class WebAclAuthorizer extends Authorizer {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly aclManager: AclManager;
   private readonly containerManager: ContainerManager;
   private readonly resourceStore: ResourceStore;
@@ -66,6 +69,8 @@ export class WebAclAuthorizer extends Authorizer {
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
     const auths = store.getQuads(null, ACL.mode, modeString, null).map((quad: Quad): Term => quad.subject);
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
+      this.logger.warn(`No permission to use ${mode} mode (agent not 
+      ${typeof agent.webID === 'string' ? 'allowed to access data' : 'authorized'}).`);
       throw typeof agent.webID === 'string' ? new ForbiddenHttpError() : new UnauthorizedHttpError();
     }
   }
