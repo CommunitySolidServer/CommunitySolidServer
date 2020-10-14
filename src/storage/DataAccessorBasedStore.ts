@@ -339,7 +339,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Create containers starting from the root until the given identifier corresponds to an existing container.
-   * Will throw errors if the identifier of the last existing "container" corresponds to an existing data resource.
+   * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
   protected async createRecursiveContainers(container: ResourceIdentifier): Promise<void> {
