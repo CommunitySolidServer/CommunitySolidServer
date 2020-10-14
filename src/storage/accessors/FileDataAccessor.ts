@@ -7,6 +7,7 @@ import type { NamedNode, Quad } from 'rdf-js';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { TEXT_TURTLE } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
@@ -22,7 +23,7 @@ import type { DataAccessor } from './DataAccessor';
 const { join: joinPath } = posix;
 
 /**
- * DataAccessor that uses the file system to store data resources as files and containers as folders.
+ * DataAccessor that uses the file system to store documents as files and containers as folders.
  */
 export class FileDataAccessor implements DataAccessor {
   private readonly resourceMapper: ExtensionBasedMapper;
@@ -79,11 +80,13 @@ export class FileDataAccessor implements DataAccessor {
    */
   public async writeDocument(identifier: ResourceIdentifier, data: Readable, metadata: RepresentationMetadata):
   Promise<void> {
-    const link = await this.resourceMapper
-      .mapUrlToFilePath(identifier, metadata.contentType);
-    if (this.isMetadataPath(link.filePath)) {
+    if (this.isMetadataPath(identifier.path)) {
       throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
     }
+    const link = await this.resourceMapper.mapUrlToFilePath(identifier, metadata.contentType);
+
+    // Check if we already have a corresponding file with a different extension
+    await this.verifyExistingExtension(link);
 
     const wroteMetadata = await this.writeMetadata(link, metadata);
 
@@ -92,7 +95,7 @@ export class FileDataAccessor implements DataAccessor {
     } catch (error: unknown) {
       // Delete the metadata if there was an error writing the file
       if (wroteMetadata) {
-        await fsPromises.unlink(this.getMetadataPath(link.filePath));
+        await fsPromises.unlink(await this.getMetadataPath(link.identifier));
       }
       throw error;
     }
@@ -123,7 +126,7 @@ export class FileDataAccessor implements DataAccessor {
     const stats = await this.getStats(link.filePath);
 
     try {
-      await fsPromises.unlink(this.getMetadataPath(link.filePath));
+      await fsPromises.unlink(await this.getMetadataPath(link.identifier));
     } catch (error: unknown) {
       // Ignore if it doesn't exist
       if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -159,14 +162,15 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   /**
-   * Generates file path that corresponds to the metadata file of the given file path.
+   * Generates file path that corresponds to the metadata file of the given identifier.
+   * Starts from the identifier to make sure any potentially added extension has no impact on the path.
    */
-  private getMetadataPath(path: string): string {
-    return `${path}.meta`;
+  private async getMetadataPath(identifier: ResourceIdentifier): Promise<string> {
+    return (await this.resourceMapper.mapUrlToFilePath({ path: `${identifier.path}.meta` }, TEXT_TURTLE)).filePath;
   }
 
   /**
-   * Checks if the given file path is a metadata path.
+   * Checks if the given path is a metadata path.
    */
   private isMetadataPath(path: string): boolean {
     return path.endsWith('.meta');
@@ -212,7 +216,7 @@ export class FileDataAccessor implements DataAccessor {
     const quads = metadata.quads();
     if (quads.length > 0) {
       const serializedMetadata = this.metadataController.serializeQuads(quads);
-      await this.writeDataFile(this.getMetadataPath(link.filePath), serializedMetadata);
+      await this.writeDataFile(await this.getMetadataPath(link.identifier), serializedMetadata);
       return true;
     }
     return false;
@@ -227,7 +231,7 @@ export class FileDataAccessor implements DataAccessor {
   private async getBaseMetadata(link: ResourceLink, stats: Stats, isContainer: boolean):
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(link.identifier.path)
-      .addQuads(await this.getRawMetadata(link.filePath));
+      .addQuads(await this.getRawMetadata(link.identifier));
     metadata.addQuads(this.metadataController.generateResourceQuads(metadata.identifier as NamedNode, isContainer));
     metadata.addQuads(this.generatePosixQuads(metadata.identifier as NamedNode, stats));
     return metadata;
@@ -237,14 +241,16 @@ export class FileDataAccessor implements DataAccessor {
    * Reads the metadata from the corresponding metadata file.
    * Returns an empty array if there is no metadata file.
    *
-   * @param path - File path of the resource (not the metadata!).
+   * @param identifier - Identifier of the resource (not the metadata!).
    */
-  private async getRawMetadata(path: string): Promise<Quad[]> {
+  private async getRawMetadata(identifier: ResourceIdentifier): Promise<Quad[]> {
     try {
-      // Check if the metadata file exists first
-      await fsPromises.lstat(this.getMetadataPath(path));
+      const metadataPath = await this.getMetadataPath(identifier);
 
-      const readMetadataStream = createReadStream(this.getMetadataPath(path));
+      // Check if the metadata file exists first
+      await fsPromises.lstat(metadataPath);
+
+      const readMetadataStream = createReadStream(metadataPath);
       return await this.metadataController.parseQuads(readMetadataStream);
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
@@ -311,6 +317,28 @@ export class FileDataAccessor implements DataAccessor {
       Math.floor(stats.mtime.getTime() / 1000), XSD.integer,
     ));
     return quads;
+  }
+
+  /**
+   * Verifies if there already is a file corresponding to the given resource.
+   * If yes, that file is removed if it does not match the path given in the input ResourceLink.
+   * This can happen if the content-type differs from the one that was stored.
+   *
+   * @param link - ResourceLink corresponding to the new resource data.
+   */
+  private async verifyExistingExtension(link: ResourceLink): Promise<void> {
+    try {
+      // Delete the old file with the (now) wrong extension
+      const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier);
+      if (oldLink.filePath !== link.filePath) {
+        await fsPromises.unlink(oldLink.filePath);
+      }
+    } catch (error: unknown) {
+      // Ignore it if the file didn't exist yet
+      if (!(error instanceof NotFoundHttpError)) {
+        throw error;
+      }
+    }
   }
 
   /**
