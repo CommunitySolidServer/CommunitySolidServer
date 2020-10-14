@@ -6,15 +6,10 @@ import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAc
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 import { MetadataController } from '../../src/util/MetadataController';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
-import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { FileTestHelper } from '../util/TestHelpers';
 
-const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'FileResourceStore',
-  (rootFilePath: string): ServerConfig => new FileResourceStoreConfig(BASE, rootFilePath),
-];
 const fileDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'FileDataAccessorBasedStore',
   (rootFilePath: string): ServerConfig => new DataAccessorBasedConfig(BASE,
@@ -26,7 +21,7 @@ const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig
     new InMemoryDataAccessor(BASE, new MetadataController())),
 ];
 
-const configs = [ fileResourceStore, fileDataAccessorStore, inMemoryDataAccessorStore ];
+const configs = [ fileDataAccessorStore, inMemoryDataAccessorStore ];
 
 describe.each(configs)('A server using a %s', (name, configFn): void => {
   describe('without acl', (): void => {

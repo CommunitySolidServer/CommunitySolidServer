@@ -1,27 +1,30 @@
-import { copyFileSync, mkdirSync } from 'fs';
+import { createReadStream, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
+import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
+import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 import { MetadataController } from '../../src/util/MetadataController';
+import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
-import { AuthenticatedFileResourceStoreConfig } from '../configs/AuthenticatedFileResourceStoreConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
-const fileResourceStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'AuthenticatedFileResourceStore',
-  (rootFilePath: string): ServerConfig => new AuthenticatedFileResourceStoreConfig(BASE, rootFilePath),
-];
 const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'AuthenticatedFileDataAccessorBasedStore',
   (rootFilePath: string): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
     new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath), new MetadataController())),
 ];
+const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
+  'AuthenticatedInMemoryDataAccessorBasedStore',
+  (): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
+    new InMemoryDataAccessor(BASE, new MetadataController())),
+];
 
-describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (name, configFn): void => {
+describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using a %s', (name, configFn): void => {
   describe('with acl', (): void => {
     let config: ServerConfig;
     let aclHelper: AclTestHelper;
@@ -37,7 +40,13 @@ describe.each([ fileResourceStore, dataAccessorStore ])('A server using a %s', (
 
       // Make sure the root directory exists
       mkdirSync(rootFilePath, { recursive: true });
-      copyFileSync(join(__dirname, '../assets/permanent.txt'), `${rootFilePath}/permanent.txt`);
+
+      // Use store instead of file access so tests also work for non-file backends
+      await config.store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
+        binary: true,
+        data: createReadStream(join(__dirname, '../assets/permanent.txt')),
+        metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }),
+      });
     });
 
     afterAll(async(): Promise<void> => {
