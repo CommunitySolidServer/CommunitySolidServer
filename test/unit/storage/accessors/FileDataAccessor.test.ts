@@ -140,7 +140,7 @@ describe('A FileDataAccessor', (): void => {
     });
   });
 
-  describe('writing a data resource', (): void => {
+  describe('writing a document', (): void => {
     it('throws a 404 if the identifier does not start with the base.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: 'badpath' }, streamifyArray([]), metadata))
         .rejects.toThrow(NotFoundHttpError);
@@ -262,7 +262,7 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.deleteResource({ path: `${base}container` })).rejects.toThrow(NotFoundHttpError);
     });
 
-    it('deletes the corresponding file for data resources.', async(): Promise<void> => {
+    it('deletes the corresponding file for document.', async(): Promise<void> => {
       cache.data = { resource: 'apple' };
       await expect(accessor.deleteResource({ path: `${base}resource` })).resolves.toBeUndefined();
       expect(cache.data.resource).toBeUndefined();

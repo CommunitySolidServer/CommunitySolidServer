@@ -27,7 +27,7 @@ describe('An InMemoryDataAccessor', (): void => {
   });
 
   describe('reading and writing data', (): void => {
-    it('throws a 404 if the identifier does not match an existing data resource.', async(): Promise<void> => {
+    it('throws a 404 if the identifier does not match an existing document.', async(): Promise<void> => {
       await expect(accessor.getData({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
       await expect(accessor.getData({ path: `${base}container/resource` })).rejects.toThrow(NotFoundHttpError);
     });
@@ -36,7 +36,7 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.getData({ path: base })).rejects.toThrow(NotFoundHttpError);
     });
 
-    it('throws an error if part of the path matches a data resource.', async(): Promise<void> => {
+    it('throws an error if part of the path matches a document.', async(): Promise<void> => {
       await accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'data' ]), metadata);
       await expect(accessor.getData({ path: `${base}resource/resource2` })).rejects.toThrow(new Error('Invalid path.'));
     });
@@ -52,7 +52,7 @@ describe('An InMemoryDataAccessor', (): void => {
   });
 
   describe('reading and writing metadata', (): void => {
-    it('throws a 404 if the identifier does not match an existing data resource.', async(): Promise<void> => {
+    it('throws a 404 if the identifier does not match an existing document.', async(): Promise<void> => {
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
     });
 
@@ -85,7 +85,7 @@ describe('An InMemoryDataAccessor', (): void => {
       );
     });
 
-    it('adds stored metadata when requesting data resource metadata.', async(): Promise<void> => {
+    it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
       const inputMetadata = new RepresentationMetadata(`${base}resource`, { [RDF.type]: toNamedNode(LDP.Resource) });
       await accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'data' ]), inputMetadata);
       metadata = await accessor.getMetadata({ path: `${base}resource` });
