@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
@@ -193,6 +194,35 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow(new Error('error'));
       expect(cache.data['resource.meta']).toBeUndefined();
+    });
+
+    it('updates the filename if the content-type gets updated.', async(): Promise<void> => {
+      cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
+      metadata.identifier = DataFactory.namedNode(`${base}resource`);
+      metadata.contentType = 'text/plain';
+      metadata.add('new', 'metadata');
+      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+        .resolves.toBeUndefined();
+      expect(cache.data).toEqual({
+        'resource$.txt': 'text',
+        'resource.meta': expect.stringMatching(`<${base}resource> <new> "metadata".`),
+      });
+    });
+
+    it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
+      cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
+      jest.requireMock('fs').promises.unlink = (): any => {
+        throw new Error('error');
+      };
+
+      // `unlink` should not be called if the content-type does not change
+      metadata.contentType = 'text/turtle';
+      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+        .resolves.toBeUndefined();
+
+      metadata.contentType = 'text/plain';
+      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+        .rejects.toThrow(new Error('error'));
     });
   });
 

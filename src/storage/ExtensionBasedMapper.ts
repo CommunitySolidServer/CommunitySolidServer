@@ -41,7 +41,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   private readonly rootFilepath: string;
   private readonly types: Record<string, any>;
 
-  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, metadata: TEXT_TURTLE }) {
+  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
     this.baseRequestURI = trimTrailingSlashes(base);
     this.rootFilepath = trimTrailingSlashes(normalizePath(rootFilepath));
     this.types = { ...mime.types, ...overrideTypes };
