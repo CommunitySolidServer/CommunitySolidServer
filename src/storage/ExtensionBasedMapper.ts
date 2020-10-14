@@ -3,7 +3,6 @@ import { posix } from 'path';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
 import {
@@ -202,34 +201,10 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    *
    * @returns A string representing the relative path.
    */
-  public getRelativePath(identifier: ResourceIdentifier): string {
+  private getRelativePath(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
       throw new NotFoundHttpError();
     }
     return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));
-  }
-
-  /**
-   * Splits the identifier into the parent directory and slug.
-   * If the identifier specifies a directory, slug will be undefined.
-   * @param identifier - Incoming identifier.
-   *
-   * @throws {@link ConflictHttpError}
-   * If the root identifier is passed.
-   *
-   * @returns A ResourcePath object containing (absolute) path and (optional) slug fields.
-   */
-  public extractDocumentName(identifier: ResourceIdentifier): ResourcePath {
-    const [ , containerPath, documentName ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
-    if (
-      (typeof containerPath !== 'string' || normalizePath(containerPath) === '/') && typeof documentName !== 'string') {
-      throw new ConflictHttpError('Container with that identifier already exists (root).');
-    }
-    return {
-      containerPath: this.getAbsolutePath(normalizePath(containerPath)),
-
-      // If documentName is defined, return normalized documentName
-      documentName: typeof documentName === 'string' ? normalizePath(documentName) : undefined,
-    };
   }
 }

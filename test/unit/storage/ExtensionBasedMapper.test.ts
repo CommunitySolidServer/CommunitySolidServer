@@ -1,6 +1,5 @@
 import fs from 'fs';
 import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
-import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
 import { trimTrailingSlashes } from '../../../src/util/Util';
@@ -133,24 +132,6 @@ describe('An ExtensionBasedMapper', (): void => {
         identifier: { path: `${base}test` },
         filePath: `${rootFilepath}test`,
         contentType: 'application/octet-stream',
-      });
-    });
-  });
-
-  describe('extractDocumentName', (): void => {
-    it('throws an error if the input corresponds to root.', async(): Promise<void> => {
-      expect((): any => mapper.extractDocumentName({ path: base })).toThrow(ConflictHttpError);
-      expect((): any => mapper.extractDocumentName({ path: trimTrailingSlashes(base) }))
-        .toThrow(ConflictHttpError);
-    });
-
-    it('parses the identifier into container file path and document name.', async(): Promise<void> => {
-      expect(mapper.extractDocumentName({ path: `${base}test` })).toEqual({
-        containerPath: rootFilepath,
-        documentName: 'test',
-      });
-      expect(mapper.extractDocumentName({ path: `${base}test/` })).toEqual({
-        containerPath: `${rootFilepath}test/`,
       });
     });
   });
