@@ -16,8 +16,7 @@ import type { MetadataController } from '../../util/MetadataController';
 import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
 import { pushQuad } from '../../util/Util';
-import type { ExtensionBasedMapper } from '../ExtensionBasedMapper';
-import type { ResourceLink } from '../FileIdentifierMapper';
+import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
 const { join: joinPath } = posix;
@@ -26,10 +25,10 @@ const { join: joinPath } = posix;
  * DataAccessor that uses the file system to store documents as files and containers as folders.
  */
 export class FileDataAccessor implements DataAccessor {
-  private readonly resourceMapper: ExtensionBasedMapper;
+  private readonly resourceMapper: FileIdentifierMapper;
   private readonly metadataController: MetadataController;
 
-  public constructor(resourceMapper: ExtensionBasedMapper, metadataController: MetadataController) {
+  public constructor(resourceMapper: FileIdentifierMapper, metadataController: MetadataController) {
     this.resourceMapper = resourceMapper;
     this.metadataController = metadataController;
   }
