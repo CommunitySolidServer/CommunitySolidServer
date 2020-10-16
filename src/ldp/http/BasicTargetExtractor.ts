@@ -1,5 +1,4 @@
 import type { TLSSocket } from 'tls';
-import { format } from 'url';
 import type { HttpRequest } from '../../server/HttpRequest';
 import { toCanonicalUriPath } from '../../util/Util';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -23,11 +22,11 @@ export class BasicTargetExtractor extends TargetExtractor {
       throw new Error('Missing host.');
     }
     const isHttps = input.connection && (input.connection as TLSSocket).encrypted;
-    const path = format({
-      protocol: `http${isHttps ? 's' : ''}`,
-      host: toCanonicalUriPath(input.headers.host),
-      pathname: toCanonicalUriPath(input.url),
-    });
+
+    // URL object applies punycode encoding to domain
+    const base = `http${isHttps ? 's' : ''}://${input.headers.host}`;
+    const url = toCanonicalUriPath(input.url);
+    const path = new URL(url, base).href;
 
     return { path };
   }
