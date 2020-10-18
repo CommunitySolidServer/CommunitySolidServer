@@ -2,17 +2,11 @@ import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
-import { setGlobalLoggerFactory } from '../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../src/logging/VoidLoggerFactory';
 import { BasicConfig } from '../configs/BasicConfig';
 import { BasicHandlersConfig } from '../configs/BasicHandlersConfig';
 import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
-
   describe('with simple handlers', (): void => {
     const handler = new BasicConfig().getHttpHandler();
 

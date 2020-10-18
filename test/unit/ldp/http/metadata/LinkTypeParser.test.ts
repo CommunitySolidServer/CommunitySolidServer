@@ -1,7 +1,5 @@
 import { LinkTypeParser } from '../../../../../src/ldp/http/metadata/LinkTypeParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
-import { setGlobalLoggerFactory } from '../../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../../src/logging/VoidLoggerFactory';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { RDF } from '../../../../../src/util/UriConstants';
 
@@ -9,10 +7,6 @@ describe('A LinkTypeParser', (): void => {
   const parser = new LinkTypeParser();
   let request: HttpRequest;
   let metadata: RepresentationMetadata;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     request = { headers: {}} as HttpRequest;

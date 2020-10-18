@@ -1,7 +1,5 @@
 import { SlugParser } from '../../../../../src/ldp/http/metadata/SlugParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
-import { setGlobalLoggerFactory } from '../../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../../src/logging/VoidLoggerFactory';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../../src/util/errors/UnsupportedHttpError';
 import { HTTP } from '../../../../../src/util/UriConstants';
@@ -10,10 +8,6 @@ describe('A SlugParser', (): void => {
   const parser = new SlugParser();
   let request: HttpRequest;
   let metadata: RepresentationMetadata;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     request = { headers: {}} as HttpRequest;

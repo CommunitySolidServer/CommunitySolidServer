@@ -1,7 +1,5 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import { setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 import { ExpressHttpServer } from '../../../src/server/ExpressHttpServer';
 import { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
@@ -33,7 +31,6 @@ describe('ExpressHttpServer', (): void => {
   beforeAll(async(): Promise<void> => {
     // Prevent test from writing to stderr
     mock = jest.spyOn(process.stderr, 'write').mockImplementation((): boolean => true);
-    setGlobalLoggerFactory(new VoidLoggerFactory());
   });
 
   beforeEach(async(): Promise<void> => {

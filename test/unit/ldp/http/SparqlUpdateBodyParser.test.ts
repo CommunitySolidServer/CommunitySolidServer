@@ -5,8 +5,6 @@ import streamifyArray from 'streamify-array';
 import type { BodyParserArgs } from '../../../../src/ldp/http/BodyParser';
 import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { setGlobalLoggerFactory } from '../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../src/logging/VoidLoggerFactory';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -15,10 +13,6 @@ import { readableToString } from '../../../../src/util/Util';
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
   let input: BodyParserArgs;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     input = { request: { headers: {}} as HttpRequest, metadata: new RepresentationMetadata() };

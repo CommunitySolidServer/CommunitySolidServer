@@ -6,8 +6,6 @@ import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
 import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
-import { setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 import type { ContainerManager } from '../../../src/storage/ContainerManager';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
@@ -32,10 +30,6 @@ describe('A WebAclAuthorizer', (): void => {
   let permissions: PermissionSet;
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     permissions = {

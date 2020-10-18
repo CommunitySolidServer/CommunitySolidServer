@@ -1,13 +1,7 @@
 import { BasicTargetExtractor } from '../../../../src/ldp/http/BasicTargetExtractor';
-import { setGlobalLoggerFactory } from '../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../src/logging/VoidLoggerFactory';
 
 describe('A BasicTargetExtractor', (): void => {
   const extractor = new BasicTargetExtractor();
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   it('can handle any input.', async(): Promise<void> => {
     await expect(extractor.canHandle()).resolves.toBeUndefined();

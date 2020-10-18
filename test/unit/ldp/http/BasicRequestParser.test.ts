@@ -3,8 +3,6 @@ import type { BodyParser } from '../../../../src/ldp/http/BodyParser';
 import type { MetadataExtractor } from '../../../../src/ldp/http/metadata/MetadataExtractor';
 import type { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
 import type { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
-import { setGlobalLoggerFactory } from '../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../src/logging/VoidLoggerFactory';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicRequestParser', (): void => {
@@ -13,10 +11,6 @@ describe('A BasicRequestParser', (): void => {
   let metadataExtractor: MetadataExtractor;
   let bodyParser: BodyParser;
   let requestParser: BasicRequestParser;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     targetExtractor = new StaticAsyncHandler(true, 'target' as any);

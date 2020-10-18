@@ -1,6 +1,4 @@
 import * as rimraf from 'rimraf';
-import { setGlobalLoggerFactory } from '../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../src/logging/VoidLoggerFactory';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileResourceStoreConfig } from '../configs/FileResourceStoreConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
@@ -14,8 +12,6 @@ describe('A server using a FileResourceStore', (): void => {
     let fileHelper: FileTestHelper;
 
     beforeAll(async(): Promise<void> => {
-      setGlobalLoggerFactory(new VoidLoggerFactory());
-
       rootFilePath = getRootFilePath('FileResourceStore');
       config = new FileResourceStoreConfig(BASE, rootFilePath);
       handler = config.getHttpHandler();

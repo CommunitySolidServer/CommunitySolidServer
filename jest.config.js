@@ -13,7 +13,7 @@ module.exports = {
     "js"
   ],
   "testEnvironment": "node",
-  "setupFilesAfterEnv": ["jest-rdf"],
+  "setupFilesAfterEnv": ["jest-rdf", "<rootDir>/test/util/SetupTests.ts"],
   "collectCoverage": true,
   "coveragePathIgnorePatterns": [
     "/node_modules/"

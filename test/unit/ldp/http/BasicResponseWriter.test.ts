@@ -5,18 +5,12 @@ import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
 import type { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { setGlobalLoggerFactory } from '../../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../../src/logging/VoidLoggerFactory';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 describe('A BasicResponseWriter', (): void => {
   const writer = new BasicResponseWriter();
   let response: MockResponse<any>;
-
-  beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-  });
 
   beforeEach(async(): Promise<void> => {
     response = createResponse({ eventEmitter: EventEmitter });
