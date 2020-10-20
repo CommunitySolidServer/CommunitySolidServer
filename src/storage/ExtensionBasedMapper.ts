@@ -220,7 +220,8 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    */
   private getRelativePath(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
-      this.logger.warn(`The URL '${identifier.path}' does not match the baseRequestURI path (${this.baseRequestURI}) of the store.`);
+      this.logger.warn(`The URL '${identifier.path}' does not match the baseRequestURI path (${this.baseRequestURI})
+       of the store.`);
       throw new NotFoundHttpError();
     }
     return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));

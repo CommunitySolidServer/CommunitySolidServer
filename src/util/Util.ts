@@ -1,8 +1,8 @@
 import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import { getLoggerFor } from '../logging/LogUtil';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
+import { getLoggerFor } from '../logging/LogUtil';
 
 const logger = getLoggerFor('Util');
 
