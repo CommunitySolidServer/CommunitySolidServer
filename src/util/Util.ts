@@ -66,7 +66,7 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
  *
  * @returns The destination stream.
  */
-export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T,
+export const pipeStreamsAndErrors = <T extends Writable>(readable: NodeJS.ReadableStream, destination: T,
   mapError?: (error: Error) => Error): T => {
   readable.pipe(destination);
   readable.on('error', (error): boolean => {

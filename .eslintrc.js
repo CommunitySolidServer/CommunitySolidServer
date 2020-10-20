@@ -5,6 +5,9 @@ module.exports = {
     tsconfigRootDir: __dirname, // this is the reason this is a .js file
     project: ['./tsconfig.json'],
   },
+  globals:  {
+    NodeJS: 'readonly'
+  },
   plugins: [
     'tsdoc',
     'import',

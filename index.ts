@@ -84,6 +84,7 @@ export * from './src/server/HttpResponse';
 export * from './src/storage/accessors/DataAccessor';
 export * from './src/storage/accessors/FileDataAccessor';
 export * from './src/storage/accessors/InMemoryDataAccessor';
+export * from './src/storage/accessors/SparqlDataAccessor';
 
 // Storage/Conversion
 export * from './src/storage/conversion/ChainedConverter';
