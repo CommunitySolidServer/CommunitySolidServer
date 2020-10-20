@@ -1,4 +1,5 @@
 import { Algebra } from 'sparqlalgebrajs';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import type { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
 import type { Operation } from '../operations/Operation';
@@ -12,17 +13,23 @@ import { PermissionsExtractor } from './PermissionsExtractor';
  * while DELETEs require write permissions as well.
  */
 export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
+  protected readonly logger = getLoggerFor(this);
+
   public async canHandle({ method, body }: Operation): Promise<void> {
     if (method !== 'PATCH') {
+      this.logger.warn(`Cannot determine permissions of ${method}, only PATCH.`);
       throw new UnsupportedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
     }
     if (!body) {
+      this.logger.warn('Cannot determine permissions of PATCH operations without a body.');
       throw new UnsupportedHttpError('Cannot determine permissions of PATCH operations without a body.');
     }
     if (!this.isSparql(body)) {
+      this.logger.warn('Cannot determine permissions of non-SPARQL patches.');
       throw new UnsupportedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }
     if (!this.isDeleteInsert(body.algebra)) {
+      this.logger.warn('Cannot determine permissions of a PATCH without DELETE/INSERT.');
       throw new UnsupportedHttpError('Cannot determine permissions of a PATCH without DELETE/INSERT.');
     }
   }

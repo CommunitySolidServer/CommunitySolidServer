@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import type { Patch } from '../http/Patch';
@@ -6,6 +7,8 @@ import { OperationHandler } from './OperationHandler';
 import type { ResponseDescription } from './ResponseDescription';
 
 export class PatchOperationHandler extends OperationHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly store: ResourceStore;
 
   public constructor(store: ResourceStore) {
@@ -15,6 +18,7 @@ export class PatchOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'PATCH') {
+      this.logger.warn('This handler only supports PATCH operations.');
       throw new UnsupportedHttpError('This handler only supports PATCH operations.');
     }
   }

@@ -8,6 +8,7 @@ import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
@@ -20,6 +21,8 @@ import { PatchHandler } from './PatchHandler';
  * Currently all DELETE/INSERT types are supported that have empty where bodies and no variables.
  */
 export class SparqlUpdatePatchHandler extends PatchHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly source: ResourceStore;
   private readonly locker: ResourceLocker;
 
@@ -31,6 +34,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
     if (typeof input.patch.algebra !== 'object') {
+      this.logger.warn('Only SPARQL update patch requests are supported.');
       throw new UnsupportedHttpError('Only SPARQL update patch requests are supported.');
     }
   }
@@ -38,6 +42,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
     const op = input.patch.algebra;
     if (!this.isDeleteInsert(op)) {
+      this.logger.warn('Only DELETE/INSERT SPARQL update operations are supported.');
       throw new UnsupportedHttpError('Only DELETE/INSERT SPARQL update operations are supported.');
     }
 
@@ -46,13 +51,16 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const inserts = op.insert ?? [];
 
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
+      this.logger.warn('GRAPH statements are not supported.');
       throw new UnsupportedHttpError('GRAPH statements are not supported.');
     }
     if (!inserts.every((pattern): boolean => pattern.graph.equals(def))) {
+      this.logger.warn('GRAPH statements are not supported.');
       throw new UnsupportedHttpError('GRAPH statements are not supported.');
     }
     if (op.where ?? deletes.some((pattern): boolean =>
       someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
+      this.logger.warn('WHERE statements are not supported.');
       throw new UnsupportedHttpError('WHERE statements are not supported.');
     }
 

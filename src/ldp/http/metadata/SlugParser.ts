@@ -19,7 +19,7 @@ export class SlugParser implements MetadataParser {
         throw new UnsupportedHttpError('At most 1 slug header is allowed.');
       }
       metadata.set(HTTP.slug, slug);
-      this.logger.info(`Slug header '${slug}' is set.`);
+      this.logger.info(`Slug header set to '${slug}'.`);
     }
   }
 }

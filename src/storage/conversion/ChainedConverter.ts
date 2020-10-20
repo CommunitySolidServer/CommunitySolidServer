@@ -1,4 +1,5 @@
 import type { Representation } from '../../ldp/representation/Representation';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { matchingMediaType } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -9,6 +10,8 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * It chains these converters by finding intermediate types that are supported by converters on either side.
  */
 export class ChainedConverter extends TypedRepresentationConverter {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly converters: TypedRepresentationConverter[];
 
   /**
@@ -19,6 +22,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
   public constructor(converters: TypedRepresentationConverter[]) {
     super();
     if (converters.length < 2) {
+      this.logger.error('At least 2 converters are required.');
       throw new Error('At least 2 converters are required.');
     }
     this.converters = [ ...converters ];
@@ -86,6 +90,8 @@ export class ChainedConverter extends TypedRepresentationConverter {
         if (weight > bestMatch.weight && matchingMediaType(leftType, rightType)) {
           bestMatch = { type: leftType, weight };
           if (weight === 1) {
+            this.logger.info(`${bestMatch.type} found as the best media type match between ${leftKeys} and 
+            ${rightKeys}.`);
             return bestMatch.type;
           }
         }
@@ -93,9 +99,11 @@ export class ChainedConverter extends TypedRepresentationConverter {
     }
 
     if (bestMatch.weight === 0) {
+      this.logger.error(`No match found between ${leftKeys} and ${rightKeys}`);
       throw new Error(`No match found between ${leftKeys} and ${rightKeys}`);
     }
 
+    this.logger.info(`${bestMatch.type} found as the best media type match between ${leftKeys} and ${rightKeys}.`);
     return bestMatch.type;
   }
 }

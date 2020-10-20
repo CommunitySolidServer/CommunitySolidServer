@@ -69,9 +69,13 @@ export class WebAclAuthorizer extends Authorizer {
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
     const auths = store.getQuads(null, ACL.mode, modeString, null).map((quad: Quad): Term => quad.subject);
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
+      const isLoggedIn = typeof agent.webID === 'string';
+      if (isLoggedIn) {
+        this.logger.warn(`Agent ${agent.webID} unauthorized for ${mode}.`);
+      }
       this.logger.warn(`No permission to use ${mode} mode (agent not 
-      ${typeof agent.webID === 'string' ? 'allowed to access data' : 'authorized'}).`);
-      throw typeof agent.webID === 'string' ? new ForbiddenHttpError() : new UnauthorizedHttpError();
+      ${isLoggedIn ? 'allowed to access data' : 'authorized'}).`);
+      throw isLoggedIn ? new ForbiddenHttpError() : new UnauthorizedHttpError();
     }
   }
 
@@ -116,10 +120,13 @@ export class WebAclAuthorizer extends Authorizer {
    * @returns A store containing the relevant acl triples.
    */
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
+    this.logger.debug(`Obtaining ACL for ${id.path}`);
     try {
       const acl = await this.aclManager.getAcl(id);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
-      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+      const store = this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+      this.logger.info(`Obtaining ACL for ${id.path}`);
+      return store;
     } catch (error: unknown) {
       if (!(error instanceof NotFoundHttpError)) {
         throw error;

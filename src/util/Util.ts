@@ -1,6 +1,9 @@
 import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { getLoggerFor } from '../logging/LogUtil';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
+
+const logger = getLoggerFor('Util');
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -63,7 +66,10 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
  */
 export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T): T => {
   readable.pipe(destination);
-  readable.on('error', (error): boolean => destination.emit('error', new UnsupportedHttpError(error.message)));
+  readable.on('error', (error): boolean => {
+    logger.warn(`Following error was piped to the destination stream: ${error.message}`);
+    return destination.emit('error', new UnsupportedHttpError(error.message));
+  });
   return destination;
 };
 
@@ -74,6 +80,7 @@ export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, des
 export const toCanonicalUrl = (url: string): string => {
   const match = /(\w+:\/\/[^/]+\/)(.*)/u.exec(url);
   if (!match) {
+    logger.warn(`Invalid URL ${url} to convert to the canonical version.`);
     throw new UnsupportedHttpError(`Invalid URL ${url}`);
   }
   const [ , domain, path ] = match;

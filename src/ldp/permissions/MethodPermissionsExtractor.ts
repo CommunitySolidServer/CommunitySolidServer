@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../logging/LogUtil';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import type { Operation } from '../operations/Operation';
 import type { PermissionSet } from './PermissionSet';
@@ -12,8 +13,11 @@ const SUPPORTED_METHODS = new Set([ ...READ_METHODS, ...WRITE_METHODS ]);
  * Specifically: GET, HEAD, POST, PUT and DELETE.
  */
 export class MethodPermissionsExtractor extends PermissionsExtractor {
+  protected readonly logger = getLoggerFor(this);
+
   public async canHandle({ method }: Operation): Promise<void> {
     if (!SUPPORTED_METHODS.has(method)) {
+      this.logger.warn(`Cannot determine permissions of ${method}`);
       throw new UnsupportedHttpError(`Cannot determine permissions of ${method}`);
     }
   }

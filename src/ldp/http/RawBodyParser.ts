@@ -20,7 +20,7 @@ export class RawBodyParser extends BodyParser {
     // RFC7230, §3.3: The presence of a message body in a request
     // is signaled by a Content-Length or Transfer-Encoding header field.
     if (!request.headers['content-length'] && !request.headers['transfer-encoding']) {
-      this.logger.info('HTTP request does not have Content-Length or Transfer-Encoding header field.');
+      this.logger.info('HTTP request appears to not have a body.');
       return;
     }
 
