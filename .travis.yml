@@ -19,6 +19,7 @@ script:
   - npm run test:unit
   - npm run test:integration
   - npm run test:deploy
+  - sh test/surface/run-solid-test-suite.sh
 
 jobs:
   allow_failures:
