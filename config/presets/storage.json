@@ -2,10 +2,33 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:ResourceStore",
-      "@type": "InMemoryResourceStore",
-      "InMemoryResourceStore:_base": {
+      "@id": "urn:solid-server:default:MetadataController",
+      "@type": "MetadataController"
+    },
+    {
+      "@id": "urn:solid-server:default:DataAccessor",
+      "@type": "InMemoryDataAccessor",
+      "InMemoryDataAccessor:_base": {
         "@id": "urn:solid-server:default:variable:base"
+      },
+      "InMemoryDataAccessor:_metadataController": {
+        "@id": "urn:solid-server:default:MetadataController"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "DataAccessorBasedStore:_accessor": {
+        "@id": "urn:solid-server:default:DataAccessor"
+      },
+      "DataAccessorBasedStore:_base": {
+        "@id": "urn:solid-server:default:variable:base"
+      },
+      "DataAccessorBasedStore:_metadataController": {
+        "@id": "urn:solid-server:default:MetadataController"
+      },
+      "DataAccessorBasedStore:_containerManager": {
+        "@id": "urn:solid-server:default:UrlContainerManager"
       }
     }
   ]

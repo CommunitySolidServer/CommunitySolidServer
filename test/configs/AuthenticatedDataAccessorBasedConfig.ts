@@ -1,5 +1,8 @@
-import type { HttpHandler,
-  ResourceStore } from '../../index';
+import type {
+  DataAccessor,
+  HttpHandler,
+  ResourceStore,
+} from '../../index';
 import {
   AuthenticatedLdpHandler,
   BasicResponseWriter,
@@ -11,11 +14,11 @@ import {
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
 import {
-  getFileResourceStore,
   getConvertingStore,
   getBasicRequestParser,
   getOperationHandler,
   getWebAclAuthorizer,
+  getDataAccessorStore,
 } from './Util';
 
 /**
@@ -24,15 +27,14 @@ import {
  * - a FileResourceStore wrapped in a converting store (rdf to quad & quad to rdf)
  * - GET, POST, PUT & DELETE operation handlers
  */
-
-export class AuthenticatedFileResourceStoreConfig implements ServerConfig {
+export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
   public base: string;
   public store: ResourceStore;
 
-  public constructor(base: string, rootFilepath: string) {
+  public constructor(base: string, dataAccessor: DataAccessor) {
     this.base = base;
     this.store = getConvertingStore(
-      getFileResourceStore(base, rootFilepath),
+      getDataAccessorStore(base, dataAccessor),
       [ new QuadToRdfConverter(),
         new RdfToQuadConverter() ],
     );

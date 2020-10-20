@@ -108,7 +108,8 @@ export class FileTestHelper {
     return response;
   }
 
-  public async createFile(fileLocation: string, slug: string, mayFail = false): Promise<MockResponse<any>> {
+  public async createFile(fileLocation: string, slug: string, contentType: string, mayFail = false):
+  Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
       join(__dirname, fileLocation),
     );
@@ -116,7 +117,7 @@ export class FileTestHelper {
     const response: MockResponse<any> = await this.callWithFile(
       this.baseUrl,
       'POST',
-      { 'content-type': 'application/octet-stream',
+      { 'content-type': contentType,
         slug,
         'transfer-encoding': 'chunked' },
       fileData,
@@ -129,7 +130,8 @@ export class FileTestHelper {
     return response;
   }
 
-  public async overwriteFile(fileLocation: string, requestUrl: string): Promise<MockResponse<any>> {
+  public async overwriteFile(fileLocation: string, requestUrl: string, contentType: string):
+  Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
       join(__dirname, fileLocation),
     );
@@ -139,7 +141,7 @@ export class FileTestHelper {
     const response: MockResponse<any> = await this.callWithFile(
       putUrl,
       'PUT',
-      { 'content-type': 'application/octet-stream', 'transfer-encoding': 'chunked' },
+      { 'content-type': contentType, 'transfer-encoding': 'chunked' },
       fileData,
     );
     expect(response.statusCode).toBe(200);
@@ -151,7 +153,9 @@ export class FileTestHelper {
   public async getFile(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
-    return this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    const response = await this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    expect(response.statusCode).toBe(200);
+    return response;
   }
 
   public async deleteFile(requestUrl: string, mayFail = false): Promise<MockResponse<any>> {
@@ -173,7 +177,7 @@ export class FileTestHelper {
       {
         slug,
         link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
-        'content-type': 'text/plain',
+        'content-type': 'text/turtle',
         'transfer-encoding': 'chunked',
       },
     );

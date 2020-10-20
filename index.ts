@@ -80,6 +80,11 @@ export * from './src/server/HttpHandler';
 export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';
 
+// Storage/Accessors
+export * from './src/storage/accessors/DataAccessor';
+export * from './src/storage/accessors/FileDataAccessor';
+export * from './src/storage/accessors/InMemoryDataAccessor';
+
 // Storage/Conversion
 export * from './src/storage/conversion/ChainedConverter';
 export * from './src/storage/conversion/QuadToRdfConverter';
@@ -95,8 +100,8 @@ export * from './src/storage/patch/SparqlUpdatePatchHandler';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
-export * from './src/storage/FileResourceStore';
-export * from './src/storage/InMemoryResourceStore';
+export * from './src/storage/DataAccessorBasedStore';
+export * from './src/storage/ExtensionBasedMapper';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
@@ -109,9 +114,12 @@ export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/UrlContainerManager';
 
 // Util/Errors
+export * from './src/util/errors/ConflictHttpError';
 export * from './src/util/errors/ForbiddenHttpError';
 export * from './src/util/errors/HttpError';
+export * from './src/util/errors/MethodNotAllowedHttpError';
 export * from './src/util/errors/NotFoundHttpError';
+export * from './src/util/errors/SystemError';
 export * from './src/util/errors/UnauthorizedHttpError';
 export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
@@ -120,6 +128,5 @@ export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 export * from './src/util/HeaderUtil';
 export * from './src/util/AsyncHandler';
 export * from './src/util/CompositeAsyncHandler';
-export * from './src/util/InteractionController';
 export * from './src/util/MetadataController';
 export * from './src/util/Util';

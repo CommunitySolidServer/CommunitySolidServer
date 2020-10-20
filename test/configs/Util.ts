@@ -1,9 +1,12 @@
 import { join } from 'path';
-import type { BodyParser,
+import type {
+  BodyParser,
+  DataAccessor,
   Operation,
   RepresentationConverter,
   ResourceStore,
-  ResponseDescription } from '../../index';
+  ResponseDescription,
+} from '../../index';
 import {
   AcceptPreferenceParser,
   BasicMetadataExtractor,
@@ -11,12 +14,11 @@ import {
   BasicTargetExtractor,
   CompositeAsyncHandler,
   ContentTypeParser,
+  DataAccessorBasedStore,
   DeleteOperationHandler,
-  FileResourceStore,
   GetOperationHandler,
   HeadOperationHandler,
-  InMemoryResourceStore,
-  InteractionController,
+  InMemoryDataAccessor,
   LinkTypeParser,
   MetadataController,
   PatchingStore,
@@ -32,7 +34,6 @@ import {
   UrlContainerManager,
   WebAclAuthorizer,
 } from '../../index';
-import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 
 export const BASE = 'http://test.com';
 
@@ -43,17 +44,18 @@ export const BASE = 'http://test.com';
 export const getRootFilePath = (subfolder: string): string => join(__dirname, '../testData', subfolder);
 
 /**
- * Gives a file resource store based on (default) runtime config.
+ * Gives a file data accessor store based on (default) runtime config.
  * @param base - Base URL.
  * @param rootFilepath - The root file path.
  *
- * @returns The file resource store.
+ * @returns The data accessor based store.
  */
-export const getFileResourceStore = (base: string, rootFilepath: string): FileResourceStore =>
-  new FileResourceStore(
-    new ExtensionBasedMapper(base, rootFilepath),
-    new InteractionController(),
+export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
+  new DataAccessorBasedStore(
+    dataAccessor,
+    base,
     new MetadataController(),
+    new UrlContainerManager(base),
   );
 
 /**
@@ -62,8 +64,8 @@ export const getFileResourceStore = (base: string, rootFilepath: string): FileRe
  *
  * @returns The in memory resource store.
  */
-export const getInMemoryResourceStore = (base = BASE): InMemoryResourceStore =>
-  new InMemoryResourceStore(base);
+export const getInMemoryResourceStore = (base = BASE): DataAccessorBasedStore =>
+  getDataAccessorStore(base, new InMemoryDataAccessor(BASE, new MetadataController()));
 
 /**
  * Gives a converting store given some converters.

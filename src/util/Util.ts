@@ -1,7 +1,8 @@
 import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import { getLoggerFor } from '../logging/LogUtil';
-import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
+import type { Literal, NamedNode, Quad } from 'rdf-js';
 
 const logger = getLoggerFor('Util');
 
@@ -61,28 +62,41 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
  * Makes sure an error of the first stream gets passed to the second.
  * @param readable - Initial readable stream.
  * @param destination - The destination for writing data.
+ * @param mapError - Optional function that takes the error and converts it to a new error.
  *
  * @returns The destination stream.
  */
-export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T): T => {
+export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T,
+  mapError?: (error: Error) => Error): T => {
   readable.pipe(destination);
   readable.on('error', (error): boolean => {
     logger.warn(`Following error was piped to the destination stream: ${error.message}`);
-    return destination.emit('error', new UnsupportedHttpError(error.message));
+    return destination.emit('error', mapError ? mapError(error) : error);
   });
   return destination;
 };
 
 /**
- * Converts a URL string to the "canonical" version that should be used internally for consistency.
- * Decodes all percent encodings and then makes sure only the necessary characters are encoded again.
+ * Converts a URI path to the canonical version by splitting on slashes,
+ * decoding any percent-based encodings,
+ * and then encoding any special characters.
  */
-export const toCanonicalUrl = (url: string): string => {
-  const match = /(\w+:\/\/[^/]+\/)(.*)/u.exec(url);
-  if (!match) {
-    logger.warn(`Invalid URL ${url} to convert to the canonical version.`);
-    throw new UnsupportedHttpError(`Invalid URL ${url}`);
-  }
-  const [ , domain, path ] = match;
-  return encodeURI(domain + path.split('/').map(decodeURIComponent).join('/'));
-};
+export const toCanonicalUriPath = (path: string): string => path.split('/').map((part): string =>
+  encodeURIComponent(decodeURIComponent(part))).join('/');
+
+/**
+ * Decodes all components of a URI path.
+ */
+export const decodeUriPathComponents = (path: string): string => path.split('/').map(decodeURIComponent).join('/');
+
+/**
+ * Encodes all (non-slash) special characters in a URI path.
+ */
+export const encodeUriPathComponents = (path: string): string => path.split('/').map(encodeURIComponent).join('/');
+
+/**
+ * Generates a quad with the given subject/predicate/object and pushes it to the given array.
+ */
+export const pushQuad =
+  (quads: Quad[], subject: NamedNode, predicate: NamedNode, object: NamedNode | Literal): number =>
+    quads.push(DataFactory.quad(subject, predicate, object));

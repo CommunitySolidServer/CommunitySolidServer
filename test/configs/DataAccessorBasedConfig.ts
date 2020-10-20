@@ -1,5 +1,8 @@
-import type { HttpHandler,
-  ResourceStore } from '../../index';
+import type {
+  DataAccessor,
+  HttpHandler,
+  ResourceStore,
+} from '../../index';
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
@@ -13,25 +16,24 @@ import {
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
 import {
-  getFileResourceStore,
   getOperationHandler,
   getConvertingStore,
   getBasicRequestParser,
+  getDataAccessorStore,
 } from './Util';
 
 /**
- * FileResourceStoreConfig works with
+ * DataAccessorBasedConfig works with
  * - an AllowEverythingAuthorizer (no acl)
- * - a FileResourceStore wrapped in a converting store (rdf to quad & quad to rdf)
+ * - a DataAccessorBasedStore with a FileDataAccessor wrapped in a converting store (rdf to quad & quad to rdf)
  * - GET, POST, PUT & DELETE operation handlers
  */
-
-export class FileResourceStoreConfig implements ServerConfig {
+export class DataAccessorBasedConfig implements ServerConfig {
   public store: ResourceStore;
 
-  public constructor(base: string, rootFilepath: string) {
+  public constructor(base: string, dataAccessor: DataAccessor) {
     this.store = getConvertingStore(
-      getFileResourceStore(base, rootFilepath),
+      getDataAccessorStore(base, dataAccessor),
       [ new QuadToRdfConverter(), new RdfToQuadConverter() ],
     );
   }

@@ -26,8 +26,14 @@ describe('A BasicTargetExtractor', (): void => {
     )).resolves.toEqual({ path: 'https://test.com/url' });
   });
 
-  it('decodes relevant percent encodings.', async(): Promise<void> => {
+  it('encodes relevant characters.', async(): Promise<void> => {
     await expect(extractor.handle({ url: '/a%20path%26/name', headers: { host: 'test.com' }} as any))
-      .resolves.toEqual({ path: 'http://test.com/a%20path&/name' });
+      .resolves.toEqual({ path: 'http://test.com/a%20path%26/name' });
+
+    await expect(extractor.handle({ url: '/a path%26/name', headers: { host: 'test.com' }} as any))
+      .resolves.toEqual({ path: 'http://test.com/a%20path%26/name' });
+
+    await expect(extractor.handle({ url: '/path&%26/name', headers: { host: 'test.com' }} as any))
+      .resolves.toEqual({ path: 'http://test.com/path%26%26/name' });
   });
 });

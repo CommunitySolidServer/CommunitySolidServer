@@ -16,7 +16,8 @@ module.exports = {
   "setupFilesAfterEnv": ["jest-rdf", "<rootDir>/test/util/SetupTests.ts"],
   "collectCoverage": true,
   "coveragePathIgnorePatterns": [
-    "/node_modules/"
+    "/node_modules/",
+    "/test/"
   ],
   "coverageThreshold": {
     "./src": {

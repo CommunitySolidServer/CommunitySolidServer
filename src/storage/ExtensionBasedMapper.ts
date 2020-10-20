@@ -4,10 +4,14 @@ import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
-import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
-import { trimTrailingSlashes } from '../util/Util';
+import {
+  decodeUriPathComponents,
+  encodeUriPathComponents,
+  ensureTrailingSlash,
+  trimTrailingSlashes,
+} from '../util/Util';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -39,7 +43,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   private readonly rootFilepath: string;
   private readonly types: Record<string, any>;
 
-  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, metadata: TEXT_TURTLE }) {
+  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
     this.baseRequestURI = trimTrailingSlashes(base);
     this.rootFilepath = trimTrailingSlashes(normalizePath(rootFilepath));
     this.types = { ...mime.types, ...overrideTypes };
@@ -148,7 +152,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
 
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
-      const path = encodeURI(this.baseRequestURI + relative);
+      const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
       this.logger.verbose(`Container filepath '${filePath}' maps to URL '${path}'.`);
       return {
         identifier: { path },
@@ -163,7 +167,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
       relative = relative.slice(0, -(extension.length + 2));
     }
 
-    const path = encodeURI(this.baseRequestURI + relative);
+    const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
     this.logger.verbose(`Filepath '${filePath}' with Content-Type ${contentType} maps to URL '${path}'.`);
 
     return {
@@ -214,35 +218,11 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    *
    * @returns A string representing the relative path.
    */
-  public getRelativePath(identifier: ResourceIdentifier): string {
+  private getRelativePath(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
+      this.logger.warn(`The URL '${identifier.path}' does not match the baseRequestURI path (${this.baseRequestURI}) of the store.`);
       throw new NotFoundHttpError();
     }
-    return decodeURI(identifier.path).slice(this.baseRequestURI.length);
-  }
-
-  /**
-   * Splits the identifier into the parent directory and slug.
-   * If the identifier specifies a directory, slug will be undefined.
-   * @param identifier - Incoming identifier.
-   *
-   * @throws {@link ConflictHttpError}
-   * If the root identifier is passed.
-   *
-   * @returns A ResourcePath object containing (absolute) path and (optional) slug fields.
-   */
-  public extractDocumentName(identifier: ResourceIdentifier): ResourcePath {
-    const [ , containerPath, documentName ] = /^(.*\/)([^/]+\/?)?$/u.exec(this.getRelativePath(identifier)) ?? [];
-    if (
-      (typeof containerPath !== 'string' || normalizePath(containerPath) === '/') && typeof documentName !== 'string') {
-      this.logger.warn('Container with that identifier already exists (root).');
-      throw new ConflictHttpError('Container with that identifier already exists (root).');
-    }
-    return {
-      containerPath: this.getAbsolutePath(normalizePath(containerPath)),
-
-      // If documentName is defined, return normalized documentName
-      documentName: typeof documentName === 'string' ? normalizePath(documentName) : undefined,
-    };
+    return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));
   }
 }
