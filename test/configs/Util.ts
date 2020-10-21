@@ -76,11 +76,11 @@ export const getInMemoryResourceStore = (base = BASE): DataAccessorBasedStore =>
  */
 export const getConvertingStore =
 (store: ResourceStore, converters: RepresentationConverter[]): RepresentationConvertingStore =>
-  new RepresentationConvertingStore(store, new CompositeAsyncHandler(converters));
+  new RepresentationConvertingStore(store, { outConverter: new CompositeAsyncHandler(converters) });
 
 /**
  * Gives a patching store based on initial store.
- * @param store - Inital resource store.
+ * @param store - Initial resource store.
  *
  * @returns The patching store.
  */

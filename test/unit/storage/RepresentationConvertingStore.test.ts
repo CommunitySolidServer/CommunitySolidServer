@@ -1,4 +1,6 @@
+import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
 import type { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
@@ -7,19 +9,24 @@ import { CONTENT_TYPE } from '../../../src/util/UriConstants';
 describe('A RepresentationConvertingStore', (): void => {
   let store: RepresentationConvertingStore;
   let source: ResourceStore;
-  let handleSafeFn: jest.Mock<Promise<void>, []>;
-  let converter: RepresentationConverter;
+  let inConverter: RepresentationConverter;
+  let outConverter: RepresentationConverter;
+  const inPreferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
   const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
+  let representation: Representation;
 
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn(async(): Promise<any> => ({ data: 'data', metadata })),
-    } as unknown as ResourceStore;
+      addResource: jest.fn(),
+      setRepresentation: jest.fn(),
+    } as any;
 
-    handleSafeFn = jest.fn(async(): Promise<any> => 'converter');
-    converter = { handleSafe: handleSafeFn } as unknown as RepresentationConverter;
+    inConverter = { handleSafe: jest.fn(async(): Promise<any> => 'inConvert') } as any;
+    outConverter = { handleSafe: jest.fn(async(): Promise<any> => 'outConvert') } as any;
 
-    store = new RepresentationConvertingStore(source, converter);
+    store = new RepresentationConvertingStore(source, { inPreferences, inConverter, outConverter });
+    representation = { binary: true, data: 'data', metadata } as any;
   });
 
   it('returns the Representation from the source if no changes are required.', async(): Promise<void> => {
@@ -35,7 +42,7 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, { type: [{ value: 'text/*', weight: 0 }, { value: 'text/turtle', weight: 1 }]}, undefined,
     );
-    expect(handleSafeFn).toHaveBeenCalledTimes(0);
+    expect(outConverter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('returns the Representation from the source if there are no preferences.', async(): Promise<void> => {
@@ -49,19 +56,43 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, {}, undefined,
     );
-    expect(handleSafeFn).toHaveBeenCalledTimes(0);
+    expect(outConverter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('calls the converter if another output is preferred.', async(): Promise<void> => {
     await expect(store.getRepresentation({ path: 'path' }, { type: [
       { value: 'text/plain', weight: 1 }, { value: 'text/turtle', weight: 0 },
-    ]})).resolves.toEqual('converter');
+    ]})).resolves.toEqual('outConvert');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(handleSafeFn).toHaveBeenCalledTimes(1);
-    expect(handleSafeFn).toHaveBeenLastCalledWith({
+    expect(outConverter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(outConverter.handleSafe).toHaveBeenLastCalledWith({
       identifier: { path: 'path' },
       representation: { data: 'data', metadata },
       preferences: { type: [{ value: 'text/plain', weight: 1 }, { value: 'text/turtle', weight: 0 }]},
     });
+  });
+
+  it('keeps the representation if the conversion is not required.', async(): Promise<void> => {
+    const id = { path: 'identifier' };
+
+    await expect(store.addResource(id, representation, 'conditions' as any)).resolves.toBeUndefined();
+    expect(source.addResource).toHaveBeenLastCalledWith(id, representation, 'conditions');
+
+    await expect(store.setRepresentation(id, representation, 'conditions' as any)).resolves.toBeUndefined();
+    expect(inConverter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(id, representation, 'conditions');
+  });
+
+  it('converts the data if it is required.', async(): Promise<void> => {
+    metadata.contentType = 'text/plain';
+    const id = { path: 'identifier' };
+
+    await expect(store.addResource(id, representation, 'conditions' as any)).resolves.toBeUndefined();
+    expect(inConverter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.addResource).toHaveBeenLastCalledWith(id, 'inConvert', 'conditions');
+
+    await expect(store.setRepresentation(id, representation, 'conditions' as any)).resolves.toBeUndefined();
+    expect(inConverter.handleSafe).toHaveBeenCalledTimes(2);
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(id, 'inConvert', 'conditions');
   });
 });
