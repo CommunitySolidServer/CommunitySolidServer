@@ -127,8 +127,7 @@ export class WebAclAuthorizer extends Authorizer {
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
-      const store = this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
-      return store;
+      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
     } catch (error: unknown) {
       if (error instanceof NotFoundHttpError) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);

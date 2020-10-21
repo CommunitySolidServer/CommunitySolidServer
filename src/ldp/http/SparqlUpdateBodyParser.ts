@@ -38,7 +38,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       const sparql = await readableToString(toAlgebraStream);
       algebra = translate(sparql, { quads: true });
     } catch (error: unknown) {
-      this.logger.warn('Could ont translate SPARQL query to SPARQL algebra', { error });
+      this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
       if (error instanceof Error) {
         throw new UnsupportedHttpError(error.message);
       }
