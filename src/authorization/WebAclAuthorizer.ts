@@ -71,11 +71,12 @@ export class WebAclAuthorizer extends Authorizer {
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
       const isLoggedIn = typeof agent.webID === 'string';
       if (isLoggedIn) {
-        this.logger.warn(`Agent ${agent.webID} unauthorized for ${mode}.`);
+        this.logger.warn(`Agent ${agent.webID} has no ${mode} permissions`);
+        throw new ForbiddenHttpError();
+      } else {
+        this.logger.warn(`Unauthenticated agent has no ${mode} permissions`);
+        throw new UnauthorizedHttpError();
       }
-      this.logger.warn(`No permission to use ${mode} mode (agent not 
-      ${isLoggedIn ? 'allowed to access data' : 'authorized'}).`);
-      throw isLoggedIn ? new ForbiddenHttpError() : new UnauthorizedHttpError();
     }
   }
 
@@ -120,21 +121,26 @@ export class WebAclAuthorizer extends Authorizer {
    * @returns A store containing the relevant acl triples.
    */
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
-    this.logger.debug(`Obtaining ACL for ${id.path}`);
+    this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
       const acl = await this.aclManager.getAcl(id);
+      this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+      this.logger.info(`Reading ACL statements from ${acl.path}`);
       const store = this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
-      this.logger.info(`Obtaining ACL for ${id.path}`);
       return store;
     } catch (error: unknown) {
-      if (!(error instanceof NotFoundHttpError)) {
+      if (error instanceof NotFoundHttpError) {
+        this.logger.debug(`No direct ACL document found for ${id.path}`);
+      } else {
+        this.logger.error(`Error reading ACL for ${id.path}`, { error });
         throw error;
       }
-
-      const parent = await this.containerManager.getContainer(id);
-      return this.getAclRecursive(parent, true);
     }
+
+    this.logger.debug(`Traversing to the parent of ${id.path}`);
+    const parent = await this.containerManager.getContainer(id);
+    return this.getAclRecursive(parent, true);
   }
 
   /**

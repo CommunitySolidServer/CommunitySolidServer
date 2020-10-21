@@ -14,7 +14,7 @@ export class StaticAsyncHandler<TOut> extends AsyncHandler<any, TOut> {
     if (this.canHandleStatic) {
       return;
     }
-    throw new Error('Not supported.');
+    throw new Error('Not supported');
   }
 
   public async handle(): Promise<TOut> {

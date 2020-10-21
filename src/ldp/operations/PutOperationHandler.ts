@@ -21,15 +21,14 @@ export class PutOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'PUT') {
-      this.logger.warn('This handler only supports PUT operations.');
-      throw new UnsupportedHttpError('This handler only supports PUT operations.');
+      throw new UnsupportedHttpError('This handler only supports PUT operations');
     }
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
     if (typeof input.body !== 'object') {
-      this.logger.warn('PUT operations require a body.');
-      throw new UnsupportedHttpError('PUT operations require a body.');
+      this.logger.warn('No body specified on PUT request');
+      throw new UnsupportedHttpError('PUT operations require a body');
     }
     await this.store.setRepresentation(input.target, input.body);
     return { identifier: input.target };

@@ -152,7 +152,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
           '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('GRAPH statements are not supported.');
+    await expect(handle).rejects.toThrow('GRAPH statements are not supported');
     expect(order).toEqual([]);
   });
 
@@ -163,7 +163,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
           '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('GRAPH statements are not supported.');
+    await expect(handle).rejects.toThrow('GRAPH statements are not supported');
     expect(order).toEqual([]);
   });
 
@@ -175,7 +175,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'WHERE { ?s ?p ?o }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('WHERE statements are not supported.');
+    await expect(handle).rejects.toThrow('WHERE statements are not supported');
     expect(order).toEqual([]);
   });
 
@@ -185,7 +185,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'DELETE WHERE { ?v <http://test.com/startP1> <http://test.com/startO1> }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('WHERE statements are not supported.');
+    await expect(handle).rejects.toThrow('WHERE statements are not supported');
     expect(order).toEqual([]);
   });
 
@@ -195,7 +195,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'MOVE DEFAULT TO GRAPH <http://test.com/newGraph>',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('Only DELETE/INSERT SPARQL update operations are supported.');
+    await expect(handle).rejects.toThrow('Only DELETE/INSERT SPARQL update operations are supported');
     expect(order).toEqual([]);
   });
 });

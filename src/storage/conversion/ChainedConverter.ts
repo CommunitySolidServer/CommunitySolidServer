@@ -22,7 +22,6 @@ export class ChainedConverter extends TypedRepresentationConverter {
   public constructor(converters: TypedRepresentationConverter[]) {
     super();
     if (converters.length < 2) {
-      this.logger.error('At least 2 converters are required.');
       throw new Error('At least 2 converters are required.');
     }
     this.converters = [ ...converters ];
@@ -90,8 +89,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
         if (weight > bestMatch.weight && matchingMediaType(leftType, rightType)) {
           bestMatch = { type: leftType, weight };
           if (weight === 1) {
-            this.logger.info(`${bestMatch.type} found as the best media type match between ${leftKeys} and 
-            ${rightKeys}.`);
+            this.logger.info(`${bestMatch.type} is an exact match between ${leftKeys} and ${rightKeys}`);
             return bestMatch.type;
           }
         }
@@ -103,7 +101,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
       throw new Error(`No match found between ${leftKeys} and ${rightKeys}`);
     }
 
-    this.logger.info(`${bestMatch.type} found as the best media type match between ${leftKeys} and ${rightKeys}.`);
+    this.logger.info(`${bestMatch.type} is the best match between ${leftKeys} and ${rightKeys}`);
     return bestMatch.type;
   }
 }

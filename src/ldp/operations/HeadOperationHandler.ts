@@ -1,5 +1,4 @@
 import { Readable } from 'stream';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import type { Operation } from './Operation';
@@ -11,8 +10,6 @@ import type { ResponseDescription } from './ResponseDescription';
  * Calls the getRepresentation function from a {@link ResourceStore}.
  */
 export class HeadOperationHandler extends OperationHandler {
-  protected readonly logger = getLoggerFor(this);
-
   private readonly store: ResourceStore;
 
   public constructor(store: ResourceStore) {
@@ -22,8 +19,7 @@ export class HeadOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'HEAD') {
-      this.logger.warn('This handler only supports HEAD operations.');
-      throw new UnsupportedHttpError('This handler only supports HEAD operations.');
+      throw new UnsupportedHttpError('This handler only supports HEAD operations');
     }
   }
 

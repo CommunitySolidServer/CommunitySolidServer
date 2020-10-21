@@ -1,11 +1,8 @@
 import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
-import { getLoggerFor } from '../../logging/LogUtil';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { matchingMediaType } from '../../util/Util';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-
-const logger = getLoggerFor('ConversionUtil');
 
 /**
  * Filters out the media types from the preferred types that correspond to one of the supported types.
@@ -20,7 +17,6 @@ const logger = getLoggerFor('ConversionUtil');
 export const matchingTypes = (preferences: RepresentationPreferences, supported: string[]):
 RepresentationPreference[] => {
   if (!Array.isArray(preferences.type)) {
-    logger.warn('Output type required for conversion.');
     throw new UnsupportedHttpError('Output type required for conversion.');
   }
   return preferences.type.filter(({ value, weight }): boolean => weight > 0 &&
@@ -40,15 +36,12 @@ export const checkRequest = (request: RepresentationConverterArgs, supportedIn: 
 void => {
   const inType = request.representation.metadata.contentType;
   if (!inType) {
-    logger.warn('Input type required for conversion.');
     throw new UnsupportedHttpError('Input type required for conversion.');
   }
   if (!supportedIn.some((type): boolean => matchingMediaType(inType, type))) {
-    logger.warn(`Can only convert from ${supportedIn} to ${supportedOut}.`);
     throw new UnsupportedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
   if (matchingTypes(request.preferences, supportedOut).length <= 0) {
-    logger.warn(`Can only convert from ${supportedIn} to ${supportedOut}.`);
     throw new UnsupportedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
 };

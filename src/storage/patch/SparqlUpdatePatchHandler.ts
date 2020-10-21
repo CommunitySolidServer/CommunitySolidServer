@@ -34,16 +34,15 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
     if (typeof input.patch.algebra !== 'object') {
-      this.logger.warn('Only SPARQL update patch requests are supported.');
-      throw new UnsupportedHttpError('Only SPARQL update patch requests are supported.');
+      throw new UnsupportedHttpError('Only SPARQL update patch requests are supported');
     }
   }
 
   public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
     const op = input.patch.algebra;
     if (!this.isDeleteInsert(op)) {
-      this.logger.warn('Only DELETE/INSERT SPARQL update operations are supported.');
-      throw new UnsupportedHttpError('Only DELETE/INSERT SPARQL update operations are supported.');
+      this.logger.warn(`Unsupported operation: ${op.type}`);
+      throw new UnsupportedHttpError('Only DELETE/INSERT SPARQL update operations are supported');
     }
 
     const def = defaultGraph();
@@ -51,17 +50,17 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const inserts = op.insert ?? [];
 
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
-      this.logger.warn('GRAPH statements are not supported.');
-      throw new UnsupportedHttpError('GRAPH statements are not supported.');
+      this.logger.warn('GRAPH statement in DELETE clause');
+      throw new UnsupportedHttpError('GRAPH statements are not supported');
     }
     if (!inserts.every((pattern): boolean => pattern.graph.equals(def))) {
-      this.logger.warn('GRAPH statements are not supported.');
-      throw new UnsupportedHttpError('GRAPH statements are not supported.');
+      this.logger.warn('GRAPH statement in INSERT clause');
+      throw new UnsupportedHttpError('GRAPH statements are not supported');
     }
     if (op.where ?? deletes.some((pattern): boolean =>
       someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
-      this.logger.warn('WHERE statements are not supported.');
-      throw new UnsupportedHttpError('WHERE statements are not supported.');
+      this.logger.warn('WHERE statements are not supported');
+      throw new UnsupportedHttpError('WHERE statements are not supported');
     }
 
     const lock = await this.locker.acquire(input.identifier);

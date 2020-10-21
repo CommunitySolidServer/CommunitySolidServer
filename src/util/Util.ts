@@ -70,7 +70,7 @@ export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, des
   mapError?: (error: Error) => Error): T => {
   readable.pipe(destination);
   readable.on('error', (error): boolean => {
-    logger.warn(`Following error was piped to the destination stream: ${error.message}`);
+    logger.warn(`Piped stream errored with ${error.message}`);
     return destination.emit('error', mapError ? mapError(error) : error);
   });
   return destination;

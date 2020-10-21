@@ -22,7 +22,7 @@ describe('A SlugParser', (): void => {
   it('errors if there are multiple slug headers.', async(): Promise<void> => {
     request.headers.slug = [ 'slugA', 'slugB' ];
     await expect(parser.parse(request, metadata))
-      .rejects.toThrow(new UnsupportedHttpError('At most 1 slug header is allowed.'));
+      .rejects.toThrow(new UnsupportedHttpError('Request has multiple Slug headers'));
   });
 
   it('stores the slug metadata.', async(): Promise<void> => {

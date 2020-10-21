@@ -15,11 +15,11 @@ export class SlugParser implements MetadataParser {
     const { slug } = request.headers;
     if (slug) {
       if (Array.isArray(slug)) {
-        this.logger.warn('At most 1 slug header is allowed.');
-        throw new UnsupportedHttpError('At most 1 slug header is allowed.');
+        this.logger.warn(`Expected 0 or 1 Slug headers but received ${slug.length}`);
+        throw new UnsupportedHttpError('Request has multiple Slug headers');
       }
+      this.logger.debug(`Request Slug is '${slug}'.`);
       metadata.set(HTTP.slug, slug);
-      this.logger.info(`Slug header set to '${slug}'.`);
     }
   }
 }

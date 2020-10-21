@@ -8,11 +8,11 @@ describe('A BasicTargetExtractor', (): void => {
   });
 
   it('errors if there is no URL.', async(): Promise<void> => {
-    await expect(extractor.handle({ headers: { host: 'test.com' }} as any)).rejects.toThrow('Missing URL.');
+    await expect(extractor.handle({ headers: { host: 'test.com' }} as any)).rejects.toThrow('Missing URL');
   });
 
   it('errors if there is no host.', async(): Promise<void> => {
-    await expect(extractor.handle({ url: 'url', headers: {}} as any)).rejects.toThrow('Missing host.');
+    await expect(extractor.handle({ url: 'url', headers: {}} as any)).rejects.toThrow('Missing Host header');
   });
 
   it('returns the input URL.', async(): Promise<void> => {

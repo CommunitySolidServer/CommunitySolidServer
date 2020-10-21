@@ -33,8 +33,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     if (this.matchesPreferences(representation, preferences)) {
       return representation;
     }
-    this.logger.info(`Passing identifier '${identifier.path}' with Content-Type ${representation.metadata.contentType}
-     and preferences ${preferences.type} to RepresentationConverter.`);
+    this.logger.info(`Convert ${identifier.path} from ${representation.metadata.contentType} to ${preferences.type}`);
     return this.converter.handleSafe({ identifier, representation, preferences });
   }
 

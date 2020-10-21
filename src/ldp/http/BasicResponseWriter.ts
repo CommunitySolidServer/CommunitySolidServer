@@ -14,8 +14,8 @@ export class BasicResponseWriter extends ResponseWriter {
 
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error) && input.result.body && !input.result.body.binary) {
-      this.logger.warn('Only binary results and errors are supported.');
-      throw new UnsupportedHttpError('Only binary results and errors are supported.');
+      this.logger.warn('This writer can only write binary bodies and errors');
+      throw new UnsupportedHttpError('Only binary results and errors are supported');
     }
   }
 

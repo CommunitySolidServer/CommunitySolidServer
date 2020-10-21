@@ -24,12 +24,12 @@ export class SingleThreadedResourceLocker implements ResourceLocker {
    * @returns The {@link Lock} when it's available. Its release function needs to be called when finished.
    */
   public async acquire(identifier: ResourceIdentifier): Promise<Lock> {
-    this.logger.verbose(`Acquiring a lock for ${identifier.path} ...`);
+    this.logger.verbose(`Acquiring lock for ${identifier.path}`);
     return new Promise(async(resolve): Promise<Lock> =>
       this.locks.acquire(identifier.path, (done): void => {
-        this.logger.verbose(`Acquired a lock for ${identifier.path}.`);
+        this.logger.verbose(`Acquired lock for ${identifier.path}`);
         resolve({ release: async(): Promise<void> => {
-          this.logger.verbose(`Released the lock for ${identifier.path}.`);
+          this.logger.verbose(`Released lock for ${identifier.path}`);
           done();
         } });
       }));

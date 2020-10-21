@@ -17,7 +17,7 @@ export class MethodPermissionsExtractor extends PermissionsExtractor {
 
   public async canHandle({ method }: Operation): Promise<void> {
     if (!SUPPORTED_METHODS.has(method)) {
-      this.logger.warn(`Cannot determine permissions of ${method}`);
+      this.logger.warn(`Unrecognized method ${method}`);
       throw new UnsupportedHttpError(`Cannot determine permissions of ${method}`);
     }
   }

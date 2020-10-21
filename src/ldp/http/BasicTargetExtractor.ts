@@ -17,20 +17,22 @@ export class BasicTargetExtractor extends TargetExtractor {
     // Can handle all URLs
   }
 
-  public async handle(input: HttpRequest): Promise<ResourceIdentifier> {
-    if (!input.url) {
-      this.logger.error('Missing URL in HttpRequest.');
-      throw new Error('Missing URL.');
+  public async handle(request: HttpRequest): Promise<ResourceIdentifier> {
+    if (!request.url) {
+      this.logger.error('The request has no URL');
+      throw new Error('Missing URL');
     }
-    if (!input.headers.host) {
-      this.logger.error('Missing host in HttpRequest.');
-      throw new Error('Missing host.');
+    if (!request.headers.host) {
+      this.logger.error('The request has no Host header');
+      throw new Error('Missing Host header');
     }
-    const isHttps = input.connection && (input.connection as TLSSocket).encrypted;
+
+    const isHttps = request.connection && (request.connection as TLSSocket).encrypted;
+    this.logger.debug(`Request is using HTTPS: ${isHttps}`);
 
     // URL object applies punycode encoding to domain
-    const base = `http${isHttps ? 's' : ''}://${input.headers.host}`;
-    const url = toCanonicalUriPath(input.url);
+    const base = `http${isHttps ? 's' : ''}://${request.headers.host}`;
+    const url = toCanonicalUriPath(request.url);
     const path = new URL(url, base).href;
 
     return { path };

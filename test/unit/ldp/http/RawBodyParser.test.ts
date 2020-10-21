@@ -28,14 +28,14 @@ describe('A RawBodyparser', (): void => {
     input.request = streamifyArray([ 'abc' ]) as HttpRequest;
     input.request.headers = { 'content-length': '0' };
     await expect(bodyParser.handle(input)).rejects
-      .toThrow('An HTTP request body was passed without Content-Type header');
+      .toThrow('HTTP request body was passed without Content-Type header');
   });
 
   it('errors when a transfer encoding was specified without content type.', async(): Promise<void> => {
     input.request = streamifyArray([ 'abc' ]) as HttpRequest;
     input.request.headers = { 'transfer-encoding': 'chunked' };
     await expect(bodyParser.handle(input)).rejects
-      .toThrow('An HTTP request body was passed without Content-Type header');
+      .toThrow('HTTP request body was passed without Content-Type header');
   });
 
   it('returns a Representation if there was data.', async(): Promise<void> => {

@@ -25,7 +25,8 @@ describe('A BasicRequestParser', (): void => {
   });
 
   it('errors if there is no input.', async(): Promise<void> => {
-    await expect(requestParser.handle({ url: 'url' } as any)).rejects.toThrow('Missing method.');
+    await expect(requestParser.handle({ url: 'url' } as any))
+      .rejects.toThrow('No method specified on the HTTP request');
   });
 
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {
