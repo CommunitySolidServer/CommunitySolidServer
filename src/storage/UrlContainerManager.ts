@@ -15,14 +15,14 @@ export class UrlContainerManager implements ContainerManager {
   public async getContainer(id: ResourceIdentifier): Promise<ResourceIdentifier> {
     const path = this.canonicalUrl(id.path);
     if (this.base === path) {
-      throw new Error('Root does not have a container.');
+      throw new Error('Root does not have a container');
     }
 
     const parentPath = new URL('..', path).toString();
 
     // This probably means there is an issue with the root
     if (parentPath === path) {
-      throw new Error('URL root reached.');
+      throw new Error('URL root reached');
     }
 
     return { path: parentPath };

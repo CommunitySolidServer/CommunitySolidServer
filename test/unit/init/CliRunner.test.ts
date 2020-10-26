@@ -2,8 +2,6 @@ import * as Path from 'path';
 import type { Loader } from 'componentsjs';
 import { runCli } from '../../../src/init/CliRunner';
 import type { Setup } from '../../../src/init/Setup';
-import { setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 let calledInstantiateFromUrl: boolean;
 let calledRegisterAvailableModuleResources: boolean;
@@ -56,8 +54,6 @@ jest.mock('yargs', (): any => ({
 
 describe('CliRunner', (): void => {
   beforeAll(async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-
     mockSetup.setup.mockImplementation(async(): Promise<any> => {
       // The info method will be called when all other code has been executed, so end the waiting function.
       outsideResolve();

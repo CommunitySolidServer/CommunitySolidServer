@@ -1,5 +1,6 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { toObjectTerm, toNamedNode, isTerm } from '../../util/UriUtil';
 
 export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
@@ -9,6 +10,8 @@ export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | 
  * Most functions return the metadata object to allow for chaining.
  */
 export class RepresentationMetadata {
+  protected readonly logger = getLoggerFor(this);
+
   private store: Store;
   private id: NamedNode | BlankNode;
 
@@ -184,6 +187,7 @@ export class RepresentationMetadata {
       return;
     }
     if (terms.length > 1) {
+      this.logger.error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
       throw new Error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
     }
     return terms[0];

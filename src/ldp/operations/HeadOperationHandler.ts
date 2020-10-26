@@ -19,7 +19,7 @@ export class HeadOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'HEAD') {
-      throw new UnsupportedHttpError('This handler only supports HEAD operations.');
+      throw new UnsupportedHttpError('This handler only supports HEAD operations');
     }
   }
 

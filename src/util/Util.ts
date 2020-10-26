@@ -2,6 +2,9 @@ import type { Readable, Writable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
+import { getLoggerFor } from '../logging/LogUtil';
+
+const logger = getLoggerFor('Util');
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -66,7 +69,10 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
 export const pipeStreamsAndErrors = <T extends Writable>(readable: Readable, destination: T,
   mapError?: (error: Error) => Error): T => {
   readable.pipe(destination);
-  readable.on('error', (error): boolean => destination.emit('error', mapError ? mapError(error) : error));
+  readable.on('error', (error): boolean => {
+    logger.warn(`Piped stream errored with ${error.message}`);
+    return destination.emit('error', mapError ? mapError(error) : error);
+  });
   return destination;
 };
 

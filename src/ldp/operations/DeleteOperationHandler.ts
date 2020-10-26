@@ -18,7 +18,7 @@ export class DeleteOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'DELETE') {
-      throw new UnsupportedHttpError('This handler only supports DELETE operations.');
+      throw new UnsupportedHttpError('This handler only supports DELETE operations');
     }
   }
 

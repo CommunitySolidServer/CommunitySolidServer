@@ -1,4 +1,7 @@
+import { getLoggerFor } from '../logging/LogUtil';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
+
+const logger = getLoggerFor('HeaderUtil');
 
 // BNF based on https://tools.ietf.org/html/rfc7231
 //
@@ -105,9 +108,8 @@ export const transformQuotedStrings = (input: string): { result: string; replace
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!/^"(?:[\t !\u0023-\u005B\u005D-\u007E\u0080-\u00FF]|(?:\\[\t\u0020-\u007E\u0080-\u00FF]))*"$/u.test(match)) {
-      throw new UnsupportedHttpError(
-        `Invalid quoted string in header: ${match}. Check which characters are allowed`,
-      );
+      logger.warn(`Invalid quoted string in header: ${match}`);
+      throw new UnsupportedHttpError(`Invalid quoted string in header: ${match}`);
     }
     const replacement = `"${idx}"`;
     replacements[replacement] = match.slice(1, -1);
@@ -137,6 +139,7 @@ export const splitAndClean = (input: string): string[] =>
  */
 const testQValue = (qvalue: string): void => {
   if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
+    logger.warn(`Invalid q value: ${qvalue}`);
     throw new UnsupportedHttpError(
       `Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`,
     );
@@ -163,6 +166,7 @@ export const parseParameters = (parameters: string[], replacements: { [id: strin
   // parameter  = token "=" ( token / quoted-string )
   // second part is optional for certain parameters
   if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
+    logger.warn(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue}`);
     throw new UnsupportedHttpError(
       `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
       `does not match (token ( "=" ( token / quoted-string ))?). `,
@@ -197,6 +201,7 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
   // No reason to test differently for * since we don't check if the type exists
   const [ type, subtype ] = range.split('/');
   if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
+    logger.warn(`Invalid Accept range: ${range}`);
     throw new UnsupportedHttpError(
       `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
     );
@@ -215,8 +220,9 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
       weight = Number.parseFloat(value);
     } else {
       if (!value && map !== extensionParams) {
+        logger.warn(`Invalid Accept parameter ${name}`);
         throw new UnsupportedHttpError(`Invalid Accept parameter ${name}: ` +
-        `Accept parameter values are not optional when preceding the q value.`);
+        `Accept parameter values are not optional when preceding the q value`);
       }
       map[name] = value || '';
     }
@@ -249,7 +255,8 @@ const parseNoParameters = (input: string): { range: string; weight: number }[] =
     const result = { range, weight: 1 };
     if (qvalue) {
       if (!qvalue.startsWith('q=')) {
-        throw new UnsupportedHttpError(`Only q parameters are allowed in ${input}.`);
+        logger.warn(`Only q parameters are allowed in ${input}`);
+        throw new UnsupportedHttpError(`Only q parameters are allowed in ${input}`);
       }
       const val = qvalue.slice(2);
       testQValue(val);
@@ -293,6 +300,7 @@ export const parseAcceptCharset = (input: string): AcceptCharset[] => {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
+      logger.warn(`Invalid Accept-Charset range: ${result.range}`);
       throw new UnsupportedHttpError(
         `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
       );
@@ -315,6 +323,7 @@ export const parseAcceptEncoding = (input: string): AcceptEncoding[] => {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
+      logger.warn(`Invalid Accept-Encoding range: ${result.range}`);
       throw new UnsupportedHttpError(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
     }
   });
@@ -336,6 +345,9 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
   results.forEach((result): void => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
+      logger.warn(
+        `Invalid Accept-Language range: ${result.range}`,
+      );
       throw new UnsupportedHttpError(
         `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
       );

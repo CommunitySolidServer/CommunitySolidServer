@@ -3,6 +3,7 @@ import type { Patch } from '../ldp/http/Patch';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
 import type { ResourceLocker } from './ResourceLocker';
@@ -16,6 +17,8 @@ const READ_TIMEOUT = 1000;
  * and releases it afterwards.
  */
 export class LockingResourceStore implements AtomicResourceStore {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly source: ResourceStore;
   private readonly locks: ResourceLocker;
 
@@ -117,8 +120,10 @@ export class LockingResourceStore implements AtomicResourceStore {
    */
   protected createExpiringReadable(source: Readable): Readable {
     // Destroy the source when a timeout occurs.
-    const destroySource = (): void =>
+    const destroySource = (): void => {
+      this.logger.info(`Stream reading timout of ${READ_TIMEOUT}ms exceeded; destroying source`);
       source.destroy(new Error(`Stream reading timout of ${READ_TIMEOUT}ms exceeded`));
+    };
     let timeout = setTimeout(destroySource, READ_TIMEOUT);
 
     // Cancel the timeout when the source terminates by itself.

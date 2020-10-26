@@ -2,6 +2,7 @@ import { promises as fsPromises } from 'fs';
 import { posix } from 'path';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
@@ -36,6 +37,8 @@ export interface ResourcePath {
  * This new extension is stripped again when generating an identifier.
  */
 export class ExtensionBasedMapper implements FileIdentifierMapper {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly baseRequestURI: string;
   private readonly rootFilepath: string;
   private readonly types: Record<string, any>;
@@ -56,34 +59,38 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    * @returns A ResourceLink with all the necessary metadata.
    */
   public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    let path = this.getRelativePath(identifier);
+    const path = this.getRelativePath(identifier);
 
     if (!path.startsWith('/')) {
-      throw new UnsupportedHttpError('URL needs a / after the base.');
+      this.logger.warn(`URL ${identifier.path} needs a / after the base`);
+      throw new UnsupportedHttpError('URL needs a / after the base');
     }
 
     if (path.includes('/..')) {
-      throw new UnsupportedHttpError('Disallowed /.. segment in URL.');
+      this.logger.warn(`Disallowed /.. segment in URL ${identifier.path}.`);
+      throw new UnsupportedHttpError('Disallowed /.. segment in URL');
     }
 
-    path = this.getAbsolutePath(path);
+    let filePath = this.getAbsolutePath(path);
 
     // Container
     if (identifier.path.endsWith('/')) {
+      this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
       return {
         identifier,
-        filePath: path,
+        filePath,
       };
     }
 
-    // Would conflict with how new extensions get stored
-    if (/\$\.\w+$/u.test(path)) {
-      throw new UnsupportedHttpError('Identifiers cannot contain a dollar sign before their extension.');
+    // Would conflict with how new extensions are stored
+    if (/\$\.\w+$/u.test(filePath)) {
+      this.logger.warn(`Identifier ${identifier.path} contains a dollar sign before its extension`);
+      throw new UnsupportedHttpError('Identifiers cannot contain a dollar sign before their extension');
     }
 
     // Existing file
     if (!contentType) {
-      const [ , folder, documentName ] = /^(.*\/)(.*)$/u.exec(path)!;
+      const [ , folder, documentName ] = /^(.*\/)(.*)$/u.exec(filePath)!;
 
       let fileName: string | undefined;
       try {
@@ -94,34 +101,40 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
         );
       } catch {
         // Parent folder does not exist (or is not a folder)
+        this.logger.warn(`No parent folder for ${identifier.path} found at ${folder}`);
         throw new NotFoundHttpError();
       }
 
       // File doesn't exist
       if (!fileName) {
+        this.logger.warn(`File for URL ${identifier.path} does not exist in ${folder}`);
         throw new NotFoundHttpError();
       }
 
+      filePath = joinPath(folder, fileName);
+      this.logger.info(`The path for ${identifier.path} is ${filePath}`);
       return {
         identifier,
-        filePath: joinPath(folder, fileName),
+        filePath,
         contentType: this.getContentTypeFromExtension(fileName),
       };
     }
 
     // If the extension of the identifier matches a different content-type than the one that is given,
     // we need to add a new extension to match the correct type.
-    if (contentType !== this.getContentTypeFromExtension(path)) {
+    if (contentType !== this.getContentTypeFromExtension(filePath)) {
       const extension = mime.extension(contentType);
       if (!extension) {
-        throw new UnsupportedHttpError(`Unsupported content-type ${contentType}.`);
+        this.logger.warn(`No extension found for ${contentType}`);
+        throw new UnsupportedHttpError(`Unsupported content type ${contentType}`);
       }
-      path = `${path}$.${extension}`;
+      filePath += `$.${extension}`;
     }
 
+    this.logger.info(`The path for ${identifier.path} is ${filePath}`);
     return {
       identifier,
-      filePath: path,
+      filePath,
       contentType,
     };
   }
@@ -135,13 +148,16 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    */
   public async mapFilePathToUrl(filePath: string, isContainer: boolean): Promise<ResourceLink> {
     if (!filePath.startsWith(this.rootFilepath)) {
-      throw new Error(`File ${filePath} is not part of the file storage at ${this.rootFilepath}.`);
+      this.logger.error(`Trying to access file ${filePath} outside of ${this.rootFilepath}`);
+      throw new Error(`File ${filePath} is not part of the file storage at ${this.rootFilepath}`);
     }
 
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
+      const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
+      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
       return {
-        identifier: { path: ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative)) },
+        identifier: { path },
         filePath,
       };
     }
@@ -153,8 +169,11 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
       relative = relative.slice(0, -(extension.length + 2));
     }
 
+    const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
+    this.logger.info(`File ${filePath} (${contentType}) maps to URL ${path}`);
+
     return {
-      identifier: { path: trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative)) },
+      identifier: { path },
       filePath,
       contentType,
     };
@@ -203,6 +222,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    */
   private getRelativePath(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.baseRequestURI)) {
+      this.logger.warn(`The URL ${identifier.path} is outside of the scope ${this.baseRequestURI}`);
       throw new NotFoundHttpError();
     }
     return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));

@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../logging/LogUtil';
 import type { AsyncHandler } from './AsyncHandler';
 import { HttpError } from './errors/HttpError';
 import { InternalServerError } from './errors/InternalServerError';
@@ -10,6 +11,8 @@ import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
  * allowing for more fine-grained handlers to check before catch-all handlers.
  */
 export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly handlers: AsyncHandler<TIn, TOut>[];
 
   /**
@@ -43,7 +46,8 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
     try {
       handler = await this.findHandler(input);
     } catch {
-      throw new Error('All handlers failed. This might be the consequence of calling handle before canHandle.');
+      this.logger.warn('All handlers failed. This might be the consequence of calling handle before canHandle.');
+      throw new Error('All handlers failed');
     }
 
     return handler.handle(input);
@@ -85,13 +89,13 @@ export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
         } else if (error instanceof Error) {
           errors.push(new InternalServerError(error.message));
         } else {
-          errors.push(new InternalServerError('Unknown error.'));
+          errors.push(new InternalServerError('Unknown error'));
         }
       }
     }
 
     const joined = errors.map((error: Error): string => error.message).join(', ');
-    const message = `No handler supports the given input: [${joined}].`;
+    const message = `No handler supports the given input: [${joined}]`;
 
     // Check if all errors have the same status code
     if (errors.every((error): boolean => error.statusCode === errors[0].statusCode)) {

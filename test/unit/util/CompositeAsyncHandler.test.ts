@@ -44,7 +44,7 @@ describe('A CompositeAsyncHandler', (): void => {
     it('can not handle data if no handler supports it.', async(): Promise<void> => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow('[Not supported., Not supported.]');
+      await expect(handler.canHandle(null)).rejects.toThrow('[Not supported, Not supported]');
     });
 
     it('throws unknown errors if no Error objects are thrown.', async(): Promise<void> => {
@@ -53,7 +53,7 @@ describe('A CompositeAsyncHandler', (): void => {
       };
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error., Unknown error.]');
+      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error, Unknown error]');
     });
 
     it('handles data if a handler supports it.', async(): Promise<void> => {
@@ -67,7 +67,7 @@ describe('A CompositeAsyncHandler', (): void => {
     it('errors if the handle function is called but no handler supports the data.', async(): Promise<void> => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.handle('test')).rejects.toThrow('All handlers failed.');
+      await expect(handler.handle('test')).rejects.toThrow('All handlers failed');
     });
 
     it('only calls the canHandle function once of its handlers when handleSafe is called.', async(): Promise<void> => {
@@ -81,7 +81,7 @@ describe('A CompositeAsyncHandler', (): void => {
     it('throws the canHandle error when calling handleSafe if the data is not supported.', async(): Promise<void> => {
       const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported., Not supported.]');
+      await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
     });
 
     it('throws an error with matching status code if all handlers threw the same.', async(): Promise<void> => {

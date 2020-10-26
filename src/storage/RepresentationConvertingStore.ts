@@ -1,6 +1,7 @@
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import { matchingMediaType } from '../util/Util';
 import type { Conditions } from './Conditions';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
@@ -17,6 +18,8 @@ import type { ResourceStore } from './ResourceStore';
  * if there is a low weight for that type conversions might still be preferred.
  */
 export class RepresentationConvertingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly converter: RepresentationConverter;
 
   public constructor(source: T, converter: RepresentationConverter) {
@@ -30,6 +33,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     if (this.matchesPreferences(representation, preferences)) {
       return representation;
     }
+    this.logger.info(`Convert ${identifier.path} from ${representation.metadata.contentType} to ${preferences.type}`);
     return this.converter.handleSafe({ identifier, representation, preferences });
   }
 

@@ -1,5 +1,6 @@
 import AsyncLock from 'async-lock';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { Lock } from './Lock';
 import type { ResourceLocker } from './ResourceLocker';
 
@@ -7,6 +8,8 @@ import type { ResourceLocker } from './ResourceLocker';
  * A resource locker making use of the `async-lock` library.
  */
 export class SingleThreadedResourceLocker implements ResourceLocker {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly locks: AsyncLock;
 
   public constructor() {
@@ -21,9 +24,14 @@ export class SingleThreadedResourceLocker implements ResourceLocker {
    * @returns The {@link Lock} when it's available. Its release function needs to be called when finished.
    */
   public async acquire(identifier: ResourceIdentifier): Promise<Lock> {
+    this.logger.verbose(`Acquiring lock for ${identifier.path}`);
     return new Promise(async(resolve): Promise<Lock> =>
       this.locks.acquire(identifier.path, (done): void => {
-        resolve({ release: async(): Promise<void> => done() });
+        this.logger.verbose(`Acquired lock for ${identifier.path}`);
+        resolve({ release: async(): Promise<void> => {
+          this.logger.verbose(`Released lock for ${identifier.path}`);
+          done();
+        } });
       }));
   }
 }

@@ -3,8 +3,8 @@ import streamifyArray from 'streamify-array';
 import type { BodyParserArgs } from '../../../../src/ldp/http/BodyParser';
 import { RawBodyParser } from '../../../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import 'jest-rdf';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 
 describe('A RawBodyparser', (): void => {
   const bodyParser = new RawBodyParser();
@@ -28,14 +28,14 @@ describe('A RawBodyparser', (): void => {
     input.request = streamifyArray([ 'abc' ]) as HttpRequest;
     input.request.headers = { 'content-length': '0' };
     await expect(bodyParser.handle(input)).rejects
-      .toThrow('An HTTP request body was passed without Content-Type header');
+      .toThrow('HTTP request body was passed without Content-Type header');
   });
 
   it('errors when a transfer encoding was specified without content type.', async(): Promise<void> => {
     input.request = streamifyArray([ 'abc' ]) as HttpRequest;
     input.request.headers = { 'transfer-encoding': 'chunked' };
     await expect(bodyParser.handle(input)).rejects
-      .toThrow('An HTTP request body was passed without Content-Type header');
+      .toThrow('HTTP request body was passed without Content-Type header');
   });
 
   it('returns a Representation if there was data.', async(): Promise<void> => {

@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { HttpError } from '../../util/errors/HttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
@@ -9,9 +10,12 @@ import { ResponseWriter } from './ResponseWriter';
  * Still needs a way to write correct status codes for successful operations.
  */
 export class BasicResponseWriter extends ResponseWriter {
+  protected readonly logger = getLoggerFor(this);
+
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error) && input.result.body && !input.result.body.binary) {
-      throw new UnsupportedHttpError('Only binary results and errors are supported.');
+      this.logger.warn('This writer can only write binary bodies and errors');
+      throw new UnsupportedHttpError('Only binary results and errors are supported');
     }
   }
 

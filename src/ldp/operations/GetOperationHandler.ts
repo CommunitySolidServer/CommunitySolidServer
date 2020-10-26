@@ -18,7 +18,7 @@ export class GetOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'GET') {
-      throw new UnsupportedHttpError('This handler only supports GET operations.');
+      throw new UnsupportedHttpError('This handler only supports GET operations');
     }
   }
 

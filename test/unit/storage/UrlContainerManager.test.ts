@@ -12,20 +12,20 @@ describe('An UrlContainerManager', (): void => {
   it('errors when getting the container of root.', async(): Promise<void> => {
     let manager = new UrlContainerManager('http://test.com/foo/');
     await expect(manager.getContainer({ path: 'http://test.com/foo/' }))
-      .rejects.toThrow('Root does not have a container.');
+      .rejects.toThrow('Root does not have a container');
     await expect(manager.getContainer({ path: 'http://test.com/foo' }))
-      .rejects.toThrow('Root does not have a container.');
+      .rejects.toThrow('Root does not have a container');
 
     manager = new UrlContainerManager('http://test.com/foo/');
     await expect(manager.getContainer({ path: 'http://test.com/foo/' }))
-      .rejects.toThrow('Root does not have a container.');
+      .rejects.toThrow('Root does not have a container');
     await expect(manager.getContainer({ path: 'http://test.com/foo' }))
-      .rejects.toThrow('Root does not have a container.');
+      .rejects.toThrow('Root does not have a container');
   });
 
   it('errors when the root of an URl is reached that does not match the input root.', async(): Promise<void> => {
     const manager = new UrlContainerManager('http://test.com/foo/');
     await expect(manager.getContainer({ path: 'http://test.com/' }))
-      .rejects.toThrow('URL root reached.');
+      .rejects.toThrow('URL root reached');
   });
 });

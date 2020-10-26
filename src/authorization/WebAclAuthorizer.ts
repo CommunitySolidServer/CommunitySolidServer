@@ -4,6 +4,7 @@ import type { Credentials } from '../authentication/Credentials';
 import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import type { Representation } from '../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { ContainerManager } from '../storage/ContainerManager';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -21,6 +22,8 @@ import { Authorizer } from './Authorizer';
  * Does not support `acl:agentGroup`, `acl:origin` and `acl:trustedApp` yet.
  */
 export class WebAclAuthorizer extends Authorizer {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly aclManager: AclManager;
   private readonly containerManager: ContainerManager;
   private readonly resourceStore: ResourceStore;
@@ -66,7 +69,14 @@ export class WebAclAuthorizer extends Authorizer {
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
     const auths = store.getQuads(null, ACL.mode, modeString, null).map((quad: Quad): Term => quad.subject);
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
-      throw typeof agent.webID === 'string' ? new ForbiddenHttpError() : new UnauthorizedHttpError();
+      const isLoggedIn = typeof agent.webID === 'string';
+      if (isLoggedIn) {
+        this.logger.warn(`Agent ${agent.webID} has no ${mode} permissions`);
+        throw new ForbiddenHttpError();
+      } else {
+        this.logger.warn(`Unauthenticated agent has no ${mode} permissions`);
+        throw new UnauthorizedHttpError();
+      }
     }
   }
 
@@ -111,18 +121,25 @@ export class WebAclAuthorizer extends Authorizer {
    * @returns A store containing the relevant acl triples.
    */
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
+    this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
       const acl = await this.aclManager.getAcl(id);
+      this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+      this.logger.info(`Reading ACL statements from ${acl.path}`);
       return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
     } catch (error: unknown) {
-      if (!(error instanceof NotFoundHttpError)) {
+      if (error instanceof NotFoundHttpError) {
+        this.logger.debug(`No direct ACL document found for ${id.path}`);
+      } else {
+        this.logger.error(`Error reading ACL for ${id.path}`, { error });
         throw error;
       }
-
-      const parent = await this.containerManager.getContainer(id);
-      return this.getAclRecursive(parent, true);
     }
+
+    this.logger.debug(`Traversing to the parent of ${id.path}`);
+    const parent = await this.containerManager.getContainer(id);
+    return this.getAclRecursive(parent, true);
   }
 
   /**
