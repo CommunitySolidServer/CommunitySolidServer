@@ -3,12 +3,11 @@ import type { HttpHandler,
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  BasicResponseWriter,
   MethodPermissionsExtractor,
   UnsecureWebIdExtractor,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
-import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser } from './Util';
+import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser, getResponseWriter } from './Util';
 
 /**
  * BasicConfig works with
@@ -33,7 +32,7 @@ export class BasicConfig implements ServerConfig {
 
     const operationHandler = getOperationHandler(this.store);
 
-    const responseWriter = new BasicResponseWriter();
+    const responseWriter = getResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

@@ -3,7 +3,6 @@ import type { HttpHandler,
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  BasicResponseWriter,
   CompositeAsyncHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
@@ -21,6 +20,7 @@ import {
   getConvertingStore,
   getPatchingStore,
   getBasicRequestParser,
+  getResponseWriter,
 } from './Util';
 
 /**
@@ -56,7 +56,7 @@ export class BasicHandlersConfig implements ServerConfig {
 
     const operationHandler = getOperationHandler(this.store);
 
-    const responseWriter = new BasicResponseWriter();
+    const responseWriter = getResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,
