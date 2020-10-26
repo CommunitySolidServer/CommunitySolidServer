@@ -155,7 +155,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
       const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
-      this.logger.verbose(`Container filepath ${filePath} maps to URL ${path}`);
+      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
       return {
         identifier: { path },
         filePath,
@@ -170,7 +170,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     }
 
     const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
-    this.logger.verbose(`File ${filePath} (${contentType}) maps to URL ${path}`);
+    this.logger.info(`File ${filePath} (${contentType}) maps to URL ${path}`);
 
     return {
       identifier: { path },
