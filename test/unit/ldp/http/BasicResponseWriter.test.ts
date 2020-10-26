@@ -16,7 +16,9 @@ describe('A BasicResponseWriter', (): void => {
     response = createResponse({ eventEmitter: EventEmitter });
   });
 
-  it('requires the description body to be a string or binary stream if present.', async(): Promise<void> => {
+  it('requires a description body, with a binary stream if there is data.', async(): Promise<void> => {
+    await expect(writer.canHandle({ response, result: new Error('error') }))
+      .rejects.toThrow(UnsupportedHttpError);
     await expect(writer.canHandle({ response, result: { body: { binary: false }} as ResponseDescription }))
       .rejects.toThrow(UnsupportedHttpError);
     await expect(writer.canHandle({ response, result: { body: { binary: true }} as ResponseDescription }))
@@ -71,35 +73,5 @@ describe('A BasicResponseWriter', (): void => {
 
     await writer.handle({ response, result: { identifier: { path: 'path' }, body }});
     await end;
-  });
-
-  it('responds with 500 if an error if there is an error.', async(): Promise<void> => {
-    await writer.handle({ response, result: new Error('error') });
-    expect(response._isEndCalled()).toBeTruthy();
-    expect(response._getStatusCode()).toBe(500);
-    expect(response._getData()).toMatch('Error: error');
-  });
-
-  it('responds with the given statuscode if there is an HttpError.', async(): Promise<void> => {
-    const error = new UnsupportedHttpError('error');
-    await writer.handle({ response, result: error });
-    expect(response._isEndCalled()).toBeTruthy();
-    expect(response._getStatusCode()).toBe(error.statusCode);
-    expect(response._getData()).toMatch('UnsupportedHttpError: error');
-  });
-
-  it('responds with the error name and message when no stack trace is lazily generated.', async(): Promise<void> => {
-    const error = new Error('error');
-    error.stack = undefined;
-    await writer.handle({ response, result: error });
-    expect(response._isEndCalled()).toBeTruthy();
-    expect(response._getStatusCode()).toBe(500);
-    expect(response._getData()).toMatch('Error: error');
-  });
-
-  it('ends its response with a newline if there is an error.', async(): Promise<void> => {
-    await writer.handle({ response, result: new Error('error') });
-    expect(response._isEndCalled()).toBeTruthy();
-    expect(response._getData().endsWith('\n')).toBeTruthy();
   });
 });

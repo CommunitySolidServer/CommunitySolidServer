@@ -6,7 +6,6 @@ import type {
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  BasicResponseWriter,
   CompositeAsyncHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
@@ -20,6 +19,7 @@ import {
   getConvertingStore,
   getBasicRequestParser,
   getDataAccessorStore,
+  getResponseWriter,
 } from './Util';
 
 /**
@@ -50,7 +50,7 @@ export class DataAccessorBasedConfig implements ServerConfig {
     const authorizer = new AllowEverythingAuthorizer();
 
     const operationHandler = getOperationHandler(this.store);
-    const responseWriter = new BasicResponseWriter();
+    const responseWriter = getResponseWriter();
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

@@ -2,7 +2,6 @@ import type { HttpHandler,
   ResourceStore } from '../../index';
 import {
   AuthenticatedLdpHandler,
-  BasicResponseWriter,
   CompositeAsyncHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
@@ -16,6 +15,7 @@ import {
   getBasicRequestParser,
   getOperationHandler,
   getWebAclAuthorizer,
+  getResponseWriter,
 } from './Util';
 
 /**
@@ -46,7 +46,7 @@ export class BasicHandlersWithAclConfig implements ServerConfig {
 
     const operationHandler = getOperationHandler(this.store);
 
-    const responseWriter = new BasicResponseWriter();
+    const responseWriter = getResponseWriter();
     const authorizer = getWebAclAuthorizer(this.store);
 
     const handler = new AuthenticatedLdpHandler({

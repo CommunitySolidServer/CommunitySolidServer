@@ -28,6 +28,7 @@ export * from './src/ldp/http/BasicRequestParser';
 export * from './src/ldp/http/BasicResponseWriter';
 export * from './src/ldp/http/BasicTargetExtractor';
 export * from './src/ldp/http/BodyParser';
+export * from './src/ldp/http/ErrorResponseWriter';
 export * from './src/ldp/http/Patch';
 export * from './src/ldp/http/PreferenceParser';
 export * from './src/ldp/http/RawBodyParser';

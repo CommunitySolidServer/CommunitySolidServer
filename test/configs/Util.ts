@@ -6,16 +6,20 @@ import type {
   RepresentationConverter,
   ResourceStore,
   ResponseDescription,
+  HttpResponse,
+  ResponseWriter,
 } from '../../index';
 import {
   AcceptPreferenceParser,
   BasicMetadataExtractor,
   BasicRequestParser,
+  BasicResponseWriter,
   BasicTargetExtractor,
   CompositeAsyncHandler,
   ContentTypeParser,
   DataAccessorBasedStore,
   DeleteOperationHandler,
+  ErrorResponseWriter,
   GetOperationHandler,
   HeadOperationHandler,
   InMemoryDataAccessor,
@@ -112,6 +116,12 @@ export const getOperationHandler = (store: ResourceStore): CompositeAsyncHandler
   ];
   return new CompositeAsyncHandler<Operation, ResponseDescription>(handlers);
 };
+
+export const getResponseWriter = (): ResponseWriter =>
+  new CompositeAsyncHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
+    new ErrorResponseWriter(),
+    new BasicResponseWriter(),
+  ]);
 
 /**
  * Creates a BasicMetadataExtractor with parsers for content-type, slugs and link types.

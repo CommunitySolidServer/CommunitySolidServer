@@ -5,7 +5,6 @@ import type {
 } from '../../index';
 import {
   AuthenticatedLdpHandler,
-  BasicResponseWriter,
   CompositeAsyncHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
@@ -19,6 +18,7 @@ import {
   getOperationHandler,
   getWebAclAuthorizer,
   getDataAccessorStore,
+  getResponseWriter,
 } from './Util';
 
 /**
@@ -50,7 +50,7 @@ export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
 
     const operationHandler = getOperationHandler(this.store);
 
-    const responseWriter = new BasicResponseWriter();
+    const responseWriter = getResponseWriter();
     const authorizer = getWebAclAuthorizer(this.store, this.base);
 
     const handler = new AuthenticatedLdpHandler({
