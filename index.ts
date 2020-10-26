@@ -97,20 +97,27 @@ export * from './src/storage/conversion/TypedRepresentationConverter';
 export * from './src/storage/patch/PatchHandler';
 export * from './src/storage/patch/SparqlUpdatePatchHandler';
 
+// Storage/Routing
+export * from './src/storage/routing/ConvertingRouterRule';
+export * from './src/storage/routing/PreferenceSupport';
+export * from './src/storage/routing/RegexRouterRule';
+export * from './src/storage/routing/RouterRule';
+
 // Storage
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/ContainerManager';
 export * from './src/storage/DataAccessorBasedStore';
 export * from './src/storage/ExtensionBasedMapper';
+export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
 export * from './src/storage/RepresentationConvertingStore';
 export * from './src/storage/ResourceLocker';
-export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/ResourceStore';
+export * from './src/storage/RoutingResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/UrlContainerManager';
 

@@ -52,6 +52,7 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 'off', // this prevents some functional programming paradigms
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
+    'unicorn/prefer-ternary': 'off', // can get ugly with large single statements
 
     // Naming conventions
     '@typescript-eslint/naming-convention': [
