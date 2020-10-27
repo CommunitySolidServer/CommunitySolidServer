@@ -20,6 +20,6 @@
   ],
   "exclude": [
     "node_modules",
-    "test/system"
+    "test/tmp"
   ]
 }

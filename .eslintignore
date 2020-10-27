@@ -7,3 +7,6 @@ coverage
 **/*.js
 **/*.d.ts
 **/*.js.map
+
+# ignore temporary test files
+test/tmp
