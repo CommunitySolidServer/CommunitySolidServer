@@ -81,4 +81,19 @@ describe('A BasicResponseWriter', (): void => {
     expect(response._getStatusCode()).toBe(error.statusCode);
     expect(response._getData()).toMatch('UnsupportedHttpError: error');
   });
+
+  it('responds with the error name and message when no stack trace is lazily generated.', async(): Promise<void> => {
+    const error = new Error('error');
+    error.stack = undefined;
+    await writer.handle({ response, result: error });
+    expect(response._isEndCalled()).toBeTruthy();
+    expect(response._getStatusCode()).toBe(500);
+    expect(response._getData()).toMatch('Error: error');
+  });
+
+  it('ends its response with a newline if there is an error.', async(): Promise<void> => {
+    await writer.handle({ response, result: new Error('error') });
+    expect(response._isEndCalled()).toBeTruthy();
+    expect(response._getData().endsWith('\n')).toBeTruthy();
+  });
 });
