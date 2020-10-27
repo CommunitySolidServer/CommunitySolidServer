@@ -1,6 +1,6 @@
 import type { HttpResponse } from '../../server/HttpResponse';
 import { AsyncHandler } from '../../util/AsyncHandler';
-import type { ResponseDescription } from '../operations/ResponseDescription';
+import type { ResponseDescription } from './response/ResponseDescription';
 
 /**
  * Writes to the HttpResponse.

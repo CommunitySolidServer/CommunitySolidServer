@@ -2,7 +2,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { HttpError } from '../../util/errors/HttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import type { ResponseDescription } from '../operations/ResponseDescription';
+import type { ResponseDescription } from './response/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
 
 /**

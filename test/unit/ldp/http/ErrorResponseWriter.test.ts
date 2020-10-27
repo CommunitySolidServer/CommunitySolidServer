@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import { ErrorResponseWriter } from '../../../../src/ldp/http/ErrorResponseWriter';
-import type { ResponseDescription } from '../../../../src/ldp/operations/ResponseDescription';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('An ErrorResponseWriter', (): void => {
@@ -16,9 +15,7 @@ describe('An ErrorResponseWriter', (): void => {
   it('requires the input to be an error.', async(): Promise<void> => {
     await expect(writer.canHandle({ response, result: new Error('error') }))
       .resolves.toBeUndefined();
-    await expect(writer.canHandle({ response, result: { body: { binary: false }} as ResponseDescription }))
-      .rejects.toThrow(UnsupportedHttpError);
-    await expect(writer.canHandle({ response, result: { body: { binary: true }} as ResponseDescription }))
+    await expect(writer.canHandle({ response, result: { statusCode: 200 }}))
       .rejects.toThrow(UnsupportedHttpError);
   });
 

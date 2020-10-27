@@ -22,6 +22,12 @@ export * from './src/ldp/http/metadata/MetadataExtractor';
 export * from './src/ldp/http/metadata/MetadataParser';
 export * from './src/ldp/http/metadata/SlugParser';
 
+// LDP/HTTP/Response
+export * from './src/ldp/http/response/CreatedResponseDescription';
+export * from './src/ldp/http/response/OkResponseDescription';
+export * from './src/ldp/http/response/ResetResponseDescription';
+export * from './src/ldp/http/response/ResponseDescription';
+
 // LDP/HTTP
 export * from './src/ldp/http/AcceptPreferenceParser';
 export * from './src/ldp/http/BasicRequestParser';
@@ -38,16 +44,6 @@ export * from './src/ldp/http/SparqlUpdateBodyParser';
 export * from './src/ldp/http/SparqlUpdatePatch';
 export * from './src/ldp/http/TargetExtractor';
 
-// Logging
-export * from './src/logging/LazyLogger';
-export * from './src/logging/LazyLoggerFactory';
-export * from './src/logging/Logger';
-export * from './src/logging/LoggerFactory';
-export * from './src/logging/LogLevel';
-export * from './src/logging/LogUtil';
-export * from './src/logging/VoidLoggerFactory';
-export * from './src/logging/WinstonLoggerFactory';
-
 // LDP/Operations
 export * from './src/ldp/operations/DeleteOperationHandler';
 export * from './src/ldp/operations/GetOperationHandler';
@@ -57,7 +53,6 @@ export * from './src/ldp/operations/OperationHandler';
 export * from './src/ldp/operations/PatchOperationHandler';
 export * from './src/ldp/operations/PostOperationHandler';
 export * from './src/ldp/operations/PutOperationHandler';
-export * from './src/ldp/operations/ResponseDescription';
 
 // LDP/Permissions
 export * from './src/ldp/permissions/PermissionSet';
@@ -74,6 +69,16 @@ export * from './src/ldp/representation/ResourceIdentifier';
 
 // LDP
 export * from './src/ldp/AuthenticatedLdpHandler';
+
+// Logging
+export * from './src/logging/LazyLogger';
+export * from './src/logging/LazyLoggerFactory';
+export * from './src/logging/Logger';
+export * from './src/logging/LoggerFactory';
+export * from './src/logging/LogLevel';
+export * from './src/logging/LogUtil';
+export * from './src/logging/VoidLoggerFactory';
+export * from './src/logging/WinstonLoggerFactory';
 
 // Server
 export * from './src/server/ExpressHttpServer';
