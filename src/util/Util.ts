@@ -3,6 +3,7 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { getLoggerFor } from '../logging/LogUtil';
+import type { HttpResponse } from '../server/HttpResponse';
 
 const logger = getLoggerFor('Util');
 
@@ -100,3 +101,25 @@ export const encodeUriPathComponents = (path: string): string => path.split('/')
 export const pushQuad =
   (quads: Quad[], subject: NamedNode, predicate: NamedNode, object: NamedNode | Literal): number =>
     quads.push(DataFactory.quad(subject, predicate, object));
+
+/**
+ * Adds a header value without overriding previous values.
+ */
+export const addHeader = (response: HttpResponse, name: string, value: string | string[]): void => {
+  let allValues: string[] = [];
+  if (response.hasHeader(name)) {
+    let oldValues = response.getHeader(name)!;
+    if (typeof oldValues === 'string') {
+      oldValues = [ oldValues ];
+    } else if (typeof oldValues === 'number') {
+      oldValues = [ `${oldValues}` ];
+    }
+    allValues = oldValues;
+  }
+  if (Array.isArray(value)) {
+    allValues.push(...value);
+  } else {
+    allValues.push(value);
+  }
+  response.setHeader(name, allValues.length === 1 ? allValues[0] : allValues);
+};
