@@ -6,7 +6,8 @@ import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHtt
 
 describe('A GetOperationHandler', (): void => {
   const store = {
-    getRepresentation: async(): Promise<Representation> => ({ binary: false } as Representation),
+    getRepresentation: async(): Promise<Representation> =>
+      ({ binary: false, data: 'data', metadata: 'metadata' } as any),
   } as unknown as ResourceStore;
   const handler = new GetOperationHandler(store);
 
@@ -15,9 +16,10 @@ describe('A GetOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
-  it('returns the representation from the store with the input identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }} as Operation)).resolves.toEqual(
-      { identifier: { path: 'url' }, body: { binary: false }},
-    );
+  it('returns the representation from the store with the correct response.', async(): Promise<void> => {
+    const result = await handler.handle({ target: { path: 'url' }} as Operation);
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata).toBe('metadata');
+    expect(result.data).toBe('data');
   });
 });

@@ -1,6 +1,6 @@
 import { AsyncHandler } from '../../util/AsyncHandler';
+import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
-import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handler for a specific operation type.

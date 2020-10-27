@@ -66,11 +66,10 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
       // Get file
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE2');
 
       // DELETE file
-      await fileHelper.deleteFile(id);
+      await fileHelper.deleteResource(id);
       await fileHelper.shouldNotExist(id);
     });
 
@@ -95,11 +94,10 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
 
       // GET permanent file
       response = await fileHelper.getFile('http://test.com/permanent.txt');
-      expect(response._getHeaders().location).toBe('http://test.com/permanent.txt');
       expect(response._getBuffer().toString()).toContain('TEST');
 
       // Try to delete permanent file
-      response = await fileHelper.deleteFile('http://test.com/permanent.txt', true);
+      response = await fileHelper.deleteResource('http://test.com/permanent.txt', true);
       expect(response.statusCode).toBe(401);
     });
   });

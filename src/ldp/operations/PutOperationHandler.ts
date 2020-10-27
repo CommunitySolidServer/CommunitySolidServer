@@ -1,9 +1,10 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { ResetResponseDescription } from '../http/response/ResetResponseDescription';
+import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handles PUT {@link Operation}s.
@@ -31,6 +32,6 @@ export class PutOperationHandler extends OperationHandler {
       throw new UnsupportedHttpError('PUT operations require a body');
     }
     await this.store.setRepresentation(input.target, input.body);
-    return { identifier: input.target };
+    return new ResetResponseDescription();
   }
 }

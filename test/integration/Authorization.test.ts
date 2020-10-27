@@ -21,7 +21,7 @@ describe('A server with authorization', (): void => {
       { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
 
     // PUT
     requestUrl = new URL('http://test.com/foo/bar');
@@ -32,7 +32,7 @@ describe('A server with authorization', (): void => {
       { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],
     );
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(205);
   });
 
   it('can not create new entries if not allowed.', async(): Promise<void> => {

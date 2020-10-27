@@ -28,6 +28,7 @@ export const FOAF = {
 
 const HTTP_PREFIX = createNamespace('urn:solid:http:');
 export const HTTP = {
+  location: HTTP_PREFIX('location'),
   slug: HTTP_PREFIX('slug'),
 };
 

@@ -1,9 +1,10 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { CreatedResponseDescription } from '../http/response/CreatedResponseDescription';
+import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handles POST {@link Operation}s.
@@ -31,6 +32,6 @@ export class PostOperationHandler extends OperationHandler {
       throw new UnsupportedHttpError('POST operations require a body');
     }
     const identifier = await this.store.addResource(input.target, input.body);
-    return { identifier };
+    return new CreatedResponseDescription(identifier);
   }
 }

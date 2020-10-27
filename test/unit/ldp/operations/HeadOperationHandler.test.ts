@@ -1,5 +1,4 @@
-import arrayifyStream from 'arrayify-stream';
-import streamifyArray from 'streamify-array';
+import type { Readable } from 'stream';
 import { HeadOperationHandler } from '../../../../src/ldp/operations/HeadOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
@@ -7,11 +6,18 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A HeadOperationHandler', (): void => {
-  const store = {
-    getRepresentation: async(): Promise<Representation> => ({ binary: false, data: streamifyArray([ 1, 2, 3 ]) } as
-      Representation),
-  } as unknown as ResourceStore;
-  const handler = new HeadOperationHandler(store);
+  let store: ResourceStore;
+  let handler: HeadOperationHandler;
+  let data: Readable;
+
+  beforeEach(async(): Promise<void> => {
+    data = { destroy: jest.fn() } as any;
+    store = {
+      getRepresentation: async(): Promise<Representation> =>
+        ({ binary: false, data, metadata: 'metadata' } as any),
+    } as any;
+    handler = new HeadOperationHandler(store);
+  });
 
   it('only supports HEAD operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'HEAD' } as Operation)).resolves.toBeUndefined();
@@ -19,10 +25,11 @@ describe('A HeadOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
   });
 
-  it('returns the representation from the store with the input identifier and empty data.', async(): Promise<void> => {
+  it('returns the representation from the store with the correct response.', async(): Promise<void> => {
     const result = await handler.handle({ target: { path: 'url' }} as Operation);
-    expect(result.identifier.path).toBe('url');
-    expect(result.body?.binary).toBe(false);
-    await expect(arrayifyStream(result.body!.data)).resolves.toEqual([]);
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata).toBe('metadata');
+    expect(result.data).toBeUndefined();
+    expect(data.destroy).toHaveBeenCalledTimes(1);
   });
 });

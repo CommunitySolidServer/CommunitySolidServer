@@ -1,9 +1,9 @@
-import { Readable } from 'stream';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { OkResponseDescription } from '../http/response/OkResponseDescription';
+import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handles HEAD {@link Operation}s.
@@ -28,10 +28,7 @@ export class HeadOperationHandler extends OperationHandler {
 
     // Close the Readable as we will not return it.
     body.data.destroy();
-    body.data = new Readable();
-    body.data._read = function(): void {
-      body.data.push(null);
-    };
-    return { identifier: input.target, body };
+
+    return new OkResponseDescription(body.metadata);
   }
 }

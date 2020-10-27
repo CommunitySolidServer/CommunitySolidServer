@@ -16,11 +16,13 @@ describe('A PutOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'PUT' } as Operation)).resolves.toBeUndefined();
   });
 
-  it('sets the representation in the store and returns its identifier.', async(): Promise<void> => {
-    await expect(handler.handle({ target: { path: 'url' }, body: {}} as Operation))
-      .resolves.toEqual({ identifier: { path: 'url' }});
+  it('sets the representation in the store and returns the correct response.', async(): Promise<void> => {
+    const result = await handler.handle({ target: { path: 'url' }, body: {}} as Operation);
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, {});
+    expect(result.statusCode).toBe(205);
+    expect(result.metadata).toBeUndefined();
+    expect(result.data).toBeUndefined();
   });
 
   it('errors when there is no body.', async(): Promise<void> => {

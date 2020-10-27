@@ -1,8 +1,9 @@
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { OkResponseDescription } from '../http/response/OkResponseDescription';
+import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
 import { OperationHandler } from './OperationHandler';
-import type { ResponseDescription } from './ResponseDescription';
 
 /**
  * Handles GET {@link Operation}s.
@@ -24,6 +25,6 @@ export class GetOperationHandler extends OperationHandler {
 
   public async handle(input: Operation): Promise<ResponseDescription> {
     const body = await this.store.getRepresentation(input.target, input.preferences);
-    return { identifier: input.target, body };
+    return new OkResponseDescription(body.metadata, body.data);
   }
 }

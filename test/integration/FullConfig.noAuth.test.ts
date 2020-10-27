@@ -51,11 +51,10 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE0');
 
       // DELETE
-      await fileHelper.deleteFile(id);
+      await fileHelper.deleteResource(id);
       await fileHelper.shouldNotExist(id);
     });
 
@@ -66,7 +65,6 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE0');
 
       // PUT
@@ -75,11 +73,10 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
       expect(response._getBuffer().toString()).toContain('TESTFILE1');
 
       // DELETE
-      await fileHelper.deleteFile(id);
+      await fileHelper.deleteResource(id);
       await fileHelper.shouldNotExist(id);
     });
 
@@ -91,10 +88,9 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFolder(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
 
       // DELETE
-      await fileHelper.deleteFolder(id);
+      await fileHelper.deleteResource(id);
       await fileHelper.shouldNotExist(id);
     });
 
@@ -109,12 +105,11 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET File
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(id);
 
       // DELETE
-      await fileHelper.deleteFile(id);
+      await fileHelper.deleteResource(id);
       await fileHelper.shouldNotExist(id);
-      await fileHelper.deleteFolder('http://test.com/testfolder0/');
+      await fileHelper.deleteResource('http://test.com/testfolder0/');
       await fileHelper.shouldNotExist('http://test.com/testfolder0/');
     });
 
@@ -132,9 +127,9 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
       // DELETE
-      await fileHelper.deleteFile('http://test.com/testfolder1/testfile0.txt');
+      await fileHelper.deleteResource('http://test.com/testfolder1/testfile0.txt');
       await fileHelper.shouldNotExist('http://test.com/testfolder1/testfile0.txt');
-      await fileHelper.deleteFolder(folderId);
+      await fileHelper.deleteResource(folderId);
       await fileHelper.shouldNotExist(folderId);
     });
 
@@ -153,9 +148,9 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
       // DELETE
-      await fileHelper.deleteFolder(subFolderId);
+      await fileHelper.deleteResource(subFolderId);
       await fileHelper.shouldNotExist(subFolderId);
-      await fileHelper.deleteFolder(folderId);
+      await fileHelper.deleteResource(folderId);
       await fileHelper.shouldNotExist(folderId);
     });
 
@@ -174,16 +169,15 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
 
       response = await fileHelper.getFolder(folderId);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(folderId);
       expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
       expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
 
       // DELETE
-      await fileHelper.deleteFile(fileId);
+      await fileHelper.deleteResource(fileId);
       await fileHelper.shouldNotExist(fileId);
-      await fileHelper.deleteFolder(subFolderId);
+      await fileHelper.deleteResource(subFolderId);
       await fileHelper.shouldNotExist(subFolderId);
-      await fileHelper.deleteFolder(folderId);
+      await fileHelper.deleteResource(folderId);
       await fileHelper.shouldNotExist(folderId);
     });
 
@@ -194,11 +188,10 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFile(fileId);
       expect(response.statusCode).toBe(200);
-      expect(response._getHeaders().location).toBe(fileId);
       expect(response._getHeaders()['content-type']).toBe('image/png');
 
       // DELETE
-      await fileHelper.deleteFile(fileId);
+      await fileHelper.deleteResource(fileId);
       await fileHelper.shouldNotExist(fileId);
     });
   });

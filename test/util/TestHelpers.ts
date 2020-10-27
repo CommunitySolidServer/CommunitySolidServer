@@ -124,7 +124,7 @@ export class FileTestHelper {
       fileData,
     );
     if (!mayFail) {
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(201);
       expect(response._getData()).toHaveLength(0);
       expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
     }
@@ -145,9 +145,8 @@ export class FileTestHelper {
       { 'content-type': contentType, 'transfer-encoding': 'chunked' },
       fileData,
     );
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(205);
     expect(response._getData()).toHaveLength(0);
-    expect(response._getHeaders().location).toContain(url.format(putUrl));
     return response;
   }
 
@@ -159,14 +158,13 @@ export class FileTestHelper {
     return response;
   }
 
-  public async deleteFile(requestUrl: string, mayFail = false): Promise<MockResponse<any>> {
+  public async deleteResource(requestUrl: string, mayFail = false): Promise<MockResponse<any>> {
     const deleteUrl = new URL(requestUrl);
 
     const response = await this.simpleCall(deleteUrl, 'DELETE', {});
     if (!mayFail) {
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(205);
       expect(response._getData()).toHaveLength(0);
-      expect(response._getHeaders().location).toBe(url.format(requestUrl));
     }
     return response;
   }
@@ -182,7 +180,7 @@ export class FileTestHelper {
         'transfer-encoding': 'chunked',
       },
     );
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(response._getData()).toHaveLength(0);
     expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
     return response;
@@ -193,16 +191,6 @@ export class FileTestHelper {
 
     // `n-quads` allow for easy testing if a triple is present
     return await this.simpleCall(getUrl, 'GET', { accept: 'application/n-quads' });
-  }
-
-  public async deleteFolder(requestUrl: string): Promise<MockResponse<any>> {
-    const deleteUrl = new URL(requestUrl);
-
-    const response = await this.simpleCall(deleteUrl, 'DELETE', {});
-    expect(response.statusCode).toBe(200);
-    expect(response._getData()).toHaveLength(0);
-    expect(response._getHeaders().location).toBe(url.format(requestUrl));
-    return response;
   }
 
   public async shouldNotExist(requestUrl: string): Promise<MockResponse<any>> {

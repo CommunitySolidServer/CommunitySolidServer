@@ -5,10 +5,10 @@ import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
 import type { RequestParser } from './http/RequestParser';
+import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
 import type { Operation } from './operations/Operation';
 import type { OperationHandler } from './operations/OperationHandler';
-import type { ResponseDescription } from './operations/ResponseDescription';
 import type { PermissionSet } from './permissions/PermissionSet';
 import type { PermissionsExtractor } from './permissions/PermissionsExtractor';
 
