@@ -2,7 +2,9 @@ import { PassThrough } from 'stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
+import type { HttpResponse } from '../../../src/server/HttpResponse';
 import {
+  addHeader,
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
@@ -94,6 +96,43 @@ describe('Util function', (): void => {
       expect(quads).toEqualRdfQuadArray([
         DataFactory.quad(DataFactory.namedNode('sub'), DataFactory.namedNode('pred'), DataFactory.literal('obj')),
       ]);
+    });
+  });
+
+  describe('addHeader', (): void => {
+    let response: HttpResponse;
+
+    beforeEach(async(): Promise<void> => {
+      const headers: Record<string, string | number | string[]> = {};
+      response = {
+        hasHeader: (name: string): boolean => Boolean(headers[name]),
+        getHeader: (name: string): number | string | string[] | undefined => headers[name],
+        setHeader(name: string, value: number | string | string[]): void {
+          headers[name] = value;
+        },
+      } as any;
+    });
+
+    it('adds values if there are none already.', async(): Promise<void> => {
+      expect(addHeader(response, 'name', 'value')).toBeUndefined();
+      expect(response.getHeader('name')).toBe('value');
+
+      expect(addHeader(response, 'names', [ 'value1', 'values2' ])).toBeUndefined();
+      expect(response.getHeader('names')).toEqual([ 'value1', 'values2' ]);
+    });
+
+    it('appends values to already existing values.', async(): Promise<void> => {
+      response.setHeader('name', 'oldValue');
+      expect(addHeader(response, 'name', 'value')).toBeUndefined();
+      expect(response.getHeader('name')).toEqual([ 'oldValue', 'value' ]);
+
+      response.setHeader('number', 5);
+      expect(addHeader(response, 'number', 'value')).toBeUndefined();
+      expect(response.getHeader('number')).toEqual([ '5', 'value' ]);
+
+      response.setHeader('names', [ 'oldValue1', 'oldValue2' ]);
+      expect(addHeader(response, 'names', [ 'value1', 'values2' ])).toBeUndefined();
+      expect(response.getHeader('names')).toEqual([ 'oldValue1', 'oldValue2', 'value1', 'values2' ]);
     });
   });
 });
