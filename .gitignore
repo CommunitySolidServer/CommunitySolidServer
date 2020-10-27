@@ -1,16 +1,18 @@
 .idea
+
 node_modules
-coverage
 
 *.js
 *.js.map
 *.d.ts
+components
 
 .eslintcache
-
 !.eslintrc.js
 !test/eslintrc.js
+
 !jest.config.js
 
-components
-solid-crud-tests
+coverage
+
+test/tmp
