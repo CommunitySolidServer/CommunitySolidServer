@@ -27,7 +27,9 @@ export class BasicResponseWriter extends ResponseWriter {
       }
       input.response.setHeader('content-type', 'text/plain');
       input.response.writeHead(code);
-      input.response.end(`${input.result.name}: ${input.result.message}\n${input.result.stack}`);
+      input.response.end(typeof input.result.stack === 'string' ?
+        `${input.result.stack}\n` :
+        `${input.result.name}: ${input.result.message}\n`);
     } else {
       input.response.setHeader('location', input.result.identifier.path);
       if (input.result.body) {
