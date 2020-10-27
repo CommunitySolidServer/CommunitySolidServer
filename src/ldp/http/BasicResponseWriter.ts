@@ -2,7 +2,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { HTTP } from '../../util/UriConstants';
+import type { MetadataWriter } from './metadata/MetadataWriter';
 import type { ResponseDescription } from './response/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
 
@@ -11,6 +11,12 @@ import { ResponseWriter } from './ResponseWriter';
  */
 export class BasicResponseWriter extends ResponseWriter {
   protected readonly logger = getLoggerFor(this);
+  private readonly metadataWriter: MetadataWriter;
+
+  public constructor(metadataWriter: MetadataWriter) {
+    super();
+    this.metadataWriter = metadataWriter;
+  }
 
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (input.result instanceof Error || input.result.metadata?.contentType === INTERNAL_QUADS) {
@@ -20,13 +26,8 @@ export class BasicResponseWriter extends ResponseWriter {
   }
 
   public async handle(input: { response: HttpResponse; result: ResponseDescription }): Promise<void> {
-    const location = input.result.metadata?.get(HTTP.location);
-    if (location) {
-      input.response.setHeader('location', location.value);
-    }
-    if (input.result.data) {
-      const contentType = input.result.metadata?.contentType ?? 'text/plain';
-      input.response.setHeader('content-type', contentType);
+    if (input.result.metadata) {
+      await this.metadataWriter.handleSafe({ response: input.response, metadata: input.result.metadata });
     }
 
     input.response.writeHead(input.result.statusCode);

@@ -5,6 +5,7 @@ import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 import { MetadataController } from '../../src/util/MetadataController';
+import { LDP } from '../../src/util/UriConstants';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
@@ -52,6 +53,7 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
       expect(response._getBuffer().toString()).toContain('TESTFILE0');
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // DELETE
       await fileHelper.deleteResource(id);
@@ -66,6 +68,7 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
       expect(response._getBuffer().toString()).toContain('TESTFILE0');
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // PUT
       response = await fileHelper.overwriteFile('../assets/testfile1.txt', id, 'text/plain');
@@ -74,6 +77,7 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
       expect(response._getBuffer().toString()).toContain('TESTFILE1');
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // DELETE
       await fileHelper.deleteResource(id);
@@ -88,6 +92,9 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET
       response = await fileHelper.getFolder(id);
       expect(response.statusCode).toBe(200);
+      expect(response.getHeaders().link).toEqual(
+        [ `<${LDP.Container}>; rel="type"`, `<${LDP.BasicContainer}>; rel="type"`, `<${LDP.Resource}>; rel="type"` ],
+      );
 
       // DELETE
       await fileHelper.deleteResource(id);
@@ -105,6 +112,7 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       // GET File
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // DELETE
       await fileHelper.deleteResource(id);
@@ -171,6 +179,9 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       expect(response.statusCode).toBe(200);
       expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
       expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
+      expect(response.getHeaders().link).toEqual(
+        [ `<${LDP.Container}>; rel="type"`, `<${LDP.BasicContainer}>; rel="type"`, `<${LDP.Resource}>; rel="type"` ],
+      );
 
       // DELETE
       await fileHelper.deleteResource(fileId);

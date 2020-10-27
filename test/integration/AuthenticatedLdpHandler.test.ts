@@ -2,6 +2,7 @@ import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
+import { LDP } from '../../src/util/UriConstants';
 import { BasicConfig } from '../configs/BasicConfig';
 import { BasicHandlersConfig } from '../configs/BasicHandlersConfig';
 import { call } from '../util/Util';
@@ -38,6 +39,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       expect(response._getData()).toContain(
         '<http://test.com/s> <http://test.com/p> <http://test.com/o>.',
       );
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // DELETE
       response = await call(handler, requestUrl, 'DELETE', {}, []);
@@ -104,6 +106,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       expect(response._getBuffer().toString()).toContain(
         '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
       );
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
       const parser = new Parser();
       const triples = parser.parse(response._getBuffer().toString());
       expect(triples).toBeRdfIsomorphic([
@@ -164,6 +167,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         [],
       );
       expect(response.statusCode).toBe(200);
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
       const parser = new Parser();
       const triples = parser.parse(response._getData());
       expect(triples).toBeRdfIsomorphic([
