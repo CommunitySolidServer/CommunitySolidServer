@@ -11,20 +11,22 @@ import type {
   OperationHandler,
 } from '../../index';
 import {
-  AcceptPreferenceParser,
+  AcceptPreferenceParser, AllVoidCompositeHandler,
   BasicMetadataExtractor,
   BasicRequestParser,
   BasicResponseWriter,
   BasicTargetExtractor,
-  FirstCompositeHandler,
   ContentTypeParser,
   DataAccessorBasedStore,
   DeleteOperationHandler,
   ErrorResponseWriter,
+  FirstCompositeHandler,
   GetOperationHandler,
   HeadOperationHandler,
   InMemoryDataAccessor,
+  LinkRelMetadataWriter,
   LinkTypeParser,
+  MappedMetadataWriter,
   MetadataController,
   PatchingStore,
   PatchOperationHandler,
@@ -39,6 +41,7 @@ import {
   UrlContainerManager,
   WebAclAuthorizer,
 } from '../../index';
+import { CONTENT_TYPE, HTTP, RDF } from '../../src/util/UriConstants';
 
 export const BASE = 'http://test.com';
 
@@ -118,11 +121,22 @@ export const getOperationHandler = (store: ResourceStore): OperationHandler => {
   return new FirstCompositeHandler<Operation, ResponseDescription>(handlers);
 };
 
-export const getResponseWriter = (): ResponseWriter =>
-  new FirstCompositeHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
-    new ErrorResponseWriter(),
-    new BasicResponseWriter(),
+export const getResponseWriter = (): ResponseWriter => {
+  const serializer = new AllVoidCompositeHandler([
+    new MappedMetadataWriter({
+      [CONTENT_TYPE]: 'content-type',
+      [HTTP.location]: 'location',
+    }),
+    new LinkRelMetadataWriter({
+      [RDF.type]: 'type',
+    }),
   ]);
+
+  return new FirstCompositeHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
+    new ErrorResponseWriter(),
+    new BasicResponseWriter(serializer),
+  ]);
+};
 
 /**
  * Creates a BasicMetadataExtractor with parsers for content-type, slugs and link types.

@@ -6,7 +6,7 @@ import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
 import { MetadataController } from '../../src/util/MetadataController';
-import { CONTENT_TYPE } from '../../src/util/UriConstants';
+import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
 import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
@@ -67,6 +67,7 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
       response = await fileHelper.getFile(id);
       expect(response.statusCode).toBe(200);
       expect(response._getBuffer().toString()).toContain('TESTFILE2');
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // DELETE file
       await fileHelper.deleteResource(id);
@@ -95,6 +96,7 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
       // GET permanent file
       response = await fileHelper.getFile('http://test.com/permanent.txt');
       expect(response._getBuffer().toString()).toContain('TEST');
+      expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
       // Try to delete permanent file
       response = await fileHelper.deleteResource('http://test.com/permanent.txt', true);
