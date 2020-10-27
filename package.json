@@ -49,6 +49,7 @@
     "test": "npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:integration": "jest --coverageThreshold '{}' test/integration",
+    "test:system": "test/system/run-solid-test-suite.sh",
     "test:unit": "jest test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
