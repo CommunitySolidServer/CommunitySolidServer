@@ -90,4 +90,10 @@ describe('A BasicResponseWriter', (): void => {
     expect(response._getStatusCode()).toBe(500);
     expect(response._getData()).toMatch('Error: error');
   });
+
+  it('ends its response with a newline if there is an error.', async(): Promise<void> => {
+    await writer.handle({ response, result: new Error('error') });
+    expect(response._isEndCalled()).toBeTruthy();
+    expect(response._getData().endsWith('\n')).toBeTruthy();
+  });
 });
