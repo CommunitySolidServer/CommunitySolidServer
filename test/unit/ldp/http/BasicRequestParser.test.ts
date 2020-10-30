@@ -21,7 +21,7 @@ describe('A BasicRequestParser', (): void => {
   });
 
   it('can handle any input.', async(): Promise<void> => {
-    await expect(requestParser.canHandle()).resolves.toBeUndefined();
+    await expect(requestParser.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('errors if there is no input.', async(): Promise<void> => {

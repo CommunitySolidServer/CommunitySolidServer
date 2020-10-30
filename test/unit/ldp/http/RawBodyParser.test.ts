@@ -15,7 +15,7 @@ describe('A RawBodyparser', (): void => {
   });
 
   it('accepts all input.', async(): Promise<void> => {
-    await expect(bodyParser.canHandle()).resolves.toBeUndefined();
+    await expect(bodyParser.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('returns empty output if there was no content length or transfer encoding.', async(): Promise<void> => {

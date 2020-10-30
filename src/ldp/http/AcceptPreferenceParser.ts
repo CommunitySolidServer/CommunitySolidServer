@@ -19,10 +19,6 @@ export class AcceptPreferenceParser extends PreferenceParser {
     super();
   }
 
-  public async canHandle(): Promise<void> {
-    // Supports all HttpRequests
-  }
-
   public async handle(input: HttpRequest): Promise<RepresentationPreferences> {
     const result: RepresentationPreferences = {};
     const headers:

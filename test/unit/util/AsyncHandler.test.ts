@@ -1,7 +1,17 @@
-import type { AsyncHandler } from '../../../src/util/AsyncHandler';
+import { AsyncHandler } from '../../../src/util/AsyncHandler';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('An AsyncHandler', (): void => {
+  it('supports any input by default.', async(): Promise<void> => {
+    class EmptyHandler<T> extends AsyncHandler<T, null> {
+      public async handle(): Promise<null> {
+        return null;
+      }
+    }
+    const handler = new EmptyHandler<string>();
+    await expect(handler.canHandle('test')).resolves.toBeUndefined();
+  });
+
   it('calls canHandle and handle when handleSafe is called.', async(): Promise<void> => {
     const handlerTrue: AsyncHandler<any, any> = new StaticAsyncHandler(true, null);
     const canHandleFn = jest.fn(async(input: any): Promise<void> => input);

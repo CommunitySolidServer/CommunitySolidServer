@@ -31,10 +31,6 @@ export class BasicRequestParser extends RequestParser {
     Object.assign(this, args);
   }
 
-  public async canHandle(): Promise<void> {
-    // Can handle all requests
-  }
-
   public async handle(request: HttpRequest): Promise<Operation> {
     const { method } = request;
     if (!method) {

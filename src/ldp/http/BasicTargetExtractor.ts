@@ -13,10 +13,6 @@ import { TargetExtractor } from './TargetExtractor';
 export class BasicTargetExtractor extends TargetExtractor {
   protected readonly logger = getLoggerFor(this);
 
-  public async canHandle(): Promise<void> {
-    // Can handle all URLs
-  }
-
   public async handle(request: HttpRequest): Promise<ResourceIdentifier> {
     if (!request.url) {
       this.logger.error('The request has no URL');

@@ -5,7 +5,7 @@ describe('An UnsecureWebIdExtractor', (): void => {
   const extractor = new UnsecureWebIdExtractor();
 
   it('can handle all input.', async(): Promise<void> => {
-    await expect(extractor.canHandle()).resolves.toBeUndefined();
+    await expect(extractor.canHandle({} as HttpRequest)).resolves.toBeUndefined();
   });
 
   it('returns undefined if there is no input.', async(): Promise<void> => {

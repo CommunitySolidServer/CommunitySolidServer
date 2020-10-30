@@ -10,10 +10,6 @@ import { BodyParser } from './BodyParser';
 export class RawBodyParser extends BodyParser {
   protected readonly logger = getLoggerFor(this);
 
-  public async canHandle(): Promise<void> {
-    // All content-types are supported
-  }
-
   // Note that the only reason this is a union is in case the body is empty.
   // If this check gets moved away from the BodyParsers this union could be removed
   public async handle({ request, metadata }: BodyParserArgs): Promise<Representation | undefined> {

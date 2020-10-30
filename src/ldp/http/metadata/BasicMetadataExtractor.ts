@@ -14,10 +14,6 @@ export class BasicMetadataExtractor extends MetadataExtractor {
     this.parsers = parsers;
   }
 
-  public async canHandle(): Promise<void> {
-    // Can handle all requests
-  }
-
   public async handle(request: HttpRequest):
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata();
