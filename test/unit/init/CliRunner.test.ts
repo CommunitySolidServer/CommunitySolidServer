@@ -78,7 +78,7 @@ describe('CliRunner', (): void => {
 
     expect(calledInstantiateFromUrl).toBeTruthy();
     expect(calledRegisterAvailableModuleResources).toBeTruthy();
-    expect(mockSetup.setup).toBeCalledTimes(1);
+    expect(mockSetup.setup).toHaveBeenCalledTimes(1);
   });
 
   it('Writes to stderr when an exception occurs.', async(): Promise<void> => {

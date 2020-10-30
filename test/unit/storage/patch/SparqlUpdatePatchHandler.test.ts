@@ -63,7 +63,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     handler = new SparqlUpdatePatchHandler(source, locker);
   });
 
-  const basicChecks = async(quads: Quad[]): Promise<void> => {
+  const basicChecks = async(quads: Quad[]): Promise<boolean> => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, { type: [{ value: INTERNAL_QUADS, weight: 1 }]},
@@ -78,6 +78,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     }));
     expect(setParams[1].metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
+    return true;
   };
 
   it('only accepts SPARQL updates.', async(): Promise<void> => {
@@ -95,10 +96,10 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await basicChecks(startQuads.concat(
+    expect(await basicChecks(startQuads.concat(
       [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
         quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')) ],
-    ));
+    ))).toBe(true);
   });
 
   it('handles DELETE DATA updates.', async(): Promise<void> => {
@@ -107,11 +108,11 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'DELETE DATA { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await basicChecks(
+    expect(await basicChecks(
       [ quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
         namedNode('http://test.com/startO2')) ],
-    );
+    )).toBe(true);
   });
 
   it('handles DELETE WHERE updates with no variables.', async(): Promise<void> => {
@@ -120,11 +121,11 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'DELETE WHERE { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await basicChecks(
+    expect(await basicChecks(
       [ quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
         namedNode('http://test.com/startO2')) ],
-    );
+    )).toBe(true);
   });
 
   it('handles DELETE/INSERT updates with empty WHERE.', async(): Promise<void> => {
@@ -135,14 +136,14 @@ describe('A SparqlUpdatePatchHandler', (): void => {
         'WHERE {}',
         { quads: true },
       ) } as SparqlUpdatePatch });
-    await basicChecks([
+    expect(await basicChecks([
       quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
         namedNode('http://test.com/startO2')),
       quad(namedNode('http://test.com/s1'),
         namedNode('http://test.com/p1'),
         namedNode('http://test.com/o1')),
-    ]);
+    ])).toBe(true);
   });
 
   it('rejects GRAPH inserts.', async(): Promise<void> => {

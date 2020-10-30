@@ -30,25 +30,28 @@ describe('A BasicResponseWriter', (): void => {
     expect(response._getHeaders()).toMatchObject({ location: 'path' });
   });
 
-  it('responds with a body if the description has a body.', async(done): Promise<void> => {
+  it('responds with a body if the description has a body.', async(): Promise<void> => {
     const body = {
       binary: true,
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
       metadata: new RepresentationMetadata(),
     };
 
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      expect(response._getStatusCode()).toBe(200);
-      expect(response._getHeaders()).toMatchObject({ location: 'path' });
-      expect(response._getData()).toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
-      done();
+    const end = new Promise((resolve): void => {
+      response.on('end', (): void => {
+        expect(response._isEndCalled()).toBeTruthy();
+        expect(response._getStatusCode()).toBe(200);
+        expect(response._getHeaders()).toMatchObject({ location: 'path' });
+        expect(response._getData()).toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
+        resolve();
+      });
     });
 
     await writer.handle({ response, result: { identifier: { path: 'path' }, body }});
+    await end;
   });
 
-  it('responds with a content-type if the metadata has it.', async(done): Promise<void> => {
+  it('responds with a content-type if the metadata has it.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     const body = {
       binary: true,
@@ -56,15 +59,18 @@ describe('A BasicResponseWriter', (): void => {
       metadata,
     };
 
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      expect(response._getStatusCode()).toBe(200);
-      expect(response._getHeaders()).toMatchObject({ location: 'path', 'content-type': 'text/turtle' });
-      expect(response._getData()).toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
-      done();
+    const end = new Promise((resolve): void => {
+      response.on('end', (): void => {
+        expect(response._isEndCalled()).toBeTruthy();
+        expect(response._getStatusCode()).toBe(200);
+        expect(response._getHeaders()).toMatchObject({ location: 'path', 'content-type': 'text/turtle' });
+        expect(response._getData()).toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
+        resolve();
+      });
     });
 
     await writer.handle({ response, result: { identifier: { path: 'path' }, body }});
+    await end;
   });
 
   it('responds with 500 if an error if there is an error.', async(): Promise<void> => {

@@ -123,6 +123,7 @@ describe('A LockingResourceStore', (): void => {
   it('destroys the resource and releases the lock when the readable errors.', async(): Promise<void> => {
     // Make the representation error
     const representation = await store.getRepresentation({ path: 'path' }, {});
+    // eslint-disable-next-line jest/valid-expect-in-promise
     Promise.resolve().then((): any =>
       representation.data.emit('error', new Error('Error on the readable')), null);
     await registerEventOrder(representation.data, 'error');
@@ -176,7 +177,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and read
     jest.advanceTimersByTime(1000);
-    expect(representation.data.read()).toBe(null);
+    expect(representation.data.read()).toBeNull();
     await registerEventOrder(representation.data, 'close');
 
     // Verify a timeout error was thrown
@@ -207,7 +208,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and watch the stream be destroyed
     jest.advanceTimersByTime(1000);
-    expect(representation.data.read()).toBe(null);
+    expect(representation.data.read()).toBeNull();
     await registerEventOrder(representation.data, 'close');
 
     // Verify a timeout error was thrown

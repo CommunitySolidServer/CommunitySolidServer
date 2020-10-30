@@ -6,15 +6,15 @@ module.exports = {
     project: ['./tsconfig.json'],
   },
   plugins: [
-    'eslint-plugin-tsdoc',
-    'eslint-plugin-import',
-    'eslint-plugin-unused-imports'
+    'tsdoc',
+    'import',
+    'unused-imports',
   ],
   extends: [
     'es/node',
     'plugin:import/errors',
     'plugin:import/warnings',
-    'plugin:import/typescript'
+    'plugin:import/typescript',
   ],
   settings: {
     'import/resolver': {
@@ -72,7 +72,7 @@ module.exports = {
       {
         selector: [ 'typeParameter' ],
         format: [ 'PascalCase' ],
-        prefix: [ 'T' ]
+        prefix: [ 'T' ],
       }
     ],
 
@@ -81,12 +81,12 @@ module.exports = {
     'import/order': ['error', {
       alphabetize: {
         order: 'asc',
-        caseInsensitive: true
+        caseInsensitive: true,
       }
     }],
     'import/no-duplicates': 'error',
     'import/no-extraneous-dependencies': 'error',
     'no-duplicate-imports': 'off', // doesn't work with type imports
-    'unused-imports/no-unused-imports-ts': 'error'
+    'unused-imports/no-unused-imports-ts': 'error',
   },
 };
