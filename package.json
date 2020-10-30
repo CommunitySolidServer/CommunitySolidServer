@@ -106,6 +106,7 @@
     "eslint-config-es": "^3.20.3",
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-tsdoc": "^0.2.7",
     "eslint-plugin-unused-imports": "^1.0.0",
     "husky": "^4.2.5",

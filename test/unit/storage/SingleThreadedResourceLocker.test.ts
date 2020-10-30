@@ -23,6 +23,7 @@ describe('A SingleThreadedResourceLocker', (): void => {
     expect(lock).toEqual(expect.objectContaining({ release: expect.any(Function) }));
   });
 
+  /* eslint-disable jest/valid-expect-in-promise */
   it('blocks lock acquisition until they are released.', async(): Promise<void> => {
     const results: number[] = [];
     const lock1 = locker.acquire({ path: 'path' });

@@ -1,7 +1,11 @@
 module.exports = {
-  env: {
-    jest: true
-  },
+  plugins: [
+    'jest',
+  ],
+  extends: [
+    'plugin:jest/recommended',
+    'plugin:jest/style',
+  ],
   rules: {
     '@typescript-eslint/no-unsafe-assignment': 'off',
     'unicorn/no-useless-undefined': 'off',
@@ -9,5 +13,5 @@ module.exports = {
     // Need these 2 to run tests for throwing non-Error objects
     '@typescript-eslint/no-throw-literal': 'off',
     'no-throw-literal': 'off',
-  }
+  },
 };

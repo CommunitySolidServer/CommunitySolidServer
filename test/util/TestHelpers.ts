@@ -14,6 +14,7 @@ import type { HttpRequest } from '../../src/server/HttpRequest';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { call } from './Util';
 
+/* eslint-disable jest/no-standalone-expect */
 export class AclTestHelper {
   public readonly store: ResourceStore;
   public id: string;

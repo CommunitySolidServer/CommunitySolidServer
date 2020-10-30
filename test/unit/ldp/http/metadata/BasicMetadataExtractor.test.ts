@@ -21,7 +21,7 @@ class BasicParser implements MetadataParser {
   }
 }
 
-describe(' A BasicMetadataExtractor', (): void => {
+describe('A BasicMetadataExtractor', (): void => {
   const handler = new BasicMetadataExtractor([
     new BasicParser('aa'),
     new BasicParser('bb'),

@@ -20,13 +20,13 @@ describe('LogUtil', (): void => {
   });
 
   it('allows setting the global logger factory.', async(): Promise<void> => {
-    expect(setGlobalLoggerFactory(new VoidLoggerFactory()));
+    setGlobalLoggerFactory(new VoidLoggerFactory());
     expect(LazyLoggerFactory.getInstance().loggerFactory).toBeInstanceOf(VoidLoggerFactory);
   });
 
   it('allows unsetting the global logger factory.', async(): Promise<void> => {
-    expect(setGlobalLoggerFactory(new VoidLoggerFactory()));
-    expect(resetGlobalLoggerFactory());
+    setGlobalLoggerFactory(new VoidLoggerFactory());
+    resetGlobalLoggerFactory();
     expect((): any => LazyLoggerFactory.getInstance().loggerFactory)
       .toThrow(new Error('No logger factory has been set. Can be caused by logger invocation during initialization.'));
   });

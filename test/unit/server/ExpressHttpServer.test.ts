@@ -72,7 +72,7 @@ describe('ExpressHttpServer', (): void => {
       .map((method: string): string => method.trim());
     const allowedMethods = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ];
     expect(corsMethods).toEqual(expect.arrayContaining(allowedMethods));
-    expect(corsMethods.length).toBe(allowedMethods.length);
+    expect(corsMethods).toHaveLength(allowedMethods.length);
   });
 
   it('specifies CORS origin header if an origin was supplied.', async(): Promise<void> => {

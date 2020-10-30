@@ -129,11 +129,11 @@ describe('A FileDataAccessor', (): void => {
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': '<this> <is> <metadata>.' };
       metadata = await accessor.getMetadata({ path: `${base}resource` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'this'));
+      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'this')).toBe(true);
 
       cache.data = { container: { '.meta': '<this> <is> <metadata>.' }};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'this'));
+      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'this')).toBe(true);
     });
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
