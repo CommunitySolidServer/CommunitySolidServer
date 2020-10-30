@@ -5,7 +5,7 @@ describe('An AcceptPreferenceParser', (): void => {
   const preferenceParser = new AcceptPreferenceParser();
 
   it('can handle all input.', async(): Promise<void> => {
-    await expect(preferenceParser.canHandle()).resolves.toBeUndefined();
+    await expect(preferenceParser.canHandle({} as HttpRequest)).resolves.toBeUndefined();
   });
 
   it('returns an empty result if there is no relevant input.', async(): Promise<void> => {

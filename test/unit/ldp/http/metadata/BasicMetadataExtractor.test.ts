@@ -28,7 +28,7 @@ describe(' A BasicMetadataExtractor', (): void => {
   ]);
 
   it('can handle all requests.', async(): Promise<void> => {
-    await expect(handler.canHandle()).resolves.toBeUndefined();
+    await expect(handler.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('will add metadata from the parsers.', async(): Promise<void> => {

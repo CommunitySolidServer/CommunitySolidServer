@@ -9,7 +9,10 @@ export abstract class AsyncHandler<TInput, TOutput = void> {
    *
    * @returns A promise resolving if this input can be handled, rejecting with an Error if not.
    */
-  public abstract canHandle(input: TInput): Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async canHandle(input: TInput): Promise<void> {
+    // Support any input by default
+  }
 
   /**
    * Handles the given input. This should only be done if the {@link canHandle} function returned `true`.

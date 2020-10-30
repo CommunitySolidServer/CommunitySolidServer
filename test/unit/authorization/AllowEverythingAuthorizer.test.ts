@@ -4,7 +4,7 @@ describe('An AllowEverythingAuthorizer', (): void => {
   const authorizer = new AllowEverythingAuthorizer();
 
   it('can handle everything.', async(): Promise<void> => {
-    await expect(authorizer.canHandle()).resolves.toBeUndefined();
+    await expect(authorizer.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('always returns undefined.', async(): Promise<void> => {

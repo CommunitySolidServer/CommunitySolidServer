@@ -12,10 +12,6 @@ const handle = async(input: { request: HttpRequest; response: HttpResponse }): P
 };
 
 class SimpleHttpHandler extends HttpHandler {
-  public async canHandle(): Promise<void> {
-    // Supports all HttpRequests
-  }
-
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
     return handle(input);
   }

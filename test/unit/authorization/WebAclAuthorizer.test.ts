@@ -43,7 +43,7 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('handles all inputs.', async(): Promise<void> => {
     authorizer = new WebAclAuthorizer(aclManager, containerManager, null as any);
-    await expect(authorizer.canHandle()).resolves.toBeUndefined();
+    await expect(authorizer.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('allows access if the acl file allows all agents.', async(): Promise<void> => {

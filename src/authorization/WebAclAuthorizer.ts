@@ -35,10 +35,6 @@ export class WebAclAuthorizer extends Authorizer {
     this.resourceStore = resourceStore;
   }
 
-  public async canHandle(): Promise<void> {
-    // Can handle everything
-  }
-
   /**
    * Checks if an agent is allowed to execute the requested actions.
    * Will throw an error if this is not the case.

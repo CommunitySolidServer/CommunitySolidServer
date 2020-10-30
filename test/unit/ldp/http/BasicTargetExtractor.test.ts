@@ -4,7 +4,7 @@ describe('A BasicTargetExtractor', (): void => {
   const extractor = new BasicTargetExtractor();
 
   it('can handle any input.', async(): Promise<void> => {
-    await expect(extractor.canHandle()).resolves.toBeUndefined();
+    await expect(extractor.canHandle({} as any)).resolves.toBeUndefined();
   });
 
   it('errors if there is no URL.', async(): Promise<void> => {
