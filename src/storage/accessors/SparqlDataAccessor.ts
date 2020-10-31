@@ -17,6 +17,7 @@ import {
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
@@ -44,6 +45,7 @@ const { defaultGraph, namedNode, quad, variable } = DataFactory;
  * so those don't get overwritten.
  */
 export class SparqlDataAccessor implements DataAccessor {
+  protected readonly logger = getLoggerFor(this);
   private readonly endpoint: string;
   private readonly base: string;
   private readonly containerManager: ContainerManager;
@@ -298,7 +300,15 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   private async sendSparqlConstruct(sparqlQuery: ConstructQuery): Promise<Readable> {
     const query = this.generator.stringify(sparqlQuery);
-    return await this.fetcher.fetchTriples(this.endpoint, query);
+    this.logger.info(`Sending SPARQL CONSTRUCT query to ${this.endpoint}: ${query}`);
+    try {
+      return await this.fetcher.fetchTriples(this.endpoint, query);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${error.message}`);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -307,6 +317,14 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   private async sendSparqlUpdate(sparqlQuery: Update): Promise<void> {
     const query = this.generator.stringify(sparqlQuery);
-    return await this.fetcher.fetchUpdate(this.endpoint, query);
+    this.logger.info(`Sending SPARQL UPDATE query to ${this.endpoint}: ${query}`);
+    try {
+      return await this.fetcher.fetchUpdate(this.endpoint, query);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${error.message}`);
+      }
+      throw error;
+    }
   }
 }

@@ -35,14 +35,25 @@ describe('A SparqlDataAccessor', (): void => {
   let fetchTriples: jest.Mock<Promise<Readable>>;
   let fetchUpdate: jest.Mock<Promise<void>>;
   let triples: Quad[];
+  let fetchError: any;
+  let updateError: any;
 
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata();
     triples = [ quad(namedNode('this'), namedNode('a'), namedNode('triple')) ];
 
-    // Makes it so the `SparqlEndpointFetcher` will always return the contents of the `bindings` array
-    fetchTriples = jest.fn(async(): Promise<Readable> => streamifyArray(triples));
-    fetchUpdate = jest.fn(async(): Promise<void> => undefined);
+    // Makes it so the `SparqlEndpointFetcher` will always return the contents of the `triples` array
+    fetchTriples = jest.fn(async(): Promise<Readable> => {
+      if (fetchError) {
+        throw fetchError;
+      }
+      return streamifyArray(triples);
+    });
+    fetchUpdate = jest.fn(async(): Promise<void> => {
+      if (updateError) {
+        throw updateError;
+      }
+    });
     (SparqlEndpointFetcher as any).mockImplementation((): any => ({
       fetchTriples,
       fetchUpdate,
@@ -128,8 +139,8 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('throws 404 if no metadata was found.', async(): Promise<void> => {
-    // Clear bindings array
-    triples.splice(0, triples.length);
+    // Clear triples array
+    triples = [];
     await expect(accessor.getMetadata({ path: 'http://identifier' })).rejects.toThrow(NotFoundHttpError);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -204,5 +215,28 @@ describe('A SparqlDataAccessor', (): void => {
     );
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
       .rejects.toThrow(new UnsupportedHttpError('Only triples in the default graph are supported.'));
+  });
+
+  it('errors when the SPARQL endpoint fails during reading.', async(): Promise<void> => {
+    fetchError = 'error';
+    await expect(accessor.getMetadata({ path: 'http://identifier' })).rejects.toBe(fetchError);
+
+    fetchError = new Error();
+    await expect(accessor.getMetadata({ path: 'http://identifier' })).rejects.toThrow(fetchError);
+
+    fetchError = undefined;
+  });
+
+  it('errors when the SPARQL endpoint fails during writing.', async(): Promise<void> => {
+    const path = 'http://test.com/container/';
+    metadata = new RepresentationMetadata(path);
+
+    updateError = 'error';
+    await expect(accessor.writeContainer({ path }, metadata)).rejects.toBe(updateError);
+
+    updateError = new Error();
+    await expect(accessor.writeContainer({ path }, metadata)).rejects.toThrow(updateError);
+
+    updateError = undefined;
   });
 });
