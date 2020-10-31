@@ -1,0 +1,28 @@
+import { SparqlDataAccessor } from '../../src/storage/accessors/SparqlDataAccessor';
+import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
+import { INTERNAL_QUADS } from '../../src/util/ContentTypes';
+import { MetadataController } from '../../src/util/MetadataController';
+import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
+import { BASE } from '../configs/Util';
+import { FileTestHelper } from '../util/TestHelpers';
+
+describe('A server with a SPARQL endpoint as storage', (): void => {
+  describe('without acl', (): void => {
+    const config = new DataAccessorBasedConfig(BASE,
+      new SparqlDataAccessor('http://localhost:4000/sparql',
+        BASE,
+        new UrlContainerManager(BASE),
+        new MetadataController()),
+      INTERNAL_QUADS);
+    const handler = config.getHttpHandler();
+    const fileHelper = new FileTestHelper(handler, new URL(BASE));
+
+    it('can add a Turtle file to the store.', async():
+    Promise<void> => {
+      // POST
+      const response = await fileHelper.createFile('../assets/person.ttl', 'person', 'text/turtle');
+      const id = response._getHeaders().location;
+      expect(id).toBeTruthy();
+    });
+  });
+});
