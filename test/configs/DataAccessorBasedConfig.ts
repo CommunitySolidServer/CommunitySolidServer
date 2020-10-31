@@ -31,10 +31,11 @@ import {
 export class DataAccessorBasedConfig implements ServerConfig {
   public store: ResourceStore;
 
-  public constructor(base: string, dataAccessor: DataAccessor) {
+  public constructor(base: string, dataAccessor: DataAccessor, inType?: string) {
     this.store = getConvertingStore(
       getDataAccessorStore(base, dataAccessor),
       [ new QuadToRdfConverter(), new RdfToQuadConverter() ],
+      inType,
     );
   }
 

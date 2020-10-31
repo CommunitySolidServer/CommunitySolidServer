@@ -1,10 +1,18 @@
 language: node_js
 node_js:
- - "10"
- - "12"
- - "14"
- - "lts/*"
- - "node"
+  - "10"
+  - "12"
+  - "14"
+  - "lts/*"
+  - "node"
+
+services:
+  - docker
+
+before_install:
+  # Set up SPARQL endpoint
+  - docker pull tenforce/virtuoso
+  - docker run -d -p 4000:8890 -e SPARQL_UPDATE=true tenforce/virtuoso
 
 script:
   - npm run lint

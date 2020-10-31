@@ -1,0 +1,6 @@
+PREFIX : <https://ruben.verborgh.org/profile/#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+:me a foaf:Person;
+    foaf:name  "Ruben Verborgh"@en;
+    foaf:homepage <https://ruben.verborgh.org/>.
