@@ -41,7 +41,11 @@
     "lint": "eslint . --ext .ts --cache",
     "prepare": "npm run build",
     "start": "node ./bin/server.js -p 3000",
-    "test": "jest",
+    "test": "npm run jest",
+    "jest": "jest",
+    "test:unit": "jest test/unit",
+    "test:integration": "jest --coverageThreshold '{}' test/integration",
+    "test:deploy": "test/deploy/validate-package.sh",
     "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
     "watch": "nodemon --watch \"src/**/*.js\" --watch \"bin/**/*.js\" --exec npm start"
