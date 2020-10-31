@@ -10,7 +10,7 @@ describe('An ExtensionBasedMapper', (): void => {
   const base = 'http://test.com/';
   const rootFilepath = 'uploads/';
   const mapper = new ExtensionBasedMapper(base, rootFilepath);
-  let fsPromises: { [ id: string ]: jest.Mock };
+  let fsPromises: Record<string, jest.Mock>;
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();

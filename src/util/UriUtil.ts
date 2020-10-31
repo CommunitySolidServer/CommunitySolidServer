@@ -3,12 +3,12 @@ import type { Literal, NamedNode, Term } from 'rdf-js';
 import { CONTENT_TYPE } from './UriConstants';
 
 // Shorthands for commonly used predicates
-const shorthands: { [id: string]: NamedNode } = {
+const shorthands: Record<string, NamedNode> = {
   contentType: DataFactory.namedNode(CONTENT_TYPE),
 };
 
 // Caches named node conversions
-const termMap: { [id: string]: NamedNode } = {};
+const termMap: Record<string, NamedNode> = {};
 
 /**
  * @param input - Checks if this is a {@link Term}.

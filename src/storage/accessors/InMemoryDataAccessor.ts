@@ -14,7 +14,7 @@ interface DataEntry {
   metadata: RepresentationMetadata;
 }
 interface ContainerEntry {
-  entries: { [name: string]: CacheEntry };
+  entries: Record<string, CacheEntry>;
   metadata: RepresentationMetadata;
 }
 type CacheEntry = DataEntry | ContainerEntry;

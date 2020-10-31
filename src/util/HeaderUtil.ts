@@ -68,12 +68,12 @@ export interface AcceptHeader {
 export interface Accept extends AcceptHeader {
   parameters: {
     /** Media type parameters. These are the parameters that came before the q value. */
-    mediaType: { [key: string]: string };
+    mediaType: Record<string, string>;
     /**
      * Extension parameters. These are the parameters that came after the q value.
      * Value will be an empty string if there was none.
      */
-    extension: { [key: string]: string };
+    extension: Record<string, string>;
   };
 }
 
@@ -102,9 +102,9 @@ const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
  *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  */
-export const transformQuotedStrings = (input: string): { result: string; replacements: { [id: string]: string } } => {
+export const transformQuotedStrings = (input: string): { result: string; replacements: Record<string, string> } => {
   let idx = 0;
-  const replacements: { [id: string]: string } = {};
+  const replacements: Record<string, string> = {};
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
     // Not all characters allowed in quoted strings, see BNF above
     if (!/^"(?:[\t !\u0023-\u005B\u005D-\u007E\u0080-\u00FF]|(?:\\[\t\u0020-\u007E\u0080-\u00FF]))*"$/u.test(match)) {
@@ -158,7 +158,7 @@ const testQValue = (qvalue: string): void => {
  *
  * @returns An array of name/value objects corresponding to the parameters.
  */
-export const parseParameters = (parameters: string[], replacements: { [id: string]: string }):
+export const parseParameters = (parameters: string[], replacements: Record<string, string>):
 { name: string; value: string }[] => parameters.map((param): { name: string; value: string } => {
   const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
 
@@ -195,7 +195,7 @@ export const parseParameters = (parameters: string[], replacements: { [id: strin
  *
  * @returns {@link Accept} object corresponding to the header string.
  */
-const parseAcceptPart = (part: string, replacements: { [id: string]: string }): Accept => {
+const parseAcceptPart = (part: string, replacements: Record<string, string>): Accept => {
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
@@ -208,8 +208,8 @@ const parseAcceptPart = (part: string, replacements: { [id: string]: string }): 
   }
 
   let weight = 1;
-  const mediaTypeParams: { [key: string]: string } = {};
-  const extensionParams: { [key: string]: string } = {};
+  const mediaTypeParams: Record<string, string> = {};
+  const extensionParams: Record<string, string> = {};
   let map = mediaTypeParams;
   const parsedParams = parseParameters(parameters, replacements);
   parsedParams.forEach(({ name, value }): void => {

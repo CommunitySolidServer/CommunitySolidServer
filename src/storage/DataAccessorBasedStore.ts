@@ -227,11 +227,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.identifier = DataFactory.namedNode(identifier.path);
     metadata.addQuads(this.metadataController.generateResourceQuads(metadata.identifier, isContainer));
 
-    if (isContainer) {
-      await this.accessor.writeContainer(identifier, representation.metadata);
-    } else {
-      await this.accessor.writeDocument(identifier, representation.data, representation.metadata);
-    }
+    await (isContainer ?
+      this.accessor.writeContainer(identifier, representation.metadata) :
+      this.accessor.writeDocument(identifier, representation.data, representation.metadata));
   }
 
   /**
