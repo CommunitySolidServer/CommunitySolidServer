@@ -3,13 +3,23 @@ node_js:
  - "10"
  - "12"
  - "14"
+ - "lts/*"
  - "node"
+
 script:
- - npm run build
- - npm run lint
- - npm run validate
- - npm run test
- - .travis/validate-package.sh
-after_success:
- - npm run coveralls
-cache: npm
+  - npm run lint
+  - npm run validate
+  - npm run test:unit
+  - npm run test:integration
+  - npm run test:deploy
+
+jobs:
+  allow_failures:
+    - node_js: "node"
+  fast_finish: true
+  include:
+    - stage: test
+      name: Coveralls
+      node_js: "14"
+      script:
+       - npm run jest -- --coverage --coverageReporters=text-lcov | npx coveralls
