@@ -18,7 +18,8 @@ jobs:
     - node_js: "node"
   fast_finish: true
   include:
-    - stage: coverage
+    - stage: test
+      name: Coveralls
       node_js: "14"
       script:
-       - npm run coveralls
+       - npm run jest -- --coverage --coverageReporters=text-lcov | npx coveralls
