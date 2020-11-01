@@ -9,6 +9,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-unsafe-assignment': 'off',
     'unicorn/no-useless-undefined': 'off',
+    'no-process-env': 'off',
 
     // Need these 2 to run tests for throwing non-Error objects
     '@typescript-eslint/no-throw-literal': 'off',
