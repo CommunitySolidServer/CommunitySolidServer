@@ -11,6 +11,7 @@ services:
 
 before_install:
   - npm run docker
+  - export TEST_DOCKER=1
 
 script:
   - npm run lint

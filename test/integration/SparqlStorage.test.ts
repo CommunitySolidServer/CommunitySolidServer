@@ -4,9 +4,9 @@ import { INTERNAL_QUADS } from '../../src/util/ContentTypes';
 import { MetadataController } from '../../src/util/MetadataController';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import { BASE } from '../configs/Util';
-import { FileTestHelper } from '../util/TestHelpers';
+import { describeIf, FileTestHelper } from '../util/TestHelpers';
 
-describe('A server with a SPARQL endpoint as storage', (): void => {
+describeIf('docker', 'a server with a SPARQL endpoint as storage', (): void => {
   describe('without acl', (): void => {
     const config = new DataAccessorBasedConfig(BASE,
       new SparqlDataAccessor('http://localhost:4000/sparql',
