@@ -1,6 +1,5 @@
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
 import type { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
@@ -11,7 +10,7 @@ describe('A RepresentationConvertingStore', (): void => {
   let source: ResourceStore;
   let inConverter: RepresentationConverter;
   let outConverter: RepresentationConverter;
-  const inPreferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
+  const inType = 'text/turtle';
   const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
   let representation: Representation;
 
@@ -25,7 +24,7 @@ describe('A RepresentationConvertingStore', (): void => {
     inConverter = { handleSafe: jest.fn(async(): Promise<any> => 'inConvert') } as any;
     outConverter = { handleSafe: jest.fn(async(): Promise<any> => 'outConvert') } as any;
 
-    store = new RepresentationConvertingStore(source, { inPreferences, inConverter, outConverter });
+    store = new RepresentationConvertingStore(source, { inType, inConverter, outConverter });
     representation = { binary: true, data: 'data', metadata } as any;
   });
 
@@ -81,6 +80,10 @@ describe('A RepresentationConvertingStore', (): void => {
     await expect(store.setRepresentation(id, representation, 'conditions' as any)).resolves.toBeUndefined();
     expect(inConverter.handleSafe).toHaveBeenCalledTimes(0);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(id, representation, 'conditions');
+
+    store = new RepresentationConvertingStore(source, {});
+    await expect(store.addResource(id, representation, 'conditions' as any)).resolves.toBeUndefined();
+    expect(source.addResource).toHaveBeenLastCalledWith(id, representation, 'conditions');
   });
 
   it('converts the data if it is required.', async(): Promise<void> => {
