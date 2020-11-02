@@ -1,0 +1,47 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:MetadataController",
+      "@type": "MetadataController"
+    },
+    {
+      "@id": "urn:solid-server:default:FileIdentifierMapper",
+      "@type": "ExtensionBasedMapper",
+      "ExtensionBasedMapper:_base": {
+        "@id": "urn:solid-server:default:variable:base"
+      },
+      "ExtensionBasedMapper:_rootFilepath": {
+        "@id": "urn:solid-server:default:variable:rootFilePath"
+      },
+      "ExtensionBasedMapper:_acl": "text/turtle",
+      "ExtensionBasedMapper:_meta": "text/turtle"
+    },
+    {
+      "@id": "urn:solid-server:default:DataAccessor",
+      "@type": "FileDataAccessor",
+      "FileDataAccessor:_resourceMapper": {
+        "@id": "urn:solid-server:default:FileIdentifierMapper"
+      },
+      "FileDataAccessor:_metadataController": {
+        "@id": "urn:solid-server:default:MetadataController"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "DataAccessorBasedStore:_accessor": {
+        "@id": "urn:solid-server:default:DataAccessor"
+      },
+      "DataAccessorBasedStore:_base": {
+        "@id": "urn:solid-server:default:variable:base"
+      },
+      "DataAccessorBasedStore:_metadataController": {
+        "@id": "urn:solid-server:default:MetadataController"
+      },
+      "DataAccessorBasedStore:_containerManager": {
+        "@id": "urn:solid-server:default:UrlContainerManager"
+      }
+    }
+  ]
+}

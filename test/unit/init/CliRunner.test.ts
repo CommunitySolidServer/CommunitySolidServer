@@ -40,10 +40,10 @@ jest.mock('yargs', (): any => ({
     return this;
   },
   help(): any {
-    // Return once with and once without config value so that both branches are tested.
+    // Return once with and once without values so that both branches are tested.
     if (throwError) {
       return {
-        argv: { config: 'value' },
+        argv: { config: 'value', rootFilePath: 'root' },
       };
     }
     return {

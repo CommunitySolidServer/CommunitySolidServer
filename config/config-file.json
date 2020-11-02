@@ -12,7 +12,7 @@
     "files-scs:config/presets/logging.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/setup.json",
-    "files-scs:config/presets/storage-backend/storage-memory.json",
+    "files-scs:config/presets/storage-backend/storage-filesystem.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json"
   ]

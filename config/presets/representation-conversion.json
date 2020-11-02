@@ -1,0 +1,43 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:RdfToQuadConverter",
+      "@type": "RdfToQuadConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:QuadToRdfConverter",
+      "@type": "QuadToRdfConverter"
+    },
+
+    {
+      "@id": "urn:solid-server:default:RdfRepresentationConverter",
+      "@type": "ChainedConverter",
+      "ChainedConverter:_converters": [
+        {
+          "@id": "urn:solid-server:default:RdfToQuadConverter"
+        },
+        {
+          "@id": "urn:solid-server:default:QuadToRdfConverter"
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:RepresentationConverter",
+      "@type": "CompositeAsyncHandler",
+      "CompositeAsyncHandler:_handlers": [
+        {
+          "@id": "urn:solid-server:default:RdfToQuadConverter"
+        },
+        {
+          "@id": "urn:solid-server:default:QuadToRdfConverter"
+        },
+        {
+          "@id": "urn:solid-server:default:RdfRepresentationConverter"
+        }
+      ]
+    }
+  ]
+}

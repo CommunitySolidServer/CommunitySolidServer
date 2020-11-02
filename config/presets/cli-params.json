@@ -14,6 +14,10 @@
       "@type": "Variable"
     },
     {
+      "@id": "urn:solid-server:default:variable:sparqlEndpoint",
+      "@type": "Variable"
+    },
+    {
       "@id": "urn:solid-server:default:variable:loggingLevel",
       "@type": "Variable"
     }
