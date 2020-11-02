@@ -28,6 +28,8 @@ export const runCustom = function(
     .options({
       port: { type: 'number', alias: 'p', default: 3000 },
       config: { type: 'string', alias: 'c' },
+      rootFilePath: { type: 'string', alias: 'f' },
+      sparqlEndpoint: { type: 'string', alias: 's' },
       level: { type: 'string', alias: 'l', default: 'info' },
     })
     .help();
@@ -46,7 +48,8 @@ export const runCustom = function(
         variables: {
           'urn:solid-server:default:variable:port': argv.port,
           'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
-          'urn:solid-server:default:variable:rootFilePath': process.cwd(),
+          'urn:solid-server:default:variable:rootFilePath': argv.rootFilePath ?? process.cwd(),
+          'urn:solid-server:default:variable:sparqlEndpoint': argv.sparqlEndpoint,
           'urn:solid-server:default:variable:loggingLevel': argv.level,
         },
       }) as Setup;
