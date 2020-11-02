@@ -24,9 +24,9 @@ export class ConvertingRouterRule extends RouterRule {
   private readonly typedStores: ConvertingStoreEntry[];
   private readonly defaultStore: ResourceStore;
 
-  public constructor(typedStores: ConvertingStoreEntry[], defaultStore: ResourceStore) {
+  public constructor(typedStore: ConvertingStoreEntry, defaultStore: ResourceStore) {
     super();
-    this.typedStores = typedStores;
+    this.typedStores = [ typedStore ];
     this.defaultStore = defaultStore;
   }
 
