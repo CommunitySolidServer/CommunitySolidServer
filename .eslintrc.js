@@ -29,6 +29,7 @@ module.exports = {
     '@typescript-eslint/no-invalid-void-type': 'off', // breaks with default void in Asynchandler 2nd generic
     '@typescript-eslint/no-unnecessary-condition': 'off', // problems with optional parameters
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
+    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',
     'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
@@ -44,8 +45,10 @@ module.exports = {
     'tsdoc/syntax': 'error',
     'unicorn/catch-error-name': 'off',
     'unicorn/import-index': 'off',
+    'unicorn/import-style': 'off',
     'unicorn/no-fn-reference-in-iterator': 'off', // this prevents some functional programming paradigms
     'unicorn/no-object-as-default-parameter': 'off',
+    'unicorn/numeric-separators-style': 'off',
 
     // Naming conventions
     '@typescript-eslint/naming-convention': [

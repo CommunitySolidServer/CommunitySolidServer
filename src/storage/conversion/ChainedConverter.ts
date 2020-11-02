@@ -35,11 +35,11 @@ export class ChainedConverter extends TypedRepresentationConverter {
     return this.converters[this.converters.length - 1];
   }
 
-  public async getInputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getInputTypes(): Promise<Record<string, number>> {
     return this.first.getInputTypes();
   }
 
-  public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getOutputTypes(): Promise<Record<string, number>> {
     return this.last.getOutputTypes();
   }
 
@@ -51,7 +51,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
     checkRequest(input, inTypes, outTypes);
   }
 
-  private filterTypes(typeVals: { [contentType: string]: number }): string[] {
+  private filterTypes(typeVals: Record<string, number>): string[] {
     return Object.keys(typeVals).filter((name): boolean => typeVals[name] > 0);
   }
 

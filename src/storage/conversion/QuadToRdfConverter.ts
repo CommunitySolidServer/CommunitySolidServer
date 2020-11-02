@@ -13,11 +13,11 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * Converts `internal/quads` to most major RDF serializations.
  */
 export class QuadToRdfConverter extends TypedRepresentationConverter {
-  public async getInputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getInputTypes(): Promise<Record<string, number>> {
     return { [INTERNAL_QUADS]: 1 };
   }
 
-  public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getOutputTypes(): Promise<Record<string, number>> {
     return rdfSerializer.getContentTypesPrioritized();
   }
 

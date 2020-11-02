@@ -20,7 +20,7 @@ import { toNamedNode } from '../../../src/util/UriUtil';
 import { ensureTrailingSlash } from '../../../src/util/Util';
 
 class SimpleDataAccessor implements DataAccessor {
-  public readonly data: { [path: string]: Representation} = {};
+  public readonly data: Record<string, Representation> = {};
 
   private checkExists(identifier: ResourceIdentifier): void {
     if (!this.data[identifier.path]) {

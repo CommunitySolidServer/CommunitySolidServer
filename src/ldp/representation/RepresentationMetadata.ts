@@ -23,23 +23,23 @@ export class RepresentationMetadata {
    *
    * `@ignored` tag is necessary for Components-Generator.js
    */
-  public constructor(identifier?: NamedNode | BlankNode | string, overrides?: { [pred: string]: MetadataOverrideValue});
+  public constructor(identifier?: NamedNode | BlankNode | string, overrides?: Record<string, MetadataOverrideValue>);
 
   /**
    * @param metadata - Starts as a copy of the input metadata.
    * @param overrides - Key/value map of extra values that need to be added to the metadata.
    *                    Will override values that were set by the input metadata.
    */
-  public constructor(metadata?: RepresentationMetadata, overrides?: { [pred: string]: MetadataOverrideValue});
+  public constructor(metadata?: RepresentationMetadata, overrides?: Record<string, MetadataOverrideValue>);
 
   /**
    * @param overrides - Key/value map of extra values that need to be added to the metadata.
    */
-  public constructor(overrides?: { [pred: string]: MetadataOverrideValue});
+  public constructor(overrides?: Record<string, MetadataOverrideValue>);
 
   public constructor(
-    input?: NamedNode | BlankNode | string | RepresentationMetadata | { [pred: string]: MetadataOverrideValue},
-    overrides?: { [pred: string]: MetadataOverrideValue},
+    input?: NamedNode | BlankNode | string | RepresentationMetadata | Record<string, MetadataOverrideValue>,
+    overrides?: Record<string, MetadataOverrideValue>,
   ) {
     this.store = new Store();
     if (typeof input === 'string') {
@@ -59,7 +59,7 @@ export class RepresentationMetadata {
     }
   }
 
-  private setOverrides(overrides: { [pred: string]: MetadataOverrideValue}): void {
+  private setOverrides(overrides: Record<string, MetadataOverrideValue>): void {
     for (const predicate of Object.keys(overrides)) {
       const namedPredicate = toNamedNode(predicate);
       this.removeAll(namedPredicate);

@@ -24,7 +24,7 @@ export class WinstonLoggerFactory implements LoggerFactory {
         format.label({ label }),
         format.colorize(),
         format.timestamp(),
-        format.printf(({ level: levelInner, message, label: labelInner, timestamp }: {[key: string]: any}): string =>
+        format.printf(({ level: levelInner, message, label: labelInner, timestamp }: Record<string, any>): string =>
           `${timestamp} [${labelInner}] ${levelInner}: ${message}`),
       ),
       transports: this.createTransports(),

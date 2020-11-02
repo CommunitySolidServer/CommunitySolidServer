@@ -8,20 +8,20 @@ import { TypedRepresentationConverter } from '../../../../src/storage/conversion
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 
 class DummyConverter extends TypedRepresentationConverter {
-  private readonly inTypes: { [contentType: string]: number };
-  private readonly outTypes: { [contentType: string]: number };
+  private readonly inTypes: Record<string, number>;
+  private readonly outTypes: Record<string, number>;
 
-  public constructor(inTypes: { [contentType: string]: number }, outTypes: { [contentType: string]: number }) {
+  public constructor(inTypes: Record<string, number>, outTypes: Record<string, number>) {
     super();
     this.inTypes = inTypes;
     this.outTypes = outTypes;
   }
 
-  public async getInputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getInputTypes(): Promise<Record<string, number>> {
     return this.inTypes;
   }
 
-  public async getOutputTypes(): Promise<{ [contentType: string]: number }> {
+  public async getOutputTypes(): Promise<Record<string, number>> {
     return this.outTypes;
   }
 
