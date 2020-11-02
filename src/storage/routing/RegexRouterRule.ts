@@ -20,7 +20,8 @@ export class RegexRouterRule extends RouterRule {
   /**
    * The keys of the `storeMap` will be converted into actual RegExp objects that will be used for testing.
    */
-  public constructor(base: string, storeMap: Record<string, ResourceStore>) {
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  public constructor(base: string, storeMap: { [ regex: string ]: ResourceStore }) {
     super();
     this.base = trimTrailingSlashes(base);
     this.regexes = new Map(Object.keys(storeMap).map((regex): [ RegExp, ResourceStore ] =>
