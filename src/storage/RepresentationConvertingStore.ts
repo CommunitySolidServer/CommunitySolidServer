@@ -29,17 +29,20 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   private readonly inConverter?: RepresentationConverter;
   private readonly outConverter?: RepresentationConverter;
 
-  private readonly inPreferences?: RepresentationPreferences;
+  private readonly inType?: string;
 
+  /**
+   * TODO: This should take RepresentationPreferences instead of a type string when supported by Components.js.
+   */
   public constructor(source: T, options: {
     outConverter?: RepresentationConverter;
     inConverter?: RepresentationConverter;
-    inPreferences?: RepresentationPreferences;
+    inType?: string;
   }) {
     super(source);
     this.inConverter = options.inConverter;
     this.outConverter = options.outConverter;
-    this.inPreferences = options.inPreferences;
+    this.inType = options.inType;
   }
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
@@ -56,13 +59,13 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     conditions?: Conditions): Promise<ResourceIdentifier> {
     // We can potentially run into problems here if we convert a turtle document where the base IRI is required,
     // since we don't know the resource IRI yet at this point.
-    representation = await this.convertRepresentation(container, representation);
+    representation = await this.convertInRepresentation(container, representation);
     return this.source.addResource(container, representation, conditions);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<void> {
-    representation = await this.convertRepresentation(identifier, representation);
+    representation = await this.convertInRepresentation(identifier, representation);
     return this.source.setRepresentation(identifier, representation, conditions);
   }
 
@@ -79,11 +82,15 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     );
   }
 
-  private async convertRepresentation(identifier: ResourceIdentifier, representation: Representation):
+  private async convertInRepresentation(identifier: ResourceIdentifier, representation: Representation):
   Promise<Representation> {
-    if (!this.inPreferences || !this.inConverter || this.matchesPreferences(representation, this.inPreferences)) {
+    if (!this.inType) {
       return representation;
     }
-    return this.inConverter.handleSafe({ identifier, representation, preferences: this.inPreferences });
+    const inPreferences: RepresentationPreferences = { type: [{ value: this.inType, weight: 1 }]};
+    if (!inPreferences || !this.inConverter || this.matchesPreferences(representation, inPreferences)) {
+      return representation;
+    }
+    return this.inConverter.handleSafe({ identifier, representation, preferences: inPreferences });
   }
 }
