@@ -39,6 +39,9 @@ npm ci
 npm start
 ```
 
+This will start up a server running on port 3000 with a backend storing all data in memory.
+More configs with different backends can be found in the config folder.
+
 ## Interacting with the server
 
 The server supports low-level interaction via HTTP methods,
