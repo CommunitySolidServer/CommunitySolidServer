@@ -7,7 +7,7 @@
     },
 
     {
-      "@id": "urn:solid-server:default:DataAccessor",
+      "@id": "urn:solid-server:default:SparqlDataAccessor",
       "@type": "SparqlDataAccessor",
       "SparqlDataAccessor:_endpoint": {
         "@id": "urn:solid-server:default:variable:sparqlEndpoint"
@@ -27,7 +27,7 @@
       "@id": "urn:solid-server:default:DataAccessorBasedStore",
       "@type": "DataAccessorBasedStore",
       "DataAccessorBasedStore:_accessor": {
-        "@id": "urn:solid-server:default:DataAccessor"
+        "@id": "urn:solid-server:default:SparqlDataAccessor"
       },
       "DataAccessorBasedStore:_base": {
         "@id": "urn:solid-server:default:variable:base"
@@ -41,7 +41,7 @@
     },
 
     {
-      "@id": "urn:solid-server:default:ResourceStore",
+      "@id": "urn:solid-server:default:SparqlResourceStore",
       "@type": "RepresentationConvertingStore",
       "RepresentationConvertingStore:_source": {
         "@id": "urn:solid-server:default:DataAccessorBasedStore"

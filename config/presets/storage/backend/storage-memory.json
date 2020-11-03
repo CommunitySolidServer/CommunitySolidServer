@@ -6,32 +6,20 @@
       "@type": "MetadataController"
     },
     {
-      "@id": "urn:solid-server:default:FileIdentifierMapper",
-      "@type": "ExtensionBasedMapper",
-      "ExtensionBasedMapper:_base": {
+      "@id": "urn:solid-server:default:MemoryDataAccessor",
+      "@type": "InMemoryDataAccessor",
+      "InMemoryDataAccessor:_base": {
         "@id": "urn:solid-server:default:variable:base"
       },
-      "ExtensionBasedMapper:_rootFilepath": {
-        "@id": "urn:solid-server:default:variable:rootFilePath"
-      },
-      "ExtensionBasedMapper:_acl": "text/turtle",
-      "ExtensionBasedMapper:_meta": "text/turtle"
-    },
-    {
-      "@id": "urn:solid-server:default:DataAccessor",
-      "@type": "FileDataAccessor",
-      "FileDataAccessor:_resourceMapper": {
-        "@id": "urn:solid-server:default:FileIdentifierMapper"
-      },
-      "FileDataAccessor:_metadataController": {
+      "InMemoryDataAccessor:_metadataController": {
         "@id": "urn:solid-server:default:MetadataController"
       }
     },
     {
-      "@id": "urn:solid-server:default:ResourceStore",
+      "@id": "urn:solid-server:default:MemoryResourceStore",
       "@type": "DataAccessorBasedStore",
       "DataAccessorBasedStore:_accessor": {
-        "@id": "urn:solid-server:default:DataAccessor"
+        "@id": "urn:solid-server:default:MemoryDataAccessor"
       },
       "DataAccessorBasedStore:_base": {
         "@id": "urn:solid-server:default:variable:base"

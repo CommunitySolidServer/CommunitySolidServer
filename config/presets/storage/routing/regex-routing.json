@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:RegexRouterRule",
+      "@type": "RegexRouterRule",
+      "RegexRouterRule:_base": {
+        "@id": "urn:solid-server:default:variable:base"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "RoutingResourceStore",
+      "RoutingResourceStore:_rule": {
+        "@id": "urn:solid-server:default:RegexRouterRule"
+      }
+    }
+  ]
+}
