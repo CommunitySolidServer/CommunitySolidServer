@@ -8,7 +8,7 @@ PID=$!
 pushd test/tmp
 git clone https://github.com/solid/solid-crud-tests
 cd solid-crud-tests
-git checkout v0.1.1
+git checkout v0.3.0
 npm ci
 
 # Run tests
