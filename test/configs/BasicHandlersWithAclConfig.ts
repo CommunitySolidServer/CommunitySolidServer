@@ -2,7 +2,7 @@ import type { HttpHandler,
   ResourceStore } from '../../index';
 import {
   AuthenticatedLdpHandler,
-  CompositeAsyncHandler,
+  FirstCompositeHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
   UnsecureWebIdExtractor,
@@ -40,7 +40,7 @@ export class BasicHandlersWithAclConfig implements ServerConfig {
     const requestParser = getBasicRequestParser();
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
+    const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);
 

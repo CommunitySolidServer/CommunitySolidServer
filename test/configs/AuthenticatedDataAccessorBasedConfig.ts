@@ -5,7 +5,7 @@ import type {
 } from '../../index';
 import {
   AuthenticatedLdpHandler,
-  CompositeAsyncHandler,
+  FirstCompositeHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
   UnsecureWebIdExtractor,
@@ -44,7 +44,7 @@ export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
     const requestParser = getBasicRequestParser();
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
+    const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);
 

@@ -8,6 +8,7 @@ import type {
   ResponseDescription,
   HttpResponse,
   ResponseWriter,
+  OperationHandler,
 } from '../../index';
 import {
   AcceptPreferenceParser,
@@ -15,7 +16,7 @@ import {
   BasicRequestParser,
   BasicResponseWriter,
   BasicTargetExtractor,
-  CompositeAsyncHandler,
+  FirstCompositeHandler,
   ContentTypeParser,
   DataAccessorBasedStore,
   DeleteOperationHandler,
@@ -82,8 +83,8 @@ export const getConvertingStore =
 (store: ResourceStore, converters: RepresentationConverter[], inType?: string):
 RepresentationConvertingStore =>
   new RepresentationConvertingStore(store, {
-    inConverter: new CompositeAsyncHandler(converters),
-    outConverter: new CompositeAsyncHandler(converters),
+    inConverter: new FirstCompositeHandler(converters),
+    outConverter: new FirstCompositeHandler(converters),
     inType,
   });
 
@@ -105,7 +106,7 @@ export const getPatchingStore = (store: ResourceStore): PatchingStore => {
  *
  * @returns The operation handler.
  */
-export const getOperationHandler = (store: ResourceStore): CompositeAsyncHandler<Operation, ResponseDescription> => {
+export const getOperationHandler = (store: ResourceStore): OperationHandler => {
   const handlers = [
     new GetOperationHandler(store),
     new HeadOperationHandler(store),
@@ -114,11 +115,11 @@ export const getOperationHandler = (store: ResourceStore): CompositeAsyncHandler
     new PatchOperationHandler(store),
     new DeleteOperationHandler(store),
   ];
-  return new CompositeAsyncHandler<Operation, ResponseDescription>(handlers);
+  return new FirstCompositeHandler<Operation, ResponseDescription>(handlers);
 };
 
 export const getResponseWriter = (): ResponseWriter =>
-  new CompositeAsyncHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
+  new FirstCompositeHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
     new ErrorResponseWriter(),
     new BasicResponseWriter(),
   ]);
@@ -146,7 +147,7 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
     // If no body parser is given (array is empty), default to RawBodyParser
     bodyParser = new RawBodyParser();
   } else {
-    bodyParser = new CompositeAsyncHandler(bodyParsers);
+    bodyParser = new FirstCompositeHandler(bodyParsers);
   }
   return new BasicRequestParser({
     targetExtractor: new BasicTargetExtractor(),

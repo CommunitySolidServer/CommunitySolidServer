@@ -3,7 +3,7 @@ import type { HttpHandler,
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  CompositeAsyncHandler,
+  FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
@@ -48,7 +48,7 @@ export class BasicHandlersConfig implements ServerConfig {
     ]);
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
+    const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);
