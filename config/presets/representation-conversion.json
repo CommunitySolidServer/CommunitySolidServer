@@ -26,8 +26,8 @@
 
     {
       "@id": "urn:solid-server:default:RepresentationConverter",
-      "@type": "CompositeAsyncHandler",
-      "CompositeAsyncHandler:_handlers": [
+      "@type": "FirstCompositeHandler",
+      "FirstCompositeHandler:_handlers": [
         {
           "@id": "urn:solid-server:default:RdfToQuadConverter"
         },

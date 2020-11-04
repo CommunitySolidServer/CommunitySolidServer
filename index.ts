@@ -139,8 +139,9 @@ export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Util
-export * from './src/util/HeaderUtil';
+export * from './src/util/AllVoidCompositeHandler';
 export * from './src/util/AsyncHandler';
-export * from './src/util/CompositeAsyncHandler';
+export * from './src/util/FirstCompositeHandler';
+export * from './src/util/HeaderUtil';
 export * from './src/util/MetadataController';
 export * from './src/util/Util';

@@ -10,13 +10,13 @@ import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
  * The handlers will be checked in the order they appear in the input array,
  * allowing for more fine-grained handlers to check before catch-all handlers.
  */
-export class CompositeAsyncHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
+export class FirstCompositeHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly handlers: AsyncHandler<TIn, TOut>[];
 
   /**
-   * Creates a new CompositeAsyncHandler that stores the given handlers.
+   * Creates a new FirstCompositeHandler that stores the given handlers.
    * @param handlers - Handlers over which it will run.
    */
   public constructor(handlers: AsyncHandler<TIn, TOut>[]) {

@@ -6,7 +6,7 @@ import type {
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
-  CompositeAsyncHandler,
+  FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
@@ -44,7 +44,7 @@ export class DataAccessorBasedConfig implements ServerConfig {
     const requestParser = getBasicRequestParser([ new RawBodyParser() ]);
 
     const credentialsExtractor = new UnsecureWebIdExtractor();
-    const permissionsExtractor = new CompositeAsyncHandler([
+    const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);
     const authorizer = new AllowEverythingAuthorizer();

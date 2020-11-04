@@ -1,19 +1,19 @@
 import type { AsyncHandler } from '../../../src/util/AsyncHandler';
-import { CompositeAsyncHandler } from '../../../src/util/CompositeAsyncHandler';
 import { HttpError } from '../../../src/util/errors/HttpError';
 import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
+import { FirstCompositeHandler } from '../../../src/util/FirstCompositeHandler';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
-describe('A CompositeAsyncHandler', (): void => {
+describe('A FirstCompositeHandler', (): void => {
   describe('with no handlers', (): void => {
     it('can never handle data.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([]);
+      const handler = new FirstCompositeHandler([]);
 
       await expect(handler.canHandle(null)).rejects.toThrow(Error);
     });
 
     it('errors if its handle function is called.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([]);
+      const handler = new FirstCompositeHandler([]);
 
       await expect(handler.handle(null)).rejects.toThrow(Error);
     });
@@ -36,13 +36,13 @@ describe('A CompositeAsyncHandler', (): void => {
     });
 
     it('can handle data if a handler supports it.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerTrue ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerTrue ]);
 
       await expect(handler.canHandle(null)).resolves.toBeUndefined();
     });
 
     it('can not handle data if no handler supports it.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.canHandle(null)).rejects.toThrow('[Not supported, Not supported]');
     });
@@ -51,13 +51,13 @@ describe('A CompositeAsyncHandler', (): void => {
       handlerFalse.canHandle = async(): Promise<void> => {
         throw 'apple';
       };
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error, Unknown error]');
     });
 
     it('handles data if a handler supports it.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerTrue ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerTrue ]);
 
       await expect(handler.handle('test')).resolves.toEqual('test');
       expect(canHandleFn).toHaveBeenCalledTimes(1);
@@ -65,13 +65,13 @@ describe('A CompositeAsyncHandler', (): void => {
     });
 
     it('errors if the handle function is called but no handler supports the data.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.handle('test')).rejects.toThrow('All handlers failed');
     });
 
     it('only calls the canHandle function once of its handlers when handleSafe is called.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerTrue ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerTrue ]);
 
       await expect(handler.handleSafe('test')).resolves.toEqual('test');
       expect(canHandleFn).toHaveBeenCalledTimes(1);
@@ -79,7 +79,7 @@ describe('A CompositeAsyncHandler', (): void => {
     });
 
     it('throws the canHandle error when calling handleSafe if the data is not supported.', async(): Promise<void> => {
-      const handler = new CompositeAsyncHandler([ handlerFalse, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
     });
@@ -88,7 +88,7 @@ describe('A CompositeAsyncHandler', (): void => {
       handlerTrue.canHandle = async(): Promise<void> => {
         throw new HttpError(401, 'UnauthorizedHttpError');
       };
-      const handler = new CompositeAsyncHandler([ handlerTrue, handlerTrue ]);
+      const handler = new FirstCompositeHandler([ handlerTrue, handlerTrue ]);
 
       await expect(handler.canHandle(null)).rejects.toMatchObject({
         statusCode: 401,
@@ -103,7 +103,7 @@ describe('A CompositeAsyncHandler', (): void => {
       handlerFalse.canHandle = async(): Promise<void> => {
         throw new Error('Server is crashing!');
       };
-      const handler = new CompositeAsyncHandler([ handlerTrue, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerTrue, handlerFalse ]);
 
       await expect(handler.canHandle(null)).rejects.toMatchObject({
         statusCode: 500,
@@ -118,7 +118,7 @@ describe('A CompositeAsyncHandler', (): void => {
       handlerFalse.canHandle = async(): Promise<void> => {
         throw new HttpError(415, 'UnsupportedMediaTypeHttpError');
       };
-      const handler = new CompositeAsyncHandler([ handlerTrue, handlerFalse ]);
+      const handler = new FirstCompositeHandler([ handlerTrue, handlerFalse ]);
 
       await expect(handler.canHandle(null)).rejects.toThrow(UnsupportedHttpError);
     });

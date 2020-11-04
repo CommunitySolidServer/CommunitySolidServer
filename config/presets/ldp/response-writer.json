@@ -3,8 +3,8 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:ResponseWriter",
-      "@type": "CompositeAsyncHandler",
-      "CompositeAsyncHandler:_handlers": [
+      "@type": "FirstCompositeHandler",
+      "FirstCompositeHandler:_handlers": [
         {
           "@type": "ErrorResponseWriter"
         },
