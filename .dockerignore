@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.git
+yarn.lock
+yarn-error.log
+.env
+dist
+components
+*.d.ts
+*.js
+*.js.map
+Dockerfile

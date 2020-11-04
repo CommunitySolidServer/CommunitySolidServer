@@ -34,10 +34,33 @@ and [good first issues](https://github.com/solid/community-server/issues?q=is%3A
 
 ## Running locally
 
+You can run the community server locally as follows.
+
 ```
 npm ci
 npm start
 ```
+
+## Running inside a Docker container
+
+Alternatively, you can run the community server inside a Docker container. Start by building a Docker image based on the `Dockerfile`.
+
+```
+docker build -t solid/community-server:0.1.1 .
+```
+
+Once you built the Docker image, you can run it as follows.
+
+```
+docker run -p 3000:3000 solid/community-server:0.1.1
+```
+
+The Docker file supports the following variables at both runtime and at build time.
+
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `LEVEL` | The minimum level of a log to be shown in the console. | `info` |
+| `PORT` | The port on which the server will be available. | `3000` |
 
 ## Interacting with the server
 
