@@ -40,6 +40,8 @@ module.exports = {
     'dot-location': ['error', 'property'],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-len': ['error', { code: 120, ignoreUrls: true }],
+    'mocha/no-exports': 'off', // we are not using Mocha
+    'mocha/no-skipped-tests': 'off', // we are not using Mocha
     'new-cap': 'off', // used for RDF constants
     'no-param-reassign': 'off', // necessary in constructor overloading
     'no-underscore-dangle': 'off', // conflicts with external libraries

@@ -41,6 +41,9 @@ npm ci
 npm start
 ```
 
+This will start up a server running on port 3000 with a backend storing all data in memory.
+More configs with different backends can be found in the config folder.
+
 ## Running inside a Docker container
 
 Alternatively, you can run the community server inside a Docker container. Start by building a Docker image based on the `Dockerfile`.

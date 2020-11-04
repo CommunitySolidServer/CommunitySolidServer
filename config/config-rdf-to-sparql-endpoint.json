@@ -12,17 +12,18 @@
     "files-scs:config/presets/logging.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/setup.json",
-    "files-scs:config/presets/storage/backend/storage-memory.json",
-    "files-scs:config/presets/storage/routing/no-routing.json",
+    "files-scs:config/presets/storage/backend/storage-filesystem.json",
+    "files-scs:config/presets/storage/backend/storage-sparql-endpoint.json",
+    "files-scs:config/presets/storage/routing/quad-type-routing.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json"
   ],
   "@graph": [
     {
-      "comment": "Use a memory based store as backend with no additional routing.",
-      "@id": "urn:solid-server:default:RoutingResourceStore",
-      "PassthroughStore:_source": {
-        "@id": "urn:solid-server:default:MemoryResourceStore"
+      "comment": "Sends all data that can be interpreted as RDF to the sparql endpoint store and all other data to the default store (file in this case).",
+      "@id": "urn:solid-server:default:ConvertingRouterRule",
+      "ConvertingRouterRule:_defaultStore": {
+        "@id": "urn:solid-server:default:FileResourceStore"
       }
     }
   ]

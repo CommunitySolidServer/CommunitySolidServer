@@ -1,0 +1,30 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:PreferenceSupport",
+      "@type": "PreferenceSupport",
+      "PreferenceSupport:_type": "internal/quads",
+      "PreferenceSupport:_converter": {
+        "@id": "urn:solid-server:default:RepresentationConverter"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:ConvertingRouterRule",
+      "@type": "ConvertingRouterRule",
+      "ConvertingRouterRule:_store": {
+        "@id": "urn:solid-server:default:SparqlResourceStore"
+      },
+      "ConvertingRouterRule:_supportChecker": {
+        "@id": "urn:solid-server:default:PreferenceSupport"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "RoutingResourceStore",
+      "RoutingResourceStore:_rule": {
+        "@id": "urn:solid-server:default:ConvertingRouterRule"
+      }
+    }
+  ]
+}
