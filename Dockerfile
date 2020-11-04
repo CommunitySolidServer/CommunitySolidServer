@@ -6,7 +6,7 @@ ENV NODE_VERSION 14.10.0
 ARG LEVEL=info
 ENV LEVEL ${LEVEL}
 
-# Setting the port on whic the server will run
+# Setting the port on which the server will run
 ARG PORT=3000
 ENV PORT ${PORT}
 

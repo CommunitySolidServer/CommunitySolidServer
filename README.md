@@ -49,13 +49,13 @@ More configs with different backends can be found in the config folder.
 Alternatively, you can run the community server inside a Docker container. Start by building a Docker image based on the `Dockerfile`.
 
 ```
-docker build -t solid/community-server:0.1.1 .
+docker build -t solid/community-server .
 ```
 
 Once you built the Docker image, you can run it as follows.
 
 ```
-docker run -p 3000:3000 solid/community-server:0.1.1
+docker run -p 3000:3000 solid/community-server
 ```
 
 The Docker file supports the following variables at both runtime and at build time.
