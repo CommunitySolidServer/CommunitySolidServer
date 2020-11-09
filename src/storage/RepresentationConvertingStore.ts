@@ -2,9 +2,10 @@ import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import { matchingMediaType } from '../util/Util';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import type { Conditions } from './Conditions';
-import type { RepresentationConverter } from './conversion/RepresentationConverter';
+import { matchingTypes } from './conversion/ConversionUtil';
+import type { RepresentationConverter, RepresentationConverterArgs } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';
 
@@ -48,11 +49,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     const representation = await super.getRepresentation(identifier, preferences, conditions);
-    if (!this.outConverter || this.matchesPreferences(representation, preferences)) {
-      return representation;
-    }
-    this.logger.info(`Convert ${identifier.path} from ${representation.metadata.contentType} to ${preferences.type}`);
-    return this.outConverter.handleSafe({ identifier, representation, preferences });
+    return this.convertRepresentation({ identifier, representation, preferences }, this.outConverter);
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
@@ -69,28 +66,46 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     return this.source.setRepresentation(identifier, representation, conditions);
   }
 
+  /**
+   * Helper function that checks if the given representation matches the given preferences.
+   */
   private matchesPreferences(representation: Representation, preferences: RepresentationPreferences): boolean {
-    if (!preferences.type) {
-      return true;
-    }
     const { contentType } = representation.metadata;
-    return Boolean(
-      contentType &&
-      preferences.type.some((type): boolean =>
-        type.weight > 0 &&
-        matchingMediaType(type.value, contentType)),
-    );
+
+    if (!contentType) {
+      throw new InternalServerError('Content-Type is required for data conversion.');
+    }
+
+    // Check if there is a result if we try to map the preferences to the content-type
+    return matchingTypes(preferences, [ contentType ]).length > 0;
   }
 
+  /**
+   * Helper function that converts a Representation using the given args and converter,
+   * if the conversion is necessary and there is a converter.
+   */
+  private async convertRepresentation(args: RepresentationConverterArgs, converter?: RepresentationConverter):
+  Promise<Representation> {
+    if (!converter || !args.preferences.type || this.matchesPreferences(args.representation, args.preferences)) {
+      return args.representation;
+    }
+
+    const typeStr = args.preferences.type.map((pref): string => `${pref.value};q=${pref.weight}`).join(', ');
+    this.logger.info(`Convert ${args.identifier.path} from ${args.representation.metadata.contentType} to ${typeStr}`);
+
+    return converter.handleSafe(args);
+  }
+
+  /**
+   * Helper function that converts an incoming representation if necessary.
+   */
   private async convertInRepresentation(identifier: ResourceIdentifier, representation: Representation):
   Promise<Representation> {
     if (!this.inType) {
       return representation;
     }
-    const inPreferences: RepresentationPreferences = { type: [{ value: this.inType, weight: 1 }]};
-    if (!inPreferences || !this.inConverter || this.matchesPreferences(representation, inPreferences)) {
-      return representation;
-    }
-    return this.inConverter.handleSafe({ identifier, representation, preferences: inPreferences });
+    const preferences: RepresentationPreferences = { type: [{ value: this.inType, weight: 1 }]};
+
+    return this.convertRepresentation({ identifier, representation, preferences }, this.inConverter);
   }
 }

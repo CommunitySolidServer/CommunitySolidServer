@@ -3,6 +3,8 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { checkRequest, matchingTypes } from '../../../../src/storage/conversion/ConversionUtil';
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
+import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('A ConversionUtil', (): void => {
   const identifier: ResourceIdentifier = { path: 'path' };
@@ -38,7 +40,7 @@ describe('A ConversionUtil', (): void => {
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect(checkRequest({ identifier, representation, preferences }, [ '*/*' ], [ '*/*' ]))
+      expect(checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'b/x' ]))
         .toBeUndefined();
     });
   });
@@ -54,6 +56,20 @@ describe('A ConversionUtil', (): void => {
       const preferences: RepresentationPreferences = { type:
           [{ value: 'a/x', weight: 1 }, { value: 'b/x', weight: 0.5 }, { value: 'c/x', weight: 0 }]};
       expect(matchingTypes(preferences, [ 'b/x', 'c/x' ])).toEqual([{ value: 'b/x', weight: 0.5 }]);
+    });
+
+    it('errors if there are duplicate preferences.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences =
+        { type: [{ value: 'b/x', weight: 1 }, { value: 'b/x', weight: 0 }]};
+      expect((): any => matchingTypes(preferences, [ 'b/x' ]))
+        .toThrow(new UnsupportedHttpError(`Duplicate type preference found: b/x`));
+    });
+
+    it('errors if there invalid types.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences =
+        { type: [{ value: 'b/x', weight: 1 }]};
+      expect((): any => matchingTypes(preferences, [ 'noType' ]))
+        .toThrow(new InternalServerError(`Unexpected type preference: noType`));
     });
   });
 });
