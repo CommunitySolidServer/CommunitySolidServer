@@ -19,22 +19,22 @@ describe('A ConversionUtil', (): void => {
   describe('#checkRequest', (): void => {
     it('requires an input type.', async(): Promise<void> => {
       const preferences: RepresentationPreferences = {};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ '*/*' ], [ '*/*' ]))
+      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'a/x' ]))
         .toThrow('Input type required for conversion.');
     });
 
     it('requires a matching input type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'c/x' ], [ '*/*' ]))
-        .toThrow('Can only convert from c/x to */*.');
+      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'c/x' ], [ 'a/x' ]))
+        .toThrow('Can only convert from c/x to a/x.');
     });
 
     it('requires a matching output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ '*/*' ], [ 'c/x' ]))
-        .toThrow('Can only convert from */* to c/x.');
+      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'c/x' ]))
+        .toThrow('Can only convert from a/x to c/x.');
     });
 
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
@@ -48,7 +48,7 @@ describe('A ConversionUtil', (): void => {
   describe('#matchingTypes', (): void => {
     it('requires type preferences.', async(): Promise<void> => {
       const preferences: RepresentationPreferences = {};
-      expect((): any => matchingTypes(preferences, [ '*/*' ]))
+      expect((): any => matchingTypes(preferences, [ 'a/b' ]))
         .toThrow('Output type required for conversion.');
     });
 
@@ -70,6 +70,25 @@ describe('A ConversionUtil', (): void => {
         { type: [{ value: 'b/x', weight: 1 }]};
       expect((): any => matchingTypes(preferences, [ 'noType' ]))
         .toThrow(new InternalServerError(`Unexpected type preference: noType`));
+    });
+
+    it('filters out internal types.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences = { type: [{ value: '*/*', weight: 1 }]};
+      expect(matchingTypes(preferences, [ 'a/x', 'internal/quads' ])).toEqual([{ value: 'a/x', weight: 1 }]);
+    });
+
+    it('keeps internal types that are specifically requested.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences =
+        { type: [{ value: '*/*', weight: 1 }, { value: 'internal/*', weight: 0.5 }]};
+      expect(matchingTypes(preferences, [ 'a/x', 'internal/quads' ]))
+        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]);
+    });
+
+    it('takes the most relevant weight for a type.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences =
+        { type: [{ value: '*/*', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]};
+      expect(matchingTypes(preferences, [ 'a/x', 'internal/quads' ]))
+        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]);
     });
   });
 });
