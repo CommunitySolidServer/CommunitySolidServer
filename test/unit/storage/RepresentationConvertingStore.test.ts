@@ -3,6 +3,7 @@ import { RepresentationMetadata } from '../../../src/ldp/representation/Represen
 import type { RepresentationConverter } from '../../../src/storage/conversion/RepresentationConverter';
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { CONTENT_TYPE } from '../../../src/util/UriConstants';
 
 describe('A RepresentationConvertingStore', (): void => {
@@ -30,7 +31,7 @@ describe('A RepresentationConvertingStore', (): void => {
 
   it('returns the Representation from the source if no changes are required.', async(): Promise<void> => {
     const result = await store.getRepresentation({ path: 'path' }, { type: [
-      { value: 'text/*', weight: 0 }, { value: 'text/turtle', weight: 1 },
+      { value: 'application/*', weight: 0 }, { value: 'text/turtle', weight: 1 },
     ]});
     expect(result).toEqual({
       data: 'data',
@@ -39,7 +40,9 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(result.metadata.contentType).toEqual('text/turtle');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
-      { path: 'path' }, { type: [{ value: 'text/*', weight: 0 }, { value: 'text/turtle', weight: 1 }]}, undefined,
+      { path: 'path' },
+      { type: [{ value: 'application/*', weight: 0 }, { value: 'text/turtle', weight: 1 }]},
+      undefined,
     );
     expect(outConverter.handleSafe).toHaveBeenCalledTimes(0);
   });
@@ -97,5 +100,12 @@ describe('A RepresentationConvertingStore', (): void => {
     await expect(store.setRepresentation(id, representation, 'conditions' as any)).resolves.toBeUndefined();
     expect(inConverter.handleSafe).toHaveBeenCalledTimes(2);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(id, 'inConvert', 'conditions');
+  });
+
+  it('throws an error if no content-type is provided.', async(): Promise<void> => {
+    metadata.removeAll(CONTENT_TYPE);
+    const id = { path: 'identifier' };
+
+    await expect(store.addResource(id, representation, 'conditions' as any)).rejects.toThrow(InternalServerError);
   });
 });
