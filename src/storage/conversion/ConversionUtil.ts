@@ -1,5 +1,6 @@
 import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
+import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { matchingMediaType } from '../../util/Util';
@@ -8,6 +9,9 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
 /**
  * Filters media types based on the given preferences.
  * Based on RFC 7231 - Content negotiation.
+ * Will add a default `internal/*;q=0` to the preferences to prevent accidental use of internal types.
+ * Since more specific media ranges override less specific ones,
+ * this will be ignored if there is a specific internal type preference.
  *
  * @param preferences - Preferences for output type.
  * @param types - Media types to compare to the preferences.
@@ -30,6 +34,11 @@ RepresentationPreference[] => {
     map[pref.value] = pref.weight;
     return map;
   }, {});
+
+  // Prevent accidental use of internal types
+  if (!prefMap[INTERNAL_ALL]) {
+    prefMap[INTERNAL_ALL] = 0;
+  }
 
   // RFC 7231
   //    Media ranges can be overridden by more specific media ranges or
