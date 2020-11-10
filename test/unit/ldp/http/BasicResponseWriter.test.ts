@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { PassThrough } from 'stream';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
@@ -65,5 +66,27 @@ describe('A BasicResponseWriter', (): void => {
     expect(metadataWriter.handle).toHaveBeenLastCalledWith({ response, metadata: result.metadata });
     expect(response._isEndCalled()).toBeTruthy();
     expect(response._getStatusCode()).toBe(201);
+  });
+
+  it('can handle the data stream erroring.', async(): Promise<void> => {
+    const data = new PassThrough();
+    data.read = (): any => {
+      data.emit('error', new Error('bad data!'));
+      return null;
+    };
+    result = { statusCode: 201, data };
+
+    response = new PassThrough();
+    response.writeHead = jest.fn();
+
+    const end = new Promise((resolve): void => {
+      response.on('error', (error: Error): void => {
+        expect(error).toEqual(new Error('bad data!'));
+        resolve();
+      });
+    });
+
+    await expect(writer.handle({ response, result })).resolves.toBeUndefined();
+    await end;
   });
 });

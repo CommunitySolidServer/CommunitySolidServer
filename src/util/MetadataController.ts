@@ -7,7 +7,7 @@ import { RepresentationMetadata } from '../ldp/representation/RepresentationMeta
 import { TEXT_TURTLE } from './ContentTypes';
 import { LDP, RDF } from './UriConstants';
 import { toNamedNode } from './UriUtil';
-import { pipeStreamsAndErrors, pushQuad } from './Util';
+import { pipeSafe, pushQuad } from './Util';
 
 export class MetadataController {
   /**
@@ -46,7 +46,7 @@ export class MetadataController {
    * @returns The Readable object.
    */
   public serializeQuads(quads: Quad[]): Readable {
-    return pipeStreamsAndErrors(streamifyArray(quads), new StreamWriter({ format: TEXT_TURTLE }));
+    return pipeSafe(streamifyArray(quads), new StreamWriter({ format: TEXT_TURTLE }));
   }
 
   /**
@@ -56,6 +56,6 @@ export class MetadataController {
    * @returns A promise containing the array of quads.
    */
   public async parseQuads(readable: Readable): Promise<Quad[]> {
-    return await arrayifyStream(pipeStreamsAndErrors(readable, new StreamParser({ format: TEXT_TURTLE })));
+    return await arrayifyStream(pipeSafe(readable, new StreamParser({ format: TEXT_TURTLE })));
   }
 }
