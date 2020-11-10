@@ -14,21 +14,21 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
   protected readonly logger = getLoggerFor(this);
 
   protected readonly innerLock: Lock;
-  protected readonly readTimeout: number;
+  protected readonly expiration: number;
   protected readonly identifier: ResourceIdentifier;
-  protected timeout: NodeJS.Timeout;
+  protected timeoutHandle?: NodeJS.Timeout;
 
   /**
    * @param innerLock - Instance of ResourceLocker to use for acquiring a lock.
-   * @param readTimeout - Time in ms after which reading a representation times out, causing the lock to be released.
+   * @param expiration - Time in ms after which the lock expires.
    * @param identifier - Identifier of the resource that needs to be locked.
    */
-  public constructor(innerLock: Lock, readTimeout: number, identifier: ResourceIdentifier) {
+  public constructor(innerLock: Lock, expiration: number, identifier: ResourceIdentifier) {
     super();
     this.innerLock = innerLock;
-    this.readTimeout = readTimeout;
+    this.expiration = expiration;
     this.identifier = identifier;
-    this.timeout = setTimeout((): any => this.emitExpired(), readTimeout);
+    this.scheduleTimeout();
   }
 
   /**
@@ -36,7 +36,7 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
    * @returns A promise resolving when the release is finished.
    */
   public async release(): Promise<void> {
-    clearTimeout(this.timeout);
+    this.clearTimeout();
     return this.innerLock.release();
   }
 
@@ -44,17 +44,26 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
    * Reset the unlock timer.
    */
   public renew(): void {
-    this.logger.verbose(`Renewed expiring timer of the lock for ${this.identifier.path}`);
-    clearTimeout(this.timeout);
-    this.timeout = setTimeout((): any => this.emitExpired(), this.readTimeout);
+    this.clearTimeout();
+    this.scheduleTimeout();
   }
 
-  /**
-   * This function will be called when the timer expires.
-   */
-  protected async emitExpired(): Promise<void> {
-    this.logger.verbose(`Lock expired after exceeding timeout of ${this.readTimeout}ms for ${this.identifier.path}`);
+  private async expire(): Promise<void> {
+    this.logger.verbose(`Lock for ${this.identifier.path} expired after ${this.expiration}ms`);
     this.emit('expired');
-    return this.innerLock.release();
+    try {
+      await this.innerLock.release();
+    } catch (error: unknown) {
+      this.emit('error', error);
+    }
+  }
+
+  private clearTimeout(): void {
+    clearTimeout(this.timeoutHandle!);
+  }
+
+  private scheduleTimeout(): void {
+    this.logger.verbose(`Renewed expiring lock for ${this.identifier.path}`);
+    this.timeoutHandle = setTimeout((): any => this.expire(), this.expiration);
   }
 }

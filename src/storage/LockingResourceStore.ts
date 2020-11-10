@@ -120,12 +120,9 @@ export class LockingResourceStore implements AtomicResourceStore {
    */
   protected createExpiringReadable(source: Readable, lock: ExpiringLock): Readable {
     // Destroy the source when a timeout occurs.
-    const destroySource = (): void => {
+    lock.on('expired', (): void => {
       source.destroy(new Error(`Stream reading timout exceeded`));
-    };
-
-    // Handle the destruction of the source when the lock expires.
-    lock.on('expired', destroySource);
+    });
 
     // Spy on the source to renew the lock upon reading.
     return Object.create(source, {
