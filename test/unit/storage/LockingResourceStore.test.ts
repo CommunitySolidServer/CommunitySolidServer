@@ -194,9 +194,9 @@ describe('A LockingResourceStore', (): void => {
     jest.useFakeTimers();
 
     // Spy on a real ResourceLocker instance
-    const strLocker = new WrappedExpiringResourceLocker(locker, 1000);
-    store = new LockingResourceStore(source, strLocker);
-    const acquireSpy = jest.spyOn(strLocker, 'acquire');
+    const expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
+    store = new LockingResourceStore(source, expiringLocker);
+    const acquireSpy = jest.spyOn(expiringLocker, 'acquire');
 
     const representation = await store.getRepresentation({ path: 'path' }, {});
     const errorCallback = jest.fn();
@@ -221,9 +221,9 @@ describe('A LockingResourceStore', (): void => {
     jest.useFakeTimers();
 
     // Spy on a real ResourceLocker instance
-    const strLocker = new WrappedExpiringResourceLocker(locker, 1000);
-    store = new LockingResourceStore(source, strLocker);
-    const acquireSpy = jest.spyOn(strLocker, 'acquire');
+    const expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
+    store = new LockingResourceStore(source, expiringLocker);
+    const acquireSpy = jest.spyOn(expiringLocker, 'acquire');
 
     const representation = await store.getRepresentation({ path: 'path' }, {});
     const errorCallback = jest.fn();

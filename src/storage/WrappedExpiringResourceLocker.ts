@@ -13,15 +13,15 @@ export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
   protected readonly logger = getLoggerFor(this);
 
   protected readonly locker: ResourceLocker;
-  protected readonly readTimeout: number;
+  protected readonly expiration: number;
 
   /**
    * @param locker - Instance of ResourceLocker to use for acquiring a lock.
-   * @param readTimeout - Time in ms after which reading a representation times out, causing the lock to be released.
+   * @param expiration - Time in ms after which the lock expires.
    */
-  public constructor(locker: ResourceLocker, readTimeout: number) {
+  public constructor(locker: ResourceLocker, expiration: number) {
     this.locker = locker;
-    this.readTimeout = readTimeout;
+    this.expiration = expiration;
   }
 
   /**
@@ -32,6 +32,6 @@ export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
    */
   public async acquire(identifier: ResourceIdentifier): Promise<ExpiringLock> {
     const innerLock = await this.locker.acquire(identifier);
-    return new WrappedExpiringLock(innerLock, this.readTimeout, identifier);
+    return new WrappedExpiringLock(innerLock, this.expiration, identifier);
   }
 }
