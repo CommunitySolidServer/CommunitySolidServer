@@ -5,7 +5,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { pipeStreamsAndErrors } from '../../util/Util';
+import { pipeSafe } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -39,8 +39,8 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
 
     // Wrap the stream such that errors are transformed
     // (Node 10 requires both writableObjectMode and readableObjectMode)
-    const data = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    pipeStreamsAndErrors(rawQuads, data, (error): Error => new UnsupportedHttpError(error.message));
+    const pass = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
+    const data = pipeSafe(rawQuads, pass, (error): Error => new UnsupportedHttpError(error.message));
 
     return {
       binary: false,

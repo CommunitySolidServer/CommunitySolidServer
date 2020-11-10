@@ -2,6 +2,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { pipeSafe } from '../../util/Util';
 import type { MetadataWriter } from './metadata/MetadataWriter';
 import type { ResponseDescription } from './response/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
@@ -33,7 +34,10 @@ export class BasicResponseWriter extends ResponseWriter {
     input.response.writeHead(input.result.statusCode);
 
     if (input.result.data) {
-      input.result.data.pipe(input.response);
+      const pipe = pipeSafe(input.result.data, input.response);
+      pipe.on('error', (error): void => {
+        this.logger.error(`Writing to HttpResponse failed with message ${error.message}`);
+      });
     } else {
       // If there is input data the response will end once the input stream ends
       input.response.end();
