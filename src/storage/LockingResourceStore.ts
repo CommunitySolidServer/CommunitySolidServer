@@ -6,11 +6,9 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { getLoggerFor } from '../logging/LogUtil';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
-import type { ResourceLocker } from './ResourceLocker';
+import type { ExpiringLock } from './ExpiringLock';
+import type { ExpiringResourceLocker } from './ExpiringResourceLocker';
 import type { ResourceStore } from './ResourceStore';
-
-/** Time in ms after which reading a representation times out, causing the lock to be released. */
-const READ_TIMEOUT = 1000;
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -20,9 +18,9 @@ export class LockingResourceStore implements AtomicResourceStore {
   protected readonly logger = getLoggerFor(this);
 
   private readonly source: ResourceStore;
-  private readonly locks: ResourceLocker;
+  private readonly locks: ExpiringResourceLocker;
 
-  public constructor(source: ResourceStore, locks: ResourceLocker) {
+  public constructor(source: ResourceStore, locks: ExpiringResourceLocker) {
     this.source = source;
     this.locks = locks;
   }
@@ -83,7 +81,7 @@ export class LockingResourceStore implements AtomicResourceStore {
     try {
       // Make the resource time out to ensure that the lock is always released eventually.
       representation = await func();
-      return this.createExpiringRepresentation(representation);
+      return this.createExpiringRepresentation(representation, lock);
     } finally {
       // If the representation contains a valid Readable, wait for it to be consumed.
       const data = representation?.data;
@@ -106,10 +104,11 @@ export class LockingResourceStore implements AtomicResourceStore {
    * Wraps a representation to make it time out when nothing is read for a certain amount of time.
    *
    * @param source - The representation to wrap
+   * @param lock - The lock for the corresponding identifier.
    */
-  protected createExpiringRepresentation(source: Representation): Representation {
+  protected createExpiringRepresentation(source: Representation, lock: ExpiringLock): Representation {
     return Object.create(source, {
-      data: { value: this.createExpiringReadable(source.data) },
+      data: { value: this.createExpiringReadable(source.data, lock) },
     });
   }
 
@@ -117,26 +116,22 @@ export class LockingResourceStore implements AtomicResourceStore {
    * Wraps a readable to make it time out when nothing is read for a certain amount of time.
    *
    * @param source - The readable to wrap
+   * @param lock - The lock for the corresponding identifier.
    */
-  protected createExpiringReadable(source: Readable): Readable {
+  protected createExpiringReadable(source: Readable, lock: ExpiringLock): Readable {
     // Destroy the source when a timeout occurs.
     const destroySource = (): void => {
-      this.logger.info(`Stream reading timout of ${READ_TIMEOUT}ms exceeded; destroying source`);
-      source.destroy(new Error(`Stream reading timout of ${READ_TIMEOUT}ms exceeded`));
+      source.destroy(new Error(`Stream reading timout exceeded`));
     };
-    let timeout = setTimeout(destroySource, READ_TIMEOUT);
 
-    // Cancel the timeout when the source terminates by itself.
-    const cancelTimeout = (): void => clearTimeout(timeout);
-    source.on('error', cancelTimeout);
-    source.on('end', cancelTimeout);
+    // Handle the destruction of the source when the lock expires.
+    lock.on('expired', destroySource);
 
-    // Spy on the source to reset the timeout on read.
+    // Spy on the source to renew the lock upon reading.
     return Object.create(source, {
       read: {
         value(size: number): any {
-          cancelTimeout();
-          timeout = setTimeout(destroySource, READ_TIMEOUT);
+          lock.renew();
           return source.read(size);
         },
       },

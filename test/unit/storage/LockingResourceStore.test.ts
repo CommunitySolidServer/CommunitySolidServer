@@ -2,20 +2,25 @@ import type { EventEmitter } from 'events';
 import streamifyArray from 'streamify-array';
 import type { Patch } from '../../../src/ldp/http/Patch';
 import type { Representation } from '../../../src/ldp/representation/Representation';
-import type { Lock } from '../../../src/storage/Lock';
+import type { ExpiringLock } from '../../../src/storage/ExpiringLock';
+import type { ExpiringResourceLocker } from '../../../src/storage/ExpiringResourceLocker';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
-import type { ResourceLocker } from '../../../src/storage/ResourceLocker';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { WrappedExpiringResourceLocker } from '../../../src/storage/WrappedExpiringResourceLocker';
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
-  let locker: ResourceLocker;
-  let lock: Lock;
+  let locker: ExpiringResourceLocker;
+  let lock: ExpiringLock;
   let release: () => Promise<void>;
+  let renew: () => void;
   let source: ResourceStore;
   let order: string[];
+  let funcOnEmit: () => any;
 
   beforeEach(async(): Promise<void> => {
+    jest.clearAllMocks();
+
     order = [];
     const delayedResolve = (resolve: (resolveParams: any) => void, name: string, resolveParams?: any): void => {
       // `setImmediate` is introduced to make sure the promise doesn't execute immediately
@@ -40,10 +45,26 @@ describe('A LockingResourceStore', (): void => {
         new Promise((resolve): any => delayedResolve(resolve, 'modifyResource'))),
     };
     release = jest.fn(async(): Promise<any> => order.push('release'));
+    renew = jest.fn();
+    funcOnEmit = (): any => true;
+
     locker = {
       acquire: jest.fn(async(): Promise<any> => {
         order.push('acquire');
-        lock = { release };
+        lock = {
+          release,
+          renew,
+          on(event: string, func: () => void): void {
+            if (event === 'expired') {
+              funcOnEmit = func;
+            }
+          },
+          emit(event: string): void {
+            if (event === 'expired') {
+              funcOnEmit();
+            }
+          },
+        } as unknown as ExpiringLock;
         return lock;
       }),
     };
@@ -171,6 +192,12 @@ describe('A LockingResourceStore', (): void => {
 
   it('destroys the stream when nothing is read after 1000ms.', async(): Promise<void> => {
     jest.useFakeTimers();
+
+    // Spy on a real ResourceLocker instance
+    const strLocker = new WrappedExpiringResourceLocker(locker, 1000);
+    store = new LockingResourceStore(source, strLocker);
+    const acquireSpy = jest.spyOn(strLocker, 'acquire');
+
     const representation = await store.getRepresentation({ path: 'path' }, {});
     const errorCallback = jest.fn();
     representation.data.on('error', errorCallback);
@@ -182,18 +209,22 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify a timeout error was thrown
     expect(errorCallback).toHaveBeenCalledTimes(1);
-    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout of 1000ms exceeded'));
+    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout exceeded'));
 
     // Verify the lock was acquired and released at the right time
-    expect(locker.acquire).toHaveBeenCalledTimes(1);
-    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(acquireSpy).toHaveBeenCalledTimes(1);
+    expect(acquireSpy).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
   });
 
   it('destroys the stream when pauses between reads exceed 1000ms.', async(): Promise<void> => {
     jest.useFakeTimers();
+
+    // Spy on a real ResourceLocker instance
+    const strLocker = new WrappedExpiringResourceLocker(locker, 1000);
+    store = new LockingResourceStore(source, strLocker);
+    const acquireSpy = jest.spyOn(strLocker, 'acquire');
+
     const representation = await store.getRepresentation({ path: 'path' }, {});
     const errorCallback = jest.fn();
     representation.data.on('error', errorCallback);
@@ -213,13 +244,11 @@ describe('A LockingResourceStore', (): void => {
 
     // Verify a timeout error was thrown
     expect(errorCallback).toHaveBeenCalledTimes(1);
-    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout of 1000ms exceeded'));
+    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout exceeded'));
 
     // Verify the lock was acquired and released at the right time
-    expect(locker.acquire).toHaveBeenCalledTimes(1);
-    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(acquireSpy).toHaveBeenCalledTimes(1);
+    expect(acquireSpy).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
   });
 });
