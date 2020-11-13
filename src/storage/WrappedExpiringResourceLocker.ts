@@ -32,6 +32,6 @@ export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
    */
   public async acquire(identifier: ResourceIdentifier): Promise<ExpiringLock> {
     const innerLock = await this.locker.acquire(identifier);
-    return new WrappedExpiringLock(innerLock, this.expiration, identifier);
+    return new WrappedExpiringLock(innerLock, this.expiration);
   }
 }

@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ExpiringLock } from './ExpiringLock';
 import type { Lock } from './Lock';
@@ -15,19 +14,16 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
 
   protected readonly innerLock: Lock;
   protected readonly expiration: number;
-  protected readonly identifier: ResourceIdentifier;
   protected timeoutHandle?: NodeJS.Timeout;
 
   /**
    * @param innerLock - Instance of ResourceLocker to use for acquiring a lock.
    * @param expiration - Time in ms after which the lock expires.
-   * @param identifier - Identifier of the resource that needs to be locked.
    */
-  public constructor(innerLock: Lock, expiration: number, identifier: ResourceIdentifier) {
+  public constructor(innerLock: Lock, expiration: number) {
     super();
     this.innerLock = innerLock;
     this.expiration = expiration;
-    this.identifier = identifier;
     this.scheduleTimeout();
   }
 
@@ -49,7 +45,7 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
   }
 
   private async expire(): Promise<void> {
-    this.logger.verbose(`Lock for ${this.identifier.path} expired after ${this.expiration}ms`);
+    this.logger.verbose(`Lock expired after ${this.expiration}ms`);
     this.emit('expired');
     try {
       await this.innerLock.release();
@@ -63,7 +59,7 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
   }
 
   private scheduleTimeout(): void {
-    this.logger.verbose(`Renewed expiring lock for ${this.identifier.path}`);
+    this.logger.verbose(`Renewed expiring lock`);
     this.timeoutHandle = setTimeout((): any => this.expire(), this.expiration);
   }
 }
