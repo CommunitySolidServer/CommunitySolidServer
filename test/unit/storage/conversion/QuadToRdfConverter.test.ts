@@ -24,13 +24,13 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
-    const representation = { metadata } as Representation;
+    const representation = { data: streamifyArray([]), metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle quad to JSON-LD conversions.', async(): Promise<void> => {
-    const representation = { metadata } as Representation;
+    const representation = { data: streamifyArray([]), metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });

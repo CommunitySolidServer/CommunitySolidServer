@@ -4,6 +4,7 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { StreamMonitor } from '../../util/StreamMonitor';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { checkRequest, matchingTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -22,7 +23,9 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
+    const monitor = new StreamMonitor(input.representation.data, 'QuadToRdfConverter');
     checkRequest(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
+    monitor.release();
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

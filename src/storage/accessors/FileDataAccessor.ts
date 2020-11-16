@@ -13,6 +13,7 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import type { MetadataController } from '../../util/MetadataController';
+import { StreamMonitor } from '../../util/StreamMonitor';
 import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
 import { pushQuad } from '../../util/Util';
@@ -82,12 +83,17 @@ export class FileDataAccessor implements DataAccessor {
     if (this.isMetadataPath(identifier.path)) {
       throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
     }
+
+    const monitor = new StreamMonitor(data, 'FileDataAccessor-writeDocument');
+
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, metadata.contentType);
 
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
     const wroteMetadata = await this.writeMetadata(link, metadata);
+
+    monitor.release();
 
     try {
       await this.writeDataFile(link.filePath, data);

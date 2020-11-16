@@ -4,6 +4,7 @@ import type { Authorizer } from '../authorization/Authorizer';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
+import { StreamMonitor } from '../util/StreamMonitor';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
@@ -113,7 +114,19 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     const op: Operation = await this.requestParser.handleSafe(request);
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
     const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(op);
+
+    // Monitor the data stream while authorizer is checking the permissions
+    let monitor: StreamMonitor | undefined;
+    if (op.body) {
+      monitor = new StreamMonitor(op.body.data, 'AuthenticatedLdpHandler');
+    }
+
     await this.authorizer.handleSafe({ credentials, identifier: op.target, permissions });
+
+    if (monitor) {
+      monitor.release();
+    }
+
     return this.operationHandler.handleSafe(op);
   }
 }

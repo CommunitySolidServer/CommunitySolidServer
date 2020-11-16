@@ -1,3 +1,4 @@
+import streamifyArray from 'streamify-array';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import type { Authorizer } from '../../../src/authorization/Authorizer';
 import type { AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
@@ -76,5 +77,12 @@ describe('An AuthenticatedLdpHandler', (): void => {
     const handler = new AuthenticatedLdpHandler(args);
 
     await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toEqual('apple');
+  });
+
+  it('can handle operations with data.', async(): Promise< void> => {
+    args.requestParser.handle = async(): Promise<any> => ({ body: { data: streamifyArray([ 'data' ]) }});
+    const handler = new AuthenticatedLdpHandler(args);
+
+    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toBeUndefined();
   });
 });

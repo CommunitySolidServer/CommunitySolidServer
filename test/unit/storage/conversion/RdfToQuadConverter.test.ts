@@ -26,14 +26,14 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
-    const representation = { metadata } as Representation;
+    const representation = { data: streamifyArray([]), metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle JSON-LD to quad conversions.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/ld+json' });
-    const representation = { metadata } as Representation;
+    const representation = { data: streamifyArray([]), metadata } as Representation;
     const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });

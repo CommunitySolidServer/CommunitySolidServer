@@ -24,6 +24,7 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import type { MetadataController } from '../../util/MetadataController';
+import { StreamMonitor } from '../../util/StreamMonitor';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
 import { ensureTrailingSlash } from '../../util/Util';
@@ -125,7 +126,12 @@ export class SparqlDataAccessor implements DataAccessor {
     if (this.isMetadataIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to create NamedNodes with the metadata extension.');
     }
+
+    const monitor = new StreamMonitor(data, 'SparqlDataAccessor-writeDocument');
+
     const { name, parent } = await this.getRelatedNames(identifier);
+
+    monitor.release();
 
     const triples = await arrayifyStream(data) as Quad[];
     const def = defaultGraph();

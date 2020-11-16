@@ -1,5 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { StreamMonitor } from '../../util/StreamMonitor';
 import { matchingMediaType } from '../../util/Util';
 import { checkRequest } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -44,10 +45,15 @@ export class ChainedConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
+    const monitor = new StreamMonitor(input.representation.data, 'ChainedConverter-canHandle');
+
     // We assume a chain can be constructed, otherwise there would be a configuration issue
     // So we only check if the input can be parsed and the preferred type can be written
     const inTypes = this.filterTypes(await this.first.getInputTypes());
     const outTypes = this.filterTypes(await this.last.getOutputTypes());
+
+    monitor.release();
+
     checkRequest(input, inTypes, outTypes);
   }
 
@@ -58,7 +64,9 @@ export class ChainedConverter extends TypedRepresentationConverter {
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
     const args = { ...input };
     for (let i = 0; i < this.converters.length - 1; ++i) {
+      const monitor = new StreamMonitor(args.representation.data, `ChainedConverter-chain${i}`);
       const value = await this.getMatchingType(this.converters[i], this.converters[i + 1]);
+      monitor.release();
       args.preferences = { type: [{ value, weight: 1 }]};
       args.representation = await this.converters[i].handle(args);
     }

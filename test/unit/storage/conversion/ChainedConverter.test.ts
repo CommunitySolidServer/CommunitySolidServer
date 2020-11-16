@@ -1,3 +1,4 @@
+import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
@@ -52,7 +53,7 @@ describe('A ChainedConverter', (): void => {
     converter = new ChainedConverter(converters);
 
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
-    representation = { metadata } as Representation;
+    representation = { data: streamifyArray([]), metadata } as Representation;
     preferences = { type: [{ value: 'internal/quads', weight: 1 }]};
     args = { representation, preferences, identifier: { path: 'path' }};
   });

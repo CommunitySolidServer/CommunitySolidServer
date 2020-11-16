@@ -13,6 +13,7 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
 import type { MetadataController } from '../util/MetadataController';
+import { StreamMonitor } from '../util/StreamMonitor';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../util/UriConstants';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import type { DataAccessor } from './accessors/DataAccessor';
@@ -93,8 +94,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Ensure the representation is supported by the accessor
     await this.accessor.canHandle(representation);
 
+    const monitor = new StreamMonitor(representation.data, 'DataAccessorBasedStore-addResource');
+
     // Using the parent metadata as we can also use that later to check if the nested containers maybe need to be made
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
+
+    monitor.release();
 
     // When a POST method request targets a non-container resource without an existing representation,
     // the server MUST respond with the 404 status code.
@@ -120,8 +125,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Ensure the representation is supported by the accessor
     await this.accessor.canHandle(representation);
 
+    const monitor = new StreamMonitor(representation.data, 'DataAccessorBasedStore-setRepresentation');
+
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
+
+    monitor.release();
 
     // Might want to redirect in the future
     if (oldMetadata && oldMetadata.identifier.value !== identifier.path) {
@@ -218,9 +227,13 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.handleContainerData(representation);
     }
 
+    const monitor = new StreamMonitor(representation.data, 'DataAccessorBasedStore-writeData');
+
     if (createContainers) {
       await this.createRecursiveContainers(await this.containerManager.getContainer(identifier));
     }
+
+    monitor.release();
 
     // Make sure the metadata has the correct identifier and correct type quads
     const { metadata } = representation;
