@@ -129,6 +129,7 @@ export * from './src/storage/ResourceStore';
 export * from './src/storage/RoutingResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
 export * from './src/storage/UrlContainerManager';
+export * from './src/storage/WrappedExpiringResourceLocker';
 
 // Util/Errors
 export * from './src/util/errors/ConflictHttpError';
