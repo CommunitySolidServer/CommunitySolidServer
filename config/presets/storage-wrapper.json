@@ -3,7 +3,11 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:ResourceLocker",
-      "@type": "SingleThreadedResourceLocker"
+      "@type": "WrappedExpiringResourceLocker",
+      "WrappedExpiringResourceLocker:_locker": {
+        "@type": "SingleThreadedResourceLocker"
+      },
+      "WrappedExpiringResourceLocker:_expiration": 3000
     },
 
     {
