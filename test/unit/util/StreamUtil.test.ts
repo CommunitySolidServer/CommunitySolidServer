@@ -1,6 +1,6 @@
 import { PassThrough } from 'stream';
 import streamifyArray from 'streamify-array';
-import { pipeSafely, readableToString } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom, pipeSafely, readableToString } from '../../../src/util/StreamUtil';
 
 describe('StreamUtil', (): void => {
   describe('#readableToString', (): void => {
@@ -38,6 +38,13 @@ describe('StreamUtil', (): void => {
       const output = new PassThrough();
       const piped = pipeSafely(input, output, (): any => new Error('other error'));
       await expect(readableToString(piped)).rejects.toThrow(new Error('other error'));
+    });
+  });
+
+  describe('#guardedStreamFrom', (): void => {
+    it('converts data to a guarded stream.', async(): Promise<void> => {
+      const data = [ 'a', 'b' ];
+      await expect(readableToString(guardedStreamFrom(data))).resolves.toBe('ab');
     });
   });
 });
