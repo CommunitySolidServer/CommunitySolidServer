@@ -1,5 +1,5 @@
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringLock } from './ExpiringLock';
 import type { ExpiringResourceLocker } from './ExpiringResourceLocker';
 import type { ResourceLocker } from './ResourceLocker';

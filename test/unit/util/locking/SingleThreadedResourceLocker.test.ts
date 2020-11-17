@@ -1,4 +1,4 @@
-import { SingleThreadedResourceLocker } from '../../../src/storage/SingleThreadedResourceLocker';
+import { SingleThreadedResourceLocker } from '../../../../src/util/locking/SingleThreadedResourceLocker';
 
 describe('A SingleThreadedResourceLocker', (): void => {
   let locker: SingleThreadedResourceLocker;

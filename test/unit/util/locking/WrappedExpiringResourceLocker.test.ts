@@ -1,4 +1,4 @@
-import { WrappedExpiringResourceLocker } from '../../../src/storage/WrappedExpiringResourceLocker';
+import { WrappedExpiringResourceLocker } from '../../../../src/util/locking/WrappedExpiringResourceLocker';
 
 describe('A WrappedExpiringResourceLocker', (): void => {
   it('emits an error event when releasing the lock errors.', async(): Promise<void> => {

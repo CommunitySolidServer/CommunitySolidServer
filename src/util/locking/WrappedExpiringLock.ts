@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { getLoggerFor } from '../logging/LogUtil';
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringLock } from './ExpiringLock';
 import type { Lock } from './Lock';
 
