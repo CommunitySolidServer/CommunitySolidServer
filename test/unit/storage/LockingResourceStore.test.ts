@@ -6,7 +6,6 @@ import { LockingResourceStore } from '../../../src/storage/LockingResourceStore'
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringLock } from '../../../src/util/locking/ExpiringLock';
 import type { ExpiringResourceLocker } from '../../../src/util/locking/ExpiringResourceLocker';
-import { WrappedExpiringResourceLocker } from '../../../src/util/locking/WrappedExpiringResourceLocker';
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
@@ -190,65 +189,17 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'end', 'close', 'release' ]);
   });
 
-  it('destroys the stream when nothing is read after 1000ms.', async(): Promise<void> => {
-    jest.useFakeTimers();
-
-    // Spy on a real ResourceLocker instance
-    const expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
-    store = new LockingResourceStore(source, expiringLocker);
-    const acquireSpy = jest.spyOn(expiringLocker, 'acquire');
-
+  it('releases the lock on the resource when readable times out.', async(): Promise<void> => {
+    // Make the representation time out
     const representation = await store.getRepresentation({ path: 'path' }, {});
-    const errorCallback = jest.fn();
-    representation.data.on('error', errorCallback);
-
-    // Wait 1000ms and read
-    jest.advanceTimersByTime(1000);
-    expect(representation.data.read()).toBeNull();
+    lock.emit('expired');
     await registerEventOrder(representation.data, 'close');
 
-    // Verify a timeout error was thrown
-    expect(errorCallback).toHaveBeenCalledTimes(1);
-    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout exceeded'));
-
     // Verify the lock was acquired and released at the right time
-    expect(acquireSpy).toHaveBeenCalledTimes(1);
-    expect(acquireSpy).toHaveBeenLastCalledWith({ path: 'path' });
+    expect(locker.acquire).toHaveBeenCalledTimes(1);
+    expect(locker.acquire).toHaveBeenLastCalledWith({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-  });
-
-  it('destroys the stream when pauses between reads exceed 1000ms.', async(): Promise<void> => {
-    jest.useFakeTimers();
-
-    // Spy on a real ResourceLocker instance
-    const expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
-    store = new LockingResourceStore(source, expiringLocker);
-    const acquireSpy = jest.spyOn(expiringLocker, 'acquire');
-
-    const representation = await store.getRepresentation({ path: 'path' }, {});
-    const errorCallback = jest.fn();
-    representation.data.on('error', errorCallback);
-
-    // Wait 750ms and read
-    jest.advanceTimersByTime(750);
-    expect(representation.data.read()).toBe(1);
-
-    // Wait 750ms and read
-    jest.advanceTimersByTime(750);
-    expect(representation.data.read()).toBe(2);
-
-    // Wait 1000ms and watch the stream be destroyed
-    jest.advanceTimersByTime(1000);
-    expect(representation.data.read()).toBeNull();
-    await registerEventOrder(representation.data, 'close');
-
-    // Verify a timeout error was thrown
-    expect(errorCallback).toHaveBeenCalledTimes(1);
-    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Stream reading timout exceeded'));
-
-    // Verify the lock was acquired and released at the right time
-    expect(acquireSpy).toHaveBeenCalledTimes(1);
-    expect(acquireSpy).toHaveBeenLastCalledWith({ path: 'path' });
-    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(lock.release).toHaveBeenCalledTimes(1);
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'close', 'release' ]);
   });
 });
