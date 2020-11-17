@@ -1,9 +1,8 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
-import streamifyArray from 'streamify-array';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
@@ -11,6 +10,8 @@ import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import type { Guarded } from '../../../../src/util/GuardedStream';
+import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toNamedNode } from '../../../../src/util/UriUtil';
 
@@ -30,6 +31,7 @@ describe('A SparqlDataAccessor', (): void => {
   const base = 'http://test.com/';
   let accessor: SparqlDataAccessor;
   let metadata: RepresentationMetadata;
+  let data: Guarded<Readable>;
   let fetchTriples: jest.Mock<Promise<Readable>>;
   let fetchUpdate: jest.Mock<Promise<void>>;
   let triples: Quad[];
@@ -38,6 +40,9 @@ describe('A SparqlDataAccessor', (): void => {
 
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata();
+    data = guardedStreamFrom(
+      [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value')) ],
+    );
     triples = [ quad(namedNode('this'), namedNode('a'), namedNode('triple')) ];
 
     // Makes it so the `SparqlEndpointFetcher` will always return the contents of the `triples` array
@@ -45,7 +50,7 @@ describe('A SparqlDataAccessor', (): void => {
       if (fetchError) {
         throw fetchError;
       }
-      return streamifyArray(triples);
+      return Readable.from(triples);
     });
     fetchUpdate = jest.fn(async(): Promise<void> => {
       if (updateError) {
@@ -62,7 +67,6 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('can only handle quad data.', async(): Promise<void> => {
-    const data = streamifyArray([]);
     await expect(accessor.canHandle({ binary: true, data, metadata })).rejects.toThrow(UnsupportedMediaTypeHttpError);
     metadata.contentType = 'newInternalType';
     await expect(accessor.canHandle({ binary: false, data, metadata })).rejects.toThrow(UnsupportedMediaTypeHttpError);
@@ -71,8 +75,8 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('returns the corresponding quads when data is requested.', async(): Promise<void> => {
-    const data = await accessor.getData({ path: 'http://identifier' });
-    await expect(arrayifyStream(data)).resolves.toBeRdfIsomorphic([
+    const result = await accessor.getData({ path: 'http://identifier' });
+    await expect(arrayifyStream(result)).resolves.toBeRdfIsomorphic([
       quad(namedNode('this'), namedNode('a'), namedNode('triple')),
     ]);
 
@@ -168,7 +172,6 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the data and metadata when writing a resource and updates parent.', async(): Promise<void> => {
-    const data = streamifyArray([ quad(namedNode('http://name'), namedNode('http://pred'), literal('value')) ]);
     metadata = new RepresentationMetadata('http://test.com/container/resource',
       { [RDF.type]: [ toNamedNode(LDP.Resource) ]});
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
@@ -202,13 +205,12 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('errors when trying to write to a metadata document.', async(): Promise<void> => {
-    const data = streamifyArray([ quad(namedNode('http://name'), namedNode('http://pred'), literal('value')) ]);
     await expect(accessor.writeDocument({ path: 'meta:http://test.com/container/resource' }, data, metadata))
       .rejects.toThrow(new ConflictHttpError('Not allowed to create NamedNodes with the metadata extension.'));
   });
 
   it('errors when writing triples in a non-default graph.', async(): Promise<void> => {
-    const data = streamifyArray(
+    data = guardedStreamFrom(
       [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value'), namedNode('badGraph!')) ],
     );
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))

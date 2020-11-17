@@ -1,4 +1,5 @@
 import type { Readable } from 'stream';
+import type { Guarded } from '../../util/GuardedStream';
 import type { RepresentationMetadata } from './RepresentationMetadata';
 
 /**
@@ -12,7 +13,7 @@ export interface Representation {
   /**
    * The raw data stream for this representation.
    */
-  data: Readable;
+  data: Guarded<Readable>;
   /**
    * Whether the data stream consists of binary/string chunks
    * (as opposed to complex objects).

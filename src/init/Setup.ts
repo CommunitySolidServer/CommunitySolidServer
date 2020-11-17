@@ -1,4 +1,3 @@
-import streamifyArray from 'streamify-array';
 import type { AclManager } from '../authorization/AclManager';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { LoggerFactory } from '../logging/LoggerFactory';
@@ -6,6 +5,7 @@ import { getLoggerFor, setGlobalLoggerFactory } from '../logging/LogUtil';
 import type { ExpressHttpServerFactory } from '../server/ExpressHttpServerFactory';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
+import { guardedStreamFrom } from '../util/StreamUtil';
 import { CONTENT_TYPE } from '../util/UriConstants';
 
 /**
@@ -65,7 +65,7 @@ export class Setup {
         baseAclId,
         {
           binary: true,
-          data: streamifyArray([ acl ]),
+          data: guardedStreamFrom([ acl ]),
           metadata,
         },
       );

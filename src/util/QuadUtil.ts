@@ -4,6 +4,7 @@ import { DataFactory, StreamParser, StreamWriter } from 'n3';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { TEXT_TURTLE } from './ContentTypes';
+import type { Guarded } from './GuardedStream';
 import { pipeSafely } from './StreamUtil';
 
 /**
@@ -19,7 +20,7 @@ export const pushQuad =
  *
  * @returns The Readable object.
  */
-export const serializeQuads = (quads: Quad[]): Readable =>
+export const serializeQuads = (quads: Quad[]): Guarded<Readable> =>
   pipeSafely(streamifyArray(quads), new StreamWriter({ format: TEXT_TURTLE }));
 
 /**
@@ -28,5 +29,5 @@ export const serializeQuads = (quads: Quad[]): Readable =>
  *
  * @returns A promise containing the array of quads.
  */
-export const parseQuads = async(readable: Readable): Promise<Quad[]> =>
+export const parseQuads = async(readable: Guarded<Readable>): Promise<Quad[]> =>
   arrayifyStream(pipeSafely(readable, new StreamParser({ format: TEXT_TURTLE })));

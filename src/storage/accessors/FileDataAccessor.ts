@@ -12,6 +12,8 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
+import { guardStream } from '../../util/GuardedStream';
+import type { Guarded } from '../../util/GuardedStream';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
@@ -45,12 +47,12 @@ export class FileDataAccessor implements DataAccessor {
    * Will return data stream directly to the file corresponding to the resource.
    * Will throw NotFoundHttpError if the input is a container.
    */
-  public async getData(identifier: ResourceIdentifier): Promise<Readable> {
+  public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
     const stats = await this.getStats(link.filePath);
 
     if (stats.isFile()) {
-      return createReadStream(link.filePath);
+      return guardStream(createReadStream(link.filePath));
     }
 
     throw new NotFoundHttpError();
@@ -76,7 +78,7 @@ export class FileDataAccessor implements DataAccessor {
    * Writes the given data as a file (and potential metadata as additional file).
    * The metadata file will be written first and will be deleted if something goes wrong writing the actual data.
    */
-  public async writeDocument(identifier: ResourceIdentifier, data: Readable, metadata: RepresentationMetadata):
+  public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
     if (this.isMetadataPath(identifier.path)) {
       throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
@@ -264,7 +266,7 @@ export class FileDataAccessor implements DataAccessor {
       // Check if the metadata file exists first
       await fsPromises.lstat(metadataPath);
 
-      const readMetadataStream = createReadStream(metadataPath);
+      const readMetadataStream = guardStream(createReadStream(metadataPath));
       return await parseQuads(readMetadataStream);
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.

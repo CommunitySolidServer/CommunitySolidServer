@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import type { Representation } from '../../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Guarded } from '../../util/GuardedStream';
 
 /**
  * A DataAccessor is the building block closest to the actual data storage.
@@ -27,7 +28,7 @@ export interface DataAccessor {
    * It can be assumed that the incoming identifier will always correspond to a document.
    * @param identifier - Identifier for which the data is requested.
    */
-  getData: (identifier: ResourceIdentifier) => Promise<Readable>;
+  getData: (identifier: ResourceIdentifier) => Promise<Guarded<Readable>>;
 
   /**
    * Returns the metadata corresponding to the identifier.
@@ -42,7 +43,8 @@ export interface DataAccessor {
    * @param data - Data to store.
    * @param metadata - Metadata to store.
    */
-  writeDocument: (identifier: ResourceIdentifier, data: Readable, metadata: RepresentationMetadata) => Promise<void>;
+  writeDocument: (identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata) =>
+  Promise<void>;
 
   /**
    * Writes metadata for a container.

@@ -1,7 +1,6 @@
 import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
-import streamifyArray from 'streamify-array';
 import { v4 as uuid } from 'uuid';
 import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
@@ -12,6 +11,7 @@ import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpEr
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
+import type { Guarded } from '../util/GuardedStream';
 import {
   ensureTrailingSlash,
   getParentContainer,
@@ -21,6 +21,7 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
+import { guardedStreamFrom } from '../util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../util/UriConstants';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
@@ -70,9 +71,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       metadata.contentType = INTERNAL_QUADS;
       result = {
         binary: false,
-        get data(): Readable {
+        get data(): Guarded<Readable> {
           // This allows other modules to still add metadata before the output data is written
-          return streamifyArray(result.metadata.quads());
+          return guardedStreamFrom(result.metadata.quads());
         },
         metadata,
       };
@@ -365,7 +366,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected getEmptyContainerRepresentation(container: ResourceIdentifier): Representation {
     return {
       binary: true,
-      data: streamifyArray([]),
+      data: guardedStreamFrom([]),
       metadata: new RepresentationMetadata(container.path),
     };
   }

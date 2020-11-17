@@ -4,6 +4,7 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { guardStream } from '../../util/GuardedStream';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { validateRequestArgs, matchingTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -34,7 +35,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
     const metadata = new RepresentationMetadata(quads.metadata, { [CONTENT_TYPE]: contentType });
     return {
       binary: true,
-      data: rdfSerializer.serialize(quads.data, { contentType }) as Readable,
+      data: guardStream(rdfSerializer.serialize(quads.data, { contentType }) as Readable),
       metadata,
     };
   }

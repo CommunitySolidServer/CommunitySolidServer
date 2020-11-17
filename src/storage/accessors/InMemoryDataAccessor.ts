@@ -1,12 +1,14 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import type { Guarded } from '../../util/GuardedStream';
 import { ensureTrailingSlash, isContainerIdentifier } from '../../util/PathUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
+import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { DataAccessor } from './DataAccessor';
 
 interface DataEntry {
@@ -18,27 +20,6 @@ interface ContainerEntry {
   metadata: RepresentationMetadata;
 }
 type CacheEntry = DataEntry | ContainerEntry;
-
-class ArrayReadable extends Readable {
-  private readonly data: any[];
-  private idx: number;
-
-  public constructor(data: any[]) {
-    super({ objectMode: true });
-    this.data = data;
-    this.idx = 0;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  public _read(): void {
-    if (this.idx < this.data.length) {
-      this.push(this.data[this.idx]);
-      this.idx += 1;
-    } else {
-      this.push(null);
-    }
-  }
-}
 
 export class InMemoryDataAccessor implements DataAccessor {
   private readonly base: string;
@@ -56,12 +37,12 @@ export class InMemoryDataAccessor implements DataAccessor {
     // All data is supported since streams never get read, only copied
   }
 
-  public async getData(identifier: ResourceIdentifier): Promise<Readable> {
+  public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     const entry = this.getEntry(identifier);
     if (!this.isDataEntry(entry)) {
       throw new NotFoundHttpError();
     }
-    return new ArrayReadable(entry.data);
+    return guardedStreamFrom(entry.data);
   }
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
@@ -72,7 +53,7 @@ export class InMemoryDataAccessor implements DataAccessor {
     return this.generateMetadata(identifier, entry);
   }
 
-  public async writeDocument(identifier: ResourceIdentifier, data: Readable, metadata: RepresentationMetadata):
+  public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
     const { parent, name } = this.getParentEntry(identifier);
     parent.entries[name] = {

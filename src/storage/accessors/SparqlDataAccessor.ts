@@ -23,6 +23,8 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
+import { guardStream } from '../../util/GuardedStream';
+import type { Guarded } from '../../util/GuardedStream';
 import { ensureTrailingSlash, getParentContainer, isContainerIdentifier } from '../../util/PathUtil';
 import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
@@ -70,9 +72,9 @@ export class SparqlDataAccessor implements DataAccessor {
    * Returns all triples stored for the corresponding identifier.
    * Note that this will not throw a 404 if no results were found.
    */
-  public async getData(identifier: ResourceIdentifier): Promise<Readable> {
+  public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     const name = namedNode(identifier.path);
-    return this.sendSparqlConstruct(this.sparqlConstruct(name));
+    return await this.sendSparqlConstruct(this.sparqlConstruct(name));
   }
 
   /**
@@ -114,7 +116,7 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Reads the given data stream and stores it together with the metadata.
    */
-  public async writeDocument(identifier: ResourceIdentifier, data: Readable, metadata: RepresentationMetadata):
+  public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
     if (this.isMetadataIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to create NamedNodes with the metadata extension.');
@@ -292,11 +294,11 @@ export class SparqlDataAccessor implements DataAccessor {
    * Sends a SPARQL CONSTRUCT query to the endpoint and returns a stream of quads.
    * @param sparqlQuery - Query to execute.
    */
-  private async sendSparqlConstruct(sparqlQuery: ConstructQuery): Promise<Readable> {
+  private async sendSparqlConstruct(sparqlQuery: ConstructQuery): Promise<Guarded<Readable>> {
     const query = this.generator.stringify(sparqlQuery);
     this.logger.info(`Sending SPARQL CONSTRUCT query to ${this.endpoint}: ${query}`);
     try {
-      return await this.fetcher.fetchTriples(this.endpoint, query);
+      return guardStream(await this.fetcher.fetchTriples(this.endpoint, query));
     } catch (error: unknown) {
       if (error instanceof Error) {
         this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${error.message}`);

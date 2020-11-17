@@ -5,6 +5,7 @@ import { RepresentationMetadata } from '../../src/ldp/representation/Representat
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/mapping/ExtensionBasedMapper';
+import { guardStream } from '../../src/util/GuardedStream';
 import { ensureTrailingSlash } from '../../src/util/PathUtil';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
 import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
@@ -42,7 +43,7 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
       // Use store instead of file access so tests also work for non-file backends
       await config.store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
         binary: true,
-        data: createReadStream(join(__dirname, '../assets/permanent.txt')),
+        data: guardStream(createReadStream(join(__dirname, '../assets/permanent.txt'))),
         metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }),
       });
     });

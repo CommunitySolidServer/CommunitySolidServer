@@ -11,6 +11,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { guardStream } from '../../util/GuardedStream';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import type { ResourceLocker } from '../ResourceLocker';
 import type { ResourceStore } from '../ResourceStore';
@@ -77,7 +78,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const metadata = new RepresentationMetadata(input.identifier.path, { [CONTENT_TYPE]: INTERNAL_QUADS });
     const representation: Representation = {
       binary: false,
-      data: store.match() as Readable,
+      data: guardStream(store.match() as Readable),
       metadata,
     };
     await this.source.setRepresentation(input.identifier, representation);
