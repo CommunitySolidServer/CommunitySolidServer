@@ -2,12 +2,12 @@ import { EventEmitter } from 'events';
 import { promises as fs } from 'fs';
 import type { IncomingHttpHeaders } from 'http';
 import { join } from 'path';
+import { Readable } from 'stream';
 import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
-import streamifyArray from 'streamify-array';
 import type { ResourceStore } from '../../index';
-import { RepresentationMetadata } from '../../index';
+import { guardedStreamFrom, RepresentationMetadata } from '../../index';
 import type { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import type { HttpRequest } from '../../src/server/HttpRequest';
@@ -52,7 +52,7 @@ export class AclTestHelper {
 
     const representation = {
       binary: true,
-      data: streamifyArray(acl),
+      data: guardedStreamFrom(acl),
       metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' }),
     };
 
@@ -86,7 +86,7 @@ export class FileTestHelper {
     headers: IncomingHttpHeaders,
     data: Buffer,
   ): Promise<MockResponse<any>> {
-    const request = streamifyArray([ data ]) as HttpRequest;
+    const request = Readable.from([ data ]) as HttpRequest;
 
     request.url = requestUrl.pathname;
     request.method = method;

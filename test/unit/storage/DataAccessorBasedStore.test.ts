@@ -1,7 +1,6 @@
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
@@ -13,7 +12,9 @@ import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAll
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../../../src/util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
+import type { Guarded } from '../../../src/util/GuardedStream';
 import * as quadUtil from '../../../src/util/QuadUtil';
+import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../../../src/util/UriConstants';
 import { toNamedNode } from '../../../src/util/UriUtil';
 
@@ -39,7 +40,7 @@ class SimpleDataAccessor implements DataAccessor {
     return undefined;
   }
 
-  public async getData(identifier: ResourceIdentifier): Promise<Readable> {
+  public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
     this.checkExists(identifier);
     return this.data[identifier.path].data;
   }
@@ -83,11 +84,11 @@ describe('A DataAccessorBasedStore', (): void => {
 
     representation = {
       binary: true,
-      data: streamifyArray([ resourceData ]),
+      data: guardedStreamFrom([ resourceData ]),
       metadata: new RepresentationMetadata(
         { [CONTENT_TYPE]: 'text/plain', [RDF.type]: DataFactory.namedNode(LDP.Resource) },
       ),
-    } as Representation;
+    };
   });
 
   describe('getting a Representation', (): void => {
@@ -176,7 +177,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
       representation.metadata.contentType = 'text/turtle';
-      representation.data = streamifyArray([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
@@ -287,7 +288,7 @@ describe('A DataAccessorBasedStore', (): void => {
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = streamifyArray([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
@@ -298,7 +299,9 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
       representation.metadata.contentType = 'text/turtle';
       representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
-      representation.data = streamifyArray([ `<${`${root}resource/`}> <http://www.w3.org/ns/ldp#contains> <uri>.` ]);
+      representation.data = guardedStreamFrom(
+        [ `<${`${root}resource/`}> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
+      );
       await expect(store.setRepresentation(resourceID, representation))
         .rejects.toThrow(new ConflictHttpError('Container bodies are not allowed to have containment triples.'));
     });

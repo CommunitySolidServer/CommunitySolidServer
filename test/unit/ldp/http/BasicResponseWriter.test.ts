@@ -2,13 +2,13 @@ import { EventEmitter } from 'events';
 import { PassThrough } from 'stream';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
-import streamifyArray from 'streamify-array';
 import { BasicResponseWriter } from '../../../../src/ldp/http/BasicResponseWriter';
 import type { MetadataWriter } from '../../../../src/ldp/http/metadata/MetadataWriter';
 import type { ResponseDescription } from '../../../../src/ldp/http/response/ResponseDescription';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
@@ -42,7 +42,7 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('responds with a body if the description has a body.', async(): Promise<void> => {
-    const data = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]);
+    const data = guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]);
     result = { statusCode: 201, data };
 
     const end = new Promise((resolve): void => {
@@ -69,7 +69,7 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('can handle the data stream erroring.', async(): Promise<void> => {
-    const data = new PassThrough();
+    const data = guardedStreamFrom([]);
     data.read = (): any => {
       data.emit('error', new Error('bad data!'));
       return null;

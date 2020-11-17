@@ -4,6 +4,7 @@ import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
+import type { Guarded } from '../util/GuardedStream';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
 import type { ExpiringLock } from './ExpiringLock';
@@ -118,7 +119,7 @@ export class LockingResourceStore implements AtomicResourceStore {
    * @param source - The readable to wrap
    * @param lock - The lock for the corresponding identifier.
    */
-  protected createExpiringReadable(source: Readable, lock: ExpiringLock): Readable {
+  protected createExpiringReadable(source: Guarded<Readable>, lock: ExpiringLock): Readable {
     // Destroy the source when a timeout occurs.
     lock.on('expired', (): void => {
       source.destroy(new Error(`Stream reading timout exceeded`));

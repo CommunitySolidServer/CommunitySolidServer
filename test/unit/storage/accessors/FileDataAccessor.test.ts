@@ -1,5 +1,5 @@
+import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
-import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
@@ -9,7 +9,8 @@ import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { readableToString } from '../../../../src/util/StreamUtil';
+import type { Guarded } from '../../../../src/util/GuardedStream';
+import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../../../src/util/UriUtil';
 import { mockFs } from '../../../util/Util';
@@ -24,12 +25,15 @@ describe('A FileDataAccessor', (): void => {
   let accessor: FileDataAccessor;
   let cache: { data: any };
   let metadata: RepresentationMetadata;
+  let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
     cache = mockFs(rootFilePath, now);
     accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
 
     metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
+
+    data = guardedStreamFrom([ 'data' ]);
   });
 
   it('can only handle binary data.', async(): Promise<void> => {
@@ -140,23 +144,21 @@ describe('A FileDataAccessor', (): void => {
 
   describe('writing a document', (): void => {
     it('throws a 404 if the identifier does not start with the base.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: 'badpath' }, streamifyArray([]), metadata))
+      await expect(accessor.writeDocument({ path: 'badpath' }, data, metadata))
         .rejects.toThrow(NotFoundHttpError);
     });
 
     it('throws an error when writing to a metadata path.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}resource.meta` }, streamifyArray([]), metadata))
+      await expect(accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata))
         .rejects.toThrow(new ConflictHttpError('Not allowed to create files with the metadata extension.'));
     });
 
     it('writes the data to the corresponding file.', async(): Promise<void> => {
-      const data = streamifyArray([ 'data' ]);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      const data = streamifyArray([ 'data' ]);
       metadata = new RepresentationMetadata(`${base}res.ttl`, { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
@@ -164,7 +166,6 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
-      const data = streamifyArray([ 'data' ]);
       metadata.add(RDF.type, toNamedNode(LDP.Resource));
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
@@ -173,7 +174,6 @@ describe('A FileDataAccessor', (): void => {
 
     it('deletes existing metadata if nothing new needs to be stored.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
-      const data = streamifyArray([ 'data' ]);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -184,13 +184,11 @@ describe('A FileDataAccessor', (): void => {
       jest.requireMock('fs').promises.unlink = (): any => {
         throw new Error('error');
       };
-      const data = streamifyArray([ 'data' ]);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow(new Error('error'));
     });
 
     it('throws if something went wrong writing a file.', async(): Promise<void> => {
-      const data = streamifyArray([ 'data' ]);
       data.read = (): any => {
         data.emit('error', new Error('error'));
         return null;
@@ -200,7 +198,6 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('deletes the metadata file if something went wrong writing the file.', async(): Promise<void> => {
-      const data = streamifyArray([ 'data' ]);
       data.read = (): any => {
         data.emit('error', new Error('error'));
         return null;
@@ -216,10 +213,10 @@ describe('A FileDataAccessor', (): void => {
       metadata.identifier = DataFactory.namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
       metadata.add('new', 'metadata');
-      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
-        'resource$.txt': 'text',
+        'resource$.txt': 'data',
         'resource.meta': expect.stringMatching(`<${base}resource> <new> "metadata".`),
       });
     });
@@ -235,11 +232,11 @@ describe('A FileDataAccessor', (): void => {
 
       // `unlink` throwing ENOENT should not be an issue if the content-type does not change
       metadata.contentType = 'text/turtle';
-      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .resolves.toBeUndefined();
 
       metadata.contentType = 'text/plain';
-      await expect(accessor.writeDocument({ path: `${base}resource` }, streamifyArray([ 'text' ]), metadata))
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow(new Error('error'));
     });
   });

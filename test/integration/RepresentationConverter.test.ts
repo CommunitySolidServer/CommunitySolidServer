@@ -1,10 +1,9 @@
-import streamifyArray from 'streamify-array';
 import type { Representation } from '../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
-import { readableToString } from '../../src/util/StreamUtil';
+import { guardedStreamFrom, readableToString } from '../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
 
 describe('A ChainedConverter', (): void => {
@@ -18,7 +17,9 @@ describe('A ChainedConverter', (): void => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/ld+json' });
     const representation: Representation = {
       binary: true,
-      data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
+      data: guardedStreamFrom(
+        [ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ],
+      ),
       metadata,
     };
 
@@ -36,7 +37,7 @@ describe('A ChainedConverter', (): void => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     const representation: Representation = {
       binary: true,
-      data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
+      data: guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
       metadata,
     };
 
