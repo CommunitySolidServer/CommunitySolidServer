@@ -5,10 +5,10 @@ import type { RepresentationPreferences } from '../ldp/representation/Representa
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { Guarded } from '../util/GuardedStream';
+import type { ExpiringLock } from '../util/locking/ExpiringLock';
+import type { ExpiringResourceLocker } from '../util/locking/ExpiringResourceLocker';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
-import type { ExpiringLock } from './ExpiringLock';
-import type { ExpiringResourceLocker } from './ExpiringResourceLocker';
 import type { ResourceStore } from './ResourceStore';
 
 /**

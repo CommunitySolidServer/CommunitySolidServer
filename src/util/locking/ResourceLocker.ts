@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Lock } from './Lock';
 
 /**

@@ -12,8 +12,8 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { guardStream } from '../../util/GuardedStream';
+import type { ResourceLocker } from '../../util/locking/ResourceLocker';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import type { ResourceLocker } from '../ResourceLocker';
 import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
 

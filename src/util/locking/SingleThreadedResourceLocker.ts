@@ -1,6 +1,6 @@
 import AsyncLock from 'async-lock';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { Lock } from './Lock';
 import type { ResourceLocker } from './ResourceLocker';
 

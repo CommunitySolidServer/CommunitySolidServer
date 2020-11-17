@@ -5,12 +5,12 @@ import { translate } from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
 import type { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { Lock } from '../../../../src/storage/Lock';
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
-import type { ResourceLocker } from '../../../../src/storage/ResourceLocker';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import type { Lock } from '../../../../src/util/locking/Lock';
+import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
   let handler: SparqlUpdatePatchHandler;

@@ -2,11 +2,11 @@ import type { EventEmitter } from 'events';
 import streamifyArray from 'streamify-array';
 import type { Patch } from '../../../src/ldp/http/Patch';
 import type { Representation } from '../../../src/ldp/representation/Representation';
-import type { ExpiringLock } from '../../../src/storage/ExpiringLock';
-import type { ExpiringResourceLocker } from '../../../src/storage/ExpiringResourceLocker';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
-import { WrappedExpiringResourceLocker } from '../../../src/storage/WrappedExpiringResourceLocker';
+import type { ExpiringLock } from '../../../src/util/locking/ExpiringLock';
+import type { ExpiringResourceLocker } from '../../../src/util/locking/ExpiringResourceLocker';
+import { WrappedExpiringResourceLocker } from '../../../src/util/locking/WrappedExpiringResourceLocker';
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
