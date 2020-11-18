@@ -1,3 +1,4 @@
+import type { AclManager } from '../../../src/authorization/AclManager';
 import { Setup } from '../../../src/init/Setup';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
@@ -5,15 +6,15 @@ import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 describe('Setup', (): void => {
   let serverFactory: any;
   let store: any;
-  let aclManager: any;
+  let aclManager: AclManager;
   let setup: Setup;
   beforeEach(async(): Promise<void> => {
     store = {
       setRepresentation: jest.fn(async(): Promise<void> => undefined),
     };
     aclManager = {
-      getAcl: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'http://test.com/.acl' })),
-    };
+      getAclDocument: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'http://test.com/.acl' })),
+    } as any;
     serverFactory = {
       startServer: jest.fn(),
     };
@@ -27,7 +28,7 @@ describe('Setup', (): void => {
 
   it('invokes ACL initialization.', async(): Promise<void> => {
     await setup.setup();
-    expect(aclManager.getAcl).toHaveBeenCalledWith({ path: 'http://localhost:3000/' });
+    expect(aclManager.getAclDocument).toHaveBeenCalledWith({ path: 'http://localhost:3000/' });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
   });
 });

@@ -59,7 +59,7 @@ export class Setup {
     acl:mode        acl:Control;
     acl:accessTo    <${this.base}>;
     acl:default     <${this.base}>.`;
-      const baseAclId = await this.aclManager.getAcl({ path: this.base });
+      const baseAclId = await this.aclManager.getAclDocument({ path: this.base });
       const metadata = new RepresentationMetadata(baseAclId.path, { [CONTENT_TYPE]: TEXT_TURTLE });
       await this.store.setRepresentation(
         baseAclId,

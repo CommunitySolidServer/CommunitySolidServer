@@ -19,9 +19,11 @@ const acl = 'http://www.w3.org/ns/auth/acl#';
 describe('A WebAclAuthorizer', (): void => {
   let authorizer: WebAclAuthorizer;
   const aclManager: AclManager = {
-    getAcl: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
+    getAclDocument: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
       id.path.endsWith('.acl') ? id : { path: `${id.path}.acl` },
-    isAcl: async(id: ResourceIdentifier): Promise<boolean> => id.path.endsWith('.acl'),
+    isAclDocument: async(id: ResourceIdentifier): Promise<boolean> => id.path.endsWith('.acl'),
+    getAclConstrainedResource: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
+      !id.path.endsWith('.acl') ? id : { path: id.path.slice(0, -4) },
   };
   let permissions: PermissionSet;
   let credentials: Credentials;
@@ -134,9 +136,9 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    identifier = await aclManager.getAcl(identifier);
+    const aclIdentifier = await aclManager.getAclDocument(identifier);
     authorizer = new WebAclAuthorizer(aclManager, store);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    await expect(authorizer.handle({ identifier: aclIdentifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
   it('errors if an agent tries to edit the acl file without control permissions.', async(): Promise<void> => {
@@ -149,7 +151,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    identifier = await aclManager.getAcl(identifier);
+    identifier = await aclManager.getAclDocument(identifier);
     authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
