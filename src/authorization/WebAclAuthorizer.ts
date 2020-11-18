@@ -40,7 +40,7 @@ export class WebAclAuthorizer extends Authorizer {
    */
   public async handle(input: AuthorizerArgs): Promise<void> {
     const store = await this.getAclRecursive(input.identifier);
-    if (await this.aclManager.isAcl(input.identifier)) {
+    if (await this.aclManager.isAclDocument(input.identifier)) {
       this.checkPermission(input.credentials, store, 'control');
     } else {
       (Object.keys(input.permissions) as (keyof PermissionSet)[]).forEach((key): void => {
@@ -117,11 +117,13 @@ export class WebAclAuthorizer extends Authorizer {
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
-      const acl = await this.aclManager.getAcl(id);
+      const acl = await this.aclManager.getAclDocument(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
-      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+
+      const resourceId = await this.aclManager.getAclConstrainedResource(id);
+      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, resourceId.path);
     } catch (error: unknown) {
       if (error instanceof NotFoundHttpError) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
