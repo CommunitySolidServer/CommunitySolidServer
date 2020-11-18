@@ -1,7 +1,7 @@
 import { MappedMetadataWriter } from '../../../../../src/ldp/http/metadata/MappedMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
+import * as util from '../../../../../src/util/HeaderUtil';
 import { CONTENT_TYPE } from '../../../../../src/util/UriConstants';
-import * as util from '../../../../../src/util/Util';
 
 describe('A MappedMetadataWriter', (): void => {
   const writer = new MappedMetadataWriter({ [CONTENT_TYPE]: 'content-type', dummy: 'dummy' });

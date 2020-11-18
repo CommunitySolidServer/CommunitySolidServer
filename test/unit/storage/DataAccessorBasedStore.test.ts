@@ -6,7 +6,6 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
-import type { ContainerManager } from '../../../src/storage/ContainerManager';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
@@ -14,10 +13,9 @@ import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAll
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../../../src/util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
-import { MetadataController } from '../../../src/util/MetadataController';
+import * as quadUtil from '../../../src/util/QuadUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../../../src/util/UriConstants';
 import { toNamedNode } from '../../../src/util/UriUtil';
-import { ensureTrailingSlash } from '../../../src/util/Util';
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -68,8 +66,6 @@ class SimpleDataAccessor implements DataAccessor {
 describe('A DataAccessorBasedStore', (): void => {
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
-  let containerManager: ContainerManager;
-  let metadataController: MetadataController;
   const root = 'http://test.com/';
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
@@ -78,20 +74,7 @@ describe('A DataAccessorBasedStore', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new SimpleDataAccessor();
 
-    metadataController = new MetadataController();
-
-    containerManager = {
-      async getContainer(id: ResourceIdentifier): Promise<ResourceIdentifier> {
-        return { path: new URL('..', ensureTrailingSlash(id.path)).toString() };
-      },
-    };
-
-    store = new DataAccessorBasedStore(
-      accessor,
-      root,
-      metadataController,
-      containerManager,
-    );
+    store = new DataAccessorBasedStore(accessor, root);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [ DataFactory.namedNode(LDP.Container), DataFactory.namedNode(LDP.BasicContainer) ]},
@@ -171,11 +154,12 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('passes the result along if the MetadataController throws a non-Error.', async(): Promise<void> => {
       const resourceID = { path: root };
-      metadataController.parseQuads = async(): Promise<any> => {
+      const mock = jest.spyOn(quadUtil, 'parseQuads').mockImplementationOnce(async(): Promise<any> => {
         throw 'apple';
-      };
+      });
       representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
       await expect(store.addResource(resourceID, representation)).rejects.toBe('apple');
+      mock.mockRestore();
     });
 
     it('can write resources.', async(): Promise<void> => {

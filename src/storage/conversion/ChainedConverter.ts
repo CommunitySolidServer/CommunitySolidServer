@@ -1,7 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { matchingMediaType } from '../../util/Util';
-import { checkRequest } from './ConversionUtil';
+import { validateRequestArgs, matchingMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -48,7 +47,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
     // So we only check if the input can be parsed and the preferred type can be written
     const inTypes = this.filterTypes(await this.first.getInputTypes());
     const outTypes = this.filterTypes(await this.last.getOutputTypes());
-    checkRequest(input, inTypes, outTypes);
+    validateRequestArgs(input, inTypes, outTypes);
   }
 
   private filterTypes(typeVals: Record<string, number>): string[] {

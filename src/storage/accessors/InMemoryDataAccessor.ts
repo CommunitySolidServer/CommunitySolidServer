@@ -5,8 +5,8 @@ import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import type { MetadataController } from '../../util/MetadataController';
-import { ensureTrailingSlash } from '../../util/Util';
+import { ensureTrailingSlash } from '../../util/PathUtil';
+import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import type { DataAccessor } from './DataAccessor';
 
 interface DataEntry {
@@ -43,14 +43,12 @@ class ArrayReadable extends Readable {
 export class InMemoryDataAccessor implements DataAccessor {
   private readonly base: string;
   private readonly store: ContainerEntry;
-  private readonly metadataController: MetadataController;
 
-  public constructor(base: string, metadataController: MetadataController) {
+  public constructor(base: string) {
     this.base = ensureTrailingSlash(base);
-    this.metadataController = metadataController;
 
     const metadata = new RepresentationMetadata(this.base);
-    metadata.addQuads(this.metadataController.generateResourceQuads(DataFactory.namedNode(this.base), true));
+    metadata.addQuads(generateResourceQuads(DataFactory.namedNode(this.base), true));
     this.store = { entries: {}, metadata };
   }
 
@@ -161,8 +159,7 @@ export class InMemoryDataAccessor implements DataAccessor {
     if (!this.isDataEntry(entry)) {
       const childNames = Object.keys(entry.entries).map((name): string =>
         `${identifier.path}${name}${this.isDataEntry(entry.entries[name]) ? '' : '/'}`);
-      const quads = this.metadataController
-        .generateContainerContainsResourceQuads(metadata.identifier as NamedNode, childNames);
+      const quads = generateContainmentQuads(metadata.identifier as NamedNode, childNames);
       metadata.addQuads(quads);
     }
     return metadata;

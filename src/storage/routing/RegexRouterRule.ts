@@ -1,7 +1,7 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { trimTrailingSlashes } from '../../util/Util';
+import { trimTrailingSlashes } from '../../util/PathUtil';
 import type { ResourceStore } from '../ResourceStore';
 import { RouterRule } from './RouterRule';
 

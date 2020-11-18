@@ -27,7 +27,6 @@ import {
   LinkRelMetadataWriter,
   LinkTypeParser,
   MappedMetadataWriter,
-  MetadataController,
   PatchingStore,
   PatchOperationHandler,
   PostOperationHandler,
@@ -38,7 +37,6 @@ import {
   SlugParser,
   SparqlUpdatePatchHandler,
   UrlBasedAclManager,
-  UrlContainerManager,
   WebAclAuthorizer,
 } from '../../index';
 import { CONTENT_TYPE, HTTP, RDF } from '../../src/util/UriConstants';
@@ -52,19 +50,14 @@ export const BASE = 'http://test.com';
 export const getRootFilePath = (subfolder: string): string => join(__dirname, '../testData', subfolder);
 
 /**
- * Gives a file data accessor store based on (default) runtime config.
+ * Gives a data accessor store with the given data accessor.
  * @param base - Base URL.
- * @param rootFilepath - The root file path.
+ * @param dataAccessor - DataAccessor to use.
  *
  * @returns The data accessor based store.
  */
 export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
-  new DataAccessorBasedStore(
-    dataAccessor,
-    base,
-    new MetadataController(),
-    new UrlContainerManager(base),
-  );
+  new DataAccessorBasedStore(dataAccessor, base);
 
 /**
  * Gives an in memory resource store based on (default) base url.
@@ -73,7 +66,7 @@ export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): 
  * @returns The in memory resource store.
  */
 export const getInMemoryResourceStore = (base = BASE): DataAccessorBasedStore =>
-  getDataAccessorStore(base, new InMemoryDataAccessor(BASE, new MetadataController()));
+  getDataAccessorStore(base, new InMemoryDataAccessor(BASE));
 
 /**
  * Gives a converting store given some converters.
@@ -172,15 +165,11 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
 };
 
 /**
- * Gives a web acl authorizer, using a UrlContainerManager & based on a (default) runtimeConfig.
+ * Gives a web acl authorizer based on a (default) runtimeConfig.
  * @param store - Initial resource store.
- * @param base - Base URI of the pod.
  * @param aclManager - Optional acl manager, default is UrlBasedAclManager.
  *
  * @returns The acl authorizer.
  */
-export const getWebAclAuthorizer =
-(store: ResourceStore, base = BASE, aclManager = new UrlBasedAclManager()): WebAclAuthorizer => {
-  const containerManager = new UrlContainerManager(base);
-  return new WebAclAuthorizer(aclManager, containerManager, store);
-};
+export const getWebAclAuthorizer = (store: ResourceStore, aclManager = new UrlBasedAclManager()): WebAclAuthorizer =>
+  new WebAclAuthorizer(aclManager, store);

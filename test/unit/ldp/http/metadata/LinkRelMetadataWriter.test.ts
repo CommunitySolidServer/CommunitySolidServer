@@ -1,8 +1,8 @@
 import { LinkRelMetadataWriter } from '../../../../../src/ldp/http/metadata/LinkRelMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
+import * as util from '../../../../../src/util/HeaderUtil';
 import { LDP, RDF } from '../../../../../src/util/UriConstants';
 import { toNamedNode } from '../../../../../src/util/UriUtil';
-import * as util from '../../../../../src/util/Util';
 
 describe('A LinkRelMetadataWriter', (): void => {
   const writer = new LinkRelMetadataWriter({ [RDF.type]: 'type', dummy: 'dummy' });

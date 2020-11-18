@@ -2,7 +2,7 @@ import type { Representation } from '../../../../src/ldp/representation/Represen
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
-import { checkRequest } from '../../../../src/storage/conversion/ConversionUtil';
+import { validateRequestArgs } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
@@ -26,7 +26,7 @@ class DummyConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, Object.keys(this.inTypes), Object.keys(this.outTypes));
+    validateRequestArgs(input, Object.keys(this.inTypes), Object.keys(this.outTypes));
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

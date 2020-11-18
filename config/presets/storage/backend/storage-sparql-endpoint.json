@@ -2,11 +2,6 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:MetadataController",
-      "@type": "MetadataController"
-    },
-
-    {
       "@id": "urn:solid-server:default:SparqlDataAccessor",
       "@type": "SparqlDataAccessor",
       "SparqlDataAccessor:_endpoint": {
@@ -14,12 +9,6 @@
       },
       "SparqlDataAccessor:_base": {
         "@id": "urn:solid-server:default:variable:base"
-      },
-      "SparqlDataAccessor:_containerManager": {
-        "@id": "urn:solid-server:default:UrlContainerManager"
-      },
-      "SparqlDataAccessor:_metadataController": {
-        "@id": "urn:solid-server:default:MetadataController"
       }
     },
 
@@ -31,12 +20,6 @@
       },
       "DataAccessorBasedStore:_base": {
         "@id": "urn:solid-server:default:variable:base"
-      },
-      "DataAccessorBasedStore:_metadataController": {
-        "@id": "urn:solid-server:default:MetadataController"
-      },
-      "DataAccessorBasedStore:_containerManager": {
-        "@id": "urn:solid-server:default:UrlContainerManager"
       }
     },
 

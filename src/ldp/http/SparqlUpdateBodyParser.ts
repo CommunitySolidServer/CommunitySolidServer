@@ -5,7 +5,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import { pipeSafe, readableToString } from '../../util/Util';
+import { pipeSafely, readableToString } from '../../util/StreamUtil';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
 import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
@@ -29,8 +29,8 @@ export class SparqlUpdateBodyParser extends BodyParser {
     // Note that readableObjectMode is only defined starting from Node 12
     // It is impossible to check if object mode is enabled in Node 10 (without accessing private variables)
     const options = { objectMode: request.readableObjectMode };
-    const toAlgebraStream = pipeSafe(request, new PassThrough(options));
-    const dataCopy = pipeSafe(request, new PassThrough(options));
+    const toAlgebraStream = pipeSafely(request, new PassThrough(options));
+    const dataCopy = pipeSafely(request, new PassThrough(options));
     let algebra: Algebra.Operation;
     try {
       const sparql = await readableToString(toAlgebraStream);

@@ -6,13 +6,11 @@ import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
-import { UrlContainerManager } from '../../../../src/storage/UrlContainerManager';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { MetadataController } from '../../../../src/util/MetadataController';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toNamedNode } from '../../../../src/util/UriUtil';
 
@@ -60,7 +58,7 @@ describe('A SparqlDataAccessor', (): void => {
     }));
 
     // This needs to be last so the fetcher can be mocked first
-    accessor = new SparqlDataAccessor(endpoint, base, new UrlContainerManager(base), new MetadataController());
+    accessor = new SparqlDataAccessor(endpoint, base);
   });
 
   it('can only handle quad data.', async(): Promise<void> => {

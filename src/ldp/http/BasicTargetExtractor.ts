@@ -1,7 +1,7 @@
 import type { TLSSocket } from 'tls';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpRequest } from '../../server/HttpRequest';
-import { toCanonicalUriPath } from '../../util/Util';
+import { toCanonicalUriPath } from '../../util/PathUtil';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 

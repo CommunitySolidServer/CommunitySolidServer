@@ -4,8 +4,8 @@ import { RepresentationMetadata } from '../../src/ldp/representation/Representat
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
+import { readableToString } from '../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
-import { readableToString } from '../../src/util/Util';
 
 describe('A ChainedConverter', (): void => {
   const converters = [

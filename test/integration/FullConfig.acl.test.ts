@@ -5,9 +5,8 @@ import { RepresentationMetadata } from '../../src/ldp/representation/Representat
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
-import { MetadataController } from '../../src/util/MetadataController';
+import { ensureTrailingSlash } from '../../src/util/PathUtil';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
-import { ensureTrailingSlash } from '../../src/util/Util';
 import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
 import { BASE, getRootFilePath } from '../configs/Util';
@@ -16,12 +15,11 @@ import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'AuthenticatedFileDataAccessorBasedStore',
   (rootFilePath: string): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
-    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath), new MetadataController())),
+    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath))),
 ];
 const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'AuthenticatedInMemoryDataAccessorBasedStore',
-  (): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
-    new InMemoryDataAccessor(BASE, new MetadataController())),
+  (): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE, new InMemoryDataAccessor(BASE)),
 ];
 
 describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using a %s', (name, configFn): void => {

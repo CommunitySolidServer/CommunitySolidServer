@@ -9,10 +9,9 @@ import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { MetadataController } from '../../../../src/util/MetadataController';
+import { readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../../../src/util/UriUtil';
-import { readableToString } from '../../../../src/util/Util';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
@@ -28,10 +27,7 @@ describe('A FileDataAccessor', (): void => {
 
   beforeEach(async(): Promise<void> => {
     cache = mockFs(rootFilePath, now);
-    accessor = new FileDataAccessor(
-      new ExtensionBasedMapper(base, rootFilePath),
-      new MetadataController(),
-    );
+    accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
 
     metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
   });

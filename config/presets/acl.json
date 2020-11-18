@@ -11,9 +11,6 @@
       "WebAclAuthorizer:_aclManager": {
         "@id": "urn:solid-server:default:AclManager"
       },
-      "WebAclAuthorizer:_containerManager": {
-        "@id": "urn:solid-server:default:UrlContainerManager"
-      },
       "WebAclAuthorizer:_resourceStore": {
         "@id": "urn:solid-server:default:ResourceStore_Patching"
       }

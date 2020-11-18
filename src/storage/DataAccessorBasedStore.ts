@@ -12,11 +12,11 @@ import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpEr
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
-import type { MetadataController } from '../util/MetadataController';
+import { ensureTrailingSlash, getParentContainer, trimTrailingSlashes } from '../util/PathUtil';
+import { parseQuads } from '../util/QuadUtil';
+import { generateResourceQuads } from '../util/ResourceUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../util/UriConstants';
-import { ensureTrailingSlash, trimTrailingSlashes } from '../util/Util';
 import type { DataAccessor } from './accessors/DataAccessor';
-import type { ContainerManager } from './ContainerManager';
 import type { ResourceStore } from './ResourceStore';
 
 /**
@@ -45,15 +45,10 @@ import type { ResourceStore } from './ResourceStore';
 export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
   private readonly base: string;
-  private readonly metadataController: MetadataController;
-  private readonly containerManager: ContainerManager;
 
-  public constructor(accessor: DataAccessor, base: string, metadataController: MetadataController,
-    containerManager: ContainerManager) {
+  public constructor(accessor: DataAccessor, base: string) {
     this.accessor = accessor;
     this.base = ensureTrailingSlash(base);
-    this.metadataController = metadataController;
-    this.containerManager = containerManager;
   }
 
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
@@ -219,13 +214,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     if (createContainers) {
-      await this.createRecursiveContainers(await this.containerManager.getContainer(identifier));
+      await this.createRecursiveContainers(getParentContainer(identifier));
     }
 
     // Make sure the metadata has the correct identifier and correct type quads
     const { metadata } = representation;
     metadata.identifier = DataFactory.namedNode(identifier.path);
-    metadata.addQuads(this.metadataController.generateResourceQuads(metadata.identifier, isContainer));
+    metadata.addQuads(generateResourceQuads(metadata.identifier, isContainer));
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
@@ -241,7 +236,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected async handleContainerData(representation: Representation): Promise<void> {
     let quads: Quad[];
     try {
-      quads = await this.metadataController.parseQuads(representation.data);
+      quads = await parseQuads(representation.data);
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new UnsupportedHttpError(`Can only create containers with RDF data. ${error.message}`);
@@ -349,7 +344,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     } catch (error: unknown) {
       if (error instanceof NotFoundHttpError) {
         // Make sure the parent exists first
-        await this.createRecursiveContainers(await this.containerManager.getContainer(container));
+        await this.createRecursiveContainers(getParentContainer(container));
         await this.writeData(container, this.getEmptyContainerRepresentation(container), true);
       } else {
         throw error;

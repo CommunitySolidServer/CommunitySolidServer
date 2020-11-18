@@ -2,11 +2,15 @@ import type { Representation } from '../../../../src/ldp/representation/Represen
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
-import { checkRequest, matchingTypes } from '../../../../src/storage/conversion/ConversionUtil';
+import {
+  matchingMediaType,
+  matchingTypes,
+  validateRequestArgs,
+} from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
-describe('A ConversionUtil', (): void => {
+describe('ConversionUtil', (): void => {
   const identifier: ResourceIdentifier = { path: 'path' };
   let representation: Representation;
   let metadata: RepresentationMetadata;
@@ -16,31 +20,31 @@ describe('A ConversionUtil', (): void => {
     representation = { metadata } as Representation;
   });
 
-  describe('#checkRequest', (): void => {
+  describe('#validateRequestArgs', (): void => {
     it('requires an input type.', async(): Promise<void> => {
       const preferences: RepresentationPreferences = {};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'a/x' ]))
+      expect((): any => validateRequestArgs({ identifier, representation, preferences }, [ 'a/x' ], [ 'a/x' ]))
         .toThrow('Input type required for conversion.');
     });
 
     it('requires a matching input type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'c/x' ], [ 'a/x' ]))
+      expect((): any => validateRequestArgs({ identifier, representation, preferences }, [ 'c/x' ], [ 'a/x' ]))
         .toThrow('Can only convert from c/x to a/x.');
     });
 
     it('requires a matching output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect((): any => checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'c/x' ]))
+      expect((): any => validateRequestArgs({ identifier, representation, preferences }, [ 'a/x' ], [ 'c/x' ]))
         .toThrow('Can only convert from a/x to c/x.');
     });
 
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
       const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
-      expect(checkRequest({ identifier, representation, preferences }, [ 'a/x' ], [ 'b/x' ]))
+      expect(validateRequestArgs({ identifier, representation, preferences }, [ 'a/x' ], [ 'b/x' ]))
         .toBeUndefined();
     });
   });
@@ -89,6 +93,20 @@ describe('A ConversionUtil', (): void => {
         { type: [{ value: '*/*', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]};
       expect(matchingTypes(preferences, [ 'a/x', 'internal/quads' ]))
         .toEqual([{ value: 'a/x', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]);
+    });
+  });
+
+  describe('#matchingMediaType', (): void => {
+    it('matches all possible media types.', async(): Promise<void> => {
+      expect(matchingMediaType('*/*', 'text/turtle')).toBeTruthy();
+      expect(matchingMediaType('text/*', '*/*')).toBeTruthy();
+      expect(matchingMediaType('text/*', 'text/turtle')).toBeTruthy();
+      expect(matchingMediaType('text/plain', 'text/*')).toBeTruthy();
+      expect(matchingMediaType('text/turtle', 'text/turtle')).toBeTruthy();
+
+      expect(matchingMediaType('text/*', 'application/*')).toBeFalsy();
+      expect(matchingMediaType('text/plain', 'application/*')).toBeFalsy();
+      expect(matchingMediaType('text/plain', 'text/turtle')).toBeFalsy();
     });
   });
 });

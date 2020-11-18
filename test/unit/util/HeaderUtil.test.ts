@@ -1,4 +1,6 @@
+import type { HttpResponse } from '../../../src/server/HttpResponse';
 import {
+  addHeader,
   parseAccept,
   parseAcceptCharset,
   parseAcceptEncoding,
@@ -6,7 +8,7 @@ import {
 } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
-  describe('parseAccept function', (): void => {
+  describe('#parseAccept', (): void => {
     it('parses empty Accept headers.', async(): Promise<void> => {
       expect(parseAccept('')).toEqual([]);
     });
@@ -71,7 +73,7 @@ describe('HeaderUtil', (): void => {
     });
   });
 
-  describe('parseCharset function', (): void => {
+  describe('#parseCharset', (): void => {
     it('parses Accept-Charset headers.', async(): Promise<void> => {
       expect(parseAcceptCharset('iso-8859-5, unicode-1-1;q=0.8')).toEqual([
         { range: 'iso-8859-5', weight: 1 },
@@ -86,7 +88,7 @@ describe('HeaderUtil', (): void => {
     });
   });
 
-  describe('parseEncoding function', (): void => {
+  describe('#parseEncoding', (): void => {
     it('parses empty Accept-Encoding headers.', async(): Promise<void> => {
       expect(parseAcceptCharset('')).toEqual([]);
     });
@@ -106,7 +108,7 @@ describe('HeaderUtil', (): void => {
     });
   });
 
-  describe('parseLanguage function', (): void => {
+  describe('#parseLanguage', (): void => {
     it('parses Accept-Language headers.', async(): Promise<void> => {
       expect(parseAcceptLanguage('da, en-gb;q=0.8, en;q=0.7')).toEqual([
         { range: 'da', weight: 1 },
@@ -125,6 +127,43 @@ describe('HeaderUtil', (): void => {
 
       expect((): any => parseAcceptLanguage('a; q=text')).toThrow('Invalid q value:');
       expect((): any => parseAcceptCharset('a; c=d')).toThrow('Only q parameters are allowed');
+    });
+  });
+
+  describe('#addHeader', (): void => {
+    let response: HttpResponse;
+
+    beforeEach(async(): Promise<void> => {
+      const headers: Record<string, string | number | string[]> = {};
+      response = {
+        hasHeader: (name: string): boolean => Boolean(headers[name]),
+        getHeader: (name: string): number | string | string[] | undefined => headers[name],
+        setHeader(name: string, value: number | string | string[]): void {
+          headers[name] = value;
+        },
+      } as any;
+    });
+
+    it('adds values if there are none already.', async(): Promise<void> => {
+      expect(addHeader(response, 'name', 'value')).toBeUndefined();
+      expect(response.getHeader('name')).toBe('value');
+
+      expect(addHeader(response, 'names', [ 'value1', 'values2' ])).toBeUndefined();
+      expect(response.getHeader('names')).toEqual([ 'value1', 'values2' ]);
+    });
+
+    it('appends values to already existing values.', async(): Promise<void> => {
+      response.setHeader('name', 'oldValue');
+      expect(addHeader(response, 'name', 'value')).toBeUndefined();
+      expect(response.getHeader('name')).toEqual([ 'oldValue', 'value' ]);
+
+      response.setHeader('number', 5);
+      expect(addHeader(response, 'number', 'value')).toBeUndefined();
+      expect(response.getHeader('number')).toEqual([ '5', 'value' ]);
+
+      response.setHeader('names', [ 'oldValue1', 'oldValue2' ]);
+      expect(addHeader(response, 'names', [ 'value1', 'values2' ])).toBeUndefined();
+      expect(response.getHeader('names')).toEqual([ 'oldValue1', 'oldValue2', 'value1', 'values2' ]);
     });
   });
 });

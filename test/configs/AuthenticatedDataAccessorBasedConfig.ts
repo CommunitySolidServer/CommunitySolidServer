@@ -51,7 +51,7 @@ export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
     const operationHandler = getOperationHandler(this.store);
 
     const responseWriter = getResponseWriter();
-    const authorizer = getWebAclAuthorizer(this.store, this.base);
+    const authorizer = getWebAclAuthorizer(this.store);
 
     const handler = new AuthenticatedLdpHandler({
       requestParser,

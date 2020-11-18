@@ -4,7 +4,6 @@ import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
-import { MetadataController } from '../../src/util/MetadataController';
 import { LDP } from '../../src/util/UriConstants';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
@@ -14,12 +13,11 @@ import { FileTestHelper } from '../util/TestHelpers';
 const fileDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'FileDataAccessorBasedStore',
   (rootFilePath: string): ServerConfig => new DataAccessorBasedConfig(BASE,
-    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath), new MetadataController())),
+    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath))),
 ];
 const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
   'InMemoryDataAccessorBasedStore',
-  (): ServerConfig => new DataAccessorBasedConfig(BASE,
-    new InMemoryDataAccessor(BASE, new MetadataController())),
+  (): ServerConfig => new DataAccessorBasedConfig(BASE, new InMemoryDataAccessor(BASE)),
 ];
 
 const configs = [ fileDataAccessorStore, inMemoryDataAccessorStore ];
