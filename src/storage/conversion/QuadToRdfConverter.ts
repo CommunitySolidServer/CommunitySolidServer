@@ -5,7 +5,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { checkRequest, matchingTypes } from './ConversionUtil';
+import { validateRequestArgs, matchingTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -22,7 +22,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
+    validateRequestArgs(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

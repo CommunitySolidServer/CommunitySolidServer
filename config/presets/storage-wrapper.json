@@ -52,14 +52,6 @@
       "RepresentationConvertingStore:_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
-    },
-
-    {
-      "@id": "urn:solid-server:default:UrlContainerManager",
-      "@type": "UrlContainerManager",
-      "UrlContainerManager:_base": {
-        "@id": "urn:solid-server:default:variable:base"
-      }
     }
   ]
 }

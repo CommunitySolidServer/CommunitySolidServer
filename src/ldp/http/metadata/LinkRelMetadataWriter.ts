@@ -1,5 +1,5 @@
 import type { HttpResponse } from '../../../server/HttpResponse';
-import { addHeader } from '../../../util/Util';
+import { addHeader } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataWriter } from './MetadataWriter';
 

@@ -11,7 +11,7 @@ import {
   encodeUriPathComponents,
   ensureTrailingSlash,
   trimTrailingSlashes,
-} from '../util/Util';
+} from '../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;

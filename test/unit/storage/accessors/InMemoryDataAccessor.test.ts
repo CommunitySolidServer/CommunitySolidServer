@@ -3,10 +3,9 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { MetadataController } from '../../../../src/util/MetadataController';
+import { readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toNamedNode } from '../../../../src/util/UriUtil';
-import { readableToString } from '../../../../src/util/Util';
 
 describe('An InMemoryDataAccessor', (): void => {
   const base = 'http://test.com/';
@@ -14,10 +13,7 @@ describe('An InMemoryDataAccessor', (): void => {
   let metadata: RepresentationMetadata;
 
   beforeEach(async(): Promise<void> => {
-    accessor = new InMemoryDataAccessor(
-      base,
-      new MetadataController(),
-    );
+    accessor = new InMemoryDataAccessor(base);
 
     metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
   });

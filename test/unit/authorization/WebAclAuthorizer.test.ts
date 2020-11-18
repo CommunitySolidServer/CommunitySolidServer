@@ -6,11 +6,11 @@ import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
 import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
-import type { ContainerManager } from '../../../src/storage/ContainerManager';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
+import { getParentContainer } from '../../../src/util/PathUtil';
 
 const nn = namedNode;
 
@@ -22,10 +22,6 @@ describe('A WebAclAuthorizer', (): void => {
     getAcl: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
       id.path.endsWith('.acl') ? id : { path: `${id.path}.acl` },
     isAcl: async(id: ResourceIdentifier): Promise<boolean> => id.path.endsWith('.acl'),
-  };
-  const containerManager: ContainerManager = {
-    getContainer: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
-      ({ path: new URL('..', id.path).toString() }),
   };
   let permissions: PermissionSet;
   let credentials: Credentials;
@@ -42,7 +38,7 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('handles all inputs.', async(): Promise<void> => {
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, null as any);
+    authorizer = new WebAclAuthorizer(aclManager, null as any);
     await expect(authorizer.canHandle({} as any)).resolves.toBeUndefined();
   });
 
@@ -54,7 +50,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -67,13 +63,13 @@ describe('A WebAclAuthorizer', (): void => {
         return {
           data: streamifyArray([
             quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
-            quad(nn('auth'), nn(`${acl}default`), nn((await containerManager.getContainer(identifier)).path)),
+            quad(nn('auth'), nn(`${acl}default`), nn(getParentContainer(identifier).path)),
             quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
           ]),
         } as Representation;
       },
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -85,7 +81,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     credentials.webID = 'http://test.com/user';
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
@@ -98,7 +94,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(UnauthorizedHttpError);
   });
 
@@ -111,7 +107,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -124,7 +120,7 @@ describe('A WebAclAuthorizer', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
@@ -139,7 +135,7 @@ describe('A WebAclAuthorizer', (): void => {
       ]) } as Representation),
     } as unknown as ResourceStore;
     identifier = await aclManager.getAcl(identifier);
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -154,7 +150,7 @@ describe('A WebAclAuthorizer', (): void => {
       ]) } as Representation),
     } as unknown as ResourceStore;
     identifier = await aclManager.getAcl(identifier);
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
@@ -164,7 +160,7 @@ describe('A WebAclAuthorizer', (): void => {
         throw new Error('TEST!');
       },
     } as unknown as ResourceStore;
-    authorizer = new WebAclAuthorizer(aclManager, containerManager, store);
+    authorizer = new WebAclAuthorizer(aclManager, store);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow('TEST!');
   });
 });

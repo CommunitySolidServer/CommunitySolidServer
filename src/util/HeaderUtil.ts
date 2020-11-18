@@ -1,4 +1,5 @@
 import { getLoggerFor } from '../logging/LogUtil';
+import type { HttpResponse } from '../server/HttpResponse';
 import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 const logger = getLoggerFor('HeaderUtil');
@@ -354,4 +355,26 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
     }
   });
   return results;
+};
+
+/**
+ * Adds a header value without overriding previous values.
+ */
+export const addHeader = (response: HttpResponse, name: string, value: string | string[]): void => {
+  let allValues: string[] = [];
+  if (response.hasHeader(name)) {
+    let oldValues = response.getHeader(name)!;
+    if (typeof oldValues === 'string') {
+      oldValues = [ oldValues ];
+    } else if (typeof oldValues === 'number') {
+      oldValues = [ `${oldValues}` ];
+    }
+    allValues = oldValues;
+  }
+  if (Array.isArray(value)) {
+    allValues.push(...value);
+  } else {
+    allValues.push(value);
+  }
+  response.setHeader(name, allValues.length === 1 ? allValues[0] : allValues);
 };

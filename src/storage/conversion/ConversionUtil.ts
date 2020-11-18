@@ -3,7 +3,6 @@ import type { RepresentationPreferences } from '../../ldp/representation/Represe
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { matchingMediaType } from '../../util/Util';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
 /**
@@ -58,6 +57,33 @@ RepresentationPreference[] => {
 };
 
 /**
+ * Checks if the given two media types/ranges match each other.
+ * Takes wildcards into account.
+ * @param mediaA - Media type to match.
+ * @param mediaB - Media type to match.
+ *
+ * @returns True if the media type patterns can match each other.
+ */
+export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
+  if (mediaA === mediaB) {
+    return true;
+  }
+
+  const [ typeA, subTypeA ] = mediaA.split('/');
+  const [ typeB, subTypeB ] = mediaB.split('/');
+  if (typeA === '*' || typeB === '*') {
+    return true;
+  }
+  if (typeA !== typeB) {
+    return false;
+  }
+  if (subTypeA === '*' || subTypeB === '*') {
+    return true;
+  }
+  return subTypeA === subTypeB;
+};
+
+/**
  * Runs some standard checks on the input request:
  *  - Checks if there is a content type for the input.
  *  - Checks if the input type is supported by the parser.
@@ -66,8 +92,8 @@ RepresentationPreference[] => {
  * @param supportedIn - Media types that can be parsed by the converter.
  * @param supportedOut - Media types that can be produced by the converter.
  */
-export const checkRequest = (request: RepresentationConverterArgs, supportedIn: string[], supportedOut: string[]):
-void => {
+export const validateRequestArgs = (request: RepresentationConverterArgs, supportedIn: string[],
+  supportedOut: string[]): void => {
   const inType = request.representation.metadata.contentType;
   if (!inType) {
     throw new UnsupportedHttpError('Input type required for conversion.');

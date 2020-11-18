@@ -12,10 +12,10 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import type { MetadataController } from '../../util/MetadataController';
+import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
+import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
-import { pushQuad } from '../../util/Util';
 import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -26,11 +26,9 @@ const { join: joinPath } = posix;
  */
 export class FileDataAccessor implements DataAccessor {
   private readonly resourceMapper: FileIdentifierMapper;
-  private readonly metadataController: MetadataController;
 
-  public constructor(resourceMapper: FileIdentifierMapper, metadataController: MetadataController) {
+  public constructor(resourceMapper: FileIdentifierMapper) {
     this.resourceMapper = resourceMapper;
-    this.metadataController = metadataController;
   }
 
   /**
@@ -218,7 +216,7 @@ export class FileDataAccessor implements DataAccessor {
 
     // Write metadata to file if there are quads remaining
     if (quads.length > 0) {
-      const serializedMetadata = this.metadataController.serializeQuads(quads);
+      const serializedMetadata = serializeQuads(quads);
       await this.writeDataFile(metadataPath, serializedMetadata);
       wroteMetadata = true;
 
@@ -247,7 +245,7 @@ export class FileDataAccessor implements DataAccessor {
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(link.identifier.path)
       .addQuads(await this.getRawMetadata(link.identifier));
-    metadata.addQuads(this.metadataController.generateResourceQuads(metadata.identifier as NamedNode, isContainer));
+    metadata.addQuads(generateResourceQuads(metadata.identifier as NamedNode, isContainer));
     metadata.addQuads(this.generatePosixQuads(metadata.identifier as NamedNode, stats));
     return metadata;
   }
@@ -266,7 +264,7 @@ export class FileDataAccessor implements DataAccessor {
       await fsPromises.lstat(metadataPath);
 
       const readMetadataStream = createReadStream(metadataPath);
-      return await this.metadataController.parseQuads(readMetadataStream);
+      return await parseQuads(readMetadataStream);
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
       if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -306,13 +304,13 @@ export class FileDataAccessor implements DataAccessor {
 
       // Generate metadata of this specific child
       const subject = DataFactory.namedNode(childLink.identifier.path);
-      quads.push(...this.metadataController.generateResourceQuads(subject, childStats.isDirectory()));
+      quads.push(...generateResourceQuads(subject, childStats.isDirectory()));
       quads.push(...this.generatePosixQuads(subject, childStats));
       childURIs.push(childLink.identifier.path);
     }
 
     // Generate containment metadata
-    const containsQuads = this.metadataController.generateContainerContainsResourceQuads(
+    const containsQuads = generateContainmentQuads(
       DataFactory.namedNode(link.identifier.path), childURIs,
     );
 

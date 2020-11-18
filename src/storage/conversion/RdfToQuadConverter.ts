@@ -4,9 +4,9 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { pipeSafely } from '../../util/StreamUtil';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { pipeSafe } from '../../util/Util';
-import { checkRequest } from './ConversionUtil';
+import { validateRequestArgs } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -23,7 +23,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    checkRequest(input, await rdfParser.getContentTypes(), [ INTERNAL_QUADS ]);
+    validateRequestArgs(input, await rdfParser.getContentTypes(), [ INTERNAL_QUADS ]);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -40,7 +40,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
     // Wrap the stream such that errors are transformed
     // (Node 10 requires both writableObjectMode and readableObjectMode)
     const pass = new PassThrough({ writableObjectMode: true, readableObjectMode: true });
-    const data = pipeSafe(rawQuads, pass, (error): Error => new UnsupportedHttpError(error.message));
+    const data = pipeSafely(rawQuads, pass, (error): Error => new UnsupportedHttpError(error.message));
 
     return {
       binary: false,

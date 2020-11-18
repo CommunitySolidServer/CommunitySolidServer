@@ -5,12 +5,12 @@ import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import type { Representation } from '../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import type { ContainerManager } from '../storage/ContainerManager';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
+import { getParentContainer } from '../util/PathUtil';
 import { ACL, FOAF } from '../util/UriConstants';
 import type { AclManager } from './AclManager';
 import type { AuthorizerArgs } from './Authorizer';
@@ -25,13 +25,11 @@ export class WebAclAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
   private readonly aclManager: AclManager;
-  private readonly containerManager: ContainerManager;
   private readonly resourceStore: ResourceStore;
 
-  public constructor(aclManager: AclManager, containerManager: ContainerManager, resourceStore: ResourceStore) {
+  public constructor(aclManager: AclManager, resourceStore: ResourceStore) {
     super();
     this.aclManager = aclManager;
-    this.containerManager = containerManager;
     this.resourceStore = resourceStore;
   }
 
@@ -134,7 +132,7 @@ export class WebAclAuthorizer extends Authorizer {
     }
 
     this.logger.debug(`Traversing to the parent of ${id.path}`);
-    const parent = await this.containerManager.getContainer(id);
+    const parent = getParentContainer(id);
     return this.getAclRecursive(parent, true);
   }
 

@@ -8,7 +8,7 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { readableToString } from '../../../../src/util/Util';
+import { readableToString } from '../../../../src/util/StreamUtil';
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();

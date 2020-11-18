@@ -115,7 +115,6 @@ export * from './src/storage/routing/RouterRule';
 // Storage
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
-export * from './src/storage/ContainerManager';
 export * from './src/storage/DataAccessorBasedStore';
 export * from './src/storage/ExtensionBasedMapper';
 export * from './src/storage/FileIdentifierMapper';
@@ -128,7 +127,6 @@ export * from './src/storage/ResourceLocker';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/RoutingResourceStore';
 export * from './src/storage/SingleThreadedResourceLocker';
-export * from './src/storage/UrlContainerManager';
 export * from './src/storage/WrappedExpiringResourceLocker';
 
 // Util/Errors
@@ -147,5 +145,6 @@ export * from './src/util/AllVoidCompositeHandler';
 export * from './src/util/AsyncHandler';
 export * from './src/util/FirstCompositeHandler';
 export * from './src/util/HeaderUtil';
-export * from './src/util/MetadataController';
-export * from './src/util/Util';
+export * from './src/util/PathUtil';
+export * from './src/util/QuadUtil';
+export * from './src/util/StreamUtil';

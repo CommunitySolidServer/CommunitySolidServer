@@ -2,10 +2,6 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:MetadataController",
-      "@type": "MetadataController"
-    },
-    {
       "@id": "urn:solid-server:default:FileIdentifierMapper",
       "@type": "ExtensionBasedMapper",
       "ExtensionBasedMapper:_base": {
@@ -22,9 +18,6 @@
       "@type": "FileDataAccessor",
       "FileDataAccessor:_resourceMapper": {
         "@id": "urn:solid-server:default:FileIdentifierMapper"
-      },
-      "FileDataAccessor:_metadataController": {
-        "@id": "urn:solid-server:default:MetadataController"
       }
     },
     {
@@ -35,12 +28,6 @@
       },
       "DataAccessorBasedStore:_base": {
         "@id": "urn:solid-server:default:variable:base"
-      },
-      "DataAccessorBasedStore:_metadataController": {
-        "@id": "urn:solid-server:default:MetadataController"
-      },
-      "DataAccessorBasedStore:_containerManager": {
-        "@id": "urn:solid-server:default:UrlContainerManager"
       }
     }
   ]

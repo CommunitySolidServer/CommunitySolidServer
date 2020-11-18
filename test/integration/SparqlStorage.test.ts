@@ -1,7 +1,5 @@
 import { SparqlDataAccessor } from '../../src/storage/accessors/SparqlDataAccessor';
-import { UrlContainerManager } from '../../src/storage/UrlContainerManager';
 import { INTERNAL_QUADS } from '../../src/util/ContentTypes';
-import { MetadataController } from '../../src/util/MetadataController';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import { BASE } from '../configs/Util';
 import { describeIf, FileTestHelper } from '../util/TestHelpers';
@@ -9,10 +7,7 @@ import { describeIf, FileTestHelper } from '../util/TestHelpers';
 describeIf('docker', 'a server with a SPARQL endpoint as storage', (): void => {
   describe('without acl', (): void => {
     const config = new DataAccessorBasedConfig(BASE,
-      new SparqlDataAccessor('http://localhost:4000/sparql',
-        BASE,
-        new UrlContainerManager(BASE),
-        new MetadataController()),
+      new SparqlDataAccessor('http://localhost:4000/sparql', BASE),
       INTERNAL_QUADS);
     const handler = config.getHttpHandler();
     const fileHelper = new FileTestHelper(handler, new URL(BASE));

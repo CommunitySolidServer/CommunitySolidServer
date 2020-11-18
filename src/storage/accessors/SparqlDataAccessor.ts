@@ -23,11 +23,10 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import type { MetadataController } from '../../util/MetadataController';
+import { ensureTrailingSlash, getParentContainer } from '../../util/PathUtil';
+import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
-import { ensureTrailingSlash } from '../../util/Util';
-import type { ContainerManager } from '../ContainerManager';
 import type { DataAccessor } from './DataAccessor';
 
 const { defaultGraph, namedNode, quad, variable } = DataFactory;
@@ -48,17 +47,12 @@ export class SparqlDataAccessor implements DataAccessor {
   protected readonly logger = getLoggerFor(this);
   private readonly endpoint: string;
   private readonly base: string;
-  private readonly containerManager: ContainerManager;
-  private readonly metadataController: MetadataController;
   private readonly fetcher: SparqlEndpointFetcher;
   private readonly generator: SparqlGenerator;
 
-  public constructor(endpoint: string, base: string, containerManager: ContainerManager,
-    metadataController: MetadataController) {
+  public constructor(endpoint: string, base: string) {
     this.endpoint = endpoint;
     this.base = ensureTrailingSlash(base);
-    this.containerManager = containerManager;
-    this.metadataController = metadataController;
     this.fetcher = new SparqlEndpointFetcher();
     this.generator = new Generator();
   }
@@ -103,7 +97,7 @@ export class SparqlDataAccessor implements DataAccessor {
 
     // Need to generate type metadata for the root container since it's not stored
     if (identifier.path === this.base) {
-      metadata.addQuads(this.metadataController.generateResourceQuads(name, true));
+      metadata.addQuads(generateResourceQuads(name, true));
     }
 
     return metadata;
@@ -113,7 +107,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * Writes the given metadata for the container.
    */
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    const { name, parent } = await this.getRelatedNames(identifier);
+    const { name, parent } = this.getRelatedNames(identifier);
     return this.sendSparqlUpdate(this.sparqlInsert(name, parent, metadata));
   }
 
@@ -125,7 +119,7 @@ export class SparqlDataAccessor implements DataAccessor {
     if (this.isMetadataIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to create NamedNodes with the metadata extension.');
     }
-    const { name, parent } = await this.getRelatedNames(identifier);
+    const { name, parent } = this.getRelatedNames(identifier);
 
     const triples = await arrayifyStream(data) as Quad[];
     const def = defaultGraph();
@@ -143,15 +137,15 @@ export class SparqlDataAccessor implements DataAccessor {
    * Removes all graph data relevant to the given identifier.
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    const { name, parent } = await this.getRelatedNames(identifier);
+    const { name, parent } = this.getRelatedNames(identifier);
     return this.sendSparqlUpdate(this.sparqlDelete(name, parent));
   }
 
   /**
    * Helper function to get named nodes corresponding to the identifier and its parent container.
    */
-  private async getRelatedNames(identifier: ResourceIdentifier): Promise<{ name: NamedNode; parent: NamedNode }> {
-    const parentIdentifier = await this.containerManager.getContainer(identifier);
+  private getRelatedNames(identifier: ResourceIdentifier): { name: NamedNode; parent: NamedNode } {
+    const parentIdentifier = getParentContainer(identifier);
     const name = namedNode(identifier.path);
     const parent = namedNode(parentIdentifier.path);
     return { name, parent };
