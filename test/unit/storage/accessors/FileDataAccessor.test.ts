@@ -3,7 +3,7 @@ import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
-import { ExtensionBasedMapper } from '../../../../src/storage/ExtensionBasedMapper';
+import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';

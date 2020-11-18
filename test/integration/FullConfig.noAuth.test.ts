@@ -3,7 +3,7 @@ import * as rimraf from 'rimraf';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
-import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
+import { ExtensionBasedMapper } from '../../src/storage/mapping/ExtensionBasedMapper';
 import { LDP } from '../../src/util/UriConstants';
 import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
 import type { ServerConfig } from '../configs/ServerConfig';
