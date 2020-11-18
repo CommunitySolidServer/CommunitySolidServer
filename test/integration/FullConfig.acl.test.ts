@@ -4,7 +4,7 @@ import * as rimraf from 'rimraf';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
-import { ExtensionBasedMapper } from '../../src/storage/ExtensionBasedMapper';
+import { ExtensionBasedMapper } from '../../src/storage/mapping/ExtensionBasedMapper';
 import { ensureTrailingSlash } from '../../src/util/PathUtil';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
 import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';

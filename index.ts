@@ -102,6 +102,9 @@ export * from './src/storage/conversion/RdfToQuadConverter';
 export * from './src/storage/conversion/RepresentationConverter';
 export * from './src/storage/conversion/TypedRepresentationConverter';
 
+// Storage/Mapping
+export * from './src/storage/mapping/ExtensionBasedMapper';
+
 // Storage/Patch
 export * from './src/storage/patch/PatchHandler';
 export * from './src/storage/patch/SparqlUpdatePatchHandler';
@@ -116,7 +119,6 @@ export * from './src/storage/routing/RouterRule';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/DataAccessorBasedStore';
-export * from './src/storage/ExtensionBasedMapper';
 export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';

@@ -1,8 +1,8 @@
 import fs from 'fs';
-import { ExtensionBasedMapper } from '../../../src/storage/ExtensionBasedMapper';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
-import { trimTrailingSlashes } from '../../../src/util/PathUtil';
+import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
+import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
 jest.mock('fs');
 

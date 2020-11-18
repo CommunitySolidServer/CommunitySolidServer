@@ -1,19 +1,19 @@
 import { promises as fsPromises } from 'fs';
 import { posix } from 'path';
 import * as mime from 'mime-types';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
-import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../util/ContentTypes';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
+import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
+import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import {
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
   isContainerIdentifier,
   trimTrailingSlashes,
-} from '../util/PathUtil';
-import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
+} from '../../util/PathUtil';
+import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 
