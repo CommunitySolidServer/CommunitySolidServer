@@ -7,13 +7,13 @@ import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import {
-  decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
   isContainerIdentifier,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
+import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
 
 const { join: joinPath, normalize: normalizePath } = posix;
 
@@ -60,19 +60,10 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
    * @returns A ResourceLink with all the necessary metadata.
    */
   public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    const path = this.getRelativePath(identifier);
+    const path = getRelativePath(this.baseRequestURI, identifier, this.logger);
+    validateRelativePath(path, identifier, this.logger);
 
-    if (!path.startsWith('/')) {
-      this.logger.warn(`URL ${identifier.path} needs a / after the base`);
-      throw new UnsupportedHttpError('URL needs a / after the base');
-    }
-
-    if (path.includes('/..')) {
-      this.logger.warn(`Disallowed /.. segment in URL ${identifier.path}.`);
-      throw new UnsupportedHttpError('Disallowed /.. segment in URL');
-    }
-
-    let filePath = this.getAbsolutePath(path);
+    let filePath = getAbsolutePath(this.rootFilepath, path);
 
     // Container
     if (isContainerIdentifier(identifier)) {
@@ -199,33 +190,5 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
   private getExtension(path: string): string | null {
     const extension = /\.([^./]+)$/u.exec(path);
     return extension && extension[1];
-  }
-
-  /**
-   * Get the absolute file path based on the rootFilepath of the store.
-   * @param path - The relative file path.
-   * @param identifier - Optional identifier to add to the path.
-   *
-   * @returns Absolute path of the file.
-   */
-  private getAbsolutePath(path: string, identifier = ''): string {
-    return joinPath(this.rootFilepath, path, identifier);
-  }
-
-  /**
-   * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.
-   * @param identifier - Incoming identifier.
-   *
-   * @throws {@link NotFoundHttpError}
-   * If the identifier does not match the baseRequestURI path of the store.
-   *
-   * @returns A string representing the relative path.
-   */
-  private getRelativePath(identifier: ResourceIdentifier): string {
-    if (!identifier.path.startsWith(this.baseRequestURI)) {
-      this.logger.warn(`The URL ${identifier.path} is outside of the scope ${this.baseRequestURI}`);
-      throw new NotFoundHttpError();
-    }
-    return decodeUriPathComponents(identifier.path.slice(this.baseRequestURI.length));
   }
 }
