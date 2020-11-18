@@ -3,7 +3,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import type { Logger } from '../../logging/Logger';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
-import { decodeUriPathComponents } from '../../util/Util';
+import { decodeUriPathComponents } from '../../util/PathUtil';
 
 const { join: joinPath } = posix;
 
