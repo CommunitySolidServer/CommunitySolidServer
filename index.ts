@@ -104,6 +104,7 @@ export * from './src/storage/conversion/TypedRepresentationConverter';
 
 // Storage/Mapping
 export * from './src/storage/mapping/ExtensionBasedMapper';
+export * from './src/storage/mapping/FixedContentTypeMapper';
 
 // Storage/Patch
 export * from './src/storage/patch/PatchHandler';
