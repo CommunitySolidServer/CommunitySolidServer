@@ -12,7 +12,13 @@ import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpEr
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedError } from '../util/errors/NotImplementedError';
 import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
-import { ensureTrailingSlash, getParentContainer, trimTrailingSlashes } from '../util/PathUtil';
+import {
+  ensureTrailingSlash,
+  getParentContainer,
+  isContainerIdentifier,
+  isContainerPath,
+  trimTrailingSlashes,
+} from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../util/UriConstants';
@@ -93,7 +99,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // When a POST method request targets a non-container resource without an existing representation,
     // the server MUST respond with the 404 status code.
-    if (!parentMetadata && !container.path.endsWith('/')) {
+    if (!parentMetadata && !isContainerIdentifier(container)) {
       throw new NotFoundHttpError();
     }
 
@@ -104,7 +110,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const newID = this.createSafeUri(container, representation.metadata, parentMetadata);
 
     // Write the data. New containers will need to be created if there is no parent.
-    await this.writeData(newID, representation, newID.path.endsWith('/'), !parentMetadata);
+    await this.writeData(newID, representation, isContainerIdentifier(newID), !parentMetadata);
 
     return newID;
   }
@@ -128,7 +134,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (oldMetadata && isContainer !== this.isExistingContainer(oldMetadata)) {
       throw new ConflictHttpError('Input resource type does not match existing resource type.');
     }
-    if (isContainer !== identifier.path.endsWith('/')) {
+    if (isContainer !== isContainerIdentifier(identifier)) {
       throw new UnsupportedHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
@@ -172,7 +178,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param identifier - Identifier that needs to be checked.
    */
   protected async getNormalizedMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
-    const hasSlash = identifier.path.endsWith('/');
+    const hasSlash = isContainerIdentifier(identifier);
     try {
       return await this.accessor.getMetadata(identifier);
     } catch (error: unknown) {
@@ -312,7 +318,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       isContainer = this.isExistingContainer(metadata);
     } catch {
       const slug = suffix ?? metadata.get(HTTP.slug)?.value;
-      isContainer = Boolean(slug?.endsWith('/'));
+      isContainer = Boolean(slug && isContainerPath(slug));
     }
     return isContainer;
   }

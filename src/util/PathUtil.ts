@@ -58,3 +58,15 @@ export const getParentContainer = (id: ResourceIdentifier): ResourceIdentifier =
 
   return { path: parentPath };
 };
+
+/**
+ * Checks if the path corresponds to a container path (ending in a /).
+ * @param path - Path to check.
+ */
+export const isContainerPath = (path: string): boolean => path.endsWith('/');
+
+/**
+ * Checks if the identifier corresponds to a container identifier.
+ * @param identifier - Identifier to check.
+ */
+export const isContainerIdentifier = (identifier: ResourceIdentifier): boolean => isContainerPath(identifier.path);

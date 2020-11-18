@@ -10,6 +10,7 @@ import {
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
+  isContainerIdentifier,
   trimTrailingSlashes,
 } from '../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
@@ -74,7 +75,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     let filePath = this.getAbsolutePath(path);
 
     // Container
-    if (identifier.path.endsWith('/')) {
+    if (isContainerIdentifier(identifier)) {
       this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
       return {
         identifier,

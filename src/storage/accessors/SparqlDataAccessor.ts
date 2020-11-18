@@ -23,7 +23,7 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import { ensureTrailingSlash, getParentContainer } from '../../util/PathUtil';
+import { ensureTrailingSlash, getParentContainer, isContainerIdentifier } from '../../util/PathUtil';
 import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
@@ -81,7 +81,7 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const name = namedNode(identifier.path);
-    const query = identifier.path.endsWith('/') ?
+    const query = isContainerIdentifier(identifier) ?
       this.sparqlConstructContainer(name) :
       this.sparqlConstruct(this.getMetadataNode(name));
     const stream = await this.sendSparqlConstruct(query);

@@ -12,6 +12,7 @@ import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
+import { isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
@@ -62,10 +63,10 @@ export class FileDataAccessor implements DataAccessor {
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
     const stats = await this.getStats(link.filePath);
-    if (!identifier.path.endsWith('/') && stats.isFile()) {
+    if (!isContainerIdentifier(identifier) && stats.isFile()) {
       return this.getFileMetadata(link, stats);
     }
-    if (identifier.path.endsWith('/') && stats.isDirectory()) {
+    if (isContainerIdentifier(identifier) && stats.isDirectory()) {
       return this.getDirectoryMetadata(link, stats);
     }
     throw new NotFoundHttpError();
@@ -131,9 +132,9 @@ export class FileDataAccessor implements DataAccessor {
       }
     }
 
-    if (!identifier.path.endsWith('/') && stats.isFile()) {
+    if (!isContainerIdentifier(identifier) && stats.isFile()) {
       await fsPromises.unlink(link.filePath);
-    } else if (identifier.path.endsWith('/') && stats.isDirectory()) {
+    } else if (isContainerIdentifier(identifier) && stats.isDirectory()) {
       await fsPromises.rmdir(link.filePath);
     } else {
       throw new NotFoundHttpError();
