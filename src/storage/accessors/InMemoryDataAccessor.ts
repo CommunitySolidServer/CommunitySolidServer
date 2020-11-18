@@ -5,7 +5,7 @@ import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { ensureTrailingSlash } from '../../util/PathUtil';
+import { ensureTrailingSlash, isContainerIdentifier } from '../../util/PathUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import type { DataAccessor } from './DataAccessor';
 
@@ -66,7 +66,7 @@ export class InMemoryDataAccessor implements DataAccessor {
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const entry = this.getEntry(identifier);
-    if (this.isDataEntry(entry) === identifier.path.endsWith('/')) {
+    if (this.isDataEntry(entry) === isContainerIdentifier(identifier)) {
       throw new NotFoundHttpError();
     }
     return this.generateMetadata(identifier, entry);
