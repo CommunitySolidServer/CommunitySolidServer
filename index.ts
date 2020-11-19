@@ -120,6 +120,7 @@ export * from './src/storage/ExtensionBasedMapper';
 export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
+export * from './src/storage/MonitoringStore';
 export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
 export * from './src/storage/RepresentationConvertingStore';
