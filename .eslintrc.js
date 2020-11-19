@@ -38,6 +38,7 @@ module.exports = {
     'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
     'comma-dangle': ['error', 'always-multiline'],
     'dot-location': ['error', 'property'],
+    'lines-around-comment': 'off', // conflicts with padded-blocks
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-len': ['error', { code: 120, ignoreUrls: true }],
     'new-cap': 'off', // used for RDF constants
