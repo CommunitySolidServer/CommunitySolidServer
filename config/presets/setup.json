@@ -4,8 +4,8 @@
     {
       "@id": "urn:solid-server:default",
       "@type": "Setup",
-      "Setup:_httpServer": {
-        "@id": "urn:solid-server:default:HttpServer"
+      "Setup:_serverFactory": {
+        "@id": "urn:solid-server:default:ServerFactory"
       },
       "Setup:_store": {
         "@id": "urn:solid-server:default:ResourceStore_Patching"

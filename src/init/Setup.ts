@@ -3,7 +3,7 @@ import type { AclManager } from '../authorization/AclManager';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { LoggerFactory } from '../logging/LoggerFactory';
 import { getLoggerFor, setGlobalLoggerFactory } from '../logging/LogUtil';
-import type { ExpressHttpServer } from '../server/ExpressHttpServer';
+import type { ExpressHttpServerFactory } from '../server/ExpressHttpServerFactory';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { CONTENT_TYPE } from '../util/UriConstants';
@@ -13,7 +13,7 @@ import { CONTENT_TYPE } from '../util/UriConstants';
  */
 export class Setup {
   protected readonly logger = getLoggerFor(this);
-  private readonly httpServer: ExpressHttpServer;
+  private readonly serverFactory: ExpressHttpServerFactory;
   private readonly store: ResourceStore;
   private readonly aclManager: AclManager;
   private readonly loggerFactory: LoggerFactory;
@@ -21,14 +21,14 @@ export class Setup {
   private readonly port: number;
 
   public constructor(
-    httpServer: ExpressHttpServer,
+    serverFactory: ExpressHttpServerFactory,
     store: ResourceStore,
     aclManager: AclManager,
     loggerFactory: LoggerFactory,
     base: string,
     port: number,
   ) {
-    this.httpServer = httpServer;
+    this.serverFactory = serverFactory;
     this.store = store;
     this.aclManager = aclManager;
     this.loggerFactory = loggerFactory;
@@ -73,7 +73,7 @@ export class Setup {
     this.logger.debug('Setup default ACL settings');
     await aclSetup();
 
-    this.httpServer.listen(this.port);
+    this.serverFactory.startServer(this.port);
 
     return this.base;
   }

@@ -3,7 +3,7 @@ import type { ResourceIdentifier } from '../../../src/ldp/representation/Resourc
 import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 
 describe('Setup', (): void => {
-  let httpServer: any;
+  let serverFactory: any;
   let store: any;
   let aclManager: any;
   let setup: Setup;
@@ -14,15 +14,15 @@ describe('Setup', (): void => {
     aclManager = {
       getAcl: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'http://test.com/.acl' })),
     };
-    httpServer = {
-      listen: jest.fn(),
+    serverFactory = {
+      startServer: jest.fn(),
     };
-    setup = new Setup(httpServer, store, aclManager, new VoidLoggerFactory(), 'http://localhost:3000/', 3000);
+    setup = new Setup(serverFactory, store, aclManager, new VoidLoggerFactory(), 'http://localhost:3000/', 3000);
   });
 
   it('starts an HTTP server.', async(): Promise<void> => {
     await setup.setup();
-    expect(httpServer.listen).toHaveBeenCalledWith(3000);
+    expect(serverFactory.startServer).toHaveBeenCalledWith(3000);
   });
 
   it('invokes ACL initialization.', async(): Promise<void> => {
