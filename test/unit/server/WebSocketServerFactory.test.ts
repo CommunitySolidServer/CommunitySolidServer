@@ -33,7 +33,7 @@ describe('SimpleWebSocketHandler', (): void => {
     webSocketHandler = new SimpleWebSocketHandler();
     const httpServerFactory = new ExpressHttpServerFactory(httpHandler);
     const webSocketServerFactory = new WebSocketServerFactory(httpServerFactory, webSocketHandler);
-    server = webSocketServerFactory.startServer(5555);
+    server = webSocketServerFactory.startServer(5556);
   });
 
   afterAll(async(): Promise<void> => {
@@ -46,9 +46,9 @@ describe('SimpleWebSocketHandler', (): void => {
   });
 
   it('has a functioning WebSockets interface.', async(): Promise<void> => {
-    const client = new WebSocket('ws://localhost:5555');
+    const client = new WebSocket('ws://localhost:5556');
     const text = await new Promise((resolve): any => client.on('message', resolve));
     expect(text).toBe('SimpleWebSocketHandler');
-    expect(webSocketHandler.host).toBe('localhost:5555');
+    expect(webSocketHandler.host).toBe('localhost:5556');
   });
 });
