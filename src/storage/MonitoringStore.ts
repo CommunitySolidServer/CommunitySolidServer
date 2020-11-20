@@ -3,6 +3,7 @@ import type { Patch } from '../ldp/http/Patch';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getParentContainer } from '../util/PathUtil';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
@@ -22,12 +23,24 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   public async addResource(container: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier> {
     const identifier = await this.source.addResource(container, representation, conditions);
+
+    // Both the container contents and the resource itself have changed
+    this.emit('changed', container);
     this.emit('changed', identifier);
+
     return identifier;
   }
 
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
     await this.source.deleteResource(identifier, conditions);
+
+    // Both the container contents and the resource itself have changed
+    try {
+      const container = getParentContainer(identifier);
+      this.emit('changed', container);
+    } catch {
+      // Parent container not found
+    }
     this.emit('changed', identifier);
   }
 
