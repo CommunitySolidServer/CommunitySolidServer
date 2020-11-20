@@ -84,7 +84,7 @@ export * from './src/logging/VoidLoggerFactory';
 export * from './src/logging/WinstonLoggerFactory';
 
 // Server
-export * from './src/server/ExpressHttpServer';
+export * from './src/server/ExpressHttpServerFactory';
 export * from './src/server/HttpHandler';
 export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';

@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import { ExpressHttpServer } from '../../../src/server/ExpressHttpServer';
+import { ExpressHttpServerFactory } from '../../../src/server/ExpressHttpServerFactory';
 import { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
@@ -17,7 +17,7 @@ class SimpleHttpHandler extends HttpHandler {
   }
 }
 
-describe('ExpressHttpServer', (): void => {
+describe('ExpressHttpServerFactory', (): void => {
   let server: Server;
   let canHandleJest: jest.Mock<Promise<void>, []>;
   let handleJest: jest.Mock<Promise<void>, [any]>;
@@ -37,8 +37,8 @@ describe('ExpressHttpServer', (): void => {
     handler.canHandle = canHandleJest;
     handler.handle = handleJest;
 
-    const expressServer = new ExpressHttpServer(handler);
-    server = expressServer.listen();
+    const factory = new ExpressHttpServerFactory(handler);
+    server = factory.startServer(5555);
   });
 
   afterEach(async(): Promise<void> => {

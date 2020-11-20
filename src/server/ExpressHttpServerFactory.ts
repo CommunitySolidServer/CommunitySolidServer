@@ -4,8 +4,9 @@ import type { Express } from 'express';
 import express from 'express';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandler } from './HttpHandler';
+import type { HttpServerFactory } from './HttpServerFactory';
 
-export class ExpressHttpServer {
+export class ExpressHttpServerFactory implements HttpServerFactory {
   protected readonly logger = getLoggerFor(this);
 
   private readonly handler: HttpHandler;
@@ -14,7 +15,7 @@ export class ExpressHttpServer {
     this.handler = handler;
   }
 
-  public listen(port?: number): Server {
+  public startServer(port: number): Server {
     const app = express();
     this.setup(app);
     return app.listen(port);
