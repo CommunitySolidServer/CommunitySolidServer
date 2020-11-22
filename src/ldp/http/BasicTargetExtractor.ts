@@ -13,23 +13,25 @@ import { TargetExtractor } from './TargetExtractor';
 export class BasicTargetExtractor extends TargetExtractor {
   protected readonly logger = getLoggerFor(this);
 
-  public async handle(request: HttpRequest): Promise<ResourceIdentifier> {
-    if (!request.url) {
+  public async handle({ url, headers: { host }, connection }: HttpRequest): Promise<ResourceIdentifier> {
+    if (!url) {
       this.logger.error('The request has no URL');
       throw new Error('Missing URL');
     }
-    if (!request.headers.host) {
+    if (!host) {
       this.logger.error('The request has no Host header');
       throw new Error('Missing Host header');
     }
+    if (/[/\\*]/u.test(host)) {
+      throw new Error(`The request has an invalid Host header: ${host}`);
+    }
 
-    const isHttps = request.connection && (request.connection as TLSSocket).encrypted;
+    const isHttps = (connection as TLSSocket)?.encrypted;
     this.logger.debug(`Request is using HTTPS: ${isHttps}`);
 
     // URL object applies punycode encoding to domain
-    const base = `http${isHttps ? 's' : ''}://${request.headers.host}`;
-    const url = toCanonicalUriPath(request.url);
-    const path = new URL(url, base).href;
+    const base = `http${isHttps ? 's' : ''}://${host}`;
+    const path = new URL(toCanonicalUriPath(url), base).href;
 
     return { path };
   }

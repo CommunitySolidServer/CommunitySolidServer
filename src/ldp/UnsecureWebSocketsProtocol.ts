@@ -95,7 +95,7 @@ class WebSocketListener extends EventEmitter {
         throw new Error(`Mismatched protocol: ${resolved.protocol} instead of ${this.protocol}`);
       }
       // Subscribe to the URL
-      const url = resolved.toString();
+      const url = resolved.href;
       this.subscribedPaths.add(url);
       this.sendMessage('ack', url);
       this.logger.debug(`WebSocket subscribed to changes on ${url}`);
