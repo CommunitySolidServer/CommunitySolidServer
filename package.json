@@ -35,7 +35,7 @@
   "homepage": "https://github.com/solid/community-server#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:components": "componentsjs-generator -s src",
+    "build:components": "componentsjs-generator -s src -i componentsjs-generator-ignore-classes.json",
     "build:ts": "tsc",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
@@ -110,7 +110,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
-    "componentjs-generator": "^1.2.0",
+    "componentsjs-generator": "^1.5.0",
     "eslint": "^7.9.0",
     "eslint-config-es": "^3.20.3",
     "eslint-import-resolver-typescript": "^2.3.0",
