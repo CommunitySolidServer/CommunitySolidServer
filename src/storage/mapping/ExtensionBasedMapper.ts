@@ -36,6 +36,11 @@ export interface ResourcePath {
  * a new extension will be appended (with a `$` in front of it).
  * E.g. if the path is `input.ttl` with content-type `text/plain`, the path would actually be `input.ttl$.txt`.
  * This new extension is stripped again when generating an identifier.
+ *
+ * Warning: Since this mapper iterates over all files in the requested directory,
+ * it can experience performance issues over directories with a huge number of files (10.000+).
+ * For typical directory structures, the performance of this mapper should be sufficient.
+ * @see https://github.com/solid/community-server/issues/333
  */
 export class ExtensionBasedMapper implements FileIdentifierMapper {
   protected readonly logger = getLoggerFor(this);
