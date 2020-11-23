@@ -4,7 +4,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
 import {
   encodeUriPathComponents,
-  ensureTrailingSlash,
+  ensureTrailingSlash, isContainerIdentifier,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
@@ -35,7 +35,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
     const filePath = getAbsolutePath(this.rootFilepath, path);
 
     // Container
-    if (identifier.path.endsWith('/')) {
+    if (isContainerIdentifier(identifier)) {
       this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
       return {
         identifier,
