@@ -4,22 +4,22 @@
     {
       "@id": "urn:solid-server:default:HttpHandler",
       "@type": "AuthenticatedLdpHandler",
-      "AuthenticatedLdpHandler:_requestParser": {
+      "AuthenticatedLdpHandler:_args_requestParser": {
         "@id": "urn:solid-server:default:RequestParser"
       },
-      "AuthenticatedLdpHandler:_credentialsExtractor": {
+      "AuthenticatedLdpHandler:_args_credentialsExtractor": {
         "@id": "urn:solid-server:default:CredentialsExtractor"
       },
-      "AuthenticatedLdpHandler:_permissionsExtractor": {
+      "AuthenticatedLdpHandler:_args_permissionsExtractor": {
         "@id": "urn:solid-server:default:PermissionsExtractor"
       },
-      "AuthenticatedLdpHandler:_authorizer": {
+      "AuthenticatedLdpHandler:_args_authorizer": {
         "@id": "urn:solid-server:default:AclAuthorizer"
       },
-      "AuthenticatedLdpHandler:_operationHandler": {
+      "AuthenticatedLdpHandler:_args_operationHandler": {
         "@id": "urn:solid-server:default:OperationHandler"
       },
-      "AuthenticatedLdpHandler:_responseWriter": {
+      "AuthenticatedLdpHandler:_args_responseWriter": {
         "@id": "urn:solid-server:default:ResponseWriter"
       }
     }

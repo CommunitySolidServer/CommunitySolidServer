@@ -4,16 +4,16 @@
     {
       "@id": "urn:solid-server:default:RequestParser",
       "@type": "BasicRequestParser",
-      "BasicRequestParser:_targetExtractor": {
+      "BasicRequestParser:_args_targetExtractor": {
         "@type": "BasicTargetExtractor"
       },
-      "BasicRequestParser:_preferenceParser": {
+      "BasicRequestParser:_args_preferenceParser": {
         "@type": "AcceptPreferenceParser"
       },
-      "BasicRequestParser:_metadataExtractor": {
+      "BasicRequestParser:_args_metadataExtractor": {
         "@id": "urn:solid-server:default:MetadataExtractor"
       },
-      "BasicRequestParser:_bodyParser": {
+      "BasicRequestParser:_args_bodyParser": {
         "@type": "FirstCompositeHandler",
         "FirstCompositeHandler:_handlers": [
           {
