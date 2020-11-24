@@ -121,16 +121,12 @@ export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/DataAccessorBasedStore';
 export * from './src/storage/FileIdentifierMapper';
-export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
 export * from './src/storage/RepresentationConvertingStore';
-export * from './src/storage/ResourceLocker';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/RoutingResourceStore';
-export * from './src/storage/SingleThreadedResourceLocker';
-export * from './src/storage/WrappedExpiringResourceLocker';
 
 // Util/Errors
 export * from './src/util/errors/ConflictHttpError';
@@ -142,6 +138,12 @@ export * from './src/util/errors/SystemError';
 export * from './src/util/errors/UnauthorizedHttpError';
 export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
+
+// Util/Locking
+export * from './src/util/locking/Lock';
+export * from './src/util/locking/ResourceLocker';
+export * from './src/util/locking/SingleThreadedResourceLocker';
+export * from './src/util/locking/WrappedExpiringResourceLocker';
 
 // Util
 export * from './src/util/AllVoidCompositeHandler';
