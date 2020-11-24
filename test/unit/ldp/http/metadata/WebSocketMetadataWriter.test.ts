@@ -3,7 +3,7 @@ import { WebSocketMetadataWriter } from '../../../../../src/ldp/http/metadata/We
 
 describe('A WebSocketMetadataWriter', (): void => {
   it('writes a default HTTP WebSocket.', async(): Promise<void> => {
-    const writer = new WebSocketMetadataWriter({});
+    const writer = new WebSocketMetadataWriter();
     const response = createResponse();
     await writer.handle({ response } as any);
     expect(response.getHeaders()).toEqual({ 'updates-via': 'ws://localhost' });

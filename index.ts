@@ -24,6 +24,7 @@ export * from './src/ldp/http/metadata/MetadataExtractor';
 export * from './src/ldp/http/metadata/MetadataParser';
 export * from './src/ldp/http/metadata/MetadataWriter';
 export * from './src/ldp/http/metadata/SlugParser';
+export * from './src/ldp/http/metadata/WebSocketMetadataWriter';
 
 // LDP/HTTP/Response
 export * from './src/ldp/http/response/CreatedResponseDescription';
@@ -72,6 +73,7 @@ export * from './src/ldp/representation/ResourceIdentifier';
 
 // LDP
 export * from './src/ldp/AuthenticatedLdpHandler';
+export * from './src/ldp/UnsecureWebSocketsProtocol';
 
 // Logging
 export * from './src/logging/LazyLogger';
@@ -88,6 +90,8 @@ export * from './src/server/ExpressHttpServerFactory';
 export * from './src/server/HttpHandler';
 export * from './src/server/HttpRequest';
 export * from './src/server/HttpResponse';
+export * from './src/server/WebSocketServerFactory';
+export * from './src/server/WebSocketHandler';
 
 // Storage/Accessors
 export * from './src/storage/accessors/DataAccessor';
@@ -123,6 +127,7 @@ export * from './src/storage/DataAccessorBasedStore';
 export * from './src/storage/FileIdentifierMapper';
 export * from './src/storage/Lock';
 export * from './src/storage/LockingResourceStore';
+export * from './src/storage/MonitoringStore';
 export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
 export * from './src/storage/RepresentationConvertingStore';
