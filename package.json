@@ -112,7 +112,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
-    "componentsjs-generator": "^1.5.0",
+    "componentsjs-generator": "^1.6.0",
     "eslint": "^7.9.0",
     "eslint-config-es": "^3.20.3",
     "eslint-import-resolver-typescript": "^2.3.0",
