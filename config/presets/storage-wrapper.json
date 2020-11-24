@@ -34,13 +34,13 @@
       "RepresentationConvertingStore:_source": {
         "@id": "urn:solid-server:default:RoutingResourceStore"
       },
-      "RepresentationConvertingStore:_outConverter": {
+      "RepresentationConvertingStore:_options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_inConverter": {
+      "RepresentationConvertingStore:_options_inConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_inType": "text/turtle"
+      "RepresentationConvertingStore:_options_inType": "text/turtle"
     },
 
     {
@@ -49,7 +49,7 @@
       "RepresentationConvertingStore:_source": {
         "@id": "urn:solid-server:default:RoutingResourceStore"
       },
-      "RepresentationConvertingStore:_outConverter": {
+      "RepresentationConvertingStore:_options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
     }

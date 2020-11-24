@@ -10,8 +10,8 @@
       "ExtensionBasedMapper:_rootFilepath": {
         "@id": "urn:solid-server:default:variable:rootFilePath"
       },
-      "ExtensionBasedMapper:_acl": "text/turtle",
-      "ExtensionBasedMapper:_meta": "text/turtle"
+      "ExtensionBasedMapper:_overrideTypes_acl": "text/turtle",
+      "ExtensionBasedMapper:_overrideTypes_meta": "text/turtle"
     },
     {
       "@id": "urn:solid-server:default:FileDataAccessor",

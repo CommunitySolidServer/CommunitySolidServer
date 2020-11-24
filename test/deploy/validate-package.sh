@@ -17,7 +17,7 @@ if [ -z $PID ]; then
 else
   for i in {1..10}; do
     sleep 1
-    if curl -s localhost:8888; then
+    if curl -s -f localhost:8888; then
       echo "Server reached"
       FAILURE=0
       break
