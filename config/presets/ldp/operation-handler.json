@@ -8,37 +8,37 @@
         {
           "@type": "DeleteOperationHandler",
           "DeleteOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "GetOperationHandler",
           "GetOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "HeadOperationHandler",
           "HeadOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PatchOperationHandler",
           "PatchOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PostOperationHandler",
           "PostOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PutOperationHandler",
           "PutOperationHandler:_store": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching"
+            "@id": "urn:solid-server:default:ResourceStore"
           }
         }
       ]

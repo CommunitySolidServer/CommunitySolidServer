@@ -26,6 +26,12 @@
               "LinkRelMetadataWriter:_headerMap_value": "type"
             }
           ]
+        },
+        {
+          "@type": "WebSocketMetadataWriter",
+          "WebSocketMetadataWriter:_settings_port": {
+            "@id": "urn:solid-server:default:variable:port"
+          }
         }
       ]
     },

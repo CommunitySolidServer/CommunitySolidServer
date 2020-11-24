@@ -8,7 +8,7 @@
         "@id": "urn:solid-server:default:ServerFactory"
       },
       "Setup:_store": {
-        "@id": "urn:solid-server:default:ResourceStore_Patching"
+        "@id": "urn:solid-server:default:ResourceStore"
       },
       "Setup:_aclManager": {
         "@id": "urn:solid-server:default:AclManager"
