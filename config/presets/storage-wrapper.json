@@ -2,12 +2,11 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:ResourceLocker",
-      "@type": "WrappedExpiringResourceLocker",
-      "WrappedExpiringResourceLocker:_locker": {
-        "@type": "SingleThreadedResourceLocker"
-      },
-      "WrappedExpiringResourceLocker:_expiration": 3000
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "MonitoringStore",
+      "MonitoringStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
+      }
     },
 
     {
@@ -27,6 +26,16 @@
         }
       }
     },
+
+    {
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "WrappedExpiringResourceLocker",
+      "WrappedExpiringResourceLocker:_locker": {
+        "@type": "SingleThreadedResourceLocker"
+      },
+      "WrappedExpiringResourceLocker:_expiration": 3000
+    },
+
 
     {
       "@id": "urn:solid-server:default:ResourceStore_ToTurtle",

@@ -12,7 +12,7 @@
         "@id": "urn:solid-server:default:AclManager"
       },
       "WebAclAuthorizer:_resourceStore": {
-        "@id": "urn:solid-server:default:ResourceStore_Patching"
+        "@id": "urn:solid-server:default:ResourceStore"
       }
     }
   ]

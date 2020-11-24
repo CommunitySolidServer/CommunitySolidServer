@@ -3,6 +3,16 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "WebSocketServerFactory",
+      "WebSocketServerFactory:_baseServerFactory": {
+        "@id": "urn:solid-server:default:ExpressHttpServerFactory"
+      },
+      "WebSocketServerFactory:_webSocketHandler": {
+        "@id": "urn:solid-server:default:WebSocketHandler"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:ExpressHttpServerFactory",
       "@type": "ExpressHttpServerFactory",
       "ExpressHttpServerFactory:_handler": {
         "@id": "urn:solid-server:default:HttpHandler"
