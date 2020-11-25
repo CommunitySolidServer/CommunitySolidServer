@@ -29,10 +29,10 @@
       "RepresentationConvertingStore:_source": {
         "@id": "urn:solid-server:default:DataAccessorBasedStore"
       },
-      "RepresentationConvertingStore:_inConverter": {
+      "RepresentationConvertingStore:_options_inConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_inType": "internal/quads"
+      "RepresentationConvertingStore:_options_inType": "internal/quads"
     }
   ]
 }
