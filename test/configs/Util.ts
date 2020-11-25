@@ -1,4 +1,6 @@
 import { join } from 'path';
+import * as Path from 'path';
+import { Loader } from 'componentsjs';
 import type {
   BodyParser,
   DataAccessor,
@@ -173,3 +175,18 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
  */
 export const getWebAclAuthorizer = (store: ResourceStore, aclManager = new UrlBasedAclManager()): WebAclAuthorizer =>
   new WebAclAuthorizer(aclManager, store);
+
+/**
+ * Returns a component instantiated from a Components.js configuration.
+ */
+export const instantiateFromConfig = async(componentUrl: string, configFile: string,
+  variables?: Record<string, any>): Promise<any> => {
+  // Initialize the Components.js loader
+  const mainModulePath = Path.join(__dirname, '../../');
+  const loader = new Loader({ mainModulePath });
+  await loader.registerAvailableModuleResources();
+
+  // Instantiate the component from the config
+  const configPath = Path.join(__dirname, configFile);
+  return loader.instantiateFromUrl(componentUrl, configPath, undefined, { variables });
+};
