@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:RequestParser",
       "@type": "BasicRequestParser",
       "BasicRequestParser:_args_targetExtractor": {
-        "@type": "BasicTargetExtractor"
+        "@id": "urn:solid-server:default:TargetExtractor"
       },
       "BasicRequestParser:_args_preferenceParser": {
         "@type": "AcceptPreferenceParser"
@@ -24,6 +24,10 @@
           }
         ]
       }
+    },
+    {
+      "@id": "urn:solid-server:default:TargetExtractor",
+      "@type": "BasicTargetExtractor"
     }
   ]
 }
