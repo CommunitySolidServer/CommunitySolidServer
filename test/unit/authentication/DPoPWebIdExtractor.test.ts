@@ -1,17 +1,12 @@
 import { verify } from 'ts-dpop';
 import { DPoPWebIdExtractor } from '../../../src/authentication/DPoPWebIdExtractor';
-import { TargetExtractor } from '../../../src/ldp/http/TargetExtractor';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
-
-class DummyTargetExtractor extends TargetExtractor {
-  public async handle(): Promise<ResourceIdentifier> {
-    return { path: 'http://example.org/foo/bar' };
-  }
-}
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
+import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('A DPoPWebIdExtractor', (): void => {
-  const targetExtractor = new DummyTargetExtractor();
+  const targetExtractor = new StaticAsyncHandler(true, { path: 'http://example.org/foo/bar' });
   const webIdExtractor = new DPoPWebIdExtractor(targetExtractor);
 
   beforeEach((): void => {
@@ -27,8 +22,26 @@ describe('A DPoPWebIdExtractor', (): void => {
       },
     } as any as HttpRequest;
 
-    it('returns empty credentials.', async(): Promise<void> => {
-      await expect(webIdExtractor.handle(request)).resolves.toEqual({});
+    it('throws an error.', async(): Promise<void> => {
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).rejects.toThrow(NotImplementedHttpError);
+      await expect(result).rejects.toThrow('No DPoP Authorization header specified.');
+    });
+  });
+
+  describe('on a request with an Authorization header that does not start with DPoP', (): void => {
+    const request = {
+      method: 'GET',
+      headers: {
+        authorization: 'Other token-1234',
+        dpop: 'token-5678',
+      },
+    } as any as HttpRequest;
+
+    it('throws an error.', async(): Promise<void> => {
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).rejects.toThrow(NotImplementedHttpError);
+      await expect(result).rejects.toThrow('No DPoP Authorization header specified.');
     });
   });
 
@@ -40,8 +53,10 @@ describe('A DPoPWebIdExtractor', (): void => {
       },
     } as any as HttpRequest;
 
-    it('returns empty credentials.', async(): Promise<void> => {
-      await expect(webIdExtractor.handle(request)).resolves.toEqual({});
+    it('throws an error.', async(): Promise<void> => {
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow('No DPoP token specified.');
     });
   });
 
@@ -55,20 +70,20 @@ describe('A DPoPWebIdExtractor', (): void => {
     } as any as HttpRequest;
 
     it('calls the target extractor with the correct parameters.', async(): Promise<void> => {
-      await webIdExtractor.handle(request);
+      await webIdExtractor.handleSafe(request);
       expect(targetExtractor.handle).toHaveBeenCalledTimes(1);
       expect(targetExtractor.handle).toHaveBeenCalledWith(request);
     });
 
     it('calls the DPoP verifier with the correct parameters.', async(): Promise<void> => {
-      await webIdExtractor.handle(request);
+      await webIdExtractor.handleSafe(request);
       expect(verify).toHaveBeenCalledTimes(1);
       expect(verify).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
     });
 
     it('returns the extracted WebID.', async(): Promise<void> => {
-      await expect(webIdExtractor.handle(request)).resolves
-        .toEqual({ webID: 'http://alice.example/card#me' });
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).resolves.toEqual({ webID: 'http://alice.example/card#me' });
     });
   });
 
@@ -87,8 +102,10 @@ describe('A DPoPWebIdExtractor', (): void => {
       });
     });
 
-    it('returns empty credentials.', async(): Promise<void> => {
-      await expect(webIdExtractor.handle(request)).resolves.toEqual({});
+    it('throws an error.', async(): Promise<void> => {
+      const result = webIdExtractor.handleSafe(request);
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow('Error verifying WebID via DPoP token: invalid');
     });
   });
 });

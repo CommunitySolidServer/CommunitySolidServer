@@ -2,10 +2,10 @@ import type { HttpHandler,
   ResourceStore } from '../../index';
 import {
   AuthenticatedLdpHandler,
+  EmptyCredentialsExtractor,
   FirstCompositeHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
-  UnsecureWebIdExtractor,
   QuadToRdfConverter,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
@@ -39,7 +39,7 @@ export class BasicHandlersWithAclConfig implements ServerConfig {
   public getHttpHandler(): HttpHandler {
     const requestParser = getBasicRequestParser();
 
-    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const credentialsExtractor = new EmptyCredentialsExtractor();
     const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);

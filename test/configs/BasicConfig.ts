@@ -3,8 +3,8 @@ import type { HttpHandler,
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  EmptyCredentialsExtractor,
   MethodPermissionsExtractor,
-  UnsecureWebIdExtractor,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
 import { getOperationHandler, getInMemoryResourceStore, getBasicRequestParser, getResponseWriter } from './Util';
@@ -26,7 +26,7 @@ export class BasicConfig implements ServerConfig {
   public getHttpHandler(): HttpHandler {
     const requestParser = getBasicRequestParser();
 
-    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const credentialsExtractor = new EmptyCredentialsExtractor();
     const permissionsExtractor = new MethodPermissionsExtractor();
     const authorizer = new AllowEverythingAuthorizer();
 

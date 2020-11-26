@@ -3,6 +3,7 @@ import type { HttpHandler,
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  EmptyCredentialsExtractor,
   FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
@@ -10,7 +11,6 @@ import {
   RdfToQuadConverter,
   SparqlUpdateBodyParser,
   SparqlPatchPermissionsExtractor,
-  UnsecureWebIdExtractor,
 } from '../../index';
 
 import type { ServerConfig } from './ServerConfig';
@@ -47,7 +47,7 @@ export class BasicHandlersConfig implements ServerConfig {
       new RawBodyParser(),
     ]);
 
-    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const credentialsExtractor = new EmptyCredentialsExtractor();
     const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),

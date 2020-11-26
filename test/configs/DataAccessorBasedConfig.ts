@@ -6,12 +6,12 @@ import type {
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
+  EmptyCredentialsExtractor,
   FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
   RdfToQuadConverter,
-  UnsecureWebIdExtractor,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
 import {
@@ -43,7 +43,7 @@ export class DataAccessorBasedConfig implements ServerConfig {
     // This is for the sake of test coverage, as it could also be just getBasicRequestParser()
     const requestParser = getBasicRequestParser([ new RawBodyParser() ]);
 
-    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const credentialsExtractor = new EmptyCredentialsExtractor();
     const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);
