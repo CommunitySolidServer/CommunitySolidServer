@@ -2,6 +2,7 @@
 export * from './src/authentication/Credentials';
 export * from './src/authentication/CredentialsExtractor';
 export * from './src/authentication/DPoPWebIdExtractor';
+export * from './src/authentication/EmptyCredentialsExtractor';
 export * from './src/authentication/UnsecureWebIdExtractor';
 
 // Authorization

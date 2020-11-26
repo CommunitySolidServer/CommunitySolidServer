@@ -5,10 +5,10 @@ import type {
 } from '../../index';
 import {
   AuthenticatedLdpHandler,
+  EmptyCredentialsExtractor,
   FirstCompositeHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
-  UnsecureWebIdExtractor,
   QuadToRdfConverter,
 } from '../../index';
 import type { ServerConfig } from './ServerConfig';
@@ -43,7 +43,7 @@ export class AuthenticatedDataAccessorBasedConfig implements ServerConfig {
   public getHttpHandler(): HttpHandler {
     const requestParser = getBasicRequestParser();
 
-    const credentialsExtractor = new UnsecureWebIdExtractor();
+    const credentialsExtractor = new EmptyCredentialsExtractor();
     const permissionsExtractor = new FirstCompositeHandler([
       new MethodPermissionsExtractor(),
     ]);

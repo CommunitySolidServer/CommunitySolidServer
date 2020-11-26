@@ -2,6 +2,8 @@ import { verify } from 'ts-dpop';
 import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
+import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
@@ -17,20 +19,27 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     this.targetExtractor = targetExtractor;
   }
 
-  public async handle(request: HttpRequest): Promise<Credentials> {
-    let webID: string | undefined;
-    const authorizationHeader = request.headers.authorization;
-    const dpopHeader = request.headers.dpop as string;
-    if (authorizationHeader && dpopHeader) {
-      const method = request.method as any;
-      const resource = await this.targetExtractor.handleSafe(request);
-      try {
-        webID = await verify(authorizationHeader, dpopHeader, method, resource.path);
-        this.logger.info(`Extracted WebID via DPoP token: ${webID}`);
-      } catch (error: unknown) {
-        this.logger.warn(`Error verifying WebID via DPoP token: ${(error as Error).message}`);
-      }
+  public async canHandle({ headers }: HttpRequest): Promise<void> {
+    const { authorization } = headers;
+    if (!authorization || !authorization.startsWith('DPoP ')) {
+      throw new NotImplementedHttpError('No DPoP Authorization header specified.');
     }
-    return { webID };
+  }
+
+  public async handle(request: HttpRequest): Promise<Credentials> {
+    const { headers: { authorization, dpop }, method } = request;
+    if (!dpop) {
+      throw new BadRequestHttpError('No DPoP token specified.');
+    }
+    const resource = await this.targetExtractor.handleSafe(request);
+    try {
+      const webID = await verify(authorization as string, dpop as string, method as any, resource.path);
+      this.logger.info(`Verified WebID via DPoP token: ${webID}`);
+      return { webID };
+    } catch (error: unknown) {
+      const message = `Error verifying WebID via DPoP token: ${(error as Error).message}`;
+      this.logger.warn(message);
+      throw new BadRequestHttpError(message);
+    }
   }
 }
