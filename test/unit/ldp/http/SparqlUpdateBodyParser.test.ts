@@ -1,4 +1,5 @@
 import { namedNode, quad } from '@rdfjs/data-model';
+import arrayifyStream from 'arrayify-stream';
 import { Algebra } from 'sparqlalgebrajs';
 import * as algebra from 'sparqlalgebrajs';
 import streamifyArray from 'streamify-array';
@@ -8,7 +9,6 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-import { readableToString } from '../../../../src/util/StreamUtil';
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
@@ -56,9 +56,8 @@ describe('A SparqlUpdateBodyParser', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata).toBe(input.metadata);
 
-    // Workaround for Node 10 not exposing objectMode
-    expect(await readableToString(result.data)).toEqual(
-      'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }',
+    expect(await arrayifyStream(result.data)).toEqual(
+      [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     );
   });
 });
