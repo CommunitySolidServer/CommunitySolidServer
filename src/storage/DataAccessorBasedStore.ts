@@ -6,11 +6,11 @@ import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
+import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { NotImplementedError } from '../util/errors/NotImplementedError';
-import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Guarded } from '../util/GuardedStream';
 import {
   ensureTrailingSlash,
@@ -136,7 +136,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError('Input resource type does not match existing resource type.');
     }
     if (isContainer !== isContainerIdentifier(identifier)) {
-      throw new UnsupportedHttpError('Containers should have a `/` at the end of their path, resources should not.');
+      throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
     // Potentially have to create containers if it didn't exist yet
@@ -144,7 +144,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async modifyResource(): Promise<void> {
-    throw new NotImplementedError('Patches are not supported by the default store.');
+    throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
@@ -246,7 +246,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       quads = await parseQuads(representation.data);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        throw new UnsupportedHttpError(`Can only create containers with RDF data. ${error.message}`);
+        throw new BadRequestHttpError(`Can only create containers with RDF data. ${error.message}`);
       }
       throw error;
     }

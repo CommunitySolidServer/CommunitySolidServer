@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
 
 jest.mock('fs');
@@ -27,12 +27,12 @@ describe('An ExtensionBasedMapper', (): void => {
 
     it('throws 404 if the relative path does not start with a slash.', async(): Promise<void> => {
       await expect(mapper.mapUrlToFilePath({ path: `${trimTrailingSlashes(base)}test` }))
-        .rejects.toThrow(new UnsupportedHttpError('URL needs a / after the base'));
+        .rejects.toThrow(new BadRequestHttpError('URL needs a / after the base'));
     });
 
     it('throws 400 if the input path contains relative parts.', async(): Promise<void> => {
       await expect(mapper.mapUrlToFilePath({ path: `${base}test/../test2` }))
-        .rejects.toThrow(new UnsupportedHttpError('Disallowed /.. segment in URL'));
+        .rejects.toThrow(new BadRequestHttpError('Disallowed /.. segment in URL'));
     });
 
     it('returns the corresponding file path for container identifiers.', async(): Promise<void> => {
@@ -44,7 +44,7 @@ describe('An ExtensionBasedMapper', (): void => {
 
     it('rejects URLs that end with "$.{extension}".', async(): Promise<void> => {
       await expect(mapper.mapUrlToFilePath({ path: `${base}test$.txt` }))
-        .rejects.toThrow(new UnsupportedHttpError('Identifiers cannot contain a dollar sign before their extension'));
+        .rejects.toThrow(new BadRequestHttpError('Identifiers cannot contain a dollar sign before their extension'));
     });
 
     it('throws 404 when looking in a folder that does not exist.', async(): Promise<void> => {
@@ -95,7 +95,7 @@ describe('An ExtensionBasedMapper', (): void => {
 
     it('throws 400 if the given content-type is not recognized.', async(): Promise<void> => {
       await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, 'fake/data'))
-        .rejects.toThrow(new UnsupportedHttpError(`Unsupported content type fake/data`));
+        .rejects.toThrow(new BadRequestHttpError(`Unsupported content type fake/data`));
     });
   });
 

@@ -1,5 +1,5 @@
 import { getLoggerFor } from '../../logging/LogUtil';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import type { Representation } from '../representation/Representation';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
@@ -24,7 +24,7 @@ export class RawBodyParser extends BodyParser {
     // such an omission likely signals a mistake, so force clients to make this explicit.
     if (!request.headers['content-type']) {
       this.logger.warn('A body was passed, but the content length was not specified');
-      throw new UnsupportedHttpError('HTTP request body was passed without Content-Type header');
+      throw new BadRequestHttpError('HTTP request body was passed without Content-Type header');
     }
 
     return {

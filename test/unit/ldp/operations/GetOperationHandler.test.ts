@@ -2,7 +2,7 @@ import { GetOperationHandler } from '../../../../src/ldp/operations/GetOperation
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A GetOperationHandler', (): void => {
   const store = {
@@ -13,7 +13,7 @@ describe('A GetOperationHandler', (): void => {
 
   it('only supports GET operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'GET' } as Operation)).resolves.toBeUndefined();
-    await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('returns the representation from the store with the correct response.', async(): Promise<void> => {

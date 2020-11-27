@@ -7,11 +7,11 @@ import type { ResourceIdentifier } from '../../../src/ldp/representation/Resourc
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { NotImplementedError } from '../../../src/util/errors/NotImplementedError';
-import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
@@ -29,7 +29,7 @@ class SimpleDataAccessor implements DataAccessor {
 
   public async canHandle(representation: Representation): Promise<void> {
     if (!representation.binary) {
-      throw new UnsupportedHttpError();
+      throw new BadRequestHttpError();
     }
   }
 
@@ -124,7 +124,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       representation.binary = false;
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(UnsupportedHttpError);
+      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('will 404 if the target does not exist and does not end in a slash.', async(): Promise<void> => {
@@ -150,7 +150,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(UnsupportedHttpError);
+      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('passes the result along if the MetadataController throws a non-Error.', async(): Promise<void> => {
@@ -241,7 +241,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       representation.binary = false;
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(UnsupportedHttpError);
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('will error if the path has a different slash than the existing one.', async(): Promise<void> => {
@@ -266,14 +266,14 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource/` };
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
-        new UnsupportedHttpError('Containers should have a `/` at the end of their path, resources should not.'),
+        new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
       );
     });
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(UnsupportedHttpError);
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('can write resources.', async(): Promise<void> => {
@@ -328,7 +328,7 @@ describe('A DataAccessorBasedStore', (): void => {
   describe('modifying a Representation', (): void => {
     it('is not supported.', async(): Promise<void> => {
       await expect(store.modifyResource())
-        .rejects.toThrow(new NotImplementedError('Patches are not supported by the default store.'));
+        .rejects.toThrow(new NotImplementedHttpError('Patches are not supported by the default store.'));
     });
   });
 

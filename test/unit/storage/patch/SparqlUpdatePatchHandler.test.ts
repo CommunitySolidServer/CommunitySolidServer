@@ -8,7 +8,7 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import type { Lock } from '../../../../src/util/locking/Lock';
 import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
 
@@ -86,7 +86,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
       patch: { algebra: {}} as SparqlUpdatePatch };
     await expect(handler.canHandle(input)).resolves.toBeUndefined();
     delete (input.patch as any).algebra;
-    await expect(handler.canHandle(input)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.canHandle(input)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('handles INSERT DATA updates.', async(): Promise<void> => {

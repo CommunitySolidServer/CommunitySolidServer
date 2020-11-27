@@ -1,8 +1,9 @@
 import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
 /**
@@ -15,7 +16,7 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  * @param preferences - Preferences for output type.
  * @param types - Media types to compare to the preferences.
  *
- * @throws UnsupportedHttpError
+ * @throws BadRequestHttpError
  * If the type preferences are undefined or if there are duplicate preferences.
  *
  * @returns The weighted and filtered list of matching types.
@@ -23,12 +24,12 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
 export const matchingTypes = (preferences: RepresentationPreferences, types: string[]):
 RepresentationPreference[] => {
   if (!Array.isArray(preferences.type)) {
-    throw new UnsupportedHttpError('Output type required for conversion.');
+    throw new BadRequestHttpError('Output type required for conversion.');
   }
 
   const prefMap = preferences.type.reduce((map: Record<string, number>, pref): Record<string, number> => {
     if (map[pref.value]) {
-      throw new UnsupportedHttpError(`Duplicate type preference found: ${pref.value}`);
+      throw new BadRequestHttpError(`Duplicate type preference found: ${pref.value}`);
     }
     map[pref.value] = pref.weight;
     return map;
@@ -96,12 +97,12 @@ export const validateRequestArgs = (request: RepresentationConverterArgs, suppor
   supportedOut: string[]): void => {
   const inType = request.representation.metadata.contentType;
   if (!inType) {
-    throw new UnsupportedHttpError('Input type required for conversion.');
+    throw new BadRequestHttpError('Input type required for conversion.');
   }
   if (!supportedIn.some((type): boolean => matchingMediaType(inType, type))) {
-    throw new UnsupportedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
+    throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
   if (matchingTypes(request.preferences, supportedOut).length <= 0) {
-    throw new UnsupportedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
+    throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
 };

@@ -1,8 +1,8 @@
 import { getLoggerFor } from '../logging/LogUtil';
 import type { AsyncHandler } from './AsyncHandler';
+import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { HttpError } from './errors/HttpError';
 import { InternalServerError } from './errors/InternalServerError';
-import { UnsupportedHttpError } from './errors/UnsupportedHttpError';
 
 /**
  * Handler that combines several other handlers,
@@ -106,6 +106,6 @@ export class FirstCompositeHandler<TIn, TOut> implements AsyncHandler<TIn, TOut>
     if (errors.some((error): boolean => error.statusCode >= 500)) {
       throw new InternalServerError(message);
     }
-    throw new UnsupportedHttpError(message);
+    throw new BadRequestHttpError(message);
   }
 }

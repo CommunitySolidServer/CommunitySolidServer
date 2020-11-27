@@ -134,6 +134,7 @@ export * from './src/storage/ResourceStore';
 export * from './src/storage/RoutingResourceStore';
 
 // Util/Errors
+export * from './src/util/errors/BadRequestHttpError';
 export * from './src/util/errors/ConflictHttpError';
 export * from './src/util/errors/ForbiddenHttpError';
 export * from './src/util/errors/HttpError';
@@ -141,7 +142,6 @@ export * from './src/util/errors/MethodNotAllowedHttpError';
 export * from './src/util/errors/NotFoundHttpError';
 export * from './src/util/errors/SystemError';
 export * from './src/util/errors/UnauthorizedHttpError';
-export * from './src/util/errors/UnsupportedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Locking

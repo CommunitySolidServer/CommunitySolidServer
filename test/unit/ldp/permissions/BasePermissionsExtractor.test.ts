@@ -1,6 +1,6 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { MethodPermissionsExtractor } from '../../../../src/ldp/permissions/MethodPermissionsExtractor';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A MethodPermissionsExtractor', (): void => {
   const extractor = new MethodPermissionsExtractor();
@@ -11,7 +11,7 @@ describe('A MethodPermissionsExtractor', (): void => {
     await expect(extractor.canHandle({ method: 'POST' } as Operation)).resolves.toBeUndefined();
     await expect(extractor.canHandle({ method: 'PUT' } as Operation)).resolves.toBeUndefined();
     await expect(extractor.canHandle({ method: 'DELETE' } as Operation)).resolves.toBeUndefined();
-    await expect(extractor.canHandle({ method: 'PATCH' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(extractor.canHandle({ method: 'PATCH' } as Operation)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('requires read for HEAD operations.', async(): Promise<void> => {

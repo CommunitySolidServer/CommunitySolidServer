@@ -1,6 +1,6 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
-import { UnsupportedHttpError } from '../../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { HTTP } from '../../../util/UriConstants';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { MetadataParser } from './MetadataParser';
@@ -16,7 +16,7 @@ export class SlugParser implements MetadataParser {
     if (slug) {
       if (Array.isArray(slug)) {
         this.logger.warn(`Expected 0 or 1 Slug headers but received ${slug.length}`);
-        throw new UnsupportedHttpError('Request has multiple Slug headers');
+        throw new BadRequestHttpError('Request has multiple Slug headers');
       }
       this.logger.debug(`Request Slug is '${slug}'.`);
       metadata.set(HTTP.slug, slug);

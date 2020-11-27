@@ -6,9 +6,9 @@ import type { Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
@@ -214,7 +214,7 @@ describe('A SparqlDataAccessor', (): void => {
       [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value'), namedNode('badGraph!')) ],
     );
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
-      .rejects.toThrow(new UnsupportedHttpError('Only triples in the default graph are supported.'));
+      .rejects.toThrow(new BadRequestHttpError('Only triples in the default graph are supported.'));
   });
 
   it('errors when the SPARQL endpoint fails during reading.', async(): Promise<void> => {

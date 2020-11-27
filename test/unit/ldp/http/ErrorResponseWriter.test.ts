@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import { ErrorResponseWriter } from '../../../../src/ldp/http/ErrorResponseWriter';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('An ErrorResponseWriter', (): void => {
   const writer = new ErrorResponseWriter();
@@ -16,7 +16,7 @@ describe('An ErrorResponseWriter', (): void => {
     await expect(writer.canHandle({ response, result: new Error('error') }))
       .resolves.toBeUndefined();
     await expect(writer.canHandle({ response, result: { statusCode: 200 }}))
-      .rejects.toThrow(UnsupportedHttpError);
+      .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('responds with 500 if an error if there is an error.', async(): Promise<void> => {
@@ -27,11 +27,11 @@ describe('An ErrorResponseWriter', (): void => {
   });
 
   it('responds with the given statuscode if there is an HttpError.', async(): Promise<void> => {
-    const error = new UnsupportedHttpError('error');
+    const error = new NotImplementedHttpError('error');
     await writer.handle({ response, result: error });
     expect(response._isEndCalled()).toBeTruthy();
     expect(response._getStatusCode()).toBe(error.statusCode);
-    expect(response._getData()).toMatch('UnsupportedHttpError: error');
+    expect(response._getData()).toMatch('NotImplementedHttpError: error');
   });
 
   it('responds with the error name and message when no stack trace is lazily generated.', async(): Promise<void> => {

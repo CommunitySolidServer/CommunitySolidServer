@@ -1,6 +1,7 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { trimTrailingSlashes } from '../../util/PathUtil';
 import type { ResourceStore } from '../ResourceStore';
 import { RouterRule } from './RouterRule';
@@ -47,7 +48,7 @@ export class RegexRouterRule extends RouterRule {
         return this.regexes.get(regex)!;
       }
     }
-    throw new UnsupportedHttpError(`No stored regexes match ${identifier.path}`);
+    throw new NotImplementedHttpError(`No stored regexes match ${identifier.path}`);
   }
 
   /**
@@ -55,7 +56,7 @@ export class RegexRouterRule extends RouterRule {
    */
   private toRelative(identifier: ResourceIdentifier): string {
     if (!identifier.path.startsWith(this.base)) {
-      throw new UnsupportedHttpError(`Identifiers need to start with ${this.base}`);
+      throw new BadRequestHttpError(`Identifiers need to start with ${this.base}`);
     }
     return identifier.path.slice(this.base.length);
   }

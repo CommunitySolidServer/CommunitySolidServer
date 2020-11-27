@@ -3,7 +3,7 @@ import { HeadOperationHandler } from '../../../../src/ldp/operations/HeadOperati
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A HeadOperationHandler', (): void => {
   let store: ResourceStore;
@@ -21,8 +21,8 @@ describe('A HeadOperationHandler', (): void => {
 
   it('only supports HEAD operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'HEAD' } as Operation)).resolves.toBeUndefined();
-    await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(UnsupportedHttpError);
-    await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(NotImplementedHttpError);
+    await expect(handler.canHandle({ method: 'POST' } as Operation)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('returns the representation from the store with the correct response.', async(): Promise<void> => {

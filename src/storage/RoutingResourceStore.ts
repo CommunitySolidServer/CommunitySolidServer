@@ -3,7 +3,7 @@ import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 import type { RouterRule } from './routing/RouterRule';
@@ -53,7 +53,7 @@ export class RoutingResourceStore implements ResourceStore {
     try {
       return await this.rule.handleSafe({ identifier });
     } catch (error: unknown) {
-      if (error instanceof UnsupportedHttpError) {
+      if (error instanceof NotImplementedHttpError) {
         throw new NotFoundHttpError();
       }
       throw error;

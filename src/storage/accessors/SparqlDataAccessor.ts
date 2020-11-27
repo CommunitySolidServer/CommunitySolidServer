@@ -21,7 +21,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
@@ -126,7 +126,7 @@ export class SparqlDataAccessor implements DataAccessor {
     const triples = await arrayifyStream(data) as Quad[];
     const def = defaultGraph();
     if (triples.some((triple): boolean => !def.equals(triple.graph))) {
-      throw new UnsupportedHttpError('Only triples in the default graph are supported.');
+      throw new NotImplementedHttpError('Only triples in the default graph are supported.');
     }
 
     // Not relevant since all content is triples

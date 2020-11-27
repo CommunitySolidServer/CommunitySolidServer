@@ -3,7 +3,7 @@ import type { RepresentationPreferences } from '../../../../src/ldp/representati
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSupport';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 
 describe('A PreferenceSupport', (): void => {
   const type = 'internal/quads';
@@ -26,7 +26,7 @@ describe('A PreferenceSupport', (): void => {
 
   it('returns false if the converter does not support the input.', async(): Promise<void> => {
     converter.canHandle = jest.fn((): any => {
-      throw new UnsupportedHttpError();
+      throw new BadRequestHttpError();
     });
     await expect(support.supports({ identifier, representation })).resolves.toBe(false);
     expect(converter.canHandle).toHaveBeenCalledTimes(1);

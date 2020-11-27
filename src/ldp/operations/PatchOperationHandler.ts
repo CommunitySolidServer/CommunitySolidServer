@@ -1,5 +1,5 @@
 import type { ResourceStore } from '../../storage/ResourceStore';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { Patch } from '../http/Patch';
 import { ResetResponseDescription } from '../http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
@@ -16,7 +16,7 @@ export class PatchOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'PATCH') {
-      throw new UnsupportedHttpError('This handler only supports PATCH operations.');
+      throw new NotImplementedHttpError('This handler only supports PATCH operations.');
     }
   }
 

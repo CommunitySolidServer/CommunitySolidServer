@@ -3,7 +3,7 @@ import rdfParser from 'rdf-parse';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
 import { CONTENT_TYPE } from '../../util/UriConstants';
 import { validateRequestArgs } from './ConversionUtil';
@@ -38,7 +38,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
     });
 
     const pass = new PassThrough({ objectMode: true });
-    const data = pipeSafely(rawQuads, pass, (error): Error => new UnsupportedHttpError(error.message));
+    const data = pipeSafely(rawQuads, pass, (error): Error => new BadRequestHttpError(error.message));
 
     return {
       binary: false,

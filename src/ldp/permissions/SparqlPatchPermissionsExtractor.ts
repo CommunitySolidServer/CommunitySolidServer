@@ -1,5 +1,5 @@
 import { Algebra } from 'sparqlalgebrajs';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
 import type { Operation } from '../operations/Operation';
 import type { Representation } from '../representation/Representation';
@@ -14,16 +14,16 @@ import { PermissionsExtractor } from './PermissionsExtractor';
 export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
   public async canHandle({ method, body }: Operation): Promise<void> {
     if (method !== 'PATCH') {
-      throw new UnsupportedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
+      throw new NotImplementedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
     }
     if (!body) {
-      throw new UnsupportedHttpError('Cannot determine permissions of PATCH operations without a body.');
+      throw new NotImplementedHttpError('Cannot determine permissions of PATCH operations without a body.');
     }
     if (!this.isSparql(body)) {
-      throw new UnsupportedHttpError('Cannot determine permissions of non-SPARQL patches.');
+      throw new NotImplementedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }
     if (!this.isDeleteInsert(body.algebra)) {
-      throw new UnsupportedHttpError('Cannot determine permissions of a PATCH without DELETE/INSERT.');
+      throw new NotImplementedHttpError('Cannot determine permissions of a PATCH without DELETE/INSERT.');
     }
   }
 

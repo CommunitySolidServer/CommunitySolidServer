@@ -1,7 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { MetadataWriter } from './metadata/MetadataWriter';
 import type { ResponseDescription } from './response/ResponseDescription';
@@ -22,7 +22,7 @@ export class BasicResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (input.result instanceof Error || input.result.metadata?.contentType === INTERNAL_QUADS) {
       this.logger.warn('This writer only supports binary ResponseDescriptions');
-      throw new UnsupportedHttpError('Only successful binary responses are supported');
+      throw new NotImplementedHttpError('Only successful binary responses are supported');
     }
   }
 

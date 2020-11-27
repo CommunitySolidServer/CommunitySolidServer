@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { CreatedResponseDescription } from '../http/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
@@ -22,14 +23,14 @@ export class PostOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'POST') {
-      throw new UnsupportedHttpError('This handler only supports POST operations');
+      throw new NotImplementedHttpError('This handler only supports POST operations');
     }
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
     if (!input.body) {
       this.logger.warn('POST operations require a body');
-      throw new UnsupportedHttpError('POST operations require a body');
+      throw new BadRequestHttpError('POST operations require a body');
     }
     const identifier = await this.store.addResource(input.target, input.body);
     return new CreatedResponseDescription(identifier);
