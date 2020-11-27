@@ -7,7 +7,7 @@ import {
   ensureTrailingSlash, isContainerIdentifier,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
-import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
+import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
 
 const { normalize: normalizePath } = posix;

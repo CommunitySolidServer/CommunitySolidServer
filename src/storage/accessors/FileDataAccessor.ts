@@ -19,7 +19,7 @@ import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
-import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
+import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
 const { join: joinPath } = posix;

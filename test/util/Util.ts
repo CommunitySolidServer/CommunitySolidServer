@@ -160,6 +160,10 @@ export const mockFs = (rootFilepath?: string, time?: Date): { data: any } => {
         }
         folder[name] = {};
       },
+      readFile(path: string): string {
+        const { folder, name } = getFolder(path);
+        return folder[name];
+      },
     },
   };
 

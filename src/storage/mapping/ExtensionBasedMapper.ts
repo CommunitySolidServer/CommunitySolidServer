@@ -12,7 +12,7 @@ import {
   isContainerIdentifier,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
-import type { FileIdentifierMapper, ResourceLink } from '../FileIdentifierMapper';
+import type { FileIdentifierMapper, FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
 import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
 
 const { join: joinPath, normalize: normalizePath } = posix;
@@ -197,3 +197,10 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     return extension && extension[1];
   }
 }
+
+export class ExtensionBasedMapperFactory implements FileIdentifierMapperFactory<ExtensionBasedMapper> {
+  public async create(base: string, rootFilePath: string): Promise<ExtensionBasedMapper> {
+    return new ExtensionBasedMapper(base, rootFilePath);
+  }
+}
+

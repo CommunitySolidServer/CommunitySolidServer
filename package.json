@@ -91,6 +91,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fetch-sparql-endpoint": "^1.8.0",
+    "handlebars": "^4.7.6",
     "mime-types": "^2.1.27",
     "n3": "^1.6.4",
     "rdf-parse": "^1.5.0",
