@@ -6,7 +6,8 @@ module.exports = {
     project: ['./tsconfig.json'],
   },
   globals:  {
-    NodeJS: 'readonly'
+    AsyncIterable: 'readonly',
+    NodeJS: 'readonly',
   },
   plugins: [
     'tsdoc',
@@ -38,6 +39,7 @@ module.exports = {
     'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
     'comma-dangle': ['error', 'always-multiline'],
     'dot-location': ['error', 'property'],
+    'generator-star-spacing': ['error', 'after'],
     'lines-around-comment': 'off', // conflicts with padded-blocks
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
     'max-len': ['error', { code: 120, ignoreUrls: true }],
@@ -54,6 +56,7 @@ module.exports = {
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
     'unicorn/prefer-ternary': 'off', // can get ugly with large single statements
+    'yield-star-spacing': ['error', 'after'],
 
     // Naming conventions
     '@typescript-eslint/naming-convention': [
