@@ -27,12 +27,12 @@ module.exports = {
     }
   },
   rules: {
+    '@typescript-eslint/consistent-type-definitions': 'off', // there are valid typing reasons to have one or the other
     '@typescript-eslint/lines-between-class-members': [ 'error', { exceptAfterSingleLine: true }],
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-invalid-void-type': 'off', // breaks with default void in Asynchandler 2nd generic
     '@typescript-eslint/no-unnecessary-condition': 'off', // problems with optional parameters
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
-    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',
     'class-methods-use-this': 'off', // conflicts with functions from interfaces that sometimes don't require `this`
@@ -82,6 +82,7 @@ module.exports = {
     ],
 
     // Import
+    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
     'sort-imports': 'off', // Disabled in favor of eslint-plugin-import
     'import/order': ['error', {
       alphabetize: {
