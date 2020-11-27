@@ -13,6 +13,7 @@
     "files-scs:config/presets/ldp/websockets.json",
     "files-scs:config/presets/logging.json",
     "files-scs:config/presets/middleware.json",
+    "files-scs:config/presets/pod-management.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/setup.json",
     "files-scs:config/presets/storage/backend/storage-memory.json",

@@ -16,6 +16,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       'urn:solid-server:default:ServerFactory', 'websockets.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
+        'urn:solid-server:default:variable:podTemplateFolder': 'templates',
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);

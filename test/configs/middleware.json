@@ -7,6 +7,10 @@
   ],
   "@graph": [
     {
+      "@id": "urn:solid-server:default:PodManagerHandler",
+      "@type": "Variable"
+    },
+    {
       "@id": "urn:solid-server:default:LdpHandler",
       "@type": "Variable"
     }

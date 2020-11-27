@@ -20,6 +20,10 @@
     {
       "@id": "urn:solid-server:default:variable:loggingLevel",
       "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:podTemplateFolder",
+      "@type": "Variable"
     }
   ]
 }
