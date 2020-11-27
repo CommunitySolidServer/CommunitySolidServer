@@ -7,7 +7,7 @@ import type { MetadataWriter } from '../../../../src/ldp/http/metadata/MetadataW
 import type { ResponseDescription } from '../../../../src/ldp/http/response/ResponseDescription';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
@@ -27,10 +27,10 @@ describe('A BasicResponseWriter', (): void => {
 
   it('requires the input to be a binary ResponseDescription.', async(): Promise<void> => {
     await expect(writer.canHandle({ response, result: new Error('error') }))
-      .rejects.toThrow(UnsupportedHttpError);
+      .rejects.toThrow(NotImplementedHttpError);
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
     await expect(writer.canHandle({ response, result: { statusCode: 201, metadata }}))
-      .rejects.toThrow(UnsupportedHttpError);
+      .rejects.toThrow(NotImplementedHttpError);
     await expect(writer.canHandle({ response, result }))
       .resolves.toBeUndefined();
   });

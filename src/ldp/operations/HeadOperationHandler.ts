@@ -1,5 +1,5 @@
 import type { ResourceStore } from '../../storage/ResourceStore';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { OkResponseDescription } from '../http/response/OkResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
 import type { Operation } from './Operation';
@@ -19,7 +19,7 @@ export class HeadOperationHandler extends OperationHandler {
 
   public async canHandle(input: Operation): Promise<void> {
     if (input.method !== 'HEAD') {
-      throw new UnsupportedHttpError('This handler only supports HEAD operations');
+      throw new NotImplementedHttpError('This handler only supports HEAD operations');
     }
   }
 

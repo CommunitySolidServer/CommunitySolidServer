@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import {
   encodeUriPathComponents,
   ensureTrailingSlash,
@@ -82,7 +82,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     // Would conflict with how new extensions are stored
     if (/\$\.\w+$/u.test(filePath)) {
       this.logger.warn(`Identifier ${identifier.path} contains a dollar sign before its extension`);
-      throw new UnsupportedHttpError('Identifiers cannot contain a dollar sign before their extension');
+      throw new NotImplementedHttpError('Identifiers cannot contain a dollar sign before their extension');
     }
 
     // Existing file
@@ -123,7 +123,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
       const extension = mime.extension(contentType);
       if (!extension) {
         this.logger.warn(`No extension found for ${contentType}`);
-        throw new UnsupportedHttpError(`Unsupported content type ${contentType}`);
+        throw new NotImplementedHttpError(`Unsupported content type ${contentType}`);
       }
       filePath += `$.${extension}`;
     }

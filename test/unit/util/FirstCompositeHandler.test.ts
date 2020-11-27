@@ -1,6 +1,6 @@
 import type { AsyncHandler } from '../../../src/util/AsyncHandler';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { HttpError } from '../../../src/util/errors/HttpError';
-import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
 import { FirstCompositeHandler } from '../../../src/util/FirstCompositeHandler';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
@@ -111,7 +111,7 @@ describe('A FirstCompositeHandler', (): void => {
       });
     });
 
-    it('throws an UnsupportedHttpError if handlers throw different errors.', async(): Promise<void> => {
+    it('throws an BadRequestHttpError if handlers throw different errors.', async(): Promise<void> => {
       handlerTrue.canHandle = async(): Promise<void> => {
         throw new HttpError(401, 'UnauthorizedHttpError');
       };
@@ -120,7 +120,7 @@ describe('A FirstCompositeHandler', (): void => {
       };
       const handler = new FirstCompositeHandler([ handlerTrue, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow(UnsupportedHttpError);
+      await expect(handler.canHandle(null)).rejects.toThrow(BadRequestHttpError);
     });
   });
 });

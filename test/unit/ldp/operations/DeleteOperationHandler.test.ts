@@ -1,7 +1,7 @@
 import { DeleteOperationHandler } from '../../../../src/ldp/operations/DeleteOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A DeleteOperationHandler', (): void => {
   const store = {} as unknown as ResourceStore;
@@ -12,7 +12,7 @@ describe('A DeleteOperationHandler', (): void => {
 
   it('only supports DELETE operations.', async(): Promise<void> => {
     await expect(handler.canHandle({ method: 'DELETE' } as Operation)).resolves.toBeUndefined();
-    await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('deletes the resource from the store and returns the correct response.', async(): Promise<void> => {

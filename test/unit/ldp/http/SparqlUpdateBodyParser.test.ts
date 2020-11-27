@@ -7,7 +7,7 @@ import type { BodyParserArgs } from '../../../../src/ldp/http/BodyParser';
 import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 
 describe('A SparqlUpdateBodyParser', (): void => {
@@ -28,7 +28,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
 
   it('errors when handling invalid SPARQL updates.', async(): Promise<void> => {
     input.request = streamifyArray([ 'VERY INVALID UPDATE' ]) as HttpRequest;
-    await expect(bodyParser.handle(input)).rejects.toThrow(UnsupportedHttpError);
+    await expect(bodyParser.handle(input)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('errors when receiving an unexpected error.', async(): Promise<void> => {
@@ -38,7 +38,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     input.request = streamifyArray(
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     ) as HttpRequest;
-    await expect(bodyParser.handle(input)).rejects.toThrow(UnsupportedHttpError);
+    await expect(bodyParser.handle(input)).rejects.toThrow(BadRequestHttpError);
     mock.mockRestore();
   });
 

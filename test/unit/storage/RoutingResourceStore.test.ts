@@ -1,7 +1,7 @@
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { RoutingResourceStore } from '../../../src/storage/RoutingResourceStore';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { UnsupportedHttpError } from '../../../src/util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('A RoutingResourceStore', (): void => {
@@ -61,7 +61,7 @@ describe('A RoutingResourceStore', (): void => {
 
   it('throws a 404 if there is no body and no store was found.', async(): Promise<void> => {
     rule.canHandle = (): any => {
-      throw new UnsupportedHttpError();
+      throw new NotImplementedHttpError();
     };
     await expect(store.getRepresentation(identifier, 'preferences' as any, 'conditions' as any))
       .rejects.toThrow(NotFoundHttpError);

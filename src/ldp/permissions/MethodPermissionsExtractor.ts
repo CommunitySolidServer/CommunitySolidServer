@@ -1,5 +1,5 @@
 import { getLoggerFor } from '../../logging/LogUtil';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { Operation } from '../operations/Operation';
 import type { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
@@ -18,7 +18,7 @@ export class MethodPermissionsExtractor extends PermissionsExtractor {
   public async canHandle({ method }: Operation): Promise<void> {
     if (!SUPPORTED_METHODS.has(method)) {
       this.logger.warn(`Unrecognized method ${method}`);
-      throw new UnsupportedHttpError(`Cannot determine permissions of ${method}`);
+      throw new NotImplementedHttpError(`Cannot determine permissions of ${method}`);
     }
   }
 

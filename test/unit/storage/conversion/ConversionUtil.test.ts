@@ -7,8 +7,8 @@ import {
   matchingTypes,
   validateRequestArgs,
 } from '../../../../src/storage/conversion/ConversionUtil';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
 
 describe('ConversionUtil', (): void => {
   const identifier: ResourceIdentifier = { path: 'path' };
@@ -66,7 +66,7 @@ describe('ConversionUtil', (): void => {
       const preferences: RepresentationPreferences =
         { type: [{ value: 'b/x', weight: 1 }, { value: 'b/x', weight: 0 }]};
       expect((): any => matchingTypes(preferences, [ 'b/x' ]))
-        .toThrow(new UnsupportedHttpError(`Duplicate type preference found: b/x`));
+        .toThrow(new BadRequestHttpError(`Duplicate type preference found: b/x`));
     });
 
     it('errors if there invalid types.', async(): Promise<void> => {

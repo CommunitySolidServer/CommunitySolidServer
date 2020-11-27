@@ -3,7 +3,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { pipeSafely, readableToString } from '../../util/StreamUtil';
 import type { BodyParserArgs } from './BodyParser';
@@ -36,9 +36,9 @@ export class SparqlUpdateBodyParser extends BodyParser {
     } catch (error: unknown) {
       this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
       if (error instanceof Error) {
-        throw new UnsupportedHttpError(error.message);
+        throw new BadRequestHttpError(error.message);
       }
-      throw new UnsupportedHttpError();
+      throw new BadRequestHttpError();
     }
 
     // Prevent body from being requested again

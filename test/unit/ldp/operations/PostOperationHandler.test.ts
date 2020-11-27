@@ -3,7 +3,8 @@ import { PostOperationHandler } from '../../../../src/ldp/operations/PostOperati
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
-import { UnsupportedHttpError } from '../../../../src/util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { HTTP } from '../../../../src/util/UriConstants';
 
 describe('A PostOperationHandler', (): void => {
@@ -16,11 +17,11 @@ describe('A PostOperationHandler', (): void => {
     await expect(handler.canHandle({ method: 'POST', body: { }} as Operation))
       .resolves.toBeUndefined();
     await expect(handler.canHandle({ method: 'GET', body: { }} as Operation))
-      .rejects.toThrow(UnsupportedHttpError);
+      .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('errors if there is no body.', async(): Promise<void> => {
-    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(UnsupportedHttpError);
+    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('adds the given representation to the store and returns the correct response.', async(): Promise<void> => {

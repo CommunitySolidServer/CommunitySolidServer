@@ -1,7 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
 import { HttpError } from '../../util/errors/HttpError';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { ResponseDescription } from './response/ResponseDescription';
 import { ResponseWriter } from './ResponseWriter';
 
@@ -14,7 +14,7 @@ export class ErrorResponseWriter extends ResponseWriter {
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error)) {
       this.logger.warn('This writer can only write errors');
-      throw new UnsupportedHttpError('Only errors are supported');
+      throw new NotImplementedHttpError('Only errors are supported');
     }
   }
 

@@ -1,7 +1,7 @@
 import { posix } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import {
   encodeUriPathComponents,
   ensureTrailingSlash, isContainerIdentifier,
@@ -45,7 +45,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
 
     // Only allow the configured content type
     if (contentType && contentType !== this.contentType) {
-      throw new UnsupportedHttpError(`Unsupported content type ${contentType}, only ${this.contentType} is allowed`);
+      throw new NotImplementedHttpError(`Unsupported content type ${contentType}, only ${this.contentType} is allowed`);
     }
 
     this.logger.info(`The path for ${identifier.path} is ${filePath}`);

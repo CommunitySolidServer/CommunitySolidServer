@@ -10,7 +10,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { UnsupportedHttpError } from '../../util/errors/UnsupportedHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { ResourceLocker } from '../../util/locking/ResourceLocker';
 import { CONTENT_TYPE } from '../../util/UriConstants';
@@ -35,7 +35,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
     if (typeof input.patch.algebra !== 'object') {
-      throw new UnsupportedHttpError('Only SPARQL update patch requests are supported');
+      throw new NotImplementedHttpError('Only SPARQL update patch requests are supported');
     }
   }
 
@@ -43,7 +43,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const op = input.patch.algebra;
     if (!this.isDeleteInsert(op)) {
       this.logger.warn(`Unsupported operation: ${op.type}`);
-      throw new UnsupportedHttpError('Only DELETE/INSERT SPARQL update operations are supported');
+      throw new NotImplementedHttpError('Only DELETE/INSERT SPARQL update operations are supported');
     }
 
     const def = defaultGraph();
@@ -52,16 +52,16 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
       this.logger.warn('GRAPH statement in DELETE clause');
-      throw new UnsupportedHttpError('GRAPH statements are not supported');
+      throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
     if (!inserts.every((pattern): boolean => pattern.graph.equals(def))) {
       this.logger.warn('GRAPH statement in INSERT clause');
-      throw new UnsupportedHttpError('GRAPH statements are not supported');
+      throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
     if (op.where ?? deletes.some((pattern): boolean =>
       someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
       this.logger.warn('WHERE statements are not supported');
-      throw new UnsupportedHttpError('WHERE statements are not supported');
+      throw new NotImplementedHttpError('WHERE statements are not supported');
     }
 
     const lock = await this.locker.acquire(input.identifier);

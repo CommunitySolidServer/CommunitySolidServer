@@ -1,7 +1,7 @@
 import { SlugParser } from '../../../../../src/ldp/http/metadata/SlugParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import { UnsupportedHttpError } from '../../../../../src/util/errors/UnsupportedHttpError';
+import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
 import { HTTP } from '../../../../../src/util/UriConstants';
 
 describe('A SlugParser', (): void => {
@@ -22,7 +22,7 @@ describe('A SlugParser', (): void => {
   it('errors if there are multiple slug headers.', async(): Promise<void> => {
     request.headers.slug = [ 'slugA', 'slugB' ];
     await expect(parser.parse(request, metadata))
-      .rejects.toThrow(new UnsupportedHttpError('Request has multiple Slug headers'));
+      .rejects.toThrow(new BadRequestHttpError('Request has multiple Slug headers'));
   });
 
   it('stores the slug metadata.', async(): Promise<void> => {
