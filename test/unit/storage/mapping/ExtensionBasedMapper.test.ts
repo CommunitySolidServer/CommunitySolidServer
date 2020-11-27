@@ -1,5 +1,8 @@
 import fs from 'fs';
-import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
+import {
+  ExtensionBasedMapper,
+  ExtensionBasedMapperFactory,
+} from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { trimTrailingSlashes } from '../../../../src/util/PathUtil';
@@ -133,6 +136,14 @@ describe('An ExtensionBasedMapper', (): void => {
         filePath: `${rootFilepath}test`,
         contentType: 'application/octet-stream',
       });
+    });
+  });
+
+  describe('An ExtensionBasedMapperFactory', (): void => {
+    const factory = new ExtensionBasedMapperFactory();
+
+    it('creates an ExtensionBasedMapper.', async(): Promise<void> => {
+      await expect(factory.create('base', 'filePath')).resolves.toBeInstanceOf(ExtensionBasedMapper);
     });
   });
 });

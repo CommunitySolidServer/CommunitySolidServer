@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 
 export interface ResourceLink {
   /**
@@ -37,4 +37,12 @@ export interface FileIdentifierMapper {
    * @returns A ResourceLink with all the necessary metadata.
    */
   mapUrlToFilePath: (identifier: ResourceIdentifier, contentType?: string) => Promise<ResourceLink>;
+}
+
+/**
+ * Factory that can create FileIdentifierMappers so the base and rootFilePath can be set dynamically.
+ * Specifically used when identifiers need to be generated for a new pod (since pod identifiers are generated).
+ */
+export interface FileIdentifierMapperFactory<T extends FileIdentifierMapper = FileIdentifierMapper> {
+  create: (base: string, rootFilePath: string) => Promise<T>;
 }
