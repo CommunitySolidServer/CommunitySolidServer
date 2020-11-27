@@ -37,6 +37,7 @@ export const runCli = function({
       port: { type: 'number', alias: 'p', default: 3000 },
       rootFilePath: { type: 'string', alias: 'f' },
       sparqlEndpoint: { type: 'string', alias: 's' },
+      podTemplateFolder: { type: 'string', alias: 't' },
     })
     .help();
 
@@ -58,6 +59,8 @@ export const runCli = function({
           'urn:solid-server:default:variable:port': params.port,
           'urn:solid-server:default:variable:rootFilePath': params.rootFilePath ?? process.cwd(),
           'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
+          'urn:solid-server:default:variable:podTemplateFolder':
+            params.podTemplateFolder ?? path.join(__dirname, '../../templates'),
         },
       }) as Setup;
     return await setup.setup();

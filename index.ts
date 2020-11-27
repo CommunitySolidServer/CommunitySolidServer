@@ -86,6 +86,24 @@ export * from './src/logging/LogUtil';
 export * from './src/logging/VoidLoggerFactory';
 export * from './src/logging/WinstonLoggerFactory';
 
+// Pods/Agent
+export * from './src/pods/agent/Agent';
+export * from './src/pods/agent/AgentJsonParser';
+export * from './src/pods/agent/AgentParser';
+
+// Pods/Generate
+export * from './src/pods/generate/HandlebarsTemplateEngine';
+export * from './src/pods/generate/IdentifierGenerator';
+export * from './src/pods/generate/ResourcesGenerator';
+export * from './src/pods/generate/SuffixIdentifierGenerator';
+export * from './src/pods/generate/TemplateEngine';
+export * from './src/pods/generate/TemplatedResourcesGenerator';
+
+// Pods
+export * from './src/pods/GeneratedPodManager';
+export * from './src/pods/PodManager';
+export * from './src/pods/PodManagerHttpHandler';
+
 // Server
 export * from './src/server/ExpressHttpServerFactory';
 export * from './src/server/HttpHandler';

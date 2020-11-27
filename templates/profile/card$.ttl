@@ -1,0 +1,10 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<>
+    a foaf:PersonalProfileDocument;
+    foaf:maker <{{webId}}>;
+    foaf:primaryTopic <{{webId}}>.
+
+<{{webId}}>
+    a foaf:Person;
+    foaf:name "{{name}}".
