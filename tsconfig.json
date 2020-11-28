@@ -5,6 +5,7 @@
     "newLine": "lf",
     "declaration": true,
     "esModuleInterop": true,
+    "incremental": true,
     "inlineSources": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,

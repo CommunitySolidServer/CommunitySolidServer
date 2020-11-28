@@ -7,6 +7,8 @@ node_modules
 *.d.ts
 components
 
+tsconfig.tsbuildinfo
+
 .eslintcache
 !.eslintrc.js
 !test/eslintrc.js
