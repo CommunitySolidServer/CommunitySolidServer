@@ -45,7 +45,7 @@ export class WrappedExpiringLock extends EventEmitter implements ExpiringLock {
   }
 
   private async expire(): Promise<void> {
-    this.logger.verbose(`Lock expired after ${this.expiration}ms`);
+    this.logger.warn(`Lock expired after ${this.expiration}ms`);
     this.emit('expired');
     try {
       await this.innerLock.release();
