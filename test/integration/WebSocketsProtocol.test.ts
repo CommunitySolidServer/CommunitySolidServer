@@ -33,7 +33,7 @@ describe('A server with the Solid WebSockets API', (): void => {
 
   it('sets the Updates-Via header.', async(): Promise<void> => {
     const response = await fetch(baseUrl);
-    expect(response.headers.get('Updates-Via')).toBe(`ws://localhost:${port}`);
+    expect(response.headers.get('Updates-Via')).toBe(`ws://localhost:${port}/`);
   });
 
   it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {

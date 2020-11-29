@@ -22,7 +22,7 @@ export class WebSocketAdvertiser extends HttpHandler {
     if (socketUrl.hostname !== hostname) {
       throw new Error(`Invalid hostname: ${hostname}`);
     }
-    this.socketUrl = socketUrl.href.slice(0, -1);
+    this.socketUrl = socketUrl.href;
   }
 
   public async handle({ response }: { response: HttpResponse }): Promise<void> {
