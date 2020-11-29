@@ -3,18 +3,24 @@ import { HeaderHandler } from '../../../../src/server/middleware/HeaderHandler';
 import { guardStream } from '../../../../src/util/GuardedStream';
 
 describe('a HeaderHandler', (): void => {
-  let handler: HeaderHandler;
+  it('adds no headers when none are configured.', async(): Promise<void> => {
+    const handler = new HeaderHandler();
 
-  beforeAll(async(): Promise<void> => {
-    handler = new HeaderHandler();
-  });
-
-  it('returns an X-Powered-By header.', async(): Promise<void> => {
     const request = guardStream(createRequest());
     const response = createResponse();
     await handler.handleSafe({ request, response });
-    expect(response.getHeaders()).toEqual(expect.objectContaining({
-      'x-powered-by': 'Community Solid Server',
-    }));
+
+    expect(response.getHeaders()).toEqual({});
+  });
+
+  it('adds all configured headers.', async(): Promise<void> => {
+    const headers = { custom: 'Custom', other: 'Other' };
+    const handler = new HeaderHandler(headers);
+
+    const request = guardStream(createRequest());
+    const response = createResponse();
+    await handler.handleSafe({ request, response });
+
+    expect(response.getHeaders()).toEqual(expect.objectContaining(headers));
   });
 });

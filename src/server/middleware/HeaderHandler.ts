@@ -7,11 +7,11 @@ import type { HttpResponse } from '../HttpResponse';
 export class HeaderHandler extends HttpHandler {
   private readonly headers: Record<string, string>;
 
-  public constructor() {
+  // Not supported by Components.js yet
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  public constructor(headers: { [header: string]: string } = {}) {
     super();
-    this.headers = {
-      'x-powered-by': 'Community Solid Server',
-    };
+    this.headers = { ...headers };
   }
 
   public async handle({ response }: { response: HttpResponse }): Promise<void> {

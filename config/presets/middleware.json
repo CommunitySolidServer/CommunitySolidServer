@@ -9,7 +9,13 @@
           "@type": "CorsHandler"
         },
         {
-          "@type": "HeaderHandler"
+          "@type": "HeaderHandler",
+          "HeaderHandler:_headers": [
+            {
+              "HeaderHandler:_headers_key": "X-Powered-By",
+              "HeaderHandler:_headers_value": "Community Solid Server"
+            }
+          ]
         }
       ]
     }
