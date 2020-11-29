@@ -1,6 +1,6 @@
-import type { HttpResponse } from '../../../server/HttpResponse';
-import { addHeader } from '../../../util/HeaderUtil';
-import { MetadataWriter } from './MetadataWriter';
+import { addHeader } from '../../util/HeaderUtil';
+import { HttpHandler } from '../HttpHandler';
+import type { HttpResponse } from '../HttpResponse';
 
 interface WebSocketSettings {
   hostname?: string;
@@ -9,9 +9,9 @@ interface WebSocketSettings {
 }
 
 /**
- * A {@link MetadataWriter} that advertises a WebSocket through the Updates-Via header.
+ * Handler that advertises a WebSocket through the Updates-Via header.
  */
-export class WebSocketMetadataWriter extends MetadataWriter {
+export class WebSocketAdvertiser extends HttpHandler {
   private readonly socketUrl: string;
 
   public constructor(settings: WebSocketSettings = {}) {

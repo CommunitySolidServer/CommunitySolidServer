@@ -28,6 +28,12 @@
               "HeaderHandler:_headers_value": "Community Solid Server"
             }
           ]
+        },
+        {
+          "@type": "WebSocketAdvertiser",
+          "WebSocketAdvertiser:_settings_port": {
+            "@id": "urn:solid-server:default:variable:port"
+          }
         }
       ]
     }

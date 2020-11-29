@@ -26,7 +26,6 @@ export * from './src/ldp/http/metadata/MetadataExtractor';
 export * from './src/ldp/http/metadata/MetadataParser';
 export * from './src/ldp/http/metadata/MetadataWriter';
 export * from './src/ldp/http/metadata/SlugParser';
-export * from './src/ldp/http/metadata/WebSocketMetadataWriter';
 
 // LDP/HTTP/Response
 export * from './src/ldp/http/response/CreatedResponseDescription';
@@ -98,6 +97,7 @@ export * from './src/server/WebSocketHandler';
 // Server/Middleware
 export * from './src/server/middleware/CorsHandler';
 export * from './src/server/middleware/HeaderHandler';
+export * from './src/server/middleware/WebSocketAdvertiser';
 
 // Storage/Accessors
 export * from './src/storage/accessors/DataAccessor';

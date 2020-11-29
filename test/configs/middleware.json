@@ -2,7 +2,8 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/presets/http.json",
-    "files-scs:config/presets/middleware.json"
+    "files-scs:config/presets/middleware.json",
+    "files-scs:config/presets/cli-params.json"
   ],
   "@graph": [
     {
