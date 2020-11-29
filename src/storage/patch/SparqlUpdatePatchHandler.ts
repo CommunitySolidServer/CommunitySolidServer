@@ -40,7 +40,9 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   }
 
   public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
-    const op = input.patch.algebra;
+    // Verify the patch
+    const { identifier, patch } = input;
+    const op = patch.algebra;
     if (!this.isDeleteInsert(op)) {
       this.logger.warn(`Unsupported operation: ${op.type}`);
       throw new NotImplementedHttpError('Only DELETE/INSERT SPARQL update operations are supported');
@@ -49,7 +51,6 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const def = defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
-
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
       this.logger.warn('GRAPH statement in DELETE clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
@@ -64,8 +65,9 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       throw new NotImplementedHttpError('WHERE statements are not supported');
     }
 
-    const lock = await this.locker.acquire(input.identifier);
-    const quads = await this.source.getRepresentation(input.identifier,
+    // Read the quads of the current representation
+    const lock = await this.locker.acquire(identifier);
+    const quads = await this.source.getRepresentation(identifier,
       { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
     const store = new Store<BaseQuad>();
     const importEmitter = store.import(quads.data);
@@ -73,15 +75,22 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       importEmitter.on('end', resolve);
       importEmitter.on('error', reject);
     });
+    this.logger.debug(`${store.size} quads in ${identifier.path}.`);
+
+    // Apply the patch
     store.removeQuads(deletes);
     store.addQuads(inserts);
-    const metadata = new RepresentationMetadata(input.identifier.path, { [CONTENT_TYPE]: INTERNAL_QUADS });
+    this.logger.debug(`Removed ${deletes.length} and added ${inserts.length} quads to ${identifier.path}.`);
+    this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
+
+    // Write the result
+    const metadata = new RepresentationMetadata(identifier.path, { [CONTENT_TYPE]: INTERNAL_QUADS });
     const representation: Representation = {
       binary: false,
       data: guardStream(store.match() as Readable),
       metadata,
     };
-    await this.source.setRepresentation(input.identifier, representation);
+    await this.source.setRepresentation(identifier, representation);
 
     await lock.release();
   }
