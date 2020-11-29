@@ -9,6 +9,7 @@
     "files-scs:config/presets/ldp/response-writer.json",
     "files-scs:config/presets/ldp/request-parser.json",
     "files-scs:config/presets/ldp/websockets.json",
+    "files-scs:config/presets/middleware.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/storage/backend/storage-memory.json",
     "files-scs:config/presets/storage/routing/no-routing.json",
@@ -17,7 +18,7 @@
   ],
   "@graph": [
     {
-      "@id": "urn:solid-server:default:HttpHandler",
+      "@id": "urn:solid-server:default:LdpHandler",
       "@type": "AuthenticatedLdpHandler",
       "AuthenticatedLdpHandler:_args_requestParser": {
         "@id": "urn:solid-server:default:RequestParser"

@@ -17,6 +17,18 @@
       "ExpressHttpServerFactory:_handler": {
         "@id": "urn:solid-server:default:HttpHandler"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:HttpHandler",
+      "@type": "AllVoidCompositeHandler",
+      "AllVoidCompositeHandler:_handlers": [
+        {
+          "@id": "urn:solid-server:default:Middleware"
+        },
+        {
+          "@id": "urn:solid-server:default:LdpHandler"
+        }
+      ]
     }
   ]
 }

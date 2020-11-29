@@ -95,6 +95,10 @@ export * from './src/server/HttpResponse';
 export * from './src/server/WebSocketServerFactory';
 export * from './src/server/WebSocketHandler';
 
+// Server/Middleware
+export * from './src/server/middleware/CorsHandler';
+export * from './src/server/middleware/HeaderHandler';
+
 // Storage/Accessors
 export * from './src/storage/accessors/DataAccessor';
 export * from './src/storage/accessors/FileDataAccessor';

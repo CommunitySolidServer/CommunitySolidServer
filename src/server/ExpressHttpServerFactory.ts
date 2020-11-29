@@ -1,5 +1,4 @@
 import type { Server } from 'http';
-import cors from 'cors';
 import type { Express } from 'express';
 import express from 'express';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -17,28 +16,11 @@ export class ExpressHttpServerFactory implements HttpServerFactory {
   }
 
   public startServer(port: number): Server {
-    const app = express();
-    this.setup(app);
-    return app.listen(port);
+    return this.createApp().listen(port);
   }
 
-  protected setup(app: Express): void {
-    // Set up server identification
-    app.use((request, response, done): void => {
-      response.setHeader('X-Powered-By', 'Community Solid Server');
-      done();
-    });
-
-    // Set up Cross-Origin Resource Sharing (CORS)
-    app.use(cors({
-      // Based on https://github.com/solid/solid-spec/blob/master/recommendations-server.md#cors---cross-origin-resource-sharing
-      // By default origin is always '*', this forces it to be the origin header if there is one
-      origin: (origin, callback): void => callback(null, (origin ?? '*') as any),
-      methods: [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ],
-    }));
-
-    // Delegate to the main handler
-    app.use(async(request, response, done): Promise<void> => {
+  protected createApp(): Express {
+    return express().use(async(request, response, done): Promise<void> => {
       try {
         this.logger.info(`Received request for ${request.url}`);
         await this.handler.handleSafe({ request: guardStream(request), response });

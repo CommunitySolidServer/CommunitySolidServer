@@ -42,42 +42,11 @@ describe('ExpressHttpServerFactory', (): void => {
   });
 
   afterEach(async(): Promise<void> => {
-    // Close server
     server.close();
   });
 
   afterAll(async(): Promise<void> => {
     mock.mockReset();
-  });
-
-  it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
-    const res = await request(server).get('/');
-    expect(res.header).toEqual(expect.objectContaining({
-      'x-powered-by': 'Community Solid Server',
-    }));
-  });
-
-  it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
-    const res = await request(server)
-      .options('/')
-      .set('Access-Control-Request-Headers', 'content-type')
-      .set('Access-Control-Request-Method', 'POST')
-      .set('Host', 'test.com')
-      .expect(204);
-    expect(res.header).toEqual(expect.objectContaining({
-      'access-control-allow-origin': '*',
-      'access-control-allow-headers': 'content-type',
-    }));
-    const corsMethods = res.header['access-control-allow-methods'].split(',')
-      .map((method: string): string => method.trim());
-    const allowedMethods = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ];
-    expect(corsMethods).toEqual(expect.arrayContaining(allowedMethods));
-    expect(corsMethods).toHaveLength(allowedMethods.length);
-  });
-
-  it('specifies CORS origin header if an origin was supplied.', async(): Promise<void> => {
-    const res = await request(server).get('/').set('origin', 'test.com').expect(200);
-    expect(res.header).toEqual(expect.objectContaining({ 'access-control-allow-origin': 'test.com' }));
   });
 
   it('sends incoming requests to the handler.', async(): Promise<void> => {
