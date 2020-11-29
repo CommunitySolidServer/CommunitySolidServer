@@ -6,7 +6,16 @@
       "@type": "AllVoidCompositeHandler",
       "AllVoidCompositeHandler:_handlers": [
         {
-          "@type": "CorsHandler"
+          "@type": "CorsHandler",
+          "CorsHandler:_options_methods": [
+            "GET",
+            "HEAD",
+            "OPTIONS",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE"
+          ]
         },
         {
           "@type": "HeaderHandler",

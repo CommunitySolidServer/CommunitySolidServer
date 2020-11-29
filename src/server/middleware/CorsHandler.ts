@@ -1,8 +1,25 @@
 import cors from 'cors';
+import type { CorsOptions } from 'cors';
 import type { RequestHandler } from 'express';
 import { HttpHandler } from '../HttpHandler';
 import type { HttpRequest } from '../HttpRequest';
 import type { HttpResponse } from '../HttpResponse';
+
+const defaultOptions: CorsOptions = {
+  origin: (origin: any, callback: any): void => callback(null, origin ?? '*'),
+};
+
+// Components.js does not support the full CorsOptions yet
+interface SimpleCorsOptions {
+  origin?: string;
+  methods?: string[];
+  allowedHeaders?: string[];
+  exposedHeaders?: string[];
+  credentials?: boolean;
+  maxAge?: number;
+  preflightContinue?: boolean;
+  optionsSuccessStatus?: number;
+}
 
 /**
  * Handler that sets CORS options on the response.
@@ -10,12 +27,9 @@ import type { HttpResponse } from '../HttpResponse';
 export class CorsHandler extends HttpHandler {
   private readonly corsHandler: RequestHandler;
 
-  public constructor() {
+  public constructor(options: SimpleCorsOptions = {}) {
     super();
-    this.corsHandler = cors({
-      origin: (origin, callback): void => callback(null, (origin ?? '*') as any),
-      methods: [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ],
-    });
+    this.corsHandler = cors({ ...defaultOptions, ...options });
   }
 
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
