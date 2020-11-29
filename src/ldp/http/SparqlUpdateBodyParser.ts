@@ -20,7 +20,6 @@ export class SparqlUpdateBodyParser extends BodyParser {
   public async canHandle({ request }: BodyParserArgs): Promise<void> {
     const contentType = request.headers['content-type'];
     if (contentType !== APPLICATION_SPARQL_UPDATE) {
-      this.logger.debug(`Unsupported content type: ${contentType}`);
       throw new UnsupportedMediaTypeHttpError('This parser only supports SPARQL UPDATE data.');
     }
   }

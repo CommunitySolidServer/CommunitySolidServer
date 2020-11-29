@@ -21,7 +21,6 @@ export class BasicResponseWriter extends ResponseWriter {
 
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (input.result instanceof Error || input.result.metadata?.contentType === INTERNAL_QUADS) {
-      this.logger.warn('This writer only supports binary ResponseDescriptions');
       throw new NotImplementedHttpError('Only successful binary responses are supported');
     }
   }

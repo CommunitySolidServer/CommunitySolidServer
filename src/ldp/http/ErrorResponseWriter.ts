@@ -13,7 +13,6 @@ export class ErrorResponseWriter extends ResponseWriter {
 
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
     if (!(input.result instanceof Error)) {
-      this.logger.warn('This writer can only write errors');
       throw new NotImplementedHttpError('Only errors are supported');
     }
   }
