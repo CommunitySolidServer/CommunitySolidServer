@@ -36,6 +36,12 @@ describe('A server with the Solid WebSockets API', (): void => {
     expect(response.headers.get('Updates-Via')).toBe(`ws://localhost:${port}`);
   });
 
+  it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
+    const response = await fetch(baseUrl);
+    expect(response.headers.get('Access-Control-Expose-Headers')!.split(','))
+      .toContain('Updates-Via');
+  });
+
   describe('when a WebSocket client connects', (): void => {
     let client: WebSocket;
     const messages = new Array<string>();

@@ -15,6 +15,9 @@
             "PUT",
             "PATCH",
             "DELETE"
+          ],
+          "CorsHandler:_options_exposedHeaders": [
+            "Updates-Via"
           ]
         },
         {
