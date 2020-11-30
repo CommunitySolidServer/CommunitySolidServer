@@ -3,16 +3,6 @@ import { HeaderHandler } from '../../../../src/server/middleware/HeaderHandler';
 import { guardStream } from '../../../../src/util/GuardedStream';
 
 describe('a HeaderHandler', (): void => {
-  it('adds no headers when none are configured.', async(): Promise<void> => {
-    const handler = new HeaderHandler();
-
-    const request = guardStream(createRequest());
-    const response = createResponse();
-    await handler.handleSafe({ request, response });
-
-    expect(response.getHeaders()).toEqual({});
-  });
-
   it('adds all configured headers.', async(): Promise<void> => {
     const headers = { custom: 'Custom', other: 'Other' };
     const handler = new HeaderHandler(headers);

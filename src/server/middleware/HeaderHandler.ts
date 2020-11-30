@@ -7,9 +7,7 @@ import type { HttpResponse } from '../HttpResponse';
 export class HeaderHandler extends HttpHandler {
   private readonly headers: Record<string, string>;
 
-  // Not supported by Components.js yet
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  public constructor(headers: { [header: string]: string } = {}) {
+  public constructor(headers: Record<string, string>) {
     super();
     this.headers = { ...headers };
   }

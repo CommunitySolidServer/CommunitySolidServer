@@ -10,9 +10,7 @@ import { MetadataWriter } from './MetadataWriter';
 export class LinkRelMetadataWriter extends MetadataWriter {
   private readonly linkRelMap: Record<string, string>;
 
-  // Not supported by Components.js yet
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  public constructor(linkRelMap: { [predicate: string]: string }) {
+  public constructor(linkRelMap: Record<string, string>) {
     super();
     this.linkRelMap = linkRelMap;
   }

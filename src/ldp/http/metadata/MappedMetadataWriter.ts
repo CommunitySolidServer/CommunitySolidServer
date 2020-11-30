@@ -10,9 +10,7 @@ import { MetadataWriter } from './MetadataWriter';
 export class MappedMetadataWriter extends MetadataWriter {
   private readonly headerMap: Record<string, string>;
 
-  // Not supported by Components.js yet
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  public constructor(headerMap: { [predicate: string]: string }) {
+  public constructor(headerMap: Record<string, string>) {
     super();
     this.headerMap = headerMap;
   }
