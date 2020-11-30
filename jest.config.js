@@ -26,5 +26,6 @@ module.exports = {
       "lines": 100,
       "statements": 100
     }
-  }
+  },
+  "testTimeout": 10000, // Slower machines had problems calling the WebSocket integration callbacks on time
 };
