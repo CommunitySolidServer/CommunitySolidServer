@@ -53,7 +53,7 @@ export const getParentContainer = (id: ResourceIdentifier): ResourceIdentifier =
 
   // This probably means there is an issue with the root
   if (parentPath === id.path) {
-    throw new InternalServerError('URL root reached');
+    throw new InternalServerError(`Resource ${id.path} does not have a parent container`);
   }
 
   return { path: parentPath };

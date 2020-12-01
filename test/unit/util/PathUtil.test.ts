@@ -37,7 +37,8 @@ describe('PathUtil', (): void => {
     });
 
     it('errors when the root of an URl is reached that does not match the input root.', async(): Promise<void> => {
-      expect((): any => getParentContainer({ path: 'http://test.com/' })).toThrow('URL root reached');
+      expect((): any => getParentContainer({ path: 'http://test.com/' }))
+        .toThrow('Resource http://test.com/ does not have a parent container');
     });
   });
 });
