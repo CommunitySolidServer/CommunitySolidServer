@@ -3,6 +3,7 @@ import type WebSocket from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
+import { parseForwarded } from '../util/HeaderUtil';
 import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid/0.1.0-alpha';
@@ -26,13 +27,13 @@ class WebSocketListener extends EventEmitter {
     socket.addListener('message', (message: string): void => this.onMessage(message));
   }
 
-  public start(upgradeRequest: HttpRequest): void {
+  public start({ headers, socket }: HttpRequest): void {
     // Greet the client
     this.sendMessage('protocol', VERSION);
     this.sendMessage('warning', 'Unstandardized protocol version, proceed with care');
 
     // Verify the WebSocket protocol version
-    const protocolHeader = upgradeRequest.headers['sec-websocket-protocol'];
+    const protocolHeader = headers['sec-websocket-protocol'];
     if (!protocolHeader) {
       this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
     } else {
@@ -44,8 +45,9 @@ class WebSocketListener extends EventEmitter {
     }
 
     // Store the HTTP host and protocol
-    this.host = upgradeRequest.headers.host ?? '';
-    this.protocol = (upgradeRequest.socket as any).secure ? 'https:' : 'http:';
+    const forwarded = parseForwarded(headers.forwarded);
+    this.host = forwarded.host ?? headers.host ?? 'localhost';
+    this.protocol = forwarded.proto === 'https' || (socket as any).secure ? 'https:' : 'http:';
   }
 
   private stop(): void {

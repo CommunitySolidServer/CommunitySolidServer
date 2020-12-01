@@ -1,6 +1,6 @@
 import type { TLSSocket } from 'tls';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpRequest } from '../../server/HttpRequest';
+import { parseForwarded } from '../../util/HeaderUtil';
 import { toCanonicalUriPath } from '../../util/PathUtil';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
@@ -11,28 +11,35 @@ import { TargetExtractor } from './TargetExtractor';
  * TODO: input requires more extensive cleaning/parsing based on headers (see #22).
  */
 export class BasicTargetExtractor extends TargetExtractor {
-  protected readonly logger = getLoggerFor(this);
-
-  public async handle({ url, headers: { host }, connection }: HttpRequest): Promise<ResourceIdentifier> {
+  public async handle({ url, connection, headers }: HttpRequest): Promise<ResourceIdentifier> {
     if (!url) {
-      this.logger.error('The request has no URL');
       throw new Error('Missing URL');
     }
+
+    // Extract host and protocol (possibly overridden by the Forwarded header)
+    let { host } = headers;
+    let protocol = (connection as TLSSocket)?.encrypted ? 'https' : 'http';
+    if (headers.forwarded) {
+      const forwarded = parseForwarded(headers.forwarded);
+      if (forwarded.host) {
+        ({ host } = forwarded);
+      }
+      if (forwarded.proto) {
+        ({ proto: protocol } = forwarded);
+      }
+    }
+
+    // Perform a sanity check on the host
     if (!host) {
-      this.logger.error('The request has no Host header');
       throw new Error('Missing Host header');
     }
     if (/[/\\*]/u.test(host)) {
       throw new Error(`The request has an invalid Host header: ${host}`);
     }
 
-    const isHttps = (connection as TLSSocket)?.encrypted;
-    this.logger.debug(`Request is using HTTPS: ${isHttps}`);
-
     // URL object applies punycode encoding to domain
-    const base = `http${isHttps ? 's' : ''}://${host}`;
+    const base = `${protocol}://${host}`;
     const path = new URL(toCanonicalUriPath(url), base).href;
-
     return { path };
   }
 }
