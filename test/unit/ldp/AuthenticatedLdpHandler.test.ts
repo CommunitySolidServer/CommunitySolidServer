@@ -16,7 +16,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   let responseFn: jest.Mock<Promise<void>, [any]>;
 
   beforeEach(async(): Promise<void> => {
-    const requestParser: RequestParser = new StaticAsyncHandler(true, 'parser' as any);
+    const requestParser: RequestParser = new StaticAsyncHandler(true, ({ target: 'target' }) as any);
     const credentialsExtractor: CredentialsExtractor = new StaticAsyncHandler(true, 'credentials' as any);
     const permissionsExtractor: PermissionsExtractor = new StaticAsyncHandler(true, 'permissions' as any);
     const authorizer: Authorizer = new StaticAsyncHandler(true, 'authorizer' as any);

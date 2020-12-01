@@ -1,6 +1,7 @@
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
+import { getLoggerFor } from '../logging/LogUtil';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
@@ -52,6 +53,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
   private readonly authorizer!: Authorizer;
   private readonly operationHandler!: OperationHandler;
   private readonly responseWriter!: ResponseWriter;
+  private readonly logger = getLoggerFor(this);
 
   /**
    * Creates the handler.
@@ -110,10 +112,26 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    * @returns A promise resolving to the generated Operation.
    */
   private async runHandlers(request: HttpRequest): Promise<ResponseDescription> {
-    const op: Operation = await this.requestParser.handleSafe(request);
+    this.logger.verbose(`Handling LDP request for ${request.url}`);
+
+    const operation: Operation = await this.requestParser.handleSafe(request);
+    this.logger.verbose(`Parsed ${operation.method} operation on ${operation.target.path}`);
+
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
-    const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(op);
-    await this.authorizer.handleSafe({ credentials, identifier: op.target, permissions });
-    return this.operationHandler.handleSafe(op);
+    this.logger.verbose(`Extracted credentials: ${credentials.webID}`);
+
+    const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(operation);
+    const { read, write, append } = permissions;
+    this.logger.verbose(`Required permissions are read: ${read}, write: ${write}, append: ${append}`);
+
+    try {
+      await this.authorizer.handleSafe({ credentials, identifier: operation.target, permissions });
+    } catch (error: unknown) {
+      this.logger.verbose(`Authorization failed: ${(error as any).message}`);
+      throw error;
+    }
+
+    this.logger.verbose(`Authorization succeeded, performing operation`);
+    return this.operationHandler.handleSafe(operation);
   }
 }
