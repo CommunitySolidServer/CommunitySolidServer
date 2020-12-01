@@ -11,19 +11,23 @@ const logger = getLoggerFor('CliRunner');
 /**
  * Generic run function for starting the server from a given config
  * @param args - Command line arguments.
- * @param stdin - Standard input stream.
- * @param stdout - Standard output stream.
  * @param stderr - Standard error stream.
  * @param properties - Components loader properties.
  */
-export const runCustom = function(
-  args: string[],
-  stdin: ReadStream,
-  stdout: WriteStream,
-  stderr: WriteStream,
-  properties: LoaderProperties,
-): void {
-  const { argv } = yargs(args)
+export const runCli = function({
+  argv = process.argv,
+  stderr = process.stderr,
+  properties = {
+    mainModulePath: path.join(__dirname, '../../'),
+  },
+}: {
+  argv?: string[];
+  stdin?: ReadStream;
+  stdout?: WriteStream;
+  stderr?: WriteStream;
+  properties?: LoaderProperties;
+} = {}): void {
+  const { argv: params } = yargs(argv.slice(2))
     .usage('node ./bin/server.js [args]')
     .options({
       port: { type: 'number', alias: 'p', default: 3000 },
@@ -36,8 +40,8 @@ export const runCustom = function(
 
   (async(): Promise<string> => {
     // Load provided or default config file
-    const configPath = argv.config ?
-      path.join(process.cwd(), argv.config) :
+    const configPath = params.config ?
+      path.join(process.cwd(), params.config) :
       path.join(__dirname, '/../../config/config-default.json');
 
     // Setup from config file
@@ -46,11 +50,11 @@ export const runCustom = function(
     const setup: Setup = await loader
       .instantiateFromUrl('urn:solid-server:default', configPath, undefined, {
         variables: {
-          'urn:solid-server:default:variable:port': argv.port,
-          'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
-          'urn:solid-server:default:variable:rootFilePath': argv.rootFilePath ?? process.cwd(),
-          'urn:solid-server:default:variable:sparqlEndpoint': argv.sparqlEndpoint,
-          'urn:solid-server:default:variable:loggingLevel': argv.loggingLevel,
+          'urn:solid-server:default:variable:port': params.port,
+          'urn:solid-server:default:variable:base': `http://localhost:${params.port}/`,
+          'urn:solid-server:default:variable:rootFilePath': params.rootFilePath ?? process.cwd(),
+          'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
+          'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
         },
       }) as Setup;
     return await setup.setup();
@@ -60,12 +64,4 @@ export const runCustom = function(
     // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);
   });
-};
-
-/**
- * Run function for starting the server from the command line
- * @param moduleRootPath - Path to the module's root.
- */
-export const runCli = function(mainModulePath: string, argv: string[]): void {
-  runCustom(argv, process.stdin, process.stdout, process.stderr, { mainModulePath });
 };

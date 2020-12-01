@@ -1,9 +1,9 @@
 import * as path from 'path';
-import type { Loader } from 'componentsjs';
+import { Loader } from 'componentsjs';
 import { runCli } from '../../../src/init/CliRunner';
 import type { Setup } from '../../../src/init/Setup';
 
-const mainModulePath = path.join(__dirname, '..');
+const mainModulePath = path.join(__dirname, '../../../');
 
 const mockSetup = {
   setup: jest.fn(async(): Promise<any> => null),
@@ -25,9 +25,13 @@ describe('CliRunner', (): void => {
   });
 
   it('starts the server with default settings.', async(): Promise<void> => {
-    runCli(mainModulePath, [ 'node', 'script' ]);
+    runCli({
+      argv: [ 'node', 'script' ],
+    });
     await mockSetup.setup();
 
+    expect(Loader).toHaveBeenCalledTimes(1);
+    expect(Loader).toHaveBeenCalledWith({ mainModulePath });
     expect(loader.instantiateFromUrl).toHaveBeenCalledTimes(1);
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
       'urn:solid-server:default',
@@ -50,13 +54,16 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts abbreviated flags.', async(): Promise<void> => {
-    runCli(mainModulePath, [ 'node', 'script',
-      '-p', '4000',
-      '-c', 'myconfig.json',
-      '-f', '/root',
-      '-s', 'http://localhost:5000/sparql',
-      '-l', 'debug',
-    ]);
+    runCli({
+      argv: [
+        'node', 'script',
+        '-p', '4000',
+        '-c', 'myconfig.json',
+        '-f', '/root',
+        '-s', 'http://localhost:5000/sparql',
+        '-l', 'debug',
+      ],
+    });
     await mockSetup.setup();
 
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
@@ -76,13 +83,16 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts full flags.', async(): Promise<void> => {
-    runCli(mainModulePath, [ 'node', 'script',
-      '--port', '4000',
-      '--config', 'myconfig.json',
-      '--rootFilePath', '/root',
-      '--sparqlEndpoint', 'http://localhost:5000/sparql',
-      '--loggingLevel', 'debug',
-    ]);
+    runCli({
+      argv: [
+        'node', 'script',
+        '--port', '4000',
+        '--config', 'myconfig.json',
+        '--rootFilePath', '/root',
+        '--sparqlEndpoint', 'http://localhost:5000/sparql',
+        '--loggingLevel', 'debug',
+      ],
+    });
     await mockSetup.setup();
 
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
@@ -105,7 +115,7 @@ describe('CliRunner', (): void => {
     jest.spyOn(process.stderr, 'write');
     loader.instantiateFromUrl.mockRejectedValueOnce(new Error('Fatal'));
 
-    runCli(mainModulePath, [ 'node', 'script' ]);
+    runCli();
     await new Promise((resolve): any => setImmediate(resolve));
 
     expect(process.stderr.write).toHaveBeenCalledTimes(1);
