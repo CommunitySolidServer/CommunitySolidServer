@@ -22,6 +22,6 @@ describe('An UnsecureWebIdExtractor', (): void => {
   it('returns the authorization header as WebID if there is one.', async(): Promise<void> => {
     const headers = { authorization: 'WebID http://alice.example/card#me' };
     const result = extractor.handleSafe({ headers } as HttpRequest);
-    await expect(result).resolves.toEqual({ webID: 'http://alice.example/card#me' });
+    await expect(result).resolves.toEqual({ webId: 'http://alice.example/card#me' });
   });
 });

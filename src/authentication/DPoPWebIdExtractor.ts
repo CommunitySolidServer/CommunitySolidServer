@@ -33,9 +33,9 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     }
     const resource = await this.targetExtractor.handleSafe(request);
     try {
-      const webID = await verify(authorization as string, dpop as string, method as any, resource.path);
-      this.logger.info(`Verified WebID via DPoP token: ${webID}`);
-      return { webID };
+      const webId = await verify(authorization as string, dpop as string, method as any, resource.path);
+      this.logger.info(`Verified WebID via DPoP token: ${webId}`);
+      return { webId };
     } catch (error: unknown) {
       const message = `Error verifying WebID via DPoP token: ${(error as Error).message}`;
       this.logger.warn(message);

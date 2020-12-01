@@ -118,7 +118,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     this.logger.verbose(`Parsed ${operation.method} operation on ${operation.target.path}`);
 
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
-    this.logger.verbose(`Extracted credentials: ${credentials.webID}`);
+    this.logger.verbose(`Extracted credentials: ${credentials.webId}`);
 
     const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(operation);
     const { read, write, append } = permissions;

@@ -63,9 +63,9 @@ export class WebAclAuthorizer extends Authorizer {
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
     const auths = store.getQuads(null, ACL.mode, modeString, null).map((quad: Quad): Term => quad.subject);
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
-      const isLoggedIn = typeof agent.webID === 'string';
+      const isLoggedIn = typeof agent.webId === 'string';
       if (isLoggedIn) {
-        this.logger.warn(`Agent ${agent.webID} has no ${mode} permissions`);
+        this.logger.warn(`Agent ${agent.webId} has no ${mode} permissions`);
         throw new ForbiddenHttpError();
       } else {
         this.logger.warn(`Unauthenticated agent has no ${mode} permissions`);
@@ -96,13 +96,13 @@ export class WebAclAuthorizer extends Authorizer {
     if (store.countQuads(auth, ACL.agentClass, FOAF.Agent, null) > 0) {
       return true;
     }
-    if (typeof agent.webID !== 'string') {
+    if (typeof agent.webId !== 'string') {
       return false;
     }
     if (store.countQuads(auth, ACL.agentClass, FOAF.AuthenticatedAgent, null) > 0) {
       return true;
     }
-    return store.countQuads(auth, ACL.agent, agent.webID, null) > 0;
+    return store.countQuads(auth, ACL.agent, agent.webId, null) > 0;
   }
 
   /**

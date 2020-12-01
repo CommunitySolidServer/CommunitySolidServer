@@ -5,7 +5,7 @@ import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 /**
- * Credentials extractor which simply interprets the contents of the Authorization header as a webID.
+ * Credentials extractor which simply interprets the contents of the Authorization header as a WebID.
  */
 export class UnsecureWebIdExtractor extends CredentialsExtractor {
   protected readonly logger = getLoggerFor(this);
@@ -18,8 +18,8 @@ export class UnsecureWebIdExtractor extends CredentialsExtractor {
   }
 
   public async handle({ headers }: HttpRequest): Promise<Credentials> {
-    const webID = /^WebID\s+(.*)/u.exec(headers.authorization as string)![1];
-    this.logger.info(`Agent unsecurely claims to be ${webID}`);
-    return { webID };
+    const webId = /^WebID\s+(.*)/u.exec(headers.authorization as string)![1];
+    this.logger.info(`Agent unsecurely claims to be ${webId}`);
+    return { webId };
   }
 }

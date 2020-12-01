@@ -84,7 +84,7 @@ describe('A WebAclAuthorizer', (): void => {
       ]) } as Representation),
     } as unknown as ResourceStore;
     authorizer = new WebAclAuthorizer(aclManager, store);
-    credentials.webID = 'http://test.com/user';
+    credentials.webId = 'http://test.com/user';
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -101,10 +101,10 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('allows access to specific agents if the acl files identifies them.', async(): Promise<void> => {
-    credentials.webID = 'http://test.com/user';
+    credentials.webId = 'http://test.com/user';
     const store = {
       getRepresentation: async(): Promise<Representation> => ({ data: streamifyArray([
-        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webID!)),
+        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
         quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
@@ -114,7 +114,7 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('errors if a specific agents wants to access files not assigned to them.', async(): Promise<void> => {
-    credentials.webID = 'http://test.com/user';
+    credentials.webId = 'http://test.com/user';
     const store = {
       getRepresentation: async(): Promise<Representation> => ({ data: streamifyArray([
         quad(nn('auth'), nn(`${acl}agent`), nn('http://test.com/differentUser')),
@@ -127,11 +127,11 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('allows access to the acl file if control is allowed.', async(): Promise<void> => {
-    credentials.webID = 'http://test.com/user';
+    credentials.webId = 'http://test.com/user';
     identifier.path = 'http://test.com/foo';
     const store = {
       getRepresentation: async(): Promise<Representation> => ({ data: streamifyArray([
-        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webID!)),
+        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
         quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
       ]) } as Representation),
@@ -142,11 +142,11 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('errors if an agent tries to edit the acl file without control permissions.', async(): Promise<void> => {
-    credentials.webID = 'http://test.com/user';
+    credentials.webId = 'http://test.com/user';
     identifier.path = 'http://test.com/foo';
     const store = {
       getRepresentation: async(): Promise<Representation> => ({ data: streamifyArray([
-        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webID!)),
+        quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
         quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ]) } as Representation),
