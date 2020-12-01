@@ -65,10 +65,25 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       throw new NotImplementedHttpError('WHERE statements are not supported');
     }
 
-    // Read the quads of the current representation
     const lock = await this.locker.acquire(identifier);
-    const quads = await this.source.getRepresentation(identifier,
-      { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+    try {
+      await this.applyPatch(identifier, deletes, inserts);
+    } finally {
+      await lock.release();
+    }
+  }
+
+  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
+    return op.type === Algebra.types.DELETE_INSERT;
+  }
+
+  /**
+   * Applies the given deletes and inserts to the resource.
+   */
+  private async applyPatch(identifier: ResourceIdentifier, deletes: Algebra.Pattern[], inserts: Algebra.Pattern[]):
+  Promise<void> {
+    // Read the quads of the current representation
+    const quads = await this.source.getRepresentation(identifier, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
     const store = new Store<BaseQuad>();
     const importEmitter = store.import(quads.data);
     await new Promise((resolve, reject): void => {
@@ -91,11 +106,5 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       metadata,
     };
     await this.source.setRepresentation(identifier, representation);
-
-    await lock.release();
-  }
-
-  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
-    return op.type === Algebra.types.DELETE_INSERT;
   }
 }

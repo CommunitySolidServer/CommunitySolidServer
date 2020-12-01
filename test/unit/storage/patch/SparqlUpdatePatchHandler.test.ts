@@ -199,4 +199,20 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     await expect(handle).rejects.toThrow('Only DELETE/INSERT SPARQL update operations are supported');
     expect(order).toEqual([]);
   });
+
+  it('releases the lock if an error occurs while patching.', async(): Promise<void> => {
+    source.getRepresentation = jest.fn(async(): Promise<any> => {
+      order.push('getRepresentation');
+      throw new Error('error');
+    });
+
+    const input = { identifier: { path: 'path' },
+      patch: { algebra: translate(
+        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
+        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
+        { quads: true },
+      ) } as SparqlUpdatePatch };
+    await expect(handler.handle(input)).rejects.toThrow('error');
+    expect(order).toEqual([ 'acquire', 'getRepresentation', 'release' ]);
+  });
 });
