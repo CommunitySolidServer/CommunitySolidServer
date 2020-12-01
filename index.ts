@@ -152,6 +152,7 @@ export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Locking
 export * from './src/util/locking/Lock';
+export * from './src/util/locking/LockfileResourceLocker';
 export * from './src/util/locking/ResourceLocker';
 export * from './src/util/locking/SingleThreadedResourceLocker';
 export * from './src/util/locking/WrappedExpiringResourceLocker';
