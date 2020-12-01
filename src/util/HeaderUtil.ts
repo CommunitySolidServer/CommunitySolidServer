@@ -378,3 +378,37 @@ export const addHeader = (response: HttpResponse, name: string, value: string | 
   }
   response.setHeader(name, allValues.length === 1 ? allValues[0] : allValues);
 };
+
+/**
+ * The Forwarded header from RFC7239
+ */
+export interface Forwarded {
+  /** The user-agent facing interface of the proxy */
+  by?: string;
+  /** The node making the request to the proxy */
+  for?: string;
+  /** The host request header field as received by the proxy */
+  host?: string;
+  /** The protocol used to make the request */
+  proto?: string;
+}
+
+/**
+ * Parses a Forwarded header value.
+ *
+ * @param value - The Forwarded header value.
+ *
+ * @returns The parsed Forwarded header.
+ */
+export const parseForwarded = (value = ''): Forwarded => {
+  const forwarded: Record<string, string> = {};
+  if (value) {
+    for (const pair of value.replace(/\s*,.*$/u, '').split(';')) {
+      const components = /^(by|for|host|proto)=(.+)$/u.exec(pair);
+      if (components) {
+        forwarded[components[1]] = components[2];
+      }
+    }
+  }
+  return forwarded;
+};

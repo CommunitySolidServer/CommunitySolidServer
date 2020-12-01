@@ -5,6 +5,7 @@ import {
   parseAcceptCharset,
   parseAcceptEncoding,
   parseAcceptLanguage,
+  parseForwarded,
 } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
@@ -164,6 +165,37 @@ describe('HeaderUtil', (): void => {
       response.setHeader('names', [ 'oldValue1', 'oldValue2' ]);
       expect(addHeader(response, 'names', [ 'value1', 'values2' ])).toBeUndefined();
       expect(response.getHeader('names')).toEqual([ 'oldValue1', 'oldValue2', 'value1', 'values2' ]);
+    });
+  });
+
+  describe('parseForwarded', (): void => {
+    it('parses an undefined value.', (): void => {
+      expect(parseForwarded()).toEqual({});
+    });
+
+    it('parses an empty string.', (): void => {
+      expect(parseForwarded('')).toEqual({});
+    });
+
+    it('parses a Forwarded header value.', (): void => {
+      expect(parseForwarded('for=192.0.2.60;proto=http;by=203.0.113.43;host=example.org')).toEqual({
+        by: '203.0.113.43',
+        for: '192.0.2.60',
+        host: 'example.org',
+        proto: 'http',
+      });
+    });
+
+    it('skips empty fields.', (): void => {
+      expect(parseForwarded('for=192.0.2.60;proto=;by=;host=')).toEqual({
+        for: '192.0.2.60',
+      });
+    });
+
+    it('takes only the first value into account.', (): void => {
+      expect(parseForwarded('host=pod.example, for=192.0.2.43, host=other')).toEqual({
+        host: 'pod.example',
+      });
     });
   });
 });

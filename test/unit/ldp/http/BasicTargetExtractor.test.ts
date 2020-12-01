@@ -51,4 +51,22 @@ describe('A BasicTargetExtractor', (): void => {
     await expect(extractor.handle({ url: '/', headers: { host: '點看' }} as any))
       .resolves.toEqual({ path: 'http://xn--c1yn36f/' });
   });
+
+  it('ignores an irrelevant Forwarded header.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      forwarded: 'by=203.0.113.60',
+    };
+    await expect(extractor.handle({ url: '/foo/bar', headers } as any))
+      .resolves.toEqual({ path: 'http://test.com/foo/bar' });
+  });
+
+  it('takes the Forwarded header into account.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      forwarded: 'proto=https;host=pod.example',
+    };
+    await expect(extractor.handle({ url: '/foo/bar', headers } as any))
+      .resolves.toEqual({ path: 'https://pod.example/foo/bar' });
+  });
 });

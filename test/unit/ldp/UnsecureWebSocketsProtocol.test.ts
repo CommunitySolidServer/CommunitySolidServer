@@ -120,52 +120,67 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
   });
 
   it('unsubscribes when a socket closes.', async(): Promise<void> => {
-    const newSocket = new DummySocket();
-    await protocol.handle({ webSocket: newSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
-    expect(newSocket.listenerCount('message')).toBe(1);
-    newSocket.emit('close');
-    expect(newSocket.listenerCount('message')).toBe(0);
-    expect(newSocket.listenerCount('close')).toBe(0);
-    expect(newSocket.listenerCount('error')).toBe(0);
+    const webSocket = new DummySocket();
+    await protocol.handle({ webSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
+    expect(webSocket.listenerCount('message')).toBe(1);
+    webSocket.emit('close');
+    expect(webSocket.listenerCount('message')).toBe(0);
+    expect(webSocket.listenerCount('close')).toBe(0);
+    expect(webSocket.listenerCount('error')).toBe(0);
   });
 
   it('unsubscribes when a socket errors.', async(): Promise<void> => {
-    const newSocket = new DummySocket();
-    await protocol.handle({ webSocket: newSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
-    expect(newSocket.listenerCount('message')).toBe(1);
-    newSocket.emit('error');
-    expect(newSocket.listenerCount('message')).toBe(0);
-    expect(newSocket.listenerCount('close')).toBe(0);
-    expect(newSocket.listenerCount('error')).toBe(0);
+    const webSocket = new DummySocket();
+    await protocol.handle({ webSocket, upgradeRequest: { headers: {}, socket: {}}} as any);
+    expect(webSocket.listenerCount('message')).toBe(1);
+    webSocket.emit('error');
+    expect(webSocket.listenerCount('message')).toBe(0);
+    expect(webSocket.listenerCount('close')).toBe(0);
+    expect(webSocket.listenerCount('error')).toBe(0);
   });
 
   it('emits a warning when no Sec-WebSocket-Protocol is supplied.', async(): Promise<void> => {
-    const newSocket = new DummySocket();
+    const webSocket = new DummySocket();
     const upgradeRequest = {
       headers: {},
       socket: {},
     } as any as HttpRequest;
-    await protocol.handle({ webSocket: newSocket, upgradeRequest } as any);
-    expect(newSocket.messages).toHaveLength(3);
-    expect(newSocket.messages.pop())
+    await protocol.handle({ webSocket, upgradeRequest } as any);
+    expect(webSocket.messages).toHaveLength(3);
+    expect(webSocket.messages.pop())
       .toBe('warning Missing Sec-WebSocket-Protocol header, expected value \'solid/0.1.0-alpha\'');
-    expect(newSocket.close).toHaveBeenCalledTimes(0);
+    expect(webSocket.close).toHaveBeenCalledTimes(0);
   });
 
   it('emits an error and closes the connection with the wrong Sec-WebSocket-Protocol.', async(): Promise<void> => {
-    const newSocket = new DummySocket();
+    const webSocket = new DummySocket();
     const upgradeRequest = {
       headers: {
         'sec-websocket-protocol': 'solid/1.0.0, other',
       },
       socket: {},
     } as any as HttpRequest;
-    await protocol.handle({ webSocket: newSocket, upgradeRequest } as any);
-    expect(newSocket.messages).toHaveLength(3);
-    expect(newSocket.messages.pop()).toBe('error Client does not support protocol solid/0.1.0-alpha');
-    expect(newSocket.close).toHaveBeenCalledTimes(1);
-    expect(newSocket.listenerCount('message')).toBe(0);
-    expect(newSocket.listenerCount('close')).toBe(0);
-    expect(newSocket.listenerCount('error')).toBe(0);
+    await protocol.handle({ webSocket, upgradeRequest } as any);
+    expect(webSocket.messages).toHaveLength(3);
+    expect(webSocket.messages.pop()).toBe('error Client does not support protocol solid/0.1.0-alpha');
+    expect(webSocket.close).toHaveBeenCalledTimes(1);
+    expect(webSocket.listenerCount('message')).toBe(0);
+    expect(webSocket.listenerCount('close')).toBe(0);
+    expect(webSocket.listenerCount('error')).toBe(0);
+  });
+
+  it('respects the Forwarded header.', async(): Promise<void> => {
+    const webSocket = new DummySocket();
+    const upgradeRequest = {
+      headers: {
+        forwarded: 'proto=https;host=other.example',
+        'sec-websocket-protocol': 'solid/0.1.0-alpha',
+      },
+      socket: {},
+    } as any as HttpRequest;
+    await protocol.handle({ webSocket, upgradeRequest } as any);
+    webSocket.emit('message', 'sub https://other.example/protocol/foo');
+    expect(webSocket.messages).toHaveLength(3);
+    expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
   });
 });
