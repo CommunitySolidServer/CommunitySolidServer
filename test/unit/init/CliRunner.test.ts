@@ -1,98 +1,114 @@
-import * as Path from 'path';
+import * as path from 'path';
 import type { Loader } from 'componentsjs';
 import { runCli } from '../../../src/init/CliRunner';
 import type { Setup } from '../../../src/init/Setup';
 
-let calledInstantiateFromUrl: boolean;
-let calledRegisterAvailableModuleResources: boolean;
-let throwError: boolean;
-let outsideResolve: () => void;
-let functionToResolve: Promise<unknown>;
+const mainModulePath = path.join(__dirname, '..');
 
 const mockSetup = {
-  setup: jest.fn(),
+  setup: jest.fn(async(): Promise<any> => null),
 } as unknown as jest.Mocked<Setup>;
+const loader = {
+  instantiateFromUrl: jest.fn(async(): Promise<any> => mockSetup),
+  registerAvailableModuleResources: jest.fn(async(): Promise<any> => mockSetup),
+} as unknown as jest.Mocked<Loader>;
 
 // Mock the Loader class.
-jest.mock('componentsjs', (): any => (
-  // eslint-disable-next-line @typescript-eslint/naming-convention, object-shorthand
-  { Loader: function(): Loader {
-    return {
-      instantiateFromUrl(): any {
-        calledInstantiateFromUrl = true;
-        if (throwError) {
-          throw new Error('Error! :o');
-        }
-        return mockSetup;
-      },
-      registerAvailableModuleResources(): any {
-        calledRegisterAvailableModuleResources = true;
-      },
-    } as unknown as Loader;
-  } }
-));
-
-jest.mock('yargs', (): any => ({
-  usage(): any {
-    return this;
-  },
-  options(): any {
-    return this;
-  },
-  help(): any {
-    // Return once with and once without values so that both branches are tested.
-    if (throwError) {
-      return {
-        argv: { config: 'value', rootFilePath: 'root' },
-      };
-    }
-    return {
-      argv: { },
-    };
-  },
+jest.mock('componentsjs', (): any => ({
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Loader: jest.fn((): Loader => loader),
 }));
 
 describe('CliRunner', (): void => {
-  beforeAll(async(): Promise<void> => {
-    mockSetup.setup.mockImplementation(async(): Promise<any> => {
-      // The info method will be called when all other code has been executed, so end the waiting function.
-      outsideResolve();
-    });
+  afterEach((): void => {
+    jest.clearAllMocks();
   });
 
-  beforeEach(async(): Promise<void> => {
-    calledInstantiateFromUrl = false;
-    calledRegisterAvailableModuleResources = false;
-    throwError = false;
+  it('starts the server with default settings.', async(): Promise<void> => {
+    runCli(mainModulePath, [ 'node', 'script' ]);
+    await mockSetup.setup();
 
-    // Initialize a function that will be resolved as soon as all necessary but asynchronous calls are completed.
-    functionToResolve = new Promise((resolve): any => {
-      outsideResolve = resolve;
-    });
-  });
-
-  it('Runs function for starting the server from the command line.', async(): Promise<void> => {
-    runCli(Path.join(__dirname, '..'));
-
-    await functionToResolve;
-
-    expect(calledInstantiateFromUrl).toBeTruthy();
-    expect(calledRegisterAvailableModuleResources).toBeTruthy();
+    expect(loader.instantiateFromUrl).toHaveBeenCalledTimes(1);
+    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+      'urn:solid-server:default',
+      path.join(__dirname, '/../../../config/config-default.json'),
+      undefined,
+      {
+        variables: {
+          'urn:solid-server:default:variable:port': 3000,
+          'urn:solid-server:default:variable:base': `http://localhost:3000/`,
+          'urn:solid-server:default:variable:rootFilePath': process.cwd(),
+          'urn:solid-server:default:variable:sparqlEndpoint': undefined,
+          'urn:solid-server:default:variable:loggingLevel': 'info',
+        },
+      },
+    );
+    expect(loader.registerAvailableModuleResources).toHaveBeenCalledTimes(1);
+    expect(loader.registerAvailableModuleResources).toHaveBeenCalledWith();
     expect(mockSetup.setup).toHaveBeenCalledTimes(1);
+    expect(mockSetup.setup).toHaveBeenCalledWith();
   });
 
-  it('Writes to stderr when an exception occurs.', async(): Promise<void> => {
-    const mockStderr = jest.spyOn(process.stderr, 'write').mockImplementation((): any => {
-      // This method will be called when an error has occurred, so end the waiting function.
-      outsideResolve();
-    });
-    throwError = true;
+  it('accepts abbreviated flags.', async(): Promise<void> => {
+    runCli(mainModulePath, [ 'node', 'script',
+      '-p', '4000',
+      '-c', 'myconfig.json',
+      '-f', '/root',
+      '-s', 'http://localhost:5000/sparql',
+      '-l', 'debug',
+    ]);
+    await mockSetup.setup();
 
-    runCli(Path.join(__dirname, '..'));
+    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+      'urn:solid-server:default',
+      path.join(process.cwd(), 'myconfig.json'),
+      undefined,
+      {
+        variables: {
+          'urn:solid-server:default:variable:port': 4000,
+          'urn:solid-server:default:variable:base': `http://localhost:4000/`,
+          'urn:solid-server:default:variable:rootFilePath': '/root',
+          'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:loggingLevel': 'debug',
+        },
+      },
+    );
+  });
 
-    await functionToResolve;
+  it('accepts full flags.', async(): Promise<void> => {
+    runCli(mainModulePath, [ 'node', 'script',
+      '--port', '4000',
+      '--config', 'myconfig.json',
+      '--rootFilePath', '/root',
+      '--sparqlEndpoint', 'http://localhost:5000/sparql',
+      '--loggingLevel', 'debug',
+    ]);
+    await mockSetup.setup();
 
-    expect(mockStderr).toHaveBeenCalledTimes(1);
-    mockStderr.mockRestore();
+    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+      'urn:solid-server:default',
+      path.join(process.cwd(), 'myconfig.json'),
+      undefined,
+      {
+        variables: {
+          'urn:solid-server:default:variable:port': 4000,
+          'urn:solid-server:default:variable:base': `http://localhost:4000/`,
+          'urn:solid-server:default:variable:rootFilePath': '/root',
+          'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:loggingLevel': 'debug',
+        },
+      },
+    );
+  });
+
+  it('writes to stderr when an error occurs.', async(): Promise<void> => {
+    jest.spyOn(process.stderr, 'write');
+    loader.instantiateFromUrl.mockRejectedValueOnce(new Error('Fatal'));
+
+    runCli(mainModulePath, [ 'node', 'script' ]);
+    await new Promise((resolve): any => setImmediate(resolve));
+
+    expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    expect(process.stderr.write).toHaveBeenCalledWith('Error: Fatal\n');
   });
 });

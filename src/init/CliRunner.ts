@@ -1,4 +1,4 @@
-import * as Path from 'path';
+import * as path from 'path';
 import type { ReadStream, WriteStream } from 'tty';
 import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
@@ -23,22 +23,22 @@ export const runCustom = function(
   stderr: WriteStream,
   properties: LoaderProperties,
 ): void {
-  const { argv } = yargs
+  const { argv } = yargs(args)
     .usage('node ./bin/server.js [args]')
     .options({
       port: { type: 'number', alias: 'p', default: 3000 },
       config: { type: 'string', alias: 'c' },
       rootFilePath: { type: 'string', alias: 'f' },
       sparqlEndpoint: { type: 'string', alias: 's' },
-      level: { type: 'string', alias: 'l', default: 'info' },
+      loggingLevel: { type: 'string', alias: 'l', default: 'info' },
     })
     .help();
 
   (async(): Promise<string> => {
     // Load provided or default config file
     const configPath = argv.config ?
-      Path.join(process.cwd(), argv.config) :
-      `${__dirname}/../../config/config-default.json`;
+      path.join(process.cwd(), argv.config) :
+      path.join(__dirname, '/../../config/config-default.json');
 
     // Setup from config file
     const loader = new Loader(properties);
@@ -50,7 +50,7 @@ export const runCustom = function(
           'urn:solid-server:default:variable:base': `http://localhost:${argv.port}/`,
           'urn:solid-server:default:variable:rootFilePath': argv.rootFilePath ?? process.cwd(),
           'urn:solid-server:default:variable:sparqlEndpoint': argv.sparqlEndpoint,
-          'urn:solid-server:default:variable:loggingLevel': argv.level,
+          'urn:solid-server:default:variable:loggingLevel': argv.loggingLevel,
         },
       }) as Setup;
     return await setup.setup();
@@ -66,7 +66,6 @@ export const runCustom = function(
  * Run function for starting the server from the command line
  * @param moduleRootPath - Path to the module's root.
  */
-export const runCli = function(moduleRootPath: string): void {
-  const argv = process.argv.slice(2);
-  runCustom(argv, process.stdin, process.stdout, process.stderr, { mainModulePath: moduleRootPath });
+export const runCli = function(mainModulePath: string, argv: string[]): void {
+  runCustom(argv, process.stdin, process.stdout, process.stderr, { mainModulePath });
 };
