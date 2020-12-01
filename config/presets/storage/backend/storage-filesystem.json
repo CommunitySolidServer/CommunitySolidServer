@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:FileIdentifierMapper",
       "@type": "ExtensionBasedMapper",
       "ExtensionBasedMapper:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "ExtensionBasedMapper:_rootFilepath": {
         "@id": "urn:solid-server:default:variable:rootFilePath"
@@ -27,7 +27,7 @@
         "@id": "urn:solid-server:default:FileDataAccessor"
       },
       "DataAccessorBasedStore:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     }
   ]

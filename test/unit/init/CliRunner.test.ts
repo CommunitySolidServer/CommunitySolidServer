@@ -5,13 +5,13 @@ import type { Setup } from '../../../src/init/Setup';
 
 const mainModulePath = path.join(__dirname, '../../../');
 
-const mockSetup = {
+const mockSetup: jest.Mocked<Setup> = {
   setup: jest.fn(async(): Promise<any> => null),
-} as unknown as jest.Mocked<Setup>;
-const loader = {
+} as any;
+const loader: jest.Mocked<Loader> = {
   instantiateFromUrl: jest.fn(async(): Promise<any> => mockSetup),
   registerAvailableModuleResources: jest.fn(async(): Promise<any> => mockSetup),
-} as unknown as jest.Mocked<Loader>;
+} as any;
 
 // Mock the Loader class.
 jest.mock('componentsjs', (): any => ({
@@ -40,7 +40,7 @@ describe('CliRunner', (): void => {
       {
         variables: {
           'urn:solid-server:default:variable:port': 3000,
-          'urn:solid-server:default:variable:base': `http://localhost:3000/`,
+          'urn:solid-server:default:variable:baseUrl': 'http://localhost:3000/',
           'urn:solid-server:default:variable:rootFilePath': process.cwd(),
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
@@ -58,6 +58,7 @@ describe('CliRunner', (): void => {
       argv: [
         'node', 'script',
         '-p', '4000',
+        '-b', 'http://pod.example/',
         '-c', 'myconfig.json',
         '-f', '/root',
         '-s', 'http://localhost:5000/sparql',
@@ -73,7 +74,7 @@ describe('CliRunner', (): void => {
       {
         variables: {
           'urn:solid-server:default:variable:port': 4000,
-          'urn:solid-server:default:variable:base': `http://localhost:4000/`,
+          'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
           'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
           'urn:solid-server:default:variable:loggingLevel': 'debug',
@@ -87,6 +88,7 @@ describe('CliRunner', (): void => {
       argv: [
         'node', 'script',
         '--port', '4000',
+        '--baseUrl', 'http://pod.example/',
         '--config', 'myconfig.json',
         '--rootFilePath', '/root',
         '--sparqlEndpoint', 'http://localhost:5000/sparql',
@@ -102,7 +104,7 @@ describe('CliRunner', (): void => {
       {
         variables: {
           'urn:solid-server:default:variable:port': 4000,
-          'urn:solid-server:default:variable:base': `http://localhost:4000/`,
+          'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
           'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
           'urn:solid-server:default:variable:loggingLevel': 'debug',

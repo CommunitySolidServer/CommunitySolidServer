@@ -4,6 +4,7 @@ import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
+import { ensureTrailingSlash } from '../util/PathUtil';
 import type { Setup } from './Setup';
 
 const logger = getLoggerFor('CliRunner');
@@ -30,11 +31,12 @@ export const runCli = function({
   const { argv: params } = yargs(argv.slice(2))
     .usage('node ./bin/server.js [args]')
     .options({
-      port: { type: 'number', alias: 'p', default: 3000 },
+      baseUrl: { type: 'string', alias: 'b' },
       config: { type: 'string', alias: 'c' },
+      loggingLevel: { type: 'string', alias: 'l', default: 'info' },
+      port: { type: 'number', alias: 'p', default: 3000 },
       rootFilePath: { type: 'string', alias: 'f' },
       sparqlEndpoint: { type: 'string', alias: 's' },
-      loggingLevel: { type: 'string', alias: 'l', default: 'info' },
     })
     .help();
 
@@ -50,16 +52,17 @@ export const runCli = function({
     const setup: Setup = await loader
       .instantiateFromUrl('urn:solid-server:default', configPath, undefined, {
         variables: {
+          'urn:solid-server:default:variable:baseUrl':
+            params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
+          'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
           'urn:solid-server:default:variable:port': params.port,
-          'urn:solid-server:default:variable:base': `http://localhost:${params.port}/`,
           'urn:solid-server:default:variable:rootFilePath': params.rootFilePath ?? process.cwd(),
           'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
-          'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
         },
       }) as Setup;
     return await setup.setup();
-  })().then((base: string): void => {
-    logger.info(`Running at ${base}`);
+  })().then((baseUrl: string): void => {
+    logger.info(`Running at ${baseUrl}`);
   }).catch((error): void => {
     // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);

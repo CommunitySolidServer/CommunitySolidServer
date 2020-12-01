@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:MemoryDataAccessor",
       "@type": "InMemoryDataAccessor",
       "InMemoryDataAccessor:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
     {
@@ -15,7 +15,7 @@
         "@id": "urn:solid-server:default:MemoryDataAccessor"
       },
       "DataAccessorBasedStore:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     }
   ]

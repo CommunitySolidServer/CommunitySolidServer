@@ -31,8 +31,8 @@
         },
         {
           "@type": "WebSocketAdvertiser",
-          "WebSocketAdvertiser:_settings_port": {
-            "@id": "urn:solid-server:default:variable:port"
+          "WebSocketAdvertiser:_baseUrl": {
+            "@id": "urn:solid-server:default:variable:baseUrl"
           }
         }
       ]

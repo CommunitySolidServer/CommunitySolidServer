@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:RegexRouterRule",
       "@type": "RegexRouterRule",
       "RegexRouterRule:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
     {

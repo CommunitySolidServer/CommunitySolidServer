@@ -5,7 +5,7 @@ import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { instantiateFromConfig } from '../configs/Util';
 
 const port = 6001;
-const baseUrl = `http://localhost:${port}/`;
+const serverUrl = `http://localhost:${port}/`;
 
 describe('A server with the Solid WebSockets API', (): void => {
   let server: Server;
@@ -14,7 +14,7 @@ describe('A server with the Solid WebSockets API', (): void => {
     const factory = await instantiateFromConfig(
       'urn:solid-server:default:ServerFactory', 'websockets.json', {
         'urn:solid-server:default:variable:port': port,
-        'urn:solid-server:default:variable:base': baseUrl,
+        'urn:solid-server:default:variable:baseUrl': 'http://example.pod/',
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);
@@ -27,17 +27,17 @@ describe('A server with the Solid WebSockets API', (): void => {
   });
 
   it('returns a 200.', async(): Promise<void> => {
-    const response = await fetch(baseUrl);
+    const response = await fetch(serverUrl, { headers: { host: 'example.pod' }});
     expect(response.status).toBe(200);
   });
 
   it('sets the Updates-Via header.', async(): Promise<void> => {
-    const response = await fetch(baseUrl);
-    expect(response.headers.get('Updates-Via')).toBe(`ws://localhost:${port}/`);
+    const response = await fetch(serverUrl, { headers: { host: 'example.pod' }});
+    expect(response.headers.get('Updates-Via')).toBe('ws://example.pod/');
   });
 
   it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
-    const response = await fetch(baseUrl);
+    const response = await fetch(serverUrl, { headers: { host: 'example.pod' }});
     expect(response.headers.get('Access-Control-Expose-Headers')!.split(','))
       .toContain('Updates-Via');
   });
@@ -47,7 +47,7 @@ describe('A server with the Solid WebSockets API', (): void => {
     const messages = new Array<string>();
 
     beforeAll(async(): Promise<void> => {
-      client = new WebSocket(`ws://localhost:${port}`, [ 'solid/0.1.0-alpha' ]);
+      client = new WebSocket(`ws://localhost:${port}`, [ 'solid/0.1.0-alpha' ], { headers: { host: 'example.pod' }});
       client.on('message', (message: string): any => messages.push(message));
       await new Promise((resolve): any => client.on('open', resolve));
     });
@@ -69,21 +69,24 @@ describe('A server with the Solid WebSockets API', (): void => {
 
     describe('when the client subscribes to a resource', (): void => {
       beforeAll(async(): Promise<void> => {
-        client.send(`sub ${baseUrl}my-resource`);
+        client.send(`sub http://example.pod/my-resource`);
         await new Promise((resolve): any => client.once('message', resolve));
       });
 
       it('acknowledges the subscription.', async(): Promise<void> => {
-        expect(messages).toEqual([ `ack ${baseUrl}my-resource` ]);
+        expect(messages).toEqual([ `ack http://example.pod/my-resource` ]);
       });
 
       it('notifies the client of resource updates.', async(): Promise<void> => {
-        await fetch(`${baseUrl}my-resource`, {
+        await fetch(`${serverUrl}my-resource`, {
           method: 'PUT',
-          headers: { 'content-type': 'application/json' },
+          headers: {
+            host: 'example.pod',
+            'content-type': 'application/json',
+          },
           body: '{}',
         });
-        expect(messages).toEqual([ `pub ${baseUrl}my-resource` ]);
+        expect(messages).toEqual([ `pub http://example.pod/my-resource` ]);
       });
     });
   });

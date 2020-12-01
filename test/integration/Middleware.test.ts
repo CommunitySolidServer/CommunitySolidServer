@@ -23,6 +23,7 @@ describe('An Express server with middleware', (): void => {
       'urn:solid-server:default:ExpressHttpServerFactory', 'middleware.json', {
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:port': port,
+        'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },
     ) as ExpressHttpServerFactory;
     server = factory.startServer(port);

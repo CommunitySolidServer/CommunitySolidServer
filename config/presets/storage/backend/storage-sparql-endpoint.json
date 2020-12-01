@@ -8,7 +8,7 @@
         "@id": "urn:solid-server:default:variable:sparqlEndpoint"
       },
       "SparqlDataAccessor:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
 
@@ -19,7 +19,7 @@
         "@id": "urn:solid-server:default:SparqlDataAccessor"
       },
       "DataAccessorBasedStore:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
 

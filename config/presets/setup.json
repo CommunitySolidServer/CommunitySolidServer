@@ -17,7 +17,7 @@
         "@id": "urn:solid-server:default:LoggerFactory"
       },
       "Setup:_base": {
-        "@id": "urn:solid-server:default:variable:base"
+        "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "Setup:_port": {
         "@id": "urn:solid-server:default:variable:port"

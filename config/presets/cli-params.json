@@ -6,7 +6,7 @@
       "@type": "Variable"
     },
     {
-      "@id": "urn:solid-server:default:variable:base",
+      "@id": "urn:solid-server:default:variable:baseUrl",
       "@type": "Variable"
     },
     {
