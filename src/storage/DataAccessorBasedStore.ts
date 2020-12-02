@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
@@ -11,7 +10,6 @@ import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { Guarded } from '../util/GuardedStream';
 import {
   ensureTrailingSlash,
   getParentContainer,
@@ -68,13 +66,12 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Create the representation of a container
     if (this.isExistingContainer(metadata)) {
+      // Generate the data stream before setting the content-type to prevent unnecessary triples
+      const data = guardedStreamFrom(metadata.quads());
       metadata.contentType = INTERNAL_QUADS;
       result = {
         binary: false,
-        get data(): Guarded<Readable> {
-          // This allows other modules to still add metadata before the output data is written
-          return guardedStreamFrom(result.metadata.quads());
-        },
+        data,
         metadata,
       };
 
