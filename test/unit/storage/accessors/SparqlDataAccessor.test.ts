@@ -190,6 +190,25 @@ describe('A SparqlDataAccessor', (): void => {
     ]));
   });
 
+  it('overwrites the data and metadata when writing an empty resource.', async(): Promise<void> => {
+    metadata = new RepresentationMetadata('http://test.com/container/resource',
+      { [RDF.type]: [ toNamedNode(LDP.Resource) ]});
+    const empty = guardedStreamFrom([]);
+    await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, empty, metadata))
+      .resolves.toBeUndefined();
+
+    expect(fetchUpdate).toHaveBeenCalledTimes(1);
+    expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchUpdate.mock.calls[0][1])).toBe(simplifyQuery([
+      'DELETE WHERE { GRAPH <http://test.com/container/resource> { ?s ?p ?o. } };',
+      'DELETE WHERE { GRAPH <meta:http://test.com/container/resource> { ?s ?p ?o. } };',
+      'INSERT DATA {',
+      '  GRAPH <meta:http://test.com/container/resource> { <http://test.com/container/resource> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>. }',
+      '  GRAPH <http://test.com/container/> { <http://test.com/container/> <http://www.w3.org/ns/ldp#contains> <http://test.com/container/resource>. }',
+      '}',
+    ]));
+  });
+
   it('removes all references when deleting a resource.', async(): Promise<void> => {
     metadata = new RepresentationMetadata('http://test.com/container/',
       { [RDF.type]: [ toNamedNode(LDP.Resource), toNamedNode(LDP.Container) ]});

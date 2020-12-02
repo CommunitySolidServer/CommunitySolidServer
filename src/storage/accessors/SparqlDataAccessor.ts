@@ -238,7 +238,9 @@ export class SparqlDataAccessor implements DataAccessor {
     if (triples) {
       // This needs to be first so it happens before the insert
       updates.unshift(this.sparqlUpdateDeleteAll(name));
-      insert.push(this.sparqlUpdateGraph(name, triples));
+      if (triples.length > 0) {
+        insert.push(this.sparqlUpdateGraph(name, triples));
+      }
     }
 
     return {
