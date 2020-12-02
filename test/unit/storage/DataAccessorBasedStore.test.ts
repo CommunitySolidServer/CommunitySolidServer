@@ -108,9 +108,10 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      const metaQuads = containerMetadata.quads();
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
-      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(containerMetadata.quads());
+      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaQuads);
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
     });
   });
