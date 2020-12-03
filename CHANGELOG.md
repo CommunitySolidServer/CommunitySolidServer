@@ -1,6 +1,66 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.3.0"></a>
+## [v0.3.0](https://github.com/solid/community-server/compare/v0.2.0...v0.3.0) - 2020-12-03
+
+#### Added
+* [feat: Store status, body and metadata in ResponseDescription](https://github.com/solid/community-server/commit/1260c5c14e26e70dc1dafa211ab35c7981c4bd22)
+* [feat: Create MetadataSerializer](https://github.com/solid/community-server/commit/aebccd45c029a0367171748702cb54c5323e683d)
+* [feat: Reject unacceptable content types](https://github.com/solid/community-server/commit/69ed2e069fcf02515de2c0a8cbd353d7ad7f1fa7)
+* [feat: Make internal/quads unacceptable output](https://github.com/solid/community-server/commit/715ba126f9b5ddbec058c4e8c455cdc7fd929639)
+* [feat: Implement ExpiringLock and -ResourceLocker](https://github.com/solid/community-server/commit/9fd844052572c9a7c3e041c5e1a225703a0e5fe9)
+* [feat: Add a monitoring store.](https://github.com/solid/community-server/commit/4ef4d44a3a26c6d988a7dc284e99e8d2c7c2c98d)
+* [feat: Add WebSocket functionality to server.](https://github.com/solid/community-server/commit/59487410b1af5dc63904f5e1ad4648a2d3c16f38)
+* [feat: Implement the Solid WebSocket protocol.](https://github.com/solid/community-server/commit/0099d1d5dc8c5f09b06cbdc9e750778122ddfcb2)
+* [feat: Include parent containers in POST and DELETE changes.](https://github.com/solid/community-server/commit/d8799368fdf68d7370391dd3f75fa0945184701a)
+* [feat: Advertise WebSocket via Updates-Via header.](https://github.com/solid/community-server/commit/f08617b1c9f9f908573ecdbc03299833428a1b2b)
+* [feat: Create function to wrap streams to not lose errors](https://github.com/solid/community-server/commit/1a30b514610fb9cf351cb42fbd0fefc87948920d)
+* [feat: Export WebSocket classes.](https://github.com/solid/community-server/commit/4a7ea4ad4692e1a407c4d0a987726d8c142a379f)
+* [feat: Wire up WebSockets.](https://github.com/solid/community-server/commit/9b7006872243ed0742bee16582a5da7c6bbcdf59)
+* [feat: Add DPoPWebIdExtractor.](https://github.com/solid/community-server/commit/0407a3649077d14c85b74a476146e9d7c73d1996)
+* [feat: Add patch logging.](https://github.com/solid/community-server/commit/de079062be3b9daf58b6e9d5589134cb031e0008)
+* [feat: Make HeaderHandler customizable.](https://github.com/solid/community-server/commit/d6c0f89cf5c7ac2d0e3fdcd32a04d133f6cbb350)
+* [feat: Make CorsHandler customizable.](https://github.com/solid/community-server/commit/8dec921c10363d74ad1c0655b46824d74484be8f)
+* [feat: Expose Updates-Via header via CORS.](https://github.com/solid/community-server/commit/49d37dcd6ce3443df3b7efc65fb4d50dd7095c91)
+* [feat: Implement --baseUrl flag.](https://github.com/solid/community-server/commit/eabe6bc4ed7966677f62943597a88106d67684cd)
+* [feat: Add LDP request logging.](https://github.com/solid/community-server/commit/535cbcd93a0cd91641a0641d028edf3027c93f09)
+* [feat: Support the Forwarded header.](https://github.com/solid/community-server/commit/ecfe3cfc46b41d5b7b89a9f541bac32bc99b15fb)
+* [feat: create PodHttpHandler with default interfaces](https://github.com/solid/community-server/commit/39745ccf22a8c41751eacbec07318580ef8009cc)
+* [feat: add implementations of pod-related interfaces](https://github.com/solid/community-server/commit/9653deec7ff5885950239c318d447d75c99e611a)
+* [feat: add template based data generator](https://github.com/solid/community-server/commit/f387b36dc2b318fbcb92b01648da3d02e1d87b3e)
+* [feat: integrate pod creation](https://github.com/solid/community-server/commit/1a043aca3f1ca828ee1cb28b97b510ccd15bb965)
+
+#### Changed
+* [refactor: Create multiple composite handlers](https://github.com/solid/community-server/commit/840965cdef1959ede73874316fce78f59e545c2c)
+* [refactor: Make piping consistent](https://github.com/solid/community-server/commit/95ab0b4e760107a06a641b86faac7b385a8b1440)
+* [refactor: Remove identifier parameter](https://github.com/solid/community-server/commit/acebf030c7094fa69828e1e170424f442ab24656)
+* [refactor: Clean up utility functions](https://github.com/solid/community-server/commit/1073c2ff4c9e18d716e96e795eb94a7f160c551d)
+* [refactor: Add isContainerPath function](https://github.com/solid/community-server/commit/75e4f73c3f3aa08bea97042078272ab5713d3b5e)
+* [refactor: Add ExpressHttpServerFactory.](https://github.com/solid/community-server/commit/e39e7963eb1f0cc0fb0e5ff6ce2fdc3d8573a8b9)
+* [refactor: move ExtensionBasedMapper into mapping directory](https://github.com/solid/community-server/commit/2c46d70780d1af4736156f2b480e8208d2c1b3f4)
+* [refactor: abstract parts of ExtensionBasedMapper into MapperUtil](https://github.com/solid/community-server/commit/971e4178d1424292d4371afceb5ea013348336d8)
+* [change: use isContainerIdentifier in FixedContentTypeMapper](https://github.com/solid/community-server/commit/f23073b87f16ca9d85745fdae1d92f986bf6cac5)
+* [refactor: Move lock stuff in its own folder](https://github.com/solid/community-server/commit/dacfb74a6a0cd07c35923fb513cdb299a67451b6)
+* [change: Drop Node 10 support.](https://github.com/solid/community-server/commit/03ffaaed43fb16648dacd1ba4230b02a47b701f4)
+* [change: Make credential extractors specialized.](https://github.com/solid/community-server/commit/b0c50b8a7ba3443d8128fcd9967a6086993ebde2)
+* [change: Do not warn in canHandle.](https://github.com/solid/community-server/commit/baf68889f98b48c25924aae9ddc0275e88796399)
+* [change: Increase logging level of lock expiry.](https://github.com/solid/community-server/commit/1d08f463f692ac4f44c781d101176aa4ec36ac2e)
+* [refactor: Separate middleware from Express.](https://github.com/solid/community-server/commit/023ff80f48d551b8bf3eaa50524772889e5f4d7b)
+* [change: Move WebSocketAdvertiser to middleware.](https://github.com/solid/community-server/commit/fc3942b372f1b227b2c326661bdc2a036cc1eb20)
+* [refactor: Refactor runCli to take optional arguments.](https://github.com/solid/community-server/commit/528688bc4c3fd48f6e42586ff3da28822197fda9)
+
+#### Fixed
+* [fix: Integrate wrapStreamError to prevent uncaught errors](https://github.com/solid/community-server/commit/e4183333fd523615d24e4d2832224bdd7c45a3d6)
+* [fix: Correctly handle acl behaviour for acl identifiers](https://github.com/solid/community-server/commit/ee312910d7f6bc08bd3176168fd6876ffc3d0146)
+* [fix: Update quad converter config parameters](https://github.com/solid/community-server/commit/59f99e1728e47e691315995ebb6dc06df99264b5)
+* [fix: Rename UnsupportedHttpError into BadRequestError.](https://github.com/solid/community-server/commit/af8f1976cdf083c4dd5da33a146fa4b613bce815)
+* [fix: Always release lock when patching](https://github.com/solid/community-server/commit/3362eee2c2a6215afc05d4f5b072e7b23be642ab)
+* [fix: Create container data before adding content-type](https://github.com/solid/community-server/commit/c2b189184be8390e2335e60e64bbdab0cfee0863)
+* [fix: Do not generate empty INSERT graph.](https://github.com/solid/community-server/commit/0ecbffa8858b7d3992bea09b175cccf91a1942c5)
+* [fix: Do not overwrite existing root ACL.](https://github.com/solid/community-server/commit/77db5c0060b28477929eac3c7a5887a19286b790)
+
+
 <a name="v0.2.0"></a>
 ## [v0.2.0](https://github.com/solid/community-server/compare/v0.1.1...v0.2.0) - 2020-11-05
 
