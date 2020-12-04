@@ -1,3 +1,4 @@
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
@@ -240,7 +241,12 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected async handleContainerData(representation: Representation): Promise<void> {
     let quads: Quad[];
     try {
-      quads = await parseQuads(representation.data);
+      // No need to parse the data if it already contains internal/quads
+      if (representation.metadata.contentType === INTERNAL_QUADS) {
+        quads = await arrayifyStream(representation.data);
+      } else {
+        quads = await parseQuads(representation.data);
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new BadRequestHttpError(`Can only create containers with RDF data. ${error.message}`);
