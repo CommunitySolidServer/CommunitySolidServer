@@ -95,7 +95,9 @@ export class SparqlDataAccessor implements DataAccessor {
     }
 
     const metadata = new RepresentationMetadata(identifier.path).addQuads(quads);
-    metadata.contentType = INTERNAL_QUADS;
+    if (!isContainerIdentifier(identifier)) {
+      metadata.contentType = INTERNAL_QUADS;
+    }
 
     // Need to generate type metadata for the root container since it's not stored
     if (identifier.path === this.base) {
