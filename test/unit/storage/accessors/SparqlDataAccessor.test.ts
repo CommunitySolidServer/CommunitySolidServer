@@ -105,7 +105,6 @@ describe('A SparqlDataAccessor', (): void => {
     metadata = await accessor.getMetadata({ path: 'http://container/' });
     expect(metadata.quads()).toBeRdfIsomorphic([
       quad(namedNode('this'), namedNode('a'), namedNode('triple')),
-      quad(namedNode('http://container/'), toNamedNode(CONTENT_TYPE), literal(INTERNAL_QUADS)),
     ]);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -123,7 +122,6 @@ describe('A SparqlDataAccessor', (): void => {
     metadata = await accessor.getMetadata({ path: base });
     expect(metadata.quads()).toBeRdfIsomorphic([
       quad(namedNode('this'), namedNode('a'), namedNode('triple')),
-      quad(namedNode(base), toNamedNode(CONTENT_TYPE), literal(INTERNAL_QUADS)),
       quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.Container)),
       quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.BasicContainer)),
       quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.Resource)),
