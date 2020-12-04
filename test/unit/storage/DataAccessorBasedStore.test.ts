@@ -17,6 +17,8 @@ import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../../../src/util/UriConstants';
 import { toNamedNode } from '../../../src/util/UriUtil';
+import quad = DataFactory.quad;
+import namedNode = DataFactory.namedNode;
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -290,6 +292,20 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      expect(accessor.data[resourceID.path]).toBeTruthy();
+      expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+    });
+
+    it('can write containers with quad data.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+
+      // Generate based on URI
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.contentType = 'internal/quads';
+      representation.data = guardedStreamFrom(
+        [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
+      );
       await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
