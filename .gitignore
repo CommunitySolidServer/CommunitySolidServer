@@ -14,5 +14,3 @@ tsconfig.tsbuildinfo
 !test/eslintrc.js
 
 coverage
-
-test/tmp
