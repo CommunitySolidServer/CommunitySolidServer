@@ -56,7 +56,7 @@
     "test:unit": "jest test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
-    "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
+    "watch": "ts-node-dev ./bin/server"
   },
   "husky": {
     "hooks": {
@@ -126,11 +126,11 @@
     "jest-rdf": "^1.5.0",
     "manual-git-changelog": "^1.0.1",
     "node-mocks-http": "^1.8.1",
-    "nodemon": "^2.0.4",
     "rimraf": "^3.0.2",
     "stream-to-string": "^1.1.0",
     "supertest": "^6.0.0",
     "ts-jest": "^26.3.0",
+    "ts-node-dev": "^1.0.0",
     "typescript": "^4.0.2"
   }
 }
