@@ -169,6 +169,8 @@ export * from './src/util/errors/UnauthorizedHttpError';
 export * from './src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Locking
+export * from './src/util/locking/ExpiringLock';
+export * from './src/util/locking/ExpiringResourceLocker';
 export * from './src/util/locking/Lock';
 export * from './src/util/locking/ResourceLocker';
 export * from './src/util/locking/SingleThreadedResourceLocker';
