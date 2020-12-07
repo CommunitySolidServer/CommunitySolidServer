@@ -3,11 +3,8 @@ import type { ReadStream, WriteStream } from 'tty';
 import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
 import yargs from 'yargs';
-import { getLoggerFor } from '../logging/LogUtil';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import type { Setup } from './Setup';
-
-const logger = getLoggerFor('CliRunner');
 
 /**
  * Generic run function for starting the server from a given config
@@ -41,7 +38,7 @@ export const runCli = function({
     })
     .help();
 
-  (async(): Promise<string> => {
+  (async(): Promise<void> => {
     // Load provided or default config file
     const configPath = params.config ?
       path.join(process.cwd(), params.config) :
@@ -63,10 +60,8 @@ export const runCli = function({
             params.podTemplateFolder ?? path.join(__dirname, '../../templates'),
         },
       }) as Setup;
-    return await setup.setup();
-  })().then((baseUrl: string): void => {
-    logger.info(`Running at ${baseUrl}`);
-  }).catch((error): void => {
+    await setup.setup();
+  })().catch((error): void => {
     // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);
   });

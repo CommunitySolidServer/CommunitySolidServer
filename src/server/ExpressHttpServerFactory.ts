@@ -16,6 +16,7 @@ export class ExpressHttpServerFactory implements HttpServerFactory {
   }
 
   public startServer(port: number): Server {
+    this.logger.info(`Starting server at http://localhost:${port}/`);
     return this.createApp().listen(port);
   }
 
