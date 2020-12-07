@@ -54,7 +54,7 @@
     "test:deploy": "test/deploy/validate-package.sh",
     "test:integration": "jest --coverageThreshold '{}' test/integration",
     "test:unit": "jest test/unit",
-    "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
+    "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
