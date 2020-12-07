@@ -148,14 +148,15 @@ export * from './src/storage/routing/RouterRule';
 export * from './src/storage/AtomicResourceStore';
 export * from './src/storage/Conditions';
 export * from './src/storage/DataAccessorBasedStore';
-export * from './src/storage/mapping/FileIdentifierMapper';
 export * from './src/storage/LockingResourceStore';
 export * from './src/storage/MonitoringStore';
 export * from './src/storage/PassthroughStore';
 export * from './src/storage/PatchingStore';
+export * from './src/storage/ReadOnlyStore';
 export * from './src/storage/RepresentationConvertingStore';
 export * from './src/storage/ResourceStore';
 export * from './src/storage/RoutingResourceStore';
+export * from './src/storage/mapping/FileIdentifierMapper';
 
 // Util/Errors
 export * from './src/util/errors/BadRequestHttpError';
