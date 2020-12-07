@@ -9,6 +9,16 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -32,7 +42,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run lint
       - run: npm run validate
       - run: npm run test:unit
       - name: Coveralls
@@ -43,12 +52,12 @@ jobs:
           parallel: true
       - run: npm run test:integration
       - run: npm run test:deploy
-  finish:
+
+  coveralls:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
+    - uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
         parallel-finished: true
