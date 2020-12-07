@@ -1,12 +1,2 @@
-# don't ever lint node_modules
+dist
 node_modules
-# don't lint nyc coverage output
-coverage
-
-# ignore generated files
-**/*.js
-**/*.d.ts
-**/*.js.map
-
-# ignore temporary test files
-test/tmp

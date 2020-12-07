@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { literal, namedNode } from '@rdfjs/data-model';
 import { CONTENT_TYPE, XSD } from '../../../src/util/UriConstants';
 import { toNamedNode, toObjectTerm, toTypedLiteral, isTerm } from '../../../src/util/UriUtil';

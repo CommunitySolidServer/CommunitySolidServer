@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
