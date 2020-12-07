@@ -11,7 +11,7 @@ import type {
   HttpResponse,
   ResponseWriter,
   OperationHandler,
-} from '../../index';
+} from '../../src/index';
 import {
   AcceptPreferenceParser, AllVoidCompositeHandler,
   BasicMetadataExtractor,
@@ -40,7 +40,7 @@ import {
   SparqlUpdatePatchHandler,
   UrlBasedAclManager,
   WebAclAuthorizer,
-} from '../../index';
+} from '../../src/index';
 import { CONTENT_TYPE, HTTP, RDF } from '../../src/util/UriConstants';
 
 export const BASE = 'http://test.com';
