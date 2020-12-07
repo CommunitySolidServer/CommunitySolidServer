@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { pushQuad } from '../../../src/util/QuadUtil';

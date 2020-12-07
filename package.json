@@ -18,16 +18,17 @@
     "node": ">=12.17 <15"
   },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
-  "lsd:components": "components/components.jsonld",
+  "lsd:components": "dist/components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld": "dist/components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "components/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "dist/components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/dist/": "dist/"
   },
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
     "community-solid-server": "./bin/server.js"
   },
@@ -38,7 +39,7 @@
   "homepage": "https://github.com/solid/community-server#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:components": "componentsjs-generator -s src -i .componentsignore",
+    "build:components": "componentsjs-generator -s src -c dist/components -i .componentsignore",
     "build:ts": "tsc",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
@@ -55,7 +56,7 @@
     "test:unit": "jest test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
-    "watch": "nodemon --watch \"src/**/*.js\" --exec npm start"
+    "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "husky": {
     "hooks": {
@@ -63,11 +64,9 @@
     }
   },
   "files": [
-    "bin/*.js",
-    "src/**/*.js",
-    "src/**/*.d.ts",
-    "components/**/*.jsonld",
-    "config/**/*.json"
+    "bin",
+    "dist",
+    "config"
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",

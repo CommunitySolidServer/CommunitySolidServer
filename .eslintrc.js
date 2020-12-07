@@ -3,7 +3,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname, // this is the reason this is a .js file
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.json', './test/tsconfig.json'],
   },
   globals:  {
     AsyncIterable: 'readonly',

@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
