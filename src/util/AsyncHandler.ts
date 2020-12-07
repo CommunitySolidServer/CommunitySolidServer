@@ -1,7 +1,7 @@
 /**
  * Simple interface for classes that can potentially handle a specific kind of data asynchronously.
  */
-export abstract class AsyncHandler<TInput, TOutput = void> {
+export abstract class AsyncHandler<TInput = void, TOutput = void> {
   /**
    * Checks if the input data can be handled by this class.
    * Throws an error if it can't handle the data.
