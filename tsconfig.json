@@ -15,7 +15,6 @@
   },
   "include": [
     "index.ts",
-    "bin/**/*.ts",
     "src/**/*.ts",
     "test/**/*.ts"
   ],
