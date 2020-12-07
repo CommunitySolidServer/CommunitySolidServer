@@ -55,7 +55,7 @@
     "test:unit": "jest test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
-    "watch": "nodemon --watch \"src/**/*.js\" --watch \"bin/**/*.js\" --exec npm start"
+    "watch": "nodemon --watch \"src/**/*.js\" --exec npm start"
   },
   "husky": {
     "hooks": {
@@ -66,7 +66,6 @@
     "index.js",
     "index.d.ts",
     "bin/*.js",
-    "bin/*.d.ts",
     "src/**/*.js",
     "src/**/*.d.ts",
     "components/**/*.jsonld",
