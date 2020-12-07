@@ -2,7 +2,7 @@ import type {
   DataAccessor,
   HttpHandler,
   ResourceStore,
-} from '../../index';
+} from '../../src/index';
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
@@ -12,7 +12,7 @@ import {
   QuadToRdfConverter,
   RawBodyParser,
   RdfToQuadConverter,
-} from '../../index';
+} from '../../src/index';
 import type { ServerConfig } from './ServerConfig';
 import {
   getOperationHandler,

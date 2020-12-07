@@ -1,5 +1,7 @@
-import type { HttpHandler,
-  ResourceStore } from '../../index';
+import type {
+  HttpHandler,
+  ResourceStore,
+} from '../../src/index';
 import {
   AuthenticatedLdpHandler,
   EmptyCredentialsExtractor,
@@ -7,7 +9,7 @@ import {
   MethodPermissionsExtractor,
   RdfToQuadConverter,
   QuadToRdfConverter,
-} from '../../index';
+} from '../../src/index';
 import type { ServerConfig } from './ServerConfig';
 import {
   getInMemoryResourceStore,

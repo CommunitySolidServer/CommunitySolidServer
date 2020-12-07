@@ -1,5 +1,7 @@
-import type { HttpHandler,
-  ResourceStore } from '../../index';
+import type {
+  HttpHandler,
+  ResourceStore,
+} from '../../src/index';
 import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
@@ -11,7 +13,7 @@ import {
   RdfToQuadConverter,
   SparqlUpdateBodyParser,
   SparqlPatchPermissionsExtractor,
-} from '../../index';
+} from '../../src/index';
 
 import type { ServerConfig } from './ServerConfig';
 import {
