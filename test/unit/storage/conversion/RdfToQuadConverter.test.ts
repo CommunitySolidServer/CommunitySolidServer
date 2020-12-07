@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { Readable } from 'stream';
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';

@@ -9,16 +9,15 @@
     "inlineSources": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
+    "outDir": "dist",
     "sourceMap": true,
     "strict": true,
     "stripInternal": true
   },
   "include": [
-    "src/**/*.ts",
-    "test/**/*.ts"
+    "src"
   ],
   "exclude": [
-    "node_modules",
-    "test/tmp"
+    "node_modules"
   ]
 }

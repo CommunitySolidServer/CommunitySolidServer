@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'rdf-js';

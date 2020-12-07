@@ -1,16 +1,7 @@
-.idea
-
 node_modules
 
-*.js
-*.js.map
-*.d.ts
-components
-
-tsconfig.tsbuildinfo
+dist
 
 .eslintcache
-!.eslintrc.js
-!test/eslintrc.js
-
 coverage
+tsconfig.tsbuildinfo

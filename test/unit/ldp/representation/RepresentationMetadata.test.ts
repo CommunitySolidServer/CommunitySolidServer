@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { literal, namedNode, quad } from '@rdfjs/data-model';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';

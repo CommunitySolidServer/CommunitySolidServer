@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import type { Readable } from 'stream';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';

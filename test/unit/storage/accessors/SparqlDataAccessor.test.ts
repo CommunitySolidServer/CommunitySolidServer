@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';

@@ -1,3 +1,4 @@
+import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
