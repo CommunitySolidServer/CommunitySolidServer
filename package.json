@@ -26,8 +26,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "components/",
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/"
   },
-  "main": "./index.js",
-  "types": "./index.d.ts",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "bin": {
     "community-solid-server": "./bin/server.js"
   },
@@ -63,8 +63,6 @@
     }
   },
   "files": [
-    "index.js",
-    "index.d.ts",
     "bin/*.js",
     "src/**/*.js",
     "src/**/*.d.ts",

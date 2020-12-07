@@ -2,7 +2,7 @@ import type {
   DataAccessor,
   HttpHandler,
   ResourceStore,
-} from '../../index';
+} from '../../src/index';
 import {
   AuthenticatedLdpHandler,
   EmptyCredentialsExtractor,
@@ -10,7 +10,7 @@ import {
   MethodPermissionsExtractor,
   RdfToQuadConverter,
   QuadToRdfConverter,
-} from '../../index';
+} from '../../src/index';
 import type { ServerConfig } from './ServerConfig';
 import {
   getConvertingStore,

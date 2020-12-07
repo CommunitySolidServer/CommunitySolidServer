@@ -6,11 +6,8 @@ import { Readable } from 'stream';
 import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
-import type { ResourceStore } from '../../index';
-import { guardedStreamFrom, RepresentationMetadata } from '../../index';
-import type { PermissionSet } from '../../src/ldp/permissions/PermissionSet';
-import type { HttpHandler } from '../../src/server/HttpHandler';
-import type { HttpRequest } from '../../src/server/HttpRequest';
+import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/index';
+import { guardedStreamFrom, RepresentationMetadata } from '../../src/index';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { call } from './Util';
 
