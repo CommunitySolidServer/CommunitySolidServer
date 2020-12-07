@@ -30,6 +30,8 @@ jobs:
           - '12.x'
           - '14.0'
           - '14.x'
+          - '15.0'
+          - '15.x'
     env:
       TEST_DOCKER: true
     services:
@@ -74,6 +76,7 @@ jobs:
         node-version:
           - '12.x'
           - '14.x'
+          - '15.x'
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2

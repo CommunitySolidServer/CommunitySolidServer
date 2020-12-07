@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=12.17 <15"
+    "node": ">=12.17"
   },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
