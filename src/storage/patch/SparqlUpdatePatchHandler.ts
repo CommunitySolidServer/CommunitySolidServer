@@ -10,6 +10,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { ResourceLocker } from '../../util/locking/ResourceLocker';
@@ -82,15 +83,23 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
    */
   private async applyPatch(identifier: ResourceIdentifier, deletes: Algebra.Pattern[], inserts: Algebra.Pattern[]):
   Promise<void> {
-    // Read the quads of the current representation
-    const quads = await this.source.getRepresentation(identifier, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
     const store = new Store<BaseQuad>();
-    const importEmitter = store.import(quads.data);
-    await new Promise((resolve, reject): void => {
-      importEmitter.on('end', resolve);
-      importEmitter.on('error', reject);
-    });
-    this.logger.debug(`${store.size} quads in ${identifier.path}.`);
+    try {
+      // Read the quads of the current representation
+      const quads = await this.source.getRepresentation(identifier, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+      const importEmitter = store.import(quads.data);
+      await new Promise((resolve, reject): void => {
+        importEmitter.on('end', resolve);
+        importEmitter.on('error', reject);
+      });
+      this.logger.debug(`${store.size} quads in ${identifier.path}.`);
+    } catch (error: unknown) {
+      // In case the resource does not exist yet we want to create it
+      if (!(error instanceof NotFoundHttpError)) {
+        throw error;
+      }
+      this.logger.debug(`Patching new resource ${identifier.path}.`);
+    }
 
     // Apply the patch
     store.removeQuads(deletes);

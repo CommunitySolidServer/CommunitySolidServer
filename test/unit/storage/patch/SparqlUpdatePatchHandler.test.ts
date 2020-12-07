@@ -8,6 +8,7 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { SparqlUpdatePatchHandler } from '../../../../src/storage/patch/SparqlUpdatePatchHandler';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
+import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import type { Lock } from '../../../../src/util/locking/Lock';
 import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
@@ -214,5 +215,23 @@ describe('A SparqlUpdatePatchHandler', (): void => {
       ) } as SparqlUpdatePatch };
     await expect(handler.handle(input)).rejects.toThrow('error');
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'release' ]);
+  });
+
+  it('creates a new resource if it does not exist yet.', async(): Promise<void> => {
+    // There is no initial data
+    startQuads = [];
+    source.getRepresentation = jest.fn((): any => {
+      order.push('getRepresentation');
+      throw new NotFoundHttpError();
+    });
+
+    await handler.handle({ identifier: { path: 'path' },
+      patch: { algebra: translate(
+        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }',
+        { quads: true },
+      ) } as SparqlUpdatePatch });
+    expect(await basicChecks(startQuads.concat(
+      [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')) ],
+    ))).toBe(true);
   });
 });
