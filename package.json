@@ -14,6 +14,9 @@
     "Ruben Verborgh <ruben.verborgh@ugent.be> (https://ruben.verborgh.org/)"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=12.17 <15"
+  },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
