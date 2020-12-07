@@ -13,7 +13,9 @@ export * from './authorization/UrlBasedAclManager';
 export * from './authorization/WebAclAuthorizer';
 
 // Init
+export * from './init/AclInitializer';
 export * from './init/CliRunner';
+export * from './init/Initializer';
 export * from './init/Setup';
 
 // LDP/HTTP/Metadata

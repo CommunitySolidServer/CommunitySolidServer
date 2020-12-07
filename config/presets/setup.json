@@ -7,14 +7,11 @@
       "Setup:_serverFactory": {
         "@id": "urn:solid-server:default:ServerFactory"
       },
-      "Setup:_store": {
-        "@id": "urn:solid-server:default:ResourceStore"
-      },
-      "Setup:_aclManager": {
-        "@id": "urn:solid-server:default:AclManager"
-      },
       "Setup:_loggerFactory": {
         "@id": "urn:solid-server:default:LoggerFactory"
+      },
+      "Setup:_initializer": {
+        "@id": "urn:solid-server:default:Initializer"
       },
       "Setup:_base": {
         "@id": "urn:solid-server:default:variable:baseUrl"
@@ -22,6 +19,24 @@
       "Setup:_port": {
         "@id": "urn:solid-server:default:variable:port"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:Initializer",
+      "@type": "AllVoidCompositeHandler",
+      "AllVoidCompositeHandler:_handlers": [
+        {
+          "@type": "AclInitializer",
+          "AclInitializer:_baseUrl": {
+            "@id": "urn:solid-server:default:variable:baseUrl"
+          },
+          "AclInitializer:_store": {
+            "@id": "urn:solid-server:default:ResourceStore"
+          },
+          "AclInitializer:_aclManager": {
+            "@id": "urn:solid-server:default:AclManager"
+          }
+        }
+      ]
     }
   ]
 }
