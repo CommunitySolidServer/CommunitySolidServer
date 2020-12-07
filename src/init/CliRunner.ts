@@ -4,7 +4,7 @@ import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
 import yargs from 'yargs';
 import { ensureTrailingSlash } from '../util/PathUtil';
-import type { Setup } from './Setup';
+import type { Initializer } from './Initializer';
 
 /**
  * Generic run function for starting the server from a given config
@@ -47,8 +47,8 @@ export const runCli = function({
     // Setup from config file
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
-    const setup: Setup = await loader
-      .instantiateFromUrl('urn:solid-server:default', configPath, undefined, {
+    const initializer: Initializer = await loader
+      .instantiateFromUrl('urn:solid-server:default:Initializer', configPath, undefined, {
         variables: {
           'urn:solid-server:default:variable:baseUrl':
             params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
@@ -59,8 +59,8 @@ export const runCli = function({
           'urn:solid-server:default:variable:podTemplateFolder':
             params.podTemplateFolder ?? path.join(__dirname, '../../templates'),
         },
-      }) as Setup;
-    await setup.setup();
+      }) as Initializer;
+    await initializer.handleSafe();
   })().catch((error): void => {
     // This is the only time we can *not* use the logger to print error messages, as dependency injection has failed.
     stderr.write(`${error}\n`);

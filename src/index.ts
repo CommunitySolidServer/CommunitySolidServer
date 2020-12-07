@@ -18,7 +18,6 @@ export * from './init/CliRunner';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ServerInitializer';
-export * from './init/Setup';
 
 // LDP/HTTP/Metadata
 export * from './ldp/http/metadata/BasicMetadataExtractor';

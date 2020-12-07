@@ -1,19 +1,19 @@
 import * as path from 'path';
 import { Loader } from 'componentsjs';
 import { runCli } from '../../../src/init/CliRunner';
-import type { Setup } from '../../../src/init/Setup';
+import type { Initializer } from '../../../src/init/Initializer';
 
 const mainModulePath = path.join(__dirname, '../../../');
 
-const mockSetup: jest.Mocked<Setup> = {
-  setup: jest.fn(async(): Promise<any> => null),
-} as any;
-const loader: jest.Mocked<Loader> = {
-  instantiateFromUrl: jest.fn(async(): Promise<any> => mockSetup),
-  registerAvailableModuleResources: jest.fn(async(): Promise<any> => mockSetup),
+const initializer: jest.Mocked<Initializer> = {
+  handleSafe: jest.fn(),
 } as any;
 
-// Mock the Loader class.
+const loader: jest.Mocked<Loader> = {
+  instantiateFromUrl: jest.fn(async(): Promise<any> => initializer),
+  registerAvailableModuleResources: jest.fn(),
+} as any;
+
 jest.mock('componentsjs', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   Loader: jest.fn((): Loader => loader),
@@ -28,13 +28,13 @@ describe('CliRunner', (): void => {
     runCli({
       argv: [ 'node', 'script' ],
     });
-    await mockSetup.setup();
+    await initializer.handleSafe();
 
     expect(Loader).toHaveBeenCalledTimes(1);
     expect(Loader).toHaveBeenCalledWith({ mainModulePath });
     expect(loader.instantiateFromUrl).toHaveBeenCalledTimes(1);
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
-      'urn:solid-server:default',
+      'urn:solid-server:default:Initializer',
       path.join(__dirname, '/../../../config/config-default.json'),
       undefined,
       {
@@ -50,8 +50,8 @@ describe('CliRunner', (): void => {
     );
     expect(loader.registerAvailableModuleResources).toHaveBeenCalledTimes(1);
     expect(loader.registerAvailableModuleResources).toHaveBeenCalledWith();
-    expect(mockSetup.setup).toHaveBeenCalledTimes(1);
-    expect(mockSetup.setup).toHaveBeenCalledWith();
+    expect(initializer.handleSafe).toHaveBeenCalledTimes(1);
+    expect(initializer.handleSafe).toHaveBeenCalledWith();
   });
 
   it('accepts abbreviated flags.', async(): Promise<void> => {
@@ -67,10 +67,10 @@ describe('CliRunner', (): void => {
         '-t', 'templates',
       ],
     });
-    await mockSetup.setup();
+    await initializer.handleSafe();
 
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
-      'urn:solid-server:default',
+      'urn:solid-server:default:Initializer',
       path.join(process.cwd(), 'myconfig.json'),
       undefined,
       {
@@ -99,10 +99,10 @@ describe('CliRunner', (): void => {
         '--podTemplateFolder', 'templates',
       ],
     });
-    await mockSetup.setup();
+    await initializer.handleSafe();
 
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
-      'urn:solid-server:default',
+      'urn:solid-server:default:Initializer',
       path.join(process.cwd(), 'myconfig.json'),
       undefined,
       {

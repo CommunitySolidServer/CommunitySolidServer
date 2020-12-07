@@ -2,13 +2,6 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default",
-      "@type": "Setup",
-      "Setup:_initializer": {
-        "@id": "urn:solid-server:default:Initializer"
-      }
-    },
-    {
       "@id": "urn:solid-server:default:Initializer",
       "@type": "AllVoidCompositeHandler",
       "AllVoidCompositeHandler:_handlers": [
