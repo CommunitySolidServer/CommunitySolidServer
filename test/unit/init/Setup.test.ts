@@ -1,6 +1,5 @@
 import type { Initializer } from '../../../src/init/Initializer';
 import { Setup } from '../../../src/init/Setup';
-import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
 import type { HttpServerFactory } from '../../../src/server/HttpServerFactory';
 
 describe('Setup', (): void => {
@@ -12,7 +11,7 @@ describe('Setup', (): void => {
   } as any;
 
   beforeAll(async(): Promise<void> => {
-    const setup = new Setup(serverFactory, new VoidLoggerFactory(), initializer, 'http://localhost:3000/', 3000);
+    const setup = new Setup(initializer, serverFactory, 'http://localhost:3000/', 3000);
     await setup.setup();
   });
 

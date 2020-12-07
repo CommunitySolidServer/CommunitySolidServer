@@ -7,9 +7,6 @@
       "Setup:_serverFactory": {
         "@id": "urn:solid-server:default:ServerFactory"
       },
-      "Setup:_loggerFactory": {
-        "@id": "urn:solid-server:default:LoggerFactory"
-      },
       "Setup:_initializer": {
         "@id": "urn:solid-server:default:Initializer"
       },
@@ -24,6 +21,12 @@
       "@id": "urn:solid-server:default:Initializer",
       "@type": "AllVoidCompositeHandler",
       "AllVoidCompositeHandler:_handlers": [
+        {
+          "@type": "LoggerInitializer",
+          "LoggerInitializer:_loggerFactory": {
+            "@id": "urn:solid-server:default:LoggerFactory"
+          }
+        },
         {
           "@type": "AclInitializer",
           "AclInitializer:_baseUrl": {

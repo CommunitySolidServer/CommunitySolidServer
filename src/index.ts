@@ -16,6 +16,7 @@ export * from './authorization/WebAclAuthorizer';
 export * from './init/AclInitializer';
 export * from './init/CliRunner';
 export * from './init/Initializer';
+export * from './init/LoggerInitializer';
 export * from './init/Setup';
 
 // LDP/HTTP/Metadata
