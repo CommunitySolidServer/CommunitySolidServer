@@ -20,8 +20,8 @@
     },
     {
       "@id": "urn:solid-server:default:HttpHandler",
-      "@type": "AllVoidCompositeHandler",
-      "AllVoidCompositeHandler:_handlers": [
+      "@type": "SequenceHandler",
+      "SequenceHandler:_handlers": [
         {
           "@id": "urn:solid-server:default:Middleware"
         },
