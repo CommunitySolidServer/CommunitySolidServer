@@ -5,18 +5,18 @@ import { HttpError } from './errors/HttpError';
 import { InternalServerError } from './errors/InternalServerError';
 
 /**
- * Handler that combines several other handlers,
- * thereby allowing other classes that depend on a single handler to still use multiple.
+ * A composite handler that tries multiple handlers one by one
+ * until it finds a handler that supports the input.
  * The handlers will be checked in the order they appear in the input array,
  * allowing for more fine-grained handlers to check before catch-all handlers.
  */
-export class FirstCompositeHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
+export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
   protected readonly logger = getLoggerFor(this);
 
   private readonly handlers: AsyncHandler<TIn, TOut>[];
 
   /**
-   * Creates a new FirstCompositeHandler that stores the given handlers.
+   * Creates a new WaterfallHandler that stores the given handlers.
    * @param handlers - Handlers over which it will run.
    */
   public constructor(handlers: AsyncHandler<TIn, TOut>[]) {

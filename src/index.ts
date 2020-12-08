@@ -182,9 +182,9 @@ export * from './util/locking/WrappedExpiringResourceLocker';
 
 // Util
 export * from './util/AsyncHandler';
-export * from './util/FirstCompositeHandler';
 export * from './util/HeaderUtil';
 export * from './util/PathUtil';
 export * from './util/QuadUtil';
 export * from './util/SequenceHandler';
 export * from './util/StreamUtil';
+export * from './util/WaterfallHandler';
