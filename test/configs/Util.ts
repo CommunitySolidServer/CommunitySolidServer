@@ -22,7 +22,6 @@ import {
   DataAccessorBasedStore,
   DeleteOperationHandler,
   ErrorResponseWriter,
-  FirstCompositeHandler,
   GetOperationHandler,
   HeadOperationHandler,
   InMemoryDataAccessor,
@@ -40,6 +39,7 @@ import {
   SlugParser,
   SparqlUpdatePatchHandler,
   UrlBasedAclManager,
+  WaterfallHandler,
   WebAclAuthorizer,
 } from '../../src/index';
 import { CONTENT_TYPE, HTTP, RDF } from '../../src/util/UriConstants';
@@ -82,8 +82,8 @@ export const getConvertingStore =
 (store: ResourceStore, converters: RepresentationConverter[], inType?: string):
 RepresentationConvertingStore =>
   new RepresentationConvertingStore(store, {
-    inConverter: new FirstCompositeHandler(converters),
-    outConverter: new FirstCompositeHandler(converters),
+    inConverter: new WaterfallHandler(converters),
+    outConverter: new WaterfallHandler(converters),
     inType,
   });
 
@@ -114,7 +114,7 @@ export const getOperationHandler = (store: ResourceStore): OperationHandler => {
     new PatchOperationHandler(store),
     new DeleteOperationHandler(store),
   ];
-  return new FirstCompositeHandler<Operation, ResponseDescription>(handlers);
+  return new WaterfallHandler<Operation, ResponseDescription>(handlers);
 };
 
 export const getResponseWriter = (): ResponseWriter => {
@@ -128,7 +128,7 @@ export const getResponseWriter = (): ResponseWriter => {
     }),
   ]);
 
-  return new FirstCompositeHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
+  return new WaterfallHandler<{ response: HttpResponse; result: ResponseDescription | Error }, void>([
     new ErrorResponseWriter(),
     new BasicResponseWriter(serializer),
   ]);
@@ -157,7 +157,7 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
     // If no body parser is given (array is empty), default to RawBodyParser
     bodyParser = new RawBodyParser();
   } else {
-    bodyParser = new FirstCompositeHandler(bodyParsers);
+    bodyParser = new WaterfallHandler(bodyParsers);
   }
   return new BasicRequestParser({
     targetExtractor: new BasicTargetExtractor(),

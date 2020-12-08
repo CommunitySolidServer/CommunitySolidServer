@@ -5,10 +5,10 @@ import type {
 import {
   AuthenticatedLdpHandler,
   EmptyCredentialsExtractor,
-  FirstCompositeHandler,
   MethodPermissionsExtractor,
   RdfToQuadConverter,
   QuadToRdfConverter,
+  WaterfallHandler,
 } from '../../src/index';
 import type { ServerConfig } from './ServerConfig';
 import {
@@ -42,7 +42,7 @@ export class BasicHandlersWithAclConfig implements ServerConfig {
     const requestParser = getBasicRequestParser();
 
     const credentialsExtractor = new EmptyCredentialsExtractor();
-    const permissionsExtractor = new FirstCompositeHandler([
+    const permissionsExtractor = new WaterfallHandler([
       new MethodPermissionsExtractor(),
     ]);
 

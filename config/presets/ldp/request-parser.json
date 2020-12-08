@@ -14,8 +14,8 @@
         "@id": "urn:solid-server:default:MetadataExtractor"
       },
       "BasicRequestParser:_args_bodyParser": {
-        "@type": "FirstCompositeHandler",
-        "FirstCompositeHandler:_handlers": [
+        "@type": "WaterfallHandler",
+        "WaterfallHandler:_handlers": [
           {
             "@type": "SparqlUpdateBodyParser"
           },

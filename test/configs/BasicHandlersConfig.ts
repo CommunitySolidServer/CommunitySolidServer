@@ -6,13 +6,13 @@ import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   EmptyCredentialsExtractor,
-  FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
   RdfToQuadConverter,
   SparqlUpdateBodyParser,
   SparqlPatchPermissionsExtractor,
+  WaterfallHandler,
 } from '../../src/index';
 
 import type { ServerConfig } from './ServerConfig';
@@ -50,7 +50,7 @@ export class BasicHandlersConfig implements ServerConfig {
     ]);
 
     const credentialsExtractor = new EmptyCredentialsExtractor();
-    const permissionsExtractor = new FirstCompositeHandler([
+    const permissionsExtractor = new WaterfallHandler([
       new MethodPermissionsExtractor(),
       new SparqlPatchPermissionsExtractor(),
     ]);

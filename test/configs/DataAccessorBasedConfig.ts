@@ -7,11 +7,11 @@ import {
   AllowEverythingAuthorizer,
   AuthenticatedLdpHandler,
   EmptyCredentialsExtractor,
-  FirstCompositeHandler,
   MethodPermissionsExtractor,
   QuadToRdfConverter,
   RawBodyParser,
   RdfToQuadConverter,
+  WaterfallHandler,
 } from '../../src/index';
 import type { ServerConfig } from './ServerConfig';
 import {
@@ -44,7 +44,7 @@ export class DataAccessorBasedConfig implements ServerConfig {
     const requestParser = getBasicRequestParser([ new RawBodyParser() ]);
 
     const credentialsExtractor = new EmptyCredentialsExtractor();
-    const permissionsExtractor = new FirstCompositeHandler([
+    const permissionsExtractor = new WaterfallHandler([
       new MethodPermissionsExtractor(),
     ]);
     const authorizer = new AllowEverythingAuthorizer();

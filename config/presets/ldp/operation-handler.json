@@ -3,8 +3,8 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:OperationHandler",
-      "@type": "FirstCompositeHandler",
-      "FirstCompositeHandler:_handlers": [
+      "@type": "WaterfallHandler",
+      "WaterfallHandler:_handlers": [
         {
           "@type": "DeleteOperationHandler",
           "DeleteOperationHandler:_store": {
