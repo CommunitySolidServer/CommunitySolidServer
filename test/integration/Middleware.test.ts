@@ -30,7 +30,7 @@ describe('An Express server with middleware', (): void => {
     server = factory.startServer(port);
   });
 
-  afterEach(async(): Promise<void> => {
+  afterAll(async(): Promise<void> => {
     server.close();
   });
 
