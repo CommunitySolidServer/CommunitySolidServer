@@ -119,13 +119,14 @@ describe('CliRunner', (): void => {
   });
 
   it('writes to stderr when an error occurs.', async(): Promise<void> => {
-    jest.spyOn(process.stderr, 'write');
+    const write = jest.spyOn(process.stderr, 'write').mockImplementation((): any => null);
     loader.instantiateFromUrl.mockRejectedValueOnce(new Error('Fatal'));
 
     runCli();
     await new Promise((resolve): any => setImmediate(resolve));
 
-    expect(process.stderr.write).toHaveBeenCalledTimes(1);
-    expect(process.stderr.write).toHaveBeenCalledWith('Error: Fatal\n');
+    expect(write).toHaveBeenCalledTimes(1);
+    expect(write).toHaveBeenCalledWith('Error: Fatal\n');
+    write.mockClear();
   });
 });
