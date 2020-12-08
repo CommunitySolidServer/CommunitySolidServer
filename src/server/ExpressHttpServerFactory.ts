@@ -28,7 +28,11 @@ export class ExpressHttpServerFactory implements HttpServerFactory {
       } catch (error: unknown) {
         const errMsg = error instanceof Error ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';
         this.logger.error(errMsg);
-        response.status(500).contentType('text/plain').send(errMsg);
+        if (response.headersSent) {
+          response.end();
+        } else {
+          response.status(500).contentType('text/plain').send(errMsg);
+        }
       } finally {
         done();
       }
