@@ -3,8 +3,8 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:MetadataSerializer",
-      "@type": "AllVoidCompositeHandler",
-      "AllVoidCompositeHandler:_handlers": [
+      "@type": "SequenceHandler",
+      "SequenceHandler:_handlers": [
         {
           "@type": "MappedMetadataWriter",
           "MappedMetadataWriter:_headerMap": [

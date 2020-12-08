@@ -13,7 +13,7 @@ import type {
   OperationHandler,
 } from '../../src/index';
 import {
-  AcceptPreferenceParser, AllVoidCompositeHandler,
+  AcceptPreferenceParser,
   BasicMetadataExtractor,
   BasicRequestParser,
   BasicResponseWriter,
@@ -35,6 +35,7 @@ import {
   PutOperationHandler,
   RawBodyParser,
   RepresentationConvertingStore,
+  SequenceHandler,
   SingleThreadedResourceLocker,
   SlugParser,
   SparqlUpdatePatchHandler,
@@ -117,7 +118,7 @@ export const getOperationHandler = (store: ResourceStore): OperationHandler => {
 };
 
 export const getResponseWriter = (): ResponseWriter => {
-  const serializer = new AllVoidCompositeHandler([
+  const serializer = new SequenceHandler([
     new MappedMetadataWriter({
       [CONTENT_TYPE]: 'content-type',
       [HTTP.location]: 'location',
