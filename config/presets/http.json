@@ -38,6 +38,9 @@
               "@id": "urn:solid-server:default:PodManagerHandler"
             },
             {
+              "@id": "urn:solid-server:default:IdentityProviderHandler"
+            },
+            {
               "@id": "urn:solid-server:default:LdpHandler"
             }
           ]
