@@ -79,6 +79,9 @@ export * from './ldp/representation/ResourceIdentifier';
 export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
+// Identity Provider
+export * from './identityProvider/IdentityProviderHandler';
+
 // Logging
 export * from './logging/LazyLogger';
 export * from './logging/LazyLoggerFactory';
