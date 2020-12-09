@@ -61,7 +61,7 @@ export const getRootFilePath = (subfolder: string): string => join(__dirname, '.
  * @returns The data accessor based store.
  */
 export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
-  new DataAccessorBasedStore(dataAccessor, base, new SingleRootIdentifierStrategy(base));
+  new DataAccessorBasedStore(dataAccessor, new SingleRootIdentifierStrategy(base));
 
 /**
  * Gives an in memory resource store based on (default) base url.

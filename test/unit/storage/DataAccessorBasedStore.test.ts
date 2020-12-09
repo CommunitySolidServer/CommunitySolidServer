@@ -80,7 +80,7 @@ describe('A DataAccessorBasedStore', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new SimpleDataAccessor();
 
-    store = new DataAccessorBasedStore(accessor, root, identifierStrategy);
+    store = new DataAccessorBasedStore(accessor, identifierStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [ DataFactory.namedNode(LDP.Container), DataFactory.namedNode(LDP.BasicContainer) ]},

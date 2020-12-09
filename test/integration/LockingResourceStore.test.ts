@@ -26,7 +26,7 @@ describe('A LockingResourceStore', (): void => {
 
     const base = 'http://test.com/';
     path = `${base}path`;
-    source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), base, new SingleRootIdentifierStrategy(base));
+    source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), new SingleRootIdentifierStrategy(base));
 
     locker = new SingleThreadedResourceLocker();
     expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
