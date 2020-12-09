@@ -172,6 +172,10 @@ export * from './util/errors/SystemError';
 export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
 
+// Util/Identifiers
+export * from './util/identifiers/IdentifierStrategy';
+export * from './util/identifiers/SingleRootIdentifierStrategy';
+
 // Util/Locking
 export * from './util/locking/ExpiringLock';
 export * from './util/locking/ExpiringResourceLocker';
