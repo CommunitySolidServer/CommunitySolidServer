@@ -13,6 +13,9 @@
       },
       "WebAclAuthorizer:_resourceStore": {
         "@id": "urn:solid-server:default:ResourceStore"
+      },
+      "WebAclAuthorizer:_identifierStrategy": {
+        "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     }
   ]

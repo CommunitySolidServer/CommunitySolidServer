@@ -6,6 +6,17 @@
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
         "@id": "urn:solid-server:default:ResourceStore_Patching"
+      },
+      "MonitoringStore:_identifierStrategy": {
+        "@id": "urn:solid-server:default:IdentifierStrategy"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:IdentifierStrategy",
+      "@type": "SingleRootIdentifierStrategy",
+      "SingleRootIdentifierStrategy:_baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
 

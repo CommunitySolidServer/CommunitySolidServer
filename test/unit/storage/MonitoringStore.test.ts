@@ -2,10 +2,12 @@ import type { Patch } from '../../../src/ldp/http/Patch';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 
 describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
   let source: ResourceStore;
+  const identifierStrategy = new SingleRootIdentifierStrategy('http://example.org/');
   let changedCallback: () => void;
 
   beforeEach(async(): Promise<void> => {
@@ -16,7 +18,7 @@ describe('A MonitoringStore', (): void => {
       deleteResource: jest.fn(async(): Promise<any> => undefined),
       modifyResource: jest.fn(async(): Promise<any> => undefined),
     };
-    store = new MonitoringStore(source);
+    store = new MonitoringStore(source, identifierStrategy);
     changedCallback = jest.fn();
     store.on('changed', changedCallback);
   });

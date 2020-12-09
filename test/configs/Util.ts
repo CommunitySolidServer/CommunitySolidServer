@@ -35,6 +35,7 @@ import {
   RawBodyParser,
   RepresentationConvertingStore,
   SequenceHandler,
+  SingleRootIdentifierStrategy,
   SingleThreadedResourceLocker,
   SlugParser,
   SparqlUpdatePatchHandler,
@@ -60,7 +61,7 @@ export const getRootFilePath = (subfolder: string): string => join(__dirname, '.
  * @returns The data accessor based store.
  */
 export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
-  new DataAccessorBasedStore(dataAccessor, base);
+  new DataAccessorBasedStore(dataAccessor, base, new SingleRootIdentifierStrategy(base));
 
 /**
  * Gives an in memory resource store based on (default) base url.
@@ -175,7 +176,7 @@ export const getBasicRequestParser = (bodyParsers: BodyParser[] = []): BasicRequ
  * @returns The acl authorizer.
  */
 export const getWebAclAuthorizer = (store: ResourceStore, aclManager = new UrlBasedAclManager()): WebAclAuthorizer =>
-  new WebAclAuthorizer(aclManager, store);
+  new WebAclAuthorizer(aclManager, store, new SingleRootIdentifierStrategy(BASE));
 
 /**
  * Returns a component instantiated from a Components.js configuration.
