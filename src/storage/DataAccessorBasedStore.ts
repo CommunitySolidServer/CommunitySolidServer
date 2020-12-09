@@ -11,9 +11,9 @@ import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import {
   ensureTrailingSlash,
-  getParentContainer,
   isContainerIdentifier,
   isContainerPath,
   trimTrailingSlashes,
@@ -51,10 +51,12 @@ import type { ResourceStore } from './ResourceStore';
 export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
   private readonly base: string;
+  private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(accessor: DataAccessor, base: string) {
+  public constructor(accessor: DataAccessor, base: string, identifierStrategy: IdentifierStrategy) {
     this.accessor = accessor;
     this.base = ensureTrailingSlash(base);
+    this.identifierStrategy = identifierStrategy;
   }
 
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
@@ -219,7 +221,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     if (createContainers) {
-      await this.createRecursiveContainers(getParentContainer(identifier));
+      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
 
     // Make sure the metadata has the correct identifier and correct type quads
@@ -354,7 +356,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     } catch (error: unknown) {
       if (error instanceof NotFoundHttpError) {
         // Make sure the parent exists first
-        await this.createRecursiveContainers(getParentContainer(container));
+        await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
         await this.writeData(container, this.getEmptyContainerRepresentation(container), true);
       } else {
         throw error;

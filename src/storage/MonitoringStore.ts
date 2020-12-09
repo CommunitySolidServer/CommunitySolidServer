@@ -3,7 +3,7 @@ import type { Patch } from '../ldp/http/Patch';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { getParentContainer } from '../util/PathUtil';
+import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
@@ -14,10 +14,12 @@ import type { ResourceStore } from './ResourceStore';
 export class MonitoringStore<T extends ResourceStore = ResourceStore>
   extends EventEmitter implements ResourceStore {
   private readonly source: T;
+  private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(source: T) {
+  public constructor(source: T, identifierStrategy: IdentifierStrategy) {
     super();
     this.source = source;
+    this.identifierStrategy = identifierStrategy;
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
@@ -35,11 +37,9 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     await this.source.deleteResource(identifier, conditions);
 
     // Both the container contents and the resource itself have changed
-    try {
-      const container = getParentContainer(identifier);
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const container = this.identifierStrategy.getParentContainer(identifier);
       this.emit('changed', container);
-    } catch {
-      // Parent container not found
     }
     this.emit('changed', identifier);
   }

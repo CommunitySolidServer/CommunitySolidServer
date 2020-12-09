@@ -1,5 +1,4 @@
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import { InternalServerError } from './errors/InternalServerError';
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -38,26 +37,6 @@ export const decodeUriPathComponents = (path: string): string => path.split('/')
  * Encodes all (non-slash) special characters in a URI path.
  */
 export const encodeUriPathComponents = (path: string): string => path.split('/').map(encodeURIComponent).join('/');
-
-/**
- * Finds the container containing the given resource.
- * This does not ensure either the container or resource actually exist.
- *
- * @param id - Identifier to find container of.
- *
- * @returns The identifier of the container this resource is in.
- */
-export const getParentContainer = (id: ResourceIdentifier): ResourceIdentifier => {
-  // Trailing slash is necessary for URL library
-  const parentPath = new URL('..', ensureTrailingSlash(id.path)).toString();
-
-  // This probably means there is an issue with the root
-  if (parentPath === id.path) {
-    throw new InternalServerError(`Resource ${id.path} does not have a parent container`);
-  }
-
-  return { path: parentPath };
-};
 
 /**
  * Checks if the path corresponds to a container path (ending in a /).

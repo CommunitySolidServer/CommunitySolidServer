@@ -25,7 +25,8 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
-import { ensureTrailingSlash, getParentContainer, isContainerIdentifier } from '../../util/PathUtil';
+import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
+import { ensureTrailingSlash, isContainerIdentifier } from '../../util/PathUtil';
 import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
@@ -49,12 +50,14 @@ export class SparqlDataAccessor implements DataAccessor {
   protected readonly logger = getLoggerFor(this);
   private readonly endpoint: string;
   private readonly base: string;
+  private readonly identifierStrategy: IdentifierStrategy;
   private readonly fetcher: SparqlEndpointFetcher;
   private readonly generator: SparqlGenerator;
 
-  public constructor(endpoint: string, base: string) {
+  public constructor(endpoint: string, base: string, identifierStrategy: IdentifierStrategy) {
     this.endpoint = endpoint;
     this.base = ensureTrailingSlash(base);
+    this.identifierStrategy = identifierStrategy;
     this.fetcher = new SparqlEndpointFetcher();
     this.generator = new Generator();
   }
@@ -149,7 +152,7 @@ export class SparqlDataAccessor implements DataAccessor {
    * Helper function to get named nodes corresponding to the identifier and its parent container.
    */
   private getRelatedNames(identifier: ResourceIdentifier): { name: NamedNode; parent: NamedNode } {
-    const parentIdentifier = getParentContainer(identifier);
+    const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
     const name = namedNode(identifier.path);
     const parent = namedNode(parentIdentifier.path);
     return { name, parent };

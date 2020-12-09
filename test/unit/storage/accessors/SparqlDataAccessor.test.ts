@@ -12,6 +12,7 @@ import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
+import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toNamedNode } from '../../../../src/util/UriUtil';
@@ -30,6 +31,7 @@ const simplifyQuery = (query: string | string[]): string => {
 describe('A SparqlDataAccessor', (): void => {
   const endpoint = 'http://test.com/sparql';
   const base = 'http://test.com/';
+  const identifierStrategy = new SingleRootIdentifierStrategy(base);
   let accessor: SparqlDataAccessor;
   let metadata: RepresentationMetadata;
   let data: Guarded<Readable>;
@@ -64,7 +66,7 @@ describe('A SparqlDataAccessor', (): void => {
     }));
 
     // This needs to be last so the fetcher can be mocked first
-    accessor = new SparqlDataAccessor(endpoint, base);
+    accessor = new SparqlDataAccessor(endpoint, base, identifierStrategy);
   });
 
   it('can only handle quad data.', async(): Promise<void> => {

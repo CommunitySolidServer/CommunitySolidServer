@@ -6,6 +6,7 @@ import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { APPLICATION_OCTET_STREAM } from '../../src/util/ContentTypes';
+import { SingleRootIdentifierStrategy } from '../../src/util/identifiers/SingleRootIdentifierStrategy';
 import type { ExpiringResourceLocker } from '../../src/util/locking/ExpiringResourceLocker';
 import type { ResourceLocker } from '../../src/util/locking/ResourceLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
@@ -25,7 +26,7 @@ describe('A LockingResourceStore', (): void => {
 
     const base = 'http://test.com/';
     path = `${base}path`;
-    source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), base);
+    source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), base, new SingleRootIdentifierStrategy(base));
 
     locker = new SingleThreadedResourceLocker();
     expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);

@@ -8,9 +8,10 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
-import { getParentContainer } from '../util/PathUtil';
+import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { ACL, FOAF } from '../util/UriConstants';
 import type { AclManager } from './AclManager';
 import type { AuthorizerArgs } from './Authorizer';
@@ -26,11 +27,13 @@ export class WebAclAuthorizer extends Authorizer {
 
   private readonly aclManager: AclManager;
   private readonly resourceStore: ResourceStore;
+  private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(aclManager: AclManager, resourceStore: ResourceStore) {
+  public constructor(aclManager: AclManager, resourceStore: ResourceStore, identifierStrategy: IdentifierStrategy) {
     super();
     this.aclManager = aclManager;
     this.resourceStore = resourceStore;
+    this.identifierStrategy = identifierStrategy;
   }
 
   /**
@@ -134,7 +137,11 @@ export class WebAclAuthorizer extends Authorizer {
     }
 
     this.logger.debug(`Traversing to the parent of ${id.path}`);
-    const parent = getParentContainer(id);
+    if (this.identifierStrategy.isRootContainer(id)) {
+      this.logger.error(`No ACL document found for root container ${id.path}`);
+      throw new InternalServerError('No ACL document found for root container');
+    }
+    const parent = this.identifierStrategy.getParentContainer(id);
     return this.getAclRecursive(parent, true);
   }
 

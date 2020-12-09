@@ -14,6 +14,7 @@ import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAll
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
+import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, RDF } from '../../../src/util/UriConstants';
@@ -71,6 +72,7 @@ describe('A DataAccessorBasedStore', (): void => {
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
   const root = 'http://test.com/';
+  const identifierStrategy = new SingleRootIdentifierStrategy(root);
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
   const resourceData = 'text';
@@ -78,7 +80,7 @@ describe('A DataAccessorBasedStore', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new SimpleDataAccessor();
 
-    store = new DataAccessorBasedStore(accessor, root);
+    store = new DataAccessorBasedStore(accessor, root, identifierStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [ DataFactory.namedNode(LDP.Container), DataFactory.namedNode(LDP.BasicContainer) ]},
