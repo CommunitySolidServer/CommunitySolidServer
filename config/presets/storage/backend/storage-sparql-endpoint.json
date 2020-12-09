@@ -7,9 +7,6 @@
       "SparqlDataAccessor:_endpoint": {
         "@id": "urn:solid-server:default:variable:sparqlEndpoint"
       },
-      "SparqlDataAccessor:_base": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
-      },
       "SparqlDataAccessor:_identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       }
@@ -20,9 +17,6 @@
       "@type": "DataAccessorBasedStore",
       "DataAccessorBasedStore:_accessor": {
         "@id": "urn:solid-server:default:SparqlDataAccessor"
-      },
-      "DataAccessorBasedStore:_base": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "DataAccessorBasedStore:_identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"

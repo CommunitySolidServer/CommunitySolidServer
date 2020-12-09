@@ -8,7 +8,7 @@ import { describeIf, FileTestHelper } from '../util/TestHelpers';
 describeIf('docker', 'a server with a SPARQL endpoint as storage', (): void => {
   describe('without acl', (): void => {
     const config = new DataAccessorBasedConfig(BASE,
-      new SparqlDataAccessor('http://localhost:4000/sparql', BASE, new SingleRootIdentifierStrategy(BASE)),
+      new SparqlDataAccessor('http://localhost:4000/sparql', new SingleRootIdentifierStrategy(BASE)),
       INTERNAL_QUADS);
     const handler = config.getHttpHandler();
     const fileHelper = new FileTestHelper(handler, new URL(BASE));

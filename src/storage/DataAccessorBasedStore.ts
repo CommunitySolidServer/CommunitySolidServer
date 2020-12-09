@@ -50,12 +50,10 @@ import type { ResourceStore } from './ResourceStore';
  */
 export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
-  private readonly base: string;
   private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(accessor: DataAccessor, base: string, identifierStrategy: IdentifierStrategy) {
+  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy) {
     this.accessor = accessor;
-    this.base = ensureTrailingSlash(base);
     this.identifierStrategy = identifierStrategy;
   }
 
@@ -149,7 +147,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     this.validateIdentifier(identifier);
-    if (ensureTrailingSlash(identifier.path) === this.base) {
+    if (this.identifierStrategy.isRootContainer(identifier)) {
       throw new MethodNotAllowedHttpError('Cannot delete root container.');
     }
     const metadata = await this.accessor.getMetadata(identifier);
@@ -163,7 +161,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Verify if the given identifier matches the stored base.
    */
   protected validateIdentifier(identifier: ResourceIdentifier): void {
-    if (!identifier.path.startsWith(this.base)) {
+    if (!this.identifierStrategy.supportsIdentifier(identifier)) {
       throw new NotFoundHttpError();
     }
   }

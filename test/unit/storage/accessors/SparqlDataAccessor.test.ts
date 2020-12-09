@@ -66,7 +66,7 @@ describe('A SparqlDataAccessor', (): void => {
     }));
 
     // This needs to be last so the fetcher can be mocked first
-    accessor = new SparqlDataAccessor(endpoint, base, identifierStrategy);
+    accessor = new SparqlDataAccessor(endpoint, identifierStrategy);
   });
 
   it('can only handle quad data.', async(): Promise<void> => {

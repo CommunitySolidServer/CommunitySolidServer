@@ -26,7 +26,7 @@ import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMedi
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
-import { ensureTrailingSlash, isContainerIdentifier } from '../../util/PathUtil';
+import { isContainerIdentifier } from '../../util/PathUtil';
 import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
@@ -49,14 +49,12 @@ const { defaultGraph, namedNode, quad, variable } = DataFactory;
 export class SparqlDataAccessor implements DataAccessor {
   protected readonly logger = getLoggerFor(this);
   private readonly endpoint: string;
-  private readonly base: string;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly fetcher: SparqlEndpointFetcher;
   private readonly generator: SparqlGenerator;
 
-  public constructor(endpoint: string, base: string, identifierStrategy: IdentifierStrategy) {
+  public constructor(endpoint: string, identifierStrategy: IdentifierStrategy) {
     this.endpoint = endpoint;
-    this.base = ensureTrailingSlash(base);
     this.identifierStrategy = identifierStrategy;
     this.fetcher = new SparqlEndpointFetcher();
     this.generator = new Generator();
@@ -93,7 +91,7 @@ export class SparqlDataAccessor implements DataAccessor {
     const quads = await arrayifyStream(stream);
 
     // Root container will not have metadata if there are no containment triples
-    if (quads.length === 0 && identifier.path !== this.base) {
+    if (quads.length === 0 && !this.identifierStrategy.isRootContainer(identifier)) {
       throw new NotFoundHttpError();
     }
 
@@ -103,7 +101,7 @@ export class SparqlDataAccessor implements DataAccessor {
     }
 
     // Need to generate type metadata for the root container since it's not stored
-    if (identifier.path === this.base) {
+    if (this.identifierStrategy.isRootContainer(identifier)) {
       metadata.addQuads(generateResourceQuads(name, true));
     }
 
