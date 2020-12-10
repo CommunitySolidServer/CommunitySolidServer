@@ -51,7 +51,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
       representation: {
         binary: true,
         data: guardedStreamFrom([]),
-        metadata: new RepresentationMetadata(link.identifier.path),
+        metadata: new RepresentationMetadata(link.identifier),
       },
     };
 
@@ -74,7 +74,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private async generateDocument(filePath: string, mapper: FileIdentifierMapper, options: Dict<string>):
   Promise<Resource> {
     const link = await mapper.mapFilePathToUrl(filePath, false);
-    const metadata = new RepresentationMetadata(link.identifier.path);
+    const metadata = new RepresentationMetadata(link.identifier);
     metadata.contentType = link.contentType;
 
     const raw = await fsPromises.readFile(filePath, 'utf8');

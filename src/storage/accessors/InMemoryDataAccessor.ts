@@ -28,7 +28,7 @@ export class InMemoryDataAccessor implements DataAccessor {
   public constructor(base: string) {
     this.base = ensureTrailingSlash(base);
 
-    const metadata = new RepresentationMetadata(this.base);
+    const metadata = new RepresentationMetadata({ path: this.base });
     metadata.addQuads(generateResourceQuads(DataFactory.namedNode(this.base), true));
     this.store = { entries: {}, metadata };
   }

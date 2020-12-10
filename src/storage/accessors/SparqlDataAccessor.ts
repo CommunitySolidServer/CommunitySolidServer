@@ -94,7 +94,7 @@ export class SparqlDataAccessor implements DataAccessor {
       throw new NotFoundHttpError();
     }
 
-    const metadata = new RepresentationMetadata(identifier.path).addQuads(quads);
+    const metadata = new RepresentationMetadata(identifier).addQuads(quads);
     if (!isContainerIdentifier(identifier)) {
       metadata.contentType = INTERNAL_QUADS;
     }

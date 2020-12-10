@@ -119,7 +119,7 @@ describe('A FileDataAccessor', (): void => {
 
       const childQuads = metadata.quads().filter((quad): boolean =>
         quad.subject.value === `${base}container/resource`);
-      const childMetadata = new RepresentationMetadata(`${base}container/resource`).addQuads(childQuads);
+      const childMetadata = new RepresentationMetadata({ path: `${base}container/resource` }).addQuads(childQuads);
       expect(childMetadata.get(RDF.type)?.value).toBe(LDP.Resource);
       expect(childMetadata.get(POSIX.size)).toEqualRdfTerm(toTypedLiteral('data'.length, XSD.integer));
       expect(childMetadata.get(DCTERMS.modified)).toEqualRdfTerm(toTypedLiteral(now.toISOString(), XSD.dateTime));
@@ -160,7 +160,8 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata(`${base}res.ttl`, { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
+      metadata = new RepresentationMetadata({ path: `${base}res.ttl` },
+        { [CONTENT_TYPE]: 'text/turtle', likes: 'apples' });
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data['res.ttl']).toBe('data');
       expect(cache.data['res.ttl.meta']).toMatch(`<${base}res.ttl> <likes> "apples".`);
@@ -266,21 +267,21 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata(`${base}container/`, { likes: 'apples' });
+      metadata = new RepresentationMetadata({ path: `${base}container/` }, { likes: 'apples' });
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       expect(cache.data.container).toEqual({ '.meta': expect.stringMatching(`<${base}container/> <likes> "apples".`) });
     });
 
     it('overwrites existing metadata.', async(): Promise<void> => {
       cache.data.container = { '.meta': `<${base}container/> <likes> "pears".` };
-      metadata = new RepresentationMetadata(`${base}container/`, { likes: 'apples' });
+      metadata = new RepresentationMetadata({ path: `${base}container/` }, { likes: 'apples' });
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       expect(cache.data.container).toEqual({ '.meta': expect.stringMatching(`<${base}container/> <likes> "apples".`) });
     });
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
       metadata = new RepresentationMetadata(
-        `${base}container/`,
+        { path: `${base}container/` },
         { [RDF.type]: [ toNamedNode(LDP.BasicContainer), toNamedNode(LDP.Resource) ]},
       );
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
