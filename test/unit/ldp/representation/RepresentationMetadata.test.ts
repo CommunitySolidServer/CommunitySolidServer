@@ -28,12 +28,12 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('converts identifier strings to named nodes.', async(): Promise<void> => {
-      metadata = new RepresentationMetadata('identifier');
+      metadata = new RepresentationMetadata({ path: 'identifier' });
       expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
     });
 
     it('copies an other metadata object.', async(): Promise<void> => {
-      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other);
       expect(metadata.identifier).toEqualRdfTerm(namedNode('otherId'));
       expect(metadata.quads()).toBeRdfIsomorphic([
@@ -59,7 +59,7 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('can combine overrides with other metadata.', async(): Promise<void> => {
-      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other, { 'test:pred': 'objVal2' });
       expect(metadata.quads()).toBeRdfIsomorphic([
         quad(namedNode('otherId'), namedNode('test:pred'), literal('objVal2')) ]);
@@ -101,7 +101,7 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('updates its identifier when copying metadata.', async(): Promise<void> => {
-      const other = new RepresentationMetadata('otherId', { 'test:pred': 'objVal' });
+      const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata.setMetadata(other);
 
       // `setMetadata` should have the same result as the following

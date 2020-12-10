@@ -370,7 +370,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     return {
       binary: true,
       data: guardedStreamFrom([]),
-      metadata: new RepresentationMetadata(container.path),
+      metadata: new RepresentationMetadata(container),
     };
   }
 }

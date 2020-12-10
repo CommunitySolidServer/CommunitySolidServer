@@ -108,7 +108,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    const metadata = new RepresentationMetadata(identifier.path, { [CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(identifier, { [CONTENT_TYPE]: INTERNAL_QUADS });
     const representation: Representation = {
       binary: false,
       data: guardStream(store.match() as Readable),

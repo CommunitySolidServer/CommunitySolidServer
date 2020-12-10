@@ -66,7 +66,7 @@ export class AclInitializer extends Initializer {
     acl:mode        acl:Control;
     acl:accessTo    <${this.baseUrl}>;
     acl:default     <${this.baseUrl}>.`;
-    const metadata = new RepresentationMetadata(rootAcl.path, { [CONTENT_TYPE]: TEXT_TURTLE });
+    const metadata = new RepresentationMetadata(rootAcl, { [CONTENT_TYPE]: TEXT_TURTLE });
     this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
     await this.store.setRepresentation(
       rootAcl,

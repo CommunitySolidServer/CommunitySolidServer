@@ -2,7 +2,10 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { toObjectTerm, toNamedNode, isTerm } from '../../util/UriUtil';
+import type { ResourceIdentifier } from './ResourceIdentifier';
+import { isResourceIdentifier } from './ResourceIdentifier';
 
+export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
 export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 
 /**
@@ -23,7 +26,7 @@ export class RepresentationMetadata {
    *
    * `@ignored` tag is necessary for Components-Generator.js
    */
-  public constructor(identifier?: NamedNode | BlankNode | string, overrides?: Record<string, MetadataOverrideValue>);
+  public constructor(identifier?: MetadataIdentifier, overrides?: Record<string, MetadataOverrideValue>);
 
   /**
    * @param metadata - Starts as a copy of the input metadata.
@@ -38,12 +41,12 @@ export class RepresentationMetadata {
   public constructor(overrides?: Record<string, MetadataOverrideValue>);
 
   public constructor(
-    input?: NamedNode | BlankNode | string | RepresentationMetadata | Record<string, MetadataOverrideValue>,
+    input?: MetadataIdentifier | RepresentationMetadata | Record<string, MetadataOverrideValue>,
     overrides?: Record<string, MetadataOverrideValue>,
   ) {
     this.store = new Store();
-    if (typeof input === 'string') {
-      this.id = DataFactory.namedNode(input);
+    if (isResourceIdentifier(input)) {
+      this.id = DataFactory.namedNode(input.path);
     } else if (isTerm(input)) {
       this.id = input;
     } else if (input instanceof RepresentationMetadata) {

@@ -7,3 +7,10 @@ export interface ResourceIdentifier {
    */
   path: string;
 }
+
+/**
+ * Determines whether the object is a `ResourceIdentifier`.
+ */
+export const isResourceIdentifier = function(object: any): object is ResourceIdentifier {
+  return object && (typeof object.path === 'string');
+};

@@ -152,7 +152,7 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the metadata when writing a container and updates parent.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata('http://test.com/container/',
+    metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
       { [RDF.type]: [ toNamedNode(LDP.Resource), toNamedNode(LDP.Container) ]});
     await expect(accessor.writeContainer({ path: 'http://test.com/container/' }, metadata)).resolves.toBeUndefined();
 
@@ -171,7 +171,7 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the data and metadata when writing a resource and updates parent.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata('http://test.com/container/resource',
+    metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
       { [RDF.type]: [ toNamedNode(LDP.Resource) ]});
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
       .resolves.toBeUndefined();
@@ -190,7 +190,7 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('overwrites the data and metadata when writing an empty resource.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata('http://test.com/container/resource',
+    metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
       { [RDF.type]: [ toNamedNode(LDP.Resource) ]});
     const empty = guardedStreamFrom([]);
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, empty, metadata))
@@ -209,7 +209,7 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('removes all references when deleting a resource.', async(): Promise<void> => {
-    metadata = new RepresentationMetadata('http://test.com/container/',
+    metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
       { [RDF.type]: [ toNamedNode(LDP.Resource), toNamedNode(LDP.Container) ]});
     await expect(accessor.deleteResource({ path: 'http://test.com/container/' })).resolves.toBeUndefined();
 
@@ -246,14 +246,14 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('errors when the SPARQL endpoint fails during writing.', async(): Promise<void> => {
-    const path = 'http://test.com/container/';
-    metadata = new RepresentationMetadata(path);
+    const identifier = { path: 'http://test.com/container/' };
+    metadata = new RepresentationMetadata(identifier);
 
     updateError = 'error';
-    await expect(accessor.writeContainer({ path }, metadata)).rejects.toBe(updateError);
+    await expect(accessor.writeContainer(identifier, metadata)).rejects.toBe(updateError);
 
     updateError = new Error();
-    await expect(accessor.writeContainer({ path }, metadata)).rejects.toThrow(updateError);
+    await expect(accessor.writeContainer(identifier, metadata)).rejects.toThrow(updateError);
 
     updateError = undefined;
   });

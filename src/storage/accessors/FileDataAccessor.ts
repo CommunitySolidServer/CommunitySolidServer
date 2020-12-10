@@ -246,7 +246,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getBaseMetadata(link: ResourceLink, stats: Stats, isContainer: boolean):
   Promise<RepresentationMetadata> {
-    const metadata = new RepresentationMetadata(link.identifier.path)
+    const metadata = new RepresentationMetadata(link.identifier)
       .addQuads(await this.getRawMetadata(link.identifier));
     metadata.addQuads(generateResourceQuads(metadata.identifier as NamedNode, isContainer));
     metadata.addQuads(this.generatePosixQuads(metadata.identifier as NamedNode, stats));

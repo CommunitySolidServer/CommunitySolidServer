@@ -86,9 +86,10 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
-      const inputMetadata = new RepresentationMetadata(`${base}resource`, { [RDF.type]: toNamedNode(LDP.Resource) });
-      await accessor.writeDocument({ path: `${base}resource` }, data, inputMetadata);
-      metadata = await accessor.getMetadata({ path: `${base}resource` });
+      const identifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Resource) });
+      await accessor.writeDocument(identifier, data, inputMetadata);
+      metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}resource`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(1);
@@ -96,10 +97,11 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('adds stored metadata when requesting container metadata.', async(): Promise<void> => {
-      const inputMetadata = new RepresentationMetadata(`${base}container/`, { [RDF.type]: toNamedNode(LDP.Container) });
-      await accessor.writeContainer({ path: `${base}container/` }, inputMetadata);
+      const identifier = { path: `${base}container/` };
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      await accessor.writeContainer(identifier, inputMetadata);
 
-      metadata = await accessor.getMetadata({ path: `${base}container/` });
+      metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(1);
@@ -107,8 +109,9 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('can overwrite the metadata of an existing container without overwriting children.', async(): Promise<void> => {
-      const inputMetadata = new RepresentationMetadata(`${base}container/`, { [RDF.type]: toNamedNode(LDP.Container) });
-      await accessor.writeContainer({ path: `${base}container/` }, inputMetadata);
+      const identifier = { path: `${base}container/` };
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      await accessor.writeContainer(identifier, inputMetadata);
       const resourceMetadata = new RepresentationMetadata();
       await accessor.writeDocument(
         { path: `${base}container/resource` }, data, resourceMetadata,
@@ -116,9 +119,9 @@ describe('An InMemoryDataAccessor', (): void => {
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
       newMetadata.add(RDF.type, toNamedNode(LDP.BasicContainer));
-      await accessor.writeContainer({ path: `${base}container/` }, newMetadata);
+      await accessor.writeContainer(identifier, newMetadata);
 
-      metadata = await accessor.getMetadata({ path: `${base}container/` });
+      metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(3);
