@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2017",
     "esModuleInterop": true,
+    "incremental": true,
     "noUnusedLocals": true,
     "strict": true
   }
