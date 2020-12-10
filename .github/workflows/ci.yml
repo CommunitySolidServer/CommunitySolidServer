@@ -36,29 +36,39 @@ jobs:
         ports:
           - 4000:8890
     steps:
-      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run validate
-      - run: npm run test:tsc
-      - run: npm run test:unit
-      - name: Coveralls
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run build scripts
+        run: npm run build
+      - name: Validate components files
+        run: npm run validate
+      - name: Type-check tests
+        run: npm run test:tsc
+      - name: Run unit tests
+        run: npm run test:unit
+      - name: Submit unit test coverage
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.github_token }}
           flag-name: run-${{ matrix.node-version }}
           parallel: true
-      - run: npm run test:integration
-      - run: npm run test:deploy
+      - name: Run integration tests
+        run: npm run test:integration
+      - name: Run deployment tests
+        run: npm run test:deploy
 
   coveralls:
     needs: test
     runs-on: ubuntu-latest
     steps:
-    - uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        parallel-finished: true
+      - name: Consolidate test coverage from different jobs
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
