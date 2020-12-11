@@ -38,12 +38,12 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('throws an error if part of the path matches a document.', async(): Promise<void> => {
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       await expect(accessor.getData({ path: `${base}resource/resource2` })).rejects.toThrow(new Error('Invalid path.'));
     });
 
     it('returns the corresponding data every time.', async(): Promise<void> => {
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
 
       // Run twice to make sure the data is stored correctly
       await expect(readableToString(await accessor.getData({ path: `${base}resource` }))).resolves.toBe('data');
@@ -56,29 +56,25 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
     });
 
-    it('errors when trying to access the parent of root.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}` }, data, metadata))
-        .rejects.toThrow(new Error('Root container has no parent.'));
-    });
-
     it('throws a 404 if the trailing slash does not match its type.', async(): Promise<void> => {
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       await expect(accessor.getMetadata({ path: `${base}resource/` })).rejects.toThrow(NotFoundHttpError);
-      await accessor.writeContainer({ path: `${base}container/` }, metadata);
+      await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       await expect(accessor.getMetadata({ path: `${base}container` })).rejects.toThrow(NotFoundHttpError);
     });
 
     it('returns empty metadata if there was none stored.', async(): Promise<void> => {
       metadata = new RepresentationMetadata();
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata({ path: `${base}resource` });
       expect(metadata.quads()).toHaveLength(0);
     });
 
     it('generates the containment metadata for a container.', async(): Promise<void> => {
-      await accessor.writeContainer({ path: `${base}container/` }, metadata);
-      await accessor.writeDocument({ path: `${base}container/resource` }, data, metadata);
-      await accessor.writeContainer({ path: `${base}container/container2` }, metadata);
+      await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeDocument({ path: `${base}container/resource` }, data, metadata))
+        .resolves.toBeUndefined();
+      await expect(accessor.writeContainer({ path: `${base}container/container2` }, metadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
         [ toNamedNode(`${base}container/resource`), toNamedNode(`${base}container/container2/`) ],
@@ -88,7 +84,7 @@ describe('An InMemoryDataAccessor', (): void => {
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}resource` };
       const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Resource) });
-      await accessor.writeDocument(identifier, data, inputMetadata);
+      await expect(accessor.writeDocument(identifier, data, inputMetadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}resource`);
       const quads = metadata.quads();
@@ -99,7 +95,7 @@ describe('An InMemoryDataAccessor', (): void => {
     it('adds stored metadata when requesting container metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
       const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
-      await accessor.writeContainer(identifier, inputMetadata);
+      await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
@@ -111,15 +107,15 @@ describe('An InMemoryDataAccessor', (): void => {
     it('can overwrite the metadata of an existing container without overwriting children.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
       const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
-      await accessor.writeContainer(identifier, inputMetadata);
+      await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
-      await accessor.writeDocument(
+      await expect(accessor.writeDocument(
         { path: `${base}container/resource` }, data, resourceMetadata,
-      );
+      )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
       newMetadata.add(RDF.type, toNamedNode(LDP.BasicContainer));
-      await accessor.writeContainer(identifier, newMetadata);
+      await expect(accessor.writeContainer(identifier, newMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
@@ -134,8 +130,29 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(await readableToString(await accessor.getData({ path: `${base}container/resource` }))).toBe('data');
     });
 
+    it('can write to the root container without overriding its children.', async(): Promise<void> => {
+      const identifier = { path: `${base}` };
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
+      const resourceMetadata = new RepresentationMetadata();
+      await expect(accessor.writeDocument(
+        { path: `${base}resource` }, data, resourceMetadata,
+      )).resolves.toBeUndefined();
+
+      metadata = await accessor.getMetadata(identifier);
+      expect(metadata.identifier.value).toBe(`${base}`);
+      const quads = metadata.quads();
+      expect(quads).toHaveLength(2);
+      expect(metadata.getAll(RDF.type)).toHaveLength(1);
+      expect(metadata.getAll(LDP.contains)).toHaveLength(1);
+
+      await expect(accessor.getMetadata({ path: `${base}resource` }))
+        .resolves.toBeInstanceOf(RepresentationMetadata);
+      expect(await readableToString(await accessor.getData({ path: `${base}resource` }))).toBe('data');
+    });
+
     it('errors when writing to an invalid container path..', async(): Promise<void> => {
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
 
       await expect(accessor.writeContainer({ path: `${base}resource/container` }, metadata))
         .rejects.toThrow(new Error('Invalid path.'));
@@ -148,12 +165,21 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('removes the corresponding resource.', async(): Promise<void> => {
-      await accessor.writeDocument({ path: `${base}resource` }, data, metadata);
-      await accessor.writeContainer({ path: `${base}container/` }, metadata);
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       await expect(accessor.deleteResource({ path: `${base}resource` })).resolves.toBeUndefined();
       await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toBeUndefined();
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
       await expect(accessor.getMetadata({ path: `${base}container/` })).rejects.toThrow(NotFoundHttpError);
+    });
+
+    it('can delete the root container and write to it again.', async(): Promise<void> => {
+      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
+      await expect(accessor.getMetadata({ path: `${base}` })).rejects.toThrow(NotFoundHttpError);
+      await expect(accessor.getMetadata({ path: `${base}test/` })).rejects.toThrow(NotFoundHttpError);
+      await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
+      const resultMetadata = await accessor.getMetadata({ path: `${base}` });
+      expect(resultMetadata.quads()).toBeRdfIsomorphic(metadata.quads());
     });
   });
 });

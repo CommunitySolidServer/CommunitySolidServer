@@ -23,14 +23,16 @@ type CacheEntry = DataEntry | ContainerEntry;
 
 export class InMemoryDataAccessor implements DataAccessor {
   private readonly base: string;
-  private readonly store: ContainerEntry;
+  // A dummy container with one entry which corresponds to the base
+  private readonly store: { entries: { ''?: ContainerEntry } };
 
   public constructor(base: string) {
     this.base = ensureTrailingSlash(base);
 
     const metadata = new RepresentationMetadata({ path: this.base });
     metadata.addQuads(generateResourceQuads(DataFactory.namedNode(this.base), true));
-    this.store = { entries: {}, metadata };
+    const rootContainer = { entries: {}, metadata };
+    this.store = { entries: { '': rootContainer }};
   }
 
   public async canHandle(): Promise<void> {
@@ -96,11 +98,15 @@ export class InMemoryDataAccessor implements DataAccessor {
   }
 
   private getParentEntry(identifier: ResourceIdentifier): { parent: ContainerEntry; name: string } {
-    const parts = identifier.path.slice(this.base.length).split('/').filter((part): boolean => part.length > 0);
-
-    if (parts.length === 0) {
-      throw new Error('Root container has no parent.');
+    if (identifier.path === this.base) {
+      // Casting is fine here as the parent should never be used as a real container
+      return { parent: this.store as any, name: '' };
     }
+    if (!this.store.entries['']) {
+      throw new NotFoundHttpError();
+    }
+
+    const parts = identifier.path.slice(this.base.length).split('/').filter((part): boolean => part.length > 0);
 
     // Name of the resource will be the last entry in the path
     const name = parts[parts.length - 1];
@@ -109,7 +115,8 @@ export class InMemoryDataAccessor implements DataAccessor {
     const containers = parts.slice(0, -1);
 
     // Step through the parts of the path up to the end
-    let parent = this.store;
+    // First entry is guaranteed to be a ContainerEntry
+    let parent = this.store.entries[''];
     for (const container of containers) {
       const child = parent.entries[container];
       if (!child) {
@@ -124,9 +131,6 @@ export class InMemoryDataAccessor implements DataAccessor {
   }
 
   private getEntry(identifier: ResourceIdentifier): CacheEntry {
-    if (identifier.path === this.base) {
-      return this.store;
-    }
     const { parent, name } = this.getParentEntry(identifier);
     const entry = parent.entries[name];
     if (!entry) {
