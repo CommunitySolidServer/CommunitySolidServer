@@ -113,7 +113,7 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const { name, parent } = this.getRelatedNames(identifier);
-    return this.sendSparqlUpdate(this.sparqlInsert(name, parent, metadata));
+    return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent));
   }
 
   /**
@@ -135,7 +135,7 @@ export class SparqlDataAccessor implements DataAccessor {
     // Not relevant since all content is triples
     metadata.removeAll(CONTENT_TYPE);
 
-    return this.sendSparqlUpdate(this.sparqlInsert(name, parent, metadata, triples));
+    return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent, triples));
   }
 
   /**
@@ -148,10 +148,17 @@ export class SparqlDataAccessor implements DataAccessor {
 
   /**
    * Helper function to get named nodes corresponding to the identifier and its parent container.
+   * In case of a root container only the name will be returned.
    */
-  private getRelatedNames(identifier: ResourceIdentifier): { name: NamedNode; parent: NamedNode } {
-    const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
+  private getRelatedNames(identifier: ResourceIdentifier): { name: NamedNode; parent?: NamedNode } {
     const name = namedNode(identifier.path);
+
+    // Root containers don't have a parent
+    if (this.identifierStrategy.isRootContainer(identifier)) {
+      return { name };
+    }
+
+    const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
     const parent = namedNode(parentIdentifier.path);
     return { name, parent };
   }
@@ -219,14 +226,15 @@ export class SparqlDataAccessor implements DataAccessor {
    * @param metadata - New metadata of the resource.
    * @param triples - New data of the resource.
    */
-  private sparqlInsert(name: NamedNode, parent: NamedNode, metadata: RepresentationMetadata, triples?: Quad[]): Update {
+  private sparqlInsert(name: NamedNode, metadata: RepresentationMetadata, parent?: NamedNode, triples?: Quad[]):
+  Update {
     const metaName = this.getMetadataNode(name);
 
     // Insert new metadata and containment triple
-    const insert: GraphQuads[] = [
-      this.sparqlUpdateGraph(metaName, metadata.quads()),
-      this.sparqlUpdateGraph(parent, [ quad(parent, toNamedNode(LDP.contains), name) ]),
-    ];
+    const insert: GraphQuads[] = [ this.sparqlUpdateGraph(metaName, metadata.quads()) ];
+    if (parent) {
+      insert.push(this.sparqlUpdateGraph(parent, [ quad(parent, toNamedNode(LDP.contains), name) ]));
+    }
 
     // Necessary updates: delete metadata and insert new data
     const updates: UpdateOperation[] = [
@@ -256,21 +264,26 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Creates a query that deletes everything related to the given name.
    * @param name - Name of resource to delete.
-   * @param parent - Parent of the resource to delete so containment triple can be removed.
+   * @param parent - Parent of the resource to delete so the containment triple can be removed (unless root).
    */
-  private sparqlDelete(name: NamedNode, parent: NamedNode): Update {
-    return {
+  private sparqlDelete(name: NamedNode, parent?: NamedNode): Update {
+    const update: Update = {
       updates: [
         this.sparqlUpdateDeleteAll(name),
         this.sparqlUpdateDeleteAll(this.getMetadataNode(name)),
-        {
-          updateType: 'delete',
-          delete: [ this.sparqlUpdateGraph(parent, [ quad(parent, toNamedNode(LDP.contains), name) ]) ],
-        },
       ],
       type: 'update',
       prefixes: {},
     };
+
+    if (parent) {
+      update.updates.push({
+        updateType: 'delete',
+        delete: [ this.sparqlUpdateGraph(parent, [ quad(parent, toNamedNode(LDP.contains), name) ]) ],
+      });
+    }
+
+    return update;
   }
 
   /**

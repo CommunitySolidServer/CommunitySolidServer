@@ -172,6 +172,24 @@ describe('A SparqlDataAccessor', (): void => {
     ]));
   });
 
+  it('does not write containment triples when writing to a root container.', async(): Promise<void> => {
+    metadata = new RepresentationMetadata({ path: 'http://test.com/' },
+      { [RDF.type]: [ toNamedNode(LDP.Resource), toNamedNode(LDP.Container) ]});
+    await expect(accessor.writeContainer({ path: 'http://test.com/' }, metadata)).resolves.toBeUndefined();
+
+    expect(fetchUpdate).toHaveBeenCalledTimes(1);
+    expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchUpdate.mock.calls[0][1])).toBe(simplifyQuery([
+      'DELETE WHERE { GRAPH <meta:http://test.com/> { ?s ?p ?o. } };',
+      'INSERT DATA {',
+      '  GRAPH <meta:http://test.com/> {',
+      '    <http://test.com/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>.',
+      '    <http://test.com/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Container>.',
+      '  }',
+      '}',
+    ]));
+  });
+
   it('overwrites the data and metadata when writing a resource and updates parent.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
       { [RDF.type]: [ toNamedNode(LDP.Resource) ]});
@@ -221,6 +239,19 @@ describe('A SparqlDataAccessor', (): void => {
       'DELETE WHERE { GRAPH <http://test.com/container/> { ?s ?p ?o. } };',
       'DELETE WHERE { GRAPH <meta:http://test.com/container/> { ?s ?p ?o. } };',
       'DELETE DATA { GRAPH <http://test.com/> { <http://test.com/> <http://www.w3.org/ns/ldp#contains> <http://test.com/container/>. } }',
+    ]));
+  });
+
+  it('does not try to remove containment triples when deleting a root container.', async(): Promise<void> => {
+    metadata = new RepresentationMetadata({ path: 'http://test.com/' },
+      { [RDF.type]: [ toNamedNode(LDP.Resource), toNamedNode(LDP.Container) ]});
+    await expect(accessor.deleteResource({ path: 'http://test.com/' })).resolves.toBeUndefined();
+
+    expect(fetchUpdate).toHaveBeenCalledTimes(1);
+    expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchUpdate.mock.calls[0][1])).toBe(simplifyQuery([
+      'DELETE WHERE { GRAPH <http://test.com/> { ?s ?p ?o. } };',
+      'DELETE WHERE { GRAPH <meta:http://test.com/> { ?s ?p ?o. } }',
     ]));
   });
 
