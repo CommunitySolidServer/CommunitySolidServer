@@ -287,6 +287,12 @@ describe('A FileDataAccessor', (): void => {
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       expect(cache.data.container).toEqual({});
     });
+
+    it('can write to the root container.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata({ path: `${base}` }, { likes: 'apples' });
+      await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
+      expect(cache.data).toEqual({ '.meta': expect.stringMatching(`<${base}> <likes> "apples".`) });
+    });
   });
 
   describe('deleting a resource', (): void => {
@@ -333,6 +339,12 @@ describe('A FileDataAccessor', (): void => {
       expect(cache.data.container['resource.meta']).toBeUndefined();
       await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toBeUndefined();
       expect(cache.data.container).toBeUndefined();
+    });
+
+    it('can delete the root container.', async(): Promise<void> => {
+      cache.data = { };
+      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
+      expect(cache.data).toBeUndefined();
     });
   });
 });
