@@ -16,6 +16,7 @@ module.exports = {
   ],
   extends: [
     'es/node',
+    'eslint:recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
@@ -46,6 +47,7 @@ module.exports = {
     'new-cap': 'off', // used for RDF constants
     'no-param-reassign': 'off', // necessary in constructor overloading
     'no-underscore-dangle': 'off', // conflicts with external libraries
+    'no-unused-vars': 'off', // already checked by @typescript-eslint/no-unused-vars
     'padding-line-between-statements': 'off',
     'prefer-named-capture-group': 'off',
     'tsdoc/syntax': 'error',

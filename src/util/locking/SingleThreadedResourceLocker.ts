@@ -25,13 +25,16 @@ export class SingleThreadedResourceLocker implements ResourceLocker {
    */
   public async acquire(identifier: ResourceIdentifier): Promise<Lock> {
     this.logger.verbose(`Acquiring lock for ${identifier.path}`);
-    return new Promise(async(resolve): Promise<Lock> =>
+    return new Promise((resolve, reject): void => {
       this.locks.acquire(identifier.path, (done): void => {
         this.logger.verbose(`Acquired lock for ${identifier.path}`);
-        resolve({ release: async(): Promise<void> => {
-          this.logger.verbose(`Released lock for ${identifier.path}`);
-          done();
-        } });
-      }));
+        resolve({
+          release: async(): Promise<void> => {
+            this.logger.verbose(`Released lock for ${identifier.path}`);
+            done();
+          },
+        });
+      }).catch(reject);
+    });
   }
 }
