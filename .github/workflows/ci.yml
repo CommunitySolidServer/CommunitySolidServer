@@ -49,7 +49,7 @@ jobs:
       - name: Validate components files
         run: npm run validate
       - name: Type-check tests
-        run: npm run test:tsc
+        run: npm run test:ts
       - name: Run unit tests
         run: npm run test:unit
       - name: Submit unit test coverage

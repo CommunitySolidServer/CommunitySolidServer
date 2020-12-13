@@ -52,7 +52,7 @@
     "start": "node ./bin/server.js -p 3000",
     "test": "npm run test:tsc && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
-    "test:tsc": "tsc -p test --noEmit",
+    "test:ts": "tsc -p test --noEmit",
     "test:integration": "jest --coverageThreshold '{}' test/integration",
     "test:unit": "jest test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
