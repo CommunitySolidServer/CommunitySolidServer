@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-const { runCli } = require("..");
+const { runCli } = require('..');
 runCli();

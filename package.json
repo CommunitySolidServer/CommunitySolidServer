@@ -47,7 +47,7 @@
     "docker:start": "./test/docker/docker-start.sh",
     "docker:stop": "./test/docker/docker-stop.sh",
     "jest": "jest",
-    "lint": "eslint . --ext .ts --cache",
+    "lint": "eslint . --cache",
     "prepare": "npm run build",
     "start": "node ./bin/server.js -p 3000",
     "test": "npm run test:tsc && npm run jest",
