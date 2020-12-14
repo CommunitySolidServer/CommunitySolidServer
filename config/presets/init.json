@@ -12,6 +12,15 @@
           }
         },
         {
+          "@type": "RootContainerInitializer",
+          "RootContainerInitializer:_baseUrl": {
+            "@id": "urn:solid-server:default:variable:baseUrl"
+          },
+          "RootContainerInitializer:_store": {
+            "@id": "urn:solid-server:default:ResourceStore"
+          }
+        },
+        {
           "@type": "AclInitializer",
           "AclInitializer:_baseUrl": {
             "@id": "urn:solid-server:default:variable:baseUrl"

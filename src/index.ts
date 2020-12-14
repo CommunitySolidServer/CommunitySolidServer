@@ -17,6 +17,7 @@ export * from './init/AclInitializer';
 export * from './init/CliRunner';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/RootContainerInitializer';
 export * from './init/ServerInitializer';
 
 // LDP/HTTP/Metadata

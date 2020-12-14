@@ -46,6 +46,11 @@ export const MA = {
   format: MA_PREFIX('format'),
 };
 
+const PIM_PREFIX = createNamespace('http://www.w3.org/ns/pim/space#');
+export const PIM = {
+  Storage: PIM_PREFIX('Storage'),
+};
+
 const POSIX_PREFIX = createNamespace('http://www.w3.org/ns/posix/stat#');
 export const POSIX = {
   mtime: POSIX_PREFIX('mtime'),
