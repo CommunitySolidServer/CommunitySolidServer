@@ -218,7 +218,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.handleContainerData(representation);
     }
 
-    if (createContainers) {
+    // Root container should not have a parent container
+    if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
 
