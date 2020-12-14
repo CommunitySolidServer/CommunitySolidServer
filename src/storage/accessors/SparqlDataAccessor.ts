@@ -27,7 +27,6 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, LDP } from '../../util/UriConstants';
 import { toNamedNode } from '../../util/UriUtil';
 import type { DataAccessor } from './DataAccessor';
@@ -90,19 +89,13 @@ export class SparqlDataAccessor implements DataAccessor {
     const stream = await this.sendSparqlConstruct(query);
     const quads = await arrayifyStream(stream);
 
-    // Root container will not have metadata if there are no containment triples
-    if (quads.length === 0 && !this.identifierStrategy.isRootContainer(identifier)) {
+    if (quads.length === 0) {
       throw new NotFoundHttpError();
     }
 
     const metadata = new RepresentationMetadata(identifier).addQuads(quads);
     if (!isContainerIdentifier(identifier)) {
       metadata.contentType = INTERNAL_QUADS;
-    }
-
-    // Need to generate type metadata for the root container since it's not stored
-    if (this.identifierStrategy.isRootContainer(identifier)) {
-      metadata.addQuads(generateResourceQuads(name, true));
     }
 
     return metadata;
