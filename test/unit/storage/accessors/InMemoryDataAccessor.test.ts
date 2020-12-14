@@ -18,6 +18,9 @@ describe('An InMemoryDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new InMemoryDataAccessor(base);
 
+    // Create default root container
+    await accessor.writeContainer({ path: `${base}` }, new RepresentationMetadata());
+
     metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
 
     data = guardedStreamFrom([ 'data' ]);

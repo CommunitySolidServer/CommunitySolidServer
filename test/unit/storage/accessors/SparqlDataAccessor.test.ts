@@ -121,26 +121,6 @@ describe('A SparqlDataAccessor', (): void => {
     ]));
   });
 
-  it('generates resource metadata for the root container.', async(): Promise<void> => {
-    metadata = await accessor.getMetadata({ path: base });
-    expect(metadata.quads()).toBeRdfIsomorphic([
-      quad(namedNode('this'), namedNode('a'), namedNode('triple')),
-      quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.Container)),
-      quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.BasicContainer)),
-      quad(namedNode(base), toNamedNode(RDF.type), toNamedNode(LDP.Resource)),
-    ]);
-
-    expect(fetchTriples).toHaveBeenCalledTimes(1);
-    expect(fetchTriples.mock.calls[0][0]).toBe(endpoint);
-    expect(simplifyQuery(fetchTriples.mock.calls[0][1])).toBe(simplifyQuery([
-      'CONSTRUCT { ?s ?p ?o. } WHERE {',
-      `  { GRAPH <${base}> { ?s ?p ?o. } }`,
-      '  UNION',
-      `  { GRAPH <meta:${base}> { ?s ?p ?o. } }`,
-      '}',
-    ]));
-  });
-
   it('throws 404 if no metadata was found.', async(): Promise<void> => {
     // Clear triples array
     triples = [];

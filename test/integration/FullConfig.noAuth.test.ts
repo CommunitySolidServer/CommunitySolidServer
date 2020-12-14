@@ -1,5 +1,6 @@
 import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
+import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
@@ -35,6 +36,10 @@ describe.each(configs)('A server using a %s', (name, configFn): void => {
       config = configFn(rootFilePath);
       handler = config.getHttpHandler();
       fileHelper = new FileTestHelper(handler, new URL(BASE));
+
+      // Initialize store
+      const initializer = new RootContainerInitializer(BASE, config.store);
+      await initializer.handleSafe();
     });
 
     afterAll(async(): Promise<void> => {

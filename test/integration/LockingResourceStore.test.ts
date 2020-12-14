@@ -1,4 +1,5 @@
 import streamifyArray from 'streamify-array';
+import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import type { Representation } from '../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
@@ -13,6 +14,7 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringResourceLocker } from '../../src/util/locking/WrappedExpiringResourceLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
+import { BASE } from '../configs/Util';
 
 describe('A LockingResourceStore', (): void => {
   let path: string;
@@ -27,6 +29,10 @@ describe('A LockingResourceStore', (): void => {
     const base = 'http://test.com/';
     path = `${base}path`;
     source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), new SingleRootIdentifierStrategy(base));
+
+    // Initialize store
+    const initializer = new RootContainerInitializer(BASE, source);
+    await initializer.handleSafe();
 
     locker = new SingleThreadedResourceLocker();
     expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);

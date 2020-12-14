@@ -3,14 +3,23 @@ import * as url from 'url';
 import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
+import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import { LDP } from '../../src/util/UriConstants';
 import { BasicConfig } from '../configs/BasicConfig';
 import { BasicHandlersConfig } from '../configs/BasicHandlersConfig';
+import { BASE } from '../configs/Util';
 import { call } from '../util/Util';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   describe('with simple handlers', (): void => {
-    const handler = new BasicConfig().getHttpHandler();
+    const config = new BasicConfig();
+    const handler = config.getHttpHandler();
+
+    beforeAll(async(): Promise<void> => {
+      // Initialize store
+      const initializer = new RootContainerInitializer(BASE, config.store);
+      await initializer.handleSafe();
+    });
 
     it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
       // POST
@@ -61,7 +70,14 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PATCH handlers', (): void => {
-    const handler = new BasicHandlersConfig().getHttpHandler();
+    const config = new BasicHandlersConfig();
+    const handler = config.getHttpHandler();
+
+    beforeAll(async(): Promise<void> => {
+      // Initialize store
+      const initializer = new RootContainerInitializer(BASE, config.store);
+      await initializer.handleSafe();
+    });
 
     it('can handle simple SPARQL updates.', async(): Promise<void> => {
       // POST
@@ -126,7 +142,14 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   });
 
   describe('with simple PUT handlers', (): void => {
-    const handler = new BasicHandlersConfig().getHttpHandler();
+    const config = new BasicHandlersConfig();
+    const handler = config.getHttpHandler();
+
+    beforeAll(async(): Promise<void> => {
+      // Initialize store
+      const initializer = new RootContainerInitializer(BASE, config.store);
+      await initializer.handleSafe();
+    });
 
     it('should overwrite the content on PUT request.', async(): Promise<void> => {
       // POST

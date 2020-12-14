@@ -1,6 +1,7 @@
 import { createReadStream, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
+import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
@@ -39,6 +40,10 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
 
       // Make sure the root directory exists
       mkdirSync(rootFilePath, { recursive: true });
+
+      // Initialize store
+      const initializer = new RootContainerInitializer(BASE, config.store);
+      await initializer.handleSafe();
 
       // Use store instead of file access so tests also work for non-file backends
       await config.store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
