@@ -343,6 +343,21 @@ describe('A DataAccessorBasedStore', (): void => {
         new ConflictHttpError(`Creating container ${root}a/ conflicts with an existing resource.`),
       );
     });
+
+    it('can write to root if it does not exist.', async(): Promise<void> => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete accessor.data[root];
+      const resourceID = { path: `${root}` };
+
+      // Generate based on URI
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.contentType = 'text/turtle';
+      representation.data = guardedStreamFrom([]);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      expect(accessor.data[resourceID.path]).toBeTruthy();
+      expect(Object.keys(accessor.data)).toHaveLength(1);
+      expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+    });
   });
 
   describe('modifying a Representation', (): void => {
