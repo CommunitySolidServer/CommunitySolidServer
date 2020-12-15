@@ -7,7 +7,6 @@ import type { NamedNode, Quad } from 'rdf-js';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { TEXT_TURTLE } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
@@ -166,7 +165,7 @@ export class FileDataAccessor implements DataAccessor {
    * Starts from the identifier to make sure any potentially added extension has no impact on the path.
    */
   private async getMetadataPath(identifier: ResourceIdentifier): Promise<string> {
-    return (await this.resourceMapper.mapUrlToFilePath({ path: `${identifier.path}.meta` }, TEXT_TURTLE)).filePath;
+    return (await this.resourceMapper.mapUrlToFilePath({ path: `${identifier.path}.meta` })).filePath;
   }
 
   /**
