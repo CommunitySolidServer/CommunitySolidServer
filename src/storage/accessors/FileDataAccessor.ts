@@ -94,7 +94,7 @@ export class FileDataAccessor implements DataAccessor {
     } catch (error: unknown) {
       // Delete the metadata if there was an error writing the file
       if (wroteMetadata) {
-        await fsPromises.unlink(await this.getMetadataPath(link.identifier));
+        await fsPromises.unlink((await this.getMetadataLink(link.identifier)).filePath);
       }
       throw error;
     }
@@ -125,7 +125,7 @@ export class FileDataAccessor implements DataAccessor {
     const stats = await this.getStats(link.filePath);
 
     try {
-      await fsPromises.unlink(await this.getMetadataPath(link.identifier));
+      await fsPromises.unlink((await this.getMetadataLink(link.identifier)).filePath);
     } catch (error: unknown) {
       // Ignore if it doesn't exist
       if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -161,11 +161,11 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   /**
-   * Generates file path that corresponds to the metadata file of the given identifier.
-   * Starts from the identifier to make sure any potentially added extension has no impact on the path.
+   * Generates ResourceLink that corresponds to the metadata resource of the given identifier.
    */
-  private async getMetadataPath(identifier: ResourceIdentifier): Promise<string> {
-    return (await this.resourceMapper.mapUrlToFilePath({ path: `${identifier.path}.meta` })).filePath;
+  private async getMetadataLink(identifier: ResourceIdentifier): Promise<ResourceLink> {
+    const metaIdentifier = { path: `${identifier.path}.meta` };
+    return this.resourceMapper.mapUrlToFilePath(metaIdentifier);
   }
 
   /**
@@ -213,19 +213,20 @@ export class FileDataAccessor implements DataAccessor {
     metadata.removeAll(RDF.type);
     metadata.removeAll(CONTENT_TYPE);
     const quads = metadata.quads();
-    const metadataPath = await this.getMetadataPath(link.identifier);
+    const metadataLink = await this.getMetadataLink(link.identifier);
     let wroteMetadata: boolean;
 
     // Write metadata to file if there are quads remaining
     if (quads.length > 0) {
-      const serializedMetadata = serializeQuads(quads);
-      await this.writeDataFile(metadataPath, serializedMetadata);
+      // Determine required content-type based on mapper
+      const serializedMetadata = serializeQuads(quads, metadataLink.contentType);
+      await this.writeDataFile(metadataLink.filePath, serializedMetadata);
       wroteMetadata = true;
 
     // Delete (potentially) existing metadata file if no metadata needs to be stored
     } else {
       try {
-        await fsPromises.unlink(metadataPath);
+        await fsPromises.unlink(metadataLink.filePath);
       } catch (error: unknown) {
         // Metadata file doesn't exist so nothing needs to be removed
         if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -260,13 +261,13 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getRawMetadata(identifier: ResourceIdentifier): Promise<Quad[]> {
     try {
-      const metadataPath = await this.getMetadataPath(identifier);
+      const metadataLink = await this.getMetadataLink(identifier);
 
       // Check if the metadata file exists first
-      await fsPromises.lstat(metadataPath);
+      await fsPromises.lstat(metadataLink.filePath);
 
-      const readMetadataStream = guardStream(createReadStream(metadataPath));
-      return await parseQuads(readMetadataStream);
+      const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
+      return await parseQuads(readMetadataStream, metadataLink.contentType);
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
       if (!isSystemError(error) || error.code !== 'ENOENT') {

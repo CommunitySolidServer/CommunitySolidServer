@@ -245,7 +245,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (representation.metadata.contentType === INTERNAL_QUADS) {
         quads = await arrayifyStream(representation.data);
       } else {
-        quads = await parseQuads(representation.data);
+        quads = await parseQuads(representation.data, representation.metadata.contentType);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
