@@ -223,19 +223,26 @@ describe('A FileDataAccessor', (): void => {
       });
     });
 
+    it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
+      metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
+      metadata.contentType = 'text/turtle';
+      metadata.add('new', 'metadata');
+      await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))
+        .resolves.toBeUndefined();
+      expect(cache.data).toEqual({
+        'resource.txt$.ttl': 'data',
+        'resource.txt.meta': expect.stringMatching(`<${base}resource.txt> <new> "metadata".`),
+      });
+    });
+
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
       jest.requireMock('fs').promises.unlink = (): any => {
         const error = new Error('error') as SystemError;
-        error.code = 'ENOENT';
+        error.code = 'EISDIR';
         error.syscall = 'unlink';
         throw error;
       };
-
-      // `unlink` throwing ENOENT should not be an issue if the content-type does not change
-      metadata.contentType = 'text/turtle';
-      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
-        .resolves.toBeUndefined();
 
       metadata.contentType = 'text/plain';
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
