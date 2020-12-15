@@ -350,8 +350,8 @@ export class FileDataAccessor implements DataAccessor {
         await fsPromises.unlink(oldLink.filePath);
       }
     } catch (error: unknown) {
-      // Ignore it if the file didn't exist yet
-      if (!(error instanceof NotFoundHttpError)) {
+      // Ignore it if the file didn't exist yet and couldn't be unlinked
+      if (!isSystemError(error) || error.code !== 'ENOENT') {
         throw error;
       }
     }

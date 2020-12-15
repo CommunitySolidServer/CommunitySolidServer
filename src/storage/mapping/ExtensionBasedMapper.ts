@@ -4,7 +4,6 @@ import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
-import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import {
   encodeUriPathComponents,
@@ -98,22 +97,18 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
         );
       } catch {
         // Parent folder does not exist (or is not a folder)
-        this.logger.warn(`No parent folder for ${identifier.path} found at ${folder}`);
-        throw new NotFoundHttpError();
       }
 
-      // File doesn't exist
-      if (!fileName) {
-        this.logger.warn(`File for URL ${identifier.path} does not exist in ${folder}`);
-        throw new NotFoundHttpError();
+      // Matching file found
+      if (fileName) {
+        filePath = joinPath(folder, fileName);
       }
 
-      filePath = joinPath(folder, fileName);
       this.logger.info(`The path for ${identifier.path} is ${filePath}`);
       return {
         identifier,
         filePath,
-        contentType: this.getContentTypeFromExtension(fileName),
+        contentType: this.getContentTypeFromExtension(filePath),
       };
     }
 

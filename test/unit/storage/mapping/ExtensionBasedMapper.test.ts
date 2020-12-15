@@ -50,16 +50,24 @@ describe('An ExtensionBasedMapper', (): void => {
         .rejects.toThrow(new BadRequestHttpError('Identifiers cannot contain a dollar sign before their extension'));
     });
 
-    it('throws 404 when looking in a folder that does not exist.', async(): Promise<void> => {
+    it('determines content-type by extension when looking in a folder that does not exist.', async(): Promise<void> => {
       fsPromises.readdir.mockImplementation((): void => {
         throw new Error('does not exist');
       });
-      await expect(mapper.mapUrlToFilePath({ path: `${base}no/test.txt` })).rejects.toThrow(NotFoundHttpError);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}no/test.txt` })).resolves.toEqual({
+        identifier: { path: `${base}no/test.txt` },
+        filePath: `${rootFilepath}no/test.txt`,
+        contentType: 'text/plain',
+      });
     });
 
-    it('throws 404 when looking for a file that does not exist.', async(): Promise<void> => {
+    it('determines content-type by extension when looking for a file that does not exist.', async(): Promise<void> => {
       fsPromises.readdir.mockReturnValue([ 'test.ttl' ]);
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` })).rejects.toThrow(NotFoundHttpError);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` })).resolves.toEqual({
+        identifier: { path: `${base}test.txt` },
+        filePath: `${rootFilepath}test.txt`,
+        contentType: 'text/plain',
+      });
     });
 
     it('determines the content-type based on the extension.', async(): Promise<void> => {
