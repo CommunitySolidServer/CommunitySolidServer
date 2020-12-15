@@ -23,7 +23,7 @@ export default function getApp(): Koa {
     cache: false,
     viewExt: 'ejs',
     layout: '_layout',
-    root: path.join(__dirname, 'views'),
+    root: path.join(__dirname, '../../../src/identity/email-password-identity-provider/default-views'),
   });
 
   // TODO [>1.0.0] Enable https redirecting for production

@@ -38,7 +38,7 @@ export const configuration: Configuration = {
     keys: [ 'some secret key', 'and also the old rotated away some time ago', 'and one more' ],
   },
   claims: {
-    profile: [ 'webid' ],
+    webid: [ 'webid', 'client_webid' ],
   },
   conformIdTokenClaims: false,
   formats: {
@@ -85,4 +85,10 @@ export const configuration: Configuration = {
     RefreshToken: 1 * 24 * 60 * 60,
   },
   subjectTypes: [ 'public', 'pairwise' ],
+  extraAccessTokenClaims(): Record<string, unknown> {
+    return {
+      webid: 'https://jackson.solidcommunity.net/profile/card#me',
+      client_webid: 'http://localhost:3001/',
+    };
+  },
 };

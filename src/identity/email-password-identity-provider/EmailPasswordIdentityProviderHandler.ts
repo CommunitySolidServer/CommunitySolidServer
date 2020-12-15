@@ -17,9 +17,10 @@ export class EmailPasswordIdentityProviderHandler extends HttpHandler {
     super();
     Object.assign(this, args);
     this.app = getApp();
-    this.app.onerror = (err): void => {
-      throw err;
-    };
+    // TODO [>1.0.0] Reenable error passthrough
+    // this.app.onerror = (err): void => {
+    //   throw err;
+    // };
   }
 
   public async handle(input: {

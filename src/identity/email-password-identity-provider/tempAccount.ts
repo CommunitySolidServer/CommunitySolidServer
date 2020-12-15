@@ -33,49 +33,10 @@ export default class Account {
    *   or not return them in id tokens but only userinfo and so on.
    */
   public async claims(): Promise<IClaims> {
-    // eslint-disable-line no-unused-vars
-    if (this.profile) {
-      return {
-        // It is essential to always return a sub claim
-        sub: this.accountId,
-        email: this.profile.email,
-        email_verified: this.profile.email_verified,
-        family_name: this.profile.family_name,
-        given_name: this.profile.given_name,
-        locale: this.profile.locale,
-        name: this.profile.name,
-      };
-    }
-
     return {
-      // It is essential to always return a sub claim
       sub: this.accountId,
-      address: {
-        country: '000',
-        formatted: '000',
-        locality: '000',
-        postal_code: '000',
-        region: '000',
-        street_address: '000',
-      },
-      birthdate: '1987-10-16',
-      email: 'johndoe@example.com',
-      email_verified: false,
-      family_name: 'Doe',
-      gender: 'male',
-      given_name: 'John',
-      locale: 'en-US',
-      middle_name: 'Middle',
-      name: 'John Doe',
-      nickname: 'Johny',
-      phone_number: '+49 000 000000',
-      phone_number_verified: false,
-      picture: 'http://lorempixel.com/400/200/',
-      preferred_username: 'johnny',
-      profile: 'https://johnswebsite.com',
-      updated_at: 1454704946,
-      website: 'http://example.com',
-      zoneinfo: 'Europe/Berlin',
+      webid: 'https://jackson.solidcommunity.net/profile/card#me',
+      client_webid: 'http://localhost:3001/',
     };
   }
 
@@ -104,6 +65,8 @@ export default class Account {
       // eslint-disable-next-line no-new
       new Account(id);
     }
-    return store.get(id);
+    const item = store.get(id);
+    console.log(item);
+    return item;
   }
 }
