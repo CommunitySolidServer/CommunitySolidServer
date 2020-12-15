@@ -18,7 +18,7 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, HTTP, LDP, RDF } from '../../../src/util/UriConstants';
+import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/UriConstants';
 import { toNamedNode } from '../../../src/util/UriUtil';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
@@ -389,9 +389,11 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(NotFoundHttpError);
     });
 
-    it('will error when deleting the root.', async(): Promise<void> => {
-      await expect(store.deleteResource({ path: root }))
-        .rejects.toThrow(new MethodNotAllowedHttpError('Cannot delete root container.'));
+    it('will error when deleting a root storage container.', async(): Promise<void> => {
+      representation.metadata.add(RDF.type, toNamedNode(PIM.Storage));
+      accessor.data[`${root}container`] = representation;
+      await expect(store.deleteResource({ path: `${root}container` }))
+        .rejects.toThrow(new MethodNotAllowedHttpError('Cannot delete a root storage container.'));
     });
 
     it('will error when deleting non-empty containers.', async(): Promise<void> => {
