@@ -1,8 +1,9 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import Koa from 'koa';
+import type Koa from 'koa';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { HttpHandler } from '../../server/HttpHandler';
 import type { Guarded } from '../../util/GuardedStream';
+import getApp from './tempServer';
 
 interface EmailPasswordIdentityProviderHandlerArgs {
   optional?: string;
@@ -15,30 +16,10 @@ export class EmailPasswordIdentityProviderHandler extends HttpHandler {
   public constructor(args: EmailPasswordIdentityProviderHandlerArgs) {
     super();
     Object.assign(this, args);
-    this.app = new Koa();
+    this.app = getApp();
     this.app.onerror = (err): void => {
       throw err;
     };
-    this.app.use(
-      async(ctx, next): Promise<void> => {
-        this.logger.info(ctx.url);
-        if (ctx.url === '/cool') {
-          await new Promise((resolve): void => {
-            setTimeout((): void => {
-              ctx.body = 'cool dude';
-              resolve();
-            }, 2000);
-          });
-        } else {
-          return await next();
-        }
-      },
-    );
-    this.app.use(
-      async(): Promise<void> => {
-        throw new Error('oop error');
-      },
-    );
   }
 
   public async handle(input: {
