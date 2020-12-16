@@ -1,6 +1,6 @@
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { HandlebarsTemplateEngine } from '../../../../src/pods/generate/HandlebarsTemplateEngine';
 import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
-import type { TemplateEngine } from '../../../../src/pods/generate/TemplateEngine';
 import type {
   FileIdentifierMapper,
   FileIdentifierMapperFactory,
@@ -9,7 +9,6 @@ import type {
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { mockFs } from '../../../util/Util';
-import Dict = NodeJS.Dict;
 
 jest.mock('fs');
 
@@ -30,13 +29,6 @@ class DummyFactory implements FileIdentifierMapperFactory {
   }
 }
 
-class DummyEngine implements TemplateEngine {
-  public apply(template: string, options: Dict<string>): string {
-    const keys = Object.keys(options);
-    return `${template}${keys.map((key): string => `{${key}:${options[key]}}`).join('')}`;
-  }
-}
-
 const genToArray = async<T>(iterable: AsyncIterable<T>): Promise<T[]> => {
   const arr: T[] = [];
   for await (const result of iterable) {
@@ -47,7 +39,8 @@ const genToArray = async<T>(iterable: AsyncIterable<T>): Promise<T[]> => {
 
 describe('A TemplatedResourcesGenerator', (): void => {
   const rootFilePath = 'templates';
-  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new DummyEngine());
+  // Using handlebars engine since it's smaller than any possible dummy
+  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine());
   let cache: { data: any };
   const template = '<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.';
   const location = { path: 'http://test.com/alice/' };
@@ -68,11 +61,11 @@ describe('A TemplatedResourcesGenerator', (): void => {
     expect(representation.binary).toBe(true);
     expect(representation.metadata.contentType).toBe('text/turtle');
     await expect(readableToString(representation.data)).resolves
-      .toEqual(`<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.{webId:${webId}}`);
+      .toEqual(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
   });
 
-  it('creates the necessary containers and ignores non-files.', async(): Promise<void> => {
-    cache.data = { container: { container: { template }}, 2: 5 };
+  it('creates the necessary containers.', async(): Promise<void> => {
+    cache.data = { container: { container: { template }}};
     const result = await genToArray(generator.generate(location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}container/container/template` };
@@ -85,6 +78,37 @@ describe('A TemplatedResourcesGenerator', (): void => {
 
     const { representation } = result[3];
     await expect(readableToString(representation.data)).resolves
-      .toEqual(`<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.{webId:${webId}}`);
+      .toEqual(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
+  });
+
+  it('adds metadata from .meta files.', async(): Promise<void> => {
+    const meta = '<> <pre:has> "metadata".';
+    cache.data = { '.meta': meta, container: { 'template.meta': meta, template }};
+
+    // Not using options since our dummy template generator generates invalid turtle
+    const result = await genToArray(generator.generate(location, { webId }));
+    const identifiers = result.map((res): ResourceIdentifier => res.identifier);
+    expect(identifiers).toEqual([
+      location,
+      { path: `${location.path}container/` },
+      { path: `${location.path}container/template` },
+    ]);
+    // Root has the 1 raw metadata triple (with <> changed to its identifier)
+    const rootMetadata = result[0].representation.metadata;
+    expect(rootMetadata.identifier.value).toBe(location.path);
+    expect(rootMetadata.quads()).toHaveLength(1);
+    expect(rootMetadata.get('pre:has')?.value).toBe('metadata');
+
+    // Container has no metadata triples
+    const contMetadata = result[1].representation.metadata;
+    expect(contMetadata.identifier.value).toBe(`${location.path}container/`);
+    expect(contMetadata.quads()).toHaveLength(0);
+
+    // Document has the 1 raw metadata triple (with <> changed to its identifier) and content-type
+    const docMetadata = result[2].representation.metadata;
+    expect(docMetadata.identifier.value).toBe(`${location.path}container/template`);
+    expect(docMetadata.quads()).toHaveLength(2);
+    expect(docMetadata.get('pre:has')?.value).toBe('metadata');
+    expect(docMetadata.contentType).toBe('text/turtle');
   });
 });
