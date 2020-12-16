@@ -16,7 +16,7 @@ import type { Guarded } from '../../util/GuardedStream';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
-import { CONTENT_TYPE, DCTERMS, POSIX, RDF, XSD } from '../../util/UriConstants';
+import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
@@ -210,7 +210,9 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
-    metadata.removeAll(RDF.type);
+    metadata.remove(RDF.type, toNamedNode(LDP.Resource));
+    metadata.remove(RDF.type, toNamedNode(LDP.Container));
+    metadata.remove(RDF.type, toNamedNode(LDP.BasicContainer));
     metadata.removeAll(CONTENT_TYPE);
     const quads = metadata.quads();
     const metadataLink = await this.getMetadataLink(link.identifier);
