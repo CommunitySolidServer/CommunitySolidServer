@@ -1,8 +1,14 @@
 import { promises as fsPromises } from 'fs';
 import { posix } from 'path';
+import { Parser } from 'n3';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import type { FileIdentifierMapper, FileIdentifierMapperFactory } from '../../storage/mapping/FileIdentifierMapper';
+import type {
+  FileIdentifierMapper,
+  FileIdentifierMapperFactory,
+  ResourceLink,
+} from '../../storage/mapping/FileIdentifierMapper';
+import { isContainerIdentifier } from '../../util/PathUtil';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
 import type { TemplateEngine } from './TemplateEngine';
@@ -20,6 +26,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateFolder: string;
   private readonly factory: FileIdentifierMapperFactory;
   private readonly engine: TemplateEngine;
+  private readonly metaExtension = '.meta';
 
   /**
    * A mapper is needed to convert the template file paths to identifiers relative to the given base identifier.
@@ -36,57 +43,132 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
 
   public async* generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
     const mapper = await this.factory.create(location.path, this.templateFolder);
-    yield* this.parseFolder(this.templateFolder, mapper, options);
+    const folderLink = await mapper.mapFilePathToUrl(this.templateFolder, true);
+    yield* this.parseFolder(folderLink, mapper, options);
   }
 
   /**
    * Generates results for all entries in the given folder, including the folder itself.
    */
-  private async* parseFolder(filePath: string, mapper: FileIdentifierMapper, options: Dict<string>):
+  private async* parseFolder(folderLink: ResourceLink, mapper: FileIdentifierMapper, options: Dict<string>):
   AsyncIterable<Resource> {
-    // Generate representation for the container
-    const link = await mapper.mapFilePathToUrl(filePath, true);
-    yield {
-      identifier: link.identifier,
-      representation: {
-        binary: true,
-        data: guardedStreamFrom([]),
-        metadata: new RepresentationMetadata(link.identifier),
-      },
-    };
+    // Group resource links with their corresponding metadata links
+    const links = await this.groupLinks(this.generateLinks(folderLink.filePath, mapper));
 
-    // Generate representations for all resources in this container
-    const files = await fsPromises.readdir(filePath);
-    for (const childName of files) {
-      const childPath = joinPath(filePath, childName);
-      const childStats = await fsPromises.lstat(childPath);
-      if (childStats.isDirectory()) {
-        yield* this.parseFolder(childPath, mapper, options);
-      } else if (childStats.isFile()) {
-        yield this.generateDocument(childPath, mapper, options);
+    // Remove root metadata if it exists
+    const metaLink = links[folderLink.identifier.path]?.meta;
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete links[folderLink.identifier.path];
+
+    yield this.generateResource(folderLink, options, metaLink);
+
+    for (const { link, meta } of Object.values(links)) {
+      if (isContainerIdentifier(link.identifier)) {
+        yield* this.parseFolder(link, mapper, options);
+      } else {
+        yield this.generateResource(link, options, meta);
       }
     }
   }
 
   /**
-   * Generates a new Representation corresponding to the template file at the given location.
+   * Generates ResourceLinks for each entry in the given folder.
    */
-  private async generateDocument(filePath: string, mapper: FileIdentifierMapper, options: Dict<string>):
-  Promise<Resource> {
-    const link = await mapper.mapFilePathToUrl(filePath, false);
-    const metadata = new RepresentationMetadata(link.identifier);
-    metadata.contentType = link.contentType;
+  private async* generateLinks(folderPath: string, mapper: FileIdentifierMapper): AsyncIterable<ResourceLink> {
+    const files = await fsPromises.readdir(folderPath);
+    for (const name of files) {
+      const filePath = joinPath(folderPath, name);
+      const stats = await fsPromises.lstat(filePath);
+      yield mapper.mapFilePathToUrl(filePath, stats.isDirectory());
+    }
+  }
 
-    const raw = await fsPromises.readFile(filePath, 'utf8');
-    const compiled = this.engine.apply(raw, options);
+  /**
+   * Parses a group of ResourceLinks so resources and their metadata are grouped together.
+   */
+  private async groupLinks(linkGen: AsyncIterable<ResourceLink>):
+  Promise<Record<string, { link: ResourceLink; meta?: ResourceLink }>> {
+    const links: Record<string, { link: ResourceLink; meta?: ResourceLink }> = { };
+    for await (const link of linkGen) {
+      const { path } = link.identifier;
+      if (this.isMeta(path)) {
+        const resourcePath = this.metaToResource(link.identifier).path;
+        links[resourcePath] = Object.assign(links[resourcePath] || {}, { meta: link });
+      } else {
+        links[path] = Object.assign(links[path] || {}, { link });
+      }
+    }
+    return links;
+  }
+
+  /**
+   * Generates a Resource object for the given ResourceLink.
+   * In the case of documents the corresponding template will be used.
+   * If a ResourceLink of metadata is provided the corresponding data will be added as metadata.
+   */
+  private async generateResource(link: ResourceLink, options: Dict<string>, metaLink?: ResourceLink):
+  Promise<Resource> {
+    const data: string[] = [];
+    const metadata = new RepresentationMetadata(link.identifier);
+
+    // Read file if it is not a container
+    if (!isContainerIdentifier(link.identifier)) {
+      const compiled = await this.parseTemplate(link.filePath, options);
+      data.push(compiled);
+      metadata.contentType = link.contentType;
+    }
+
+    // Add metadata from meta file if there is one
+    if (metaLink) {
+      const rawMetadata = await this.generateMetadata(metaLink, options);
+      metadata.addQuads(rawMetadata.quads());
+    }
 
     return {
       identifier: link.identifier,
       representation: {
         binary: true,
-        data: guardedStreamFrom([ compiled ]),
+        data: guardedStreamFrom(data),
         metadata,
       },
     };
+  }
+
+  /**
+   * Generates a RepresentationMetadata using the given template.
+   */
+  private async generateMetadata(metaLink: ResourceLink, options: Dict<string>):
+  Promise<RepresentationMetadata> {
+    const identifier = this.metaToResource(metaLink.identifier);
+    const metadata = new RepresentationMetadata(identifier);
+
+    const data = await this.parseTemplate(metaLink.filePath, options);
+    const parser = new Parser({ format: metaLink.contentType, baseIRI: identifier.path });
+    const quads = parser.parse(data);
+    metadata.addQuads(quads);
+
+    return metadata;
+  }
+
+  /**
+   * Applies the given options to the template found at the given path.
+   */
+  private async parseTemplate(filePath: string, options: Dict<string>): Promise<string> {
+    const raw = await fsPromises.readFile(filePath, 'utf8');
+    return this.engine.apply(raw, options);
+  }
+
+  /**
+   * Verifies if the given path corresponds to a metadata file.
+   */
+  private isMeta(path: string): boolean {
+    return path.endsWith(this.metaExtension);
+  }
+
+  /**
+   * Converts a generated metadata identifier to the identifier of its corresponding resource.
+   */
+  private metaToResource(metaIdentifier: ResourceIdentifier): ResourceIdentifier {
+    return { path: metaIdentifier.path.slice(0, -this.metaExtension.length) };
   }
 }
