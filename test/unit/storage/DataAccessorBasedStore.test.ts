@@ -10,6 +10,7 @@ import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedSt
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
+import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
@@ -83,7 +84,11 @@ describe('A DataAccessorBasedStore', (): void => {
     store = new DataAccessorBasedStore(accessor, identifierStrategy);
 
     containerMetadata = new RepresentationMetadata(
-      { [RDF.type]: [ DataFactory.namedNode(LDP.Container), DataFactory.namedNode(LDP.BasicContainer) ]},
+      { [RDF.type]: [
+        DataFactory.namedNode(LDP.Resource),
+        DataFactory.namedNode(LDP.Container),
+        DataFactory.namedNode(LDP.BasicContainer),
+      ]},
     );
     accessor.data[root] = { metadata: containerMetadata } as Representation;
 
@@ -270,9 +275,20 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
-      const resourceID = { path: `${root}resource/` };
+      const resourceID = { path: `${root}resource` };
+      representation.metadata.add(RDF.type, toNamedNode(LDP.Container));
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
+      );
+    });
+
+    it('will error if the DataAccessor did not store the required type triples.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      accessor.data[resourceID.path] = representation;
+      representation.metadata.identifier = namedNode(resourceID.path);
+      representation.metadata.removeAll(RDF.type);
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
+        new InternalServerError('Unknown resource type.'),
       );
     });
 

@@ -1,6 +1,6 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { Quad } from 'rdf-js';
+import type { Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
@@ -8,6 +8,7 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -318,14 +319,13 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required.
    */
   protected isNewContainer(metadata: RepresentationMetadata, suffix?: string): boolean {
-    let isContainer: boolean;
-    try {
-      isContainer = this.isExistingContainer(metadata);
-    } catch {
-      const slug = suffix ?? metadata.get(HTTP.slug)?.value;
-      isContainer = Boolean(slug && isContainerPath(slug));
+    // Should not use `isExistingContainer` since the metadata might contain unrelated type triples
+    // It's not because there is no container type triple that the new resource is not a container
+    if (this.hasContainerType(metadata.getAll(RDF.type))) {
+      return true;
     }
-    return isContainer;
+    const slug = suffix ?? metadata.get(HTTP.slug)?.value;
+    return Boolean(slug && isContainerPath(slug));
   }
 
   /**
@@ -335,9 +335,16 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected isExistingContainer(metadata: RepresentationMetadata): boolean {
     const types = metadata.getAll(RDF.type);
-    if (types.length === 0) {
-      throw new Error('Unknown resource type.');
+    if (!types.some((type): boolean => type.value === LDP.Resource)) {
+      throw new InternalServerError('Unknown resource type.');
     }
+    return this.hasContainerType(types);
+  }
+
+  /**
+   * Checks in a list of types if any of them match a Container type.
+   */
+  protected hasContainerType(types: Term[]): boolean {
     return types.some((type): boolean => type.value === LDP.Container || type.value === LDP.BasicContainer);
   }
 
