@@ -3,7 +3,10 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
-      "@type": "EmailPasswordIdentityProviderHandler"
+      "@type": "EmailPasswordIdentityProviderHandler",
+      "EmailPasswordIdentityProviderHandler:_args_oidcProviderFactory": {
+        "@id": "urn:solid-server:default:OidcProviderFactory"
+      }
     }
   ]
 }

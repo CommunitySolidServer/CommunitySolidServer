@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:OidcProviderFactory",
+      "@type": "SolidOidcProviderFactory",
+      "SolidOidcProviderFactory:_args_issuer": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "SolidOidcProviderFactory:_args_configurationFactory": {
+        "@id": "urn:solid-server:default:DevEmailPasswordOidcProviderConfigurationFactory"
+      }
+    }
+  ]
+}

@@ -79,8 +79,13 @@ export * from './ldp/representation/ResourceIdentifier';
 export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
-// Identity Provider
+// Email Password Identity Provider
 export * from './identity/email-password/EmailPasswordIdentityProviderHandler';
+export * from './identity/email-password/DevEmailPasswordOidcProviderConfigurationFactory';
+
+// Identity Provider
+export * from './identity/provider/SolidOidcProvider';
+export * from './identity/provider/SolidOidcProviderFactory';
 
 // Logging
 export * from './logging/LazyLogger';
