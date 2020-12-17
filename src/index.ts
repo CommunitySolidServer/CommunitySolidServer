@@ -80,7 +80,7 @@ export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
 // Identity Provider
-export * from './identity/email-password-identity-provider/EmailPasswordIdentityProviderHandler';
+export * from './identity/email-password/EmailPasswordIdentityProviderHandler';
 
 // Logging
 export * from './logging/LazyLogger';

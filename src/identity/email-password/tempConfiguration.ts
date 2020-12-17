@@ -85,10 +85,13 @@ export const configuration: Configuration = {
     RefreshToken: 1 * 24 * 60 * 60,
   },
   subjectTypes: [ 'public', 'pairwise' ],
-  extraAccessTokenClaims(): Record<string, unknown> {
-    return {
-      webid: 'https://jackson.solidcommunity.net/profile/card#me',
-      client_webid: 'http://localhost:3001/',
-    };
+  extraAccessTokenClaims(ctx, token): Record<string, unknown> {
+    if ((token as any).accountId) {
+      return {
+        webid: (token as any).accountId,
+        client_webid: 'http://localhost:3001/',
+      };
+    }
+    return {};
   },
 };

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 const store = new Map();
 const logins = new Map();
-import { v4 } from 'uuid';
 
 interface IProfile {
   email: string;
@@ -19,7 +18,7 @@ export default class Account {
   public profile?: IProfile;
 
   public constructor(id: string, profile?: IProfile) {
-    this.accountId = id || v4();
+    this.accountId = id || 'https://jackson.solidcommunity.net/profile/card#me';
     this.profile = profile;
     store.set(this.accountId, this);
   }
@@ -35,7 +34,7 @@ export default class Account {
   public async claims(): Promise<IClaims> {
     return {
       sub: this.accountId,
-      webid: 'https://jackson.solidcommunity.net/profile/card#me',
+      webid: this.accountId,
       client_webid: 'http://localhost:3001/',
     };
   }
@@ -50,7 +49,7 @@ export default class Account {
 
   public static async findByLogin(login: string): Promise<Account> {
     if (!logins.get(login)) {
-      logins.set(login, new Account(login));
+      logins.set(login, new Account('https://jackson.solidcommunity.net/profile/card#me'));
     }
 
     return logins.get(login);
@@ -66,7 +65,6 @@ export default class Account {
       new Account(id);
     }
     const item = store.get(id);
-    console.log(item);
     return item;
   }
 }

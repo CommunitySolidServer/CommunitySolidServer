@@ -64,7 +64,6 @@ export default function getRoutes(provider: Provider): Router {
   );
 
   router.get('/interaction/:uid', async(ctx: any, next): Promise<string | void> => {
-    console.log('In here');
     const { uid, prompt, params, session } = await provider.interactionDetails(
       ctx.req,
       ctx.res,
