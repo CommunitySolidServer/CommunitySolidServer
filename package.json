@@ -50,7 +50,7 @@
     "lint": "eslint . --cache",
     "prepare": "npm run build",
     "start": "node ./bin/server.js -p 3000",
-    "test": "npm run test:tsc && npm run jest",
+    "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
     "test:integration": "jest --coverageThreshold '{}' test/integration",
