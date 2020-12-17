@@ -30,7 +30,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "community-solid-server": "./bin/server.js"
+    "community-solid-server": "bin/server.js"
   },
   "repository": "git@github.com:solid/community-server.git",
   "bugs": {
@@ -69,6 +69,8 @@
     "config"
   ],
   "dependencies": {
+    "@bessonovs/node-http-router": "^0.0.5",
+    "@koa/router": "^10.0.0",
     "@rdfjs/data-model": "^1.2.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
@@ -90,8 +92,15 @@
     "express": "^4.17.1",
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-ejs": "^4.3.0",
+    "koa-mount": "^4.0.0",
+    "koa-router": "^10.0.0",
+    "lodash": "^4.17.20",
     "mime-types": "^2.1.27",
     "n3": "^1.6.4",
+    "oidc-provider": "^6.29.8",
     "rdf-parse": "^1.5.0",
     "rdf-serialize": "^1.0.0",
     "rdf-terms": "^1.5.1",
@@ -108,6 +117,11 @@
   "devDependencies": {
     "@microsoft/tsdoc-config": "^0.13.6",
     "@types/jest": "^26.0.13",
+    "@types/koa": "^2.11.6",
+    "@types/koa__router": "^8.0.3",
+    "@types/koa-ejs": "^4.2.2",
+    "@types/koa-mount": "^4.0.0",
+    "@types/koa-router": "^7.4.1",
     "@types/rimraf": "^3.0.0",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
