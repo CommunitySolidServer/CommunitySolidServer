@@ -1,17 +1,14 @@
 {
+  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2017",
-    "newLine": "lf",
     "declaration": true,
-    "esModuleInterop": true,
     "incremental": true,
     "inlineSources": true,
+    "newLine": "lf",
     "noUnusedLocals": true,
-    "preserveConstEnums": true,
     "outDir": "dist",
+    "preserveConstEnums": true,
     "sourceMap": true,
-    "strict": true,
     "stripInternal": true
   },
   "include": [
