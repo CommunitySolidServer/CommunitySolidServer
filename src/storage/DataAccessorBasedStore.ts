@@ -22,7 +22,7 @@ import {
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
-import { CONTENT_TYPE, HTTP, LDP, RDF } from '../util/UriConstants';
+import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../util/UriConstants';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
 
@@ -148,10 +148,13 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     this.validateIdentifier(identifier);
-    if (this.identifierStrategy.isRootContainer(identifier)) {
-      throw new MethodNotAllowedHttpError('Cannot delete root container.');
-    }
     const metadata = await this.accessor.getMetadata(identifier);
+    // "When a DELETE request targets storage’s root container or its associated ACL resource,
+    //  the server MUST respond with the 405 status code."
+    // https://solid.github.io/specification/#deleting-resources
+    if (this.isRootStorage(metadata)) {
+      throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
+    }
     if (metadata.getAll(LDP.contains).length > 0) {
       throw new ConflictHttpError('Can only delete empty containers.');
     }
@@ -346,6 +349,13 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected hasContainerType(types: Term[]): boolean {
     return types.some((type): boolean => type.value === LDP.Container || type.value === LDP.BasicContainer);
+  }
+
+  /**
+   * Verifies if this is the metadata of a root storage container.
+   */
+  protected isRootStorage(metadata: RepresentationMetadata): boolean {
+    return metadata.getAll(RDF.type).some((term): boolean => term.value === PIM.Storage);
   }
 
   /**
