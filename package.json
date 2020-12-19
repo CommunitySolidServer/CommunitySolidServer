@@ -46,6 +46,7 @@
     "docker:setup": "./test/docker/docker-setup.sh",
     "docker:start": "./test/docker/docker-start.sh",
     "docker:stop": "./test/docker/docker-stop.sh",
+    "docs": "typedoc",
     "jest": "jest",
     "lint": "eslint . --cache",
     "prepare": "npm run build",
@@ -133,6 +134,7 @@
     "stream-to-string": "^1.1.0",
     "supertest": "^6.0.0",
     "ts-jest": "^26.3.0",
+    "typedoc": "^0.19.2",
     "typescript": "^4.0.2"
   }
 }
