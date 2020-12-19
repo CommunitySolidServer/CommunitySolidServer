@@ -1,9 +1,11 @@
-import { verify } from 'ts-dpop';
+import { createSolidIdentityVerifier } from 'ts-dpop';
 import { DPoPWebIdExtractor } from '../../../src/authentication/DPoPWebIdExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
+
+const solidIdentityVerifier = createSolidIdentityVerifier() as jest.MockedFunction<any>;
 
 describe('A DPoPWebIdExtractor', (): void => {
   const targetExtractor = new StaticAsyncHandler(true, { path: 'http://example.org/foo/bar' });
@@ -25,7 +27,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('throws an error.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
       await expect(result).rejects.toThrow(NotImplementedHttpError);
-      await expect(result).rejects.toThrow('No DPoP Authorization header specified.');
+      await expect(result).rejects.toThrow('No DPoP-bound Authorization header specified.');
     });
   });
 
@@ -41,7 +43,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('throws an error.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
       await expect(result).rejects.toThrow(NotImplementedHttpError);
-      await expect(result).rejects.toThrow('No DPoP Authorization header specified.');
+      await expect(result).rejects.toThrow('No DPoP-bound Authorization header specified.');
     });
   });
 
@@ -56,7 +58,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('throws an error.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
       await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects.toThrow('No DPoP token specified.');
+      await expect(result).rejects.toThrow('No DPoP header specified.');
     });
   });
 
@@ -77,8 +79,8 @@ describe('A DPoPWebIdExtractor', (): void => {
 
     it('calls the DPoP verifier with the correct parameters.', async(): Promise<void> => {
       await webIdExtractor.handleSafe(request);
-      expect(verify).toHaveBeenCalledTimes(1);
-      expect(verify).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
+      expect(solidIdentityVerifier).toHaveBeenCalledTimes(1);
+      expect(solidIdentityVerifier).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
     });
 
     it('returns the extracted WebID.', async(): Promise<void> => {
@@ -97,7 +99,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     } as any as HttpRequest;
 
     beforeEach((): void => {
-      (verify as jest.MockedFunction<any>).mockImplementationOnce((): void => {
+      solidIdentityVerifier.mockImplementationOnce((): void => {
         throw new Error('invalid');
       });
     });
@@ -105,7 +107,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('throws an error.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
       await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects.toThrow('Error verifying WebID via DPoP token: invalid');
+      await expect(result).rejects.toThrow('Error verifying WebID via DPoP-bound access token: invalid');
     });
   });
 });
