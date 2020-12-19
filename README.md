@@ -27,12 +27,13 @@ However, you can already boot up the server,
 play around with it,
 and check how it is made.
 <br>
-The [architectural diagram](https://github.com/RubenVerborgh/solid-server-architecture)
+The [API documentation 📗](https://solid.github.io/community-server/docs/)
+and the [architectural diagram 📐](https://github.com/RubenVerborgh/solid-server-architecture)
 can help you find your way.
 
 If you are interested in helping out with the development of this server,
-be sure to have a look at the [developer notes](https://github.com/solid/community-server/wiki/Notes-for-developers)
-and [good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+be sure to have a look at the [developer notes 📓](https://github.com/solid/community-server/wiki/Notes-for-developers)
+and [good first issues 🛠️](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 ## Running locally
 
