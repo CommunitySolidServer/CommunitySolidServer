@@ -1,0 +1,901 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>FileDataAccessor | Community Solid Server</title>
+	<meta name="description" content="Documentation for Community Solid Server">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Community Solid Server</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/_storage_accessors_filedataaccessor_.html">&quot;storage/accessors/FileDataAccessor&quot;</a>
+				</li>
+				<li>
+					<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html">FileDataAccessor</a>
+				</li>
+			</ul>
+			<h1>Class FileDataAccessor</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>DataAccessor that uses the file system to store documents as files and containers as folders.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">FileDataAccessor</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/_storage_accessors_dataaccessor_.dataaccessor.html" class="tsd-signature-type">DataAccessor</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#resourcemapper" class="tsd-kind-icon">resource<wbr>Mapper</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#generateposixquads" class="tsd-kind-icon">generate<wbr>Posix<wbr>Quads</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getbasemetadata" class="tsd-kind-icon">get<wbr>Base<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getchildmetadataquads" class="tsd-kind-icon">get<wbr>Child<wbr>Metadata<wbr>Quads</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getdata" class="tsd-kind-icon">get<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getdirectorymetadata" class="tsd-kind-icon">get<wbr>Directory<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getfilemetadata" class="tsd-kind-icon">get<wbr>File<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getmetadata" class="tsd-kind-icon">get<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getmetadatalink" class="tsd-kind-icon">get<wbr>Metadata<wbr>Link</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getrawmetadata" class="tsd-kind-icon">get<wbr>Raw<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getstats" class="tsd-kind-icon">get<wbr>Stats</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#ismetadatapath" class="tsd-kind-icon">is<wbr>Metadata<wbr>Path</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#verifyexistingextension" class="tsd-kind-icon">verify<wbr>Existing<wbr>Extension</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writecontainer" class="tsd-kind-icon">write<wbr>Container</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writedatafile" class="tsd-kind-icon">write<wbr>Data<wbr>File</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writedocument" class="tsd-kind-icon">write<wbr>Document</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writemetadata" class="tsd-kind-icon">write<wbr>Metadata</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>File<wbr>Data<wbr>Accessor<span class="tsd-signature-symbol">(</span>resourceMapper<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.fileidentifiermapper.html" class="tsd-signature-type">FileIdentifierMapper</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_storage_accessors_filedataaccessor_.filedataaccessor.html" class="tsd-signature-type">FileDataAccessor</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L30">src/storage/accessors/FileDataAccessor.ts:30</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>resourceMapper: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.fileidentifiermapper.html" class="tsd-signature-type">FileIdentifierMapper</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_storage_accessors_filedataaccessor_.filedataaccessor.html" class="tsd-signature-type">FileDataAccessor</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="resourcemapper" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> resource<wbr>Mapper</h3>
+					<div class="tsd-signature tsd-kind-icon">resource<wbr>Mapper<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_storage_mapping_fileidentifiermapper_.fileidentifiermapper.html" class="tsd-signature-type">FileIdentifierMapper</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L30">src/storage/accessors/FileDataAccessor.ts:30</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="canhandle" class="tsd-anchor"></a>
+					<h3>can<wbr>Handle</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_representation_.representation.html" class="tsd-signature-type">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L39">src/storage/accessors/FileDataAccessor.ts:39</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Only binary data can be directly stored as files so will error on non-binary data.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>representation: <a href="../interfaces/_ldp_representation_representation_.representation.html" class="tsd-signature-type">Representation</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="deleteresource" class="tsd-anchor"></a>
+					<h3>delete<wbr>Resource</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L123">src/storage/accessors/FileDataAccessor.ts:123</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Removes the corresponding file/folder (and metadata file).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="generateposixquads" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> generate<wbr>Posix<wbr>Quads</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">generate<wbr>Posix<wbr>Quads<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span>, stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stats</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L330">src/storage/accessors/FileDataAccessor.ts:330</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Helper function to add file system related metadata.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>subject: <span class="tsd-signature-type">NamedNode</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Subject for the new quads.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stats: <span class="tsd-signature-type">Stats</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Stats of the file/directory corresponding to the resource.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getbasemetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Base<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Base<wbr>Metadata<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a>, stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stats</span>, isContainer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L249">src/storage/accessors/FileDataAccessor.ts:249</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates metadata relevant for any resources stored by this accessor.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path related metadata.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stats: <span class="tsd-signature-type">Stats</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Stats objects of the corresponding directory.</p>
+									</div>
+								</li>
+								<li>
+									<h5>isContainer: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If the path points to a container (directory) or not.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getchildmetadataquads" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Child<wbr>Metadata<wbr>Quads</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Child<wbr>Metadata<wbr>Quads<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L288">src/storage/accessors/FileDataAccessor.ts:288</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generate all containment related triples for a container.
+									These include the actual containment triples and specific triples for every child resource.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path related metadata.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getdata" class="tsd-anchor"></a>
+					<h3>get<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_util_guardedstream_.html#guarded" class="tsd-signature-type">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L49">src/storage/accessors/FileDataAccessor.ts:49</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Will return data stream directly to the file corresponding to the resource.
+									Will throw NotFoundHttpError if the input is a container.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_util_guardedstream_.html#guarded" class="tsd-signature-type">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getdirectorymetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Directory<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Directory<wbr>Metadata<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a>, stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stats</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L198">src/storage/accessors/FileDataAccessor.ts:198</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reads and generates all metadata relevant for the given directory,
+									ingesting it into a RepresentationMetadata object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path related metadata.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stats: <span class="tsd-signature-type">Stats</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Stats object of the corresponding directory.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getfilemetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>File<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>File<wbr>Metadata<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a>, stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stats</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L185">src/storage/accessors/FileDataAccessor.ts:185</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reads and generates all metadata relevant for the given file,
+									ingesting it into a RepresentationMetadata object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path related metadata.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stats: <span class="tsd-signature-type">Stats</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Stats object of the corresponding file.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getmetadata" class="tsd-anchor"></a>
+					<h3>get<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Metadata<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L64">src/storage/accessors/FileDataAccessor.ts:64</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Will return corresponding metadata by reading the metadata file (if it exists)
+									and adding file system specific metadata elements.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getmetadatalink" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Metadata<wbr>Link</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Metadata<wbr>Link<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L166">src/storage/accessors/FileDataAccessor.ts:166</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates ResourceLink that corresponds to the metadata resource of the given identifier.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getrawmetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Raw<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Raw<wbr>Metadata<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L264">src/storage/accessors/FileDataAccessor.ts:264</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reads the metadata from the corresponding metadata file.
+									Returns an empty array if there is no metadata file.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Identifier of the resource (not the metadata!).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getstats" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Stats</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Stats<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Stats</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L152">src/storage/accessors/FileDataAccessor.ts:152</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Gets the Stats object corresponding to the given file path.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>NotFoundHttpError
+										If the file/folder doesn&#39;t exist.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>File path to get info from.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Stats</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="ismetadatapath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Metadata<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Metadata<wbr>Path<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L174">src/storage/accessors/FileDataAccessor.ts:174</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the given path is a metadata path.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="verifyexistingextension" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> verify<wbr>Existing<wbr>Extension</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">verify<wbr>Existing<wbr>Extension<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L347">src/storage/accessors/FileDataAccessor.ts:347</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Verifies if there already is a file corresponding to the given resource.
+										If yes, that file is removed if it does not match the path given in the input ResourceLink.
+									This can happen if the content-type differs from the one that was stored.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>ResourceLink corresponding to the new resource data.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="writecontainer" class="tsd-anchor"></a>
+					<h3>write<wbr>Container</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Container<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a>, metadata<span class="tsd-signature-symbol">: </span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L106">src/storage/accessors/FileDataAccessor.ts:106</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates corresponding folder if necessary and writes metadata to metadata file if necessary.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>metadata: <a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="writedatafile" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> write<wbr>Data<wbr>File</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Data<wbr>File<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L367">src/storage/accessors/FileDataAccessor.ts:367</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Helper function without extra validation checking to create a data file.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The filepath of the file to be created.</p>
+									</div>
+								</li>
+								<li>
+									<h5>data: <span class="tsd-signature-type">Readable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The data to be put in the file.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="writedocument" class="tsd-anchor"></a>
+					<h3>write<wbr>Document</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Document<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a>, data<span class="tsd-signature-symbol">: </span><a href="../modules/_util_guardedstream_.html#guarded" class="tsd-signature-type">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">&gt;</span>, metadata<span class="tsd-signature-symbol">: </span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L80">src/storage/accessors/FileDataAccessor.ts:80</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Writes the given data as a file (and potential metadata as additional file).
+									The metadata file will be written first and will be deleted if something goes wrong writing the actual data.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/_ldp_representation_resourceidentifier_.resourceidentifier.html" class="tsd-signature-type">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>data: <a href="../modules/_util_guardedstream_.html#guarded" class="tsd-signature-type">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Readable</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>metadata: <a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="writemetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> write<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Metadata<span class="tsd-signature-symbol">(</span>link<span class="tsd-signature-symbol">: </span><a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a>, metadata<span class="tsd-signature-symbol">: </span><a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/57fba97/src/storage/accessors/FileDataAccessor.ts#L211">src/storage/accessors/FileDataAccessor.ts:211</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Writes the metadata of the resource to a meta file.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>link: <a href="../interfaces/_storage_mapping_fileidentifiermapper_.resourcelink.html" class="tsd-signature-type">ResourceLink</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path related metadata of the resource.</p>
+									</div>
+								</li>
+								<li>
+									<h5>metadata: <a href="_ldp_representation_representationmetadata_.representationmetadata.html" class="tsd-signature-type">RepresentationMetadata</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Metadata to write.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>True if data was written to a file.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/_storage_accessors_filedataaccessor_.html">&quot;storage/accessors/<wbr>File<wbr>Data<wbr>Accessor&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-module">
+						<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html" class="tsd-kind-icon">File<wbr>Data<wbr>Accessor</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#resourcemapper" class="tsd-kind-icon">resource<wbr>Mapper</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#generateposixquads" class="tsd-kind-icon">generate<wbr>Posix<wbr>Quads</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getbasemetadata" class="tsd-kind-icon">get<wbr>Base<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getchildmetadataquads" class="tsd-kind-icon">get<wbr>Child<wbr>Metadata<wbr>Quads</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getdata" class="tsd-kind-icon">get<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getdirectorymetadata" class="tsd-kind-icon">get<wbr>Directory<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getfilemetadata" class="tsd-kind-icon">get<wbr>File<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getmetadata" class="tsd-kind-icon">get<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getmetadatalink" class="tsd-kind-icon">get<wbr>Metadata<wbr>Link</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getrawmetadata" class="tsd-kind-icon">get<wbr>Raw<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#getstats" class="tsd-kind-icon">get<wbr>Stats</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#ismetadatapath" class="tsd-kind-icon">is<wbr>Metadata<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#verifyexistingextension" class="tsd-kind-icon">verify<wbr>Existing<wbr>Extension</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writecontainer" class="tsd-kind-icon">write<wbr>Container</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writedatafile" class="tsd-kind-icon">write<wbr>Data<wbr>File</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writedocument" class="tsd-kind-icon">write<wbr>Document</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_storage_accessors_filedataaccessor_.filedataaccessor.html#writemetadata" class="tsd-kind-icon">write<wbr>Metadata</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_storage_accessors_filedataaccessor_.html#joinpath" class="tsd-kind-icon">join<wbr>Path</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
