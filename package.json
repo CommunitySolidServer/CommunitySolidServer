@@ -108,6 +108,7 @@
   },
   "devDependencies": {
     "@microsoft/tsdoc-config": "^0.13.6",
+    "@tsconfig/node12": "^1.0.7",
     "@types/jest": "^26.0.13",
     "@types/rimraf": "^3.0.0",
     "@types/supertest": "^2.0.10",

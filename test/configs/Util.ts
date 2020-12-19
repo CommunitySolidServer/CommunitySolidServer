@@ -200,7 +200,8 @@ export const instantiateFromConfig = async(componentUrl: string, configFile: str
  * Initializes the root container of the server.
  * Useful for when the RootContainerInitializer was not instantiated.
  */
-export const initServerStore = async(server: Server, baseUrl: string, headers: HeadersInit = {}): Promise<void> => {
+export const initServerStore = async(server: Server, baseUrl: string,
+  headers: Record<string, string> = {}): Promise<void> => {
   const res = await fetch(baseUrl, {
     method: 'PUT',
     headers: {
