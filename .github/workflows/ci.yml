@@ -82,3 +82,26 @@ jobs:
           node-version: 14.x
       - run: npm ci --ignore-scripts
       - run: npm run docs
+      - name: Save docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: docs
+          path: docs
+          retention-days: 1
+
+  gh-pages:
+    needs:
+      - docs
+      - lint
+      - test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: docs
+          path: docs
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
