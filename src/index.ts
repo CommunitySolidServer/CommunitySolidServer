@@ -190,6 +190,7 @@ export * from './util/AsyncHandler';
 export * from './util/HeaderUtil';
 export * from './util/PathUtil';
 export * from './util/QuadUtil';
+export * from './util/RecordObject';
 export * from './util/SequenceHandler';
 export * from './util/StreamUtil';
 export * from './util/WaterfallHandler';
