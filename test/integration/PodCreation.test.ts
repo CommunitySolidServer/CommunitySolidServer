@@ -3,7 +3,7 @@ import { join } from 'path';
 import fetch from 'cross-fetch';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { readableToString } from '../../src/util/StreamUtil';
-import { initServerStore, instantiateFromConfig } from '../configs/Util';
+import { instantiateFromConfig } from '../configs/Util';
 
 const port = 6003;
 const baseUrl = `http://localhost:${port}/`;
@@ -21,7 +21,6 @@ describe('A server with a pod handler', (): void => {
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);
-    await initServerStore(server, baseUrl);
   });
 
   afterAll(async(): Promise<void> => {

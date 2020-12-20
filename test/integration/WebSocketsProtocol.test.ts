@@ -2,7 +2,7 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import WebSocket from 'ws';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import { initServerStore, instantiateFromConfig } from '../configs/Util';
+import { instantiateFromConfig } from '../configs/Util';
 
 const port = 6001;
 const serverUrl = `http://localhost:${port}/`;
@@ -20,7 +20,6 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);
-    await initServerStore(server, serverUrl, headers);
   });
 
   afterAll(async(): Promise<void> => {

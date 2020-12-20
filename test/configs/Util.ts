@@ -1,8 +1,6 @@
-import type { Server } from 'http';
 import { join } from 'path';
 import * as Path from 'path';
 import { Loader } from 'componentsjs';
-import fetch from 'cross-fetch';
 import type {
   BodyParser,
   DataAccessor,
@@ -26,7 +24,6 @@ import {
   ErrorResponseWriter,
   GetOperationHandler,
   HeadOperationHandler,
-  HttpError,
   InMemoryDataAccessor,
   LinkRelMetadataWriter,
   LinkTypeParser,
@@ -194,23 +191,4 @@ export const instantiateFromConfig = async(componentUrl: string, configFile: str
   // Instantiate the component from the config
   const configPath = Path.join(__dirname, configFile);
   return loader.instantiateFromUrl(componentUrl, configPath, undefined, { variables });
-};
-
-/**
- * Initializes the root container of the server.
- * Useful for when the RootContainerInitializer was not instantiated.
- */
-export const initServerStore = async(server: Server, baseUrl: string,
-  headers: Record<string, string> = {}): Promise<void> => {
-  const res = await fetch(baseUrl, {
-    method: 'PUT',
-    headers: {
-      ...headers,
-      'content-type': 'text/turtle',
-    },
-    body: '',
-  });
-  if (res.status >= 400) {
-    throw new HttpError(res.status, 'Error', res.statusText);
-  }
 };
