@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
@@ -9,6 +10,7 @@ import { MetadataWriter } from './MetadataWriter';
  */
 export class LinkRelMetadataWriter extends MetadataWriter {
   private readonly linkRelMap: Record<string, string>;
+  protected readonly logger = getLoggerFor(this);
 
   public constructor(linkRelMap: Record<string, string>) {
     super();
@@ -16,9 +18,12 @@ export class LinkRelMetadataWriter extends MetadataWriter {
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    for (const key of Object.keys(this.linkRelMap)) {
+    const keys = Object.keys(this.linkRelMap);
+    this.logger.debug(`Available link relations: ${keys.length}`);
+    for (const key of keys) {
       const values = input.metadata.getAll(key).map((term): string => `<${term.value}>; rel="${this.linkRelMap[key]}"`);
       if (values.length > 0) {
+        this.logger.debug(`Adding Link header ${values}`);
         addHeader(input.response, 'link', values);
       }
     }
