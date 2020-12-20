@@ -54,8 +54,8 @@
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
-    "test:integration": "jest --coverageThreshold '{}' test/integration",
-    "test:unit": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "test:unit": "jest --collectCoverage test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
