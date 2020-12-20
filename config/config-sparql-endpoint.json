@@ -17,7 +17,6 @@
     "files-scs:config/presets/pod-management.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/storage/backend/storage-sparql-endpoint.json",
-    "files-scs:config/presets/storage/routing/no-routing.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json"
   ],
@@ -25,6 +24,7 @@
     {
       "comment": "Use a SPARQL based store as backend with no additional routing.",
       "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "PassthroughStore",
       "PassthroughStore:_source": {
         "@id": "urn:solid-server:default:SparqlResourceStore"
       }
