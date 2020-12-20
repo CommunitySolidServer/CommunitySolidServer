@@ -1,8 +1,9 @@
 import { setGlobalLoggerFactory } from '../../src/logging/LogUtil';
-import { VoidLoggerFactory } from '../../src/logging/VoidLoggerFactory';
+import { WinstonLoggerFactory } from '../../src/logging/WinstonLoggerFactory';
 
 // Set the main logger
-const loggerFactory = new VoidLoggerFactory();
+const level = process.env.LOGLEVEL ?? 'off';
+const loggerFactory = new WinstonLoggerFactory(level);
 setGlobalLoggerFactory(loggerFactory);
 
 // Also set the logger factory of transpiled JS modules
