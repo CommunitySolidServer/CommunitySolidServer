@@ -13,6 +13,7 @@
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/storage/backend/storage-memory.json",
     "files-scs:config/presets/storage/backend/storage-filesystem.json",
+    "files-scs:config/presets/storage/backend/storage-sparql-endpoint.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json"
   ],
@@ -23,7 +24,13 @@
       "RecordObject:_record": [
         {
           "RecordObject:_record_key": "initializer",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:AclInitializer" }
+          "RecordObject:_record_value": {
+            "@type": "SequenceHandler",
+            "SequenceHandler:_handlers": [
+              { "@id": "urn:solid-server:default:RootContainerInitializer" },
+              { "@id": "urn:solid-server:default:AclInitializer" }
+            ]
+          }
         },
         {
           "RecordObject:_record_key": "handler",

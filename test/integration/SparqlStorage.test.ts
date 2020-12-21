@@ -1,23 +1,37 @@
-import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
-import { SparqlDataAccessor } from '../../src/storage/accessors/SparqlDataAccessor';
-import { INTERNAL_QUADS } from '../../src/util/ContentTypes';
-import { SingleRootIdentifierStrategy } from '../../src/util/identifiers/SingleRootIdentifierStrategy';
-import { DataAccessorBasedConfig } from '../configs/DataAccessorBasedConfig';
-import { BASE } from '../configs/Util';
+import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
+import { BASE, instantiateFromConfig } from '../configs/Util';
 import { describeIf, FileTestHelper } from '../util/TestHelpers';
 
 describeIf('docker', 'a server with a SPARQL endpoint as storage', (): void => {
   describe('without acl', (): void => {
-    const config = new DataAccessorBasedConfig(BASE,
-      new SparqlDataAccessor('http://localhost:4000/sparql', new SingleRootIdentifierStrategy(BASE)),
-      INTERNAL_QUADS);
-    const handler = config.getHttpHandler();
-    const fileHelper = new FileTestHelper(handler, new URL(BASE));
+    let handler: HttpHandler;
+    let fileHelper: FileTestHelper;
 
     beforeAll(async(): Promise<void> => {
-      // Initialize store
-      const initializer = new RootContainerInitializer(BASE, config.store);
+      // Set up the internal store
+      const variables: Record<string, any> = {
+        'urn:solid-server:default:variable:baseUrl': BASE,
+        'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:4000/sparql',
+      };
+      const internalStore = await instantiateFromConfig(
+        'urn:solid-server:default:SparqlResourceStore',
+        'auth-ldp-handler.json',
+        variables,
+      ) as ResourceStore;
+      variables['urn:solid-server:default:variable:store'] = internalStore;
+
+      // Create and initialize the HTTP handler and related components
+      let initializer: Initializer;
+      const instances = await instantiateFromConfig(
+        'urn:solid-server:test:Instances',
+        'auth-ldp-handler.json',
+        variables,
+      ) as Record<string, any>;
+      ({ handler, initializer } = instances);
       await initializer.handleSafe();
+
+      // Create test helpers for manipulating the components
+      fileHelper = new FileTestHelper(handler, new URL(BASE));
     });
 
     it('can add a Turtle file to the store.', async():
