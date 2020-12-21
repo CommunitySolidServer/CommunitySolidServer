@@ -12,10 +12,11 @@ module.exports = {
     'no-process-env': 'off',
 
     // We are not using Mocha
-    'mocha/no-nested-tests': 'off',
     'mocha/no-exports': 'off',
+    'mocha/no-nested-tests': 'off',
     'mocha/no-skipped-tests': 'off',
     'mocha/no-synchronous-tests': 'off',
+    'mocha/no-top-level-hooks': 'off',
 
     // Need these 2 to run tests for throwing non-Error objects
     '@typescript-eslint/no-throw-literal': 'off',

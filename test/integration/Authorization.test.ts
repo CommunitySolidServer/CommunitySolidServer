@@ -61,7 +61,7 @@ describe('A server with authorization', (): void => {
     expect(response.statusCode).toBe(205);
   });
 
-  it('can not create new entries if not allowed.', async(): Promise<void> => {
+  it('cannot create new entries if not allowed.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
     // POST
