@@ -1,14 +1,10 @@
+import { mkdirSync } from 'fs';
 import { join } from 'path';
 import * as Path from 'path';
 import { Loader } from 'componentsjs';
+import * as rimraf from 'rimraf';
 
 export const BASE = 'http://test.com';
-
-/**
- * Creates a RuntimeConfig with its rootFilePath set based on the given subfolder.
- * @param subfolder - Folder to use in the global testData folder.
- */
-export const getRootFilePath = (subfolder: string): string => join(__dirname, '../testData', subfolder);
 
 /**
  * Returns a component instantiated from a Components.js configuration.
@@ -23,4 +19,15 @@ export const instantiateFromConfig = async(componentUrl: string, configFile: str
   // Instantiate the component from the config
   const configPath = Path.join(__dirname, configFile);
   return loader.instantiateFromUrl(componentUrl, configPath, undefined, { variables });
+};
+
+export const getTestFolder = (name: string): string =>
+  join(__dirname, '../tmp', name);
+
+export const createFolder = (folder: string): void => {
+  mkdirSync(folder, { recursive: true });
+};
+
+export const removeFolder = (folder: string): void => {
+  rimraf.sync(folder, { glob: false });
 };

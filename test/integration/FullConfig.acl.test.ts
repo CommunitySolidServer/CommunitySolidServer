@@ -1,14 +1,13 @@
-import { createReadStream, mkdirSync } from 'fs';
+import { createReadStream } from 'fs';
 import { join } from 'path';
-import * as rimraf from 'rimraf';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { guardStream } from '../../src/util/GuardedStream';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
-import { BASE, getRootFilePath, instantiateFromConfig } from './Config';
+import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
 
-const rootFilePath = getRootFilePath('full-config-acl');
+const rootFilePath = getTestFolder('full-config-acl');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     storeUrn: 'urn:solid-server:default:MemoryResourceStore',
@@ -17,12 +16,8 @@ const stores: [string, any][] = [
   }],
   [ 'on-disk storage', {
     storeUrn: 'urn:solid-server:default:FileResourceStore',
-    setup(): void {
-      mkdirSync(rootFilePath, { recursive: true });
-    },
-    teardown(): void {
-      rimraf.sync(rootFilePath, { glob: false });
-    },
+    setup: (): void => createFolder(rootFilePath),
+    teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
