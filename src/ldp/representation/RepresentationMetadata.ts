@@ -9,6 +9,13 @@ export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
 export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 
 /**
+ * Determines whether the object is a `RepresentationMetadata`.
+ */
+export const isRepresentationMetadata = function(object: any): object is RepresentationMetadata {
+  return typeof object?.setMetadata === 'function';
+};
+
+/**
  * Stores the metadata triples and provides methods for easy access.
  * Most functions return the metadata object to allow for chaining.
  */
@@ -49,7 +56,7 @@ export class RepresentationMetadata {
       this.id = DataFactory.namedNode(input.path);
     } else if (isTerm(input)) {
       this.id = input;
-    } else if (input instanceof RepresentationMetadata) {
+    } else if (isRepresentationMetadata(input)) {
       this.id = input.identifier;
       this.addQuads(input.quads());
     } else {

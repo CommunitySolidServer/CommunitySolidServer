@@ -1,20 +1,23 @@
 import type { MockResponse } from 'node-mocks-http';
-import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
-import { BasicHandlersWithAclConfig } from '../configs/BasicHandlersWithAclConfig';
-import { BASE } from '../configs/Util';
+import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
+import { BASE, instantiateFromConfig } from '../configs/Util';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call } from '../util/Util';
 
 describe('A server with authorization', (): void => {
-  const config = new BasicHandlersWithAclConfig();
-  const handler = config.getHttpHandler();
-  const { store } = config;
-  const aclHelper = new AclTestHelper(store, 'http://test.com/');
+  let handler: HttpHandler;
+  let aclHelper: AclTestHelper;
 
   beforeAll(async(): Promise<void> => {
-    // Initialize store
-    const initializer = new RootContainerInitializer(BASE, config.store);
+    let initializer: Initializer,
+        store: ResourceStore;
+    const instances = await instantiateFromConfig('urn:solid-server:test:Instances', 'auth-ldp-handler.json', {
+      'urn:solid-server:default:variable:baseUrl': BASE,
+    }) as Record<string, any>;
+    ({ handler, store, initializer } = instances);
+
     await initializer.handleSafe();
+    aclHelper = new AclTestHelper(store, BASE);
   });
 
   it('can create new entries.', async(): Promise<void> => {

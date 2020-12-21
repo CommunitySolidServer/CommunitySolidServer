@@ -5,6 +5,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { ensureTrailingSlash } from '../util/PathUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
 import { CONTENT_TYPE } from '../util/UriConstants';
 import { Initializer } from './Initializer';
@@ -24,7 +25,7 @@ export class AclInitializer extends Initializer {
     aclManager: AclManager,
   ) {
     super();
-    this.baseUrl = baseUrl;
+    this.baseUrl = ensureTrailingSlash(baseUrl);
     this.store = store;
     this.aclManager = aclManager;
   }

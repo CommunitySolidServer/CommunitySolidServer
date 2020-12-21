@@ -6,8 +6,8 @@ import { Readable } from 'stream';
 import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
-import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/index';
-import { guardedStreamFrom, RepresentationMetadata } from '../../src/index';
+import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
+import { guardedStreamFrom, RepresentationMetadata, ensureTrailingSlash } from '../../src/';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
 import { call } from './Util';
 
@@ -18,7 +18,7 @@ export class AclTestHelper {
 
   public constructor(store: ResourceStore, id: string) {
     this.store = store;
-    this.id = id;
+    this.id = ensureTrailingSlash(id);
   }
 
   public async setSimpleAcl(

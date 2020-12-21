@@ -24,7 +24,6 @@ import {
   ErrorResponseWriter,
   GetOperationHandler,
   HeadOperationHandler,
-  InMemoryDataAccessor,
   LinkRelMetadataWriter,
   LinkTypeParser,
   MappedMetadataWriter,
@@ -62,15 +61,6 @@ export const getRootFilePath = (subfolder: string): string => join(__dirname, '.
  */
 export const getDataAccessorStore = (base: string, dataAccessor: DataAccessor): DataAccessorBasedStore =>
   new DataAccessorBasedStore(dataAccessor, new SingleRootIdentifierStrategy(base));
-
-/**
- * Gives an in memory resource store based on (default) base url.
- * @param base - Optional base parameter for the run time config.
- *
- * @returns The in memory resource store.
- */
-export const getInMemoryResourceStore = (base = BASE): DataAccessorBasedStore =>
-  getDataAccessorStore(base, new InMemoryDataAccessor(BASE));
 
 /**
  * Gives a converting store given some converters.

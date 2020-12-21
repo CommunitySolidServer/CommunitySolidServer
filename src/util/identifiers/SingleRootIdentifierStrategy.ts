@@ -1,4 +1,5 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
 import { ensureTrailingSlash } from '../PathUtil';
 import type { IdentifierStrategy } from './IdentifierStrategy';
@@ -8,13 +9,18 @@ import type { IdentifierStrategy } from './IdentifierStrategy';
  */
 export class SingleRootIdentifierStrategy implements IdentifierStrategy {
   private readonly baseUrl: string;
+  protected readonly logger = getLoggerFor(this);
 
   public constructor(baseUrl: string) {
     this.baseUrl = ensureTrailingSlash(baseUrl);
   }
 
   public supportsIdentifier(identifier: ResourceIdentifier): boolean {
-    return identifier.path.startsWith(this.baseUrl);
+    const supported = identifier.path.startsWith(this.baseUrl);
+    this.logger.debug(supported ?
+      `Identifier ${identifier.path} is part of ${this.baseUrl}` :
+      `Identifier ${identifier.path} is not part of ${this.baseUrl}`);
+    return supported;
   }
 
   public getParentContainer(identifier: ResourceIdentifier): ResourceIdentifier {

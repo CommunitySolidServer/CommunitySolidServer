@@ -131,7 +131,7 @@ export class WebAclAuthorizer extends Authorizer {
       if (error instanceof NotFoundHttpError) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
       } else {
-        this.logger.error(`Error reading ACL for ${id.path}`, { error });
+        this.logger.error(`Error reading ACL for ${id.path}: ${(error as Error).message}`, { error });
         throw error;
       }
     }
