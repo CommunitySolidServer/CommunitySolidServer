@@ -35,7 +35,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     };
     const internalStore = await instantiateFromConfig(
       storeUrn,
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
@@ -45,7 +45,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     let store: ResourceStore;
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as Record<string, any>;
     ({ handler, store, initializer } = instances);

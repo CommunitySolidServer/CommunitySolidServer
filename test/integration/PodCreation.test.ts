@@ -14,7 +14,7 @@ describe('A server with a pod handler', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ServerFactory', 'auth-allow-all.json', {
+      'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:podTemplateFolder': join(__dirname, '../assets/templates'),

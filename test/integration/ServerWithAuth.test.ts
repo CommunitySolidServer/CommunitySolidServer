@@ -15,7 +15,7 @@ describe('A server with authorization', (): void => {
     };
     const internalStore = await instantiateFromConfig(
       'urn:solid-server:default:MemoryResourceStore',
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
@@ -25,7 +25,7 @@ describe('A server with authorization', (): void => {
     let store: ResourceStore;
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as Record<string, any>;
     ({ handler, store, initializer } = instances);

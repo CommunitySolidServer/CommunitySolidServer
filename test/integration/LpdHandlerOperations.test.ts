@@ -13,7 +13,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
   beforeAll(async(): Promise<void> => {
     handler = await instantiateFromConfig(
-      'urn:solid-server:default:LdpHandler', 'auth-allow-all.json', {
+      'urn:solid-server:default:LdpHandler', 'server-without-auth.json', {
         'urn:solid-server:default:variable:baseUrl': BASE,
       },
     ) as HttpHandler;

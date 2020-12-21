@@ -21,7 +21,7 @@ describe('An Express server with middleware', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ExpressHttpServerFactory', 'middleware.json', {
+      'urn:solid-server:default:ExpressHttpServerFactory', 'server-middleware.json', {
         'urn:solid-server:default:PodManagerHandler': new StaticAsyncHandler(false, null),
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:port': port,

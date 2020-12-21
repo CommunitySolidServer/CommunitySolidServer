@@ -14,7 +14,7 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
     };
     const internalStore = await instantiateFromConfig(
       'urn:solid-server:default:SparqlResourceStore',
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
@@ -23,7 +23,7 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
     let initializer: Initializer;
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'auth-ldp-handler.json',
+      'ldp-with-auth.json',
       variables,
     ) as Record<string, any>;
     ({ handler, initializer } = instances);

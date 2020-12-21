@@ -17,7 +17,7 @@ export const instantiateFromConfig = async(componentUrl: string, configFile: str
   await loader.registerAvailableModuleResources();
 
   // Instantiate the component from the config
-  const configPath = Path.join(__dirname, configFile);
+  const configPath = Path.join(__dirname, 'config', configFile);
   return loader.instantiateFromUrl(componentUrl, configPath, undefined, { variables });
 };
 

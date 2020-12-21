@@ -13,7 +13,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ServerFactory', 'auth-allow-all.json', {
+      'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
         'urn:solid-server:default:variable:podTemplateFolder': 'templates',
