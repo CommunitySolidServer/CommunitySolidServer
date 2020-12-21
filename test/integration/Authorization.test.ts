@@ -9,14 +9,29 @@ describe('A server with authorization', (): void => {
   let aclHelper: AclTestHelper;
 
   beforeAll(async(): Promise<void> => {
-    let initializer: Initializer,
-        store: ResourceStore;
-    const instances = await instantiateFromConfig('urn:solid-server:test:Instances', 'auth-ldp-handler.json', {
+    // Set up the internal store
+    const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': BASE,
-    }) as Record<string, any>;
-    ({ handler, store, initializer } = instances);
+    };
+    const internalStore = await instantiateFromConfig(
+      'urn:solid-server:default:MemoryResourceStore',
+      'auth-ldp-handler.json',
+      variables,
+    ) as ResourceStore;
+    variables['urn:solid-server:default:variable:store'] = internalStore;
 
+    // Create and initialize the HTTP handler and related components
+    let initializer: Initializer;
+    let store: ResourceStore;
+    const instances = await instantiateFromConfig(
+      'urn:solid-server:test:Instances',
+      'auth-ldp-handler.json',
+      variables,
+    ) as Record<string, any>;
+    ({ handler, store, initializer } = instances);
     await initializer.handleSafe();
+
+    // Create test helpers for manipulating the components
     aclHelper = new AclTestHelper(store, BASE);
   });
 

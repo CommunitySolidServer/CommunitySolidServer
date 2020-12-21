@@ -12,6 +12,7 @@ module.exports = {
     'no-process-env': 'off',
 
     // We are not using Mocha
+    'mocha/no-nested-tests': 'off',
     'mocha/no-exports': 'off',
     'mocha/no-skipped-tests': 'off',
     'mocha/no-synchronous-tests': 'off',

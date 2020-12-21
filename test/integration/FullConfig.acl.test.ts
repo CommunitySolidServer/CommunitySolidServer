@@ -1,52 +1,68 @@
 import { createReadStream, mkdirSync } from 'fs';
 import { join } from 'path';
 import * as rimraf from 'rimraf';
-import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
+import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
-import { FileDataAccessor } from '../../src/storage/accessors/FileDataAccessor';
-import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
-import { ExtensionBasedMapper } from '../../src/storage/mapping/ExtensionBasedMapper';
 import { guardStream } from '../../src/util/GuardedStream';
-import { ensureTrailingSlash } from '../../src/util/PathUtil';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
-import { AuthenticatedDataAccessorBasedConfig } from '../configs/AuthenticatedDataAccessorBasedConfig';
-import type { ServerConfig } from '../configs/ServerConfig';
-import { BASE, getRootFilePath } from '../configs/Util';
+import { BASE, getRootFilePath, instantiateFromConfig } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
 
-const dataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'AuthenticatedFileDataAccessorBasedStore',
-  (rootFilePath: string): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE,
-    new FileDataAccessor(new ExtensionBasedMapper(BASE, rootFilePath))),
-];
-const inMemoryDataAccessorStore: [string, (rootFilePath: string) => ServerConfig] = [
-  'AuthenticatedInMemoryDataAccessorBasedStore',
-  (): ServerConfig => new AuthenticatedDataAccessorBasedConfig(BASE, new InMemoryDataAccessor(BASE)),
+const rootFilePath = getRootFilePath('full-config-acl');
+const stores: [string, any][] = [
+  [ 'in-memory storage', {
+    storeUrn: 'urn:solid-server:default:MemoryResourceStore',
+    setup: jest.fn(),
+    teardown: jest.fn(),
+  }],
+  [ 'on-disk storage', {
+    storeUrn: 'urn:solid-server:default:FileResourceStore',
+    setup(): void {
+      mkdirSync(rootFilePath, { recursive: true });
+    },
+    teardown(): void {
+      rimraf.sync(rootFilePath, { glob: false });
+    },
+  }],
 ];
 
-describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using a %s', (name, configFn): void => {
+describe.each(stores)('A server using %s', (name, { storeUrn, setup, teardown }): void => {
   describe('with acl', (): void => {
-    let config: ServerConfig;
+    let handler: HttpHandler;
     let aclHelper: AclTestHelper;
     let fileHelper: FileTestHelper;
-    let rootFilePath: string;
 
     beforeAll(async(): Promise<void> => {
-      rootFilePath = getRootFilePath(name);
-      mkdirSync(rootFilePath, { recursive: true });
-      config = configFn(rootFilePath);
-      aclHelper = new AclTestHelper(config.store, ensureTrailingSlash(BASE));
-      fileHelper = new FileTestHelper(config.getHttpHandler(), new URL(ensureTrailingSlash(BASE)));
+      // Set up the internal store
+      await setup();
+      const variables: Record<string, any> = {
+        'urn:solid-server:default:variable:baseUrl': BASE,
+        'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+      };
+      const internalStore = await instantiateFromConfig(
+        storeUrn,
+        'auth-ldp-handler.json',
+        variables,
+      ) as ResourceStore;
+      variables['urn:solid-server:default:variable:store'] = internalStore;
 
-      // Make sure the root directory exists
-      mkdirSync(rootFilePath, { recursive: true });
-
-      // Initialize store
-      const initializer = new RootContainerInitializer(BASE, config.store);
+      // Create and initialize the HTTP handler and related components
+      let initializer: Initializer;
+      let store: ResourceStore;
+      const instances = await instantiateFromConfig(
+        'urn:solid-server:test:Instances',
+        'auth-ldp-handler.json',
+        variables,
+      ) as Record<string, any>;
+      ({ handler, store, initializer } = instances);
       await initializer.handleSafe();
 
-      // Use store instead of file access so tests also work for non-file backends
-      await config.store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
+      // Create test helpers for manipulating the components
+      aclHelper = new AclTestHelper(store, BASE);
+      fileHelper = new FileTestHelper(handler, new URL(BASE));
+
+      // Write test resource
+      await store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
         binary: true,
         data: guardStream(createReadStream(join(__dirname, '../assets/permanent.txt'))),
         metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }),
@@ -54,12 +70,11 @@ describe.each([ dataAccessorStore, inMemoryDataAccessorStore ])('A server using 
     });
 
     afterAll(async(): Promise<void> => {
-      rimraf.sync(rootFilePath, { glob: false });
+      await teardown();
     });
 
-    it('can add a file to the store, read it and delete it if allowed.', async(): Promise<
-    void
-    > => {
+    it('can add a file to the store, read it and delete it if allowed.', async():
+    Promise<void> => {
       // Set acl
       await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 

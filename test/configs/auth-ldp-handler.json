@@ -12,6 +12,7 @@
     "files-scs:config/presets/ldp/request-parser.json",
     "files-scs:config/presets/representation-conversion.json",
     "files-scs:config/presets/storage/backend/storage-memory.json",
+    "files-scs:config/presets/storage/backend/storage-filesystem.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json"
   ],
@@ -38,8 +39,12 @@
       "@id": "urn:solid-server:default:RoutingResourceStore",
       "@type": "PassthroughStore",
       "PassthroughStore:_source": {
-        "@id": "urn:solid-server:default:MemoryResourceStore"
+        "@id": "urn:solid-server:default:variable:store"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:variable:store",
+      "@type": "Variable"
     }
   ]
 }
