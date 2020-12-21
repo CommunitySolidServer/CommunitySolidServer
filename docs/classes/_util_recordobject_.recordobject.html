@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PermissionSet | Community Solid Server</title>
+	<title>RecordObject | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_ldp_permissions_permissionset_.html">&quot;ldp/permissions/PermissionSet&quot;</a>
+					<a href="../modules/_util_recordobject_.html">&quot;util/RecordObject&quot;</a>
 				</li>
 				<li>
-					<a href="_ldp_permissions_permissionset_.permissionset.html">PermissionSet</a>
+					<a href="_util_recordobject_.recordobject.html">RecordObject</a>
 				</li>
 			</ul>
-			<h1>Interface PermissionSet</h1>
+			<h1>Class RecordObject</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A data interface indicating which permissions are allowed (based on the context).</p>
+						<p>Helper class for instantiating multiple objects with Components.js.
+						See <a href="https://github.com/LinkedSoftwareDependencies/Components.js/issues/26">https://github.com/LinkedSoftwareDependencies/Components.js/issues/26</a></p>
 					</div>
 				</div>
 			</section>
@@ -80,8 +81,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PermissionSet</span>
+						<span class="target">RecordObject</span>
 					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><span class="tsd-signature-symbol">{}</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -89,47 +96,38 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ldp_permissions_permissionset_.permissionset.html#append" class="tsd-kind-icon">append</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ldp_permissions_permissionset_.permissionset.html#read" class="tsd-kind-icon">read</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_ldp_permissions_permissionset_.permissionset.html#write" class="tsd-kind-icon">write</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_util_recordobject_.recordobject.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="append" class="tsd-anchor"></a>
-					<h3>append</h3>
-					<div class="tsd-signature tsd-kind-icon">append<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/9dcb4fb/src/ldp/permissions/PermissionSet.ts#L6">src/ldp/permissions/PermissionSet.ts:6</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="read" class="tsd-anchor"></a>
-					<h3>read</h3>
-					<div class="tsd-signature tsd-kind-icon">read<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/9dcb4fb/src/ldp/permissions/PermissionSet.ts#L5">src/ldp/permissions/PermissionSet.ts:5</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="write" class="tsd-anchor"></a>
-					<h3>write</h3>
-					<div class="tsd-signature tsd-kind-icon">write<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/9dcb4fb/src/ldp/permissions/PermissionSet.ts#L7">src/ldp/permissions/PermissionSet.ts:7</a></li>
-						</ul>
-					</aside>
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Record<wbr>Object<span class="tsd-signature-symbol">(</span>record<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_util_recordobject_.recordobject.html" class="tsd-signature-type">RecordObject</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/9dcb4fb/src/util/RecordObject.ts#L6">src/util/RecordObject.ts:6</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> record: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_util_recordobject_.recordobject.html" class="tsd-signature-type">RecordObject</a></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -140,7 +138,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_ldp_permissions_permissionset_.html">&quot;ldp/permissions/<wbr>Permission<wbr>Set&quot;</a>
+						<a href="../modules/_util_recordobject_.html">&quot;util/<wbr>Record<wbr>Object&quot;</a>
 					</li>
 				</ul>
 			</nav>
@@ -148,17 +146,11 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="_ldp_permissions_permissionset_.permissionset.html" class="tsd-kind-icon">Permission<wbr>Set</a>
+					<li class="current tsd-kind-class tsd-parent-kind-module">
+						<a href="_util_recordobject_.recordobject.html" class="tsd-kind-icon">Record<wbr>Object</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_ldp_permissions_permissionset_.permissionset.html#append" class="tsd-kind-icon">append</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_ldp_permissions_permissionset_.permissionset.html#read" class="tsd-kind-icon">read</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_ldp_permissions_permissionset_.permissionset.html#write" class="tsd-kind-icon">write</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_util_recordobject_.recordobject.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 						</ul>
 					</li>
@@ -182,13 +174,13 @@
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 		</div>
 	</div>
