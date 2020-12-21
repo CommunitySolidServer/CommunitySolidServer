@@ -1,8 +1,8 @@
 import type { MockResponse } from 'node-mocks-http';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { BASE, instantiateFromConfig } from '../configs/Util';
 import { AclTestHelper } from '../util/TestHelpers';
 import { call } from '../util/Util';
+import { BASE, instantiateFromConfig } from './Config';
 
 describe('A server with authorization', (): void => {
   let handler: HttpHandler;

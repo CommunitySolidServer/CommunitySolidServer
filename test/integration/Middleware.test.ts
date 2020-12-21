@@ -4,8 +4,8 @@ import type { ExpressHttpServerFactory } from '../../src/server/ExpressHttpServe
 import { HttpHandler } from '../../src/server/HttpHandler';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { HttpResponse } from '../../src/server/HttpResponse';
-import { instantiateFromConfig } from '../configs/Util';
 import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
+import { instantiateFromConfig } from './Config';
 
 const port = 6002;
 

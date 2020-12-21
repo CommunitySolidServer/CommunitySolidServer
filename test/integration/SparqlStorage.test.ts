@@ -1,6 +1,6 @@
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { BASE, instantiateFromConfig } from '../configs/Util';
 import { describeIf, FileTestHelper } from '../util/TestHelpers';
+import { BASE, instantiateFromConfig } from './Config';
 
 describeIf('docker', 'a server with a SPARQL endpoint as storage', (): void => {
   describe('without acl', (): void => {

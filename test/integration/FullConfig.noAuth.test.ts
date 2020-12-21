@@ -2,8 +2,8 @@ import { mkdirSync } from 'fs';
 import * as rimraf from 'rimraf';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { LDP } from '../../src/util/UriConstants';
-import { BASE, getRootFilePath, instantiateFromConfig } from '../configs/Util';
 import { FileTestHelper } from '../util/TestHelpers';
+import { BASE, getRootFilePath, instantiateFromConfig } from './Config';
 
 const rootFilePath = getRootFilePath('full-config-no-auth');
 const stores: [string, any][] = [

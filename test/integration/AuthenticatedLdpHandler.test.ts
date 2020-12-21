@@ -5,8 +5,8 @@ import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { LDP } from '../../src/util/UriConstants';
-import { BASE, instantiateFromConfig } from '../configs/Util';
 import { call } from '../util/Util';
+import { BASE, instantiateFromConfig } from './Config';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
   let handler: HttpHandler;

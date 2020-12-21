@@ -14,7 +14,7 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringResourceLocker } from '../../src/util/locking/WrappedExpiringResourceLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
-import { BASE } from '../configs/Util';
+import { BASE } from './Config';
 
 describe('A LockingResourceStore', (): void => {
   let path: string;

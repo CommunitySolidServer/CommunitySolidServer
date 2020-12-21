@@ -5,8 +5,8 @@ import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { guardStream } from '../../src/util/GuardedStream';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
-import { BASE, getRootFilePath, instantiateFromConfig } from '../configs/Util';
 import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
+import { BASE, getRootFilePath, instantiateFromConfig } from './Config';
 
 const rootFilePath = getRootFilePath('full-config-acl');
 const stores: [string, any][] = [
