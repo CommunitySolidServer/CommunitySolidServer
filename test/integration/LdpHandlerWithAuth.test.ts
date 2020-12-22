@@ -4,7 +4,7 @@ import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { guardStream } from '../../src/util/GuardedStream';
 import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
-import { AclTestHelper, FileTestHelper } from '../util/TestHelpers';
+import { AclHelper, ResourceHelper } from '../util/TestHelpers';
 import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
 
 const rootFilePath = getTestFolder('full-config-acl');
@@ -23,8 +23,8 @@ const stores: [string, any][] = [
 
 describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, setup, teardown }): void => {
   let handler: HttpHandler;
-  let aclHelper: AclTestHelper;
-  let fileHelper: FileTestHelper;
+  let aclHelper: AclHelper;
+  let resourceHelper: ResourceHelper;
 
   beforeAll(async(): Promise<void> => {
     // Set up the internal store
@@ -52,8 +52,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     await initializer.handleSafe();
 
     // Create test helpers for manipulating the components
-    aclHelper = new AclTestHelper(store, BASE);
-    fileHelper = new FileTestHelper(handler, new URL(BASE));
+    aclHelper = new AclHelper(store, BASE);
+    resourceHelper = new ResourceHelper(handler, BASE);
 
     // Write test resource
     await store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
@@ -73,18 +73,20 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
 
     // Create file
-    let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain');
+    let response = await resourceHelper.createResource(
+      '../assets/testfile2.txt', 'testfile2.txt', 'text/plain',
+    );
     const id = response._getHeaders().location;
 
     // Get file
-    response = await fileHelper.getFile(id);
+    response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE2');
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
     // DELETE file
-    await fileHelper.deleteResource(id);
-    await fileHelper.shouldNotExist(id);
+    await resourceHelper.deleteResource(id);
+    await resourceHelper.shouldNotExist(id);
   });
 
   it('can not add a file to the store if not allowed.', async():
@@ -93,7 +95,9 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
 
     // Try to create file
-    const response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true);
+    const response = await resourceHelper.createResource(
+      '../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true,
+    );
     expect(response.statusCode).toBe(401);
   });
 
@@ -103,16 +107,18 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
 
     // Try to create file
-    let response = await fileHelper.createFile('../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true);
+    let response = await resourceHelper.createResource(
+      '../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true,
+    );
     expect(response.statusCode).toBe(401);
 
     // GET permanent file
-    response = await fileHelper.getFile('http://test.com/permanent.txt');
+    response = await resourceHelper.getResource('http://test.com/permanent.txt');
     expect(response._getBuffer().toString()).toContain('TEST');
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
     // Try to delete permanent file
-    response = await fileHelper.deleteResource('http://test.com/permanent.txt', true);
+    response = await resourceHelper.deleteResource('http://test.com/permanent.txt', true);
     expect(response.statusCode).toBe(401);
   });
 });

@@ -1,12 +1,12 @@
 import type { MockResponse } from 'node-mocks-http';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { AclTestHelper } from '../util/TestHelpers';
-import { call } from '../util/Util';
+import { AclHelper } from '../util/TestHelpers';
+import { performRequest } from '../util/Util';
 import { BASE, instantiateFromConfig } from './Config';
 
 describe('A server with authorization', (): void => {
   let handler: HttpHandler;
-  let aclHelper: AclTestHelper;
+  let aclHelper: AclHelper;
 
   beforeAll(async(): Promise<void> => {
     // Set up the internal store
@@ -32,7 +32,7 @@ describe('A server with authorization', (): void => {
     await initializer.handleSafe();
 
     // Create test helpers for manipulating the components
-    aclHelper = new AclTestHelper(store, BASE);
+    aclHelper = new AclHelper(store, BASE);
   });
 
   it('can create new entries.', async(): Promise<void> => {
@@ -40,7 +40,7 @@ describe('A server with authorization', (): void => {
 
     // POST
     let requestUrl = new URL('http://test.com/');
-    let response: MockResponse<any> = await call(
+    let response: MockResponse<any> = await performRequest(
       handler,
       requestUrl,
       'POST',
@@ -51,7 +51,7 @@ describe('A server with authorization', (): void => {
 
     // PUT
     requestUrl = new URL('http://test.com/foo/bar');
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'PUT',
@@ -66,7 +66,7 @@ describe('A server with authorization', (): void => {
 
     // POST
     let requestUrl = new URL('http://test.com/');
-    let response: MockResponse<any> = await call(
+    let response: MockResponse<any> = await performRequest(
       handler,
       requestUrl,
       'POST',
@@ -77,7 +77,7 @@ describe('A server with authorization', (): void => {
 
     // PUT
     requestUrl = new URL('http://test.com/foo/bar');
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'PUT',

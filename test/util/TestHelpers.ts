@@ -9,10 +9,10 @@ import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
 import { guardedStreamFrom, RepresentationMetadata, ensureTrailingSlash } from '../../src/';
 import { CONTENT_TYPE } from '../../src/util/UriConstants';
-import { call } from './Util';
+import { performRequest } from './Util';
 
 /* eslint-disable jest/no-standalone-expect */
-export class AclTestHelper {
+export class AclHelper {
   public readonly store: ResourceStore;
   public id: string;
 
@@ -60,24 +60,24 @@ export class AclTestHelper {
   }
 }
 
-export class FileTestHelper {
+export class ResourceHelper {
   public readonly handler: HttpHandler;
   public readonly baseUrl: URL;
 
-  public constructor(handler: HttpHandler, baseUrl: URL) {
+  public constructor(handler: HttpHandler, baseUrl: string) {
     this.handler = handler;
-    this.baseUrl = baseUrl;
+    this.baseUrl = new URL(baseUrl);
   }
 
-  public async simpleCall(
+  public async performRequest(
     requestUrl: URL,
     method: string,
     headers: IncomingHttpHeaders,
   ): Promise<MockResponse<any>> {
-    return call(this.handler, requestUrl, method, headers, []);
+    return performRequest(this.handler, requestUrl, method, headers, []);
   }
 
-  public async callWithFile(
+  public async performRequestWithBody(
     requestUrl: URL,
     method: string,
     headers: IncomingHttpHeaders,
@@ -106,13 +106,13 @@ export class FileTestHelper {
     return response;
   }
 
-  public async createFile(fileLocation: string, slug: string, contentType: string, mayFail = false):
+  public async createResource(fileLocation: string, slug: string, contentType: string, mayFail = false):
   Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
       join(__dirname, fileLocation),
     );
 
-    const response: MockResponse<any> = await this.callWithFile(
+    const response: MockResponse<any> = await this.performRequestWithBody(
       this.baseUrl,
       'POST',
       { 'content-type': contentType,
@@ -128,7 +128,7 @@ export class FileTestHelper {
     return response;
   }
 
-  public async overwriteFile(fileLocation: string, requestUrl: string, contentType: string):
+  public async replaceResource(fileLocation: string, requestUrl: string, contentType: string):
   Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
       join(__dirname, fileLocation),
@@ -136,7 +136,7 @@ export class FileTestHelper {
 
     const putUrl = new URL(requestUrl);
 
-    const response: MockResponse<any> = await this.callWithFile(
+    const response: MockResponse<any> = await this.performRequestWithBody(
       putUrl,
       'PUT',
       { 'content-type': contentType, 'transfer-encoding': 'chunked' },
@@ -147,10 +147,10 @@ export class FileTestHelper {
     return response;
   }
 
-  public async getFile(requestUrl: string): Promise<MockResponse<any>> {
+  public async getResource(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
-    const response = await this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    const response = await this.performRequest(getUrl, 'GET', { accept: '*/*' });
     expect(response.statusCode).toBe(200);
     return response;
   }
@@ -158,7 +158,7 @@ export class FileTestHelper {
   public async deleteResource(requestUrl: string, mayFail = false): Promise<MockResponse<any>> {
     const deleteUrl = new URL(requestUrl);
 
-    const response = await this.simpleCall(deleteUrl, 'DELETE', {});
+    const response = await this.performRequest(deleteUrl, 'DELETE', {});
     if (!mayFail) {
       expect(response.statusCode).toBe(205);
       expect(response._getData()).toHaveLength(0);
@@ -166,8 +166,8 @@ export class FileTestHelper {
     return response;
   }
 
-  public async createFolder(slug: string): Promise<MockResponse<any>> {
-    const response: MockResponse<any> = await this.simpleCall(
+  public async createContainer(slug: string): Promise<MockResponse<any>> {
+    const response: MockResponse<any> = await this.performRequest(
       this.baseUrl,
       'POST',
       {
@@ -183,17 +183,17 @@ export class FileTestHelper {
     return response;
   }
 
-  public async getFolder(requestUrl: string): Promise<MockResponse<any>> {
+  public async getContainer(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
     // `n-quads` allow for easy testing if a triple is present
-    return await this.simpleCall(getUrl, 'GET', { accept: 'application/n-quads' });
+    return await this.performRequest(getUrl, 'GET', { accept: 'application/n-quads' });
   }
 
   public async shouldNotExist(requestUrl: string): Promise<MockResponse<any>> {
     const getUrl = new URL(requestUrl);
 
-    const response = await this.simpleCall(getUrl, 'GET', { accept: '*/*' });
+    const response = await this.performRequest(getUrl, 'GET', { accept: '*/*' });
     expect(response.statusCode).toBe(404);
     expect(response._getData()).toContain('NotFoundHttpError');
     return response;

@@ -5,7 +5,7 @@ import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
 import type { HttpHandler } from '../../src/server/HttpHandler';
 import { LDP } from '../../src/util/UriConstants';
-import { call } from '../util/Util';
+import { performRequest } from '../util/Util';
 import { BASE, instantiateFromConfig } from './Config';
 
 describe('An integrated AuthenticatedLdpHandler', (): void => {
@@ -22,7 +22,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {
     // POST
     let requestUrl = new URL('http://test.com/');
-    let response: MockResponse<any> = await call(
+    let response: MockResponse<any> = await performRequest(
       handler,
       requestUrl,
       'POST',
@@ -36,7 +36,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     // GET
     requestUrl = new URL(id);
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'GET',
@@ -50,12 +50,12 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
 
     // DELETE
-    response = await call(handler, requestUrl, 'DELETE', {}, []);
+    response = await performRequest(handler, requestUrl, 'DELETE', {}, []);
     expect(response.statusCode).toBe(205);
     expect(response._getData()).toHaveLength(0);
 
     // GET
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'GET',
@@ -69,7 +69,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   it('can handle simple SPARQL updates.', async(): Promise<void> => {
     // POST
     let requestUrl = new URL('http://test.com/');
-    let response: MockResponse<any> = await call(
+    let response: MockResponse<any> = await performRequest(
       handler,
       requestUrl,
       'POST',
@@ -84,7 +84,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     // PATCH
     requestUrl = new URL(id);
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'PATCH',
@@ -99,7 +99,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     // GET
     requestUrl = new URL(id);
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'GET',
@@ -130,7 +130,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
   it('should overwrite the content on PUT request.', async(): Promise<void> => {
     // POST
     let requestUrl = new URL('http://test.com/');
-    let response: MockResponse<any> = await call(
+    let response: MockResponse<any> = await performRequest(
       handler,
       requestUrl,
       'POST',
@@ -147,7 +147,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     // PUT
     requestUrl = new URL(id);
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'PUT',
@@ -159,7 +159,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
 
     // GET
     requestUrl = new URL(id);
-    response = await call(
+    response = await performRequest(
       handler,
       requestUrl,
       'GET',

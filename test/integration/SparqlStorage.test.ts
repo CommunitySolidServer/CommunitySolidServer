@@ -1,10 +1,10 @@
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { describeIf, FileTestHelper } from '../util/TestHelpers';
+import { describeIf, ResourceHelper } from '../util/TestHelpers';
 import { BASE, instantiateFromConfig } from './Config';
 
 describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
   let handler: HttpHandler;
-  let fileHelper: FileTestHelper;
+  let resourceHelper: ResourceHelper;
 
   beforeAll(async(): Promise<void> => {
     // Set up the internal store
@@ -30,13 +30,13 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
     await initializer.handleSafe();
 
     // Create test helpers for manipulating the components
-    fileHelper = new FileTestHelper(handler, new URL(BASE));
+    resourceHelper = new ResourceHelper(handler, BASE);
   });
 
   it('can add a Turtle file to the store.', async():
   Promise<void> => {
     // POST
-    const response = await fileHelper.createFile('../assets/person.ttl', 'person', 'text/turtle');
+    const response = await resourceHelper.createResource('../assets/person.ttl', 'person', 'text/turtle');
     const id = response._getHeaders().location;
     expect(id).toBeTruthy();
   });

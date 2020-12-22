@@ -9,7 +9,7 @@ import type { HttpHandler } from '../../src/server/HttpHandler';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
-export const call = async(
+export const performRequest = async(
   handler: HttpHandler,
   requestUrl: URL,
   method: string,
