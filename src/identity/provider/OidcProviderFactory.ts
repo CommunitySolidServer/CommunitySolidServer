@@ -1,5 +1,5 @@
-import type { Provider } from 'oidc-provider';
+import type { OidcProvider } from './OidcProvider';
 
 export abstract class OidcProviderFactory {
-  abstract createOidcProvider(): Promise<Provider>;
+  abstract createOidcProvider(): Promise<OidcProvider>;
 }

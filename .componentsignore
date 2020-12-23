@@ -2,5 +2,6 @@
   "Error",
   "EventEmitter",
   "Provider",
-  "Configuration"
+  "Configuration",
+  "OidcProvider"
 ]

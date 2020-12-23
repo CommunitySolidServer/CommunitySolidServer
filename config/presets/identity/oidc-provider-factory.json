@@ -3,7 +3,7 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:OidcProviderConfigurationFactory",
-      "type": "DevEmailPasswordOidcProviderConfigurationFactory"
+      "@type": "DevEmailPasswordOidcProviderConfigurationFactory"
     },
     {
       "@id": "urn:solid-server:default:OidcProviderFactory",

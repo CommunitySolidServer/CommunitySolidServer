@@ -1,5 +1,5 @@
-import type { Provider } from 'oidc-provider';
 import type { OidcProviderConfigurationFactory } from './configuration/OidcProviderConfigurationFactory';
+import type { OidcProvider } from './OidcProvider';
 import { OidcProviderFactory } from './OidcProviderFactory';
 import { SolidOidcProvider } from './SolidOidcProvider';
 
@@ -18,8 +18,8 @@ export class SolidOidcProviderFactory extends OidcProviderFactory {
     this.issuer = args.issuer;
   }
 
-  public async createOidcProvider(): Promise<Provider> {
+  public async createOidcProvider(): Promise<OidcProvider> {
     const configuration = await this.configurationFacotry.createConfiguration();
-    return new SolidOidcProvider(this.issuer, configuration) as unknown as Provider;
+    return new SolidOidcProvider(this.issuer, configuration);
   }
 }

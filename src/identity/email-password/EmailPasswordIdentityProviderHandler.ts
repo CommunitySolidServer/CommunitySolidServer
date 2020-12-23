@@ -21,8 +21,8 @@ export class EmailPasswordIdentityProviderHandler extends HttpHandler {
     request: Guarded<IncomingMessage>;
     response: ServerResponse;
   }): Promise<void> {
+    this.logger.verbose('Handling Email Passord Identity Provider Request');
     const provider = await this.oidcProviderFactory.createOidcProvider();
-    const thing = provider.callback(input.request, input.response);
-    this.logger.info(thing as unknown as string);
+    await provider.asyncCallback(input.request, input.response);
   }
 }
