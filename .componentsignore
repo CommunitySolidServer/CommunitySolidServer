@@ -1,4 +1,6 @@
 [
   "Error",
-  "EventEmitter"
+  "EventEmitter",
+  "Provider",
+  "Configuration"
 ]

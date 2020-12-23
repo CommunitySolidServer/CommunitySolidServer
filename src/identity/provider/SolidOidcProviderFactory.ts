@@ -20,6 +20,6 @@ export class SolidOidcProviderFactory extends OidcProviderFactory {
 
   public async createOidcProvider(): Promise<Provider> {
     const configuration = await this.configurationFacotry.createConfiguration();
-    return new SolidOidcProvider(this.issuer, configuration);
+    return new SolidOidcProvider(this.issuer, configuration) as unknown as Provider;
   }
 }

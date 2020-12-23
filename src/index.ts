@@ -85,7 +85,9 @@ export * from './identity/email-password/DevEmailPasswordOidcProviderConfigurati
 
 // Identity Provider
 export * from './identity/provider/SolidOidcProvider';
+export * from './identity/provider/OidcProviderFactory';
 export * from './identity/provider/SolidOidcProviderFactory';
+export * from './identity/provider/configuration/OidcProviderConfigurationFactory';
 
 // Logging
 export * from './logging/LazyLogger';

@@ -1,7 +1,10 @@
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { AnyObject, CanBePromise, Configuration } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 
-export class SolidOidcProvider extends Provider {
+export class SolidOidcProvider {
+  private readonly provider: Provider;
+
   public constructor(issuer: string, configuration: Configuration) {
     const augmentedConfiguration: Configuration = {
       ...configuration,
@@ -17,7 +20,10 @@ export class SolidOidcProvider extends Provider {
         claimsParameter: { enabled: true },
       },
       subjectTypes: [ 'public', 'pairwise' ],
-      extraAccessTokenClaims(ctx, token): CanBePromise<AnyObject | void | undefined> {
+      extraAccessTokenClaims(
+        ctx,
+        token,
+      ): CanBePromise<AnyObject | void | undefined> {
         if ((token as any).accountId) {
           return {
             webid: (token as any).accountId,
@@ -28,6 +34,17 @@ export class SolidOidcProvider extends Provider {
         return {};
       },
     };
-    super(issuer, augmentedConfiguration);
+    this.provider = new Provider(issuer, augmentedConfiguration);
+  }
+
+  public async callback(
+    incomingMessage: IncomingMessage,
+    serverResponse: ServerResponse,
+  ): Promise<void> {
+    const callbackPromise = this.provider.callback(
+      incomingMessage,
+      serverResponse,
+    ) as unknown as Promise<void>;
+    await callbackPromise;
   }
 }
