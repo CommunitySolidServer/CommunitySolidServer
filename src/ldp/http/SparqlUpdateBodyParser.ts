@@ -31,7 +31,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
     let algebra: Algebra.Operation;
     try {
       const sparql = await readableToString(toAlgebraStream);
-      algebra = translate(sparql, { quads: true });
+      algebra = translate(sparql, { quads: true, baseIRI: request.url });
     } catch (error: unknown) {
       this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
       if (error instanceof Error) {
