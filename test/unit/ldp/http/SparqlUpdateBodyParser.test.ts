@@ -61,4 +61,24 @@ describe('A SparqlUpdateBodyParser', (): void => {
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     );
   });
+
+  it('accepts relative references.', async(): Promise<void> => {
+    input.request = streamifyArray(
+      [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
+    ) as HttpRequest;
+    input.metadata.identifier = namedNode('http://test.com/my-document.ttl');
+    const result = await bodyParser.handle(input);
+    expect(result.algebra.type).toBe(Algebra.types.DELETE_INSERT);
+    expect((result.algebra as Algebra.DeleteInsert).insert).toBeRdfIsomorphic([ quad(
+      namedNode('http://test.com/my-document.ttl#it'),
+      namedNode('http://test.com/p'),
+      namedNode('http://test.com/o'),
+    ) ]);
+    expect(result.binary).toBe(true);
+    expect(result.metadata).toBe(input.metadata);
+
+    expect(await arrayifyStream(result.data)).toEqual(
+      [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
+    );
+  });
 });

@@ -75,7 +75,7 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       'POST',
       { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
       [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
-        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ],
+        '<s2> <http://test.com/p2> <http://test.com/o2>.' ],
     );
     expect(response.statusCode).toBe(201);
     expect(response._getData()).toHaveLength(0);
@@ -89,8 +89,8 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       requestUrl,
       'PATCH',
       { 'content-type': 'application/sparql-update', 'transfer-encoding': 'chunked' },
-      [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
-        'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
+      [ 'DELETE { <s1> <http://test.com/p1> <http://test.com/o1> }',
+        'INSERT {<s3> <http://test.com/p3> <http://test.com/o3>}',
         'WHERE {}',
       ],
     );
