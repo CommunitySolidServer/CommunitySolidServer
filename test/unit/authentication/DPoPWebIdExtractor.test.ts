@@ -1,11 +1,11 @@
-import { createSolidIdentityVerifier } from 'ts-dpop';
+import { createSolidTokenVerifier } from 'ts-dpop';
 import { DPoPWebIdExtractor } from '../../../src/authentication/DPoPWebIdExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
-const solidIdentityVerifier = createSolidIdentityVerifier() as jest.MockedFunction<any>;
+const solidTokenVerifier = createSolidTokenVerifier() as jest.MockedFunction<any>;
 
 describe('A DPoPWebIdExtractor', (): void => {
   const targetExtractor = new StaticAsyncHandler(true, { path: 'http://example.org/foo/bar' });
@@ -79,8 +79,8 @@ describe('A DPoPWebIdExtractor', (): void => {
 
     it('calls the DPoP verifier with the correct parameters.', async(): Promise<void> => {
       await webIdExtractor.handleSafe(request);
-      expect(solidIdentityVerifier).toHaveBeenCalledTimes(1);
-      expect(solidIdentityVerifier).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
+      expect(solidTokenVerifier).toHaveBeenCalledTimes(1);
+      expect(solidTokenVerifier).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
     });
 
     it('returns the extracted WebID.', async(): Promise<void> => {
@@ -99,7 +99,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     } as any as HttpRequest;
 
     beforeEach((): void => {
-      solidIdentityVerifier.mockImplementationOnce((): void => {
+      solidTokenVerifier.mockImplementationOnce((): void => {
         throw new Error('invalid');
       });
     });

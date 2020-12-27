@@ -1,5 +1,5 @@
-import type { RequestMethod, VerifySolidIdentityFunction } from 'ts-dpop';
-import { createSolidIdentityVerifier } from 'ts-dpop';
+import type { RequestMethod, SolidTokenVerifierFunction } from 'ts-dpop';
+import { createSolidTokenVerifier } from 'ts-dpop';
 import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
@@ -14,12 +14,12 @@ import { CredentialsExtractor } from './CredentialsExtractor';
 export class DPoPWebIdExtractor extends CredentialsExtractor {
   protected readonly logger = getLoggerFor(this);
   private readonly targetExtractor: TargetExtractor;
-  private readonly verify: VerifySolidIdentityFunction;
+  private readonly verify: SolidTokenVerifierFunction;
 
   public constructor(targetExtractor: TargetExtractor) {
     super();
     this.targetExtractor = targetExtractor;
-    this.verify = createSolidIdentityVerifier();
+    this.verify = createSolidTokenVerifier();
   }
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
