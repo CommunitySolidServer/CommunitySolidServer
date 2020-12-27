@@ -17,6 +17,7 @@
             "DELETE"
           ],
           "CorsHandler:_options_exposedHeaders": [
+            "Location",
             "Updates-Via"
           ]
         },

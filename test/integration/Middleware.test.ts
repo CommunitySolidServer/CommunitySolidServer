@@ -11,7 +11,7 @@ const port = 6002;
 
 class SimpleHttpHandler extends HttpHandler {
   public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
-    input.response.writeHead(200);
+    input.response.writeHead(200, { location: '/' });
     input.response.end('Hello World');
   }
 }
@@ -63,6 +63,12 @@ describe('An Express server with middleware', (): void => {
   it('specifies CORS origin header if an origin was supplied.', async(): Promise<void> => {
     const res = await request(server).get('/').set('origin', 'test.com').expect(200);
     expect(res.header).toEqual(expect.objectContaining({ 'access-control-allow-origin': 'test.com' }));
+  });
+
+  it('exposes the Location header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('Location');
   });
 
   it('sends incoming requests to the handler.', async(): Promise<void> => {
