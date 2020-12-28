@@ -50,7 +50,7 @@
     "jest": "jest",
     "lint": "eslint . --cache",
     "prepare": "npm run build",
-    "start": "node ./bin/server.js -p 3000",
+    "start": "node ./bin/server.js",
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
