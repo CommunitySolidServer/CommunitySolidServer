@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>UnsecureConstantCredentialsExtractor | Community Solid Server</title>
+	<title>BearerWebIdExtractor | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_authentication_unsecureconstantcredentialsextractor_.html">&quot;authentication/UnsecureConstantCredentialsExtractor&quot;</a>
+					<a href="../modules/_authentication_bearerwebidextractor_.html">&quot;authentication/BearerWebIdExtractor&quot;</a>
 				</li>
 				<li>
-					<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html">UnsecureConstantCredentialsExtractor</a>
+					<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html">BearerWebIdExtractor</a>
 				</li>
 			</ul>
-			<h1>Class UnsecureConstantCredentialsExtractor</h1>
+			<h1>Class BearerWebIdExtractor</h1>
 		</div>
 	</div>
 </header>
@@ -72,8 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Credentials extractor that authenticates a constant agent
-						(useful for development or debugging purposes).</p>
+						<p>Credentials extractor that extracts a WebID from a Bearer access token.</p>
 					</div>
 				</div>
 			</section>
@@ -84,7 +83,7 @@
 						<a href="_authentication_credentialsextractor_.credentialsextractor.html" class="tsd-signature-type">CredentialsExtractor</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">UnsecureConstantCredentialsExtractor</span>
+								<span class="target">BearerWebIdExtractor</span>
 							</li>
 						</ul>
 					</li>
@@ -97,22 +96,22 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+						<section class="tsd-index-section tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#agent" class="tsd-kind-icon">agent</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#verify" class="tsd-kind-icon">verify</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#handle" class="tsd-kind-icon">handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 							</ul>
 						</section>
 					</div>
@@ -124,82 +123,71 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html" class="tsd-signature-type">UnsecureConstantCredentialsExtractor</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Bearer<wbr>Web<wbr>IdExtractor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html" class="tsd-signature-type">BearerWebIdExtractor</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/UnsecureConstantCredentialsExtractor.ts#L11">src/authentication/UnsecureConstantCredentialsExtractor.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/BearerWebIdExtractor.ts#L15">src/authentication/BearerWebIdExtractor.ts:15</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>agent: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html" class="tsd-signature-type">UnsecureConstantCredentialsExtractor</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html" class="tsd-signature-type">BearerWebIdExtractor</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="agent" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> agent</h3>
-					<div class="tsd-signature tsd-kind-icon">agent<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="_logging_logger_.logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol"> = getLoggerFor(this)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/UnsecureConstantCredentialsExtractor.ts#L10">src/authentication/UnsecureConstantCredentialsExtractor.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/BearerWebIdExtractor.ts#L14">src/authentication/BearerWebIdExtractor.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="logger" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> logger</h3>
-					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="_logging_logger_.logger.html" class="tsd-signature-type">Logger</a><span class="tsd-signature-symbol"> = getLoggerFor(this)</span></div>
+					<a name="verify" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> verify</h3>
+					<div class="tsd-signature tsd-kind-icon">verify<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SolidTokenVerifierFunction</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/UnsecureConstantCredentialsExtractor.ts#L11">src/authentication/UnsecureConstantCredentialsExtractor.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/BearerWebIdExtractor.ts#L15">src/authentication/BearerWebIdExtractor.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="canhandle" class="tsd-anchor"></a>
 					<h3>can<wbr>Handle</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../modules/_server_httprequest_.html#httprequest" class="tsd-signature-type">HttpRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IncomingHttpHeaders</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="_util_asynchandler_.asynchandler.html">AsyncHandler</a>.<a href="_util_asynchandler_.asynchandler.html#canhandle">canHandle</a></p>
+								<p>Overrides <a href="_util_asynchandler_.asynchandler.html">AsyncHandler</a>.<a href="_util_asynchandler_.asynchandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/BearerWebIdExtractor.ts#L22">src/authentication/BearerWebIdExtractor.ts:22</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Checks if the input data can be handled by this class.
-									Throws an error if it can&#39;t handle the data.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <a href="../modules/_server_httprequest_.html#httprequest" class="tsd-signature-type">HttpRequest</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Input data that would be handled potentially.</p>
-									</div>
+									<h5>__namedParameters: <span class="tsd-signature-symbol">{ </span>headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IncomingHttpHeaders</span><span class="tsd-signature-symbol"> }</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>headers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IncomingHttpHeaders</span></h5>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A promise resolving if this input can be handled, rejecting with an Error if not.</p>
 						</li>
 					</ul>
 				</section>
@@ -207,16 +195,22 @@
 					<a name="handle" class="tsd-anchor"></a>
 					<h3>handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="../modules/_server_httprequest_.html#httprequest" class="tsd-signature-type">HttpRequest</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_util_asynchandler_.asynchandler.html">AsyncHandler</a>.<a href="_util_asynchandler_.asynchandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/UnsecureConstantCredentialsExtractor.ts#L18">src/authentication/UnsecureConstantCredentialsExtractor.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/bdfd7cf/src/authentication/BearerWebIdExtractor.ts#L29">src/authentication/BearerWebIdExtractor.ts:29</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>request: <a href="../modules/_server_httprequest_.html#httprequest" class="tsd-signature-type">HttpRequest</a></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_authentication_credentials_.credentials.html" class="tsd-signature-type">Credentials</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -238,8 +232,8 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Helper function that first runs the canHandle function followed by the handle function.
-										Throws the error of the <a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
-									or returns the result of the <a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#handle">handle</a> function otherwise.</p>
+										Throws the error of the <a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
+									or returns the result of the <a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#handle">handle</a> function otherwise.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -265,7 +259,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_authentication_unsecureconstantcredentialsextractor_.html">&quot;authentication/<wbr>Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor&quot;</a>
+						<a href="../modules/_authentication_bearerwebidextractor_.html">&quot;authentication/<wbr>Bearer<wbr>Web<wbr>IdExtractor&quot;</a>
 					</li>
 				</ul>
 			</nav>
@@ -274,25 +268,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html" class="tsd-kind-icon">Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor</a>
+						<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html" class="tsd-kind-icon">Bearer<wbr>Web<wbr>IdExtractor</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#agent" class="tsd-kind-icon">agent</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#verify" class="tsd-kind-icon">verify</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#handle" class="tsd-kind-icon">handle</a>
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="_authentication_unsecureconstantcredentialsextractor_.unsecureconstantcredentialsextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+								<a href="_authentication_bearerwebidextractor_.bearerwebidextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
 							</li>
 						</ul>
 					</li>
@@ -327,6 +321,9 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
