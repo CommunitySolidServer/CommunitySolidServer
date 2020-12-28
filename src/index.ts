@@ -82,6 +82,11 @@ export * from './ldp/UnsecureWebSocketsProtocol';
 // Email Password Identity Provider
 export * from './identity/email-password/EmailPasswordIdentityProviderHandler';
 export * from './identity/email-password/DevEmailPasswordOidcProviderConfigurationFactory';
+export * from './identity/email-password/interactionHttpHandlers/AbortInteractionHttpHandler';
+export * from './identity/email-password/interactionHttpHandlers/ConfirmInteractionHttpHandler';
+export * from './identity/email-password/interactionHttpHandlers/ContinueInteractionHttpHandler';
+export * from './identity/email-password/interactionHttpHandlers/GetInteractionHttpHandler';
+export * from './identity/email-password/interactionHttpHandlers/LoginInteractionHttpHandler';
 
 // Identity Provider
 export * from './identity/provider/OidcProvider';
