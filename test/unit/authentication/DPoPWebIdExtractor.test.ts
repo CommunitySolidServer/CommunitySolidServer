@@ -80,7 +80,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('calls the DPoP verifier with the correct parameters.', async(): Promise<void> => {
       await webIdExtractor.handleSafe(request);
       expect(solidTokenVerifier).toHaveBeenCalledTimes(1);
-      expect(solidTokenVerifier).toHaveBeenCalledWith('DPoP token-1234', 'token-5678', 'GET', 'http://example.org/foo/bar');
+      expect(solidTokenVerifier).toHaveBeenCalledWith('DPoP token-1234', { header: 'token-5678', method: 'GET', url: 'http://example.org/foo/bar' });
     });
 
     it('returns the extracted WebID.', async(): Promise<void> => {

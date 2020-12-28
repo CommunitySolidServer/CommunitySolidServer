@@ -1,4 +1,4 @@
-import type { RequestMethod, SolidTokenVerifierFunction } from 'ts-dpop';
+import type { SolidTokenVerifierFunction, RequestMethod } from 'ts-dpop';
 import { createSolidTokenVerifier } from 'ts-dpop';
 import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -9,7 +9,7 @@ import type { Credentials } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
 /**
- * Credentials extractor which extracts a WebID from a DPoP token.
+ * Credentials extractor that extracts a WebID from a DPoP-bound access token.
  */
 export class DPoPWebIdExtractor extends CredentialsExtractor {
   protected readonly logger = getLoggerFor(this);
@@ -39,11 +39,12 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     try {
       const { webid: webId } = await this.verify(
         authorization as string,
-        dpop as string,
-        method as RequestMethod,
-        resource.path,
+        {
+          header: dpop as string,
+          method: method as RequestMethod,
+          url: resource.path,
+        },
       );
-
       this.logger.info(`Verified WebID via DPoP-bound access token: ${webId}`);
       return { webId };
     } catch (error: unknown) {

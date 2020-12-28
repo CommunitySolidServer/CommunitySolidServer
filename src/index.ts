@@ -1,4 +1,5 @@
 // Authentication
+export * from './authentication/BearerWebIdExtractor';
 export * from './authentication/Credentials';
 export * from './authentication/CredentialsExtractor';
 export * from './authentication/DPoPWebIdExtractor';
