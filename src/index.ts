@@ -89,10 +89,8 @@ export * from './identity/email-password/interactionHttpHandlers/GetInteractionH
 export * from './identity/email-password/interactionHttpHandlers/LoginInteractionHttpHandler';
 
 // Identity Provider
-export * from './identity/provider/OidcProvider';
-export * from './identity/provider/SolidOidcProvider';
-export * from './identity/provider/OidcProviderFactory';
-export * from './identity/provider/SolidOidcProviderFactory';
+export * from './identity/provider/SolidIdentityProvider';
+export * from './identity/provider/SolidIdentityProviderFactory';
 export * from './identity/provider/configuration/OidcProviderConfigurationFactory';
 
 // Logging
