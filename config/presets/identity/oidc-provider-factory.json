@@ -6,12 +6,12 @@
       "@type": "DevEmailPasswordOidcProviderConfigurationFactory"
     },
     {
-      "@id": "urn:solid-server:default:OidcProviderFactory",
-      "@type": "SolidOidcProviderFactory",
-      "SolidOidcProviderFactory:_args_issuer": {
+      "@id": "urn:solid-server:default:SolidIdentityProviderFactory",
+      "@type": "SolidIdentityProviderFactory",
+      "SolidIdentityProviderFactory:_args_issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "SolidOidcProviderFactory:_args_configurationFactory": {
+      "SolidIdentityProviderFactory:_args_configurationFactory": {
         "@id": "urn:solid-server:default:OidcProviderConfigurationFactory"
       }
     }
