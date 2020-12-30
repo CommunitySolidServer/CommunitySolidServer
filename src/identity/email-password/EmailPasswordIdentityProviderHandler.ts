@@ -27,7 +27,6 @@ export class EmailPasswordIdentityProviderHandler extends HttpHandler {
     this.logger.verbose('Handling Email Passord Identity Provider Request');
     const provider = await this.oidcProviderFactory.createOidcProvider();
     try {
-      this.logger.info('HERERE!!!!!!!!!!!!!!!!!!!!!!!');
       await this.interactionHttpHandler.handleSafe(input);
     } catch {
       // Do Nothing
