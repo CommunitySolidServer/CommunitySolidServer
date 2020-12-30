@@ -1,6 +1,6 @@
-import type { IncomingMessage, ServerResponse } from 'http';
 import { parse } from 'url';
 import type { AnyObject, CanBePromise, Configuration } from 'oidc-provider';
+import { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
 // configuration, which, in turn, is needed to get the routes the provider is using.
 // It is probably very difficult to get the configuration because Panva does not want
@@ -9,11 +9,12 @@ import type { AnyObject, CanBePromise, Configuration } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
+import type { HttpHandlerInput } from '../../server/HttpHandler';
+import type { AsyncHandler } from '../../util/AsyncHandler';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { OidcProvider } from './OidcProvider';
 
-export class SolidOidcProvider extends OidcProvider {
+export class SolidIdentityProvider extends Provider implements AsyncHandler<HttpHandlerInput> {
   public constructor(issuer: string, configuration: Configuration) {
     const augmentedConfiguration: Configuration = {
       ...configuration,
@@ -52,10 +53,9 @@ export class SolidOidcProvider extends OidcProvider {
    * idp cannot handle the request.
    * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
    */
-  public async asyncCallback(
-    req: IncomingMessage,
-    res: ServerResponse,
-  ): Promise<void> {
+  public async canHandle(input: HttpHandlerInput): Promise<void> {
+    const req = input.request;
+    const res = input.response;
     // Get the routes from the configuration. `instance` is needed because the configuration
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
@@ -78,5 +78,21 @@ export class SolidOidcProvider extends OidcProvider {
     // actually return a Promise, despite what the typings say.
     // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
     return (super.callback(req, res) as unknown) as Promise<void>;
+  }
+
+  /**
+   * Handles the given input. This should only be done if the {@link canHandle} function returned `true`.
+   * @param input - Input data that needs to be handled.
+   *
+   * @returns A promise resolving when the handling is finished. Return value depends on the given type.
+   */
+  public async handle(input: HttpHandlerInput): Promise<void> {
+    return super.callback(input.request, input.response) as unknown as Promise<void>;
+  }
+
+  public async handleSafe(data: HttpHandlerInput): Promise<void> {
+    await this.canHandle(data);
+
+    return this.handle(data);
   }
 }
