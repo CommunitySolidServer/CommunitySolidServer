@@ -3,23 +3,24 @@ import { SolidIdentityProvider } from './SolidIdentityProvider';
 import type { SolidIdentityProviderConfigurationFactory } from './SolidIdentityProviderConfigurationFactory';
 
 export interface SolidIdentityProviderFactoryArgs {
-  issuer: string;
   configurationFactory: SolidIdentityProviderConfigurationFactory;
+  issuer: string;
+  targetExtractor: TargetExtractor;
 }
 
 export class SolidIdentityProviderFactory {
-  private readonly configurationFacotry: SolidIdentityProviderConfigurationFactory;
+  private readonly configurationFactory: SolidIdentityProviderConfigurationFactory;
   private readonly issuer: string;
   private readonly targetExtractor: TargetExtractor;
 
-  public constructor(targetExtractor: TargetExtractor, args: SolidIdentityProviderFactoryArgs) {
-    this.configurationFacotry = args.configurationFactory;
+  public constructor(args: SolidIdentityProviderFactoryArgs) {
+    this.configurationFactory = args.configurationFactory;
     this.issuer = args.issuer;
-    this.targetExtractor = targetExtractor;
+    this.targetExtractor = args.targetExtractor;
   }
 
-  public async createSolidIdentityProvider(): Promise<SolidIdentityProvider> {
-    const configuration = await this.configurationFacotry.createConfiguration();
+  public createSolidIdentityProvider(): SolidIdentityProvider {
+    const configuration = this.configurationFactory.createConfiguration();
     return new SolidIdentityProvider(this.targetExtractor, this.issuer, configuration);
   }
 }
