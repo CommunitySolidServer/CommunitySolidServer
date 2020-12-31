@@ -20,8 +20,8 @@
     "files-scs:config/presets/storage/routing/no-routing.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json",
-    "files-scs:config/presets/identity/oidc-provider-factory.json",
-    "files-scs:config/presets/identity/email-password-provider.json"
+    "files-scs:config/presets/identity/solid-identity-provider.json",
+    "files-scs:config/presets/identity/email-password-interaction-policy.json"
   ],
   "@graph": [
     {

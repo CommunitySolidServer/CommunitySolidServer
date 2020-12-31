@@ -1,13 +1,13 @@
-import type { OidcProviderConfigurationFactory } from './configuration/OidcProviderConfigurationFactory';
 import { SolidIdentityProvider } from './SolidIdentityProvider';
+import type { SolidIdentityProviderConfigurationFactory } from './SolidIdentityProviderConfigurationFactory';
 
 export interface SolidIdentityProviderFactoryArgs {
   issuer: string;
-  configurationFactory: OidcProviderConfigurationFactory;
+  configurationFactory: SolidIdentityProviderConfigurationFactory;
 }
 
 export class SolidIdentityProviderFactory {
-  private readonly configurationFacotry: OidcProviderConfigurationFactory;
+  private readonly configurationFacotry: SolidIdentityProviderConfigurationFactory;
   private readonly issuer: string;
 
   public constructor(args: SolidIdentityProviderFactoryArgs) {

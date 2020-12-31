@@ -1,24 +1,23 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable id-length */
 /* eslint-disable max-len */
-import type { Configuration } from 'oidc-provider';
-import { interactionPolicy } from 'oidc-provider';
-import { OidcProviderConfigurationFactory } from '../provider/configuration/OidcProviderConfigurationFactory';
+import type { SolidIdentityProviderConfiguration } from '../SolidIdentityProviderConfiguration';
+import { SolidIdentityProviderConfigurationFactory } from '../SolidIdentityProviderConfigurationFactory';
+import type { SolidIdentityProviderInteractionPolicyHttpHandler } from '../SolidIdentityProviderInteractionPolicyHttpHandler';
 
-// Copies the default policy, already has login and consent prompt policies
-const interactions = interactionPolicy.base();
+export interface DevConfigurationFactoryArgs {
+  interactionPolicyHttpHandler: SolidIdentityProviderInteractionPolicyHttpHandler;
+}
 
-// Create a requestable prompt with no implicit checks
-const selectAccount = new interactionPolicy.Prompt({
-  name: 'select_account',
-  requestable: true,
-});
+export class DevConfigurationFactory extends SolidIdentityProviderConfigurationFactory {
+  private readonly interactionPolicyHttpHandler: SolidIdentityProviderInteractionPolicyHttpHandler;
 
-// Add to index 0, order goes select_account > login > consent
-interactions.add(selectAccount, 0);
+  public constructor(args: DevConfigurationFactoryArgs) {
+    super();
+    this.interactionPolicyHttpHandler = args.interactionPolicyHttpHandler;
+  }
 
-export class DevEmailPasswordOidcProviderConfigurationFactory extends OidcProviderConfigurationFactory {
-  public async createConfiguration(): Promise<Configuration> {
+  public async createConfiguration(): Promise<SolidIdentityProviderConfiguration> {
     return {
       clients: [
         // {
@@ -28,12 +27,7 @@ export class DevEmailPasswordOidcProviderConfigurationFactory extends OidcProvid
         //   redirect_uris: ['http://sso-client.dev/providers/7/open_id', 'http://sso-client.dev/providers/8/open_id'],
         // }
       ],
-      interactions: {
-        policy: interactions,
-        url(ctx): string { // eslint-disable-line no-unused-vars
-          return `/interaction/${ctx.oidc.uid}`;
-        },
-      },
+      interactions: this.interactionPolicyHttpHandler,
       cookies: {
         long: { signed: true, maxAge: (1 * 24 * 60 * 60) * 1000 },
         short: { signed: true },
@@ -80,15 +74,6 @@ export class DevEmailPasswordOidcProviderConfigurationFactory extends OidcProvid
         RefreshToken: 1 * 24 * 60 * 60,
       },
       subjectTypes: [ 'public', 'pairwise' ],
-      extraAccessTokenClaims(ctx, token): Record<string, unknown> {
-        if ((token as any).accountId) {
-          return {
-            webid: (token as any).accountId,
-            client_webid: 'http://localhost:3001/',
-          };
-        }
-        return {};
-      },
     };
   }
 }

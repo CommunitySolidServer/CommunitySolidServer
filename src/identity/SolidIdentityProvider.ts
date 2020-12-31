@@ -1,5 +1,5 @@
 import { parse } from 'url';
-import type { AnyObject, CanBePromise, Configuration } from 'oidc-provider';
+import type { AnyObject, CanBePromise } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
 // configuration, which, in turn, is needed to get the routes the provider is using.
@@ -9,14 +9,25 @@ import { Provider } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
-import type { HttpHandlerInput } from '../../server/HttpHandler';
-import type { AsyncHandler } from '../../util/AsyncHandler';
-import { InternalServerError } from '../../util/errors/InternalServerError';
-import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import type { HttpHandlerInput } from '../server/HttpHandler';
+import type { AsyncHandler } from '../util/AsyncHandler';
+import { InternalServerError } from '../util/errors/InternalServerError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import type { SolidIdentityProviderConfiguration } from './SolidIdentityProviderConfiguration';
+import type {
+  SolidIdentityProviderInteractionPolicyHttpHandler,
+} from './SolidIdentityProviderInteractionPolicyHttpHandler';
 
-export class SolidIdentityProvider extends Provider implements AsyncHandler<HttpHandlerInput> {
-  public constructor(issuer: string, configuration: Configuration) {
-    const augmentedConfiguration: Configuration = {
+export class SolidIdentityProvider
+  extends Provider
+  implements AsyncHandler<HttpHandlerInput> {
+  private readonly interactionPolicyHttpHandler: SolidIdentityProviderInteractionPolicyHttpHandler;
+
+  public constructor(
+    issuer: string,
+    configuration: SolidIdentityProviderConfiguration,
+  ) {
+    const augmentedConfiguration: SolidIdentityProviderConfiguration = {
       ...configuration,
       claims: {
         ...configuration.claims,
@@ -45,6 +56,7 @@ export class SolidIdentityProvider extends Provider implements AsyncHandler<Http
       },
     };
     super(issuer, augmentedConfiguration);
+    this.interactionPolicyHttpHandler = augmentedConfiguration.interactions;
   }
 
   /**
@@ -56,6 +68,13 @@ export class SolidIdentityProvider extends Provider implements AsyncHandler<Http
   public async canHandle(input: HttpHandlerInput): Promise<void> {
     const req = input.request;
     const res = input.response;
+    // Run the InteractionHttpHandler
+    try {
+      await this.interactionPolicyHttpHandler.handleSafe({ ...input, provider: this });
+    } catch {
+      // Do Nothing
+    }
+
     // Get the routes from the configuration. `instance` is needed because the configuration
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
@@ -87,12 +106,14 @@ export class SolidIdentityProvider extends Provider implements AsyncHandler<Http
    * @returns A promise resolving when the handling is finished. Return value depends on the given type.
    */
   public async handle(input: HttpHandlerInput): Promise<void> {
-    return super.callback(input.request, input.response) as unknown as Promise<void>;
+    return (super.callback(
+      input.request,
+      input.response,
+    ) as unknown) as Promise<void>;
   }
 
   public async handleSafe(data: HttpHandlerInput): Promise<void> {
     await this.canHandle(data);
-
     return this.handle(data);
   }
 }
