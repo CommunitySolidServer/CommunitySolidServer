@@ -1,4 +1,7 @@
 [
   "Error",
-  "EventEmitter"
+  "EventEmitter",
+  "Provider",
+  "Configuration",
+  "OidcProvider"
 ]

@@ -81,8 +81,24 @@ export * from './ldp/representation/ResourceIdentifier';
 export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
-// Identity Provider
-export * from './identity/email-password-identity-provider/EmailPasswordIdentityProviderHandler';
+// Solid Identity Provider
+export * from './identity/SolidIdentityProvider';
+export * from './identity/SolidIdentityProviderConfiguration';
+export * from './identity/SolidIdentityProviderConfigurationFactory';
+export * from './identity/SolidIdentityProviderFactory';
+export * from './identity/SolidIdentityProviderHttpHandler';
+export * from './identity/SolidIdentityProviderInteractionHttpHandler';
+export * from './identity/SolidIdentityProviderInteractionPolicyHttpHandler';
+export * from './identity/configuration-factories/DevConfigurationFactory';
+
+// Email Password Identity Provider
+export * from './identity/interaction-policies/email-password/EmailPasswordInteractionPolicyHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/AbortInteractionHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/BaseInteractionHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/ConfirmInteractionHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/ContinueInteractionHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/GetInteractionHttpHandler';
+export * from './identity/interaction-policies/email-password/interactionHttpHandlers/LoginInteractionHttpHandler';
 
 // Logging
 export * from './logging/LazyLogger';
