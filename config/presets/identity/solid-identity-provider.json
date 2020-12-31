@@ -16,9 +16,6 @@
       },
       "SolidIdentityProviderFactory:_args_issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
-      },
-      "SolidIdentityProviderFactory:_args_targetExtractor": {
-        "@id": "urn:solid-server:default:TargetExtractor"
       }
     },
     {
