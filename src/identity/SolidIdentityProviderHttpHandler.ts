@@ -1,21 +1,27 @@
+import type { SolidIdentityProvider } from './SolidIdentityProvider';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
-import type { SolidIdentityProviderFactory } from './SolidIdentityProviderFactory';
-
-export interface SolidIdentityProviderHttpHandlerArgs {
-  providerFactory: SolidIdentityProviderFactory;
-}
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { SolidIdentityProviderFactory } from './SolidIdentityProviderFactory';
 
 export class SolidIdentityProviderHttpHandler extends HttpHandler {
-  private readonly providerFactory: SolidIdentityProviderFactory;
+  private readonly provider: SolidIdentityProvider;
 
-  public constructor(args: SolidIdentityProviderHttpHandlerArgs) {
+  constructor(providerFactory: SolidIdentityProviderFactory) {
     super();
-    this.providerFactory = args.providerFactory;
+    this.provider = providerFactory.createSolidIdentityProvider();
   }
 
-  public async handle(input: HttpHandlerInput): Promise<void> {
-    const provider = await this.providerFactory.createSolidIdentityProvider();
-    await provider.handleSafe(input);
+  public async canHandle(input: HttpHandlerInput): Promise<void> {
+    try {
+      await this.provider.canHandle(input);
+    }
+    catch (error: unknown) {
+      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
+    }
+  }
+
+  public handle(input: HttpHandlerInput): Promise<void> {
+    return this.provider.handleSafe(input);
   }
 }
