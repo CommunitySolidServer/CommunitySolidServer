@@ -3,4 +3,7 @@
   "Error",
   "EventEmitter",
   "ValuePreferencesArg"
+  "Provider",
+  "Configuration",
+  "OidcProvider"
 ]
