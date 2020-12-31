@@ -48,7 +48,7 @@
     "docker:stop": "./test/docker/docker-stop.sh",
     "docs": "typedoc",
     "jest": "jest",
-    "lint": "eslint . --cache",
+    "lint": "eslint . --cache --ignore-path .gitignore",
     "prepare": "npm run build",
     "start": "node ./bin/server.js",
     "test": "npm run test:ts && npm run jest",
