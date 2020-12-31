@@ -1,5 +1,6 @@
 {
   "name": "Community Solid Server",
   "hideGenerator": true,
+  "entryPoints": "src",
   "out": "docs"
 }
