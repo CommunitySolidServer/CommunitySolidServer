@@ -1,3 +1,4 @@
+import { parse } from 'url';
 import type { AnyObject, CanBePromise } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
@@ -8,16 +9,15 @@ import { Provider } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
-import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import type { HttpHandler, HttpHandlerInput } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { SolidIdentityProviderConfiguration } from './SolidIdentityProviderConfiguration';
+import type { SolidIdentityProviderInteractionHttpHandler } from './SolidIdentityProviderInteractionHttpHandler';
 
 export class SolidIdentityProvider extends Provider implements HttpHandler {
-  private readonly targetExtractor: TargetExtractor;
+  private readonly interactionHttpHandler: SolidIdentityProviderInteractionHttpHandler;
 
   public constructor(
-    targetExtractor: TargetExtractor,
     issuer: string,
     configuration: SolidIdentityProviderConfiguration,
   ) {
@@ -50,7 +50,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
       },
     };
     super(issuer, config);
-    this.targetExtractor = targetExtractor;
+    this.interactionHttpHandler = configuration.interactions;
   }
 
   /**
@@ -60,8 +60,6 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
    * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
    */
   public async canHandle(input: HttpHandlerInput): Promise<void> {
-    const resource = await this.targetExtractor.handleSafe(input.request);
-
     // Get the routes from the configuration. `instance` is needed because the configuration
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
@@ -71,13 +69,28 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     );
     validRoutes.push('/.well-known/openid-configuration');
 
-    try {
-      if (!validRoutes.includes(new URL(resource.path).pathname)) {
-        throw new Error();
-      }
+    let somethingCanHandle = false;
+
+    // Check if the provider itself can handle this request
+    if (!input.request.url) {
+      throw new Error('Must have present url.');
     }
-    catch (error: unknown) {
-      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${resource.path}`);
+    const { pathname } = parse(input.request.url);
+    if (validRoutes.some((route): boolean => route === pathname)) {
+      somethingCanHandle = true;
+    }
+
+    // Check if the interaction http handlers can handle this request
+    try {
+      await this.interactionHttpHandler.canHandle({ ...input, provider: this });
+      somethingCanHandle = true;
+    } catch {
+      // Do nothing
+    }
+
+    // Throw an error if nothing can handle it
+    if (!somethingCanHandle) {
+      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${pathname}`);
     }
   }
 
@@ -91,10 +104,14 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     // This casting might seem strange, but "callback" is a Koa callback which does
     // actually return a Promise, despite what the typings say.
     // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
-    return super.callback(
-      input.request,
-      input.response,
-    ) as unknown as Promise<void>;
+    try {
+      await this.interactionHttpHandler.handleSafe({ ...input, provider: this });
+    } catch {
+      return super.callback(
+        input.request,
+        input.response,
+      ) as unknown as Promise<void>;
+    }
   }
 
   public async handleSafe(data: HttpHandlerInput): Promise<void> {
