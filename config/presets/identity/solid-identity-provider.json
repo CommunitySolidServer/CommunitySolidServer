@@ -11,6 +11,9 @@
     {
       "@id": "urn:solid-server:default:SolidIdentityProviderFactory",
       "@type": "SolidIdentityProviderFactory",
+      "SolidIdentityProviderFactory:_targetExtractor": {
+        "@id": "urn:solid-server:default:TargetExtractor"
+      },
       "SolidIdentityProviderFactory:_args_issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
