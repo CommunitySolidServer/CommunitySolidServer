@@ -17,7 +17,7 @@ export class DevConfigurationFactory extends SolidIdentityProviderConfigurationF
     this.interactionPolicyHttpHandler = args.interactionPolicyHttpHandler;
   }
 
-  public async createConfiguration(): Promise<SolidIdentityProviderConfiguration> {
+  public createConfiguration(): SolidIdentityProviderConfiguration {
     return {
       clients: [
         // {
