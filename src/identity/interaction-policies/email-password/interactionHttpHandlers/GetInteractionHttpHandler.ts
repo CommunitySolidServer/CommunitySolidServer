@@ -17,8 +17,6 @@ export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
   public async handle(input: SolidIdentityProviderInteractionHttpHandlerInput): Promise<void> {
     this.logger.info('Get Interaction');
 
-    const { request, response, provider } = input;
-
     // Uncomment later
     // const { uid, prompt, params, session } = await provider.interactionDetails(
     //   request,
@@ -26,6 +24,7 @@ export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
     // );
     // // const client = await provider.Client.find(params.client_id);
     try {
+      const { request, response, provider } = input;
       const { prompt } = await provider.interactionDetails(request, response);
       this.logger.info(`HERE IS PROMPT: ${prompt.name}`);
     } catch (err: unknown) {
