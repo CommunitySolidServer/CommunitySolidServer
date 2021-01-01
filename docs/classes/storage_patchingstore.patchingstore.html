@@ -1,0 +1,425 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>PatchingStore | Community Solid Server</title>
+	<meta name="description" content="Documentation for Community Solid Server">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Community Solid Server</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">Community Solid Server</a>
+				</li>
+				<li>
+					<a href="../modules/storage_patchingstore.html">storage/PatchingStore</a>
+				</li>
+				<li>
+					<a href="storage_patchingstore.patchingstore.html">PatchingStore</a>
+				</li>
+			</ul>
+			<h1>Class PatchingStore&lt;T&gt;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p><a href="../interfaces/storage_resourcestore.resourcestore.html">ResourceStore</a> using decorator pattern for the <code>modifyResource</code> function.
+							If the original store supports the <a href="../interfaces/ldp_http_patch.patch.html">Patch</a>, behaviour will be identical,
+						otherwise the <a href="storage_patch_patchhandler.patchhandler.html">PatchHandler</a> will be called instead.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>T<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a> = <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="storage_passthroughstore.passthroughstore.html" class="tsd-signature-type" data-tsd-kind="Class">PassthroughStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">PatchingStore</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited"><a href="storage_patchingstore.patchingstore.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_patchingstore.patchingstore.html#patcher" class="tsd-kind-icon">patcher</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_patchingstore.patchingstore.html#source" class="tsd-kind-icon">source</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_patchingstore.patchingstore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_patchingstore.patchingstore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_patchingstore.patchingstore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_patchingstore.patchingstore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_patchingstore.patchingstore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Patching<wbr>Store&lt;T&gt;<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, patcher<span class="tsd-signature-symbol">: </span><a href="storage_patch_patchhandler.patchhandler.html" class="tsd-signature-type" data-tsd-kind="Class">PatchHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_patchingstore.patchingstore.html" class="tsd-signature-type" data-tsd-kind="Class">PatchingStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#constructor">constructor</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PatchingStore.ts#L14">src/storage/PatchingStore.ts:14</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a> = <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>source: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>patcher: <a href="storage_patch_patchhandler.patchhandler.html" class="tsd-signature-type" data-tsd-kind="Class">PatchHandler</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="storage_patchingstore.patchingstore.html" class="tsd-signature-type" data-tsd-kind="Class">PatchingStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="patcher" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> patcher</h3>
+					<div class="tsd-signature tsd-kind-icon">patcher<span class="tsd-signature-symbol">:</span> <a href="storage_patch_patchhandler.patchhandler.html" class="tsd-signature-type" data-tsd-kind="Class">PatchHandler</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PatchingStore.ts#L14">src/storage/PatchingStore.ts:14</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="source" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> source</h3>
+					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#source">source</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PassthroughStore.ts#L14">src/storage/PassthroughStore.ts:14</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="addresource" class="tsd-anchor"></a>
+					<h3>add<wbr>Resource</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Resource<span class="tsd-signature-symbol">(</span>container<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#addresource">addResource</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PassthroughStore.ts#L20">src/storage/PassthroughStore.ts:20</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>container: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>representation: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="deleteresource" class="tsd-anchor"></a>
+					<h3>delete<wbr>Resource</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#deleteresource">deleteResource</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PassthroughStore.ts#L25">src/storage/PassthroughStore.ts:25</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="getrepresentation" class="tsd-anchor"></a>
+					<h3>get<wbr>Representation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, preferences<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#getrepresentation">getRepresentation</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PassthroughStore.ts#L29">src/storage/PassthroughStore.ts:29</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>preferences: <a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+					<a name="modifyresource" class="tsd-anchor"></a>
+					<h3>modify<wbr>Resource</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">modify<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, patch<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#modifyresource">modifyResource</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PatchingStore.ts#L21">src/storage/PatchingStore.ts:21</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>patch: <a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="setrepresentation" class="tsd-anchor"></a>
+					<h3>set<wbr>Representation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#setrepresentation">setRepresentation</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a3ae2bd/src/storage/PassthroughStore.ts#L38">src/storage/PassthroughStore.ts:38</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5>representation: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/storage_patchingstore.html">storage/<wbr>Patching<wbr>Store</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="storage_patchingstore.patchingstore.html" class="tsd-kind-icon">Patching<wbr>Store</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
+								<a href="storage_patchingstore.patchingstore.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patchingstore.patchingstore.html#patcher" class="tsd-kind-icon">patcher</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="storage_patchingstore.patchingstore.html#source" class="tsd-kind-icon">source</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="storage_patchingstore.patchingstore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="storage_patchingstore.patchingstore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="storage_patchingstore.patchingstore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="storage_patchingstore.patchingstore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="storage_patchingstore.patchingstore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

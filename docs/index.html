@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -40,8 +41,6 @@
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
 							<input type="checkbox" id="tsd-filter-externals" checked />
 							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -51,11 +50,6 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
 			<h1>Community Solid Server</h1>
 		</div>
 	</div>
@@ -105,8 +99,9 @@
 				<a href="#running-locally" id="running-locally" style="color: inherit; text-decoration: none;">
 					<h2>Running locally</h2>
 				</a>
-				<pre><code class="language-shell">npm ci
-npm start</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">npm ci</span>
+<span style="color: #000000">npm start</span>
+</code></pre>
 				<p>This will start up a server running on port 3000 with a backend storing all data in memory.
 				More configurations with different backends can be found in the <code>config</code> folder.</p>
 				<a href="#interacting-with-the-server" id="interacting-with-the-server" style="color: inherit; text-decoration: none;">
@@ -119,548 +114,559 @@ npm start</code></pre>
 					<h3><code>PUT</code>: Creating resources for a given URL</h3>
 				</a>
 				<p>Create a plain text file:</p>
-				<pre><code class="language-shell">curl -X PUT -H &quot;Content-Type: text/plain&quot; \
-  -d &quot;abc&quot; \
-  http://localhost:3000/myfile.txt</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X PUT -H </span><span style="color: #A31515">&quot;Content-Type: text/plain&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&quot;abc&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.txt</span>
+</code></pre>
 				<p>Create a turtle file:</p>
-				<pre><code class="language-shell">curl -X PUT -H &quot;Content-Type: text/turtle&quot; \
-  -d &quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot; \
-  http://localhost:3000/myfile.ttl</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X PUT -H </span><span style="color: #A31515">&quot;Content-Type: text/turtle&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.ttl</span>
+</code></pre>
 				<a href="#post-creating-resources-at-a-generated-url" id="post-creating-resources-at-a-generated-url" style="color: inherit; text-decoration: none;">
 					<h3><code>POST</code>: Creating resources at a generated URL</h3>
 				</a>
 				<p>Create a plain text file:</p>
-				<pre><code class="language-shell">curl -X POST -H &quot;Content-Type: text/plain&quot; \
-  -d &quot;abc&quot; \
-  http://localhost:3000/</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X POST -H </span><span style="color: #A31515">&quot;Content-Type: text/plain&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&quot;abc&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/</span>
+</code></pre>
 				<p>Create a turtle file:</p>
-				<pre><code class="language-shell">curl -X POST -H &quot;Content-Type: text/turtle&quot; \
-  -d &quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot; \
-  http://localhost:3000/</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X POST -H </span><span style="color: #A31515">&quot;Content-Type: text/turtle&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&quot;&lt;ex:s&gt; &lt;ex:p&gt; &lt;ex:o&gt;.&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/</span>
+</code></pre>
 				<p>The response&#39;s <code>Location</code> header will contain the URL of the created resource.</p>
 				<a href="#get-retrieving-resources" id="get-retrieving-resources" style="color: inherit; text-decoration: none;">
 					<h3><code>GET</code>: Retrieving resources</h3>
 				</a>
 				<p>Retrieve a plain text file:</p>
-				<pre><code class="language-shell">curl -H &quot;Accept: text/plain&quot; \
-  http://localhost:3000/myfile.txt</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -H </span><span style="color: #A31515">&quot;Accept: text/plain&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.txt</span>
+</code></pre>
 				<p>Retrieve a turtle file:</p>
-				<pre><code class="language-shell">curl -H &quot;Accept: text/turtle&quot; \
-  http://localhost:3000/myfile.ttl</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -H </span><span style="color: #A31515">&quot;Accept: text/turtle&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.ttl</span>
+</code></pre>
 				<p>Retrieve a turtle file in a different serialization:</p>
-				<pre><code class="language-shell">curl -H &quot;Accept: application/ld+json&quot; \
-  http://localhost:3000/myfile.ttl</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -H </span><span style="color: #A31515">&quot;Accept: application/ld+json&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.ttl</span>
+</code></pre>
 				<a href="#delete-deleting-resources" id="delete-deleting-resources" style="color: inherit; text-decoration: none;">
 					<h3><code>DELETE</code>: Deleting resources</h3>
 				</a>
-				<pre><code class="language-shell">curl -X DELETE http://localhost:3000/myfile.txt</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X DELETE http://localhost:3000/myfile.txt</span>
+</code></pre>
 				<a href="#patch-modifying-resources" id="patch-modifying-resources" style="color: inherit; text-decoration: none;">
 					<h3><code>PATCH</code>: Modifying resources</h3>
 				</a>
 				<p>Currently, only patches over RDF resources are supported using <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>
 				queries without <code>WHERE</code> clause.</p>
-				<pre><code class="language-shell">curl -X PATCH -H &quot;Content-Type: application/sparql-update&quot; \
-  -d &quot;INSERT DATA { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt; }&quot; \
-  http://localhost:3000/myfile.ttl</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X PATCH -H </span><span style="color: #A31515">&quot;Content-Type: application/sparql-update&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&quot;INSERT DATA { &lt;ex:s2&gt; &lt;ex:p2&gt; &lt;ex:o2&gt; }&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.ttl</span>
+</code></pre>
 				<a href="#head-retrieve-resources-headers" id="head-retrieve-resources-headers" style="color: inherit; text-decoration: none;">
 					<h3><code>HEAD</code>: Retrieve resources headers</h3>
 				</a>
-				<pre><code class="language-shell">curl -I -H &quot;Accept: text/plain&quot; \
-  http://localhost:3000/myfile.txt</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -I -H </span><span style="color: #A31515">&quot;Accept: text/plain&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/myfile.txt</span>
+</code></pre>
 				<a href="#options-retrieve-resources-communication-options" id="options-retrieve-resources-communication-options" style="color: inherit; text-decoration: none;">
 					<h3><code>OPTIONS</code>: Retrieve resources communication options</h3>
 				</a>
-				<pre><code class="language-shell">curl -X OPTIONS -i http://localhost:3000/myfile.txt</code></pre>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X OPTIONS -i http://localhost:3000/myfile.txt</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_bearerwebidextractor_.html">&quot;authentication/<wbr>Bearer<wbr>Web<wbr>IdExtractor&quot;</a>
+						<a href="modules/authentication_bearerwebidextractor.html">authentication/<wbr>Bearer<wbr>Web<wbr>IdExtractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_credentials_.html">&quot;authentication/<wbr>Credentials&quot;</a>
+						<a href="modules/authentication_credentials.html">authentication/<wbr>Credentials</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_credentialsextractor_.html">&quot;authentication/<wbr>Credentials<wbr>Extractor&quot;</a>
+						<a href="modules/authentication_credentialsextractor.html">authentication/<wbr>Credentials<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_dpopwebidextractor_.html">&quot;authentication/DPoPWeb<wbr>IdExtractor&quot;</a>
+						<a href="modules/authentication_dpopwebidextractor.html">authentication/DPoPWeb<wbr>IdExtractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_emptycredentialsextractor_.html">&quot;authentication/<wbr>Empty<wbr>Credentials<wbr>Extractor&quot;</a>
+						<a href="modules/authentication_emptycredentialsextractor.html">authentication/<wbr>Empty<wbr>Credentials<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_unsecureconstantcredentialsextractor_.html">&quot;authentication/<wbr>Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor&quot;</a>
+						<a href="modules/authentication_unsecureconstantcredentialsextractor.html">authentication/<wbr>Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authentication_unsecurewebidextractor_.html">&quot;authentication/<wbr>Unsecure<wbr>Web<wbr>IdExtractor&quot;</a>
+						<a href="modules/authentication_unsecurewebidextractor.html">authentication/<wbr>Unsecure<wbr>Web<wbr>IdExtractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authorization_aclmanager_.html">&quot;authorization/<wbr>Acl<wbr>Manager&quot;</a>
+						<a href="modules/authorization_aclmanager.html">authorization/<wbr>Acl<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authorization_alloweverythingauthorizer_.html">&quot;authorization/<wbr>Allow<wbr>Everything<wbr>Authorizer&quot;</a>
+						<a href="modules/authorization_alloweverythingauthorizer.html">authorization/<wbr>Allow<wbr>Everything<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authorization_authorizer_.html">&quot;authorization/<wbr>Authorizer&quot;</a>
+						<a href="modules/authorization_authorizer.html">authorization/<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authorization_urlbasedaclmanager_.html">&quot;authorization/<wbr>Url<wbr>Based<wbr>Acl<wbr>Manager&quot;</a>
+						<a href="modules/authorization_urlbasedaclmanager.html">authorization/<wbr>Url<wbr>Based<wbr>Acl<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_authorization_webaclauthorizer_.html">&quot;authorization/<wbr>Web<wbr>Acl<wbr>Authorizer&quot;</a>
+						<a href="modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_index_.html">&quot;index&quot;</a>
+						<a href="modules/index.html">index</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_aclinitializer_.html">&quot;init/<wbr>Acl<wbr>Initializer&quot;</a>
+						<a href="modules/init_aclinitializer.html">init/<wbr>Acl<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_clirunner_.html">&quot;init/<wbr>Cli<wbr>Runner&quot;</a>
+						<a href="modules/init_clirunner.html">init/<wbr>Cli<wbr>Runner</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_initializer_.html">&quot;init/<wbr>Initializer&quot;</a>
+						<a href="modules/init_initializer.html">init/<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_loggerinitializer_.html">&quot;init/<wbr>Logger<wbr>Initializer&quot;</a>
+						<a href="modules/init_loggerinitializer.html">init/<wbr>Logger<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_rootcontainerinitializer_.html">&quot;init/<wbr>Root<wbr>Container<wbr>Initializer&quot;</a>
+						<a href="modules/init_rootcontainerinitializer.html">init/<wbr>Root<wbr>Container<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_init_serverinitializer_.html">&quot;init/<wbr>Server<wbr>Initializer&quot;</a>
+						<a href="modules/init_serverinitializer.html">init/<wbr>Server<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_authenticatedldphandler_.html">&quot;ldp/<wbr>Authenticated<wbr>Ldp<wbr>Handler&quot;</a>
+						<a href="modules/ldp_authenticatedldphandler.html">ldp/<wbr>Authenticated<wbr>Ldp<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_unsecurewebsocketsprotocol_.html">&quot;ldp/<wbr>Unsecure<wbr>Web<wbr>Sockets<wbr>Protocol&quot;</a>
+						<a href="modules/ldp_unsecurewebsocketsprotocol.html">ldp/<wbr>Unsecure<wbr>Web<wbr>Sockets<wbr>Protocol</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_acceptpreferenceparser_.html">&quot;ldp/http/<wbr>Accept<wbr>Preference<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_acceptpreferenceparser.html">ldp/http/<wbr>Accept<wbr>Preference<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_basicrequestparser_.html">&quot;ldp/http/<wbr>Basic<wbr>Request<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_basicrequestparser.html">ldp/http/<wbr>Basic<wbr>Request<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_basicresponsewriter_.html">&quot;ldp/http/<wbr>Basic<wbr>Response<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_basicresponsewriter.html">ldp/http/<wbr>Basic<wbr>Response<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_basictargetextractor_.html">&quot;ldp/http/<wbr>Basic<wbr>Target<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_http_basictargetextractor.html">ldp/http/<wbr>Basic<wbr>Target<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_bodyparser_.html">&quot;ldp/http/<wbr>Body<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_bodyparser.html">ldp/http/<wbr>Body<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_errorresponsewriter_.html">&quot;ldp/http/<wbr>Error<wbr>Response<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_errorresponsewriter.html">ldp/http/<wbr>Error<wbr>Response<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_patch_.html">&quot;ldp/http/<wbr>Patch&quot;</a>
+						<a href="modules/ldp_http_patch.html">ldp/http/<wbr>Patch</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_preferenceparser_.html">&quot;ldp/http/<wbr>Preference<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_preferenceparser.html">ldp/http/<wbr>Preference<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_rawbodyparser_.html">&quot;ldp/http/<wbr>Raw<wbr>Body<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_rawbodyparser.html">ldp/http/<wbr>Raw<wbr>Body<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_requestparser_.html">&quot;ldp/http/<wbr>Request<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_requestparser.html">ldp/http/<wbr>Request<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_responsewriter_.html">&quot;ldp/http/<wbr>Response<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_responsewriter.html">ldp/http/<wbr>Response<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_sparqlupdatebodyparser_.html">&quot;ldp/http/<wbr>Sparql<wbr>Update<wbr>Body<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_sparqlupdatebodyparser.html">ldp/http/<wbr>Sparql<wbr>Update<wbr>Body<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_sparqlupdatepatch_.html">&quot;ldp/http/<wbr>Sparql<wbr>Update<wbr>Patch&quot;</a>
+						<a href="modules/ldp_http_sparqlupdatepatch.html">ldp/http/<wbr>Sparql<wbr>Update<wbr>Patch</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_targetextractor_.html">&quot;ldp/http/<wbr>Target<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_http_targetextractor.html">ldp/http/<wbr>Target<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_basicmetadataextractor_.html">&quot;ldp/http/metadata/<wbr>Basic<wbr>Metadata<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_http_metadata_basicmetadataextractor.html">ldp/http/metadata/<wbr>Basic<wbr>Metadata<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_contenttypeparser_.html">&quot;ldp/http/metadata/<wbr>Content<wbr>Type<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_metadata_contenttypeparser.html">ldp/http/metadata/<wbr>Content<wbr>Type<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_linkrelmetadatawriter_.html">&quot;ldp/http/metadata/<wbr>Link<wbr>Rel<wbr>Metadata<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_metadata_linkrelmetadatawriter.html">ldp/http/metadata/<wbr>Link<wbr>Rel<wbr>Metadata<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_linktypeparser_.html">&quot;ldp/http/metadata/<wbr>Link<wbr>Type<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_metadata_linktypeparser.html">ldp/http/metadata/<wbr>Link<wbr>Type<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_mappedmetadatawriter_.html">&quot;ldp/http/metadata/<wbr>Mapped<wbr>Metadata<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_metadata_mappedmetadatawriter.html">ldp/http/metadata/<wbr>Mapped<wbr>Metadata<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_metadataextractor_.html">&quot;ldp/http/metadata/<wbr>Metadata<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_http_metadata_metadataextractor.html">ldp/http/metadata/<wbr>Metadata<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_metadataparser_.html">&quot;ldp/http/metadata/<wbr>Metadata<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_metadata_metadataparser.html">ldp/http/metadata/<wbr>Metadata<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_metadatawriter_.html">&quot;ldp/http/metadata/<wbr>Metadata<wbr>Writer&quot;</a>
+						<a href="modules/ldp_http_metadata_metadatawriter.html">ldp/http/metadata/<wbr>Metadata<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_metadata_slugparser_.html">&quot;ldp/http/metadata/<wbr>Slug<wbr>Parser&quot;</a>
+						<a href="modules/ldp_http_metadata_slugparser.html">ldp/http/metadata/<wbr>Slug<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_response_createdresponsedescription_.html">&quot;ldp/http/response/<wbr>Created<wbr>Response<wbr>Description&quot;</a>
+						<a href="modules/ldp_http_response_createdresponsedescription.html">ldp/http/response/<wbr>Created<wbr>Response<wbr>Description</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_response_okresponsedescription_.html">&quot;ldp/http/response/<wbr>OkResponse<wbr>Description&quot;</a>
+						<a href="modules/ldp_http_response_okresponsedescription.html">ldp/http/response/<wbr>OkResponse<wbr>Description</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_response_resetresponsedescription_.html">&quot;ldp/http/response/<wbr>Reset<wbr>Response<wbr>Description&quot;</a>
+						<a href="modules/ldp_http_response_resetresponsedescription.html">ldp/http/response/<wbr>Reset<wbr>Response<wbr>Description</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_http_response_responsedescription_.html">&quot;ldp/http/response/<wbr>Response<wbr>Description&quot;</a>
+						<a href="modules/ldp_http_response_responsedescription.html">ldp/http/response/<wbr>Response<wbr>Description</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_deleteoperationhandler_.html">&quot;ldp/operations/<wbr>Delete<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_deleteoperationhandler.html">ldp/operations/<wbr>Delete<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_getoperationhandler_.html">&quot;ldp/operations/<wbr>Get<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_getoperationhandler.html">ldp/operations/<wbr>Get<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_headoperationhandler_.html">&quot;ldp/operations/<wbr>Head<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_headoperationhandler.html">ldp/operations/<wbr>Head<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_operation_.html">&quot;ldp/operations/<wbr>Operation&quot;</a>
+						<a href="modules/ldp_operations_operation.html">ldp/operations/<wbr>Operation</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_operationhandler_.html">&quot;ldp/operations/<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_operationhandler.html">ldp/operations/<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_patchoperationhandler_.html">&quot;ldp/operations/<wbr>Patch<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_patchoperationhandler.html">ldp/operations/<wbr>Patch<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_postoperationhandler_.html">&quot;ldp/operations/<wbr>Post<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_postoperationhandler.html">ldp/operations/<wbr>Post<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_operations_putoperationhandler_.html">&quot;ldp/operations/<wbr>Put<wbr>Operation<wbr>Handler&quot;</a>
+						<a href="modules/ldp_operations_putoperationhandler.html">ldp/operations/<wbr>Put<wbr>Operation<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_permissions_methodpermissionsextractor_.html">&quot;ldp/permissions/<wbr>Method<wbr>Permissions<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_permissions_methodpermissionsextractor.html">ldp/permissions/<wbr>Method<wbr>Permissions<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_permissions_permissionset_.html">&quot;ldp/permissions/<wbr>Permission<wbr>Set&quot;</a>
+						<a href="modules/ldp_permissions_permissionset.html">ldp/permissions/<wbr>Permission<wbr>Set</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_permissions_permissionsextractor_.html">&quot;ldp/permissions/<wbr>Permissions<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_permissions_permissionsextractor.html">ldp/permissions/<wbr>Permissions<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_permissions_sparqlpatchpermissionsextractor_.html">&quot;ldp/permissions/<wbr>Sparql<wbr>Patch<wbr>Permissions<wbr>Extractor&quot;</a>
+						<a href="modules/ldp_permissions_sparqlpatchpermissionsextractor.html">ldp/permissions/<wbr>Sparql<wbr>Patch<wbr>Permissions<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_representation_representation_.html">&quot;ldp/representation/<wbr>Representation&quot;</a>
+						<a href="modules/ldp_representation_representation.html">ldp/representation/<wbr>Representation</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_representation_representationmetadata_.html">&quot;ldp/representation/<wbr>Representation<wbr>Metadata&quot;</a>
+						<a href="modules/ldp_representation_representationmetadata.html">ldp/representation/<wbr>Representation<wbr>Metadata</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_representation_representationpreference_.html">&quot;ldp/representation/<wbr>Representation<wbr>Preference&quot;</a>
+						<a href="modules/ldp_representation_representationpreference.html">ldp/representation/<wbr>Representation<wbr>Preference</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_representation_representationpreferences_.html">&quot;ldp/representation/<wbr>Representation<wbr>Preferences&quot;</a>
+						<a href="modules/ldp_representation_representationpreferences.html">ldp/representation/<wbr>Representation<wbr>Preferences</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_ldp_representation_resourceidentifier_.html">&quot;ldp/representation/<wbr>Resource<wbr>Identifier&quot;</a>
+						<a href="modules/ldp_representation_resourceidentifier.html">ldp/representation/<wbr>Resource<wbr>Identifier</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_lazylogger_.html">&quot;logging/<wbr>Lazy<wbr>Logger&quot;</a>
+						<a href="modules/logging_lazylogger.html">logging/<wbr>Lazy<wbr>Logger</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_lazyloggerfactory_.html">&quot;logging/<wbr>Lazy<wbr>Logger<wbr>Factory&quot;</a>
+						<a href="modules/logging_lazyloggerfactory.html">logging/<wbr>Lazy<wbr>Logger<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_loglevel_.html">&quot;logging/<wbr>Log<wbr>Level&quot;</a>
+						<a href="modules/logging_loglevel.html">logging/<wbr>Log<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_logutil_.html">&quot;logging/<wbr>Log<wbr>Util&quot;</a>
+						<a href="modules/logging_logutil.html">logging/<wbr>Log<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_logger_.html">&quot;logging/<wbr>Logger&quot;</a>
+						<a href="modules/logging_logger.html">logging/<wbr>Logger</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_loggerfactory_.html">&quot;logging/<wbr>Logger<wbr>Factory&quot;</a>
+						<a href="modules/logging_loggerfactory.html">logging/<wbr>Logger<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_voidlogger_.html">&quot;logging/<wbr>Void<wbr>Logger&quot;</a>
+						<a href="modules/logging_voidlogger.html">logging/<wbr>Void<wbr>Logger</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_voidloggerfactory_.html">&quot;logging/<wbr>Void<wbr>Logger<wbr>Factory&quot;</a>
+						<a href="modules/logging_voidloggerfactory.html">logging/<wbr>Void<wbr>Logger<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_winstonlogger_.html">&quot;logging/<wbr>Winston<wbr>Logger&quot;</a>
+						<a href="modules/logging_winstonlogger.html">logging/<wbr>Winston<wbr>Logger</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_logging_winstonloggerfactory_.html">&quot;logging/<wbr>Winston<wbr>Logger<wbr>Factory&quot;</a>
+						<a href="modules/logging_winstonloggerfactory.html">logging/<wbr>Winston<wbr>Logger<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generatedpodmanager_.html">&quot;pods/<wbr>Generated<wbr>Pod<wbr>Manager&quot;</a>
+						<a href="modules/pods_generatedpodmanager.html">pods/<wbr>Generated<wbr>Pod<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_podmanager_.html">&quot;pods/<wbr>Pod<wbr>Manager&quot;</a>
+						<a href="modules/pods_podmanager.html">pods/<wbr>Pod<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_podmanagerhttphandler_.html">&quot;pods/<wbr>Pod<wbr>Manager<wbr>Http<wbr>Handler&quot;</a>
+						<a href="modules/pods_podmanagerhttphandler.html">pods/<wbr>Pod<wbr>Manager<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_agent_agent_.html">&quot;pods/agent/<wbr>Agent&quot;</a>
+						<a href="modules/pods_agent_agent.html">pods/agent/<wbr>Agent</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_agent_agentjsonparser_.html">&quot;pods/agent/<wbr>Agent<wbr>Json<wbr>Parser&quot;</a>
+						<a href="modules/pods_agent_agentjsonparser.html">pods/agent/<wbr>Agent<wbr>Json<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_agent_agentparser_.html">&quot;pods/agent/<wbr>Agent<wbr>Parser&quot;</a>
+						<a href="modules/pods_agent_agentparser.html">pods/agent/<wbr>Agent<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_handlebarstemplateengine_.html">&quot;pods/generate/<wbr>Handlebars<wbr>Template<wbr>Engine&quot;</a>
+						<a href="modules/pods_generate_handlebarstemplateengine.html">pods/generate/<wbr>Handlebars<wbr>Template<wbr>Engine</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_identifiergenerator_.html">&quot;pods/generate/<wbr>Identifier<wbr>Generator&quot;</a>
+						<a href="modules/pods_generate_identifiergenerator.html">pods/generate/<wbr>Identifier<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_resourcesgenerator_.html">&quot;pods/generate/<wbr>Resources<wbr>Generator&quot;</a>
+						<a href="modules/pods_generate_resourcesgenerator.html">pods/generate/<wbr>Resources<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_suffixidentifiergenerator_.html">&quot;pods/generate/<wbr>Suffix<wbr>Identifier<wbr>Generator&quot;</a>
+						<a href="modules/pods_generate_suffixidentifiergenerator.html">pods/generate/<wbr>Suffix<wbr>Identifier<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_templateengine_.html">&quot;pods/generate/<wbr>Template<wbr>Engine&quot;</a>
+						<a href="modules/pods_generate_templateengine.html">pods/generate/<wbr>Template<wbr>Engine</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_pods_generate_templatedresourcesgenerator_.html">&quot;pods/generate/<wbr>Templated<wbr>Resources<wbr>Generator&quot;</a>
+						<a href="modules/pods_generate_templatedresourcesgenerator.html">pods/generate/<wbr>Templated<wbr>Resources<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_expresshttpserverfactory_.html">&quot;server/<wbr>Express<wbr>Http<wbr>Server<wbr>Factory&quot;</a>
+						<a href="modules/server_expresshttpserverfactory.html">server/<wbr>Express<wbr>Http<wbr>Server<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_httphandler_.html">&quot;server/<wbr>Http<wbr>Handler&quot;</a>
+						<a href="modules/server_httphandler.html">server/<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_httprequest_.html">&quot;server/<wbr>Http<wbr>Request&quot;</a>
+						<a href="modules/server_httprequest.html">server/<wbr>Http<wbr>Request</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_httpresponse_.html">&quot;server/<wbr>Http<wbr>Response&quot;</a>
+						<a href="modules/server_httpresponse.html">server/<wbr>Http<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_httpserverfactory_.html">&quot;server/<wbr>Http<wbr>Server<wbr>Factory&quot;</a>
+						<a href="modules/server_httpserverfactory.html">server/<wbr>Http<wbr>Server<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_websockethandler_.html">&quot;server/<wbr>Web<wbr>Socket<wbr>Handler&quot;</a>
+						<a href="modules/server_websockethandler.html">server/<wbr>Web<wbr>Socket<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_websocketserverfactory_.html">&quot;server/<wbr>Web<wbr>Socket<wbr>Server<wbr>Factory&quot;</a>
+						<a href="modules/server_websocketserverfactory.html">server/<wbr>Web<wbr>Socket<wbr>Server<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_middleware_corshandler_.html">&quot;server/middleware/<wbr>Cors<wbr>Handler&quot;</a>
+						<a href="modules/server_middleware_corshandler.html">server/middleware/<wbr>Cors<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_middleware_headerhandler_.html">&quot;server/middleware/<wbr>Header<wbr>Handler&quot;</a>
+						<a href="modules/server_middleware_headerhandler.html">server/middleware/<wbr>Header<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_server_middleware_websocketadvertiser_.html">&quot;server/middleware/<wbr>Web<wbr>Socket<wbr>Advertiser&quot;</a>
+						<a href="modules/server_middleware_websocketadvertiser.html">server/middleware/<wbr>Web<wbr>Socket<wbr>Advertiser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_atomicresourcestore_.html">&quot;storage/<wbr>Atomic<wbr>Resource<wbr>Store&quot;</a>
+						<a href="modules/storage_atomicresourcestore.html">storage/<wbr>Atomic<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conditions_.html">&quot;storage/<wbr>Conditions&quot;</a>
+						<a href="modules/storage_conditions.html">storage/<wbr>Conditions</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_dataaccessorbasedstore_.html">&quot;storage/<wbr>Data<wbr>Accessor<wbr>Based<wbr>Store&quot;</a>
+						<a href="modules/storage_dataaccessorbasedstore.html">storage/<wbr>Data<wbr>Accessor<wbr>Based<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_lockingresourcestore_.html">&quot;storage/<wbr>Locking<wbr>Resource<wbr>Store&quot;</a>
+						<a href="modules/storage_lockingresourcestore.html">storage/<wbr>Locking<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_monitoringstore_.html">&quot;storage/<wbr>Monitoring<wbr>Store&quot;</a>
+						<a href="modules/storage_monitoringstore.html">storage/<wbr>Monitoring<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_passthroughstore_.html">&quot;storage/<wbr>Passthrough<wbr>Store&quot;</a>
+						<a href="modules/storage_passthroughstore.html">storage/<wbr>Passthrough<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_patchingstore_.html">&quot;storage/<wbr>Patching<wbr>Store&quot;</a>
+						<a href="modules/storage_patchingstore.html">storage/<wbr>Patching<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_readonlystore_.html">&quot;storage/<wbr>Read<wbr>Only<wbr>Store&quot;</a>
+						<a href="modules/storage_readonlystore.html">storage/<wbr>Read<wbr>Only<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_representationconvertingstore_.html">&quot;storage/<wbr>Representation<wbr>Converting<wbr>Store&quot;</a>
+						<a href="modules/storage_representationconvertingstore.html">storage/<wbr>Representation<wbr>Converting<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_resourcestore_.html">&quot;storage/<wbr>Resource<wbr>Store&quot;</a>
+						<a href="modules/storage_resourcestore.html">storage/<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_routingresourcestore_.html">&quot;storage/<wbr>Routing<wbr>Resource<wbr>Store&quot;</a>
+						<a href="modules/storage_routingresourcestore.html">storage/<wbr>Routing<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_accessors_dataaccessor_.html">&quot;storage/accessors/<wbr>Data<wbr>Accessor&quot;</a>
+						<a href="modules/storage_accessors_dataaccessor.html">storage/accessors/<wbr>Data<wbr>Accessor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_accessors_filedataaccessor_.html">&quot;storage/accessors/<wbr>File<wbr>Data<wbr>Accessor&quot;</a>
+						<a href="modules/storage_accessors_filedataaccessor.html">storage/accessors/<wbr>File<wbr>Data<wbr>Accessor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_accessors_inmemorydataaccessor_.html">&quot;storage/accessors/<wbr>InMemory<wbr>Data<wbr>Accessor&quot;</a>
+						<a href="modules/storage_accessors_inmemorydataaccessor.html">storage/accessors/<wbr>InMemory<wbr>Data<wbr>Accessor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_accessors_sparqldataaccessor_.html">&quot;storage/accessors/<wbr>Sparql<wbr>Data<wbr>Accessor&quot;</a>
+						<a href="modules/storage_accessors_sparqldataaccessor.html">storage/accessors/<wbr>Sparql<wbr>Data<wbr>Accessor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_chainedconverter_.html">&quot;storage/conversion/<wbr>Chained<wbr>Converter&quot;</a>
+						<a href="modules/storage_conversion_chainedconverter.html">storage/conversion/<wbr>Chained<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_conversionutil_.html">&quot;storage/conversion/<wbr>Conversion<wbr>Util&quot;</a>
+						<a href="modules/storage_conversion_conversionutil.html">storage/conversion/<wbr>Conversion<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_quadtordfconverter_.html">&quot;storage/conversion/<wbr>Quad<wbr>ToRdf<wbr>Converter&quot;</a>
+						<a href="modules/storage_conversion_quadtordfconverter.html">storage/conversion/<wbr>Quad<wbr>ToRdf<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_rdftoquadconverter_.html">&quot;storage/conversion/<wbr>Rdf<wbr>ToQuad<wbr>Converter&quot;</a>
+						<a href="modules/storage_conversion_rdftoquadconverter.html">storage/conversion/<wbr>Rdf<wbr>ToQuad<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_representationconverter_.html">&quot;storage/conversion/<wbr>Representation<wbr>Converter&quot;</a>
+						<a href="modules/storage_conversion_representationconverter.html">storage/conversion/<wbr>Representation<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_conversion_typedrepresentationconverter_.html">&quot;storage/conversion/<wbr>Typed<wbr>Representation<wbr>Converter&quot;</a>
+						<a href="modules/storage_conversion_typedrepresentationconverter.html">storage/conversion/<wbr>Typed<wbr>Representation<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_mapping_extensionbasedmapper_.html">&quot;storage/mapping/<wbr>Extension<wbr>Based<wbr>Mapper&quot;</a>
+						<a href="modules/storage_mapping_extensionbasedmapper.html">storage/mapping/<wbr>Extension<wbr>Based<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_mapping_fileidentifiermapper_.html">&quot;storage/mapping/<wbr>File<wbr>Identifier<wbr>Mapper&quot;</a>
+						<a href="modules/storage_mapping_fileidentifiermapper.html">storage/mapping/<wbr>File<wbr>Identifier<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_mapping_fixedcontenttypemapper_.html">&quot;storage/mapping/<wbr>Fixed<wbr>Content<wbr>Type<wbr>Mapper&quot;</a>
+						<a href="modules/storage_mapping_fixedcontenttypemapper.html">storage/mapping/<wbr>Fixed<wbr>Content<wbr>Type<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_mapping_mapperutil_.html">&quot;storage/mapping/<wbr>Mapper<wbr>Util&quot;</a>
+						<a href="modules/storage_mapping_mapperutil.html">storage/mapping/<wbr>Mapper<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_patch_patchhandler_.html">&quot;storage/patch/<wbr>Patch<wbr>Handler&quot;</a>
+						<a href="modules/storage_patch_patchhandler.html">storage/patch/<wbr>Patch<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_patch_sparqlupdatepatchhandler_.html">&quot;storage/patch/<wbr>Sparql<wbr>Update<wbr>Patch<wbr>Handler&quot;</a>
+						<a href="modules/storage_patch_sparqlupdatepatchhandler.html">storage/patch/<wbr>Sparql<wbr>Update<wbr>Patch<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_routing_convertingrouterrule_.html">&quot;storage/routing/<wbr>Converting<wbr>Router<wbr>Rule&quot;</a>
+						<a href="modules/storage_routing_convertingrouterrule.html">storage/routing/<wbr>Converting<wbr>Router<wbr>Rule</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_routing_preferencesupport_.html">&quot;storage/routing/<wbr>Preference<wbr>Support&quot;</a>
+						<a href="modules/storage_routing_preferencesupport.html">storage/routing/<wbr>Preference<wbr>Support</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_routing_regexrouterrule_.html">&quot;storage/routing/<wbr>Regex<wbr>Router<wbr>Rule&quot;</a>
+						<a href="modules/storage_routing_regexrouterrule.html">storage/routing/<wbr>Regex<wbr>Router<wbr>Rule</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_storage_routing_routerrule_.html">&quot;storage/routing/<wbr>Router<wbr>Rule&quot;</a>
+						<a href="modules/storage_routing_routerrule.html">storage/routing/<wbr>Router<wbr>Rule</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_asynchandler_.html">&quot;util/<wbr>Async<wbr>Handler&quot;</a>
+						<a href="modules/util_asynchandler.html">util/<wbr>Async<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_contenttypes_.html">&quot;util/<wbr>Content<wbr>Types&quot;</a>
+						<a href="modules/util_contenttypes.html">util/<wbr>Content<wbr>Types</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_guardedstream_.html">&quot;util/<wbr>Guarded<wbr>Stream&quot;</a>
+						<a href="modules/util_guardedstream.html">util/<wbr>Guarded<wbr>Stream</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_headerutil_.html">&quot;util/<wbr>Header<wbr>Util&quot;</a>
+						<a href="modules/util_headerutil.html">util/<wbr>Header<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_pathutil_.html">&quot;util/<wbr>Path<wbr>Util&quot;</a>
+						<a href="modules/util_pathutil.html">util/<wbr>Path<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_quadutil_.html">&quot;util/<wbr>Quad<wbr>Util&quot;</a>
+						<a href="modules/util_quadutil.html">util/<wbr>Quad<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_recordobject_.html">&quot;util/<wbr>Record<wbr>Object&quot;</a>
+						<a href="modules/util_recordobject.html">util/<wbr>Record<wbr>Object</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_resourceutil_.html">&quot;util/<wbr>Resource<wbr>Util&quot;</a>
+						<a href="modules/util_resourceutil.html">util/<wbr>Resource<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_sequencehandler_.html">&quot;util/<wbr>Sequence<wbr>Handler&quot;</a>
+						<a href="modules/util_sequencehandler.html">util/<wbr>Sequence<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_streamutil_.html">&quot;util/<wbr>Stream<wbr>Util&quot;</a>
+						<a href="modules/util_streamutil.html">util/<wbr>Stream<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_uriconstants_.html">&quot;util/<wbr>Uri<wbr>Constants&quot;</a>
+						<a href="modules/util_uriconstants.html">util/<wbr>Uri<wbr>Constants</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_uriutil_.html">&quot;util/<wbr>Uri<wbr>Util&quot;</a>
+						<a href="modules/util_uriutil.html">util/<wbr>Uri<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_waterfallhandler_.html">&quot;util/<wbr>Waterfall<wbr>Handler&quot;</a>
+						<a href="modules/util_waterfallhandler.html">util/<wbr>Waterfall<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_badrequesthttperror_.html">&quot;util/errors/<wbr>Bad<wbr>Request<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_badrequesthttperror.html">util/errors/<wbr>Bad<wbr>Request<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_conflicthttperror_.html">&quot;util/errors/<wbr>Conflict<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_conflicthttperror.html">util/errors/<wbr>Conflict<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_forbiddenhttperror_.html">&quot;util/errors/<wbr>Forbidden<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_forbiddenhttperror.html">util/errors/<wbr>Forbidden<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_httperror_.html">&quot;util/errors/<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_httperror.html">util/errors/<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_internalservererror_.html">&quot;util/errors/<wbr>Internal<wbr>Server<wbr>Error&quot;</a>
+						<a href="modules/util_errors_internalservererror.html">util/errors/<wbr>Internal<wbr>Server<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_methodnotallowedhttperror_.html">&quot;util/errors/<wbr>Method<wbr>Not<wbr>Allowed<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_methodnotallowedhttperror.html">util/errors/<wbr>Method<wbr>Not<wbr>Allowed<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_notfoundhttperror_.html">&quot;util/errors/<wbr>Not<wbr>Found<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_notfoundhttperror.html">util/errors/<wbr>Not<wbr>Found<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_notimplementedhttperror_.html">&quot;util/errors/<wbr>Not<wbr>Implemented<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_notimplementedhttperror.html">util/errors/<wbr>Not<wbr>Implemented<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_systemerror_.html">&quot;util/errors/<wbr>System<wbr>Error&quot;</a>
+						<a href="modules/util_errors_systemerror.html">util/errors/<wbr>System<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_unauthorizedhttperror_.html">&quot;util/errors/<wbr>Unauthorized<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_unauthorizedhttperror.html">util/errors/<wbr>Unauthorized<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_errors_unsupportedmediatypehttperror_.html">&quot;util/errors/<wbr>Unsupported<wbr>Media<wbr>Type<wbr>Http<wbr>Error&quot;</a>
+						<a href="modules/util_errors_unsupportedmediatypehttperror.html">util/errors/<wbr>Unsupported<wbr>Media<wbr>Type<wbr>Http<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_identifiers_identifierstrategy_.html">&quot;util/identifiers/<wbr>Identifier<wbr>Strategy&quot;</a>
+						<a href="modules/util_identifiers_identifierstrategy.html">util/identifiers/<wbr>Identifier<wbr>Strategy</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_identifiers_singlerootidentifierstrategy_.html">&quot;util/identifiers/<wbr>Single<wbr>Root<wbr>Identifier<wbr>Strategy&quot;</a>
+						<a href="modules/util_identifiers_singlerootidentifierstrategy.html">util/identifiers/<wbr>Single<wbr>Root<wbr>Identifier<wbr>Strategy</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_expiringlock_.html">&quot;util/locking/<wbr>Expiring<wbr>Lock&quot;</a>
+						<a href="modules/util_locking_expiringlock.html">util/locking/<wbr>Expiring<wbr>Lock</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_expiringresourcelocker_.html">&quot;util/locking/<wbr>Expiring<wbr>Resource<wbr>Locker&quot;</a>
+						<a href="modules/util_locking_expiringresourcelocker.html">util/locking/<wbr>Expiring<wbr>Resource<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_lock_.html">&quot;util/locking/<wbr>Lock&quot;</a>
+						<a href="modules/util_locking_lock.html">util/locking/<wbr>Lock</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_resourcelocker_.html">&quot;util/locking/<wbr>Resource<wbr>Locker&quot;</a>
+						<a href="modules/util_locking_resourcelocker.html">util/locking/<wbr>Resource<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_singlethreadedresourcelocker_.html">&quot;util/locking/<wbr>Single<wbr>Threaded<wbr>Resource<wbr>Locker&quot;</a>
+						<a href="modules/util_locking_singlethreadedresourcelocker.html">util/locking/<wbr>Single<wbr>Threaded<wbr>Resource<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_wrappedexpiringlock_.html">&quot;util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Lock&quot;</a>
+						<a href="modules/util_locking_wrappedexpiringlock.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Lock</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/_util_locking_wrappedexpiringresourcelocker_.html">&quot;util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Resource<wbr>Locker&quot;</a>
+						<a href="modules/util_locking_wrappedexpiringresourcelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Resource<wbr>Locker</a>
 					</li>
 				</ul>
 			</nav>
@@ -676,7 +682,6 @@ npm start</code></pre>
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
