@@ -1,3 +1,4 @@
 #!/usr/bin/env node
-const { runCli } = require('..');
-runCli();
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { CliRunner } = require('..');
+new CliRunner().run();

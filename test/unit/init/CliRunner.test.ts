@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Loader } from 'componentsjs';
-import { runCli } from '../../../src/init/CliRunner';
+import { CliRunner } from '../../../src/init/CliRunner';
 import type { Initializer } from '../../../src/init/Initializer';
 
 const mainModulePath = path.join(__dirname, '../../../');
@@ -19,13 +19,16 @@ jest.mock('componentsjs', (): any => ({
   Loader: jest.fn((): Loader => loader),
 }));
 
+const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
+const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
+
 describe('CliRunner', (): void => {
   afterEach((): void => {
     jest.clearAllMocks();
   });
 
   it('starts the server with default settings.', async(): Promise<void> => {
-    runCli({
+    new CliRunner().run({
       argv: [ 'node', 'script' ],
     });
     await initializer.handleSafe();
@@ -55,7 +58,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts abbreviated flags.', async(): Promise<void> => {
-    runCli({
+    new CliRunner().run({
       argv: [
         'node', 'script',
         '-p', '4000',
@@ -87,7 +90,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts full flags.', async(): Promise<void> => {
-    runCli({
+    new CliRunner().run({
       argv: [
         'node', 'script',
         '--port', '4000',
@@ -118,15 +121,29 @@ describe('CliRunner', (): void => {
     );
   });
 
-  it('writes to stderr when an error occurs.', async(): Promise<void> => {
-    const write = jest.spyOn(process.stderr, 'write').mockImplementation((): any => null);
+  it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
     loader.instantiateFromUrl.mockRejectedValueOnce(new Error('Fatal'));
-
-    runCli();
+    new CliRunner().run();
     await new Promise((resolve): any => setImmediate(resolve));
 
-    expect(write).toHaveBeenCalledTimes(1);
-    expect(write).toHaveBeenCalledWith('Error: Fatal\n');
-    write.mockClear();
+    expect(write).toHaveBeenCalledTimes(2);
+    expect(write).toHaveBeenNthCalledWith(1,
+      expect.stringMatching(/^Error: could not instantiate server from .*config-default\.json/u));
+    expect(write).toHaveBeenNthCalledWith(2,
+      expect.stringMatching(/^Error: Fatal/u));
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
+    initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
+    new CliRunner().run();
+    await new Promise((resolve): any => setImmediate(resolve));
+
+    expect(write).toHaveBeenCalledTimes(0);
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 });
