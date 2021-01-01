@@ -11,17 +11,19 @@ import { Provider } from 'oidc-provider';
 import instance from 'oidc-provider/lib/helpers/weak_cache';
 import type { HttpHandler, HttpHandlerInput } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { SolidIdentityProviderConfiguration } from './SolidIdentityProviderConfiguration';
-import type { SolidIdentityProviderInteractionHttpHandler } from './SolidIdentityProviderInteractionHttpHandler';
+import type { InteractionHttpHandler } from './InteractionHttpHandler';
+import type { ProviderConfiguration } from './ProviderConfiguration';
+import type { ProviderConfigurationFactory } from './ProviderConfigurationFactory';
 
 export class SolidIdentityProvider extends Provider implements HttpHandler {
-  private readonly interactionHttpHandler: SolidIdentityProviderInteractionHttpHandler;
+  private readonly interactionHttpHandler: InteractionHttpHandler;
 
   public constructor(
     issuer: string,
-    configuration: SolidIdentityProviderConfiguration,
+    configurationFactory: ProviderConfigurationFactory,
   ) {
-    const config: SolidIdentityProviderConfiguration = {
+    const configuration = configurationFactory.createConfiguration();
+    const augmentedConfig: ProviderConfiguration = {
       ...configuration,
       claims: {
         ...configuration.claims,
@@ -31,7 +33,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
       features: {
         ...configuration.features,
         registration: { enabled: true },
-        dPoP: { enabled: true },
+        dPoP: { enabled: true, ack: 'draft-01' },
         claimsParameter: { enabled: true },
       },
       subjectTypes: [ 'public', 'pairwise' ],
@@ -49,7 +51,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
         return {};
       },
     };
-    super(issuer, config);
+    super(issuer, augmentedConfig);
     this.interactionHttpHandler = configuration.interactions;
   }
 
