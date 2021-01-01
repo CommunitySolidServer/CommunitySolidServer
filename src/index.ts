@@ -197,3 +197,4 @@ export * from './util/RecordObject';
 export * from './util/SequenceHandler';
 export * from './util/StreamUtil';
 export * from './util/WaterfallHandler';
+export * from './util/UriConstants';
