@@ -38,6 +38,7 @@ export class RootContainerInitializer extends Initializer {
    */
   protected async hasRootContainer(): Promise<boolean> {
     try {
+      this.logger.debug(`Checking for root container at ${this.baseId.path}`);
       const result = await this.store.getRepresentation(this.baseId, {});
       this.logger.debug(`Existing root container found at ${this.baseId.path}`);
       result.data.destroy();
