@@ -20,10 +20,21 @@
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
-      "@type": "SolidIdentityProviderHttpHandler",
-      "SolidIdentityProviderHttpHandler:_provider": {
-        "@id": "urn:solid-server:default:SolidIdentityProvider"
-      }
+      "@type": "WaterfallHandler",
+      "WaterfallHandler:_handlers": [
+        {
+          "@id": "urn:solid-server:default:InteractionHttpHandler",
+          "InteractionHttpHandler:_provider": {
+            "@id": "urn:solid-server:default:SolidIdentityProvider"
+          }
+        },
+        {
+          "@type": "SolidIdentityProviderHttpHandler",
+          "SolidIdentityProviderHttpHandler:_provider": {
+            "@id": "urn:solid-server:default:SolidIdentityProvider"
+          }
+        }
+      ]
     }
   ]
 }
