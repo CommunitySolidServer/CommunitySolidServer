@@ -2,10 +2,10 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:IdentityProviderHandler",
-      "@type": "SolidIdentityProviderHttpHandler",
-      "SolidIdentityProviderHttpHandler:_args_provider": {
-        "@id": "urn:solid-server:default:SolidIdentityProvider"
+      "@id": "urn:solid-server:default:ProviderConfigurationFactory",
+      "@type": "DevConfigurationFactory",
+      "DevConfigurationFactory:_interactionPolicyHttpHandler": {
+        "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
       }
     },
     {
@@ -19,10 +19,10 @@
       }
     },
     {
-      "@id": "urn:solid-server:default:ProviderConfigurationFactory",
-      "@type": "DevConfigurationFactory",
-      "DevConfigurationFactory:_args_interactionPolicyHttpHandler": {
-        "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "SolidIdentityProviderHttpHandler",
+      "SolidIdentityProviderHttpHandler:_provider": {
+        "@id": "urn:solid-server:default:SolidIdentityProvider"
       }
     }
   ]
