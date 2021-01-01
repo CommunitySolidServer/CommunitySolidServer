@@ -2,16 +2,16 @@ import { parse } from 'url';
 import { MethodNotAllowedHttpError } from '../../../../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
 import type {
-  SolidIdentityProviderInteractionHttpHandlerInput,
-} from '../../../SolidIdentityProviderInteractionHttpHandler';
-import { SolidIdentityProviderInteractionHttpHandler } from '../../../SolidIdentityProviderInteractionHttpHandler';
+  InteractionHttpHandlerInput,
+} from '../../../InteractionHttpHandler';
+import { InteractionHttpHandler } from '../../../InteractionHttpHandler';
 
 export interface BaseInteractionHttpHandlerArgs {
   allowedMethods: string[];
   pathnamePostfix: string;
 }
 
-export abstract class BaseInteractionHttpHandler extends SolidIdentityProviderInteractionHttpHandler {
+export abstract class BaseInteractionHttpHandler extends InteractionHttpHandler {
   private readonly allowedMethods: string[];
   private readonly pathnameRegex: RegExp;
 
@@ -27,7 +27,7 @@ export abstract class BaseInteractionHttpHandler extends SolidIdentityProviderIn
   }
 
   public async canHandle(
-    input: SolidIdentityProviderInteractionHttpHandlerInput,
+    input: InteractionHttpHandlerInput,
   ): Promise<void> {
     if (!input.request.url) {
       throw new Error('Cannot handle request without a url');
