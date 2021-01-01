@@ -37,7 +37,7 @@ export class CliRunner {
         mainModulePath: { type: 'string', alias: 'm' },
         podTemplateFolder: { type: 'string', alias: 't' },
         port: { type: 'number', alias: 'p', default: 3000 },
-        rootFilePath: { type: 'string', alias: 'f' },
+        rootFilePath: { type: 'string', alias: 'f', default: './' },
         sparqlEndpoint: { type: 'string', alias: 's' },
       })
       .help();
@@ -85,7 +85,7 @@ export class CliRunner {
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
       'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
       'urn:solid-server:default:variable:port': params.port,
-      'urn:solid-server:default:variable:rootFilePath': params.rootFilePath ?? process.cwd(),
+      'urn:solid-server:default:variable:rootFilePath': this.resolvePath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
         params.podTemplateFolder ?? this.resolvePath(null, 'templates'),
