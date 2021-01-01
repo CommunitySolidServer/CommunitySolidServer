@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BadRequestHttpError | Community Solid Server</title>
+	<title>InternalServerError | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -58,10 +58,10 @@
 					<a href="../modules/index.html">index</a>
 				</li>
 				<li>
-					<a href="index.badrequesthttperror.html">BadRequestHttpError</a>
+					<a href="index.internalservererror.html">InternalServerError</a>
 				</li>
 			</ul>
-			<h1>Class BadRequestHttpError</h1>
+			<h1>Class InternalServerError</h1>
 		</div>
 	</div>
 </header>
@@ -71,8 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>An error thrown when incoming data is not supported.
-						Probably because an <a href="index.asynchandler.html">AsyncHandler</a> returns false on the canHandle call.</p>
+						<p>A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.</p>
 					</div>
 				</div>
 			</section>
@@ -83,7 +82,7 @@
 						<a href="util_errors_httperror.httperror.html" class="tsd-signature-type" data-tsd-kind="Class">HttpError</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">BadRequestHttpError</span>
+								<span class="target">InternalServerError</span>
 							</li>
 						</ul>
 					</li>
@@ -96,24 +95,24 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="index.badrequesthttperror.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="index.internalservererror.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#preparestacktrace" class="tsd-kind-icon">prepare<wbr>Stack<wbr>Trace</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#stack" class="tsd-kind-icon">stack</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#stacktracelimit" class="tsd-kind-icon">stack<wbr>Trace<wbr>Limit</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="index.badrequesthttperror.html#statuscode" class="tsd-kind-icon">status<wbr>Code</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#preparestacktrace" class="tsd-kind-icon">prepare<wbr>Stack<wbr>Trace</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#stack" class="tsd-kind-icon">stack</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#stacktracelimit" class="tsd-kind-icon">stack<wbr>Trace<wbr>Limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="index.internalservererror.html#statuscode" class="tsd-kind-icon">status<wbr>Code</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.badrequesthttperror.html#capturestacktrace" class="tsd-kind-icon">capture<wbr>Stack<wbr>Trace</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="index.internalservererror.html#capturestacktrace" class="tsd-kind-icon">capture<wbr>Stack<wbr>Trace</a></li>
 							</ul>
 						</section>
 					</div>
@@ -125,31 +124,23 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Bad<wbr>Request<wbr>Http<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_errors_badrequesthttperror.badrequesthttperror.html" class="tsd-signature-type" data-tsd-kind="Class">BadRequestHttpError</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Internal<wbr>Server<wbr>Error<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_errors_internalservererror.internalservererror.html" class="tsd-signature-type" data-tsd-kind="Class">InternalServerError</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_errors_httperror.httperror.html">HttpError</a>.<a href="util_errors_httperror.httperror.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/f7825be/src/util/errors/BadRequestHttpError.ts#L7">src/util/errors/BadRequestHttpError.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/f7825be/src/util/errors/InternalServerError.ts#L5">src/util/errors/InternalServerError.ts:5</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Default message is &#39;The given input is not supported by the server configuration.&#39;.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Optional, more specific, message.</p>
-									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="util_errors_badrequesthttperror.badrequesthttperror.html" class="tsd-signature-type" data-tsd-kind="Class">BadRequestHttpError</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="util_errors_internalservererror.internalservererror.html" class="tsd-signature-type" data-tsd-kind="Class">InternalServerError</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -309,31 +300,31 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="index.badrequesthttperror.html" class="tsd-kind-icon">Bad<wbr>Request<wbr>Http<wbr>Error</a>
+						<a href="index.internalservererror.html" class="tsd-kind-icon">Internal<wbr>Server<wbr>Error</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-								<a href="index.badrequesthttperror.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="index.internalservererror.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#message" class="tsd-kind-icon">message</a>
+								<a href="index.internalservererror.html#message" class="tsd-kind-icon">message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#name" class="tsd-kind-icon">name</a>
+								<a href="index.internalservererror.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#preparestacktrace" class="tsd-kind-icon">prepare<wbr>Stack<wbr>Trace</a>
+								<a href="index.internalservererror.html#preparestacktrace" class="tsd-kind-icon">prepare<wbr>Stack<wbr>Trace</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#stack" class="tsd-kind-icon">stack</a>
+								<a href="index.internalservererror.html#stack" class="tsd-kind-icon">stack</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#stacktracelimit" class="tsd-kind-icon">stack<wbr>Trace<wbr>Limit</a>
+								<a href="index.internalservererror.html#stacktracelimit" class="tsd-kind-icon">stack<wbr>Trace<wbr>Limit</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="index.badrequesthttperror.html#statuscode" class="tsd-kind-icon">status<wbr>Code</a>
+								<a href="index.internalservererror.html#statuscode" class="tsd-kind-icon">status<wbr>Code</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="index.badrequesthttperror.html#capturestacktrace" class="tsd-kind-icon">capture<wbr>Stack<wbr>Trace</a>
+								<a href="index.internalservererror.html#capturestacktrace" class="tsd-kind-icon">capture<wbr>Stack<wbr>Trace</a>
 							</li>
 						</ul>
 					</li>
