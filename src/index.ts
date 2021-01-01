@@ -81,17 +81,22 @@ export * from './ldp/representation/ResourceIdentifier';
 export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
-// Solid Identity Provider
+// SolidIdentityProvider
+export * from './identity/InteractionHttpHandler';
+export * from './identity/InteractionPolicyHttpHandler';
+export * from './identity/MemoryAdapterFactory';
+export * from './identity/ProviderConfiguration';
+export * from './identity/ProviderConfigurationFactory';
 export * from './identity/SolidIdentityProvider';
-export * from './identity/SolidIdentityProviderConfiguration';
-export * from './identity/SolidIdentityProviderConfigurationFactory';
-export * from './identity/SolidIdentityProviderFactory';
 export * from './identity/SolidIdentityProviderHttpHandler';
-export * from './identity/SolidIdentityProviderInteractionHttpHandler';
-export * from './identity/SolidIdentityProviderInteractionPolicyHttpHandler';
-export * from './identity/configuration-factories/DevConfigurationFactory';
 
-// Email Password Identity Provider
+// SolidIdentityProvider/Configurations
+export * from './identity/configurations/DevConfigurationFactory';
+
+// SolidIdentityProvider/MemoryAdapterFactories
+export * from './identity/memory-adapter-factories/InMemoryAdapterFactory';
+
+// SolidIdentityProvider/InteractionPolicies
 export * from './identity/interaction-policies/email-password/EmailPasswordInteractionPolicyHttpHandler';
 export * from './identity/interaction-policies/email-password/interactionHttpHandlers/AbortInteractionHttpHandler';
 export * from './identity/interaction-policies/email-password/interactionHttpHandlers/BaseInteractionHttpHandler';

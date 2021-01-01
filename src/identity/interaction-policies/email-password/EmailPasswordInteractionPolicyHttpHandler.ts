@@ -1,19 +1,20 @@
+import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
 import type {
-  SolidIdentityProviderInteractionHttpHandler,
-  SolidIdentityProviderInteractionHttpHandlerInput,
-} from '../../SolidIdentityProviderInteractionHttpHandler';
+  InteractionHttpHandler,
+  InteractionHttpHandlerInput,
+} from '../../InteractionHttpHandler';
 import {
-  SolidIdentityProviderInteractionPolicyHttpHandler,
-} from '../../SolidIdentityProviderInteractionPolicyHttpHandler';
+  InteractionPolicyHttpHandler,
+} from '../../InteractionPolicyHttpHandler';
 
 export interface EmailPasswordInteractionPolicyHttpHandlerArgs {
-  interactionHttpHandler: SolidIdentityProviderInteractionHttpHandler;
+  interactionHttpHandler: InteractionHttpHandler;
 }
 
-export class EmailPasswordInteractionPolicyHttpHandler extends SolidIdentityProviderInteractionPolicyHttpHandler {
+export class EmailPasswordInteractionPolicyHttpHandler extends InteractionPolicyHttpHandler {
   public readonly policy: interactionPolicy.Prompt[];
-  private readonly interactionHttpHandler: SolidIdentityProviderInteractionHttpHandler;
+  private readonly interactionHttpHandler: InteractionHttpHandler;
 
   public constructor(args: EmailPasswordInteractionPolicyHttpHandlerArgs) {
     super();
@@ -27,11 +28,15 @@ export class EmailPasswordInteractionPolicyHttpHandler extends SolidIdentityProv
     this.policy = interactions;
   }
 
-  public async getPath(uid: string): Promise<string> {
-    return `/interaction/${uid}`;
+  public async url(ctx: KoaContextWithOIDC): Promise<string> {
+    return `/interaction/${ctx.oidc.uid}`;
   }
 
-  public async handle(input: SolidIdentityProviderInteractionHttpHandlerInput): Promise<void> {
-    return this.interactionHttpHandler.handleSafe(input);
+  public async canHandle(input: InteractionHttpHandlerInput): Promise<void> {
+    return this.interactionHttpHandler.canHandle(input);
+  }
+
+  public async handle(input: InteractionHttpHandlerInput): Promise<void> {
+    return this.interactionHttpHandler.handle(input);
   }
 }

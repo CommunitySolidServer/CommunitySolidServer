@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable id-length */
 /* eslint-disable max-len */
-import type { SolidIdentityProviderConfiguration } from '../SolidIdentityProviderConfiguration';
-import { SolidIdentityProviderConfigurationFactory } from '../SolidIdentityProviderConfigurationFactory';
-import type { SolidIdentityProviderInteractionPolicyHttpHandler } from '../SolidIdentityProviderInteractionPolicyHttpHandler';
+import type { InteractionPolicyHttpHandler } from '../InteractionPolicyHttpHandler';
+import type { ProviderConfiguration } from '../ProviderConfiguration';
+import { ProviderConfigurationFactory } from '../ProviderConfigurationFactory';
 
 export interface DevConfigurationFactoryArgs {
-  interactionPolicyHttpHandler: SolidIdentityProviderInteractionPolicyHttpHandler;
+  interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
 }
 
-export class DevConfigurationFactory extends SolidIdentityProviderConfigurationFactory {
-  private readonly interactionPolicyHttpHandler: SolidIdentityProviderInteractionPolicyHttpHandler;
+export class DevConfigurationFactory extends ProviderConfigurationFactory {
+  private readonly interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
 
   public constructor(args: DevConfigurationFactoryArgs) {
     super();
     this.interactionPolicyHttpHandler = args.interactionPolicyHttpHandler;
   }
 
-  public createConfiguration(): SolidIdentityProviderConfiguration {
+  public createConfiguration(): ProviderConfiguration {
     return {
       clients: [
         // {
@@ -40,7 +40,6 @@ export class DevConfigurationFactory extends SolidIdentityProviderConfigurationF
         introspection: { enabled: true },
         revocation: { enabled: true },
         registration: { enabled: true },
-        dPoP: { enabled: true },
         claimsParameter: { enabled: true },
       },
       jwks: {
