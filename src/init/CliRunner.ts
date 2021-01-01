@@ -16,20 +16,15 @@ export class CliRunner {
    * Generic run function for starting the server from a given config
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
-   * @param loaderProperties - Components loader properties.
    */
   public run({
     argv = process.argv,
     stderr = process.stderr,
-    loaderProperties = {
-      mainModulePath: path.join(__dirname, '../../'),
-    },
   }: {
     argv?: string[];
     stdin?: ReadStream;
     stdout?: WriteStream;
     stderr?: WriteStream;
-    loaderProperties?: LoaderProperties;
   } = {}): void {
     // Parse the command-line arguments
     const { argv: params } = yargs(argv.slice(2))
@@ -37,18 +32,22 @@ export class CliRunner {
       .options({
         baseUrl: { type: 'string', alias: 'b' },
         config: { type: 'string', alias: 'c' },
+        globalModules: { type: 'boolean', alias: 'g' },
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
+        mainModulePath: { type: 'string', alias: 'm' },
+        podTemplateFolder: { type: 'string', alias: 't' },
         port: { type: 'number', alias: 'p', default: 3000 },
         rootFilePath: { type: 'string', alias: 'f' },
         sparqlEndpoint: { type: 'string', alias: 's' },
-        podTemplateFolder: { type: 'string', alias: 't' },
       })
       .help();
 
     // Gather settings for instantiating the server
-    const configFile = params.config ?
-      path.join(process.cwd(), params.config) :
-      path.join(__dirname, '/../../config/config-default.json');
+    const loaderProperties: LoaderProperties = {
+      mainModulePath: this.resolvePath(params.mainModulePath),
+      scanGlobal: params.globalModules,
+    };
+    const configFile = this.resolvePath(params.config, 'config/config-default.json');
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
@@ -68,6 +67,16 @@ export class CliRunner {
   }
 
   /**
+   * Resolves a path relative to the current working directory,
+   * falling back to a path relative to this module.
+   */
+  protected resolvePath(cwdPath?: string | null, modulePath = ''): string {
+    return typeof cwdPath === 'string' ?
+      path.join(process.cwd(), cwdPath) :
+      path.join(__dirname, '../../', modulePath);
+  }
+
+  /**
    * Translates command-line parameters into configuration variables
    */
   protected createVariables(params: Record<string, any>): Record<string, any> {
@@ -79,7 +88,7 @@ export class CliRunner {
       'urn:solid-server:default:variable:rootFilePath': params.rootFilePath ?? process.cwd(),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
-        params.podTemplateFolder ?? path.join(__dirname, '../../templates'),
+        params.podTemplateFolder ?? this.resolvePath(null, 'templates'),
     };
   }
 
