@@ -64,6 +64,7 @@ export class RootContainerInitializer extends Initializer {
 
     metadata.contentType = TEXT_TURTLE;
 
+    this.logger.debug(`Creating root container at ${this.baseId.path}`);
     await this.store.setRepresentation(this.baseId, {
       binary: true,
       data: guardedStreamFrom([]),

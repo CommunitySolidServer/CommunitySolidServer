@@ -29,8 +29,8 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
   }
 
   public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    const path = getRelativePath(this.baseRequestURI, identifier, this.logger);
-    validateRelativePath(path, identifier, this.logger);
+    const path = getRelativePath(this.baseRequestURI, identifier);
+    validateRelativePath(path, identifier);
 
     const filePath = getAbsolutePath(this.rootFilepath, path);
 
