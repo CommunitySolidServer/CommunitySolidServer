@@ -5,16 +5,12 @@ import type { InteractionPolicyHttpHandler } from '../InteractionPolicyHttpHandl
 import type { ProviderConfiguration } from '../ProviderConfiguration';
 import { ProviderConfigurationFactory } from '../ProviderConfigurationFactory';
 
-export interface DevConfigurationFactoryArgs {
-  interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
-}
-
 export class DevConfigurationFactory extends ProviderConfigurationFactory {
   private readonly interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
 
-  public constructor(args: DevConfigurationFactoryArgs) {
+  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler) {
     super();
-    this.interactionPolicyHttpHandler = args.interactionPolicyHttpHandler;
+    this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
   }
 
   public createConfiguration(): ProviderConfiguration {
