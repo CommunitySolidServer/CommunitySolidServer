@@ -1,4 +1,3 @@
-import { parse } from 'url';
 import type { AnyObject, CanBePromise } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
@@ -72,7 +71,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     validRoutes.push('/.well-known/openid-configuration');
 
     // Throw an error if the request URL is not part of the valid routes
-    if (!input.request.url || !validRoutes.includes((parse(input.request.url) as any).pathname)) {
+    if (!input.request.url || !validRoutes.includes(input.request.url)) {
       throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
     }
   }
