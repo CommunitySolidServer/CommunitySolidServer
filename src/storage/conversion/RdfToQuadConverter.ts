@@ -6,7 +6,7 @@ import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { validateRequestArgs } from './ConversionUtil';
+import { supportsConversion } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -23,7 +23,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    validateRequestArgs(input, await rdfParser.getContentTypes(), [ INTERNAL_QUADS ]);
+    supportsConversion(input, await rdfParser.getContentTypes(), [ INTERNAL_QUADS ]);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

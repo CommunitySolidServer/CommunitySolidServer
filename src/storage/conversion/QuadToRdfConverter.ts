@@ -6,7 +6,7 @@ import type { RepresentationPreferences } from '../../ldp/representation/Represe
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { validateRequestArgs, matchingTypes } from './ConversionUtil';
+import { supportsConversion, matchingMediaTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -23,7 +23,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    validateRequestArgs(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
+    supportsConversion(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -31,7 +31,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   private async quadsToRdf(quads: Representation, preferences: RepresentationPreferences): Promise<Representation> {
-    const contentType = matchingTypes(preferences, await rdfSerializer.getContentTypes())[0].value;
+    const contentType = matchingMediaTypes(preferences, await rdfSerializer.getContentTypes())[0].value;
     const metadata = new RepresentationMetadata(quads.metadata, { [CONTENT_TYPE]: contentType });
     return {
       binary: true,

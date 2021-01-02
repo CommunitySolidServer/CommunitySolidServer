@@ -21,7 +21,7 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  *
  * @returns The weighted and filtered list of matching types.
  */
-export const matchingTypes = (preferences: RepresentationPreferences, types: string[]):
+export const matchingMediaTypes = (preferences: RepresentationPreferences, types: string[]):
 RepresentationPreference[] => {
   if (!Array.isArray(preferences.type)) {
     throw new BadRequestHttpError('Output type required for conversion.');
@@ -65,7 +65,7 @@ RepresentationPreference[] => {
  *
  * @returns True if the media type patterns can match each other.
  */
-export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
+export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
   if (mediaA === mediaB) {
     return true;
   }
@@ -85,24 +85,26 @@ export const matchingMediaType = (mediaA: string, mediaB: string): boolean => {
 };
 
 /**
- * Runs some standard checks on the input request:
+ * Determines whether the given conversion request is supported,
+ * given the available content type conversions:
  *  - Checks if there is a content type for the input.
  *  - Checks if the input type is supported by the parser.
  *  - Checks if the parser can produce one of the preferred output types.
+ * Throws an error with details if conversion is not possible.
  * @param request - Incoming arguments.
  * @param supportedIn - Media types that can be parsed by the converter.
  * @param supportedOut - Media types that can be produced by the converter.
  */
-export const validateRequestArgs = (request: RepresentationConverterArgs, supportedIn: string[],
+export const supportsConversion = (request: RepresentationConverterArgs, supportedIn: string[],
   supportedOut: string[]): void => {
   const inType = request.representation.metadata.contentType;
   if (!inType) {
     throw new BadRequestHttpError('Input type required for conversion.');
   }
-  if (!supportedIn.some((type): boolean => matchingMediaType(inType, type))) {
+  if (!supportedIn.some((type): boolean => matchesMediaType(inType, type))) {
     throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
-  if (matchingTypes(request.preferences, supportedOut).length <= 0) {
+  if (matchingMediaTypes(request.preferences, supportedOut).length <= 0) {
     throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
   }
 };

@@ -1,6 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { validateRequestArgs, matchingMediaType } from './ConversionUtil';
+import { supportsConversion, matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -47,7 +47,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
     // So we only check if the input can be parsed and the preferred type can be written
     const inTypes = this.filterTypes(await this.first.getInputTypes());
     const outTypes = this.filterTypes(await this.last.getOutputTypes());
-    validateRequestArgs(input, inTypes, outTypes);
+    supportsConversion(input, inTypes, outTypes);
   }
 
   private filterTypes(typeVals: Record<string, number>): string[] {
@@ -85,7 +85,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
       for (const rightType of rightKeys) {
         const rightWeight = rightTypes[rightType];
         const weight = leftWeight * rightWeight;
-        if (weight > bestMatch.weight && matchingMediaType(leftType, rightType)) {
+        if (weight > bestMatch.weight && matchesMediaType(leftType, rightType)) {
           bestMatch = { type: leftType, weight };
           if (weight === 1) {
             this.logger.info(`${bestMatch.type} is an exact match between ${leftKeys} and ${rightKeys}`);

@@ -4,7 +4,7 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { getLoggerFor } from '../logging/LogUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import type { Conditions } from './Conditions';
-import { matchingTypes } from './conversion/ConversionUtil';
+import { matchingMediaTypes } from './conversion/ConversionUtil';
 import type { RepresentationConverter, RepresentationConverterArgs } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';
@@ -77,7 +77,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     }
 
     // Check if there is a result if we try to map the preferences to the content-type
-    return matchingTypes(preferences, [ contentType ]).length > 0;
+    return matchingMediaTypes(preferences, [ contentType ]).length > 0;
   }
 
   /**
