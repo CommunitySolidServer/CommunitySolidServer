@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import { literal, namedNode } from '@rdfjs/data-model';
 import { CONTENT_TYPE, XSD } from '../../../src/util/UriConstants';
-import { toNamedNode, toObjectTerm, toTypedLiteral, isTerm } from '../../../src/util/UriUtil';
+import { toCachedNamedNode, toObjectTerm, toLiteral, isTerm } from '../../../src/util/UriUtil';
 
 describe('An UriUtil', (): void => {
   describe('isTerm function', (): void => {
@@ -17,21 +17,21 @@ describe('An UriUtil', (): void => {
   describe('getNamedNode function', (): void => {
     it('returns the input if it was a named node.', async(): Promise<void> => {
       const term = namedNode('name');
-      expect(toNamedNode(term)).toBe(term);
+      expect(toCachedNamedNode(term)).toBe(term);
     });
 
     it('returns a named node when a string is used.', async(): Promise<void> => {
-      expect(toNamedNode('name')).toEqualRdfTerm(namedNode('name'));
+      expect(toCachedNamedNode('name')).toEqualRdfTerm(namedNode('name'));
     });
 
     it('caches generated named nodes.', async(): Promise<void> => {
-      const result = toNamedNode('name');
+      const result = toCachedNamedNode('name');
       expect(result).toEqualRdfTerm(namedNode('name'));
-      expect(toNamedNode('name')).toBe(result);
+      expect(toCachedNamedNode('name')).toBe(result);
     });
 
     it('supports URI shorthands.', async(): Promise<void> => {
-      expect(toNamedNode('contentType')).toEqualRdfTerm(namedNode(CONTENT_TYPE));
+      expect(toCachedNamedNode('contentType')).toEqualRdfTerm(namedNode(CONTENT_TYPE));
     });
   });
 
@@ -51,7 +51,7 @@ describe('An UriUtil', (): void => {
   describe('getTypedLiteral function', (): void => {
     it('converts the input to a valid literal with the given type.', async(): Promise<void> => {
       const expected = literal('5', namedNode(XSD.integer));
-      expect(toTypedLiteral(5, XSD.integer)).toEqualRdfTerm(expected);
+      expect(toLiteral(5, XSD.integer)).toEqualRdfTerm(expected);
     });
   });
 });

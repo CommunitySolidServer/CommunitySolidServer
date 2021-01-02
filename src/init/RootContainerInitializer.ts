@@ -9,7 +9,7 @@ import { ensureTrailingSlash } from '../util/PathUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
 import { PIM, RDF } from '../util/UriConstants';
-import { toNamedNode } from '../util/UriUtil';
+import { toCachedNamedNode } from '../util/UriUtil';
 import { Initializer } from './Initializer';
 import namedNode = DataFactory.namedNode;
 
@@ -60,7 +60,7 @@ export class RootContainerInitializer extends Initializer {
 
     // Make sure the root container is a pim:Storage
     // This prevents deletion of the root container as storage root containers can not be deleted
-    metadata.add(RDF.type, toNamedNode(PIM.Storage));
+    metadata.add(RDF.type, toCachedNamedNode(PIM.Storage));
 
     metadata.contentType = TEXT_TURTLE;
 

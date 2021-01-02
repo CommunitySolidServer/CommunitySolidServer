@@ -22,7 +22,7 @@ export const isTerm = (input?: any): input is Term => input?.termType;
  * so only use this for internal constants!
  * @param name - Predicate to potentially transform.
  */
-export const toNamedNode = (name: NamedNode | string): NamedNode => {
+export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
   if (typeof name === 'string') {
     if (shorthands[name]) {
       return shorthands[name];
@@ -47,5 +47,5 @@ export const toObjectTerm = (object: NamedNode | Literal | string): NamedNode | 
  * @param object - Object value.
  * @param dataType - Object data type (as string).
  */
-export const toTypedLiteral = (object: string | number, dataType: string): Literal =>
-  DataFactory.literal(object, toNamedNode(dataType));
+export const toLiteral = (object: string | number, dataType: string): Literal =>
+  DataFactory.literal(object, toCachedNamedNode(dataType));

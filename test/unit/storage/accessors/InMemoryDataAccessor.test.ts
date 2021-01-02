@@ -7,7 +7,7 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
-import { toNamedNode } from '../../../../src/util/UriUtil';
+import { toCachedNamedNode } from '../../../../src/util/UriUtil';
 
 describe('An InMemoryDataAccessor', (): void => {
   const base = 'http://test.com/';
@@ -80,13 +80,13 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer({ path: `${base}container/container2` }, metadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
-        [ toNamedNode(`${base}container/resource`), toNamedNode(`${base}container/container2/`) ],
+        [ toCachedNamedNode(`${base}container/resource`), toCachedNamedNode(`${base}container/container2/`) ],
       );
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}resource` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Resource) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Resource) });
       await expect(accessor.writeDocument(identifier, data, inputMetadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}resource`);
@@ -97,7 +97,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('adds stored metadata when requesting container metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
@@ -109,7 +109,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('can overwrite the metadata of an existing container without overwriting children.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
@@ -117,7 +117,7 @@ describe('An InMemoryDataAccessor', (): void => {
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
-      newMetadata.add(RDF.type, toNamedNode(LDP.BasicContainer));
+      newMetadata.add(RDF.type, toCachedNamedNode(LDP.BasicContainer));
       await expect(accessor.writeContainer(identifier, newMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
@@ -135,7 +135,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('can write to the root container without overriding its children.', async(): Promise<void> => {
       const identifier = { path: `${base}` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(

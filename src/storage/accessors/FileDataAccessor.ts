@@ -17,7 +17,7 @@ import { isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../util/UriConstants';
-import { toNamedNode, toTypedLiteral } from '../../util/UriUtil';
+import { toCachedNamedNode, toLiteral } from '../../util/UriUtil';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -210,9 +210,9 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
-    metadata.remove(RDF.type, toNamedNode(LDP.Resource));
-    metadata.remove(RDF.type, toNamedNode(LDP.Container));
-    metadata.remove(RDF.type, toNamedNode(LDP.BasicContainer));
+    metadata.remove(RDF.type, toCachedNamedNode(LDP.Resource));
+    metadata.remove(RDF.type, toCachedNamedNode(LDP.Container));
+    metadata.remove(RDF.type, toCachedNamedNode(LDP.BasicContainer));
     metadata.removeAll(CONTENT_TYPE);
     const quads = metadata.quads();
     const metadataLink = await this.getMetadataLink(link.identifier);
@@ -329,9 +329,9 @@ export class FileDataAccessor implements DataAccessor {
    */
   private generatePosixQuads(subject: NamedNode, stats: Stats): Quad[] {
     const quads: Quad[] = [];
-    pushQuad(quads, subject, toNamedNode(POSIX.size), toTypedLiteral(stats.size, XSD.integer));
-    pushQuad(quads, subject, toNamedNode(DCTERMS.modified), toTypedLiteral(stats.mtime.toISOString(), XSD.dateTime));
-    pushQuad(quads, subject, toNamedNode(POSIX.mtime), toTypedLiteral(
+    pushQuad(quads, subject, toCachedNamedNode(POSIX.size), toLiteral(stats.size, XSD.integer));
+    pushQuad(quads, subject, toCachedNamedNode(DCTERMS.modified), toLiteral(stats.mtime.toISOString(), XSD.dateTime));
+    pushQuad(quads, subject, toCachedNamedNode(POSIX.mtime), toLiteral(
       Math.floor(stats.mtime.getTime() / 1000), XSD.integer,
     ));
     return quads;

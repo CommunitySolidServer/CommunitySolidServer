@@ -3,7 +3,7 @@ import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { pushQuad } from './QuadUtil';
 import { LDP, RDF } from './UriConstants';
-import { toNamedNode } from './UriUtil';
+import { toCachedNamedNode } from './UriUtil';
 
 /**
  * Helper function to generate type quads for a Container or Resource.
@@ -15,10 +15,10 @@ import { toNamedNode } from './UriUtil';
 export const generateResourceQuads = (subject: NamedNode, isContainer: boolean): Quad[] => {
   const quads: Quad[] = [];
   if (isContainer) {
-    pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.Container));
-    pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.BasicContainer));
+    pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.Container));
+    pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.BasicContainer));
   }
-  pushQuad(quads, subject, toNamedNode(RDF.type), toNamedNode(LDP.Resource));
+  pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.Resource));
 
   return quads;
 };
