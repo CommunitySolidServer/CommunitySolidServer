@@ -1,7 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { toObjectTerm, toCachedNamedNode, isTerm } from '../../util/UriUtil';
+import { toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';

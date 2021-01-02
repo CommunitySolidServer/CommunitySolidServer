@@ -7,10 +7,10 @@ import {
   toObjectTerm,
   toLiteral,
   isTerm,
-} from '../../../src/util/UriUtil';
-import { CONTENT_TYPE, XSD } from '../../../src/util/Vocabularies';
+} from '../../../src/util/TermUtil';
+import { CONTENT_TYPE_TERM, XSD } from '../../../src/util/Vocabularies';
 
-describe('An UriUtil', (): void => {
+describe('TermUtil', (): void => {
   describe('isTerm function', (): void => {
     it('checks if any input is a Term.', async(): Promise<void> => {
       expect(isTerm(namedNode('name'))).toBeTruthy();
@@ -38,7 +38,7 @@ describe('An UriUtil', (): void => {
     });
 
     it('supports URI shorthands.', async(): Promise<void> => {
-      expect(toCachedNamedNode('contentType')).toEqualRdfTerm(namedNode(CONTENT_TYPE));
+      expect(toCachedNamedNode('contentType')).toEqualRdfTerm(CONTENT_TYPE_TERM);
     });
   });
 

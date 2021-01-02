@@ -10,32 +10,31 @@ const shorthands: Record<string, NamedNode> = {
 };
 
 // Caches named node conversions
-const termMap: Record<string, NamedNode> = {};
+const cachedNamedNodes: Record<string, NamedNode> = {
+  ...shorthands,
+};
 
 /**
- * @param input - Checks if this is a {@link Term}.
- */
-export const isTerm = (input?: any): input is Term => input?.termType;
-
-/**
- * Converts the incoming name to a named node if needed.
- * In case of string, first checks if it is a shorthand, if not a new named node gets made.
- * The generated terms get cached to prevent the amount of named nodes that get created,
+ * Converts the incoming name (URI or shorthand) to a named node.
+ * The generated terms get cached to reduce the number of created nodes,
  * so only use this for internal constants!
  * @param name - Predicate to potentially transform.
  */
 export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
-  if (typeof name === 'string') {
-    if (shorthands[name]) {
-      return shorthands[name];
-    }
-    if (!termMap[name]) {
-      termMap[name] = namedNode(name);
-    }
-    return termMap[name];
+  if (typeof name !== 'string') {
+    return name;
   }
-  return name;
+  if (!(name in cachedNamedNodes)) {
+    cachedNamedNodes[name] = namedNode(name);
+  }
+  return cachedNamedNodes[name];
 };
+
+/**
+ * @param input - Checks if this is a {@link Term}.
+ */
+export const isTerm = (input?: any): input is Term =>
+  input && typeof input.termType === 'string';
 
 /**
  * Converts a subject to a named node when needed.
@@ -64,4 +63,4 @@ export const toObjectTerm = <T extends Term>(object: T | string, preferLiteral =
  * @param dataType - Object data type (as string).
  */
 export const toLiteral = (object: string | number, dataType: NamedNode): Literal =>
-  DataFactory.literal(object, toCachedNamedNode(dataType));
+  literal(object, dataType);

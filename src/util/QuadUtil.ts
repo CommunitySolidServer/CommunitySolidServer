@@ -5,7 +5,7 @@ import type { Literal, NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import type { Guarded } from './GuardedStream';
 import { pipeSafely } from './StreamUtil';
-import { toSubjectTerm, toPredicateTerm, toObjectTerm } from './UriUtil';
+import { toSubjectTerm, toPredicateTerm, toObjectTerm } from './TermUtil';
 
 /**
  * Generates a quad with the given subject/predicate/object and pushes it to the given array.
