@@ -2,14 +2,14 @@ import type { Server } from 'http';
 import request from 'supertest';
 import WebSocket from 'ws';
 import { ExpressHttpServerFactory } from '../../../src/server/ExpressHttpServerFactory';
+import type { HttpHandlerInput } from '../../../src/server/HttpHandler';
 import { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
-import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { WebSocketHandler } from '../../../src/server/WebSocketHandler';
 import { WebSocketServerFactory } from '../../../src/server/WebSocketServerFactory';
 
 class SimpleHttpHandler extends HttpHandler {
-  public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<void> {
     input.response.end('SimpleHttpHandler');
   }
 }

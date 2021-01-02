@@ -2,6 +2,7 @@ import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
 import { getLoggerFor } from '../logging/LogUtil';
+import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
@@ -71,7 +72,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving if this request can be handled, otherwise rejecting with an Error.
    */
-  public async canHandle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async canHandle(input: HttpHandlerInput): Promise<void> {
     return this.requestParser.canHandle(input.request);
   }
 
@@ -88,7 +89,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    *
    * @returns A promise resolving when the handling is finished.
    */
-  public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<void> {
     let writeData: { response: HttpResponse; result: ResponseDescription | Error };
 
     try {

@@ -1,9 +1,8 @@
 import cors from 'cors';
 import type { CorsOptions } from 'cors';
 import type { RequestHandler } from 'express';
+import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
-import type { HttpRequest } from '../HttpRequest';
-import type { HttpResponse } from '../HttpResponse';
 
 const defaultOptions: CorsOptions = {
   origin: (origin: any, callback: any): void => callback(null, origin ?? '*'),
@@ -32,7 +31,7 @@ export class CorsHandler extends HttpHandler {
     this.corsHandler = cors({ ...defaultOptions, ...options });
   }
 
-  public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<void> {
     return new Promise((resolve): void => {
       this.corsHandler(input.request as any, input.response as any, (): void => resolve());
     });
