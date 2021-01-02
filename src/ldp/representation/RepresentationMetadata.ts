@@ -78,8 +78,8 @@ export class RepresentationMetadata {
       if (!Array.isArray(objects)) {
         objects = [ objects ];
       }
-      for (const object of objects.map(toObjectTerm)) {
-        this.store.addQuad(this.id, namedPredicate, object);
+      for (const object of objects) {
+        this.store.addQuad(this.id, namedPredicate, toObjectTerm(object, true));
       }
     }
   }
@@ -149,7 +149,7 @@ export class RepresentationMetadata {
    * @param object - Value to add.
    */
   public add(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.addQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object));
+    this.store.addQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object, true));
     return this;
   }
 
@@ -159,7 +159,7 @@ export class RepresentationMetadata {
    * @param object - Value to remove.
    */
   public remove(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.removeQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object));
+    this.store.removeQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object, true));
     return this;
   }
 

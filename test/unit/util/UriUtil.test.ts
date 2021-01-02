@@ -1,7 +1,14 @@
 import 'jest-rdf';
 import { literal, namedNode } from '@rdfjs/data-model';
 import { CONTENT_TYPE, XSD } from '../../../src/util/UriConstants';
-import { toCachedNamedNode, toObjectTerm, toLiteral, isTerm } from '../../../src/util/UriUtil';
+import {
+  toCachedNamedNode,
+  toSubjectTerm,
+  toPredicateTerm,
+  toObjectTerm,
+  toLiteral,
+  isTerm,
+} from '../../../src/util/UriUtil';
 
 describe('An UriUtil', (): void => {
   describe('isTerm function', (): void => {
@@ -14,7 +21,7 @@ describe('An UriUtil', (): void => {
     });
   });
 
-  describe('getNamedNode function', (): void => {
+  describe('toCachedNamedNode function', (): void => {
     it('returns the input if it was a named node.', async(): Promise<void> => {
       const term = namedNode('name');
       expect(toCachedNamedNode(term)).toBe(term);
@@ -35,7 +42,29 @@ describe('An UriUtil', (): void => {
     });
   });
 
-  describe('getObjectTerm function', (): void => {
+  describe('toSubjectTerm function', (): void => {
+    it('returns the input if it was a term.', async(): Promise<void> => {
+      const nn = namedNode('name');
+      expect(toSubjectTerm(nn)).toBe(nn);
+    });
+
+    it('returns a named node when a string is used.', async(): Promise<void> => {
+      expect(toSubjectTerm('nn')).toEqualRdfTerm(namedNode('nn'));
+    });
+  });
+
+  describe('toPredicateTerm function', (): void => {
+    it('returns the input if it was a term.', async(): Promise<void> => {
+      const nn = namedNode('name');
+      expect(toPredicateTerm(nn)).toBe(nn);
+    });
+
+    it('returns a named node when a string is used.', async(): Promise<void> => {
+      expect(toPredicateTerm('nn')).toEqualRdfTerm(namedNode('nn'));
+    });
+  });
+
+  describe('toObjectTerm function', (): void => {
     it('returns the input if it was a term.', async(): Promise<void> => {
       const nn = namedNode('name');
       const lit = literal('lit');
@@ -43,12 +72,16 @@ describe('An UriUtil', (): void => {
       expect(toObjectTerm(lit)).toBe(lit);
     });
 
-    it('returns a literal when a string is used.', async(): Promise<void> => {
-      expect(toObjectTerm('lit')).toEqualRdfTerm(literal('lit'));
+    it('returns a named node when a string is used.', async(): Promise<void> => {
+      expect(toObjectTerm('nn')).toEqualRdfTerm(namedNode('nn'));
+    });
+
+    it('returns a literal when a string is used with preferLiteral.', async(): Promise<void> => {
+      expect(toObjectTerm('lit', true)).toEqualRdfTerm(literal('lit'));
     });
   });
 
-  describe('getTypedLiteral function', (): void => {
+  describe('toLiteral function', (): void => {
     it('converts the input to a valid literal with the given type.', async(): Promise<void> => {
       const expected = literal('5', namedNode(XSD.integer));
       expect(toLiteral(5, XSD.integer)).toEqualRdfTerm(expected);

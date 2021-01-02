@@ -2,6 +2,8 @@ import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Term } from 'rdf-js';
 import { CONTENT_TYPE } from './UriConstants';
 
+const { namedNode, literal } = DataFactory;
+
 // Shorthands for commonly used predicates
 const shorthands: Record<string, NamedNode> = {
   contentType: DataFactory.namedNode(CONTENT_TYPE),
@@ -28,7 +30,7 @@ export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
       return shorthands[name];
     }
     if (!termMap[name]) {
-      termMap[name] = DataFactory.namedNode(name);
+      termMap[name] = namedNode(name);
     }
     return termMap[name];
   }
@@ -36,11 +38,25 @@ export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
 };
 
 /**
- * Converts an object to a literal when needed.
- * @param object - Object to potentially transform.
+ * Converts a subject to a named node when needed.
+ * @param subject - Subject to potentially transform.
  */
-export const toObjectTerm = (object: NamedNode | Literal | string): NamedNode | Literal =>
-  typeof object === 'string' ? DataFactory.literal(object) : object;
+export const toSubjectTerm = (subject: NamedNode | string): NamedNode =>
+  typeof subject === 'string' ? namedNode(subject) : subject;
+
+export const toPredicateTerm = toSubjectTerm;
+
+/**
+ * Converts an object term when needed.
+ * @param object - Object to potentially transform.
+ * @param preferLiteral - Whether strings are converted to literals or named nodes.
+ */
+export const toObjectTerm = <T extends Term>(object: T | string, preferLiteral = false): T => {
+  if (typeof object === 'string') {
+    return (preferLiteral ? literal(object) : namedNode(object)) as any;
+  }
+  return object;
+};
 
 /**
  * Creates a literal by first converting the dataType string to a named node.
