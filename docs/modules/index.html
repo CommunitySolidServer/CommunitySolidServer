@@ -278,6 +278,8 @@
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#isrepresentationmetadata" class="tsd-kind-icon">is<wbr>Representation<wbr>Metadata</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#isresourceidentifier" class="tsd-kind-icon">is<wbr>Resource<wbr>Identifier</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#issystemerror" class="tsd-kind-icon">is<wbr>System<wbr>Error</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#parseaccept" class="tsd-kind-icon">parse<wbr>Accept</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#parseacceptcharset" class="tsd-kind-icon">parse<wbr>Accept<wbr>Charset</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#parseacceptencoding" class="tsd-kind-icon">parse<wbr>Accept<wbr>Encoding</a></li>
@@ -292,6 +294,7 @@
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#serializequads" class="tsd-kind-icon">serialize<wbr>Quads</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#setgloballoggerfactory" class="tsd-kind-icon">set<wbr>Global<wbr>Logger<wbr>Factory</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#splitandclean" class="tsd-kind-icon">split<wbr>And<wbr>Clean</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#supportsconversion" class="tsd-kind-icon">supports<wbr>Conversion</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#tocanonicaluripath" class="tsd-kind-icon">to<wbr>Canonical<wbr>Uri<wbr>Path</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#transformquotedstrings" class="tsd-kind-icon">transform<wbr>Quoted<wbr>Strings</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#trimtrailingslashes" class="tsd-kind-icon">trim<wbr>Trailing<wbr>Slashes</a></li>
@@ -308,7 +311,7 @@
 					<div class="tsd-signature tsd-kind-icon">Agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>email<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>login<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/pods/agent/Agent.ts#L4">src/pods/agent/Agent.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/pods/agent/Agent.ts#L4">src/pods/agent/Agent.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -340,7 +343,7 @@
 					<div class="tsd-signature tsd-kind-icon">Http<wbr>Request<span class="tsd-signature-symbol">:</span> <a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IncomingMessage</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/HttpRequest.ts#L7">src/server/HttpRequest.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/server/HttpRequest.ts#L7">src/server/HttpRequest.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -355,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">Http<wbr>Response<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ServerResponse</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/HttpResponse.ts#L6">src/server/HttpResponse.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/server/HttpResponse.ts#L6">src/server/HttpResponse.ts:6</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -370,7 +373,7 @@
 					<div class="tsd-signature tsd-kind-icon">Log<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;warn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;info&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;verbose&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;debug&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;silly&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/logging/LogLevel.ts#L4">src/logging/LogLevel.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/logging/LogLevel.ts#L4">src/logging/LogLevel.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -385,7 +388,7 @@
 					<div class="tsd-signature tsd-kind-icon">Metadata<wbr>Identifier<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/ldp/representation/RepresentationMetadata.ts#L8">src/ldp/representation/RepresentationMetadata.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/ldp/representation/RepresentationMetadata.ts#L8">src/ldp/representation/RepresentationMetadata.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -395,7 +398,7 @@
 					<div class="tsd-signature tsd-kind-icon">Metadata<wbr>Override<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/ldp/representation/RepresentationMetadata.ts#L9">src/ldp/representation/RepresentationMetadata.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/ldp/representation/RepresentationMetadata.ts#L9">src/ldp/representation/RepresentationMetadata.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -408,7 +411,7 @@
 					<div class="tsd-signature tsd-kind-icon">ACL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Append<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Control<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Read<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Write<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>accessTo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>agent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>agentClass<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L5">src/util/UriConstants.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L5">src/util/UriConstants.ts:5</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -450,7 +453,7 @@
 					<div class="tsd-signature tsd-kind-icon">CONTENT_<wbr>TYPE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L72">src/util/UriConstants.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L72">src/util/UriConstants.ts:72</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -460,7 +463,7 @@
 					<div class="tsd-signature tsd-kind-icon">DCTERMS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>modified<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L19">src/util/UriConstants.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L19">src/util/UriConstants.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -478,7 +481,7 @@
 					<div class="tsd-signature tsd-kind-icon">FOAF<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Agent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>AuthenticatedAgent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L24">src/util/UriConstants.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L24">src/util/UriConstants.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -499,7 +502,7 @@
 					<div class="tsd-signature tsd-kind-icon">HTTP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>location<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>slug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L30">src/util/UriConstants.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L30">src/util/UriConstants.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -520,7 +523,7 @@
 					<div class="tsd-signature tsd-kind-icon">LDP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>BasicContainer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Container<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Resource<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>contains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L36">src/util/UriConstants.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L36">src/util/UriConstants.ts:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -547,7 +550,7 @@
 					<div class="tsd-signature tsd-kind-icon">MA<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L45">src/util/UriConstants.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L45">src/util/UriConstants.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -565,7 +568,7 @@
 					<div class="tsd-signature tsd-kind-icon">PIM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Storage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L50">src/util/UriConstants.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L50">src/util/UriConstants.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -583,7 +586,7 @@
 					<div class="tsd-signature tsd-kind-icon">POSIX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>mtime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L55">src/util/UriConstants.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L55">src/util/UriConstants.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -604,7 +607,7 @@
 					<div class="tsd-signature tsd-kind-icon">RDF<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L61">src/util/UriConstants.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L61">src/util/UriConstants.ts:61</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -622,7 +625,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>dateTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>integer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/UriConstants.ts#L66">src/util/UriConstants.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/UriConstants.ts#L66">src/util/UriConstants.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -650,7 +653,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L363">src/util/HeaderUtil.ts:363</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L363">src/util/HeaderUtil.ts:363</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -684,7 +687,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L34">src/util/PathUtil.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L34">src/util/PathUtil.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -712,7 +715,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L39">src/util/PathUtil.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L39">src/util/PathUtil.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -740,7 +743,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L12">src/util/PathUtil.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L12">src/util/PathUtil.ts:12</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -774,7 +777,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/logging/LogUtil.ts#L23">src/logging/LogUtil.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/logging/LogUtil.ts#L23">src/logging/LogUtil.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -814,7 +817,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/StreamUtil.ts#L49">src/util/StreamUtil.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/StreamUtil.ts#L49">src/util/StreamUtil.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -851,7 +854,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L51">src/util/PathUtil.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L51">src/util/PathUtil.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -882,7 +885,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L45">src/util/PathUtil.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L45">src/util/PathUtil.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -913,7 +916,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/ldp/representation/RepresentationMetadata.ts#L14">src/ldp/representation/RepresentationMetadata.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/ldp/representation/RepresentationMetadata.ts#L14">src/ldp/representation/RepresentationMetadata.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -941,7 +944,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/ldp/representation/ResourceIdentifier.ts#L14">src/ldp/representation/ResourceIdentifier.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/ldp/representation/ResourceIdentifier.ts#L14">src/ldp/representation/ResourceIdentifier.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -969,7 +972,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/errors/SystemError.ts#L44">src/util/errors/SystemError.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/errors/SystemError.ts#L44">src/util/errors/SystemError.ts:44</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -983,6 +986,93 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="matchesmediatype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> matches<wbr>Media<wbr>Type</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">matches<wbr>Media<wbr>Type<span class="tsd-signature-symbol">(</span>mediaA<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mediaB<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/storage/conversion/ConversionUtil.ts#L68">src/storage/conversion/ConversionUtil.ts:68</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the given two media types/ranges match each other.
+									Takes wildcards into account.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>mediaA: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media type to match.</p>
+									</div>
+								</li>
+								<li>
+									<h5>mediaB: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media type to match.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>True if the media type patterns can match each other.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="matchingmediatypes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> matching<wbr>Media<wbr>Types</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a>, types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreference.representationpreference.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreference</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/storage/conversion/ConversionUtil.ts#L24">src/storage/conversion/ConversionUtil.ts:24</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Filters media types based on the given preferences.
+										Based on RFC 7231 - Content negotiation.
+										Will add a default <code>internal/*;q=0</code> to the preferences to prevent accidental use of internal types.
+										Since more specific media ranges override less specific ones,
+									this will be ignored if there is a specific internal type preference.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>BadRequestHttpError
+										If the type preferences are undefined or if there are duplicate preferences.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>preferences: <a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences for output type.</p>
+									</div>
+								</li>
+								<li>
+									<h5>types: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media types to compare to the preferences.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_representationpreference.representationpreference.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreference</a><span class="tsd-signature-symbol">[]</span></h4>
+							<p>The weighted and filtered list of matching types.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="parseaccept" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> parse<wbr>Accept</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -992,7 +1082,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L282">src/util/HeaderUtil.ts:282</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L282">src/util/HeaderUtil.ts:282</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1030,7 +1120,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L300">src/util/HeaderUtil.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L300">src/util/HeaderUtil.ts:300</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1068,7 +1158,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L323">src/util/HeaderUtil.ts:323</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L323">src/util/HeaderUtil.ts:323</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1106,7 +1196,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L344">src/util/HeaderUtil.ts:344</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L344">src/util/HeaderUtil.ts:344</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1144,7 +1234,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L403">src/util/HeaderUtil.ts:403</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L403">src/util/HeaderUtil.ts:403</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1176,7 +1266,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L162">src/util/HeaderUtil.ts:162</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L162">src/util/HeaderUtil.ts:162</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1220,7 +1310,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/QuadUtil.ts#L33">src/util/QuadUtil.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/QuadUtil.ts#L33">src/util/QuadUtil.ts:33</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1258,7 +1348,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/StreamUtil.ts#L28">src/util/StreamUtil.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/StreamUtil.ts#L28">src/util/StreamUtil.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1328,7 +1418,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/QuadUtil.ts#L12">src/util/QuadUtil.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/QuadUtil.ts#L12">src/util/QuadUtil.ts:12</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1365,7 +1455,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/StreamUtil.ts#L16">src/util/StreamUtil.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/StreamUtil.ts#L16">src/util/StreamUtil.ts:16</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1397,7 +1487,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/logging/LogUtil.ts#L41">src/logging/LogUtil.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/logging/LogUtil.ts#L41">src/logging/LogUtil.ts:41</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1421,7 +1511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/QuadUtil.ts#L23">src/util/QuadUtil.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/QuadUtil.ts#L23">src/util/QuadUtil.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1459,7 +1549,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/logging/LogUtil.ts#L31">src/logging/LogUtil.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/logging/LogUtil.ts#L31">src/logging/LogUtil.ts:31</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1491,7 +1581,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L128">src/util/HeaderUtil.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L128">src/util/HeaderUtil.ts:128</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1513,6 +1603,56 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="supportsconversion" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> supports<wbr>Conversion</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">supports<wbr>Conversion<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a>, supportedIn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, supportedOut<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/storage/conversion/ConversionUtil.ts#L98">src/storage/conversion/ConversionUtil.ts:98</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Determines whether the given conversion request is supported,
+									given the available content type conversions:</p>
+									<ul>
+										<li>Checks if there is a content type for the input.</li>
+										<li>Checks if the input type is supported by the parser.</li>
+										<li>Checks if the parser can produce one of the preferred output types.
+										Throws an error with details if conversion is not possible.</li>
+									</ul>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>request: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Incoming arguments.</p>
+									</div>
+								</li>
+								<li>
+									<h5>supportedIn: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media types that can be parsed by the converter.</p>
+									</div>
+								</li>
+								<li>
+									<h5>supportedOut: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media types that can be produced by the converter.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="tocanonicaluripath" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> to<wbr>Canonical<wbr>Uri<wbr>Path</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -1522,7 +1662,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L28">src/util/PathUtil.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L28">src/util/PathUtil.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1552,7 +1692,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/HeaderUtil.ts#L106">src/util/HeaderUtil.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/HeaderUtil.ts#L106">src/util/HeaderUtil.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1592,7 +1732,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/PathUtil.ts#L21">src/util/PathUtil.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/dfc1d46/src/util/PathUtil.ts#L21">src/util/PathUtil.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2188,6 +2328,12 @@
 						<a href="index.html#issystemerror" class="tsd-kind-icon">is<wbr>System<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="index.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="index.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#parseaccept" class="tsd-kind-icon">parse<wbr>Accept</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
@@ -2228,6 +2374,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#splitandclean" class="tsd-kind-icon">split<wbr>And<wbr>Clean</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="index.html#supportsconversion" class="tsd-kind-icon">supports<wbr>Conversion</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#tocanonicaluripath" class="tsd-kind-icon">to<wbr>Canonical<wbr>Uri<wbr>Path</a>
