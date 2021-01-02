@@ -25,9 +25,9 @@ interface StoredErrorStream extends NodeJS.EventEmitter {
 }
 
 /**
- * A stream that is guarded.
- * This means that if this stream emits an error before a listener is attached,
- * it will store the error and emit it once a listener is added.
+ * A stream that is guarded from emitting errors when there are no listeners.
+ * If an error occurs while no listener is attached,
+ * it will store the error and emit it once a listener is added (or a timeout occurs).
  */
 export type Guarded<T extends NodeJS.EventEmitter> = T & Guard;
 
