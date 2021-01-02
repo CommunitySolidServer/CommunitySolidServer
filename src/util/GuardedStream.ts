@@ -1,27 +1,17 @@
 import { getLoggerFor } from '../logging/LogUtil';
 
-// Until Typescript adds Nominal types this is how to do it.
-// This can be generalized should we need it in the future for other cases.
-// Also using the guard to store the intermediate variables.
-// See the following issue:
-//   https://github.com/microsoft/TypeScript/issues/202
-
 const logger = getLoggerFor('GuardedStream');
 
 // Using symbols to make sure we don't override existing parameters
-const guard = Symbol('guard');
-const errorGuard = Symbol('error');
-const timeoutGuard = Symbol('timeout');
+const guardedErrors = Symbol('guardedErrors');
+const guardedTimeout = Symbol('guardedTimeout');
 
-// Class used to guard streams
+let attachDefaultErrorListener: (this: Guarded, event: string) => void;
+
+// Private fields for guarded streams
 class Guard {
-  protected [guard]: boolean;
-}
-
-// Hidden interface for guard-related variables
-interface StoredErrorStream extends NodeJS.EventEmitter {
-  [errorGuard]?: Error;
-  [timeoutGuard]?: NodeJS.Timeout;
+  private [guardedErrors]: Error[];
+  private [guardedTimeout]?: NodeJS.Timeout;
 }
 
 /**
@@ -29,36 +19,71 @@ interface StoredErrorStream extends NodeJS.EventEmitter {
  * If an error occurs while no listener is attached,
  * it will store the error and emit it once a listener is added (or a timeout occurs).
  */
-export type Guarded<T extends NodeJS.EventEmitter> = T & Guard;
+export type Guarded<T extends NodeJS.EventEmitter = NodeJS.EventEmitter> = T & Guard;
+
+/**
+ * Determines whether the stream is guarded from emitting errors.
+ */
+export const isGuarded = <T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> => guardedErrors in stream;
+
+/**
+ * Makes sure that listeners always receive the error event of a stream,
+ * even if it was thrown before the listener was attached.
+ * If the input is already guarded nothing will happen.
+ * @param stream - Stream that can potentially throw an error.
+ *
+ * @returns The stream.
+ */
+export const guardStream = <T extends NodeJS.EventEmitter>(stream: T): Guarded<T> => {
+  const guarded = stream as Guarded<T>;
+  if (!isGuarded(stream)) {
+    guarded[guardedErrors] = [];
+    attachDefaultErrorListener.call(guarded, 'error');
+  }
+  return guarded;
+};
 
 /**
  * Callback that is used when a stream emits an error and no error listener is attached.
  * Used to store the error and start the logger timer.
  */
-const defaultErrorListener = function(this: StoredErrorStream, err: Error): void {
-  this[errorGuard] = err;
-  this[timeoutGuard] = setTimeout((): void => {
-    logger.error(`No error listener was attached but error was thrown: ${err.message}`);
-  }, 1000);
+const defaultErrorListener = function(this: Guarded, error: Error): void {
+  this[guardedErrors].push(error);
+  if (!this[guardedTimeout]) {
+    this[guardedTimeout] = setTimeout((): void => {
+      const message = `No error listener was attached but error was thrown: ${error.message}`;
+      logger.error(message, { error });
+    }, 1000);
+  }
 };
-
-let attachDefaultErrorListener: (this: StoredErrorStream, event: string) => void;
 
 /**
  * Callback that is used when a new listener is attached to remove the current error-related fallback functions,
  * or to emit an error if one was thrown in the meantime.
  */
-const removeDefaultErrorListener = function(this: StoredErrorStream, event: string, listener: (err: Error) => void):
+const removeDefaultErrorListener = function(this: Guarded, event: string):
 void {
   if (event === 'error') {
+    // Remove default guard listeners (but reattach when all error listeners are removed)
     this.removeListener('error', defaultErrorListener);
     this.removeListener('newListener', removeDefaultErrorListener);
-    this.on('removeListener', attachDefaultErrorListener);
-    if (this[timeoutGuard]) {
-      clearTimeout(this[timeoutGuard]!);
+    this.addListener('removeListener', attachDefaultErrorListener);
+
+    // Cancel an error timeout
+    if (this[guardedTimeout]) {
+      clearTimeout(this[guardedTimeout]!);
+      this[guardedTimeout] = undefined;
     }
-    if (this[errorGuard]) {
-      setImmediate((): void => listener(this[errorGuard]!));
+
+    // Emit any errors that were guarded
+    const errors = this[guardedErrors];
+    if (errors.length > 0) {
+      this[guardedErrors] = [];
+      setImmediate((): void => {
+        for (const error of errors) {
+          this.emit('error', error);
+        }
+      });
     }
   }
 };
@@ -67,31 +92,10 @@ void {
  * Callback that is used to make sure the error-related fallback functions are re-applied
  * when all error listeners are removed.
  */
-attachDefaultErrorListener = function(this: StoredErrorStream, event: string): void {
+attachDefaultErrorListener = function(this: Guarded, event: string): void {
   if (event === 'error' && this.listenerCount('error') === 0) {
-    this.on('error', defaultErrorListener);
-    this.on('newListener', removeDefaultErrorListener);
+    this.addListener('error', defaultErrorListener);
+    this.addListener('newListener', removeDefaultErrorListener);
     this.removeListener('removeListener', attachDefaultErrorListener);
   }
-};
-
-/**
- * Makes sure that listeners always receive the error event of a stream,
- * even if it was thrown before the listener was attached.
- * If the input is already guarded nothing will happen.
- * @param stream - Stream that can potentially throw an error.
- *
- * @returns The wrapped stream.
- */
-export const guardStream = <T extends NodeJS.EventEmitter>(stream: T): Guarded<T> => {
-  const guarded = stream as Guarded<T>;
-  if (guarded[guard]) {
-    return guarded;
-  }
-
-  guarded.on('error', defaultErrorListener);
-  guarded.on('newListener', removeDefaultErrorListener);
-
-  guarded[guard] = true;
-  return guarded;
 };
