@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>util/UriUtil | Community Solid Server</title>
+	<title>util/TermUtil | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">Community Solid Server</a>
 				</li>
 				<li>
-					<a href="util_uriutil.html">util/UriUtil</a>
+					<a href="util_termutil.html">util/TermUtil</a>
 				</li>
 			</ul>
-			<h1>Module util/UriUtil</h1>
+			<h1>Module util/TermUtil</h1>
 		</div>
 	</div>
 </header>
@@ -72,12 +72,12 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_uriutil.html#isterm" class="tsd-kind-icon">is<wbr>Term</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_uriutil.html#tocachednamednode" class="tsd-kind-icon">to<wbr>Cached<wbr>Named<wbr>Node</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_uriutil.html#toliteral" class="tsd-kind-icon">to<wbr>Literal</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="util_uriutil.html#toobjectterm" class="tsd-kind-icon">to<wbr>Object<wbr>Term</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_uriutil.html#topredicateterm" class="tsd-kind-icon">to<wbr>Predicate<wbr>Term</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_uriutil.html#tosubjectterm" class="tsd-kind-icon">to<wbr>Subject<wbr>Term</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_termutil.html#isterm" class="tsd-kind-icon">is<wbr>Term</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_termutil.html#tocachednamednode" class="tsd-kind-icon">to<wbr>Cached<wbr>Named<wbr>Node</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_termutil.html#toliteral" class="tsd-kind-icon">to<wbr>Literal</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="util_termutil.html#toobjectterm" class="tsd-kind-icon">to<wbr>Object<wbr>Term</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_termutil.html#topredicateterm" class="tsd-kind-icon">to<wbr>Predicate<wbr>Term</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_termutil.html#tosubjectterm" class="tsd-kind-icon">to<wbr>Subject<wbr>Term</a></li>
 							</ul>
 						</section>
 					</div>
@@ -95,7 +95,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L18">src/util/UriUtil.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L36">src/util/TermUtil.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -121,14 +121,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L27">src/util/UriUtil.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L23">src/util/TermUtil.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Converts the incoming name to a named node if needed.
-										In case of string, first checks if it is a shorthand, if not a new named node gets made.
-										The generated terms get cached to prevent the amount of named nodes that get created,
+									<p>Converts the incoming name (URI or shorthand) to a named node.
+										The generated terms get cached to reduce the number of created nodes,
 									so only use this for internal constants!</p>
 								</div>
 							</div>
@@ -155,7 +154,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L66">src/util/UriUtil.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L65">src/util/TermUtil.ts:65</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -192,7 +191,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L54">src/util/UriUtil.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L53">src/util/TermUtil.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,7 +234,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L47">src/util/UriUtil.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L46">src/util/TermUtil.ts:46</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -258,7 +257,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/79a8240/src/util/UriUtil.ts#L44">src/util/UriUtil.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/2e18855/src/util/TermUtil.ts#L43">src/util/TermUtil.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -288,29 +287,29 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="util_uriutil.html">util/<wbr>Uri<wbr>Util</a>
+						<a href="util_termutil.html">util/<wbr>Term<wbr>Util</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="util_uriutil.html#isterm" class="tsd-kind-icon">is<wbr>Term</a>
+						<a href="util_termutil.html#isterm" class="tsd-kind-icon">is<wbr>Term</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="util_uriutil.html#tocachednamednode" class="tsd-kind-icon">to<wbr>Cached<wbr>Named<wbr>Node</a>
+						<a href="util_termutil.html#tocachednamednode" class="tsd-kind-icon">to<wbr>Cached<wbr>Named<wbr>Node</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="util_uriutil.html#toliteral" class="tsd-kind-icon">to<wbr>Literal</a>
+						<a href="util_termutil.html#toliteral" class="tsd-kind-icon">to<wbr>Literal</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="util_uriutil.html#toobjectterm" class="tsd-kind-icon">to<wbr>Object<wbr>Term</a>
+						<a href="util_termutil.html#toobjectterm" class="tsd-kind-icon">to<wbr>Object<wbr>Term</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="util_uriutil.html#topredicateterm" class="tsd-kind-icon">to<wbr>Predicate<wbr>Term</a>
+						<a href="util_termutil.html#topredicateterm" class="tsd-kind-icon">to<wbr>Predicate<wbr>Term</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="util_uriutil.html#tosubjectterm" class="tsd-kind-icon">to<wbr>Subject<wbr>Term</a>
+						<a href="util_termutil.html#tosubjectterm" class="tsd-kind-icon">to<wbr>Subject<wbr>Term</a>
 					</li>
 				</ul>
 			</nav>
