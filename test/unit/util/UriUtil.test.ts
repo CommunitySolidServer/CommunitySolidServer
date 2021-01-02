@@ -84,7 +84,7 @@ describe('An UriUtil', (): void => {
   describe('toLiteral function', (): void => {
     it('converts the input to a valid literal with the given type.', async(): Promise<void> => {
       const expected = literal('5', namedNode(XSD.integer));
-      expect(toLiteral(5, XSD.integer)).toEqualRdfTerm(expected);
+      expect(toLiteral(5, XSD.terms.integer)).toEqualRdfTerm(expected);
     });
   });
 });

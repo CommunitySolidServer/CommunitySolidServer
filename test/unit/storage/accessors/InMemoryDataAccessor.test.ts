@@ -1,12 +1,12 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
+import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { toCachedNamedNode } from '../../../../src/util/UriUtil';
 import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/Vocabularies';
 
 describe('An InMemoryDataAccessor', (): void => {
@@ -80,13 +80,13 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer({ path: `${base}container/container2` }, metadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
-        [ toCachedNamedNode(`${base}container/resource`), toCachedNamedNode(`${base}container/container2/`) ],
+        [ DataFactory.namedNode(`${base}container/resource`), DataFactory.namedNode(`${base}container/container2/`) ],
       );
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}resource` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Resource) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Resource });
       await expect(accessor.writeDocument(identifier, data, inputMetadata)).resolves.toBeUndefined();
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}resource`);
@@ -97,7 +97,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('adds stored metadata when requesting container metadata.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Container });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
@@ -109,7 +109,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('can overwrite the metadata of an existing container without overwriting children.', async(): Promise<void> => {
       const identifier = { path: `${base}container/` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Container });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(
@@ -117,7 +117,7 @@ describe('An InMemoryDataAccessor', (): void => {
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
-      newMetadata.add(RDF.type, toCachedNamedNode(LDP.BasicContainer));
+      newMetadata.add(RDF.type, LDP.terms.BasicContainer);
       await expect(accessor.writeContainer(identifier, newMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);
@@ -135,7 +135,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('can write to the root container without overriding its children.', async(): Promise<void> => {
       const identifier = { path: `${base}` };
-      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: toCachedNamedNode(LDP.Container) });
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Container });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
       await expect(accessor.writeDocument(

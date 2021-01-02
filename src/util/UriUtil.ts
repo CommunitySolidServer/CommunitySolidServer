@@ -1,12 +1,12 @@
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Term } from 'rdf-js';
-import { CONTENT_TYPE } from './Vocabularies';
+import { CONTENT_TYPE_TERM } from './Vocabularies';
 
 const { namedNode, literal } = DataFactory;
 
 // Shorthands for commonly used predicates
 const shorthands: Record<string, NamedNode> = {
-  contentType: DataFactory.namedNode(CONTENT_TYPE),
+  contentType: CONTENT_TYPE_TERM,
 };
 
 // Caches named node conversions
@@ -63,5 +63,5 @@ export const toObjectTerm = <T extends Term>(object: T | string, preferLiteral =
  * @param object - Object value.
  * @param dataType - Object data type (as string).
  */
-export const toLiteral = (object: string | number, dataType: string | NamedNode): Literal =>
+export const toLiteral = (object: string | number, dataType: NamedNode): Literal =>
   DataFactory.literal(object, toCachedNamedNode(dataType));

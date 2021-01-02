@@ -27,7 +27,6 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { toCachedNamedNode } from '../../util/UriUtil';
 import { CONTENT_TYPE, LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
 
@@ -226,7 +225,7 @@ export class SparqlDataAccessor implements DataAccessor {
     // Insert new metadata and containment triple
     const insert: GraphQuads[] = [ this.sparqlUpdateGraph(metaName, metadata.quads()) ];
     if (parent) {
-      insert.push(this.sparqlUpdateGraph(parent, [ quad(parent, toCachedNamedNode(LDP.contains), name) ]));
+      insert.push(this.sparqlUpdateGraph(parent, [ quad(parent, LDP.terms.contains, name) ]));
     }
 
     // Necessary updates: delete metadata and insert new data
@@ -272,7 +271,7 @@ export class SparqlDataAccessor implements DataAccessor {
     if (parent) {
       update.updates.push({
         updateType: 'delete',
-        delete: [ this.sparqlUpdateGraph(parent, [ quad(parent, toCachedNamedNode(LDP.contains), name) ]) ],
+        delete: [ this.sparqlUpdateGraph(parent, [ quad(parent, LDP.terms.contains, name) ]) ],
       });
     }
 

@@ -18,7 +18,6 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { toCachedNamedNode } from '../../../src/util/UriUtil';
 import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
@@ -160,7 +159,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
@@ -169,7 +168,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const mock = jest.spyOn(quadUtil, 'parseQuads').mockImplementationOnce(async(): Promise<any> => {
         throw 'apple';
       });
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.addResource(resourceID, representation)).rejects.toBe('apple');
       mock.mockRestore();
     });
@@ -186,7 +185,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can write containers.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
       const result = await store.addResource(resourceID, representation);
@@ -269,14 +268,14 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.identifier = DataFactory.namedNode(resourceID.path);
       const newRepresentation = { ...representation };
       newRepresentation.metadata = new RepresentationMetadata(representation.metadata);
-      newRepresentation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      newRepresentation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, newRepresentation))
         .rejects.toThrow(new ConflictHttpError('Input resource type does not match existing resource type.'));
     });
 
     it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
       );
@@ -294,7 +293,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
@@ -332,7 +331,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with containment triples.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.type, toCachedNamedNode(LDP.Container));
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
       representation.data = guardedStreamFrom(
@@ -390,7 +389,7 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('will error when deleting a root storage container.', async(): Promise<void> => {
-      representation.metadata.add(RDF.type, toCachedNamedNode(PIM.Storage));
+      representation.metadata.add(RDF.type, PIM.terms.Storage);
       accessor.data[`${root}container`] = representation;
       await expect(store.deleteResource({ path: `${root}container` }))
         .rejects.toThrow(new MethodNotAllowedHttpError('Cannot delete a root storage container.'));

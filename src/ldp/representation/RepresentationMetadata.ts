@@ -2,6 +2,7 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { toObjectTerm, toCachedNamedNode, isTerm } from '../../util/UriUtil';
+import { CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -223,10 +224,10 @@ export class RepresentationMetadata {
    * Shorthand for the CONTENT_TYPE predicate.
    */
   public get contentType(): string | undefined {
-    return this.get(toCachedNamedNode('contentType'))?.value;
+    return this.get(CONTENT_TYPE_TERM)?.value;
   }
 
   public set contentType(input) {
-    this.set(toCachedNamedNode('contentType'), input);
+    this.set(CONTENT_TYPE_TERM, input);
   }
 }

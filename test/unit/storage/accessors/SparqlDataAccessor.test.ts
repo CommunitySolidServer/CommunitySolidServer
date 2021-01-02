@@ -14,8 +14,7 @@ import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/Unsup
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-import { toCachedNamedNode } from '../../../../src/util/UriUtil';
-import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE_TERM, LDP, RDF } from '../../../../src/util/Vocabularies';
 
 const { literal, namedNode, quad } = DataFactory;
 
@@ -94,7 +93,7 @@ describe('A SparqlDataAccessor', (): void => {
     metadata = await accessor.getMetadata({ path: 'http://identifier' });
     expect(metadata.quads()).toBeRdfIsomorphic([
       quad(namedNode('this'), namedNode('a'), namedNode('triple')),
-      quad(namedNode('http://identifier'), toCachedNamedNode(CONTENT_TYPE), literal(INTERNAL_QUADS)),
+      quad(namedNode('http://identifier'), CONTENT_TYPE_TERM, literal(INTERNAL_QUADS)),
     ]);
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
@@ -135,7 +134,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('overwrites the metadata when writing a container and updates parent.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource), toCachedNamedNode(LDP.Container) ]});
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
     await expect(accessor.writeContainer({ path: 'http://test.com/container/' }, metadata)).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -154,7 +153,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('does not write containment triples when writing to a root container.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource), toCachedNamedNode(LDP.Container) ]});
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
     await expect(accessor.writeContainer({ path: 'http://test.com/' }, metadata)).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -172,7 +171,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('overwrites the data and metadata when writing a resource and updates parent.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource) ]});
+      { [RDF.type]: [ LDP.terms.Resource ]});
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
       .resolves.toBeUndefined();
 
@@ -191,7 +190,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('overwrites the data and metadata when writing an empty resource.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/resource' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource) ]});
+      { [RDF.type]: [ LDP.terms.Resource ]});
     const empty = guardedStreamFrom([]);
     await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, empty, metadata))
       .resolves.toBeUndefined();
@@ -210,7 +209,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('removes all references when deleting a resource.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource), toCachedNamedNode(LDP.Container) ]});
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
     await expect(accessor.deleteResource({ path: 'http://test.com/container/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
@@ -224,7 +223,7 @@ describe('A SparqlDataAccessor', (): void => {
 
   it('does not try to remove containment triples when deleting a root container.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/' },
-      { [RDF.type]: [ toCachedNamedNode(LDP.Resource), toCachedNamedNode(LDP.Container) ]});
+      { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
     await expect(accessor.deleteResource({ path: 'http://test.com/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);

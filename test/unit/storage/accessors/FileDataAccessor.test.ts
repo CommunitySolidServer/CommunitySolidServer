@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { DataFactory } from 'n3';
+import { namedNode } from '@rdfjs/data-model';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
@@ -12,8 +12,8 @@ import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { toCachedNamedNode, toLiteral } from '../../../../src/util/UriUtil';
-import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/Vocabularies';
+import { toLiteral } from '../../../../src/util/UriUtil';
+import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../../../src/util/Vocabularies';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
@@ -98,9 +98,9 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
       expect(metadata.contentType).toBe('text/turtle');
       expect(metadata.get(RDF.type)?.value).toBe(LDP.Resource);
-      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.integer));
-      expect(metadata.get(DCTERMS.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.integer));
+      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
+      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
     });
 
     it('generates the metadata for a container and its non-meta children.', async(): Promise<void> => {
@@ -108,23 +108,23 @@ describe('A FileDataAccessor', (): void => {
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.identifier.value).toBe(`${base}container/`);
       expect(metadata.getAll(RDF.type)).toEqualRdfTermArray(
-        [ toCachedNamedNode(LDP.Container), toCachedNamedNode(LDP.BasicContainer), toCachedNamedNode(LDP.Resource) ],
+        [ LDP.terms.Container, LDP.terms.BasicContainer, LDP.terms.Resource ],
       );
-      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral(0, XSD.integer));
-      expect(metadata.get(DCTERMS.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.integer));
+      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral(0, XSD.terms.integer));
+      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
-        [ toCachedNamedNode(`${base}container/resource`), toCachedNamedNode(`${base}container/container2/`) ],
+        [ namedNode(`${base}container/resource`), namedNode(`${base}container/container2/`) ],
       );
 
       const childQuads = metadata.quads().filter((quad): boolean =>
         quad.subject.value === `${base}container/resource`);
       const childMetadata = new RepresentationMetadata({ path: `${base}container/resource` }).addQuads(childQuads);
       expect(childMetadata.get(RDF.type)?.value).toBe(LDP.Resource);
-      expect(childMetadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.integer));
-      expect(childMetadata.get(DCTERMS.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.dateTime));
+      expect(childMetadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
+      expect(childMetadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(childMetadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.integer));
+        XSD.terms.integer));
     });
 
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {
@@ -168,7 +168,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
-      metadata.add(RDF.type, toCachedNamedNode(LDP.Resource));
+      metadata.add(RDF.type, LDP.terms.Resource);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -212,7 +212,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('updates the filename if the content-type gets updated.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
-      metadata.identifier = DataFactory.namedNode(`${base}resource`);
+      metadata.identifier = namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
       metadata.add('new', 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -224,7 +224,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
-      metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
+      metadata.identifier = namedNode(`${base}resource.txt`);
       metadata.contentType = 'text/turtle';
       metadata.add('new', 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))
@@ -289,7 +289,7 @@ describe('A FileDataAccessor', (): void => {
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
       metadata = new RepresentationMetadata(
         { path: `${base}container/` },
-        { [RDF.type]: [ toCachedNamedNode(LDP.BasicContainer), toCachedNamedNode(LDP.Resource) ]},
+        { [RDF.type]: [ LDP.terms.BasicContainer, LDP.terms.Resource ]},
       );
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       expect(cache.data.container).toEqual({});

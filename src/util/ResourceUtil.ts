@@ -2,7 +2,6 @@ import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { pushQuad } from './QuadUtil';
-import { toCachedNamedNode } from './UriUtil';
 import { LDP, RDF } from './Vocabularies';
 
 /**
@@ -15,10 +14,10 @@ import { LDP, RDF } from './Vocabularies';
 export const generateResourceQuads = (subject: NamedNode, isContainer: boolean): Quad[] => {
   const quads: Quad[] = [];
   if (isContainer) {
-    pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.Container));
-    pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.BasicContainer));
+    pushQuad(quads, subject, RDF.terms.type, LDP.terms.Container);
+    pushQuad(quads, subject, RDF.terms.type, LDP.terms.BasicContainer);
   }
-  pushQuad(quads, subject, toCachedNamedNode(RDF.type), toCachedNamedNode(LDP.Resource));
+  pushQuad(quads, subject, RDF.terms.type, LDP.terms.Resource);
 
   return quads;
 };
