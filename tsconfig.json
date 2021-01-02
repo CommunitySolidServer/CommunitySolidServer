@@ -5,7 +5,6 @@
     "incremental": true,
     "inlineSources": true,
     "newLine": "lf",
-    "noUnusedLocals": true,
     "outDir": "dist",
     "preserveConstEnums": true,
     "sourceMap": true,
