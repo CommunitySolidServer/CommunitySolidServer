@@ -72,7 +72,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    * @returns A promise resolving if this request can be handled, otherwise rejecting with an Error.
    */
   public async canHandle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
-    return this.requestParser.canHandle(input.request);
+    await this.requestParser.canHandle(input.request);
   }
 
   /**

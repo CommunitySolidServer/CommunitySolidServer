@@ -15,7 +15,7 @@ describe('A WaterfallHandler', (): void => {
     it('errors if its handle function is called.', async(): Promise<void> => {
       const handler = new WaterfallHandler([]);
 
-      await expect(handler.handle(null)).rejects.toThrow(Error);
+      await expect(handler.handle(null, undefined as any)).rejects.toThrow(Error);
     });
   });
 
@@ -24,6 +24,7 @@ describe('A WaterfallHandler', (): void => {
     let handlerFalse: AsyncHandler<any, any>;
     let canHandleFn: jest.Mock<Promise<void>, [any]>;
     let handleFn: jest.Mock<Promise<void>, [any]>;
+    let handleThrowFn: jest.Mock<Promise<void>, [any]>;
 
     beforeEach(async(): Promise<void> => {
       handlerTrue = new StaticAsyncHandler(true, null);
@@ -31,14 +32,19 @@ describe('A WaterfallHandler', (): void => {
 
       canHandleFn = jest.fn(async(input: any): Promise<any> => input);
       handleFn = jest.fn(async(input: any): Promise<any> => input);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      handleThrowFn = jest.fn(async(input: any): Promise<any> => {
+        throw new Error('All handlers failed');
+      });
       handlerTrue.canHandle = canHandleFn;
       handlerTrue.handle = handleFn;
+      handlerFalse.handle = handleThrowFn;
     });
 
     it('can handle data if a handler supports it.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerTrue ]);
 
-      await expect(handler.canHandle(null)).resolves.toBeUndefined();
+      await expect(handler.canHandle(null)).resolves.toStrictEqual(handlerTrue);
     });
 
     it('can not handle data if no handler supports it.', async(): Promise<void> => {
@@ -59,15 +65,15 @@ describe('A WaterfallHandler', (): void => {
     it('handles data if a handler supports it.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerTrue ]);
 
-      await expect(handler.handle('test')).resolves.toEqual('test');
-      expect(canHandleFn).toHaveBeenCalledTimes(1);
+      await expect(handler.handle('test', handlerTrue)).resolves.toEqual('test');
+      expect(canHandleFn).toHaveBeenCalledTimes(0);
       expect(handleFn).toHaveBeenCalledTimes(1);
     });
 
     it('errors if the handle function is called but no handler supports the data.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.handle('test')).rejects.toThrow('All handlers failed');
+      await expect(handler.handle('test', handlerFalse)).rejects.toThrow('All handlers failed');
     });
 
     it('only calls the canHandle function once of its handlers when handleSafe is called.', async(): Promise<void> => {
