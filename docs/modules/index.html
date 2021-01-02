@@ -241,6 +241,7 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="index.html#agent" class="tsd-kind-icon">Agent</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="index.html#guarded" class="tsd-kind-icon">Guarded</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="index.html#httprequest" class="tsd-kind-icon">Http<wbr>Request</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="index.html#httpresponse" class="tsd-kind-icon">Http<wbr>Response</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="index.html#loglevel" class="tsd-kind-icon">Log<wbr>Level</a></li>
@@ -277,9 +278,11 @@
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#encodeuripathcomponents" class="tsd-kind-icon">encode<wbr>Uri<wbr>Path<wbr>Components</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#ensuretrailingslash" class="tsd-kind-icon">ensure<wbr>Trailing<wbr>Slash</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#getloggerfor" class="tsd-kind-icon">get<wbr>Logger<wbr>For</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="index.html#guardstream" class="tsd-kind-icon">guard<wbr>Stream</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#guardedstreamfrom" class="tsd-kind-icon">guarded<wbr>Stream<wbr>From</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#iscontaineridentifier" class="tsd-kind-icon">is<wbr>Container<wbr>Identifier</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#iscontainerpath" class="tsd-kind-icon">is<wbr>Container<wbr>Path</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter"><a href="index.html#isguarded" class="tsd-kind-icon">is<wbr>Guarded</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#isrepresentationmetadata" class="tsd-kind-icon">is<wbr>Representation<wbr>Metadata</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#isresourceidentifier" class="tsd-kind-icon">is<wbr>Resource<wbr>Identifier</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="index.html#issystemerror" class="tsd-kind-icon">is<wbr>System<wbr>Error</a></li>
@@ -316,7 +319,7 @@
 					<div class="tsd-signature tsd-kind-icon">Agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>email<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>login<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/pods/agent/Agent.ts#L4">src/pods/agent/Agent.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/pods/agent/Agent.ts#L4">src/pods/agent/Agent.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -342,13 +345,36 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="guarded" class="tsd-anchor"></a>
+					<h3>Guarded</h3>
+					<div class="tsd-signature tsd-kind-icon">Guarded&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Guard</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/GuardedStream.ts#L22">src/util/GuardedStream.ts:22</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A stream that is guarded from emitting errors when there are no listeners.
+								If an error occurs while no listener is attached,
+							it will store the error and emit it once a listener is added (or a timeout occurs).</p>
+						</div>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NodeJS.EventEmitter</span> = <span class="tsd-signature-type">NodeJS.EventEmitter</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="httprequest" class="tsd-anchor"></a>
 					<h3>Http<wbr>Request</h3>
 					<div class="tsd-signature tsd-kind-icon">Http<wbr>Request<span class="tsd-signature-symbol">:</span> <a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IncomingMessage</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/server/HttpRequest.ts#L7">src/server/HttpRequest.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/server/HttpRequest.ts#L7">src/server/HttpRequest.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -363,7 +389,7 @@
 					<div class="tsd-signature tsd-kind-icon">Http<wbr>Response<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ServerResponse</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/server/HttpResponse.ts#L6">src/server/HttpResponse.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/server/HttpResponse.ts#L6">src/server/HttpResponse.ts:6</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -378,7 +404,7 @@
 					<div class="tsd-signature tsd-kind-icon">Log<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;warn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;info&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;verbose&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;debug&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;silly&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/logging/LogLevel.ts#L4">src/logging/LogLevel.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/logging/LogLevel.ts#L4">src/logging/LogLevel.ts:4</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -393,7 +419,7 @@
 					<div class="tsd-signature tsd-kind-icon">Metadata<wbr>Identifier<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/ldp/representation/RepresentationMetadata.ts#L8">src/ldp/representation/RepresentationMetadata.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/ldp/representation/RepresentationMetadata.ts#L8">src/ldp/representation/RepresentationMetadata.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -403,7 +429,7 @@
 					<div class="tsd-signature tsd-kind-icon">Metadata<wbr>Override<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/ldp/representation/RepresentationMetadata.ts#L9">src/ldp/representation/RepresentationMetadata.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/ldp/representation/RepresentationMetadata.ts#L9">src/ldp/representation/RepresentationMetadata.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -416,7 +442,7 @@
 					<div class="tsd-signature tsd-kind-icon">ACL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Append<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Control<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Read<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Write<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>accessTo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>agent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>agentClass<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>default<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L5">src/util/UriConstants.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L5">src/util/UriConstants.ts:5</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -458,7 +484,7 @@
 					<div class="tsd-signature tsd-kind-icon">APPLICATION_<wbr>OCTET_<wbr>STREAM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;application/octet-stream&quot;</span><span class="tsd-signature-symbol"> = &#x27;application/octet-stream&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/ContentTypes.ts#L3">src/util/ContentTypes.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/ContentTypes.ts#L3">src/util/ContentTypes.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -468,7 +494,7 @@
 					<div class="tsd-signature tsd-kind-icon">APPLICATION_<wbr>SPARQL_<wbr>UPDATE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;application/sparql-update&quot;</span><span class="tsd-signature-symbol"> = &#x27;application/sparql-update&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/ContentTypes.ts#L4">src/util/ContentTypes.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/ContentTypes.ts#L4">src/util/ContentTypes.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -478,7 +504,7 @@
 					<div class="tsd-signature tsd-kind-icon">CONTENT_<wbr>TYPE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L72">src/util/UriConstants.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L72">src/util/UriConstants.ts:72</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -488,7 +514,7 @@
 					<div class="tsd-signature tsd-kind-icon">DCTERMS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>modified<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L19">src/util/UriConstants.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L19">src/util/UriConstants.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -506,7 +532,7 @@
 					<div class="tsd-signature tsd-kind-icon">FOAF<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Agent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>AuthenticatedAgent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L24">src/util/UriConstants.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L24">src/util/UriConstants.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -527,7 +553,7 @@
 					<div class="tsd-signature tsd-kind-icon">HTTP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>location<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>slug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L30">src/util/UriConstants.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L30">src/util/UriConstants.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -548,7 +574,7 @@
 					<div class="tsd-signature tsd-kind-icon">INTERNAL_<wbr>ALL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;internal/*&quot;</span><span class="tsd-signature-symbol"> = &#x27;internal/*&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/ContentTypes.ts#L7">src/util/ContentTypes.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/ContentTypes.ts#L7">src/util/ContentTypes.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -558,7 +584,7 @@
 					<div class="tsd-signature tsd-kind-icon">INTERNAL_<wbr>QUADS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;internal/quads&quot;</span><span class="tsd-signature-symbol"> = &#x27;internal/quads&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/ContentTypes.ts#L8">src/util/ContentTypes.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/ContentTypes.ts#L8">src/util/ContentTypes.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -568,7 +594,7 @@
 					<div class="tsd-signature tsd-kind-icon">LDP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>BasicContainer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Container<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>Resource<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>contains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L36">src/util/UriConstants.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L36">src/util/UriConstants.ts:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -595,7 +621,7 @@
 					<div class="tsd-signature tsd-kind-icon">MA<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>format<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L45">src/util/UriConstants.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L45">src/util/UriConstants.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -613,7 +639,7 @@
 					<div class="tsd-signature tsd-kind-icon">PIM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Storage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L50">src/util/UriConstants.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L50">src/util/UriConstants.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -631,7 +657,7 @@
 					<div class="tsd-signature tsd-kind-icon">POSIX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>mtime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L55">src/util/UriConstants.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L55">src/util/UriConstants.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -652,7 +678,7 @@
 					<div class="tsd-signature tsd-kind-icon">RDF<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L61">src/util/UriConstants.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L61">src/util/UriConstants.ts:61</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -670,7 +696,7 @@
 					<div class="tsd-signature tsd-kind-icon">TEXT_<wbr>TURTLE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;text/turtle&quot;</span><span class="tsd-signature-symbol"> = &#x27;text/turtle&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/ContentTypes.ts#L2">src/util/ContentTypes.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/ContentTypes.ts#L2">src/util/ContentTypes.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -680,7 +706,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>dateTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>integer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/UriConstants.ts#L66">src/util/UriConstants.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/UriConstants.ts#L66">src/util/UriConstants.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -708,7 +734,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L363">src/util/HeaderUtil.ts:363</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L363">src/util/HeaderUtil.ts:363</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -742,7 +768,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L34">src/util/PathUtil.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L34">src/util/PathUtil.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -770,7 +796,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L39">src/util/PathUtil.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L39">src/util/PathUtil.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -798,7 +824,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L12">src/util/PathUtil.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L12">src/util/PathUtil.ts:12</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -832,7 +858,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/logging/LogUtil.ts#L23">src/logging/LogUtil.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/logging/LogUtil.ts#L23">src/logging/LogUtil.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -862,6 +888,46 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="guardstream" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> guard<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">guard<wbr>Stream&lt;T&gt;<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/GuardedStream.ts#L37">src/util/GuardedStream.ts:37</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Makes sure that listeners always receive the error event of a stream,
+										even if it was thrown before the listener was attached.
+									If the input is already guarded nothing will happen.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stream: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Stream that can potentially throw an error.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The stream.</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="guardedstreamfrom" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> guarded<wbr>Stream<wbr>From</h3>
@@ -872,12 +938,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/StreamUtil.ts#L49">src/util/StreamUtil.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/StreamUtil.ts#L49">src/util/StreamUtil.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Converts an iterable to a stream and applies an error guard so that it is <a href="util_guardedstream.html#guarded">Guarded</a>.</p>
+									<p>Converts an iterable to a stream and applies an error guard so that it is <a href="index.html#guarded">Guarded</a>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -909,7 +975,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L51">src/util/PathUtil.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L51">src/util/PathUtil.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -940,7 +1006,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L45">src/util/PathUtil.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L45">src/util/PathUtil.ts:45</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -961,6 +1027,40 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="isguarded" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> is<wbr>Guarded</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Guarded&lt;T&gt;<span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">stream</span><span class="tsd-signature-symbol"> is </span><a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/GuardedStream.ts#L27">src/util/GuardedStream.ts:27</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Determines whether the stream is guarded from emitting errors.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stream: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">stream</span><span class="tsd-signature-symbol"> is </span><a href="util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="isrepresentationmetadata" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> is<wbr>Representation<wbr>Metadata</h3>
@@ -971,7 +1071,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/ldp/representation/RepresentationMetadata.ts#L14">src/ldp/representation/RepresentationMetadata.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/ldp/representation/RepresentationMetadata.ts#L14">src/ldp/representation/RepresentationMetadata.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -999,7 +1099,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/ldp/representation/ResourceIdentifier.ts#L14">src/ldp/representation/ResourceIdentifier.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/ldp/representation/ResourceIdentifier.ts#L14">src/ldp/representation/ResourceIdentifier.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1027,7 +1127,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/errors/SystemError.ts#L44">src/util/errors/SystemError.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/errors/SystemError.ts#L44">src/util/errors/SystemError.ts:44</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1050,7 +1150,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/storage/conversion/ConversionUtil.ts#L68">src/storage/conversion/ConversionUtil.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/storage/conversion/ConversionUtil.ts#L68">src/storage/conversion/ConversionUtil.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1089,7 +1189,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/storage/conversion/ConversionUtil.ts#L24">src/storage/conversion/ConversionUtil.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/storage/conversion/ConversionUtil.ts#L24">src/storage/conversion/ConversionUtil.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1137,7 +1237,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L282">src/util/HeaderUtil.ts:282</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L282">src/util/HeaderUtil.ts:282</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1175,7 +1275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L300">src/util/HeaderUtil.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L300">src/util/HeaderUtil.ts:300</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1213,7 +1313,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L323">src/util/HeaderUtil.ts:323</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L323">src/util/HeaderUtil.ts:323</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1251,7 +1351,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L344">src/util/HeaderUtil.ts:344</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L344">src/util/HeaderUtil.ts:344</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1289,7 +1389,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L403">src/util/HeaderUtil.ts:403</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L403">src/util/HeaderUtil.ts:403</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1321,7 +1421,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L162">src/util/HeaderUtil.ts:162</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L162">src/util/HeaderUtil.ts:162</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1365,7 +1465,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/QuadUtil.ts#L33">src/util/QuadUtil.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/QuadUtil.ts#L33">src/util/QuadUtil.ts:33</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1403,14 +1503,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/StreamUtil.ts#L28">src/util/StreamUtil.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/StreamUtil.ts#L28">src/util/StreamUtil.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Pipes one stream into another and emits errors of the first stream with the second.
 										In case of an error in the first stream the second one will be destroyed with the given error.
-									This will also make the stream <a href="util_guardedstream.html#guarded">Guarded</a>.</p>
+									This will also make the stream <a href="index.html#guarded">Guarded</a>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1473,7 +1573,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/QuadUtil.ts#L12">src/util/QuadUtil.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/QuadUtil.ts#L12">src/util/QuadUtil.ts:12</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1510,7 +1610,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/StreamUtil.ts#L16">src/util/StreamUtil.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/StreamUtil.ts#L16">src/util/StreamUtil.ts:16</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1542,7 +1642,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/logging/LogUtil.ts#L41">src/logging/LogUtil.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/logging/LogUtil.ts#L41">src/logging/LogUtil.ts:41</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1566,7 +1666,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/QuadUtil.ts#L23">src/util/QuadUtil.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/QuadUtil.ts#L23">src/util/QuadUtil.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1604,7 +1704,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/logging/LogUtil.ts#L31">src/logging/LogUtil.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/logging/LogUtil.ts#L31">src/logging/LogUtil.ts:31</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1636,7 +1736,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L128">src/util/HeaderUtil.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L128">src/util/HeaderUtil.ts:128</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1667,7 +1767,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/storage/conversion/ConversionUtil.ts#L98">src/storage/conversion/ConversionUtil.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/storage/conversion/ConversionUtil.ts#L98">src/storage/conversion/ConversionUtil.ts:98</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1717,7 +1817,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L28">src/util/PathUtil.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L28">src/util/PathUtil.ts:28</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1747,7 +1847,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/HeaderUtil.ts#L106">src/util/HeaderUtil.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/HeaderUtil.ts#L106">src/util/HeaderUtil.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1787,7 +1887,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/4df11c1/src/util/PathUtil.ts#L21">src/util/PathUtil.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/4faf916/src/util/PathUtil.ts#L21">src/util/PathUtil.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2301,6 +2401,9 @@
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="index.html#agent" class="tsd-kind-icon">Agent</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="index.html#guarded" class="tsd-kind-icon">Guarded</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="index.html#httprequest" class="tsd-kind-icon">Http<wbr>Request</a>
 					</li>
@@ -2379,6 +2482,9 @@
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#getloggerfor" class="tsd-kind-icon">get<wbr>Logger<wbr>For</a>
 					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="index.html#guardstream" class="tsd-kind-icon">guard<wbr>Stream</a>
+					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#guardedstreamfrom" class="tsd-kind-icon">guarded<wbr>Stream<wbr>From</a>
 					</li>
@@ -2387,6 +2493,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#iscontainerpath" class="tsd-kind-icon">is<wbr>Container<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="index.html#isguarded" class="tsd-kind-icon">is<wbr>Guarded</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="index.html#isrepresentationmetadata" class="tsd-kind-icon">is<wbr>Representation<wbr>Metadata</a>
