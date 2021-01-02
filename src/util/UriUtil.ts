@@ -63,5 +63,5 @@ export const toObjectTerm = <T extends Term>(object: T | string, preferLiteral =
  * @param object - Object value.
  * @param dataType - Object data type (as string).
  */
-export const toLiteral = (object: string | number, dataType: string): Literal =>
+export const toLiteral = (object: string | number, dataType: string | NamedNode): Literal =>
   DataFactory.literal(object, toCachedNamedNode(dataType));
