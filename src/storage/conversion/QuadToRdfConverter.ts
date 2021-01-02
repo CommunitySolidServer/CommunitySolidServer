@@ -6,7 +6,7 @@ import type { RepresentationPreferences } from '../../ldp/representation/Represe
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import { CONTENT_TYPE } from '../../util/UriConstants';
-import { supportsConversion, matchingMediaTypes } from './ConversionUtil';
+import { matchingMediaTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -20,10 +20,6 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
 
   public async getOutputTypes(): Promise<Record<string, number>> {
     return rdfSerializer.getContentTypesPrioritized();
-  }
-
-  public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    supportsConversion(input, [ INTERNAL_QUADS ], await rdfSerializer.getContentTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
