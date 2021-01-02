@@ -9,7 +9,7 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicResponseWriter', (): void => {

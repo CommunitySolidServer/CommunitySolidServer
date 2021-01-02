@@ -22,7 +22,7 @@ import {
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
-import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../util/UriConstants';
+import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
 

@@ -12,8 +12,8 @@ import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/UriConstants';
 import { toCachedNamedNode, toLiteral } from '../../../../src/util/UriUtil';
+import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../../../src/util/Vocabularies';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');

@@ -1,8 +1,8 @@
 import { createResponse } from 'node-mocks-http';
 import { LinkRelMetadataWriter } from '../../../../../src/ldp/http/metadata/LinkRelMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
-import { LDP, RDF } from '../../../../../src/util/UriConstants';
 import { toCachedNamedNode } from '../../../../../src/util/UriUtil';
+import { LDP, RDF } from '../../../../../src/util/Vocabularies';
 
 describe('A LinkRelMetadataWriter', (): void => {
   const writer = new LinkRelMetadataWriter({ [RDF.type]: 'type', dummy: 'dummy' });

@@ -4,7 +4,7 @@ import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter'
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
 import { guardedStreamFrom, readableToString } from '../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 
 describe('A ChainedConverter', (): void => {
   const converters = [

@@ -16,8 +16,8 @@ import type { Guarded } from '../../util/GuardedStream';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
-import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../util/UriConstants';
 import { toCachedNamedNode, toLiteral } from '../../util/UriUtil';
+import { CONTENT_TYPE, DCTERMS, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 

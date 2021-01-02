@@ -14,8 +14,8 @@ import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/Unsup
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toCachedNamedNode } from '../../../../src/util/UriUtil';
+import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/Vocabularies';
 
 const { literal, namedNode, quad } = DataFactory;
 

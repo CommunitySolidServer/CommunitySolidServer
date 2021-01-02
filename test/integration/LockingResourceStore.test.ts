@@ -13,7 +13,7 @@ import type { ResourceLocker } from '../../src/util/locking/ResourceLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringResourceLocker } from '../../src/util/locking/WrappedExpiringResourceLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 import { BASE } from './Config';
 
 describe('A LockingResourceStore', (): void => {

@@ -2,7 +2,7 @@ import { BasicMetadataExtractor } from '../../../../../src/ldp/http/metadata/Bas
 import type { MetadataParser } from '../../../../../src/ldp/http/metadata/MetadataParser';
 import type { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import { RDF } from '../../../../../src/util/UriConstants';
+import { RDF } from '../../../../../src/util/Vocabularies';
 
 class BasicParser implements MetadataParser {
   private readonly header: string;

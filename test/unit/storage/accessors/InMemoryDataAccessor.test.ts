@@ -6,8 +6,8 @@ import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/UriConstants';
 import { toCachedNamedNode } from '../../../../src/util/UriUtil';
+import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/Vocabularies';
 
 describe('An InMemoryDataAccessor', (): void => {
   const base = 'http://test.com/';

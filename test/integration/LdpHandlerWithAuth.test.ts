@@ -3,7 +3,7 @@ import { join } from 'path';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { guardStream } from '../../src/util/GuardedStream';
-import { CONTENT_TYPE, LDP } from '../../src/util/UriConstants';
+import { CONTENT_TYPE, LDP } from '../../src/util/Vocabularies';
 import { AclHelper, ResourceHelper } from '../util/TestHelpers';
 import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
 

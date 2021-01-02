@@ -1,6 +1,5 @@
 import 'jest-rdf';
 import { literal, namedNode } from '@rdfjs/data-model';
-import { CONTENT_TYPE, XSD } from '../../../src/util/UriConstants';
 import {
   toCachedNamedNode,
   toSubjectTerm,
@@ -9,6 +8,7 @@ import {
   toLiteral,
   isTerm,
 } from '../../../src/util/UriUtil';
+import { CONTENT_TYPE, XSD } from '../../../src/util/Vocabularies';
 
 describe('An UriUtil', (): void => {
   describe('isTerm function', (): void => {

@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../../../../src/ldp/representation/Reso
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { HTTP } from '../../../../src/util/UriConstants';
+import { HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   const store = {

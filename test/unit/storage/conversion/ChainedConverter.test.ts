@@ -5,7 +5,7 @@ import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConv
 import { supportsConversion } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
-import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 class DummyConverter extends TypedRepresentationConverter {
   private readonly inTypes: Record<string, number>;

@@ -18,8 +18,8 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/UriConstants';
 import { toCachedNamedNode } from '../../../src/util/UriUtil';
+import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 

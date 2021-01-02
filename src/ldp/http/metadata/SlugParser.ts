@@ -1,7 +1,7 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { HTTP } from '../../../util/UriConstants';
+import { HTTP } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { MetadataParser } from './MetadataParser';
 

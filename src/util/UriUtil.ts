@@ -1,6 +1,6 @@
 import { DataFactory } from 'n3';
 import type { Literal, NamedNode, Term } from 'rdf-js';
-import { CONTENT_TYPE } from './UriConstants';
+import { CONTENT_TYPE } from './Vocabularies';
 
 const { namedNode, literal } = DataFactory;
 

@@ -2,7 +2,7 @@ import { SlugParser } from '../../../../../src/ldp/http/metadata/SlugParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
-import { HTTP } from '../../../../../src/util/UriConstants';
+import { HTTP } from '../../../../../src/util/Vocabularies';
 
 describe('A SlugParser', (): void => {
   const parser = new SlugParser();

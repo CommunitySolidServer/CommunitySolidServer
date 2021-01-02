@@ -2,7 +2,7 @@ import 'jest-rdf';
 import { literal, namedNode, quad } from '@rdfjs/data-model';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 describe('A RepresentationMetadata', (): void => {
   let metadata: RepresentationMetadata;

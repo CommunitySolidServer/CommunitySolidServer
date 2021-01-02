@@ -7,7 +7,7 @@ import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
-import { CONTENT_TYPE } from '../util/UriConstants';
+import { CONTENT_TYPE } from '../util/Vocabularies';
 import { Initializer } from './Initializer';
 
 /**

@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import { HTTP } from '../../../util/UriConstants';
+import { HTTP } from '../../../util/Vocabularies';
 import { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../representation/ResourceIdentifier';
 import { ResponseDescription } from './ResponseDescription';

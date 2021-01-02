@@ -1,7 +1,7 @@
 import { LinkTypeParser } from '../../../../../src/ldp/http/metadata/LinkTypeParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import { RDF } from '../../../../../src/util/UriConstants';
+import { RDF } from '../../../../../src/util/Vocabularies';
 
 describe('A LinkTypeParser', (): void => {
   const parser = new LinkTypeParser();

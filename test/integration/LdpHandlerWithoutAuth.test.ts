@@ -1,5 +1,5 @@
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { LDP } from '../../src/util/UriConstants';
+import { LDP } from '../../src/util/Vocabularies';
 import { ResourceHelper } from '../util/TestHelpers';
 import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
 

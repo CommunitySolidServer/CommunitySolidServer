@@ -5,7 +5,7 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
-import { CONTENT_TYPE } from '../../util/UriConstants';
+import { CONTENT_TYPE } from '../../util/Vocabularies';
 import { matchingMediaTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';

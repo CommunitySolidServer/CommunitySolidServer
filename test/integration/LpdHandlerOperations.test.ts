@@ -4,7 +4,7 @@ import { namedNode, quad } from '@rdfjs/data-model';
 import { Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
 import type { HttpHandler } from '../../src/server/HttpHandler';
-import { LDP } from '../../src/util/UriConstants';
+import { LDP } from '../../src/util/Vocabularies';
 import { performRequest } from '../util/Util';
 import { BASE, instantiateFromConfig } from './Config';
 

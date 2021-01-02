@@ -8,8 +8,8 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
-import { PIM, RDF } from '../util/UriConstants';
 import { toCachedNamedNode } from '../util/UriUtil';
+import { PIM, RDF } from '../util/Vocabularies';
 import { Initializer } from './Initializer';
 import namedNode = DataFactory.namedNode;
 

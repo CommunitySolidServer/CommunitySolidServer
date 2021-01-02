@@ -11,7 +11,7 @@ import type { ResourceIdentifier } from '../../../../src/ldp/representation/Reso
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 describe('A RdfToQuadConverter.test.ts', (): void => {
   const converter = new RdfToQuadConverter();

@@ -8,7 +8,7 @@ import type { RepresentationPreferences } from '../../../../src/ldp/representati
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { CONTENT_TYPE } from '../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();

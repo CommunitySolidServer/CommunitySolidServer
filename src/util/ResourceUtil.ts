@@ -2,8 +2,8 @@ import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { pushQuad } from './QuadUtil';
-import { LDP, RDF } from './UriConstants';
 import { toCachedNamedNode } from './UriUtil';
+import { LDP, RDF } from './Vocabularies';
 
 /**
  * Helper function to generate type quads for a Container or Resource.

@@ -2,7 +2,7 @@ import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseParameters, splitAndClean, transformQuotedStrings } from '../../../util/HeaderUtil';
-import { RDF } from '../../../util/UriConstants';
+import { RDF } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import type { MetadataParser } from './MetadataParser';
 

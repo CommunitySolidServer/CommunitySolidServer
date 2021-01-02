@@ -4,7 +4,7 @@ import type { RepresentationConverter } from '../../../src/storage/conversion/Re
 import { RepresentationConvertingStore } from '../../../src/storage/RepresentationConvertingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
-import { CONTENT_TYPE } from '../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../src/util/Vocabularies';
 
 describe('A RepresentationConvertingStore', (): void => {
   let store: RepresentationConvertingStore;

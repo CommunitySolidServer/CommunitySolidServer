@@ -8,7 +8,7 @@ import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
 import { guardedStreamFrom, RepresentationMetadata, ensureTrailingSlash } from '../../src/';
-import { CONTENT_TYPE } from '../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 import { performRequest } from './Util';
 
 /* eslint-disable jest/no-standalone-expect */

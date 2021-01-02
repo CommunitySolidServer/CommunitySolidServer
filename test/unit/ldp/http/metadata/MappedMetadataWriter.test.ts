@@ -1,7 +1,7 @@
 import { createResponse } from 'node-mocks-http';
 import { MappedMetadataWriter } from '../../../../../src/ldp/http/metadata/MappedMetadataWriter';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
-import { CONTENT_TYPE } from '../../../../../src/util/UriConstants';
+import { CONTENT_TYPE } from '../../../../../src/util/Vocabularies';
 
 describe('A MappedMetadataWriter', (): void => {
   const writer = new MappedMetadataWriter({ [CONTENT_TYPE]: 'content-type', dummy: 'dummy' });

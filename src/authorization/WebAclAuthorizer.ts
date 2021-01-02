@@ -12,7 +12,7 @@ import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
-import { ACL, FOAF } from '../util/UriConstants';
+import { ACL, FOAF } from '../util/Vocabularies';
 import type { AclManager } from './AclManager';
 import type { AuthorizerArgs } from './Authorizer';
 import { Authorizer } from './Authorizer';

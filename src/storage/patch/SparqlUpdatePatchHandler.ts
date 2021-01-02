@@ -14,7 +14,7 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { ResourceLocker } from '../../util/locking/ResourceLocker';
-import { CONTENT_TYPE } from '../../util/UriConstants';
+import { CONTENT_TYPE } from '../../util/Vocabularies';
 import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
 
