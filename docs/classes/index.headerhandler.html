@@ -128,7 +128,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0bd48f0/src/server/middleware/HeaderHandler.ts#L8">src/server/middleware/HeaderHandler.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/middleware/HeaderHandler.ts#L8">src/server/middleware/HeaderHandler.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -150,7 +150,7 @@
 					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0bd48f0/src/server/middleware/HeaderHandler.ts#L8">src/server/middleware/HeaderHandler.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/middleware/HeaderHandler.ts#L8">src/server/middleware/HeaderHandler.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -161,14 +161,14 @@
 					<a name="canhandle" class="tsd-anchor"></a>
 					<h3>can<wbr>Handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a><span class="tsd-signature-symbol">; </span>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/server_httphandler.httphandlerinput.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpHandlerInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0bd48f0/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -180,18 +180,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <span class="tsd-signature-symbol">{ </span>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a><span class="tsd-signature-symbol">; </span>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a><span class="tsd-signature-symbol"> }</span></h5>
+									<h5>input: <a href="../interfaces/server_httphandler.httphandlerinput.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpHandlerInput</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Input data that would be handled potentially.</p>
 									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a></h5>
-										</li>
-									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -210,7 +202,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0bd48f0/src/server/middleware/HeaderHandler.ts#L15">src/server/middleware/HeaderHandler.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/middleware/HeaderHandler.ts#L15">src/server/middleware/HeaderHandler.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -232,14 +224,14 @@
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a><span class="tsd-signature-symbol">; </span>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/server_httphandler.httphandlerinput.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpHandlerInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0bd48f0/src/util/AsyncHandler.ts#L33">src/util/AsyncHandler.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/util/AsyncHandler.ts#L33">src/util/AsyncHandler.ts:33</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,18 +244,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-symbol">{ </span>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a><span class="tsd-signature-symbol">; </span>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a><span class="tsd-signature-symbol"> }</span></h5>
+									<h5>data: <a href="../interfaces/server_httphandler.httphandlerinput.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpHandlerInput</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The data to handle.</p>
 									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>request<span class="tsd-signature-symbol">: </span><a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>response<span class="tsd-signature-symbol">: </span><a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a></h5>
-										</li>
-									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ResourceIdentifier | Community Solid Server</title>
+	<title>HttpHandlerInput | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,31 +55,24 @@
 					<a href="../modules.html">Community Solid Server</a>
 				</li>
 				<li>
-					<a href="../modules/index.html">index</a>
+					<a href="../modules/server_httphandler.html">server/HttpHandler</a>
 				</li>
 				<li>
-					<a href="index.resourceidentifier.html">ResourceIdentifier</a>
+					<a href="server_httphandler.httphandlerinput.html">HttpHandlerInput</a>
 				</li>
 			</ul>
-			<h1>Interface ResourceIdentifier</h1>
+			<h1>Interface HttpHandlerInput</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>The unique identifier of a resource.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ResourceIdentifier</span>
+						<span class="target">HttpHandlerInput</span>
 					</li>
 				</ul>
 			</section>
@@ -90,7 +83,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.resourceidentifier.html#path" class="tsd-kind-icon">path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="server_httphandler.httphandlerinput.html#request" class="tsd-kind-icon">request</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="server_httphandler.httphandlerinput.html#response" class="tsd-kind-icon">response</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,19 +93,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="path" class="tsd-anchor"></a>
-					<h3>path</h3>
-					<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="request" class="tsd-anchor"></a>
+					<h3>request</h3>
+					<div class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">:</span> <a href="../modules/server_httprequest.html#httprequest" class="tsd-signature-type" data-tsd-kind="Type alias">HttpRequest</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/ldp/representation/ResourceIdentifier.ts#L8">src/ldp/representation/ResourceIdentifier.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/HttpHandler.ts#L6">src/server/HttpHandler.ts:6</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Path to the relevant resource.</p>
-						</div>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="response" class="tsd-anchor"></a>
+					<h3>response</h3>
+					<div class="tsd-signature tsd-kind-icon">response<span class="tsd-signature-symbol">:</span> <a href="../modules/server_httpresponse.html#httpresponse" class="tsd-signature-type" data-tsd-kind="Type alias">HttpResponse</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/a73936f/src/server/HttpHandler.ts#L7">src/server/HttpHandler.ts:7</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -122,19 +121,25 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/index.html">index</a>
+						<a href="../modules/server_httphandler.html">server/<wbr>Http<wbr>Handler</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/server_httphandler.httphandler.html" class="tsd-kind-icon">Http<wbr>Handler</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="index.resourceidentifier.html" class="tsd-kind-icon">Resource<wbr>Identifier</a>
+						<a href="server_httphandler.httphandlerinput.html" class="tsd-kind-icon">Http<wbr>Handler<wbr>Input</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.resourceidentifier.html#path" class="tsd-kind-icon">path</a>
+								<a href="server_httphandler.httphandlerinput.html#request" class="tsd-kind-icon">request</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="server_httphandler.httphandlerinput.html#response" class="tsd-kind-icon">response</a>
 							</li>
 						</ul>
 					</li>
