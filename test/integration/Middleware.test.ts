@@ -1,16 +1,15 @@
 import type { Server } from 'http';
 import request from 'supertest';
 import type { ExpressHttpServerFactory } from '../../src/server/ExpressHttpServerFactory';
+import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
-import type { HttpRequest } from '../../src/server/HttpRequest';
-import type { HttpResponse } from '../../src/server/HttpResponse';
 import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
 import { instantiateFromConfig } from './Config';
 
 const port = 6002;
 
 class SimpleHttpHandler extends HttpHandler {
-  public async handle(input: { request: HttpRequest; response: HttpResponse }): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<void> {
     input.response.writeHead(200, { location: '/' });
     input.response.end('Hello World');
   }
