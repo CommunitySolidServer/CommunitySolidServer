@@ -88,7 +88,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
         if (weight > bestMatch.weight && matchesMediaType(leftType, rightType)) {
           bestMatch = { type: leftType, weight };
           if (weight === 1) {
-            this.logger.info(`${bestMatch.type} is an exact match between ${leftKeys} and ${rightKeys}`);
+            this.logger.debug(`${bestMatch.type} is an exact match between ${leftKeys} and ${rightKeys}`);
             return bestMatch.type;
           }
         }
@@ -96,11 +96,11 @@ export class ChainedConverter extends TypedRepresentationConverter {
     }
 
     if (bestMatch.weight === 0) {
-      this.logger.error(`No match found between ${leftKeys} and ${rightKeys}`);
+      this.logger.warn(`No match found between ${leftKeys} and ${rightKeys}`);
       throw new Error(`No match found between ${leftKeys} and ${rightKeys}`);
     }
 
-    this.logger.info(`${bestMatch.type} is the best match between ${leftKeys} and ${rightKeys}`);
+    this.logger.debug(`${bestMatch.type} is the best match between ${leftKeys} and ${rightKeys}`);
     return bestMatch.type;
   }
 }
