@@ -62,6 +62,13 @@ describe('ConversionUtil', (): void => {
       expect(matchingMediaTypes(preferences, [ 'b/x', 'c/x' ])).toEqual([{ value: 'b/x', weight: 0.5 }]);
     });
 
+    it('sorts by descending weight.', async(): Promise<void> => {
+      const preferences: RepresentationPreferences = { type:
+          [{ value: 'a/x', weight: 1 }, { value: 'b/x', weight: 0.5 }, { value: 'c/x', weight: 0.8 }]};
+      expect(matchingMediaTypes(preferences, [ 'a/x', 'b/x', 'c/x' ]))
+        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'c/x', weight: 0.8 }, { value: 'b/x', weight: 0.5 }]);
+    });
+
     it('errors if there are duplicate preferences.', async(): Promise<void> => {
       const preferences: RepresentationPreferences =
         { type: [{ value: 'b/x', weight: 1 }, { value: 'b/x', weight: 0 }]};

@@ -84,16 +84,19 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
    * Helper function that converts a Representation using the given args and converter,
    * if the conversion is necessary and there is a converter.
    */
-  private async convertRepresentation(args: RepresentationConverterArgs, converter?: RepresentationConverter):
+  private async convertRepresentation(input: RepresentationConverterArgs, converter?: RepresentationConverter):
   Promise<Representation> {
-    if (!converter || !args.preferences.type || this.matchesPreferences(args.representation, args.preferences)) {
-      return args.representation;
+    if (!converter || !input.preferences.type || this.matchesPreferences(input.representation, input.preferences)) {
+      return input.representation;
     }
+    this.logger.debug(`Conversion needed for ${input.identifier
+      .path} from ${input.representation.metadata.contentType} to satisfy ${input.preferences.type
+      .map((pref): string => `${pref.value};q=${pref.weight}`).join(', ')}`);
 
-    const typeStr = args.preferences.type.map((pref): string => `${pref.value};q=${pref.weight}`).join(', ');
-    this.logger.info(`Convert ${args.identifier.path} from ${args.representation.metadata.contentType} to ${typeStr}`);
-
-    return converter.handleSafe(args);
+    const converted = await converter.handleSafe(input);
+    this.logger.info(`Converted representation for ${input.identifier
+      .path} from ${input.representation.metadata.contentType} to ${converted.metadata.contentType}`);
+    return converted;
   }
 
   /**

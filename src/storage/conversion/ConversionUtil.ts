@@ -54,7 +54,10 @@ RepresentationPreference[] => {
     return { value: type, weight };
   });
 
-  return weightedSupported.filter((preference): boolean => preference.weight !== 0);
+  // Return all non-zero preferences in descending order of weight
+  return weightedSupported
+    .filter((pref): boolean => pref.weight !== 0)
+    .sort((prefA, prefB): number => prefB.weight - prefA.weight);
 };
 
 /**

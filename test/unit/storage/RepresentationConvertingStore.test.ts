@@ -11,6 +11,8 @@ describe('A RepresentationConvertingStore', (): void => {
   let source: ResourceStore;
   let inConverter: RepresentationConverter;
   let outConverter: RepresentationConverter;
+  const convertedIn = { metadata: {}};
+  const convertedOut = { metadata: {}};
   const inType = 'text/turtle';
   const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
   let representation: Representation;
@@ -22,8 +24,8 @@ describe('A RepresentationConvertingStore', (): void => {
       setRepresentation: jest.fn(),
     } as any;
 
-    inConverter = { handleSafe: jest.fn(async(): Promise<any> => 'inConvert') } as any;
-    outConverter = { handleSafe: jest.fn(async(): Promise<any> => 'outConvert') } as any;
+    inConverter = { handleSafe: jest.fn(async(): Promise<any> => convertedIn) } as any;
+    outConverter = { handleSafe: jest.fn(async(): Promise<any> => convertedOut) } as any;
 
     store = new RepresentationConvertingStore(source, { inType, inConverter, outConverter });
     representation = { binary: true, data: 'data', metadata } as any;
@@ -64,7 +66,7 @@ describe('A RepresentationConvertingStore', (): void => {
   it('calls the converter if another output is preferred.', async(): Promise<void> => {
     await expect(store.getRepresentation({ path: 'path' }, { type: [
       { value: 'text/plain', weight: 1 }, { value: 'text/turtle', weight: 0 },
-    ]})).resolves.toEqual('outConvert');
+    ]})).resolves.toEqual(convertedOut);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(outConverter.handleSafe).toHaveBeenCalledTimes(1);
     expect(outConverter.handleSafe).toHaveBeenLastCalledWith({
@@ -95,11 +97,11 @@ describe('A RepresentationConvertingStore', (): void => {
 
     await expect(store.addResource(id, representation, 'conditions' as any)).resolves.toBeUndefined();
     expect(inConverter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(source.addResource).toHaveBeenLastCalledWith(id, 'inConvert', 'conditions');
+    expect(source.addResource).toHaveBeenLastCalledWith(id, convertedIn, 'conditions');
 
     await expect(store.setRepresentation(id, representation, 'conditions' as any)).resolves.toBeUndefined();
     expect(inConverter.handleSafe).toHaveBeenCalledTimes(2);
-    expect(source.setRepresentation).toHaveBeenLastCalledWith(id, 'inConvert', 'conditions');
+    expect(source.setRepresentation).toHaveBeenLastCalledWith(id, convertedIn, 'conditions');
   });
 
   it('throws an error if no content-type is provided.', async(): Promise<void> => {
