@@ -1,16 +1,15 @@
-import { posix } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import {
   encodeUriPathComponents,
-  ensureTrailingSlash, isContainerIdentifier,
+  ensureTrailingSlash,
+  isContainerIdentifier,
+  normalizeFilePath,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
 import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
 import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
-
-const { normalize: normalizePath } = posix;
 
 /**
  * A mapper that always returns a fixed content type for files.
@@ -24,7 +23,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
 
   public constructor(base: string, rootFilepath: string, contentType: string) {
     this.baseRequestURI = trimTrailingSlashes(base);
-    this.rootFilepath = trimTrailingSlashes(normalizePath(rootFilepath));
+    this.rootFilepath = trimTrailingSlashes(normalizeFilePath(rootFilepath));
     this.contentType = contentType;
   }
 

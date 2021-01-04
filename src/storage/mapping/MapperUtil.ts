@@ -1,11 +1,8 @@
-import { posix } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { decodeUriPathComponents } from '../../util/PathUtil';
-
-const { join: joinPath } = posix;
+import { joinFilePath, decodeUriPathComponents } from '../../util/PathUtil';
 
 const logger = getLoggerFor('MapperUtil');
 
@@ -18,7 +15,7 @@ const logger = getLoggerFor('MapperUtil');
  * @returns Absolute path of the file.
  */
 export const getAbsolutePath = (rootFilepath: string, path: string, identifier = ''): string =>
-  joinPath(rootFilepath, path, identifier);
+  joinFilePath(rootFilepath, path, identifier);
 
 /**
  * Strips the baseRequestURI from the identifier and checks if the stripped base URI matches the store's one.

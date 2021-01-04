@@ -1,7 +1,7 @@
-import * as path from 'path';
 import { Loader } from 'componentsjs';
 import { CliRunner } from '../../../src/init/CliRunner';
 import type { Initializer } from '../../../src/init/Initializer';
+import { joinFilePath, toSystemFilePath } from '../../../src/util/PathUtil';
 
 const initializer: jest.Mocked<Initializer> = {
   handleSafe: jest.fn(),
@@ -34,12 +34,12 @@ describe('CliRunner', (): void => {
 
     expect(Loader).toHaveBeenCalledTimes(1);
     expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: path.join(__dirname, '../../../'),
+      mainModulePath: toSystemFilePath(joinFilePath(__dirname, '../../../')),
     });
     expect(loader.instantiateFromUrl).toHaveBeenCalledTimes(1);
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      path.join(__dirname, '/../../../config/config-default.json'),
+      toSystemFilePath(joinFilePath(__dirname, '/../../../config/config-default.json')),
       undefined,
       {
         variables: {
@@ -48,7 +48,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
-          'urn:solid-server:default:variable:podTemplateFolder': path.join(__dirname, '../../../templates'),
+          'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates'),
         },
       },
     );
@@ -77,18 +77,18 @@ describe('CliRunner', (): void => {
 
     expect(Loader).toHaveBeenCalledTimes(1);
     expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: '/var/cwd/module/path',
+      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
       scanGlobal: true,
     });
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      '/var/cwd/myconfig.json',
+      toSystemFilePath('/var/cwd/myconfig.json'),
       undefined,
       {
         variables: {
           'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
           'urn:solid-server:default:variable:loggingLevel': 'debug',
-          'urn:solid-server:default:variable:podTemplateFolder': 'templates',
+          'urn:solid-server:default:variable:podTemplateFolder': '/var/cwd/templates',
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
@@ -116,18 +116,18 @@ describe('CliRunner', (): void => {
 
     expect(Loader).toHaveBeenCalledTimes(1);
     expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: '/var/cwd/module/path',
+      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
       scanGlobal: true,
     });
     expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      '/var/cwd/myconfig.json',
+      toSystemFilePath('/var/cwd/myconfig.json'),
       undefined,
       {
         variables: {
           'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
           'urn:solid-server:default:variable:loggingLevel': 'debug',
-          'urn:solid-server:default:variable:podTemplateFolder': 'templates',
+          'urn:solid-server:default:variable:podTemplateFolder': '/var/cwd/templates',
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',

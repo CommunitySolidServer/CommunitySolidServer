@@ -1,11 +1,41 @@
+import { sep } from 'path';
 import {
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
+  joinFilePath,
+  normalizeFilePath,
   toCanonicalUriPath,
+  toSystemFilePath,
 } from '../../../src/util/PathUtil';
 
 describe('PathUtil', (): void => {
+  describe('normalizeFilePath', (): void => {
+    it('normalizes POSIX paths.', async(): Promise<void> => {
+      expect(normalizeFilePath('/foo/bar/../baz')).toEqual('/foo/baz');
+    });
+
+    it('normalizes Windows paths.', async(): Promise<void> => {
+      expect(normalizeFilePath('c:\\foo\\bar\\..\\baz')).toEqual('c:/foo/baz');
+    });
+  });
+
+  describe('joinFilePath', (): void => {
+    it('joins POSIX paths.', async(): Promise<void> => {
+      expect(joinFilePath('/foo/bar/', '..', '/baz')).toEqual('/foo/baz');
+    });
+
+    it('joins Windows paths.', async(): Promise<void> => {
+      expect(joinFilePath('c:\\foo\\bar\\', '..', '/baz')).toEqual(`c:/foo/baz`);
+    });
+  });
+
+  describe('toSystemFilePath', (): void => {
+    it('converts a POSIX path to an OS-specific path.', async(): Promise<void> => {
+      expect(toSystemFilePath('c:/foo/bar/')).toEqual(`c:${sep}foo${sep}bar${sep}`);
+    });
+  });
+
   describe('#ensureTrailingSlash', (): void => {
     it('makes sure there is always exactly 1 slash.', async(): Promise<void> => {
       expect(ensureTrailingSlash('http://test.com')).toEqual('http://test.com/');

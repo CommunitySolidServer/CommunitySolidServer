@@ -1,6 +1,5 @@
 import type { Stats } from 'fs';
 import { createWriteStream, createReadStream, promises as fsPromises } from 'fs';
-import { posix } from 'path';
 import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
@@ -13,15 +12,13 @@ import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
-import { isContainerIdentifier } from '../../util/PathUtil';
+import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
 import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
-
-const { join: joinPath } = posix;
 
 /**
  * DataAccessor that uses the file system to store documents as files and containers as folders.
@@ -298,14 +295,14 @@ export class FileDataAccessor implements DataAccessor {
       }
 
       // Ignore non-file/directory entries in the folder
-      const childStats = await fsPromises.lstat(joinPath(link.filePath, childName));
+      const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
       if (!childStats.isFile() && !childStats.isDirectory()) {
         continue;
       }
 
       // Generate the URI corresponding to the child resource
       const childLink = await this.resourceMapper
-        .mapFilePathToUrl(joinPath(link.filePath, childName), childStats.isDirectory());
+        .mapFilePathToUrl(joinFilePath(link.filePath, childName), childStats.isDirectory());
 
       // Generate metadata of this specific child
       const subject = DataFactory.namedNode(childLink.identifier.path);
