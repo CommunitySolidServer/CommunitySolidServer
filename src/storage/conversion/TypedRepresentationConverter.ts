@@ -1,4 +1,4 @@
-import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
+import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { supportsConversion } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -10,12 +10,12 @@ export abstract class TypedRepresentationConverter extends RepresentationConvert
   /**
    * Gets the supported input content types for this converter, mapped to a numerical priority.
    */
-  public abstract getInputTypes(): Promise<RepresentationPreference>;
+  public abstract getInputTypes(): Promise<ValuePreferences>;
 
   /**
    * Gets the supported output content types for this converter, mapped to a numerical quality.
    */
-  public abstract getOutputTypes(): Promise<RepresentationPreference>;
+  public abstract getOutputTypes(): Promise<ValuePreferences>;
 
   /**
    * Verifies whether this converter supports the input.

@@ -2,6 +2,7 @@ import { PassThrough } from 'stream';
 import rdfParser from 'rdf-parse';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
+import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
@@ -13,11 +14,11 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * Converts most major RDF serializations to `internal/quads`.
  */
 export class RdfToQuadConverter extends TypedRepresentationConverter {
-  public async getInputTypes(): Promise<Record<string, number>> {
+  public async getInputTypes(): Promise<ValuePreferences> {
     return rdfParser.getContentTypesPrioritized();
   }
 
-  public async getOutputTypes(): Promise<Record<string, number>> {
+  public async getOutputTypes(): Promise<ValuePreferences> {
     return { [INTERNAL_QUADS]: 1 };
   }
 

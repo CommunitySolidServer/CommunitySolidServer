@@ -1,6 +1,9 @@
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import type {
+  ValuePreferences,
+  RepresentationPreferences,
+} from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { supportsConversion } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
@@ -8,20 +11,20 @@ import { TypedRepresentationConverter } from '../../../../src/storage/conversion
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 class DummyConverter extends TypedRepresentationConverter {
-  private readonly inTypes: Record<string, number>;
-  private readonly outTypes: Record<string, number>;
+  private readonly inTypes: ValuePreferences;
+  private readonly outTypes: ValuePreferences;
 
-  public constructor(inTypes: Record<string, number>, outTypes: Record<string, number>) {
+  public constructor(inTypes: ValuePreferences, outTypes: ValuePreferences) {
     super();
     this.inTypes = inTypes;
     this.outTypes = outTypes;
   }
 
-  public async getInputTypes(): Promise<Record<string, number>> {
+  public async getInputTypes(): Promise<ValuePreferences> {
     return this.inTypes;
   }
 
-  public async getOutputTypes(): Promise<Record<string, number>> {
+  public async getOutputTypes(): Promise<ValuePreferences> {
     return this.outTypes;
   }
 

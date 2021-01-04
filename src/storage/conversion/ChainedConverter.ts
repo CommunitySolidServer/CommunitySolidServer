@@ -1,4 +1,5 @@
 import type { Representation } from '../../ldp/representation/Representation';
+import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { supportsConversion, matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -34,24 +35,24 @@ export class ChainedConverter extends TypedRepresentationConverter {
     return this.converters[this.converters.length - 1];
   }
 
-  public async getInputTypes(): Promise<Record<string, number>> {
+  public async getInputTypes(): Promise<ValuePreferences> {
     return this.first.getInputTypes();
   }
 
-  public async getOutputTypes(): Promise<Record<string, number>> {
+  public async getOutputTypes(): Promise<ValuePreferences> {
     return this.last.getOutputTypes();
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
     // We assume a chain can be constructed, otherwise there would be a configuration issue
     // So we only check if the input can be parsed and the preferred type can be written
-    const inTypes = this.filterTypes(await this.first.getInputTypes());
-    const outTypes = this.filterTypes(await this.last.getOutputTypes());
+    const inTypes = this.getAcceptableTypes(await this.first.getInputTypes());
+    const outTypes = this.getAcceptableTypes(await this.last.getOutputTypes());
     supportsConversion(input, inTypes, outTypes);
   }
 
-  private filterTypes(typeVals: Record<string, number>): string[] {
-    return Object.keys(typeVals).filter((name): boolean => typeVals[name] > 0);
+  private getAcceptableTypes(preferences: ValuePreferences): string[] {
+    return Object.keys(preferences).filter((name): boolean => preferences[name] > 0);
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
