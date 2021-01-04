@@ -16,6 +16,7 @@
             "PATCH",
             "DELETE"
           ],
+          "CorsHandler:_options_credentials": true,
           "CorsHandler:_options_exposedHeaders": [
             "Location",
             "Updates-Via"

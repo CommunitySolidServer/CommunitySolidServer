@@ -44,6 +44,7 @@ describe('An Express server with middleware', (): void => {
   it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
     const res = await request(server)
       .options('/')
+      .set('Access-Control-Allow-Credentials', 'true')
       .set('Access-Control-Request-Headers', 'content-type')
       .set('Access-Control-Request-Method', 'POST')
       .set('Host', 'test.com')
