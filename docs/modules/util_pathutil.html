@@ -77,7 +77,10 @@
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#ensuretrailingslash" class="tsd-kind-icon">ensure<wbr>Trailing<wbr>Slash</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#iscontaineridentifier" class="tsd-kind-icon">is<wbr>Container<wbr>Identifier</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#iscontainerpath" class="tsd-kind-icon">is<wbr>Container<wbr>Path</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#joinfilepath" class="tsd-kind-icon">join<wbr>File<wbr>Path</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#normalizefilepath" class="tsd-kind-icon">normalize<wbr>File<wbr>Path</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#tocanonicaluripath" class="tsd-kind-icon">to<wbr>Canonical<wbr>Uri<wbr>Path</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#tosystemfilepath" class="tsd-kind-icon">to<wbr>System<wbr>File<wbr>Path</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="util_pathutil.html#trimtrailingslashes" class="tsd-kind-icon">trim<wbr>Trailing<wbr>Slashes</a></li>
 							</ul>
 						</section>
@@ -96,7 +99,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L34">src/util/PathUtil.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L75">src/util/PathUtil.ts:75</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -124,7 +127,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L39">src/util/PathUtil.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L80">src/util/PathUtil.ts:80</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -152,7 +155,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L12">src/util/PathUtil.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L53">src/util/PathUtil.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -186,7 +189,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L51">src/util/PathUtil.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L92">src/util/PathUtil.ts:92</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -217,7 +220,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L45">src/util/PathUtil.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L86">src/util/PathUtil.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -239,6 +242,76 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="joinfilepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> join<wbr>File<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">join<wbr>File<wbr>Path<span class="tsd-signature-symbol">(</span>basePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>paths<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L31">src/util/PathUtil.ts:31</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds the paths to the base path.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>basePath: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The base path (POSIX or Windows).</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>paths: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Subpaths to attach (POSIX).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>The potentially changed path (POSIX).</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="normalizefilepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> normalize<wbr>File<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">normalize<wbr>File<wbr>Path<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L20">src/util/PathUtil.ts:20</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Resolves relative segments in the path/</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path to check (POSIX or Windows).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>The potentially changed path (POSIX).</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="tocanonicaluripath" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> to<wbr>Canonical<wbr>Uri<wbr>Path</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -248,7 +321,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L28">src/util/PathUtil.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L69">src/util/PathUtil.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -269,6 +342,38 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="tosystemfilepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> to<wbr>System<wbr>File<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>System<wbr>File<wbr>Path<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L41">src/util/PathUtil.ts:41</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts the path into an OS-dependent path.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path to check (POSIX).</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+							<p>The potentially changed path (OS-dependent).</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="trimtrailingslashes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> trim<wbr>Trailing<wbr>Slashes</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -278,7 +383,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/ee072b0/src/util/PathUtil.ts#L21">src/util/PathUtil.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/util/PathUtil.ts#L62">src/util/PathUtil.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -331,7 +436,16 @@
 						<a href="util_pathutil.html#iscontainerpath" class="tsd-kind-icon">is<wbr>Container<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="util_pathutil.html#joinfilepath" class="tsd-kind-icon">join<wbr>File<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="util_pathutil.html#normalizefilepath" class="tsd-kind-icon">normalize<wbr>File<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="util_pathutil.html#tocanonicaluripath" class="tsd-kind-icon">to<wbr>Canonical<wbr>Uri<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="util_pathutil.html#tosystemfilepath" class="tsd-kind-icon">to<wbr>System<wbr>File<wbr>Path</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="util_pathutil.html#trimtrailingslashes" class="tsd-kind-icon">trim<wbr>Trailing<wbr>Slashes</a>
