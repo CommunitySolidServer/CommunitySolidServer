@@ -29,8 +29,8 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
     return this.quadsToRdf(input.representation, input.preferences);
   }
 
-  private async quadsToRdf(quads: Representation, preferences: RepresentationPreferences): Promise<Representation> {
-    const contentType = matchingMediaTypes(preferences, await rdfSerializer.getContentTypes())[0];
+  private async quadsToRdf(quads: Representation, { type }: RepresentationPreferences): Promise<Representation> {
+    const contentType = matchingMediaTypes(type, await this.getOutputTypes())[0];
     const metadata = new RepresentationMetadata(quads.metadata, { [CONTENT_TYPE]: contentType });
     return {
       binary: true,

@@ -5,7 +5,6 @@ import type {
   RepresentationPreferences,
 } from '../../../../src/ldp/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
-import { supportsConversion } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
@@ -26,10 +25,6 @@ class DummyConverter extends TypedRepresentationConverter {
 
   public async getOutputTypes(): Promise<ValuePreferences> {
     return this.outTypes;
-  }
-
-  public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    supportsConversion(input, Object.keys(this.inTypes), Object.keys(this.outTypes));
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -85,7 +80,7 @@ describe('A ChainedConverter', (): void => {
   });
 
   it('errors if the end of the chain does not support the preferences.', async(): Promise<void> => {
-    delete preferences.type;
+    preferences.type = { 'abc/def': 1 };
     await expect(converter.canHandle(args)).rejects.toThrow();
   });
 

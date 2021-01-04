@@ -1,4 +1,4 @@
-import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
@@ -12,43 +12,42 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  * Since more specific media ranges override less specific ones,
  * this will be ignored if there is a specific internal type preference.
  *
- * @param preferences - Preferences for output type.
- * @param types - Media types to compare to the preferences.
+ * @param preferredTypes - Preferences for output type.
+ * @param availableTypes - Media types to compare to the preferences.
  *
  * @throws BadRequestHttpError
  * If the type preferences are undefined or if there are duplicate preferences.
  *
  * @returns The weighted and filtered list of matching types.
  */
-export const matchingMediaTypes = (preferences: RepresentationPreferences, available: string[]):
+export const matchingMediaTypes = (preferredTypes: ValuePreferences = {}, availableTypes: ValuePreferences = {}):
 string[] => {
-  const preferredTypes = preferences.type;
-  if (!preferredTypes || Object.keys(preferredTypes).length === 0) {
-    throw new BadRequestHttpError('Output type required for conversion.');
-  }
-
+  // No preference means anything is acceptable
+  const preferred = { ...preferredTypes };
+  if (Object.keys(preferredTypes).length === 0) {
+    preferred['*/*'] = 1;
   // Prevent accidental use of internal types
-  if (!preferredTypes[INTERNAL_ALL]) {
-    preferredTypes[INTERNAL_ALL] = 0;
+  } else if (!(INTERNAL_ALL in preferred)) {
+    preferred[INTERNAL_ALL] = 0;
   }
 
   // RFC 7231
   //    Media ranges can be overridden by more specific media ranges or
   //    specific media types.  If more than one media range applies to a
   //    given type, the most specific reference has precedence.
-  const weightedSupported = available.map((type): [string, number] => {
+  const weightedSupported = Object.entries(availableTypes).map(([ type, quality ]): [string, number] => {
     const match = /^([^/]+)\/([^\s;]+)/u.exec(type);
     if (!match) {
       throw new InternalServerError(`Unexpected type preference: ${type}`);
     }
     const [ , main, sub ] = match;
     const weight =
-      preferredTypes[type] ??
-      preferredTypes[`${main}/${sub}`] ??
-      preferredTypes[`${main}/*`] ??
-      preferredTypes['*/*'] ??
+      preferred[type] ??
+      preferred[`${main}/${sub}`] ??
+      preferred[`${main}/*`] ??
+      preferred['*/*'] ??
       0;
-    return [ type, weight ];
+    return [ type, weight * quality ];
   });
 
   // Return all non-zero preferences in descending order of weight
@@ -96,16 +95,16 @@ export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
  * @param supportedIn - Media types that can be parsed by the converter.
  * @param supportedOut - Media types that can be produced by the converter.
  */
-export const supportsConversion = (request: RepresentationConverterArgs, supportedIn: string[],
-  supportedOut: string[]): void => {
+export const supportsConversion = (request: RepresentationConverterArgs, supportedIn: ValuePreferences,
+  supportedOut: ValuePreferences): void => {
   const inType = request.representation.metadata.contentType;
   if (!inType) {
-    throw new BadRequestHttpError('Input type required for conversion.');
+    throw new BadRequestHttpError('No content type indicated on request.');
   }
-  if (!supportedIn.some((type): boolean => matchesMediaType(inType, type))) {
-    throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
-  }
-  if (matchingMediaTypes(request.preferences, supportedOut).length <= 0) {
-    throw new NotImplementedHttpError(`Can only convert from ${supportedIn} to ${supportedOut}.`);
+  if (!Object.keys(supportedIn).some((type): boolean => matchesMediaType(inType, type)) ||
+     matchingMediaTypes(request.preferences.type, supportedOut).length === 0) {
+    throw new NotImplementedHttpError(
+      `Can only convert from ${Object.keys(supportedIn)} to ${Object.keys(supportedOut)}.`,
+    );
   }
 };

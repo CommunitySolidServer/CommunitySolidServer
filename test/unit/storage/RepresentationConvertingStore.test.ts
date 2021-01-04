@@ -42,7 +42,7 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' },
-      { type: { 'application/*': 0, 'text/turtle': 1, 'internal/*': 0 }},
+      { type: { 'application/*': 0, 'text/turtle': 1 }},
       undefined,
     );
     expect(outConverter.handleSafe).toHaveBeenCalledTimes(0);
@@ -70,7 +70,7 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(outConverter.handleSafe).toHaveBeenLastCalledWith({
       identifier: { path: 'path' },
       representation: { data: 'data', metadata },
-      preferences: { type: { 'text/plain': 1, 'text/turtle': 0, 'internal/*': 0 }},
+      preferences: { type: { 'text/plain': 1, 'text/turtle': 0 }},
     });
   });
 

@@ -46,13 +46,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
     // We assume a chain can be constructed, otherwise there would be a configuration issue
     // So we only check if the input can be parsed and the preferred type can be written
-    const inTypes = this.getAcceptableTypes(await this.first.getInputTypes());
-    const outTypes = this.getAcceptableTypes(await this.last.getOutputTypes());
-    supportsConversion(input, inTypes, outTypes);
-  }
-
-  private getAcceptableTypes(preferences: ValuePreferences): string[] {
-    return Object.keys(preferences).filter((name): boolean => preferences[name] > 0);
+    supportsConversion(input, await this.first.getInputTypes(), await this.last.getOutputTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

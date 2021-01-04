@@ -23,6 +23,6 @@ export abstract class TypedRepresentationConverter extends RepresentationConvert
   public async canHandle(args: RepresentationConverterArgs): Promise<void> {
     const types = [ this.getInputTypes(), this.getOutputTypes() ];
     const [ inputTypes, outputTypes ] = await Promise.all(types);
-    supportsConversion(args, Object.keys(inputTypes), Object.keys(outputTypes));
+    supportsConversion(args, inputTypes, outputTypes);
   }
 }

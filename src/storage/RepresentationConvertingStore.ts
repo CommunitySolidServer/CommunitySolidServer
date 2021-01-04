@@ -77,7 +77,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     }
 
     // Check if there is a result if we try to map the preferences to the content-type
-    return matchingMediaTypes(preferences, [ contentType ]).length > 0;
+    return matchingMediaTypes(preferences.type, { [contentType]: 1 }).length > 0;
   }
 
   /**
