@@ -1,5 +1,5 @@
 # Community Solid Server
-[![Build Status](https://travis-ci.com/solid/community-server.svg?branch=master)](https://travis-ci.com/solid/community-server)
+[![Build Status](https://github.com/solid/community-server/workflows/CI/badge.svg)](https://github.com/solid/community-server/actions)
 [![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 
