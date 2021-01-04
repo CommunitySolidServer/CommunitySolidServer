@@ -1,63 +1,34 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type {
-  ValuePreferences,
-  RepresentationPreferences,
-} from '../../../../src/ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ValuePreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import {
   matchesMediaType,
   matchingMediaTypes,
-  supportsConversion,
+  supportsMediaTypeConversion,
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
 describe('ConversionUtil', (): void => {
-  const identifier: ResourceIdentifier = { path: 'path' };
-  let representation: Representation;
-  let metadata: RepresentationMetadata;
+  describe('supportsMediaTypeConversion', (): void => {
+    it('requires preferences.', async(): Promise<void> => {
+      expect((): any => supportsMediaTypeConversion()).toThrow();
+    });
 
-  beforeEach(async(): Promise<void> => {
-    metadata = new RepresentationMetadata();
-    representation = { metadata } as Representation;
-  });
-
-  describe('#supportsConversion', (): void => {
     it('requires an input type.', async(): Promise<void> => {
-      const preferences: RepresentationPreferences = {};
-      expect((): any => supportsConversion({ identifier, representation, preferences },
-        { 'a/x': 1 },
-        { 'a/x': 1 }))
-        .toThrow('No content type indicated on request.');
+      expect((): any => supportsMediaTypeConversion(undefined, { 'b/x': 1 }, { 'a/x': 1 }, { 'a/x': 1 }))
+        .toThrow('Cannot convert from unknown to b/x, only from a/x to a/x.');
     });
 
     it('requires a matching input type.', async(): Promise<void> => {
-      metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences =
-        { type: { 'b/x': 1 }};
-      expect((): any => supportsConversion({ identifier, representation, preferences },
-        { 'c/x': 1 },
-        { 'a/x': 1 }))
-        .toThrow('Can only convert from c/x to a/x.');
+      expect((): any => supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'c/x': 1 }, { 'a/x': 1 }))
+        .toThrow('Cannot convert from a/x to b/x, only from c/x to a/x.');
     });
 
     it('requires a matching output type.', async(): Promise<void> => {
-      metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences =
-        { type: { 'b/x': 1 }};
-      expect((): any => supportsConversion({ identifier, representation, preferences },
-        { 'a/x': 1 },
-        { 'c/x': 1 }))
-        .toThrow('Can only convert from a/x to c/x.');
+      expect((): any => supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'a/x': 1 }, { 'c/x': 1 }))
+        .toThrow('Cannot convert from a/x to b/x, only from a/x to c/x.');
     });
 
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
-      metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences =
-        { type: { 'b/x': 1 }};
-      expect(supportsConversion({ identifier, representation, preferences },
-        { 'a/x': 1 },
-        { 'b/x': 1 }))
+      expect(supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'a/x': 1 }, { 'b/x': 1 }))
         .toBeUndefined();
     });
   });

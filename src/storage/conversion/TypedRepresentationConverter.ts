@@ -1,5 +1,5 @@
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
-import { supportsConversion } from './ConversionUtil';
+import { supportsMediaTypeConversion } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -22,7 +22,8 @@ export abstract class TypedRepresentationConverter extends RepresentationConvert
    */
   public async canHandle(args: RepresentationConverterArgs): Promise<void> {
     const types = [ this.getInputTypes(), this.getOutputTypes() ];
+    const { contentType } = args.representation.metadata;
     const [ inputTypes, outputTypes ] = await Promise.all(types);
-    supportsConversion(args, inputTypes, outputTypes);
+    supportsMediaTypeConversion(contentType, args.preferences.type, inputTypes, outputTypes);
   }
 }

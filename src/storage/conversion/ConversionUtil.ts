@@ -1,9 +1,7 @@
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
-import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import type { RepresentationConverterArgs } from './RepresentationConverter';
 
 /**
  * Filters media types based on the given preferences.
@@ -91,20 +89,20 @@ export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
  *  - Checks if the input type is supported by the parser.
  *  - Checks if the parser can produce one of the preferred output types.
  * Throws an error with details if conversion is not possible.
- * @param request - Incoming arguments.
- * @param supportedIn - Media types that can be parsed by the converter.
- * @param supportedOut - Media types that can be produced by the converter.
+ * @param inputType - Actual input type.
+ * @param outputTypes - Acceptable output types.
+ * @param convertorIn - Media types that can be parsed by the converter.
+ * @param convertorOut - Media types that can be produced by the converter.
  */
-export const supportsConversion = (request: RepresentationConverterArgs, supportedIn: ValuePreferences,
-  supportedOut: ValuePreferences): void => {
-  const inType = request.representation.metadata.contentType;
-  if (!inType) {
-    throw new BadRequestHttpError('No content type indicated on request.');
-  }
-  if (!Object.keys(supportedIn).some((type): boolean => matchesMediaType(inType, type)) ||
-     matchingMediaTypes(request.preferences.type, supportedOut).length === 0) {
+export const supportsMediaTypeConversion = (
+  inputType = 'unknown', outputTypes: ValuePreferences = {},
+  convertorIn: ValuePreferences = {}, convertorOut: ValuePreferences = {},
+): void => {
+  if (!Object.keys(convertorIn).some((type): boolean => matchesMediaType(inputType, type)) ||
+     matchingMediaTypes(outputTypes, convertorOut).length === 0) {
     throw new NotImplementedHttpError(
-      `Can only convert from ${Object.keys(supportedIn)} to ${Object.keys(supportedOut)}.`,
+      `Cannot convert from ${inputType} to ${Object.keys(outputTypes)
+      }, only from ${Object.keys(convertorIn)} to ${Object.keys(convertorOut)}.`,
     );
   }
 };

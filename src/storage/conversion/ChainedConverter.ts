@@ -1,7 +1,7 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { supportsConversion, matchesMediaType } from './ConversionUtil';
+import { matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -41,12 +41,6 @@ export class ChainedConverter extends TypedRepresentationConverter {
 
   public async getOutputTypes(): Promise<ValuePreferences> {
     return this.last.getOutputTypes();
-  }
-
-  public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    // We assume a chain can be constructed, otherwise there would be a configuration issue
-    // So we only check if the input can be parsed and the preferred type can be written
-    supportsConversion(input, await this.first.getInputTypes(), await this.last.getOutputTypes());
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
