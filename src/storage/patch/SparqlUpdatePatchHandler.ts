@@ -86,7 +86,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const store = new Store<BaseQuad>();
     try {
       // Read the quads of the current representation
-      const quads = await this.source.getRepresentation(identifier, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+      const quads = await this.source.getRepresentation(identifier,
+        { type: { [INTERNAL_QUADS]: 1 }});
       const importEmitter = store.import(quads.data);
       await new Promise((resolve, reject): void => {
         importEmitter.on('end', resolve);

@@ -25,13 +25,13 @@ describe('A QuadToRdfConverter', (): void => {
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle quad to JSON-LD conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { 'application/ld+json': 1 }};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
@@ -44,7 +44,7 @@ describe('A QuadToRdfConverter', (): void => {
       ) ]),
       metadata,
     } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: 'text/turtle', weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
       binary: true,
@@ -67,7 +67,7 @@ describe('A QuadToRdfConverter', (): void => {
       ) ]),
       metadata,
     } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: 'application/ld+json', weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { 'application/ld+json': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
       binary: true,

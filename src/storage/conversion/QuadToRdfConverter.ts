@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import rdfSerializer from 'rdf-serialize';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
+import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
@@ -14,11 +15,11 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * Converts `internal/quads` to most major RDF serializations.
  */
 export class QuadToRdfConverter extends TypedRepresentationConverter {
-  public async getInputTypes(): Promise<Record<string, number>> {
+  public async getInputTypes(): Promise<RepresentationPreference> {
     return { [INTERNAL_QUADS]: 1 };
   }
 
-  public async getOutputTypes(): Promise<Record<string, number>> {
+  public async getOutputTypes(): Promise<RepresentationPreference> {
     return rdfSerializer.getContentTypesPrioritized();
   }
 
@@ -27,7 +28,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
   }
 
   private async quadsToRdf(quads: Representation, preferences: RepresentationPreferences): Promise<Representation> {
-    const contentType = matchingMediaTypes(preferences, await rdfSerializer.getContentTypes())[0].value;
+    const contentType = matchingMediaTypes(preferences, await rdfSerializer.getContentTypes())[0];
     const metadata = new RepresentationMetadata(quads.metadata, { [CONTENT_TYPE]: contentType });
     return {
       binary: true,

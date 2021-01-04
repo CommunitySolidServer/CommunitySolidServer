@@ -1,3 +1,4 @@
+import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import { supportsConversion } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -7,18 +8,14 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  */
 export abstract class TypedRepresentationConverter extends RepresentationConverter {
   /**
-   * Get a hash of all supported input content types for this converter, mapped to a numerical priority.
-   * The priority weight goes from 0 up to 1.
-   * @returns A promise resolving to a hash mapping content type to a priority number.
+   * Gets the supported input content types for this converter, mapped to a numerical priority.
    */
-  public abstract getInputTypes(): Promise<Record<string, number>>;
+  public abstract getInputTypes(): Promise<RepresentationPreference>;
 
   /**
-   * Get a hash of all supported output content types for this converter, mapped to a numerical priority.
-   * The priority weight goes from 0 up to 1.
-   * @returns A promise resolving to a hash mapping content type to a priority number.
+   * Gets the supported output content types for this converter, mapped to a numerical quality.
    */
-  public abstract getOutputTypes(): Promise<Record<string, number>>;
+  public abstract getOutputTypes(): Promise<RepresentationPreference>;
 
   /**
    * Verifies whether this converter supports the input.

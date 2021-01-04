@@ -68,7 +68,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   const basicChecks = async(quads: Quad[]): Promise<boolean> => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
-      { path: 'path' }, { type: [{ value: INTERNAL_QUADS, weight: 1 }]},
+      { path: 'path' }, { type: { [INTERNAL_QUADS]: 1 }},
     );
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(order).toEqual([ 'acquire', 'getRepresentation', 'setRepresentation', 'release' ]);

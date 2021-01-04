@@ -1,4 +1,3 @@
-import type { RepresentationPreference } from '../../ldp/representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
@@ -21,43 +20,42 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  *
  * @returns The weighted and filtered list of matching types.
  */
-export const matchingMediaTypes = (preferences: RepresentationPreferences, types: string[]):
-RepresentationPreference[] => {
-  if (!Array.isArray(preferences.type)) {
+export const matchingMediaTypes = (preferences: RepresentationPreferences, available: string[]):
+string[] => {
+  const preferredTypes = preferences.type;
+  if (!preferredTypes || Object.keys(preferredTypes).length === 0) {
     throw new BadRequestHttpError('Output type required for conversion.');
   }
 
-  const prefMap = preferences.type.reduce((map: Record<string, number>, pref): Record<string, number> => {
-    if (map[pref.value]) {
-      throw new BadRequestHttpError(`Duplicate type preference found: ${pref.value}`);
-    }
-    map[pref.value] = pref.weight;
-    return map;
-  }, {});
-
   // Prevent accidental use of internal types
-  if (!prefMap[INTERNAL_ALL]) {
-    prefMap[INTERNAL_ALL] = 0;
+  if (!preferredTypes[INTERNAL_ALL]) {
+    preferredTypes[INTERNAL_ALL] = 0;
   }
 
   // RFC 7231
   //    Media ranges can be overridden by more specific media ranges or
   //    specific media types.  If more than one media range applies to a
   //    given type, the most specific reference has precedence.
-  const weightedSupported = types.map((type): RepresentationPreference => {
+  const weightedSupported = available.map((type): [string, number] => {
     const match = /^([^/]+)\/([^\s;]+)/u.exec(type);
     if (!match) {
       throw new InternalServerError(`Unexpected type preference: ${type}`);
     }
     const [ , main, sub ] = match;
-    const weight = prefMap[type] ?? prefMap[`${main}/${sub}`] ?? prefMap[`${main}/*`] ?? prefMap['*/*'] ?? 0;
-    return { value: type, weight };
+    const weight =
+      preferredTypes[type] ??
+      preferredTypes[`${main}/${sub}`] ??
+      preferredTypes[`${main}/*`] ??
+      preferredTypes['*/*'] ??
+      0;
+    return [ type, weight ];
   });
 
   // Return all non-zero preferences in descending order of weight
   return weightedSupported
-    .filter((pref): boolean => pref.weight !== 0)
-    .sort((prefA, prefB): number => prefB.weight - prefA.weight);
+    .filter(([ , weight ]): boolean => weight !== 0)
+    .sort(([ , weightA ], [ , weightB ]): number => weightB - weightA)
+    .map(([ type ]): string => type);
 };
 
 /**

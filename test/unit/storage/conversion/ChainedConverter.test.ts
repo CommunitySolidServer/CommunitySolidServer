@@ -31,7 +31,7 @@ class DummyConverter extends TypedRepresentationConverter {
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
     const metadata = new RepresentationMetadata(input.representation.metadata,
-      { [CONTENT_TYPE]: input.preferences.type![0].value });
+      { [CONTENT_TYPE]: Object.keys(input.preferences.type!)[0] });
     return { ...input.representation, metadata };
   }
 }
@@ -53,7 +53,7 @@ describe('A ChainedConverter', (): void => {
 
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     representation = { metadata } as Representation;
-    preferences = { type: [{ value: 'internal/quads', weight: 1 }]};
+    preferences = { type: { 'internal/quads': 1 }};
     args = { representation, preferences, identifier: { path: 'path' }};
   });
 

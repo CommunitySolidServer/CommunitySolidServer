@@ -90,8 +90,8 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
       return input.representation;
     }
     this.logger.debug(`Conversion needed for ${input.identifier
-      .path} from ${input.representation.metadata.contentType} to satisfy ${input.preferences.type
-      .map((pref): string => `${pref.value};q=${pref.weight}`).join(', ')}`);
+      .path} from ${input.representation.metadata.contentType} to satisfy ${Object.entries(input.preferences.type)
+      .map(([ value, weight ]): string => `${value};q=${weight}`).join(', ')}`);
 
     const converted = await converter.handleSafe(input);
     this.logger.info(`Converted representation for ${input.identifier
@@ -107,7 +107,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
     if (!this.inType) {
       return representation;
     }
-    const preferences: RepresentationPreferences = { type: [{ value: this.inType, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [this.inType]: 1 }};
 
     return this.convertRepresentation({ identifier, representation, preferences }, this.inConverter);
   }

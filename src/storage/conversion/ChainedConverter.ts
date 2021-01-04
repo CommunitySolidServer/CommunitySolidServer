@@ -58,7 +58,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
     const args = { ...input };
     for (let i = 0; i < this.converters.length - 1; ++i) {
       const value = await this.getMatchingType(this.converters[i], this.converters[i + 1]);
-      args.preferences = { type: [{ value, weight: 1 }]};
+      args.preferences = { type: { [value]: 1 }};
       args.representation = await this.converters[i].handle(args);
     }
     args.preferences = input.preferences;

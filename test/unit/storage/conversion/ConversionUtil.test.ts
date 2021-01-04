@@ -7,7 +7,6 @@ import {
   matchingMediaTypes,
   supportsConversion,
 } from '../../../../src/storage/conversion/ConversionUtil';
-import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
 describe('ConversionUtil', (): void => {
@@ -29,21 +28,24 @@ describe('ConversionUtil', (): void => {
 
     it('requires a matching input type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
+      const preferences: RepresentationPreferences =
+        { type: { 'b/x': 1 }};
       expect((): any => supportsConversion({ identifier, representation, preferences }, [ 'c/x' ], [ 'a/x' ]))
         .toThrow('Can only convert from c/x to a/x.');
     });
 
     it('requires a matching output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
+      const preferences: RepresentationPreferences =
+        { type: { 'b/x': 1 }};
       expect((): any => supportsConversion({ identifier, representation, preferences }, [ 'a/x' ], [ 'c/x' ]))
         .toThrow('Can only convert from a/x to c/x.');
     });
 
     it('succeeds with a valid input and output type.', async(): Promise<void> => {
       metadata.contentType = 'a/x';
-      const preferences: RepresentationPreferences = { type: [{ value: 'b/x', weight: 1 }]};
+      const preferences: RepresentationPreferences =
+        { type: { 'b/x': 1 }};
       expect(supportsConversion({ identifier, representation, preferences }, [ 'a/x' ], [ 'b/x' ]))
         .toBeUndefined();
     });
@@ -51,55 +53,52 @@ describe('ConversionUtil', (): void => {
 
   describe('#matchingMediaTypes', (): void => {
     it('requires type preferences.', async(): Promise<void> => {
-      const preferences: RepresentationPreferences = {};
+      const preferences: RepresentationPreferences =
+        {};
       expect((): any => matchingMediaTypes(preferences, [ 'a/b' ]))
         .toThrow('Output type required for conversion.');
     });
 
     it('returns matching types if weight > 0.', async(): Promise<void> => {
-      const preferences: RepresentationPreferences = { type:
-          [{ value: 'a/x', weight: 1 }, { value: 'b/x', weight: 0.5 }, { value: 'c/x', weight: 0 }]};
-      expect(matchingMediaTypes(preferences, [ 'b/x', 'c/x' ])).toEqual([{ value: 'b/x', weight: 0.5 }]);
+      const preferences: RepresentationPreferences =
+        { type: { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 }};
+      expect(matchingMediaTypes(preferences, [ 'b/x', 'c/x' ]))
+        .toEqual([ 'b/x' ]);
     });
 
     it('sorts by descending weight.', async(): Promise<void> => {
-      const preferences: RepresentationPreferences = { type:
-          [{ value: 'a/x', weight: 1 }, { value: 'b/x', weight: 0.5 }, { value: 'c/x', weight: 0.8 }]};
-      expect(matchingMediaTypes(preferences, [ 'a/x', 'b/x', 'c/x' ]))
-        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'c/x', weight: 0.8 }, { value: 'b/x', weight: 0.5 }]);
-    });
-
-    it('errors if there are duplicate preferences.', async(): Promise<void> => {
       const preferences: RepresentationPreferences =
-        { type: [{ value: 'b/x', weight: 1 }, { value: 'b/x', weight: 0 }]};
-      expect((): any => matchingMediaTypes(preferences, [ 'b/x' ]))
-        .toThrow(new BadRequestHttpError(`Duplicate type preference found: b/x`));
+        { type: { 'a/x': 1, 'b/x': 0.5, 'c/x': 0.8 }};
+      expect(matchingMediaTypes(preferences, [ 'a/x', 'b/x', 'c/x' ]))
+        .toEqual([ 'a/x', 'c/x', 'b/x' ]);
     });
 
     it('errors if there invalid types.', async(): Promise<void> => {
       const preferences: RepresentationPreferences =
-        { type: [{ value: 'b/x', weight: 1 }]};
+        { type: { 'b/x': 1 }};
       expect((): any => matchingMediaTypes(preferences, [ 'noType' ]))
         .toThrow(new InternalServerError(`Unexpected type preference: noType`));
     });
 
     it('filters out internal types.', async(): Promise<void> => {
-      const preferences: RepresentationPreferences = { type: [{ value: '*/*', weight: 1 }]};
-      expect(matchingMediaTypes(preferences, [ 'a/x', 'internal/quads' ])).toEqual([{ value: 'a/x', weight: 1 }]);
+      const preferences: RepresentationPreferences =
+        { type: { '*/*': 1 }};
+      expect(matchingMediaTypes(preferences, [ 'a/x', 'internal/quads' ]))
+        .toEqual([ 'a/x' ]);
     });
 
     it('keeps internal types that are specifically requested.', async(): Promise<void> => {
       const preferences: RepresentationPreferences =
-        { type: [{ value: '*/*', weight: 1 }, { value: 'internal/*', weight: 0.5 }]};
+        { type: { '*/*': 1, 'internal/*': 0.5 }};
       expect(matchingMediaTypes(preferences, [ 'a/x', 'internal/quads' ]))
-        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]);
+        .toEqual([ 'a/x', 'internal/quads' ]);
     });
 
     it('takes the most relevant weight for a type.', async(): Promise<void> => {
       const preferences: RepresentationPreferences =
-        { type: [{ value: '*/*', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]};
+        { type: { '*/*': 1, 'internal/quads': 0.5 }};
       expect(matchingMediaTypes(preferences, [ 'a/x', 'internal/quads' ]))
-        .toEqual([{ value: 'a/x', weight: 1 }, { value: 'internal/quads', weight: 0.5 }]);
+        .toEqual([ 'a/x', 'internal/quads' ]);
     });
   });
 

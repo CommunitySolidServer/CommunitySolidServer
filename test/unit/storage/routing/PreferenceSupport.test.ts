@@ -7,7 +7,7 @@ import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpE
 
 describe('A PreferenceSupport', (): void => {
   const type = 'internal/quads';
-  const preferences: RepresentationPreferences = { type: [{ value: type, weight: 1 }]};
+  const preferences: RepresentationPreferences = { type: { [type]: 1 }};
   let converter: RepresentationConverter;
   let support: PreferenceSupport;
   const identifier: ResourceIdentifier = 'identifier' as any;

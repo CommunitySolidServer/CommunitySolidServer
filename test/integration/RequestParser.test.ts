@@ -34,8 +34,8 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
       method: 'POST',
       target: { path: 'http://test.com/' },
       preferences: {
-        type: [{ value: 'text/turtle', weight: 0.8 }],
-        language: [{ value: 'en-gb', weight: 1 }, { value: 'en', weight: 0.5 }],
+        type: { 'text/turtle': 0.8 },
+        language: { 'en-gb': 1, en: 0.5 },
       },
       body: {
         data: expect.any(Readable),

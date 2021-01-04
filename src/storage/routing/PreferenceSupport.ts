@@ -15,7 +15,7 @@ export class PreferenceSupport {
   private readonly converter: RepresentationConverter;
 
   public constructor(type: string, converter: RepresentationConverter) {
-    this.preferences = { type: [{ value: type, weight: 1 }]};
+    this.preferences = { type: { [type]: 1 }};
     this.converter = converter;
   }
 

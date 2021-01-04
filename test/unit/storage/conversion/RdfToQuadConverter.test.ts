@@ -28,14 +28,14 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
   it('can handle turtle to quad conversions.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     const representation = { metadata } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
   it('can handle JSON-LD to quad conversions.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/ld+json' });
     const representation = { metadata } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
@@ -45,7 +45,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
       metadata,
     } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
       binary: false,
@@ -66,7 +66,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
       metadata,
     } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
       binary: false,
@@ -87,7 +87,7 @@ describe('A RdfToQuadConverter.test.ts', (): void => {
       data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.co' ]),
       metadata,
     } as Representation;
-    const preferences: RepresentationPreferences = { type: [{ value: INTERNAL_QUADS, weight: 1 }]};
+    const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
       binary: false,

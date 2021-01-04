@@ -122,7 +122,7 @@ export class WebAclAuthorizer extends Authorizer {
     try {
       const acl = await this.aclManager.getAclDocument(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
-      const data = await this.resourceStore.getRepresentation(acl, { type: [{ value: INTERNAL_QUADS, weight: 1 }]});
+      const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
       const resourceId = await this.aclManager.getAclConstrainedResource(id);

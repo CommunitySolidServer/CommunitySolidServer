@@ -6,7 +6,6 @@ import {
   parseAcceptEncoding,
   parseAcceptLanguage,
 } from '../../util/HeaderUtil';
-import type { RepresentationPreference } from '../representation/RepresentationPreference';
 import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import { PreferenceParser } from './PreferenceParser';
 
@@ -31,13 +30,13 @@ export class AcceptPreferenceParser extends PreferenceParser {
     (Object.keys(headers) as (keyof RepresentationPreferences)[]).forEach((key): void => {
       const preferences = this.parseHeader(headers[key]!.func, headers[key]!.val);
       if (preferences.length > 0) {
-        result[key] = preferences;
+        result[key] = Object.fromEntries(preferences);
       }
     });
 
     // Accept-DateTime is currently specified to simply have a datetime as value
     if (input.headers['accept-datetime']) {
-      result.datetime = [{ value: input.headers['accept-datetime'] as string, weight: 1 }];
+      result.datetime = { [input.headers['accept-datetime'] as string]: 1 };
     }
 
     return result;
@@ -48,13 +47,10 @@ export class AcceptPreferenceParser extends PreferenceParser {
    * @param input - Input header string.
    * @param parseFunction - Function that converts header string to {@link AcceptHeader}.
    *
-   * @returns A list of {@link RepresentationPreference}. Returns an empty list if input was not defined.
+   * @returns A list of preferences. Returns an empty list if input was not defined.
    */
-  private parseHeader(parseFunction: (input: string) => AcceptHeader[], input?: string): RepresentationPreference[] {
-    if (!input) {
-      return [];
-    }
-    return parseFunction(input).map((accept): RepresentationPreference =>
-      ({ value: accept.range, weight: accept.weight }));
+  private parseHeader(parseFunction: (input: string) => AcceptHeader[], input?: string): [string, number][] {
+    return (input ? parseFunction(input) : [])
+      .map(({ range, weight }): [string, number] => [ range, weight ]);
   }
 }

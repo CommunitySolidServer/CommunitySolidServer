@@ -32,9 +32,8 @@ describe('A RepresentationConvertingStore', (): void => {
   });
 
   it('returns the Representation from the source if no changes are required.', async(): Promise<void> => {
-    const result = await store.getRepresentation({ path: 'path' }, { type: [
-      { value: 'application/*', weight: 0 }, { value: 'text/turtle', weight: 1 },
-    ]});
+    const result = await store.getRepresentation({ path: 'path' },
+      { type: { 'application/*': 0, 'text/turtle': 1 }});
     expect(result).toEqual({
       data: 'data',
       metadata: expect.any(RepresentationMetadata),
@@ -43,7 +42,7 @@ describe('A RepresentationConvertingStore', (): void => {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' },
-      { type: [{ value: 'application/*', weight: 0 }, { value: 'text/turtle', weight: 1 }]},
+      { type: { 'application/*': 0, 'text/turtle': 1, 'internal/*': 0 }},
       undefined,
     );
     expect(outConverter.handleSafe).toHaveBeenCalledTimes(0);
@@ -64,15 +63,14 @@ describe('A RepresentationConvertingStore', (): void => {
   });
 
   it('calls the converter if another output is preferred.', async(): Promise<void> => {
-    await expect(store.getRepresentation({ path: 'path' }, { type: [
-      { value: 'text/plain', weight: 1 }, { value: 'text/turtle', weight: 0 },
-    ]})).resolves.toEqual(convertedOut);
+    await expect(store.getRepresentation({ path: 'path' },
+      { type: { 'text/plain': 1, 'text/turtle': 0 }})).resolves.toEqual(convertedOut);
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(outConverter.handleSafe).toHaveBeenCalledTimes(1);
     expect(outConverter.handleSafe).toHaveBeenLastCalledWith({
       identifier: { path: 'path' },
       representation: { data: 'data', metadata },
-      preferences: { type: [{ value: 'text/plain', weight: 1 }, { value: 'text/turtle', weight: 0 }]},
+      preferences: { type: { 'text/plain': 1, 'text/turtle': 0, 'internal/*': 0 }},
     });
   });
 

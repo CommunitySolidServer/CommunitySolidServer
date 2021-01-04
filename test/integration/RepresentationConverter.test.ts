@@ -25,7 +25,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handleSafe({
       representation,
-      preferences: { type: [{ value: 'text/turtle', weight: 1 }]},
+      preferences: { type: { 'text/turtle': 1 }},
       identifier: { path: 'path' },
     });
 
@@ -43,7 +43,7 @@ describe('A ChainedConverter', (): void => {
 
     const result = await converter.handleSafe({
       representation,
-      preferences: { type: [{ value: 'application/ld+json', weight: 1 }]},
+      preferences: { type: { 'application/ld+json': 1 }},
       identifier: { path: 'path' },
     });
 
