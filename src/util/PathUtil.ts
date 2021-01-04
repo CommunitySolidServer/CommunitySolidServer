@@ -1,4 +1,45 @@
+import platform, { posix } from 'path';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+
+/**
+ * Changes a potential Windows path into a POSIX path.
+ *
+ * @param path - Path to check (POSIX or Windows).
+ *
+ * @returns The potentially changed path (POSIX).
+ */
+const windowsToPosixPath = (path: string): string => path.replace(/\\+/gu, '/');
+
+/**
+ * Resolves relative segments in the path/
+ *
+ * @param path - Path to check (POSIX or Windows).
+ *
+ * @returns The potentially changed path (POSIX).
+ */
+export const normalizeFilePath = (path: string): string =>
+  posix.normalize(windowsToPosixPath(path));
+
+/**
+ * Adds the paths to the base path.
+ *
+ * @param basePath - The base path (POSIX or Windows).
+ * @param paths - Subpaths to attach (POSIX).
+ *
+ * @returns The potentially changed path (POSIX).
+ */
+export const joinFilePath = (basePath: string, ...paths: string[]): string =>
+  posix.join(windowsToPosixPath(basePath), ...paths);
+
+/**
+ * Converts the path into an OS-dependent path.
+ *
+ * @param path - Path to check (POSIX).
+ *
+ * @returns The potentially changed path (OS-dependent).
+ */
+export const toSystemFilePath = (path: string): string =>
+  platform.normalize(path);
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.

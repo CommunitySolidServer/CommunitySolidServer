@@ -1,5 +1,4 @@
 import { promises as fsPromises } from 'fs';
-import { posix } from 'path';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -9,12 +8,12 @@ import {
   encodeUriPathComponents,
   ensureTrailingSlash,
   isContainerIdentifier,
+  joinFilePath,
+  normalizeFilePath,
   trimTrailingSlashes,
 } from '../../util/PathUtil';
 import type { FileIdentifierMapper, FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
 import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
-
-const { join: joinPath, normalize: normalizePath } = posix;
 
 export interface ResourcePath {
 
@@ -50,7 +49,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
 
   public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
     this.baseRequestURI = trimTrailingSlashes(base);
-    this.rootFilepath = trimTrailingSlashes(normalizePath(rootFilepath));
+    this.rootFilepath = trimTrailingSlashes(normalizeFilePath(rootFilepath));
     this.types = { ...mime.types, ...overrideTypes };
   }
 
@@ -101,7 +100,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
 
       // Matching file found
       if (fileName) {
-        filePath = joinPath(folder, fileName);
+        filePath = joinFilePath(folder, fileName);
       }
 
       this.logger.info(`The path for ${identifier.path} is ${filePath}`);

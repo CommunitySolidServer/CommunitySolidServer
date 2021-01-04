@@ -1,12 +1,11 @@
 /* eslint-disable unicorn/no-process-exit */
 
-import * as path from 'path';
 import type { ReadStream, WriteStream } from 'tty';
 import type { LoaderProperties } from 'componentsjs';
 import { Loader } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { ensureTrailingSlash } from '../util/PathUtil';
+import { joinFilePath, toSystemFilePath, ensureTrailingSlash } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -44,14 +43,14 @@ export class CliRunner {
 
     // Gather settings for instantiating the server
     const loaderProperties: LoaderProperties = {
-      mainModulePath: this.resolvePath(params.mainModulePath),
+      mainModulePath: toSystemFilePath(this.resolveFilePath(params.mainModulePath)),
       scanGlobal: params.globalModules,
     };
-    const configFile = this.resolvePath(params.config, 'config/config-default.json');
+    const configFile = this.resolveFilePath(params.config, 'config/config-default.json');
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    this.createInitializer(loaderProperties, configFile, variables)
+    this.createInitializer(loaderProperties, toSystemFilePath(configFile), variables)
       .then(
         async(initializer): Promise<void> => initializer.handleSafe(),
         (error: Error): void => {
@@ -70,10 +69,10 @@ export class CliRunner {
    * Resolves a path relative to the current working directory,
    * falling back to a path relative to this module.
    */
-  protected resolvePath(cwdPath?: string | null, modulePath = ''): string {
+  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
     return typeof cwdPath === 'string' ?
-      path.join(process.cwd(), cwdPath) :
-      path.join(__dirname, '../../', modulePath);
+      joinFilePath(process.cwd(), cwdPath) :
+      joinFilePath(__dirname, '../../', modulePath);
   }
 
   /**
@@ -85,10 +84,11 @@ export class CliRunner {
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
       'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
       'urn:solid-server:default:variable:port': params.port,
-      'urn:solid-server:default:variable:rootFilePath': this.resolvePath(params.rootFilePath),
+      'urn:solid-server:default:variable:rootFilePath':
+        this.resolveFilePath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
-        params.podTemplateFolder ?? this.resolvePath(null, 'templates'),
+         this.resolveFilePath(params.podTemplateFolder, 'templates'),
     };
   }
 

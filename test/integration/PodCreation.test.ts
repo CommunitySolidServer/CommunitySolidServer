@@ -1,7 +1,7 @@
 import type { Server } from 'http';
-import { join } from 'path';
 import fetch from 'cross-fetch';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { joinFilePath } from '../../src/util/PathUtil';
 import { readableToString } from '../../src/util/StreamUtil';
 import { instantiateFromConfig } from './Config';
 
@@ -17,7 +17,7 @@ describe('A server with a pod handler', (): void => {
       'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:podTemplateFolder': join(__dirname, '../assets/templates'),
+        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);

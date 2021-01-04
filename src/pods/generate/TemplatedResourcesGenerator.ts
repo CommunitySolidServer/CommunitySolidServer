@@ -1,5 +1,4 @@
 import { promises as fsPromises } from 'fs';
-import { posix } from 'path';
 import { Parser } from 'n3';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -8,13 +7,11 @@ import type {
   FileIdentifierMapperFactory,
   ResourceLink,
 } from '../../storage/mapping/FileIdentifierMapper';
-import { isContainerIdentifier } from '../../util/PathUtil';
+import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
 import type { TemplateEngine } from './TemplateEngine';
 import Dict = NodeJS.Dict;
-
-const { join: joinPath } = posix;
 
 /**
  * Generates resources by making use of a template engine.
@@ -77,7 +74,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private async* generateLinks(folderPath: string, mapper: FileIdentifierMapper): AsyncIterable<ResourceLink> {
     const files = await fsPromises.readdir(folderPath);
     for (const name of files) {
-      const filePath = joinPath(folderPath, name);
+      const filePath = joinFilePath(folderPath, name);
       const stats = await fsPromises.lstat(filePath);
       yield mapper.mapFilePathToUrl(filePath, stats.isDirectory());
     }

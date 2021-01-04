@@ -1,13 +1,12 @@
 import { EventEmitter } from 'events';
 import { promises as fs } from 'fs';
 import type { IncomingHttpHeaders } from 'http';
-import { join } from 'path';
 import { Readable } from 'stream';
 import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
-import { guardedStreamFrom, RepresentationMetadata, ensureTrailingSlash } from '../../src/';
+import { guardedStreamFrom, RepresentationMetadata, joinFilePath, ensureTrailingSlash } from '../../src/';
 import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 import { performRequest } from './Util';
 
@@ -109,7 +108,7 @@ export class ResourceHelper {
   public async createResource(fileLocation: string, slug: string, contentType: string, mayFail = false):
   Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
-      join(__dirname, fileLocation),
+      joinFilePath(__dirname, fileLocation),
     );
 
     const response: MockResponse<any> = await this.performRequestWithBody(
@@ -131,7 +130,7 @@ export class ResourceHelper {
   public async replaceResource(fileLocation: string, requestUrl: string, contentType: string):
   Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
-      join(__dirname, fileLocation),
+      joinFilePath(__dirname, fileLocation),
     );
 
     const putUrl = new URL(requestUrl);
