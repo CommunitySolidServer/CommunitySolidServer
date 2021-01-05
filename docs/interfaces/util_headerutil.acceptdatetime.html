@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RepresentationPreference | Community Solid Server</title>
+	<title>AcceptDatetime | Community Solid Server</title>
 	<meta name="description" content="Documentation for Community Solid Server">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,13 +55,13 @@
 					<a href="../modules.html">Community Solid Server</a>
 				</li>
 				<li>
-					<a href="../modules/index.html">index</a>
+					<a href="../modules/util_headerutil.html">util/HeaderUtil</a>
 				</li>
 				<li>
-					<a href="index.representationpreference.html">RepresentationPreference</a>
+					<a href="util_headerutil.acceptdatetime.html">AcceptDatetime</a>
 				</li>
 			</ul>
-			<h1>Interface RepresentationPreference</h1>
+			<h1>Interface AcceptDatetime</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents a single preference in a request.</p>
+						<p>Contents of an HTTP Accept-Datetime header.</p>
 					</div>
 				</div>
 			</section>
@@ -79,7 +79,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">RepresentationPreference</span>
+						<a href="util_headerutil.acceptheader.html" class="tsd-signature-type" data-tsd-kind="Interface">AcceptHeader</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">AcceptDatetime</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -90,8 +95,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.representationpreference.html#value" class="tsd-kind-icon">value</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.representationpreference.html#weight" class="tsd-kind-icon">weight</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="util_headerutil.acceptdatetime.html#range" class="tsd-kind-icon">range</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="util_headerutil.acceptdatetime.html#weight" class="tsd-kind-icon">weight</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,38 +104,36 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="value" class="tsd-anchor"></a>
-					<h3>value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="range" class="tsd-anchor"></a>
+					<h3>range</h3>
+					<div class="tsd-signature tsd-kind-icon">range<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="util_headerutil.acceptheader.html">AcceptHeader</a>.<a href="util_headerutil.acceptheader.html#range">range</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/ldp/representation/RepresentationPreference.ts#L8">src/ldp/representation/RepresentationPreference.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ba5c620/src/util/HeaderUtil.ts#L60">src/util/HeaderUtil.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The actual preference value.</p>
+							<p>Requested range. Can be a specific value or <code>*</code>, matching all.</p>
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="weight" class="tsd-anchor"></a>
 					<h3>weight</h3>
 					<div class="tsd-signature tsd-kind-icon">weight<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="util_headerutil.acceptheader.html">AcceptHeader</a>.<a href="util_headerutil.acceptheader.html#weight">weight</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/ldp/representation/RepresentationPreference.ts#L17">src/ldp/representation/RepresentationPreference.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ba5c620/src/util/HeaderUtil.ts#L62">src/util/HeaderUtil.ts:62</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>How preferred this value is in a number going from 0 to 1.
-							Follows the quality values rule from RFC 7231:</p>
+							<p>Weight of the preference [0, 1].</p>
 						</div>
-						<p>&quot;The weight is normalized to a real number in the range 0 through 1,
-							where 0.001 is the least preferred and 1 is the most preferred; a
-						value of 0 means &quot;not acceptable&quot;.&quot;</p>
 					</div>
 				</section>
 			</section>
@@ -142,27 +145,75 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/index.html">index</a>
+						<a href="../modules/util_headerutil.html">util/<wbr>Header<wbr>Util</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.accept.html" class="tsd-kind-icon">Accept</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.acceptcharset.html" class="tsd-kind-icon">Accept<wbr>Charset</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="index.representationpreference.html" class="tsd-kind-icon">Representation<wbr>Preference</a>
+						<a href="util_headerutil.acceptdatetime.html" class="tsd-kind-icon">Accept<wbr>Datetime</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.representationpreference.html#value" class="tsd-kind-icon">value</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="util_headerutil.acceptdatetime.html#range" class="tsd-kind-icon">range</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="index.representationpreference.html#weight" class="tsd-kind-icon">weight</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="util_headerutil.acceptdatetime.html#weight" class="tsd-kind-icon">weight</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.acceptencoding.html" class="tsd-kind-icon">Accept<wbr>Encoding</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.acceptheader.html" class="tsd-kind-icon">Accept<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.acceptlanguage.html" class="tsd-kind-icon">Accept<wbr>Language</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="util_headerutil.forwarded.html" class="tsd-kind-icon">Forwarded</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#addheader" class="tsd-kind-icon">add<wbr>Header</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseaccept" class="tsd-kind-icon">parse<wbr>Accept</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseacceptcharset" class="tsd-kind-icon">parse<wbr>Accept<wbr>Charset</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseacceptdatetime" class="tsd-kind-icon">parse<wbr>Accept<wbr>Date<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseacceptencoding" class="tsd-kind-icon">parse<wbr>Accept<wbr>Encoding</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseacceptlanguage" class="tsd-kind-icon">parse<wbr>Accept<wbr>Language</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseforwarded" class="tsd-kind-icon">parse<wbr>Forwarded</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#parseparameters" class="tsd-kind-icon">parse<wbr>Parameters</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#splitandclean" class="tsd-kind-icon">split<wbr>And<wbr>Clean</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="../modules/util_headerutil.html#transformquotedstrings" class="tsd-kind-icon">transform<wbr>Quoted<wbr>Strings</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -182,7 +233,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>

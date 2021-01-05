@@ -74,7 +74,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#supportsconversion" class="tsd-kind-icon">supports<wbr>Conversion</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#supportsmediatypeconversion" class="tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion</a></li>
 							</ul>
 						</section>
 					</div>
@@ -92,7 +92,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/storage/conversion/ConversionUtil.ts#L71">src/storage/conversion/ConversionUtil.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ba5c620/src/storage/conversion/ConversionUtil.ts#L66">src/storage/conversion/ConversionUtil.ts:66</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -125,13 +125,13 @@
 					<a name="matchingmediatypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> matching<wbr>Media<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a>, types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreference.representationpreference.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreference</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferredTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, availableTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/storage/conversion/ConversionUtil.ts#L24">src/storage/conversion/ConversionUtil.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ba5c620/src/storage/conversion/ConversionUtil.ts#L21">src/storage/conversion/ConversionUtil.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -152,34 +152,34 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>preferences: <a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a></h5>
+									<h5>preferredTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Preferences for output type.</p>
 									</div>
 								</li>
 								<li>
-									<h5>types: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>availableTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Media types to compare to the preferences.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_representationpreference.representationpreference.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreference</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
 							<p>The weighted and filtered list of matching types.</p>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="supportsconversion" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> supports<wbr>Conversion</h3>
+					<a name="supportsmediatypeconversion" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> supports<wbr>Media<wbr>Type<wbr>Conversion</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">supports<wbr>Conversion<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a>, supportedIn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, supportedOut<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion<span class="tsd-signature-symbol">(</span>inputType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, outputTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, convertorIn<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, convertorOut<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/15d1ae1/src/storage/conversion/ConversionUtil.ts#L101">src/storage/conversion/ConversionUtil.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ba5c620/src/storage/conversion/ConversionUtil.ts#L97">src/storage/conversion/ConversionUtil.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -197,19 +197,25 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>request: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+									<h5>inputType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;unknown&#x27;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Incoming arguments.</p>
+										<p>Actual input type.</p>
 									</div>
 								</li>
 								<li>
-									<h5>supportedIn: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>outputTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Acceptable output types.</p>
+									</div>
+								</li>
+								<li>
+									<h5>convertorIn: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Media types that can be parsed by the converter.</p>
 									</div>
 								</li>
 								<li>
-									<h5>supportedOut: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>convertorOut: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Media types that can be produced by the converter.</p>
 									</div>
@@ -241,7 +247,7 @@
 						<a href="storage_conversion_conversionutil.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="storage_conversion_conversionutil.html#supportsconversion" class="tsd-kind-icon">supports<wbr>Conversion</a>
+						<a href="storage_conversion_conversionutil.html#supportsmediatypeconversion" class="tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion</a>
 					</li>
 				</ul>
 			</nav>
