@@ -362,6 +362,9 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
   return results;
 };
 
+// eslint-disable-next-line max-len
+const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/u;
+
 /**
  * Parses an Accept-DateTime header string.
  *
@@ -369,8 +372,22 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
  *
  * @returns An array with a single {@link AcceptDatetime} object.
  */
-export const parseAcceptDateTime = (input: string): AcceptDatetime[] =>
-  [{ range: input, weight: 1 }];
+export const parseAcceptDateTime = (input: string): AcceptDatetime[] => {
+  const results: AcceptDatetime[] = [];
+  const range = input.trim();
+  if (range) {
+    if (!rfc1123Date.test(range)) {
+      logger.warn(
+        `Invalid Accept-DateTime range: ${range}`,
+      );
+      throw new BadRequestHttpError(
+        `Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`,
+      );
+    }
+    results.push({ range, weight: 1 });
+  }
+  return results;
+};
 
 /**
  * Adds a header value without overriding previous values.

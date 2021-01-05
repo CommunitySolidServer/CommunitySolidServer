@@ -3,6 +3,7 @@ import {
   addHeader,
   parseAccept,
   parseAcceptCharset,
+  parseAcceptDateTime,
   parseAcceptEncoding,
   parseAcceptLanguage,
   parseForwarded,
@@ -131,6 +132,24 @@ describe('HeaderUtil', (): void => {
     });
   });
 
+  describe('#parseAcceptDateTime', (): void => {
+    it('parses valid Accept-DateTime Headers.', async(): Promise<void> => {
+      expect(parseAcceptDateTime('Wed, 30 May 2007 18:47:52 GMT')).toEqual([
+        { range: 'Wed, 30 May 2007 18:47:52 GMT', weight: 1 },
+      ]);
+    });
+
+    it('parses empty Accept-DateTime headers.', async(): Promise<void> => {
+      expect(parseAcceptDateTime('')).toEqual([]);
+      expect(parseAcceptDateTime('   ')).toEqual([]);
+    });
+
+    it('rejects invalid Accept-DateTime Headers.', async(): Promise<void> => {
+      expect((): any => parseAcceptDateTime('a/b')).toThrow('Invalid Accept-DateTime range:');
+      expect((): any => parseAcceptDateTime('30 May 2007')).toThrow('Invalid Accept-DateTime range:');
+    });
+  });
+
   describe('#addHeader', (): void => {
     let response: HttpResponse;
 
@@ -168,7 +187,7 @@ describe('HeaderUtil', (): void => {
     });
   });
 
-  describe('parseForwarded', (): void => {
+  describe('#parseForwarded', (): void => {
     it('parses an undefined value.', (): void => {
       expect(parseForwarded()).toEqual({});
     });
