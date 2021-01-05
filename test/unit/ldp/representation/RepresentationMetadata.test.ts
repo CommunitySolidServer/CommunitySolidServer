@@ -75,6 +75,11 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.quads()).toBeRdfIsomorphic(inputQuads);
     });
 
+    it('can query quads.', async(): Promise<void> => {
+      expect(metadata.quads(null, namedNode('has'), null)).toHaveLength(3);
+      expect(metadata.quads(null, null, literal('otherData'))).toHaveLength(2);
+    });
+
     it('can change the stored identifier.', async(): Promise<void> => {
       const newIdentifier = namedNode('newNode');
       metadata.identifier = newIdentifier;

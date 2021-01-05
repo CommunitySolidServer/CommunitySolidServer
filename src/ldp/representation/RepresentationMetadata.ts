@@ -86,10 +86,15 @@ export class RepresentationMetadata {
   }
 
   /**
-   * @returns All metadata quads.
+   * @returns All matching metadata quads.
    */
-  public quads(): Quad[] {
-    return this.store.getQuads(null, null, null, null);
+  public quads(
+    subject: Term | null = null,
+    predicate: Term | null = null,
+    object: Term | null = null,
+    graph: Term | null = null,
+  ): Quad[] {
+    return this.store.getQuads(subject, predicate, object, graph);
   }
 
   /**
