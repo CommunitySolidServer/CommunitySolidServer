@@ -93,6 +93,11 @@ export interface AcceptEncoding extends AcceptHeader { }
  */
 export interface AcceptLanguage extends AcceptHeader { }
 
+/**
+ * Contents of an HTTP Accept-Datetime header.
+ */
+export interface AcceptDatetime extends AcceptHeader { }
+
 // REUSED REGEXES
 const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
 
@@ -248,10 +253,10 @@ const parseAcceptPart = (part: string, replacements: Record<string, string>): Ac
  *
  * @returns An array of ranges and weights.
  */
-const parseNoParameters = (input: string): { range: string; weight: number }[] => {
+const parseNoParameters = (input: string): AcceptHeader[] => {
   const parts = splitAndClean(input);
 
-  return parts.map((part): { range: string; weight: number } => {
+  return parts.map((part): AcceptHeader => {
     const [ range, qvalue ] = part.split(';').map((param): string => param.trim());
     const result = { range, weight: 1 };
     if (qvalue) {
@@ -356,6 +361,16 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
   });
   return results;
 };
+
+/**
+ * Parses an Accept-DateTime header string.
+ *
+ * @param input - The Accept-DateTime header string.
+ *
+ * @returns An array with a single {@link AcceptDatetime} object.
+ */
+export const parseAcceptDateTime = (input: string): AcceptDatetime[] =>
+  [{ range: input, weight: 1 }];
 
 /**
  * Adds a header value without overriding previous values.
