@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import type { Literal, NamedNode, Term } from 'rdf-js';
+import type { NamedNode, Literal, Term } from 'rdf-js';
 import { CONTENT_TYPE_TERM } from './Vocabularies';
 
 const { namedNode, literal } = DataFactory;
@@ -41,7 +41,10 @@ export function isTerm(input?: any): input is Term {
  * Converts a subject to a named node when needed.
  * @param subject - Subject to potentially transform.
  */
-export function toSubjectTerm(subject: NamedNode | string): NamedNode {
+export function toSubjectTerm(subject: string): NamedNode;
+export function toSubjectTerm<T extends Term>(subject: T): T;
+export function toSubjectTerm<T extends Term>(subject: T | string): T | NamedNode;
+export function toSubjectTerm(subject: Term | string): Term {
   return typeof subject === 'string' ? namedNode(subject) : subject;
 }
 
@@ -52,7 +55,10 @@ export const toPredicateTerm = toSubjectTerm;
  * @param object - Object to potentially transform.
  * @param preferLiteral - Whether strings are converted to literals or named nodes.
  */
-export function toObjectTerm<T extends Term>(object: T | string, preferLiteral = false): T {
+export function toObjectTerm(object: string, preferLiteral?: boolean): NamedNode;
+export function toObjectTerm<T extends Term>(object: T, preferLiteral?: boolean): T;
+export function toObjectTerm<T extends Term>(object: T | string, preferLiteral?: boolean): T | NamedNode;
+export function toObjectTerm(object: Term | string, preferLiteral = false): Term {
   if (typeof object === 'string') {
     return (preferLiteral ? literal(object) : namedNode(object)) as any;
   }

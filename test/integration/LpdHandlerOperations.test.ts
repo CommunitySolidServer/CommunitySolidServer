@@ -107,12 +107,12 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       [],
     );
     expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain(
+    expect(response._getData()).toContain(
       '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
     );
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
     const parser = new Parser();
-    const triples = parser.parse(response._getBuffer().toString());
+    const triples = parser.parse(response._getData());
     expect(triples).toBeRdfIsomorphic([
       quad(
         namedNode('http://test.com/s2'),

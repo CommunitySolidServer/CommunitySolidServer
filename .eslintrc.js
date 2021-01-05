@@ -59,6 +59,8 @@ module.exports = {
     'new-cap': 'off',
     // Necessary in constructor overloading
     'no-param-reassign': 'off',
+    // Checked by @typescript-eslint/no-redeclare
+    'no-redeclare': 'off',
     // Conflicts with external libraries
     'no-underscore-dangle': 'off',
     // Already checked by @typescript-eslint/no-unused-vars

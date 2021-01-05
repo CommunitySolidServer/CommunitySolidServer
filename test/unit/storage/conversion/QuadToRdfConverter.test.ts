@@ -8,12 +8,16 @@ import type { RepresentationPreferences } from '../../../../src/ldp/representati
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
-  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
+  let metadata: RepresentationMetadata;
+
+  beforeEach((): void => {
+    metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
+  });
 
   it('supports parsing quads.', async(): Promise<void> => {
     await expect(new QuadToRdfConverter().getInputTypes())
@@ -67,6 +71,33 @@ describe('A QuadToRdfConverter', (): void => {
     expect(result.metadata.contentType).toEqual('text/turtle');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
+`,
+    );
+  });
+
+  it('converts quads with prefixes to turtle.', async(): Promise<void> => {
+    metadata.addQuad(DC.terms(), PREFERRED_PREFIX_TERM, 'dc');
+    metadata.addQuad('http://test.com/', PREFERRED_PREFIX_TERM, 'test');
+    const representation = {
+      data: streamifyArray([ triple(
+        namedNode('http://test.com/s'),
+        DC.terms.modified,
+        namedNode('http://test.com/o'),
+      ) ]),
+      metadata,
+    } as Representation;
+    const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
+    const result = await converter.handle({ identifier, representation, preferences });
+    expect(result).toMatchObject({
+      binary: true,
+      metadata: expect.any(RepresentationMetadata),
+    });
+    expect(result.metadata.contentType).toEqual('text/turtle');
+    await expect(stringifyStream(result.data)).resolves.toEqual(
+      `@prefix dc: <http://purl.org/dc/terms/>.
+@prefix test: <http://test.com/>.
+
+test:s dc:modified test:o.
 `,
     );
   });

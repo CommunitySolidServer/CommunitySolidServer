@@ -2,7 +2,7 @@
 import { namedNode } from '@rdfjs/data-model';
 import type { NamedNode } from 'rdf-js';
 
-type PrefixResolver<T> = (localName: string) => T;
+type PrefixResolver<T> = (localName?: string) => T;
 type RecordOf<TKey extends any[], TValue> = Record<TKey[number], TValue>;
 
 export type Namespace<TKey extends any[], TValue> =
@@ -19,7 +19,7 @@ export function createNamespace<TKey extends string, TValue>(
   Namespace<typeof localNames, TValue> {
   // Create a function that expands local names
   const expanded = {} as Record<string, TValue>;
-  const namespace = ((localName: string): TValue => {
+  const namespace = ((localName = ''): TValue => {
     if (!(localName in expanded)) {
       expanded[localName] = toValue(`${baseUri}${localName}`);
     }
@@ -114,11 +114,17 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
   'type',
 );
 
+export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
+  'preferredNamespacePrefix',
+);
+
 export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#',
   'dateTime',
   'integer',
 );
 
-// Alias for most commonly used URI
+// Alias for commonly used types
 export const CONTENT_TYPE = MA.format;
 export const CONTENT_TYPE_TERM = MA.terms.format;
+export const PREFERRED_PREFIX = VANN.preferredNamespacePrefix;
+export const PREFERRED_PREFIX_TERM = VANN.terms.preferredNamespacePrefix;

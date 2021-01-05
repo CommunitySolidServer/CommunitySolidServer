@@ -1,7 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
+import { toSubjectTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
@@ -134,10 +134,34 @@ export class RepresentationMetadata {
   }
 
   /**
+   * @param quads - Quad to add to the metadata.
+   */
+  public addQuad(
+    subject: NamedNode | BlankNode | string,
+    predicate: NamedNode | string,
+    object: NamedNode | BlankNode | Literal | string,
+  ): this {
+    this.store.addQuad(toSubjectTerm(subject), toCachedNamedNode(predicate), toObjectTerm(object, true));
+    return this;
+  }
+
+  /**
    * @param quads - Quads to add to the metadata.
    */
   public addQuads(quads: Quad[]): this {
     this.store.addQuads(quads);
+    return this;
+  }
+
+  /**
+   * @param quads - Quad to remove from the metadata.
+   */
+  public removeQuad(
+    subject: NamedNode | BlankNode | string,
+    predicate: NamedNode | string,
+    object: NamedNode | BlankNode | Literal | string,
+  ): this {
+    this.store.removeQuad(toSubjectTerm(subject), toCachedNamedNode(predicate), toObjectTerm(object, true));
     return this;
   }
 
@@ -155,8 +179,7 @@ export class RepresentationMetadata {
    * @param object - Value to add.
    */
   public add(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.addQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object, true));
-    return this;
+    return this.addQuad(this.id, predicate, object);
   }
 
   /**
@@ -165,8 +188,7 @@ export class RepresentationMetadata {
    * @param object - Value to remove.
    */
   public remove(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    this.store.removeQuad(this.id, toCachedNamedNode(predicate), toObjectTerm(object, true));
-    return this;
+    return this.removeQuad(this.id, predicate, object);
   }
 
   /**
