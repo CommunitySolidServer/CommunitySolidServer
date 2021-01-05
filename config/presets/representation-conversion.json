@@ -8,7 +8,33 @@
 
     {
       "@id": "urn:solid-server:default:QuadToRdfConverter",
-      "@type": "QuadToRdfConverter"
+      "@type": "QuadToRdfConverter",
+      "QuadToRdfConverter:_options_outputPreferences": [
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "text/turtle",
+          "QuadToRdfConverter:_options_outputPreferences_value": 1
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/n-triples",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/trig",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/n-quads",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "text/n3",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/ld+json",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.8
+        }
+      ]
     },
 
     {

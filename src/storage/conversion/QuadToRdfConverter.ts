@@ -17,12 +17,21 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * Converts `internal/quads` to most major RDF serializations.
  */
 export class QuadToRdfConverter extends TypedRepresentationConverter {
+  private readonly outputPreferences?: ValuePreferences;
+
+  public constructor(options: { outputPreferences?: Record<string, number> } = {}) {
+    super();
+    if (Object.keys(options.outputPreferences ?? {}).length > 0) {
+      this.outputPreferences = { ...options.outputPreferences };
+    }
+  }
+
   public async getInputTypes(): Promise<ValuePreferences> {
     return { [INTERNAL_QUADS]: 1 };
   }
 
   public async getOutputTypes(): Promise<ValuePreferences> {
-    return rdfSerializer.getContentTypesPrioritized();
+    return this.outputPreferences ?? rdfSerializer.getContentTypesPrioritized();
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

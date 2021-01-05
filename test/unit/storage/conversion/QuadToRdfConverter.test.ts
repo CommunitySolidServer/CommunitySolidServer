@@ -16,11 +16,25 @@ describe('A QuadToRdfConverter', (): void => {
   const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
 
   it('supports parsing quads.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    await expect(new QuadToRdfConverter().getInputTypes())
+      .resolves.toEqual({ [INTERNAL_QUADS]: 1 });
   });
 
-  it('supports serializing as the same types as rdfSerializer.', async(): Promise<void> => {
-    await expect(converter.getOutputTypes()).resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
+  it('defaults to rdfSerializer preferences when given no preferences.', async(): Promise<void> => {
+    await expect(new QuadToRdfConverter().getOutputTypes())
+      .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
+  });
+
+  it('defaults to rdfSerializer preferences when given empty preferences.', async(): Promise<void> => {
+    const outputPreferences = {};
+    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
+      .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
+  });
+
+  it('returns custom preferences when given non-empty preferences.', async(): Promise<void> => {
+    const outputPreferences = { 'text/turtle': 1 };
+    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
+      .resolves.toEqual(outputPreferences);
   });
 
   it('can handle quad to turtle conversions.', async(): Promise<void> => {
