@@ -266,7 +266,7 @@ export class FileDataAccessor implements DataAccessor {
       await fsPromises.lstat(metadataLink.filePath);
 
       const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
-      return await parseQuads(readMetadataStream, metadataLink.contentType);
+      return await parseQuads(readMetadataStream, { format: metadataLink.contentType, baseIRI: identifier.path });
     } catch (error: unknown) {
       // Metadata file doesn't exist so lets keep `rawMetaData` an empty array.
       if (!isSystemError(error) || error.code !== 'ENOENT') {

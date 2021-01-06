@@ -218,6 +218,12 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
     createContainers?: boolean): Promise<void> {
+    // Make sure the metadata has the correct identifier and correct type quads
+    // Need to do this before handling container data to have the correct identifier
+    const { metadata } = representation;
+    metadata.identifier = DataFactory.namedNode(identifier.path);
+    metadata.addQuads(generateResourceQuads(metadata.identifier, isContainer));
+
     if (isContainer) {
       await this.handleContainerData(representation);
     }
@@ -226,11 +232,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
-
-    // Make sure the metadata has the correct identifier and correct type quads
-    const { metadata } = representation;
-    metadata.identifier = DataFactory.namedNode(identifier.path);
-    metadata.addQuads(generateResourceQuads(metadata.identifier, isContainer));
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
@@ -250,7 +251,8 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (representation.metadata.contentType === INTERNAL_QUADS) {
         quads = await arrayifyStream(representation.data);
       } else {
-        quads = await parseQuads(representation.data, representation.metadata.contentType);
+        const { contentType, identifier } = representation.metadata;
+        quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
