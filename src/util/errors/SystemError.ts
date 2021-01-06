@@ -41,4 +41,6 @@ export interface SystemError extends Error {
   syscall: string;
 }
 
-export const isSystemError = (error: any): error is SystemError => error.code && error.syscall;
+export function isSystemError(error: any): error is SystemError {
+  return error.code && error.syscall;
+}

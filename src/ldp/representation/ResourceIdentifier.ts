@@ -11,6 +11,6 @@ export interface ResourceIdentifier {
 /**
  * Determines whether the object is a `ResourceIdentifier`.
  */
-export const isResourceIdentifier = function(object: any): object is ResourceIdentifier {
+export function isResourceIdentifier(object: any): object is ResourceIdentifier {
   return object && (typeof object.path === 'string');
-};
+}

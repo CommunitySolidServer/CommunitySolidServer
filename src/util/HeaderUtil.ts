@@ -108,7 +108,7 @@ const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
  *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  */
-export const transformQuotedStrings = (input: string): { result: string; replacements: Record<string, string> } => {
+export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
   let idx = 0;
   const replacements: Record<string, string> = {};
   const result = input.replace(/"(?:[^"\\]|\\.)*"/gu, (match): string => {
@@ -123,17 +123,18 @@ export const transformQuotedStrings = (input: string): { result: string; replace
     return replacement;
   });
   return { result, replacements };
-};
+}
 
 /**
  * Splits the input string on commas, trims all parts and filters out empty ones.
  *
  * @param input - Input header string.
  */
-export const splitAndClean = (input: string): string[] =>
-  input.split(',')
+export function splitAndClean(input: string): string[] {
+  return input.split(',')
     .map((part): string => part.trim())
     .filter((part): boolean => part.length > 0);
+}
 
 /**
  * Checks if the input string matches the qvalue regex.
@@ -143,14 +144,14 @@ export const splitAndClean = (input: string): string[] =>
  * @throws {@link BadRequestHttpError}
  * Thrown on invalid syntax.
  */
-const testQValue = (qvalue: string): void => {
+function testQValue(qvalue: string): void {
   if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
     logger.warn(`Invalid q value: ${qvalue}`);
     throw new BadRequestHttpError(
       `Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`,
     );
   }
-};
+}
 
 /**
  * Parses a list of split parameters and checks their validity.
@@ -164,28 +165,30 @@ const testQValue = (qvalue: string): void => {
  *
  * @returns An array of name/value objects corresponding to the parameters.
  */
-export const parseParameters = (parameters: string[], replacements: Record<string, string>):
-{ name: string; value: string }[] => parameters.map((param): { name: string; value: string } => {
-  const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
+export function parseParameters(parameters: string[], replacements: Record<string, string>):
+{ name: string; value: string }[] {
+  return parameters.map((param): { name: string; value: string } => {
+    const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
 
-  // Test replaced string for easier check
-  // parameter  = token "=" ( token / quoted-string )
-  // second part is optional for certain parameters
-  if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
-    logger.warn(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue}`);
-    throw new BadRequestHttpError(
-      `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
-      `does not match (token ( "=" ( token / quoted-string ))?). `,
-    );
-  }
+    // Test replaced string for easier check
+    // parameter  = token "=" ( token / quoted-string )
+    // second part is optional for certain parameters
+    if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
+      logger.warn(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue}`);
+      throw new BadRequestHttpError(
+        `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
+        `does not match (token ( "=" ( token / quoted-string ))?). `,
+      );
+    }
 
-  let value = rawValue;
-  if (value in replacements) {
-    value = replacements[rawValue];
-  }
+    let value = rawValue;
+    if (value in replacements) {
+      value = replacements[rawValue];
+    }
 
-  return { name, value };
-});
+    return { name, value };
+  });
+}
 
 /**
  * Parses a single media range with corresponding parameters from an Accept header.
@@ -201,7 +204,7 @@ export const parseParameters = (parameters: string[], replacements: Record<strin
  *
  * @returns {@link Accept} object corresponding to the header string.
  */
-const parseAcceptPart = (part: string, replacements: Record<string, string>): Accept => {
+function parseAcceptPart(part: string, replacements: Record<string, string>): Accept {
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
@@ -242,7 +245,7 @@ const parseAcceptPart = (part: string, replacements: Record<string, string>): Ac
       extension: extensionParams,
     },
   };
-};
+}
 
 /**
  * Parses an Accept-* header where each part is only a value and a weight, so roughly /.*(q=.*)?/ separated by commas.
@@ -253,7 +256,7 @@ const parseAcceptPart = (part: string, replacements: Record<string, string>): Ac
  *
  * @returns An array of ranges and weights.
  */
-const parseNoParameters = (input: string): AcceptHeader[] => {
+function parseNoParameters(input: string): AcceptHeader[] {
   const parts = splitAndClean(input);
 
   return parts.map((part): AcceptHeader => {
@@ -270,7 +273,7 @@ const parseNoParameters = (input: string): AcceptHeader[] => {
     }
     return result;
   }).sort((left, right): number => right.weight - left.weight);
-};
+}
 
 // EXPORTED FUNCTIONS
 
@@ -284,13 +287,13 @@ const parseNoParameters = (input: string): AcceptHeader[] => {
  *
  * @returns An array of {@link Accept} objects, sorted by weight.
  */
-export const parseAccept = (input: string): Accept[] => {
+export function parseAccept(input: string): Accept[] {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
   return splitAndClean(result)
     .map((part): Accept => parseAcceptPart(part, replacements))
     .sort((left, right): number => right.weight - left.weight);
-};
+}
 
 /**
  * Parses an Accept-Charset header string.
@@ -302,7 +305,7 @@ export const parseAccept = (input: string): Accept[] => {
  *
  * @returns An array of {@link AcceptCharset} objects, sorted by weight.
  */
-export const parseAcceptCharset = (input: string): AcceptCharset[] => {
+export function parseAcceptCharset(input: string): AcceptCharset[] {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
@@ -313,7 +316,7 @@ export const parseAcceptCharset = (input: string): AcceptCharset[] => {
     }
   });
   return results;
-};
+}
 
 /**
  * Parses an Accept-Encoding header string.
@@ -325,7 +328,7 @@ export const parseAcceptCharset = (input: string): AcceptCharset[] => {
  *
  * @returns An array of {@link AcceptEncoding} objects, sorted by weight.
  */
-export const parseAcceptEncoding = (input: string): AcceptEncoding[] => {
+export function parseAcceptEncoding(input: string): AcceptEncoding[] {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
@@ -334,7 +337,7 @@ export const parseAcceptEncoding = (input: string): AcceptEncoding[] => {
     }
   });
   return results;
-};
+}
 
 /**
  * Parses an Accept-Language header string.
@@ -346,7 +349,7 @@ export const parseAcceptEncoding = (input: string): AcceptEncoding[] => {
  *
  * @returns An array of {@link AcceptLanguage} objects, sorted by weight.
  */
-export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
+export function parseAcceptLanguage(input: string): AcceptLanguage[] {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
@@ -360,7 +363,7 @@ export const parseAcceptLanguage = (input: string): AcceptLanguage[] => {
     }
   });
   return results;
-};
+}
 
 // eslint-disable-next-line max-len
 const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/u;
@@ -372,7 +375,7 @@ const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|
  *
  * @returns An array with a single {@link AcceptDatetime} object.
  */
-export const parseAcceptDateTime = (input: string): AcceptDatetime[] => {
+export function parseAcceptDateTime(input: string): AcceptDatetime[] {
   const results: AcceptDatetime[] = [];
   const range = input.trim();
   if (range) {
@@ -387,12 +390,12 @@ export const parseAcceptDateTime = (input: string): AcceptDatetime[] => {
     results.push({ range, weight: 1 });
   }
   return results;
-};
+}
 
 /**
  * Adds a header value without overriding previous values.
  */
-export const addHeader = (response: HttpResponse, name: string, value: string | string[]): void => {
+export function addHeader(response: HttpResponse, name: string, value: string | string[]): void {
   let allValues: string[] = [];
   if (response.hasHeader(name)) {
     let oldValues = response.getHeader(name)!;
@@ -409,7 +412,7 @@ export const addHeader = (response: HttpResponse, name: string, value: string | 
     allValues.push(value);
   }
   response.setHeader(name, allValues.length === 1 ? allValues[0] : allValues);
-};
+}
 
 /**
  * The Forwarded header from RFC7239
@@ -432,7 +435,7 @@ export interface Forwarded {
  *
  * @returns The parsed Forwarded header.
  */
-export const parseForwarded = (value = ''): Forwarded => {
+export function parseForwarded(value = ''): Forwarded {
   const forwarded: Record<string, string> = {};
   if (value) {
     for (const pair of value.replace(/\s*,.*$/u, '').split(';')) {
@@ -443,4 +446,4 @@ export const parseForwarded = (value = ''): Forwarded => {
     }
   }
   return forwarded;
-};
+}

@@ -20,12 +20,12 @@ const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('fetch-sparql-endpoint');
 
-const simplifyQuery = (query: string | string[]): string => {
+function simplifyQuery(query: string | string[]): string {
   if (Array.isArray(query)) {
     query = query.join(' ');
   }
   return query.replace(/\n/gu, ' ').trim();
-};
+}
 
 describe('A SparqlDataAccessor', (): void => {
   const endpoint = 'http://test.com/sparql';

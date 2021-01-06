@@ -11,7 +11,7 @@ import { LDP, RDF } from './Vocabularies';
  *
  * @returns The generated quads.
  */
-export const generateResourceQuads = (subject: NamedNode, isContainer: boolean): Quad[] => {
+export function generateResourceQuads(subject: NamedNode, isContainer: boolean): Quad[] {
   const quads: Quad[] = [];
   if (isContainer) {
     pushQuad(quads, subject, RDF.terms.type, LDP.terms.Container);
@@ -20,7 +20,7 @@ export const generateResourceQuads = (subject: NamedNode, isContainer: boolean):
   pushQuad(quads, subject, RDF.terms.type, LDP.terms.Resource);
 
   return quads;
-};
+}
 
 /**
  * Helper function to generate the quads describing that the resource URIs are children of the container URI.
@@ -29,5 +29,7 @@ export const generateResourceQuads = (subject: NamedNode, isContainer: boolean):
  *
  * @returns The generated quads.
  */
-export const generateContainmentQuads = (containerURI: NamedNode, childURIs: string[]): Quad[] =>
-  new RepresentationMetadata(containerURI, { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
+export function generateContainmentQuads(containerURI: NamedNode, childURIs: string[]): Quad[] {
+  return new RepresentationMetadata(containerURI,
+    { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
+}

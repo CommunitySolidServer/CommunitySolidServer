@@ -18,8 +18,8 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
  *
  * @returns The weighted and filtered list of matching types.
  */
-export const matchingMediaTypes = (preferredTypes: ValuePreferences = {}, availableTypes: ValuePreferences = {}):
-string[] => {
+export function matchingMediaTypes(preferredTypes: ValuePreferences = {}, availableTypes: ValuePreferences = {}):
+string[] {
   // No preference means anything is acceptable
   const preferred = { ...preferredTypes };
   if (Object.keys(preferredTypes).length === 0) {
@@ -53,7 +53,7 @@ string[] => {
     .filter(([ , weight ]): boolean => weight !== 0)
     .sort(([ , weightA ], [ , weightB ]): number => weightB - weightA)
     .map(([ type ]): string => type);
-};
+}
 
 /**
  * Checks if the given two media types/ranges match each other.
@@ -63,7 +63,7 @@ string[] => {
  *
  * @returns True if the media type patterns can match each other.
  */
-export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
+export function matchesMediaType(mediaA: string, mediaB: string): boolean {
   if (mediaA === mediaB) {
     return true;
   }
@@ -80,7 +80,7 @@ export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
     return true;
   }
   return subTypeA === subTypeB;
-};
+}
 
 /**
  * Determines whether the given conversion request is supported,
@@ -94,10 +94,10 @@ export const matchesMediaType = (mediaA: string, mediaB: string): boolean => {
  * @param convertorIn - Media types that can be parsed by the converter.
  * @param convertorOut - Media types that can be produced by the converter.
  */
-export const supportsMediaTypeConversion = (
+export function supportsMediaTypeConversion(
   inputType = 'unknown', outputTypes: ValuePreferences = {},
   convertorIn: ValuePreferences = {}, convertorOut: ValuePreferences = {},
-): void => {
+): void {
   if (!Object.keys(convertorIn).some((type): boolean => matchesMediaType(inputType, type)) ||
      matchingMediaTypes(outputTypes, convertorOut).length === 0) {
     throw new NotImplementedHttpError(
@@ -105,4 +105,4 @@ export const supportsMediaTypeConversion = (
       }, only from ${Object.keys(convertorIn)} to ${Object.keys(convertorOut)}.`,
     );
   }
-};
+}

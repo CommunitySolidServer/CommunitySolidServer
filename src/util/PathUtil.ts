@@ -8,7 +8,9 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
  *
  * @returns The potentially changed path (POSIX).
  */
-const windowsToPosixPath = (path: string): string => path.replace(/\\+/gu, '/');
+function windowsToPosixPath(path: string): string {
+  return path.replace(/\\+/gu, '/');
+}
 
 /**
  * Resolves relative segments in the path/
@@ -17,8 +19,9 @@ const windowsToPosixPath = (path: string): string => path.replace(/\\+/gu, '/');
  *
  * @returns The potentially changed path (POSIX).
  */
-export const normalizeFilePath = (path: string): string =>
-  posix.normalize(windowsToPosixPath(path));
+export function normalizeFilePath(path: string): string {
+  return posix.normalize(windowsToPosixPath(path));
+}
 
 /**
  * Adds the paths to the base path.
@@ -28,8 +31,9 @@ export const normalizeFilePath = (path: string): string =>
  *
  * @returns The potentially changed path (POSIX).
  */
-export const joinFilePath = (basePath: string, ...paths: string[]): string =>
-  posix.join(windowsToPosixPath(basePath), ...paths);
+export function joinFilePath(basePath: string, ...paths: string[]): string {
+  return posix.join(windowsToPosixPath(basePath), ...paths);
+}
 
 /**
  * Converts the path into an OS-dependent path.
@@ -38,8 +42,9 @@ export const joinFilePath = (basePath: string, ...paths: string[]): string =>
  *
  * @returns The potentially changed path (OS-dependent).
  */
-export const toSystemFilePath = (path: string): string =>
-  platform.normalize(path);
+export function toSystemFilePath(path: string): string {
+  return platform.normalize(path);
+}
 
 /**
  * Makes sure the input path has exactly 1 slash at the end.
@@ -50,7 +55,9 @@ export const toSystemFilePath = (path: string): string =>
  *
  * @returns The potentially changed path.
  */
-export const ensureTrailingSlash = (path: string): string => path.replace(/\/*$/u, '/');
+export function ensureTrailingSlash(path: string): string {
+  return path.replace(/\/*$/u, '/');
+}
 
 /**
  * Makes sure the input path has no slashes at the end.
@@ -59,34 +66,46 @@ export const ensureTrailingSlash = (path: string): string => path.replace(/\/*$/
  *
  * @returns The potentially changed path.
  */
-export const trimTrailingSlashes = (path: string): string => path.replace(/\/+$/u, '');
+export function trimTrailingSlashes(path: string): string {
+  return path.replace(/\/+$/u, '');
+}
 
 /**
  * Converts a URI path to the canonical version by splitting on slashes,
  * decoding any percent-based encodings,
  * and then encoding any special characters.
  */
-export const toCanonicalUriPath = (path: string): string => path.split('/').map((part): string =>
-  encodeURIComponent(decodeURIComponent(part))).join('/');
+export function toCanonicalUriPath(path: string): string {
+  return path.split('/').map((part): string =>
+    encodeURIComponent(decodeURIComponent(part))).join('/');
+}
 
 /**
  * Decodes all components of a URI path.
  */
-export const decodeUriPathComponents = (path: string): string => path.split('/').map(decodeURIComponent).join('/');
+export function decodeUriPathComponents(path: string): string {
+  return path.split('/').map(decodeURIComponent).join('/');
+}
 
 /**
  * Encodes all (non-slash) special characters in a URI path.
  */
-export const encodeUriPathComponents = (path: string): string => path.split('/').map(encodeURIComponent).join('/');
+export function encodeUriPathComponents(path: string): string {
+  return path.split('/').map(encodeURIComponent).join('/');
+}
 
 /**
  * Checks if the path corresponds to a container path (ending in a /).
  * @param path - Path to check.
  */
-export const isContainerPath = (path: string): boolean => path.endsWith('/');
+export function isContainerPath(path: string): boolean {
+  return path.endsWith('/');
+}
 
 /**
  * Checks if the identifier corresponds to a container identifier.
  * @param identifier - Identifier to check.
  */
-export const isContainerIdentifier = (identifier: ResourceIdentifier): boolean => isContainerPath(identifier.path);
+export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
+  return isContainerPath(identifier.path);
+}

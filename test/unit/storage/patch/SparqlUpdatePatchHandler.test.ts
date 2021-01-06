@@ -65,7 +65,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     handler = new SparqlUpdatePatchHandler(source, locker);
   });
 
-  const basicChecks = async(quads: Quad[]): Promise<boolean> => {
+  async function basicChecks(quads: Quad[]): Promise<boolean> {
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
     expect(source.getRepresentation).toHaveBeenLastCalledWith(
       { path: 'path' }, { type: { [INTERNAL_QUADS]: 1 }},
@@ -81,7 +81,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     expect(setParams[1].metadata.contentType).toEqual(INTERNAL_QUADS);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
     return true;
-  };
+  }
 
   it('only accepts SPARQL updates.', async(): Promise<void> => {
     const input = { identifier: { path: 'path' },

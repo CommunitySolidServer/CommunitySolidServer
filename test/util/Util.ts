@@ -9,13 +9,13 @@ import type { HttpHandler } from '../../src/server/HttpHandler';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
-export const performRequest = async(
+export async function performRequest(
   handler: HttpHandler,
   requestUrl: URL,
   method: string,
   headers: IncomingHttpHeaders,
   data: string[],
-): Promise<MockResponse<any>> => {
+): Promise<MockResponse<any>> {
   const request = streamifyArray(data) as HttpRequest;
   request.url = requestUrl.pathname;
   request.method = method;
@@ -36,7 +36,7 @@ export const performRequest = async(
   await endPromise;
 
   return response;
-};
+}
 
 /**
  * Mocks (some) functions of the fs system library.
@@ -56,21 +56,21 @@ export const performRequest = async(
  * @param rootFilepath - The name of the root folder in which fs will start.
  * @param time - The date object to use for time functions (currently only mtime from lstats)
  */
-export const mockFs = (rootFilepath?: string, time?: Date): { data: any } => {
+export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
   const cache: { data: any } = { data: {}};
 
   rootFilepath = rootFilepath ?? 'folder';
   time = time ?? new Date();
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  const throwSystemError = (code: string): void => {
+  function throwSystemError(code: string): void {
     const error = new Error('error') as SystemError;
     error.code = code;
     error.syscall = 'this exists for isSystemError';
     throw error;
-  };
+  }
 
-  const getFolder = (path: string): { folder: any; name: string } => {
+  function getFolder(path: string): { folder: any; name: string } {
     let parts = path.slice(rootFilepath!.length).split('/').filter((part): boolean => part.length > 0);
 
     if (parts.length === 0) {
@@ -91,7 +91,7 @@ export const mockFs = (rootFilepath?: string, time?: Date): { data: any } => {
     });
 
     return { folder, name };
-  };
+  }
 
   const mock = {
     createReadStream(path: string): any {
@@ -171,4 +171,4 @@ export const mockFs = (rootFilepath?: string, time?: Date): { data: any } => {
   Object.assign(fs, mock);
 
   return cache;
-};
+}

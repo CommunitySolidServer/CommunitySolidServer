@@ -20,7 +20,7 @@ const cachedNamedNodes: Record<string, NamedNode> = {
  * so only use this for internal constants!
  * @param name - Predicate to potentially transform.
  */
-export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
+export function toCachedNamedNode(name: NamedNode | string): NamedNode {
   if (typeof name !== 'string') {
     return name;
   }
@@ -28,20 +28,22 @@ export const toCachedNamedNode = (name: NamedNode | string): NamedNode => {
     cachedNamedNodes[name] = namedNode(name);
   }
   return cachedNamedNodes[name];
-};
+}
 
 /**
  * @param input - Checks if this is a {@link Term}.
  */
-export const isTerm = (input?: any): input is Term =>
-  input && typeof input.termType === 'string';
+export function isTerm(input?: any): input is Term {
+  return input && typeof input.termType === 'string';
+}
 
 /**
  * Converts a subject to a named node when needed.
  * @param subject - Subject to potentially transform.
  */
-export const toSubjectTerm = (subject: NamedNode | string): NamedNode =>
-  typeof subject === 'string' ? namedNode(subject) : subject;
+export function toSubjectTerm(subject: NamedNode | string): NamedNode {
+  return typeof subject === 'string' ? namedNode(subject) : subject;
+}
 
 export const toPredicateTerm = toSubjectTerm;
 
@@ -50,17 +52,18 @@ export const toPredicateTerm = toSubjectTerm;
  * @param object - Object to potentially transform.
  * @param preferLiteral - Whether strings are converted to literals or named nodes.
  */
-export const toObjectTerm = <T extends Term>(object: T | string, preferLiteral = false): T => {
+export function toObjectTerm<T extends Term>(object: T | string, preferLiteral = false): T {
   if (typeof object === 'string') {
     return (preferLiteral ? literal(object) : namedNode(object)) as any;
   }
   return object;
-};
+}
 
 /**
  * Creates a literal by first converting the dataType string to a named node.
  * @param object - Object value.
  * @param dataType - Object data type (as string).
  */
-export const toLiteral = (object: string | number, dataType: NamedNode): Literal =>
-  literal(object, dataType);
+export function toLiteral(object: string | number, dataType: NamedNode): Literal {
+  return literal(`${object}`, dataType);
+}

@@ -24,7 +24,9 @@ export type Guarded<T extends NodeJS.EventEmitter = NodeJS.EventEmitter> = T & G
 /**
  * Determines whether the stream is guarded from emitting errors.
  */
-export const isGuarded = <T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> => guardedErrors in stream;
+export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is Guarded<T> {
+  return guardedErrors in stream;
+}
 
 /**
  * Makes sure that listeners always receive the error event of a stream,
@@ -34,20 +36,20 @@ export const isGuarded = <T extends NodeJS.EventEmitter>(stream: T): stream is G
  *
  * @returns The stream.
  */
-export const guardStream = <T extends NodeJS.EventEmitter>(stream: T): Guarded<T> => {
+export function guardStream<T extends NodeJS.EventEmitter>(stream: T): Guarded<T> {
   const guarded = stream as Guarded<T>;
   if (!isGuarded(stream)) {
     guarded[guardedErrors] = [];
     attachDefaultErrorListener.call(guarded, 'error');
   }
   return guarded;
-};
+}
 
 /**
  * Callback that is used when a stream emits an error and no error listener is attached.
  * Used to store the error and start the logger timer.
  */
-const defaultErrorListener = function(this: Guarded, error: Error): void {
+function defaultErrorListener(this: Guarded, error: Error): void {
   this[guardedErrors].push(error);
   if (!this[guardedTimeout]) {
     this[guardedTimeout] = setTimeout((): void => {
@@ -55,14 +57,13 @@ const defaultErrorListener = function(this: Guarded, error: Error): void {
       logger.error(message, { error });
     }, 1000);
   }
-};
+}
 
 /**
  * Callback that is used when a new listener is attached to remove the current error-related fallback functions,
  * or to emit an error if one was thrown in the meantime.
  */
-const removeDefaultErrorListener = function(this: Guarded, event: string):
-void {
+function removeDefaultErrorListener(this: Guarded, event: string): void {
   if (event === 'error') {
     // Remove default guard listeners (but reattach when all error listeners are removed)
     this.removeListener('error', defaultErrorListener);
@@ -86,7 +87,7 @@ void {
       });
     }
   }
-};
+}
 
 /**
  * Callback that is used to make sure the error-related fallback functions are re-applied

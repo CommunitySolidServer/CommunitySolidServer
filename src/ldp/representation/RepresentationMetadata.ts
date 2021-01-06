@@ -12,9 +12,9 @@ export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | 
 /**
  * Determines whether the object is a `RepresentationMetadata`.
  */
-export const isRepresentationMetadata = function(object: any): object is RepresentationMetadata {
+export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
   return typeof object?.setMetadata === 'function';
-};
+}
 
 /**
  * Stores the metadata triples and provides methods for easy access.

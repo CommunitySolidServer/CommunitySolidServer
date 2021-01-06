@@ -29,13 +29,13 @@ class DummyFactory implements FileIdentifierMapperFactory {
   }
 }
 
-const genToArray = async<T>(iterable: AsyncIterable<T>): Promise<T[]> => {
+async function genToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
   const arr: T[] = [];
   for await (const result of iterable) {
     arr.push(result);
   }
   return arr;
-};
+}
 
 describe('A TemplatedResourcesGenerator', (): void => {
   const rootFilePath = 'templates';

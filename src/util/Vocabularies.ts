@@ -12,11 +12,11 @@ export type Namespace<TKey extends any[], TValue> =
  * Creates a function that expands local names from the given base URI,
  * and exports the given local names as properties on the returned object.
  */
-export const createNamespace = <TKey extends string, TValue>(
+export function createNamespace<TKey extends string, TValue>(
   baseUri: string,
   toValue: (expanded: string) => TValue,
   ...localNames: TKey[]):
-Namespace<typeof localNames, TValue> => {
+  Namespace<typeof localNames, TValue> {
   // Create a function that expands local names
   const expanded = {} as Record<string, TValue>;
   const namespace = ((localName: string): TValue => {
@@ -31,33 +31,36 @@ Namespace<typeof localNames, TValue> => {
     (namespace as RecordOf<typeof localNames, TValue>)[localName] = namespace(localName);
   }
   return namespace;
-};
+}
 
 /**
  * Creates a function that expands local names from the given base URI into strings,
  * and exports the given local names as properties on the returned object.
  */
-export const createUriNamespace = <T extends string>(baseUri: string, ...localNames: T[]):
-Namespace<typeof localNames, string> =>
-  createNamespace(baseUri, (expanded): string => expanded, ...localNames);
+export function createUriNamespace<T extends string>(baseUri: string, ...localNames: T[]):
+Namespace<typeof localNames, string> {
+  return createNamespace(baseUri, (expanded): string => expanded, ...localNames);
+}
 
 /**
  * Creates a function that expands local names from the given base URI into named nodes,
  * and exports the given local names as properties on the returned object.
  */
-export const createTermNamespace = <T extends string>(baseUri: string, ...localNames: T[]):
-Namespace<typeof localNames, NamedNode> =>
-  createNamespace(baseUri, namedNode, ...localNames);
+export function createTermNamespace<T extends string>(baseUri: string, ...localNames: T[]):
+Namespace<typeof localNames, NamedNode> {
+  return createNamespace(baseUri, namedNode, ...localNames);
+}
 
 /**
  * Creates a function that expands local names from the given base URI into string,
  * and exports the given local names as properties on the returned object.
  * Under the `terms` property, it exposes the expanded local names as named nodes.
  */
-export const createUriAndTermNamespace = <T extends string>(baseUri: string, ...localNames: T[]):
-Namespace<typeof localNames, string> & { terms: Namespace<typeof localNames, NamedNode> } =>
-  Object.assign(createUriNamespace(baseUri, ...localNames),
+export function createUriAndTermNamespace<T extends string>(baseUri: string, ...localNames: T[]):
+Namespace<typeof localNames, string> & { terms: Namespace<typeof localNames, NamedNode> } {
+  return Object.assign(createUriNamespace(baseUri, ...localNames),
     { terms: createTermNamespace(baseUri, ...localNames) });
+}
 
 export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'accessTo',

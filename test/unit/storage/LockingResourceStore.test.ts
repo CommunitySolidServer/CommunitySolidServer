@@ -21,13 +21,13 @@ describe('A LockingResourceStore', (): void => {
     jest.clearAllMocks();
 
     order = [];
-    const delayedResolve = (resolve: (resolveParams: any) => void, name: string, resolveParams?: any): void => {
+    function delayedResolve(resolve: (value: any) => void, name: string, resolveValue?: any): void {
       // `setImmediate` is introduced to make sure the promise doesn't execute immediately
       setImmediate((): void => {
         order.push(name);
-        resolve(resolveParams);
+        resolve(resolveValue);
       });
-    };
+    }
 
     const readable = streamifyArray([ 1, 2, 3 ]);
     source = {
@@ -70,14 +70,14 @@ describe('A LockingResourceStore', (): void => {
     store = new LockingResourceStore(source, locker);
   });
 
-  const registerEventOrder = async(eventSource: EventEmitter, event: string): Promise<void> => {
+  async function registerEventOrder(eventSource: EventEmitter, event: string): Promise<void> {
     await new Promise((resolve): any => {
       eventSource.prependListener(event, (): any => {
         order.push(event);
         resolve();
       });
     });
-  };
+  }
 
   it('acquires a lock on the container when adding a representation.', async(): Promise<void> => {
     await store.addResource({ path: 'path' }, {} as Representation);

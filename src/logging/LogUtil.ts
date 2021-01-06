@@ -20,17 +20,19 @@ import type { LoggerFactory } from './LoggerFactory';
  *
  * @param loggable - A class instance or a class string name.
  */
-export const getLoggerFor = (loggable: string | Instance): Logger => LazyLoggerFactory.getInstance()
-  .createLogger(typeof loggable === 'string' ? loggable : loggable.constructor.name);
+export function getLoggerFor(loggable: string | Instance): Logger {
+  return LazyLoggerFactory.getInstance()
+    .createLogger(typeof loggable === 'string' ? loggable : loggable.constructor.name);
+}
 
 /**
  * Sets the global logger factory.
  * This will cause all loggers created by {@link getLoggerFor} to be delegated to a logger from the given factory.
  * @param loggerFactory - A logger factory.
  */
-export const setGlobalLoggerFactory = (loggerFactory: LoggerFactory): void => {
+export function setGlobalLoggerFactory(loggerFactory: LoggerFactory): void {
   LazyLoggerFactory.getInstance().loggerFactory = loggerFactory;
-};
+}
 
 /**
  * Resets the global logger factory to undefined.
@@ -38,7 +40,9 @@ export const setGlobalLoggerFactory = (loggerFactory: LoggerFactory): void => {
  * This typically only needs to be called during testing.
  * Call this at your own risk.
  */
-export const resetGlobalLoggerFactory = (): void => LazyLoggerFactory.getInstance().resetLoggerFactory();
+export function resetGlobalLoggerFactory(): void {
+  LazyLoggerFactory.getInstance().resetLoggerFactory();
+}
 
 /**
  * Helper interface to identify class instances.

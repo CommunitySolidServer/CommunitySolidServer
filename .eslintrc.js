@@ -48,6 +48,8 @@ module.exports = {
     'class-methods-use-this': 'off',
     'comma-dangle': [ 'error', 'always-multiline' ],
     'dot-location': [ 'error', 'property' ],
+    // Allow declaring overloads in TypeScript (https://eslint.org/docs/rules/func-style)
+    'func-style': [ 'error', 'declaration' ],
     'generator-star-spacing': [ 'error', 'after' ],
     // Conflicts with padded-blocks
     'lines-around-comment': 'off',

@@ -10,14 +10,14 @@ import { toSubjectTerm, toPredicateTerm, toObjectTerm } from './TermUtil';
 /**
  * Generates a quad with the given subject/predicate/object and pushes it to the given array.
  */
-export const pushQuad = (
+export function pushQuad(
   quads: Quad[] | PassThrough,
   subject: string | NamedNode,
   predicate: string | NamedNode,
   object: string | NamedNode | Literal,
-): void => {
+): void {
   quads.push(DataFactory.quad(toSubjectTerm(subject), toPredicateTerm(predicate), toObjectTerm(object)));
-};
+}
 
 /**
  * Helper function for serializing an array of quads, with as result a Readable object.
@@ -26,8 +26,9 @@ export const pushQuad = (
  *
  * @returns The Readable object.
  */
-export const serializeQuads = (quads: Quad[], contentType?: string): Guarded<Readable> =>
-  pipeSafely(streamifyArray(quads), new StreamWriter({ format: contentType }));
+export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Readable> {
+  return pipeSafely(streamifyArray(quads), new StreamWriter({ format: contentType }));
+}
 
 /**
  * Helper function to convert a Readable into an array of quads.
@@ -36,5 +37,6 @@ export const serializeQuads = (quads: Quad[], contentType?: string): Guarded<Rea
  *
  * @returns A promise containing the array of quads.
  */
-export const parseQuads = async(readable: Guarded<Readable>, contentType?: string): Promise<Quad[]> =>
-  arrayifyStream(pipeSafely(readable, new StreamParser({ format: contentType })));
+export async function parseQuads(readable: Guarded<Readable>, contentType?: string): Promise<Quad[]> {
+  return arrayifyStream(pipeSafely(readable, new StreamParser({ format: contentType })));
+}

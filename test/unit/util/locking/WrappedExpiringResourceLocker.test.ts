@@ -9,14 +9,14 @@ describe('A WrappedExpiringResourceLocker', (): void => {
     order = [];
   });
 
-  const registerEventOrder = async(eventSource: EventEmitter, event: string): Promise<void> => {
+  async function registerEventOrder(eventSource: EventEmitter, event: string): Promise<void> {
     await new Promise((resolve): any => {
       eventSource.prependListener(event, (): any => {
         order.push(event);
         resolve();
       });
     });
-  };
+  }
 
   it('emits an error event when releasing the lock errors.', async(): Promise<void> => {
     jest.useFakeTimers();
