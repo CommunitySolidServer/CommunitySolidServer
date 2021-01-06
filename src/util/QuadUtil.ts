@@ -1,5 +1,6 @@
 import type { Readable, PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import type { ParserOptions } from 'n3';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
 import type { Literal, NamedNode, Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
@@ -33,10 +34,10 @@ export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Rea
 /**
  * Helper function to convert a Readable into an array of quads.
  * @param readable - The readable object.
- * @param contentType - The content-type of the stream.
+ * @param options - Options for the parser.
  *
  * @returns A promise containing the array of quads.
  */
-export async function parseQuads(readable: Guarded<Readable>, contentType?: string): Promise<Quad[]> {
-  return arrayifyStream(pipeSafely(readable, new StreamParser({ format: contentType })));
+export async function parseQuads(readable: Guarded<Readable>, options: ParserOptions = {}): Promise<Quad[]> {
+  return arrayifyStream(pipeSafely(readable, new StreamParser(options)));
 }

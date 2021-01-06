@@ -36,9 +36,18 @@ describe('QuadUtil', (): void => {
   });
 
   describe('#parseQuads', (): void => {
-    it('parses quads from the requested format.', async(): Promise<void> => {
+    it('parses quads.', async(): Promise<void> => {
       const stream = guardedStreamFrom([ '<pre:sub> <pre:pred> "obj".' ]);
-      await expect(parseQuads(stream, 'application/n-triples')).resolves.toEqualRdfQuadArray([ quad(
+      await expect(parseQuads(stream)).resolves.toEqualRdfQuadArray([ quad(
+        namedNode('pre:sub'),
+        namedNode('pre:pred'),
+        literal('obj'),
+      ) ]);
+    });
+
+    it('parses quads with the given options.', async(): Promise<void> => {
+      const stream = guardedStreamFrom([ '<> <pre:pred> "obj".' ]);
+      await expect(parseQuads(stream, { baseIRI: 'pre:sub' })).resolves.toEqualRdfQuadArray([ quad(
         namedNode('pre:sub'),
         namedNode('pre:pred'),
         literal('obj'),

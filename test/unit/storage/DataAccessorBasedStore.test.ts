@@ -1,6 +1,7 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
@@ -187,13 +188,18 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ '<> a <http://test.com/coolContainer>.' ]);
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
       });
       expect(accessor.data[result.path]).toBeTruthy();
       expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
+
+      const { data } = await store.getRepresentation(result);
+      const quads: Quad[] = await arrayifyStream(data);
+      expect(quads.some((entry): boolean => entry.subject.value === result.path &&
+        entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
     });
 
     it('creates a URI based on the incoming slug.', async(): Promise<void> => {
