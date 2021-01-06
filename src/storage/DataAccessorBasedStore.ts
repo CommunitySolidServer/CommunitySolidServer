@@ -97,9 +97,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Using the parent metadata as we can also use that later to check if the nested containers maybe need to be made
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
 
-    // When a POST method request targets a non-container resource without an existing representation,
+    // When a POST method request targets a resource without an existing representation,
     // the server MUST respond with the 404 status code.
-    if (!parentMetadata && !isContainerIdentifier(container)) {
+    if (!parentMetadata) {
       throw new NotFoundHttpError();
     }
 
@@ -290,10 +290,10 @@ export class DataAccessorBasedStore implements ResourceStore {
    *
    * @param container - Identifier of the target container.
    * @param metadata - Metadata of the new resource.
-   * @param parentMetadata - Optional metadata of the parent container.
+   * @param parentMetadata - Metadata of the parent container.
    */
   protected createSafeUri(container: ResourceIdentifier, metadata: RepresentationMetadata,
-    parentMetadata?: RepresentationMetadata): ResourceIdentifier {
+    parentMetadata: RepresentationMetadata): ResourceIdentifier {
     // Get all values needed for naming the resource
     const isContainer = this.isNewContainer(metadata);
     const slug = metadata.get(HTTP.slug)?.value;
@@ -302,14 +302,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);
 
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
-    if (parentMetadata) {
-      const withSlash = ensureTrailingSlash(newID.path);
-      const withoutSlash = trimTrailingSlashes(newID.path);
-      const exists = parentMetadata.getAll(LDP.contains).some((term): boolean =>
-        term.value === withSlash || term.value === withoutSlash);
-      if (exists) {
-        newID = this.createURI(container, isContainer);
-      }
+    const withSlash = ensureTrailingSlash(newID.path);
+    const withoutSlash = trimTrailingSlashes(newID.path);
+    const exists = parentMetadata.getAll(LDP.contains).some((term): boolean =>
+      term.value === withSlash || term.value === withoutSlash);
+    if (exists) {
+      newID = this.createURI(container, isContainer);
     }
 
     return newID;

@@ -137,8 +137,8 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
-    it('will 404 if the target does not exist and does not end in a slash.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container` };
+    it('will 404 if the target does not exist.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(NotFoundHttpError);
     });
 
@@ -218,27 +218,6 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).not.toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
       });
-    });
-
-    it('creates recursive containers when needed.', async(): Promise<void> => {
-      const resourceID = { path: `${root}a/b/` };
-      const result = await store.addResource(resourceID, representation);
-      expect(result).toEqual({
-        path: expect.stringMatching(new RegExp(`^${root}a/b/[^/]+$`, 'u')),
-      });
-      await expect(arrayifyStream(accessor.data[result.path].data)).resolves.toEqual([ resourceData ]);
-      expect(accessor.data[`${root}a/`].metadata.getAll(RDF.type).map((type): string => type.value))
-        .toContain(LDP.Container);
-      expect(accessor.data[`${root}a/b/`].metadata.getAll(RDF.type).map((type): string => type.value))
-        .toContain(LDP.Container);
-    });
-
-    it('errors when a recursive container overlaps with an existing resource.', async(): Promise<void> => {
-      const resourceID = { path: `${root}a/b/` };
-      accessor.data[`${root}a`] = representation;
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(
-        new ConflictHttpError(`Creating container ${root}a/ conflicts with an existing resource.`),
-      );
     });
   });
 
