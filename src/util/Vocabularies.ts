@@ -2,11 +2,10 @@
 import { namedNode } from '@rdfjs/data-model';
 import type { NamedNode } from 'rdf-js';
 
-type PrefixResolver<T> = (localName?: string) => T;
 type RecordOf<TKey extends any[], TValue> = Record<TKey[number], TValue>;
 
 export type Namespace<TKey extends any[], TValue> =
-  PrefixResolver<TValue> & RecordOf<TKey, TValue>;
+  { namespace: TValue } & RecordOf<TKey, TValue>;
 
 /**
  * Creates a function that expands local names from the given base URI,
@@ -17,20 +16,14 @@ export function createNamespace<TKey extends string, TValue>(
   toValue: (expanded: string) => TValue,
   ...localNames: TKey[]):
   Namespace<typeof localNames, TValue> {
-  // Create a function that expands local names
-  const expanded = {} as Record<string, TValue>;
-  const namespace = ((localName = ''): TValue => {
-    if (!(localName in expanded)) {
-      expanded[localName] = toValue(`${baseUri}${localName}`);
-    }
-    return expanded[localName];
-  }) as Namespace<typeof localNames, TValue>;
-
+  const expanded: Namespace<typeof localNames, TValue> = {} as any;
+  // Expose the main namespace
+  expanded.namespace = toValue(baseUri);
   // Expose the listed local names as properties
   for (const localName of localNames) {
-    (namespace as RecordOf<typeof localNames, TValue>)[localName] = namespace(localName);
+    (expanded as RecordOf<TKey[], TValue>)[localName] = toValue(`${baseUri}${localName}`);
   }
-  return namespace;
+  return expanded;
 }
 
 /**

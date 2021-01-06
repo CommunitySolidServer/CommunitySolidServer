@@ -3,20 +3,12 @@ import { LDP } from '../../../src/util/Vocabularies';
 
 describe('Vocabularies', (): void => {
   describe('LDP', (): void => {
-    it('can return its own URI.', (): void => {
-      expect(LDP()).toBe('http://www.w3.org/ns/ldp#');
+    it('contains its own URI.', (): void => {
+      expect(LDP.namespace).toBe('http://www.w3.org/ns/ldp#');
     });
 
-    it('can create new properties.', (): void => {
-      expect(LDP('new')).toBe('http://www.w3.org/ns/ldp#new');
-    });
-
-    it('can create new properties as terms.', (): void => {
-      expect(LDP.terms('new')).toEqual(namedNode('http://www.w3.org/ns/ldp#new'));
-    });
-
-    it('caches new properties as terms.', (): void => {
-      expect(LDP.terms('new')).toBe(LDP.terms('new'));
+    it('contains its own URI as a term.', (): void => {
+      expect(LDP.terms.namespace).toEqual(namedNode('http://www.w3.org/ns/ldp#'));
     });
 
     it('exposes ldp:contains.', (): void => {
@@ -25,10 +17,6 @@ describe('Vocabularies', (): void => {
 
     it('exposes ldp:contains as a term.', (): void => {
       expect(LDP.terms.contains).toEqual(namedNode('http://www.w3.org/ns/ldp#contains'));
-    });
-
-    it('caches ldp:contains as a term.', (): void => {
-      expect(LDP.terms.contains).toBe(LDP.terms.contains);
     });
   });
 });

@@ -76,7 +76,7 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('converts quads with prefixes to turtle.', async(): Promise<void> => {
-    metadata.addQuad(DC.terms(), PREFERRED_PREFIX_TERM, 'dc');
+    metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc');
     metadata.addQuad('http://test.com/', PREFERRED_PREFIX_TERM, 'test');
     const representation = {
       data: streamifyArray([ triple(
