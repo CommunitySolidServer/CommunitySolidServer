@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
   pull_request:
     branches:
       - master
@@ -116,13 +118,13 @@ jobs:
           path: docs
           retention-days: 1
 
-  gh-pages:
+  publish-docs:
     needs:
       - docs
       - lint
       - test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/download-artifact@v2
         with:

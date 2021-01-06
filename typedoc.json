@@ -2,5 +2,6 @@
   "name": "Community Solid Server",
   "hideGenerator": true,
   "entryPoints": "src",
+  "includeVersion": true,
   "out": "docs"
 }
