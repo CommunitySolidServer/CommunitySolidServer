@@ -185,7 +185,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     try {
       return await this.accessor.getMetadata(identifier);
     } catch (error: unknown) {
-      if (error instanceof NotFoundHttpError) {
+      // Trimming the trailing slash of a root container is undefined as there is no parent container
+      if (error instanceof NotFoundHttpError && !this.identifierStrategy.isRootContainer(identifier)) {
         return this.accessor.getMetadata(
           { path: hasSlash ? trimTrailingSlashes(identifier.path) : ensureTrailingSlash(identifier.path) },
         );

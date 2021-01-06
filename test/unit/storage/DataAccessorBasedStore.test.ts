@@ -241,6 +241,27 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
     });
 
+    // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
+    // can result in undefined behaviour since there is no parent container.
+    it('will not trim the slash of root containers since there is no parent.', async(): Promise<void> => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete accessor.data[root];
+
+      const mock = jest.spyOn(accessor, 'getMetadata');
+
+      const resourceID = { path: `${root}` };
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.contentType = 'text/turtle';
+      representation.data = guardedStreamFrom([ `<${`${root}`}> a <coolContainer>.` ]);
+
+      await expect(store.setRepresentation(resourceID, representation))
+        .resolves.toBeUndefined();
+      expect(mock).toHaveBeenCalledTimes(1);
+      expect(mock).toHaveBeenLastCalledWith(resourceID);
+
+      mock.mockRestore();
+    });
+
     it('will error if the target has a different resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       accessor.data[resourceID.path] = representation;
