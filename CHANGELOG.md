@@ -1,6 +1,74 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.4.0"></a>
+## [v0.4.0](https://github.com/solid/community-server/compare/v0.3.0...v0.4.0) - 2021-01-06
+
+### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
+
+#### Added
+* [feat: Create new resources when patching](https://github.com/solid/community-server/commit/7011b766b4d6a39a4edcfde19856d9a4b933fda6)
+* [feat: Add read-only store.](https://github.com/solid/community-server/commit/038d5728e306248057c3a8d3782050328de618e8)
+* [feat: Create ContainerManager for containing container conventions](https://github.com/solid/community-server/commit/9c080c2101876e2a0008194cba5416fa4fe0ce15)
+* [feat: Add constant WebID extractor.](https://github.com/solid/community-server/commit/209b87a424469bb63cbdccd9e89620c330a4e86a)
+* [feat: Initialize root containers with RootContainerInitializer](https://github.com/solid/community-server/commit/231349b30d1de5fd97ac14540ede945f1d4d9295)
+* [feat: ExtensionBasedMapper no longer throws if there is no file](https://github.com/solid/community-server/commit/d7434df8089cdd5c5f040f774710c62331f86ad9)
+* [feat: Support .meta files for pod provisioning](https://github.com/solid/community-server/commit/e722cc67affbb189b48bfb4d133e5bc28bec5339)
+* [feat: Add pod template to indicate storage](https://github.com/solid/community-server/commit/70cc3596dbde6e1da1951367b4786052ab2b11d9)
+* [feat: Add RecordObject.](https://github.com/solid/community-server/commit/147f3cf0c7486506ff07cd1211a1ab88c85e7ee8)
+* [feat: Bearer token support](https://github.com/solid/community-server/commit/bdfd7cf902afb0cab45b26c62cb0bae18fbcc1ee)
+* [feat: Add extra logging for root container creation.](https://github.com/solid/community-server/commit/5a3a612dce8b183018e15921877cb7fdaaa7c441)
+* [feat: Add mainModulePath and globalModules CLI flags.](https://github.com/solid/community-server/commit/ba4f7ff26c77636f7b367de316409001cd173692)
+* [feat: Improve path logging.](https://github.com/solid/community-server/commit/e20510a3920cd6d0e7129121dc3cea9ccbbf89df)
+* [feat: Expose UriConstants.](https://github.com/solid/community-server/commit/0bd48f0dc5655be8022facae8f2405de517c388d)
+* [feat: Expose ConversionUtil.](https://github.com/solid/community-server/commit/dfc1d4662f4c5fa74e0ee121e890e916dd63d70e)
+* [feat: Expose ContentTypes.](https://github.com/solid/community-server/commit/4df11c193230f65c69919fa2731a737d05a372cb)
+* [feat: Expose GuardedStream.](https://github.com/solid/community-server/commit/166c4de493d6f68da9197fe727901d24d4d86eaa)
+* [feat: Support strings in addQuad.](https://github.com/solid/community-server/commit/feaac1cf56eea1b739bb8042cf9bf3ba336f8710)
+* [feat: Expose UriUtil.](https://github.com/solid/community-server/commit/882c0fdba55dfb8d5ba3921c7e4a15bb116b933d)
+* [feat: Incorporate server-side representation quality.](https://github.com/solid/community-server/commit/8cd3f7d2e5266a1fb376aba8cb852cbe09d9bc6c)
+* [feat: Validate Accept-DateTime.](https://github.com/solid/community-server/commit/ba5c62059a65c49dbf25e3d54a37c25bcb7045ca)
+* [feat: Allow querying metadata.](https://github.com/solid/community-server/commit/3b63786ae09c43d486126c0d52bbfec34eb74e4f)
+* [feat: Support writer prefixes.](https://github.com/solid/community-server/commit/87752ddf205a00f81b8597a3f5a3e9ea2aac057f)
+
+#### Changed
+* [refactor: Split off AclInitializer.](https://github.com/solid/community-server/commit/8fbb4f592e6873afca1ae7e1aa7062588630fcf9)
+* [refactor: Split off LoggerInitializer.](https://github.com/solid/community-server/commit/b0ecf1c1d8bb07ccbc25724f0f7ee6b8c948d2fd)
+* [refactor: Split off ServerInitializer.](https://github.com/solid/community-server/commit/04a91858c2ebbbe640f5f1b6ab8f1f55ddbb26ef)
+* [refactor: Remove Setup.](https://github.com/solid/community-server/commit/badbe0032b7b3a2bfab6df55eb181c619d176b55)
+* [change: Refactor AllVoidCompositeHandler into SequenceHandler.](https://github.com/solid/community-server/commit/ba47ce79519e950b6a2d5f210ce266796052131a)
+* [change: Rename FirstCompositeHandler into WaterfallHandler.](https://github.com/solid/community-server/commit/f26178b1b509e9f58edba7762a3153b1aab5f1cc)
+* [change: Make RepresentationMetadata accept a ResourceIdentifier.](https://github.com/solid/community-server/commit/accfc2e58da9cd2298182e08186a2eced5c877fa)
+* [refactor: Replace getParentContainer util function with ContainerManager](https://github.com/solid/community-server/commit/f0db9e501f45c265855071e6dc3be77d28e98c80)
+* [refactor: Also create named nodes for vocabularies.](https://github.com/solid/community-server/commit/ae06e9906793831c3730eb33feda52ee75c2ce1e)
+* [refactor: Rename UriUtil into TermUtil.](https://github.com/solid/community-server/commit/2e188551f7d53191e8d591ffb6da58fefbe29287)
+* [refactor: Use record for representation preference.](https://github.com/solid/community-server/commit/48289125932617bda0e4939b20c0d768d745e360)
+* [refactor: Rename RepresentationPreference into ValuePreferences.](https://github.com/solid/community-server/commit/09ae95933359ea5d5cd59f711b0f467123255ec0)
+
+#### Fixed
+* [fix: Only set content-type for documents in sparql store](https://github.com/solid/community-server/commit/d7e189cdd874253ee058c7fc6cd2b4fac878e136)
+* [fix: Allow quad data for containers](https://github.com/solid/community-server/commit/d5bf4e1e675ce63e6a92a8db5c34209e07283231)
+* [fix: Do not write error if response already started.](https://github.com/solid/community-server/commit/907caa1e93c1b66df0b76389e1fc7b3cfdc4d3e4)
+* [fix: Allow overwriting and deleting root container in SparqlDataAccessor](https://github.com/solid/community-server/commit/fc8540f5531fd44f6472bfdd0b75633a00ec4e31)
+* [fix: Allow deletion of root in InMemoryDataAccessor](https://github.com/solid/community-server/commit/3e3dd7f5a9510fb1e536ae7d0edcc6eab1361bac)
+* [fix: Allow DataAccessorBasedStore to create root](https://github.com/solid/community-server/commit/a08b7e9112c2188ef62b8a77f7ad09073f126884)
+* [fix: Remove metadata content-type assumption from FileDataAccessor](https://github.com/solid/community-server/commit/1464288b0f09faccdd4e495640c79b22cb91bfe8)
+* [fix: Remove metadata content-type assumption from QuadUtil](https://github.com/solid/community-server/commit/a114d00827e4fe15bf8df9291a0754a7311e1669)
+* [fix: Only check relevant type triples](https://github.com/solid/community-server/commit/a721684e6b5f67b921e81caa8502da9dde401889)
+* [fix: Execute only one main handler.](https://github.com/solid/community-server/commit/2443f2c75574c7ce44195ae3b5192841d97bea3b)
+* [fix: Prevent deletion of root storage containers](https://github.com/solid/community-server/commit/39a79dbcb2986ee0f8ac2106aa7f1e2dd2234d1d)
+* [fix: Remove faulty no-routing configuration.](https://github.com/solid/community-server/commit/eb6ba0374f341957dee36d74847efbacfa11ef8d)
+* [fix: Expose Location header via CORS.](https://github.com/solid/community-server/commit/a5c372c37c269904e1e6cad5d53d2a3a543779a2)
+* [fix: Export all errors.](https://github.com/solid/community-server/commit/f7825beea9961eaa8a0c589f46518d79b0e45142)
+* [fix: Distinguish instantiation and initialization errors.](https://github.com/solid/community-server/commit/49551eb9ebcb2a856f1e8c06d6a1abeab7ea72e1)
+* [fix: Ensure root file path is absolute.](https://github.com/solid/community-server/commit/c41c41d0e98437597e26572765e9807eabdb3b4c)
+* [fix: Emit all guarded errors to all listeners.](https://github.com/solid/community-server/commit/4faf916ecec7f3fc8c0a50aaebb07c05b5011563)
+* [fix: Sort preferences by descending weight.](https://github.com/solid/community-server/commit/98bf8c199d8aba8cea488e82351434d06714687b)
+* [fix: Allow credentials over CORS.](https://github.com/solid/community-server/commit/ee072b038afc7b75c33ef64e6312d4101c4fca3d)
+* [fix: Join and normalize paths consistently.](https://github.com/solid/community-server/commit/f454b781ff7c466cdf995e8833d481409338deec)
+* [fix: Prefer Turtle as default content type.](https://github.com/solid/community-server/commit/e70e060225815d2103fd115e936b0263bc566f05)
+
+
 <a name="v0.3.0"></a>
 ## [v0.3.0](https://github.com/solid/community-server/compare/v0.2.0...v0.3.0) - 2020-12-03
 
