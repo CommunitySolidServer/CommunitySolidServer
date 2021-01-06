@@ -129,6 +129,7 @@ export * from './storage/accessors/SparqlDataAccessor';
 
 // Storage/Conversion
 export * from './storage/conversion/ChainedConverter';
+export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/ConversionUtil';
 export * from './storage/conversion/QuadToRdfConverter';
 export * from './storage/conversion/RdfToQuadConverter';

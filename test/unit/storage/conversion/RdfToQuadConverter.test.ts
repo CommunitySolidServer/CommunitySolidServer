@@ -13,7 +13,7 @@ import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
-describe('A RdfToQuadConverter.test.ts', (): void => {
+describe('A RdfToQuadConverter', (): void => {
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
 

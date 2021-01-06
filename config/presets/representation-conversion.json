@@ -38,6 +38,33 @@
     },
 
     {
+      "@id": "urn:solid-server:default:ContentTypeReplacer",
+      "@type": "ContentTypeReplacer",
+      "ContentTypeReplacer:_replacements": [
+        {
+          "ContentTypeReplacer:_replacements_key": "application/n-triples",
+          "ContentTypeReplacer:_replacements_value": "text/turtle"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "text/turtle",
+          "ContentTypeReplacer:_replacements_value": "application/trig"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "application/ld+json",
+          "ContentTypeReplacer:_replacements_value": "application/json"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "application/*",
+          "ContentTypeReplacer:_replacements_value": "application/octet-stream"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "text/*",
+          "ContentTypeReplacer:_replacements_value": "application/octet-stream"
+        }
+      ]
+    },
+
+    {
       "@id": "urn:solid-server:default:RdfRepresentationConverter",
       "@type": "ChainedConverter",
       "ChainedConverter:_converters": [
@@ -54,6 +81,9 @@
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
       "WaterfallHandler:_handlers": [
+        {
+          "@id": "urn:solid-server:default:ContentTypeReplacer"
+        },
         {
           "@id": "urn:solid-server:default:RdfToQuadConverter"
         },
