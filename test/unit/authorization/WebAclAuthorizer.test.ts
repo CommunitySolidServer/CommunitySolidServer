@@ -155,4 +155,20 @@ describe('A WebAclAuthorizer', (): void => {
     await expect(promise).rejects.toThrow('No ACL document found for root container');
     await expect(promise).rejects.toThrow(InternalServerError);
   });
+
+  it('allows an agent to append if they have write access.', async(): Promise<void> => {
+    credentials.webId = 'http://test.com/user';
+    identifier.path = 'http://test.com/foo';
+    permissions = {
+      read: false,
+      write: false,
+      append: true,
+    };
+    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
+      quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
+      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
+    ]) } as Representation);
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+  });
 });
