@@ -38,7 +38,7 @@ export class BasicRequestParser extends RequestParser {
     }
     const target = await this.targetExtractor.handleSafe({ request });
     const preferences = await this.preferenceParser.handleSafe({ request });
-    const metadata = await this.metadataExtractor.handleSafe({ request });
+    const metadata = await this.metadataExtractor.handleSafe({ request, target });
     const body = await this.bodyParser.handleSafe({ request, metadata });
 
     return { method, target, preferences, body };
