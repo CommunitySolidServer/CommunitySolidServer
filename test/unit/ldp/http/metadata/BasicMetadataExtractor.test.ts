@@ -32,7 +32,11 @@ describe('A BasicMetadataExtractor', (): void => {
   });
 
   it('will add metadata from the parsers.', async(): Promise<void> => {
-    const metadata = await handler.handle({ request: { headers: { aa: 'valA', bb: 'valB' } as any } as HttpRequest });
+    const target = { path: 'http://test.com/id' };
+    const metadata = await handler.handle(
+      { target, request: { headers: { aa: 'valA', bb: 'valB' } as any } as HttpRequest },
+    );
+    expect(metadata.identifier.value).toBe(target.path);
     expect(metadata.getAll(RDF.type).map((term): any => term.value)).toEqual([ 'valA', 'valB' ]);
   });
 });
