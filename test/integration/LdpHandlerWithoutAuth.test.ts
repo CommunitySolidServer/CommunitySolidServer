@@ -1,7 +1,11 @@
+import { DataFactory, Parser } from 'n3';
+import type { MockResponse } from 'node-mocks-http';
+import { ensureTrailingSlash } from '../../src/';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
 import { ResourceHelper } from '../util/TestHelpers';
 import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
+const { literal, namedNode, quad } = DataFactory;
 
 const rootFilePath = getTestFolder('full-config-no-auth');
 const stores: [string, any][] = [
@@ -228,5 +232,35 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     // DELETE
     await resourceHelper.deleteResource(fileId);
     await resourceHelper.shouldNotExist(fileId);
+  });
+
+  it('can create a container with a diamond identifier in the data.', async(): Promise<void> => {
+    const slug = 'my-container';
+
+    let response: MockResponse<any> = await resourceHelper.performRequestWithBody(
+      new URL(ensureTrailingSlash(BASE)),
+      'POST',
+      {
+        'content-type': 'text/turtle',
+        'transfer-encoding': 'chunked',
+        link: '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
+        slug,
+      },
+      Buffer.from('<> <http://www.w3.org/2000/01/rdf-schema#label> "My Container" .', 'utf-8'),
+    );
+
+    expect(response.statusCode).toBe(201);
+    expect(response._getHeaders().location).toBe(`${BASE}/${slug}/`);
+
+    response = await resourceHelper.performRequest(new URL(`${BASE}/${slug}/`), 'GET', { accept: 'text/turtle' });
+    expect(response.statusCode).toBe(200);
+
+    const parser = new Parser();
+    const quads = parser.parse(response._getData());
+    expect(quads.some((entry): boolean => entry.equals(quad(
+      namedNode(`${BASE}/${slug}/`),
+      namedNode('http://www.w3.org/2000/01/rdf-schema#label'),
+      literal('My Container'),
+    )))).toBeTruthy();
   });
 });
