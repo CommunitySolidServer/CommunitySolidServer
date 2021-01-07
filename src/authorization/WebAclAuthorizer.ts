@@ -64,7 +64,13 @@ export class WebAclAuthorizer extends Authorizer {
    */
   private checkPermission(agent: Credentials, store: Store, mode: string): void {
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
-    const auths = store.getQuads(null, ACL.mode, modeString, null).map((quad: Quad): Term => quad.subject);
+    const auths = this.getModePermissions(store, modeString);
+
+    // Having write permissions implies having append permissions
+    if (modeString === ACL.Append) {
+      auths.push(...this.getModePermissions(store, ACL.Write));
+    }
+
     if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
       const isLoggedIn = typeof agent.webId === 'string';
       if (isLoggedIn) {
@@ -85,6 +91,15 @@ export class WebAclAuthorizer extends Authorizer {
    */
   private capitalize(mode: string): string {
     return `${mode[0].toUpperCase()}${mode.slice(1).toLowerCase()}`;
+  }
+
+  /**
+   * Returns the identifiers of all authorizations that grant the given mode access for a resource.
+   * @param store - The store containing the quads of the acl resource.
+   * @param aclMode - A valid acl mode (ACL.Write/Read/...)
+   */
+  private getModePermissions(store: Store, aclMode: string): Term[] {
+    return store.getQuads(null, ACL.mode, aclMode, null).map((quad: Quad): Term => quad.subject);
   }
 
   /**
