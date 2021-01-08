@@ -2,8 +2,9 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:InMemoryAdapterFactory",
-      "@type": "InMemoryAdapterFactory"
+      "@id": "urn:solid-server:default:MemoryAdapter",
+      "@type": "InMemoryAdapter",
+      "InMemoryAdapter:_model": "IdpMemory"
     },
     {
       "@id": "urn:solid-server:default:ProviderConfigurationFactory",
@@ -11,8 +12,8 @@
       "DevConfigurationFactory:_interactionPolicyHttpHandler": {
         "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
       },
-      "DevConfigurationFactory:_inMemoryAdapterFactory": {
-        "@id": "urn:solid-server:default:InMemoryAdapterFactory"
+      "DevConfigurationFactory:_memoryAdapter": {
+        "@id": "urn:solid-server:default:MemoryAdapter"
       }
     },
     {

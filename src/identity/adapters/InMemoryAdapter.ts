@@ -1,28 +1,28 @@
-import type { Adapter, AdapterConstructor, AdapterPayload } from 'oidc-provider';
 import LRUCache from 'lru-cache';
+import type { Adapter, AdapterPayload } from 'oidc-provider';
 
-class InMemoryAdapter implements Adapter {
+export class InMemoryAdapter implements Adapter {
   private readonly model: string;
   private readonly lru: LRUCache<string, string | string[] | AdapterPayload>;
 
-  constructor(model: string, lru = new LRUCache<string, string | string[]>({})) {
+  public constructor(model: string) {
     this.model = model;
-    this.lru = lru;
+    this.lru = new LRUCache<string, string | string[]>({});
   }
 
   private key(id: string): string {
     return `${this.model}:${id}`;
   }
 
-  private static grantKeyFor(id: string) {
+  private static grantKeyFor(id: string): string {
     return `grant:${id}`;
   }
 
-  private static sessionUidKeyFor(id: string) {
+  private static sessionUidKeyFor(id: string): string {
     return `sessionUid:${id}`;
   }
 
-  private static userCodeKeyFor(userCode: string) {
+  private static userCodeKeyFor(userCode: string): string {
     return `userCode:${userCode}`;
   }
 
@@ -40,7 +40,7 @@ class InMemoryAdapter implements Adapter {
   }
 
   public async find(id: string): Promise<AdapterPayload | undefined | void> {
-    return (this.lru.get(this.key(id)) as AdapterPayload | undefined);
+    return this.lru.get(this.key(id)) as AdapterPayload | undefined;
   }
 
   public async findByUid(uid: string): Promise<AdapterPayload | undefined | void> {
@@ -65,7 +65,7 @@ class InMemoryAdapter implements Adapter {
       const grantKey = InMemoryAdapter.grantKeyFor(grantId);
       const grant = this.lru.get(grantKey);
       if (!grant) {
-        this.lru.set(grantKey, [key]);
+        this.lru.set(grantKey, [ key ]);
       } else {
         (grant as string[]).push(key);
       }
@@ -82,10 +82,8 @@ class InMemoryAdapter implements Adapter {
     const grantKey = InMemoryAdapter.grantKeyFor(grantId);
     const grant = this.lru.get(grantKey);
     if (grant) {
-      (grant as string[]).forEach((token) => this.lru.del(token));
+      (grant as string[]).forEach((token): void => this.lru.del(token));
       this.lru.del(grantKey);
     }
   }
 }
-
-export const inMemoryAdapterConstructor: AdapterConstructor = InMemoryAdapter;

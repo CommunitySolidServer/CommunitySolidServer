@@ -111,9 +111,8 @@ export * from './identity/SolidIdentityProviderHttpHandler';
 // SolidIdentityProvider/Configurations
 export * from './identity/configurations/DevConfigurationFactory';
 
-// SolidIdentityProvider/MemoryAdapterFactories
-export * from './identity/adapters/InMemoryAdapterConstructor';
-export * from './identity/adapters/InMemoryAdapterFactory';
+// SolidIdentityProvider/memoryAdapters
+export * from './identity/adapters/InMemoryAdapter';
 
 // SolidIdentityProvider/InteractionPolicies
 export * from './identity/interaction-policies/email-password/EmailPasswordInteractionPolicyHttpHandler';

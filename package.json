@@ -101,6 +101,7 @@
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
     "lodash": "^4.17.20",
+    "lru-cache": "^6.0.0",
     "mime-types": "^2.1.27",
     "n3": "^1.8.0",
     "pump": "^3.0.0",
