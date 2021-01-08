@@ -1,25 +1,31 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable id-length */
 /* eslint-disable max-len */
+import type { Adapter } from 'oidc-provider';
 import type { InteractionPolicyHttpHandler } from '../InteractionPolicyHttpHandler';
 import type { ProviderConfiguration } from '../ProviderConfiguration';
 import { ProviderConfigurationFactory } from '../ProviderConfigurationFactory';
-import { InMemoryAdapterFactory } from '../adapters/InMemoryAdapterFactory';
-
 
 export class DevConfigurationFactory extends ProviderConfigurationFactory {
   private readonly interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
-  private readonly inMemoryAdapterFactory: InMemoryAdapterFactory;
+  private readonly memoryAdapter: Adapter;
 
-  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler, inMemoryAdapterFactory: InMemoryAdapterFactory) {
+  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler, memoryAdapter: Adapter) {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
-    this.inMemoryAdapterFactory = inMemoryAdapterFactory;
+    this.memoryAdapter = memoryAdapter;
   }
 
   public createConfiguration(): ProviderConfiguration {
+    // Aliasing the "this" variable is an anti-pattern that is better served by using
+    // arrow functions. Unfortunately, the adapter function MUST be a named function
+    // See https://github.com/panva/node-oidc-provider/issues/799
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
     return {
-      adapter: this.inMemoryAdapterFactory.createMemoryAdapter(),
+      adapter: function loadAdapter(): Adapter {
+        return that.memoryAdapter;
+      },
       clients: [
         // {
         //   client_id: 'oidcCLIENT',
