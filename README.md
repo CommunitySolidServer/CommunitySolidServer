@@ -28,7 +28,7 @@ play around with it,
 and check how it is made.
 <br>
 The [📗 API documentation](https://solid.github.io/community-server/docs/)
-and the [📐 architectural diagram](https://github.com/RubenVerborgh/solid-server-architecture)
+and the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
 can help you find your way.
 
 If you are interested in helping out with the development of this server,
