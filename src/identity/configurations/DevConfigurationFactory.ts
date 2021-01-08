@@ -4,17 +4,22 @@
 import type { InteractionPolicyHttpHandler } from '../InteractionPolicyHttpHandler';
 import type { ProviderConfiguration } from '../ProviderConfiguration';
 import { ProviderConfigurationFactory } from '../ProviderConfigurationFactory';
+import { InMemoryAdapterFactory } from '../adapters/InMemoryAdapterFactory';
+
 
 export class DevConfigurationFactory extends ProviderConfigurationFactory {
   private readonly interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
+  private readonly inMemoryAdapterFactory: InMemoryAdapterFactory;
 
-  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler) {
+  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler, inMemoryAdapterFactory: InMemoryAdapterFactory) {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
+    this.inMemoryAdapterFactory = inMemoryAdapterFactory;
   }
 
   public createConfiguration(): ProviderConfiguration {
     return {
+      adapter: this.inMemoryAdapterFactory.createMemoryAdapter(),
       clients: [
         // {
         //   client_id: 'oidcCLIENT',

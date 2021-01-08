@@ -2,10 +2,17 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
+      "@id": "urn:solid-server:default:InMemoryAdapterFactory",
+      "@type": "InMemoryAdapterFactory"
+    },
+    {
       "@id": "urn:solid-server:default:ProviderConfigurationFactory",
       "@type": "DevConfigurationFactory",
       "DevConfigurationFactory:_interactionPolicyHttpHandler": {
         "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
+      },
+      "DevConfigurationFactory:_inMemoryAdapterFactory": {
+        "@id": "urn:solid-server:default:InMemoryAdapterFactory"
       }
     },
     {
@@ -20,21 +27,10 @@
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
-      "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
-        {
-          "@id": "urn:solid-server:default:InteractionHttpHandler",
-          "InteractionHttpHandler:_provider": {
-            "@id": "urn:solid-server:default:SolidIdentityProvider"
-          }
-        },
-        {
-          "@type": "SolidIdentityProviderHttpHandler",
-          "SolidIdentityProviderHttpHandler:_provider": {
-            "@id": "urn:solid-server:default:SolidIdentityProvider"
-          }
-        }
-      ]
+      "@type": "SolidIdentityProviderHttpHandler",
+      "SolidIdentityProviderHttpHandler:_provider": {
+        "@id": "urn:solid-server:default:SolidIdentityProvider"
+      }
     }
   ]
 }
