@@ -1,5 +1,5 @@
-import type { Writable, ReadableOptions } from 'stream';
-import { Readable } from 'stream';
+import type { Writable, ReadableOptions, DuplexOptions } from 'stream';
+import { Readable, Transform } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { Guarded } from './GuardedStream';
@@ -41,6 +41,59 @@ export function pipeSafely<T extends Writable>(readable: NodeJS.ReadableStream, 
     destination.destroy(mapError ? mapError(error) : error);
   });
   return guardStream(destination);
+}
+
+export interface AsyncTransformOptions<T = any> extends DuplexOptions {
+  /**
+   * Transforms data from the source by calling the `push` method
+   */
+  transform?: (this: Transform, data: T, encoding: string) => any | Promise<any>;
+
+  /**
+   * Performs any final actions after the source has ended
+   */
+  flush?: (this: Transform) => any | Promise<any>;
+}
+
+/**
+ * Transforms a stream, ensuring that all errors are forwarded.
+ * @param source - The stream to be transformed
+ * @param options - The transformation options
+ *
+ * @returns The transformed stream
+ */
+export function transformSafely<T = any>(
+  source: NodeJS.ReadableStream,
+  {
+    transform = function(data): void {
+      this.push(data);
+    },
+    flush = (): null => null,
+    ...options
+  }: AsyncTransformOptions<T> = {},
+):
+  Guarded<Transform> {
+  return pipeSafely(source, new Transform({
+    ...options,
+    async transform(data, encoding, callback): Promise<void> {
+      let error: Error | null = null;
+      try {
+        await transform.call(this, data, encoding);
+      } catch (err: unknown) {
+        error = err as Error;
+      }
+      callback(error);
+    },
+    async flush(callback): Promise<void> {
+      let error: Error | null = null;
+      try {
+        await flush.call(this);
+      } catch (err: unknown) {
+        error = err as Error;
+      }
+      callback(error);
+    },
+  }));
 }
 
 /**
