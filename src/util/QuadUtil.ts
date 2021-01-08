@@ -1,4 +1,4 @@
-import type { Readable, PassThrough } from 'stream';
+import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { DataFactory, StreamParser, StreamWriter } from 'n3';
@@ -12,7 +12,7 @@ import { toSubjectTerm, toPredicateTerm, toObjectTerm } from './TermUtil';
  * Generates a quad with the given subject/predicate/object and pushes it to the given array.
  */
 export function pushQuad(
-  quads: Quad[] | PassThrough,
+  quads: Quad[] | Readable,
   subject: string | NamedNode,
   predicate: string | NamedNode,
   object: string | NamedNode | Literal,
