@@ -1,4 +1,4 @@
-import { createSolidTokenVerifier } from 'ts-dpop';
+import { createSolidTokenVerifier } from '@solid/identity-token-verifier';
 import { BearerWebIdExtractor } from '../../../src/authentication/BearerWebIdExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';

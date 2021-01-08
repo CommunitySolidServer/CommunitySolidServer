@@ -73,6 +73,7 @@
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",
+    "@solid/identity-token-verifier": "^0.4.3",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
     "@types/cors": "^2.8.6",
@@ -101,7 +102,6 @@
     "sparqlalgebrajs": "^2.3.1",
     "sparqljs": "^3.1.2",
     "streamify-array": "^1.0.1",
-    "ts-dpop": "^0.4.2",
     "uuid": "^8.3.0",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",
