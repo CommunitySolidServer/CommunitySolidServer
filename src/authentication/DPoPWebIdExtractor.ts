@@ -1,5 +1,5 @@
-import type { SolidTokenVerifierFunction, RequestMethod } from 'ts-dpop';
-import { createSolidTokenVerifier } from 'ts-dpop';
+import type { SolidTokenVerifierFunction, RequestMethod } from '@solid/identity-token-verifier';
+import { createSolidTokenVerifier } from '@solid/identity-token-verifier';
 import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
