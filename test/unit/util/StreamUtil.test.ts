@@ -1,6 +1,7 @@
 import { PassThrough } from 'stream';
+import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
-import { guardedStreamFrom, pipeSafely, readableToString } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom, pipeSafely, transformSafely, readableToString } from '../../../src/util/StreamUtil';
 
 describe('StreamUtil', (): void => {
   describe('#readableToString', (): void => {
@@ -38,6 +39,104 @@ describe('StreamUtil', (): void => {
       const output = new PassThrough();
       const piped = pipeSafely(input, output, (): any => new Error('other error'));
       await expect(readableToString(piped)).rejects.toThrow(new Error('other error'));
+    });
+  });
+
+  describe('#transformSafely', (): void => {
+    it('can transform a stream without arguments.', async(): Promise<void> => {
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely(source);
+      transformed.setEncoding('utf8');
+      const result = await arrayifyStream(transformed);
+      expect(result).toEqual([ 'data' ]);
+    });
+
+    it('can transform a stream synchronously.', async(): Promise<void> => {
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        encoding: 'utf8',
+        transform(data: string): void {
+          this.push(`${data}1`);
+          this.push(`${data}2`);
+        },
+        flush(): void {
+          this.push(`data3`);
+        },
+      });
+      const result = await arrayifyStream(transformed);
+      expect(result).toEqual([ 'data1', 'data2', 'data3' ]);
+    });
+
+    it('can transform a stream asynchronously.', async(): Promise<void> => {
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        encoding: 'utf8',
+        async transform(data: string): Promise<void> {
+          await new Promise((resolve): any => setImmediate(resolve));
+          this.push(`${data}1`);
+          this.push(`${data}2`);
+        },
+        async flush(): Promise<void> {
+          await new Promise((resolve): any => setImmediate(resolve));
+          this.push(`data3`);
+        },
+      });
+      const result = await arrayifyStream(transformed);
+      expect(result).toEqual([ 'data1', 'data2', 'data3' ]);
+    });
+
+    it('catches source errors.', async(): Promise<void> => {
+      const error = new Error('stream error');
+      const source = new PassThrough();
+      const transformed = transformSafely<string>(source);
+      source.emit('error', error);
+      await expect(arrayifyStream(transformed)).rejects.toThrow(error);
+    });
+
+    it('catches synchronous errors on transform.', async(): Promise<void> => {
+      const error = new Error('stream error');
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        transform(): never {
+          throw error;
+        },
+      });
+      await expect(arrayifyStream(transformed)).rejects.toThrow(error);
+    });
+
+    it('catches synchronous errors on flush.', async(): Promise<void> => {
+      const error = new Error('stream error');
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        async flush(): Promise<never> {
+          await new Promise((resolve): any => setImmediate(resolve));
+          throw error;
+        },
+      });
+      await expect(arrayifyStream(transformed)).rejects.toThrow(error);
+    });
+
+    it('catches asynchronous errors on transform.', async(): Promise<void> => {
+      const error = new Error('stream error');
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        transform(): never {
+          throw error;
+        },
+      });
+      await expect(arrayifyStream(transformed)).rejects.toThrow(error);
+    });
+
+    it('catches asynchronous errors on flush.', async(): Promise<void> => {
+      const error = new Error('stream error');
+      const source = streamifyArray([ 'data' ]);
+      const transformed = transformSafely<string>(source, {
+        async flush(): Promise<never> {
+          await new Promise((resolve): any => setImmediate(resolve));
+          throw error;
+        },
+      });
+      await expect(arrayifyStream(transformed)).rejects.toThrow(error);
     });
   });
 
