@@ -102,7 +102,7 @@ export * from './ldp/UnsecureWebSocketsProtocol';
 // SolidIdentityProvider
 export * from './identity/InteractionHttpHandler';
 export * from './identity/InteractionPolicyHttpHandler';
-export * from './identity/MemoryAdapterFactory';
+export * from './identity/IdentityProviderAdapterFactory';
 export * from './identity/ProviderConfiguration';
 export * from './identity/ProviderConfigurationFactory';
 export * from './identity/SolidIdentityProvider';
@@ -112,7 +112,8 @@ export * from './identity/SolidIdentityProviderHttpHandler';
 export * from './identity/configurations/DevConfigurationFactory';
 
 // SolidIdentityProvider/MemoryAdapterFactories
-export * from './identity/memory-adapter-factories/InMemoryAdapterFactory';
+export * from './identity/adapters/InMemoryAdapterConstructor';
+export * from './identity/adapters/InMemoryAdapterFactory';
 
 // SolidIdentityProvider/InteractionPolicies
 export * from './identity/interaction-policies/email-password/EmailPasswordInteractionPolicyHttpHandler';

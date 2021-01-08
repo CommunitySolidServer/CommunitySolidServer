@@ -72,8 +72,13 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     validRoutes.push('/.well-known/openid-configuration');
 
     // Throw an error if the request URL is not part of the valid routes
-    if (!input.request.url || !validRoutes.includes(parse(input.request.url).pathname as string)) {
-      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
+    if (!input.request.url || (!validRoutes.includes(parse(input.request.url).pathname as string))) {
+      try {
+        await this.interactionHttpHandler.canHandle({ ...input, provider: this });
+      }
+      catch {
+        throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
+      }
     }
   }
 
