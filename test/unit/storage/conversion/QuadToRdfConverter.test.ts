@@ -24,18 +24,12 @@ describe('A QuadToRdfConverter', (): void => {
       .resolves.toEqual({ [INTERNAL_QUADS]: 1 });
   });
 
-  it('defaults to rdfSerializer preferences when given no preferences.', async(): Promise<void> => {
+  it('defaults to rdfSerializer preferences when given no output preferences.', async(): Promise<void> => {
     await expect(new QuadToRdfConverter().getOutputTypes())
       .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
   });
 
-  it('defaults to rdfSerializer preferences when given empty preferences.', async(): Promise<void> => {
-    const outputPreferences = {};
-    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
-      .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
-  });
-
-  it('returns custom preferences when given non-empty preferences.', async(): Promise<void> => {
+  it('supports overriding output preferences.', async(): Promise<void> => {
     const outputPreferences = { 'text/turtle': 1 };
     await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
       .resolves.toEqual(outputPreferences);

@@ -1,5 +1,4 @@
 import type { Representation } from '../../ldp/representation/Representation';
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -25,6 +24,8 @@ export class ChainedConverter extends TypedRepresentationConverter {
       throw new Error('At least 2 converters are required.');
     }
     this.converters = [ ...converters ];
+    this.inputTypes = this.first.getInputTypes();
+    this.outputTypes = this.last.getOutputTypes();
   }
 
   protected get first(): TypedRepresentationConverter {
@@ -33,14 +34,6 @@ export class ChainedConverter extends TypedRepresentationConverter {
 
   protected get last(): TypedRepresentationConverter {
     return this.converters[this.converters.length - 1];
-  }
-
-  public async getInputTypes(): Promise<ValuePreferences> {
-    return this.first.getInputTypes();
-  }
-
-  public async getOutputTypes(): Promise<ValuePreferences> {
-    return this.last.getOutputTypes();
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
