@@ -2,8 +2,9 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
+import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
-import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import type { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
@@ -21,7 +22,6 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
-import { guardedStreamFrom } from '../util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
@@ -64,28 +64,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     const metadata = await this.accessor.getMetadata(identifier);
 
-    let result: Representation;
-
-    // Create the representation of a container
-    if (this.isExistingContainer(metadata)) {
-      // Generate the data stream before setting the content-type to prevent unnecessary triples
-      const data = guardedStreamFrom(metadata.quads());
-      metadata.contentType = INTERNAL_QUADS;
-      result = {
-        binary: false,
-        data,
-        metadata,
-      };
-
-    // Obtain a representation of a document
-    } else {
-      result = {
-        binary: metadata.contentType !== INTERNAL_QUADS,
-        data: await this.accessor.getData(identifier),
-        metadata,
-      };
-    }
-    return result;
+    return this.isExistingContainer(metadata) ?
+      new BasicRepresentation(metadata.quads(), metadata, INTERNAL_QUADS) :
+      new BasicRepresentation(await this.accessor.getData(identifier), metadata);
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
@@ -374,22 +355,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (error instanceof NotFoundHttpError) {
         // Make sure the parent exists first
         await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-        await this.writeData(container, this.getEmptyContainerRepresentation(container), true);
+        await this.writeData(container, new BasicRepresentation([], container), true);
       } else {
         throw error;
       }
     }
-  }
-
-  /**
-   * Generates the minimal representation for an empty container.
-   * @param container - Identifier of this new container.
-   */
-  protected getEmptyContainerRepresentation(container: ResourceIdentifier): Representation {
-    return {
-      binary: true,
-      data: guardedStreamFrom([]),
-      metadata: new RepresentationMetadata(container),
-    };
   }
 }

@@ -1,3 +1,4 @@
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { AgentJsonParser } from '../../../../src/pods/agent/AgentJsonParser';
@@ -11,13 +12,8 @@ describe('An AgentJsonParser', (): void => {
   const parser = new AgentJsonParser();
 
   beforeEach(async(): Promise<void> => {
-    metadata = new RepresentationMetadata();
-    metadata.contentType = 'application/json';
-    representation = {
-      binary: true,
-      data: guardedStreamFrom([]),
-      metadata,
-    };
+    metadata = new RepresentationMetadata('application/json');
+    representation = new BasicRepresentation([], metadata);
   });
 
   it('only supports JSON data.', async(): Promise<void> => {

@@ -1,4 +1,5 @@
 import { DataFactory } from 'n3';
+import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -7,7 +8,6 @@ import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
-import { guardedStreamFrom } from '../util/StreamUtil';
 import { PIM, RDF } from '../util/Vocabularies';
 import { Initializer } from './Initializer';
 import namedNode = DataFactory.namedNode;
@@ -54,20 +54,14 @@ export class RootContainerInitializer extends Initializer {
    * Create a root container in a ResourceStore.
    */
   protected async createRootContainer(): Promise<void> {
-    const metadata = new RepresentationMetadata(this.baseId);
+    const metadata = new RepresentationMetadata(this.baseId, TEXT_TURTLE);
     metadata.addQuads(generateResourceQuads(namedNode(this.baseId.path), true));
 
     // Make sure the root container is a pim:Storage
     // This prevents deletion of the root container as storage root containers can not be deleted
     metadata.add(RDF.type, PIM.terms.Storage);
 
-    metadata.contentType = TEXT_TURTLE;
-
     this.logger.debug(`Creating root container at ${this.baseId.path}`);
-    await this.store.setRepresentation(this.baseId, {
-      binary: true,
-      data: guardedStreamFrom([]),
-      metadata,
-    });
+    await this.store.setRepresentation(this.baseId, new BasicRepresentation([], metadata));
   }
 }

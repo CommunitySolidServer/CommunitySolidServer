@@ -1,5 +1,4 @@
-import { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { Agent } from '../../../src/pods/agent/Agent';
 import type { IdentifierGenerator } from '../../../src/pods/generate/IdentifierGenerator';
@@ -46,11 +45,7 @@ describe('A GeneratedPodManager', (): void => {
   });
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
-    (store.getRepresentation as jest.Mock).mockImplementationOnce((): any => ({
-      data: Readable.from([]),
-      metadata: new RepresentationMetadata(),
-      binary: true,
-    }));
+    (store.getRepresentation as jest.Mock).mockImplementationOnce((): any => new BasicRepresentation([], {}));
     const result = manager.createPod(agent);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);

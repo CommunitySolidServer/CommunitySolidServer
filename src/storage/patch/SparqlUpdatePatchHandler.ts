@@ -5,14 +5,12 @@ import type { BaseQuad } from 'rdf-js';
 import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { guardStream } from '../../util/GuardedStream';
 import type { ResourceLocker } from '../../util/locking/ResourceLocker';
 import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
@@ -108,12 +106,6 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    const metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
-    const representation: Representation = {
-      binary: false,
-      data: guardStream(store.match() as Readable),
-      metadata,
-    };
-    await this.source.setRepresentation(identifier, representation);
+    await this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS));
   }
 }

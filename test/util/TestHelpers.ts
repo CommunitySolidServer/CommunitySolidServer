@@ -6,7 +6,7 @@ import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
-import { guardedStreamFrom, RepresentationMetadata, joinFilePath, ensureTrailingSlash } from '../../src/';
+import { BasicRepresentation, joinFilePath, ensureTrailingSlash } from '../../src/';
 import { performRequest } from './Util';
 
 /* eslint-disable jest/no-standalone-expect */
@@ -45,16 +45,7 @@ export class AclHelper {
 
     acl.push('.');
 
-    const representation = {
-      binary: true,
-      data: guardedStreamFrom(acl),
-      metadata: new RepresentationMetadata('text/turtle'),
-    };
-
-    return this.store.setRepresentation(
-      { path: `${this.id}.acl` },
-      representation,
-    );
+    await this.store.setRepresentation({ path: `${this.id}.acl` }, new BasicRepresentation(acl, 'text/turtle'));
   }
 }
 

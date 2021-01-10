@@ -71,6 +71,7 @@ export * from './ldp/permissions/MethodPermissionsExtractor';
 export * from './ldp/permissions/SparqlPatchPermissionsExtractor';
 
 // LDP/Representation
+export * from './ldp/representation/BasicRepresentation';
 export * from './ldp/representation/Representation';
 export * from './ldp/representation/RepresentationMetadata';
 export * from './ldp/representation/RepresentationPreferences';

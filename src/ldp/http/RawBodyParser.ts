@@ -1,5 +1,6 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { BasicRepresentation } from '../representation/BasicRepresentation';
 import type { Representation } from '../representation/Representation';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
@@ -27,10 +28,6 @@ export class RawBodyParser extends BodyParser {
       throw new BadRequestHttpError('HTTP request body was passed without Content-Type header');
     }
 
-    return {
-      binary: true,
-      data: request,
-      metadata,
-    };
+    return new BasicRepresentation(request, metadata);
   }
 }

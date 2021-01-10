@@ -1,5 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import { Parser } from 'n3';
+import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type {
@@ -8,7 +9,6 @@ import type {
   ResourceLink,
 } from '../../storage/mapping/FileIdentifierMapper';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
-import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
 import type { TemplateEngine } from './TemplateEngine';
 import Dict = NodeJS.Dict;
@@ -123,11 +123,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
 
     return {
       identifier: link.identifier,
-      representation: {
-        binary: true,
-        data: guardedStreamFrom(data),
-        metadata,
-      },
+      representation: new BasicRepresentation(data, metadata),
     };
   }
 

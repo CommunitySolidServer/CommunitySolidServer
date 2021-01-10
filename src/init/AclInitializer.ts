@@ -1,12 +1,11 @@
 import type { AclManager } from '../authorization/AclManager';
-import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
-import { guardedStreamFrom } from '../util/StreamUtil';
 import { Initializer } from './Initializer';
 
 /**
@@ -66,15 +65,7 @@ export class AclInitializer extends Initializer {
     acl:mode        acl:Control;
     acl:accessTo    <${this.baseUrl}>;
     acl:default     <${this.baseUrl}>.`;
-    const metadata = new RepresentationMetadata(rootAcl, TEXT_TURTLE);
     this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
-    await this.store.setRepresentation(
-      rootAcl,
-      {
-        binary: true,
-        data: guardedStreamFrom([ acl ]),
-        metadata,
-      },
-    );
+    await this.store.setRepresentation(rootAcl, new BasicRepresentation(acl, rootAcl, TEXT_TURTLE));
   }
 }

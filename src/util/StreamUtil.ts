@@ -97,10 +97,10 @@ export function transformSafely<T = any>(
 }
 
 /**
- * Converts an iterable to a stream and applies an error guard so that it is {@link Guarded}.
- * @param iterable - Data to stream.
+ * Converts a string or array to a stream and applies an error guard so that it is {@link Guarded}.
+ * @param contents - Data to stream.
  * @param options - Options to pass to the Readable constructor. See {@link Readable.from}.
  */
-export function guardedStreamFrom(iterable: Iterable<any>, options?: ReadableOptions): Guarded<Readable> {
-  return guardStream(Readable.from(iterable, options));
+export function guardedStreamFrom(contents: string | Iterable<any>, options?: ReadableOptions): Guarded<Readable> {
+  return guardStream(Readable.from(typeof contents === 'string' ? [ contents ] : contents, options));
 }

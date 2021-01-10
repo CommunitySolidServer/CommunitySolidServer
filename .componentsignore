@@ -1,4 +1,5 @@
 [
+  "BasicRepresentation",
   "Error",
   "EventEmitter",
   "ValuePreferencesArg"

@@ -1,9 +1,8 @@
-import type { Representation } from '../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
-import { guardedStreamFrom, readableToString } from '../../src/util/StreamUtil';
+import { readableToString } from '../../src/util/StreamUtil';
 
 describe('A ChainedConverter', (): void => {
   const converters = [
@@ -13,14 +12,10 @@ describe('A ChainedConverter', (): void => {
   const converter = new ChainedConverter(converters);
 
   it('can convert from JSON-LD to turtle.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata('application/ld+json');
-    const representation: Representation = {
-      binary: true,
-      data: guardedStreamFrom(
-        [ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ],
-      ),
-      metadata,
-    };
+    const representation = new BasicRepresentation(
+      '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}',
+      'application/ld+json',
+    );
 
     const result = await converter.handleSafe({
       representation,
@@ -33,12 +28,10 @@ describe('A ChainedConverter', (): void => {
   });
 
   it('can convert from turtle to JSON-LD.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata('text/turtle');
-    const representation: Representation = {
-      binary: true,
-      data: guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      metadata,
-    };
+    const representation = new BasicRepresentation(
+      '<http://test.com/s> <http://test.com/p> <http://test.com/o>.',
+      'text/turtle',
+    );
 
     const result = await converter.handleSafe({
       representation,

@@ -1,7 +1,7 @@
 import streamifyArray from 'streamify-array';
 import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
+import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore';
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
@@ -12,7 +12,6 @@ import type { ExpiringResourceLocker } from '../../src/util/locking/ExpiringReso
 import type { ResourceLocker } from '../../src/util/locking/ResourceLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringResourceLocker } from '../../src/util/locking/WrappedExpiringResourceLocker';
-import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { BASE } from './Config';
 
 describe('A LockingResourceStore', (): void => {
@@ -39,9 +38,7 @@ describe('A LockingResourceStore', (): void => {
     store = new LockingResourceStore(source, expiringLocker);
 
     // Make sure something is in the store before we read from it in our tests.
-    const metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
-    const data = guardedStreamFrom([ 1, 2, 3 ]);
-    await store.setRepresentation({ path }, { metadata, data, binary: true });
+    await store.setRepresentation({ path }, new BasicRepresentation([ 1, 2, 3 ], APPLICATION_OCTET_STREAM));
   });
 
   it('destroys the stream when nothing is read after 1000ms.', async(): Promise<void> => {
