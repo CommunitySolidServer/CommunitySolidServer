@@ -2,12 +2,13 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { toSubjectTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE_TERM } from '../../util/Vocabularies';
+import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
 export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
-export type MetadataOverrideValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
+export type MetadataValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
+export type MetadataRecord = Record<string, MetadataValue>;
 
 /**
  * Determines whether the object is a `RepresentationMetadata`.
@@ -34,23 +35,40 @@ export class RepresentationMetadata {
    *
    * `@ignored` tag is necessary for Components-Generator.js
    */
-  public constructor(identifier?: MetadataIdentifier, overrides?: Record<string, MetadataOverrideValue>);
+  public constructor(identifier?: MetadataIdentifier, overrides?: MetadataRecord);
 
   /**
    * @param metadata - Starts as a copy of the input metadata.
    * @param overrides - Key/value map of extra values that need to be added to the metadata.
    *                    Will override values that were set by the input metadata.
    */
-  public constructor(metadata?: RepresentationMetadata, overrides?: Record<string, MetadataOverrideValue>);
+  public constructor(metadata?: RepresentationMetadata, overrides?: MetadataRecord);
 
   /**
-   * @param overrides - Key/value map of extra values that need to be added to the metadata.
+   * @param identifier - Identifier of the resource relevant to this metadata.
+   * @param contentType - Override for the content type of the representation.
    */
-  public constructor(overrides?: Record<string, MetadataOverrideValue>);
+  public constructor(identifier?: MetadataIdentifier, contentType?: string);
+
+  /**
+   * @param metadata - Starts as a copy of the input metadata.
+   * @param contentType - Override for the content type of the representation.
+   */
+  public constructor(metadata?: RepresentationMetadata, contentType?: string);
+
+  /**
+   * @param contentType - The content type of the representation.
+   */
+  public constructor(contentType?: string);
+
+  /**
+   * @param overrides - Metadata values (defaulting to content type if a string)
+   */
+  public constructor(metadata?: RepresentationMetadata | MetadataRecord | string);
 
   public constructor(
-    input?: MetadataIdentifier | RepresentationMetadata | Record<string, MetadataOverrideValue>,
-    overrides?: Record<string, MetadataOverrideValue>,
+    input?: MetadataIdentifier | RepresentationMetadata | MetadataRecord | string,
+    overrides?: MetadataRecord | string,
   ) {
     this.store = new Store();
     if (isResourceIdentifier(input)) {
@@ -66,11 +84,14 @@ export class RepresentationMetadata {
     }
 
     if (overrides) {
+      if (typeof overrides === 'string') {
+        overrides = { [CONTENT_TYPE]: overrides };
+      }
       this.setOverrides(overrides);
     }
   }
 
-  private setOverrides(overrides: Record<string, MetadataOverrideValue>): void {
+  private setOverrides(overrides: Record<string, MetadataValue>): void {
     for (const predicate of Object.keys(overrides)) {
       const namedPredicate = toCachedNamedNode(predicate);
       this.removeAll(namedPredicate);

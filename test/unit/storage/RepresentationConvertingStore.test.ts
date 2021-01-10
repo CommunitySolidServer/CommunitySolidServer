@@ -14,7 +14,7 @@ describe('A RepresentationConvertingStore', (): void => {
   const convertedIn = { metadata: {}};
   const convertedOut = { metadata: {}};
   const inType = 'text/turtle';
-  const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
+  const metadata = new RepresentationMetadata('text/turtle');
   let representation: Representation;
 
   beforeEach(async(): Promise<void> => {

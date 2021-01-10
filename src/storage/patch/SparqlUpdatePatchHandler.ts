@@ -14,7 +14,6 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { ResourceLocker } from '../../util/locking/ResourceLocker';
-import { CONTENT_TYPE } from '../../util/Vocabularies';
 import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
 
@@ -109,7 +108,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    const metadata = new RepresentationMetadata(identifier, { [CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
     const representation: Representation = {
       binary: false,
       data: guardStream(store.match() as Readable),

@@ -9,7 +9,6 @@ import { RepresentationMetadata } from '../../../../src/ldp/representation/Repre
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicResponseWriter', (): void => {
@@ -28,7 +27,7 @@ describe('A BasicResponseWriter', (): void => {
   it('requires the input to be a binary ResponseDescription.', async(): Promise<void> => {
     await expect(writer.canHandle({ response, result: new Error('error') }))
       .rejects.toThrow(NotImplementedHttpError);
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(INTERNAL_QUADS);
     await expect(writer.canHandle({ response, result: { statusCode: 201, metadata }}))
       .rejects.toThrow(NotImplementedHttpError);
     await expect(writer.canHandle({ response, result }))

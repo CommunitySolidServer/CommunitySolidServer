@@ -49,7 +49,7 @@ describe('A ChainedConverter', (): void => {
     ];
     converter = new ChainedConverter(converters);
 
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
+    const metadata = new RepresentationMetadata('text/turtle');
     representation = { metadata } as Representation;
     preferences = { type: { 'internal/quads': 1 }};
     args = { representation, preferences, identifier: { path: 'path' }};

@@ -7,7 +7,6 @@ import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
 import { guardedStreamFrom, RepresentationMetadata, joinFilePath, ensureTrailingSlash } from '../../src/';
-import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 import { performRequest } from './Util';
 
 /* eslint-disable jest/no-standalone-expect */
@@ -49,7 +48,7 @@ export class AclHelper {
     const representation = {
       binary: true,
       data: guardedStreamFrom(acl),
-      metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' }),
+      metadata: new RepresentationMetadata('text/turtle'),
     };
 
     return this.store.setRepresentation(

@@ -5,7 +5,6 @@ import { RepresentationMetadata } from '../../ldp/representation/RepresentationM
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
-import { CONTENT_TYPE } from '../../util/Vocabularies';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -18,7 +17,7 @@ export class RdfToQuadConverter extends TypedRepresentationConverter {
   }
 
   public async handle({ representation, identifier }: RepresentationConverterArgs): Promise<Representation> {
-    const metadata = new RepresentationMetadata(representation.metadata, { [CONTENT_TYPE]: INTERNAL_QUADS });
+    const metadata = new RepresentationMetadata(representation.metadata, INTERNAL_QUADS);
     const rawQuads = rdfParser.parse(representation.data, {
       contentType: representation.metadata.contentType!,
       baseIRI: identifier.path,

@@ -8,7 +8,7 @@ import type { RepresentationPreferences } from '../../../../src/ldp/representati
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { CONTENT_TYPE, DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
+import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
@@ -16,7 +16,7 @@ describe('A QuadToRdfConverter', (): void => {
   let metadata: RepresentationMetadata;
 
   beforeEach((): void => {
-    metadata = new RepresentationMetadata({ [CONTENT_TYPE]: INTERNAL_QUADS });
+    metadata = new RepresentationMetadata(INTERNAL_QUADS);
   });
 
   it('supports parsing quads.', async(): Promise<void> => {

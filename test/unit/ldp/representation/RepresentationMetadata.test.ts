@@ -27,9 +27,20 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
     });
 
-    it('converts identifier strings to named nodes.', async(): Promise<void> => {
+    it('converts identifiers to named nodes.', async(): Promise<void> => {
       metadata = new RepresentationMetadata({ path: 'identifier' });
       expect(metadata.identifier).toEqualRdfTerm(namedNode('identifier'));
+    });
+
+    it('converts string to content type.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata('text/turtle');
+      expect(metadata.contentType).toEqual('text/turtle');
+
+      metadata = new RepresentationMetadata({ path: 'identifier' }, 'text/turtle');
+      expect(metadata.contentType).toEqual('text/turtle');
+
+      metadata = new RepresentationMetadata(new RepresentationMetadata(), 'text/turtle');
+      expect(metadata.contentType).toEqual('text/turtle');
     });
 
     it('copies an other metadata object.', async(): Promise<void> => {

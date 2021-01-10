@@ -7,7 +7,6 @@ import { TEXT_TURTLE } from '../util/ContentTypes';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { guardedStreamFrom } from '../util/StreamUtil';
-import { CONTENT_TYPE } from '../util/Vocabularies';
 import { Initializer } from './Initializer';
 
 /**
@@ -67,7 +66,7 @@ export class AclInitializer extends Initializer {
     acl:mode        acl:Control;
     acl:accessTo    <${this.baseUrl}>;
     acl:default     <${this.baseUrl}>.`;
-    const metadata = new RepresentationMetadata(rootAcl, { [CONTENT_TYPE]: TEXT_TURTLE });
+    const metadata = new RepresentationMetadata(rootAcl, TEXT_TURTLE);
     this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
     await this.store.setRepresentation(
       rootAcl,

@@ -2,7 +2,6 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { CONTENT_TYPE } from '../../util/Vocabularies';
 import { matchesMediaType, matchingMediaTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { RepresentationConverter } from './RepresentationConverter';
@@ -50,7 +49,7 @@ export class ContentTypeReplacer extends RepresentationConverter {
    */
   public async handle({ representation, preferences }: RepresentationConverterArgs): Promise<Representation> {
     const contentType = this.getReplacementType(representation.metadata.contentType, preferences.type);
-    const metadata = new RepresentationMetadata(representation.metadata, { [CONTENT_TYPE]: contentType });
+    const metadata = new RepresentationMetadata(representation.metadata, contentType);
     return { ...representation, metadata };
   }
 

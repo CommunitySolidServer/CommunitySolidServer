@@ -13,7 +13,6 @@ import type { ResourceLocker } from '../../src/util/locking/ResourceLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringResourceLocker } from '../../src/util/locking/WrappedExpiringResourceLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 import { BASE } from './Config';
 
 describe('A LockingResourceStore', (): void => {
@@ -40,7 +39,7 @@ describe('A LockingResourceStore', (): void => {
     store = new LockingResourceStore(source, expiringLocker);
 
     // Make sure something is in the store before we read from it in our tests.
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
+    const metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
     const data = guardedStreamFrom([ 1, 2, 3 ]);
     await store.setRepresentation({ path }, { metadata, data, binary: true });
   });

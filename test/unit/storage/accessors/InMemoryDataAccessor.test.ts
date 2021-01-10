@@ -7,7 +7,7 @@ import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
-import { CONTENT_TYPE, LDP, RDF } from '../../../../src/util/Vocabularies';
+import { LDP, RDF } from '../../../../src/util/Vocabularies';
 
 describe('An InMemoryDataAccessor', (): void => {
   const base = 'http://test.com/';
@@ -21,7 +21,7 @@ describe('An InMemoryDataAccessor', (): void => {
     // Create default root container
     await accessor.writeContainer({ path: `${base}` }, new RepresentationMetadata());
 
-    metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
+    metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
 
     data = guardedStreamFrom([ 'data' ]);
   });

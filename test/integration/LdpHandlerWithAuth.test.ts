@@ -1,9 +1,6 @@
 import { createReadStream } from 'fs';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import {
-  CONTENT_TYPE, LDP,
-  RepresentationMetadata, guardStream, joinFilePath,
-} from '../../src/';
+import { LDP, RepresentationMetadata, guardStream, joinFilePath } from '../../src/';
 import { AclHelper, ResourceHelper } from '../util/TestHelpers';
 import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
 
@@ -59,7 +56,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     await store.setRepresentation({ path: `${BASE}/permanent.txt` }, {
       binary: true,
       data: guardStream(createReadStream(joinFilePath(__dirname, '../assets/permanent.txt'))),
-      metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }),
+      metadata: new RepresentationMetadata('text/plain'),
     });
   });
 

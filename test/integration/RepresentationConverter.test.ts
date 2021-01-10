@@ -4,7 +4,6 @@ import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter'
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
 import { guardedStreamFrom, readableToString } from '../../src/util/StreamUtil';
-import { CONTENT_TYPE } from '../../src/util/Vocabularies';
 
 describe('A ChainedConverter', (): void => {
   const converters = [
@@ -14,7 +13,7 @@ describe('A ChainedConverter', (): void => {
   const converter = new ChainedConverter(converters);
 
   it('can convert from JSON-LD to turtle.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/ld+json' });
+    const metadata = new RepresentationMetadata('application/ld+json');
     const representation: Representation = {
       binary: true,
       data: guardedStreamFrom(
@@ -34,7 +33,7 @@ describe('A ChainedConverter', (): void => {
   });
 
   it('can convert from turtle to JSON-LD.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
+    const metadata = new RepresentationMetadata('text/turtle');
     const representation: Representation = {
       binary: true,
       data: guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),

@@ -7,7 +7,7 @@ import type { ValuePreferences } from '../../ldp/representation/RepresentationPr
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
-import { CONTENT_TYPE, PREFERRED_PREFIX_TERM } from '../../util/Vocabularies';
+import { PREFERRED_PREFIX_TERM } from '../../util/Vocabularies';
 import { matchingMediaTypes } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -27,7 +27,7 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
 
   public async handle({ representation: quads, preferences }: RepresentationConverterArgs): Promise<Representation> {
     const contentType = matchingMediaTypes(preferences.type, await this.getOutputTypes())[0];
-    const metadata = new RepresentationMetadata(quads.metadata, { [CONTENT_TYPE]: contentType });
+    const metadata = new RepresentationMetadata(quads.metadata, contentType);
     let data: Readable;
 
     // Use prefixes if possible (see https://github.com/rubensworks/rdf-serialize.js/issues/1)

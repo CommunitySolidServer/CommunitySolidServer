@@ -32,7 +32,7 @@ describe('A FileDataAccessor', (): void => {
     cache = mockFs(rootFilePath, now);
     accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
 
-    metadata = new RepresentationMetadata({ [CONTENT_TYPE]: APPLICATION_OCTET_STREAM });
+    metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
 
     data = guardedStreamFrom([ 'data' ]);
   });
