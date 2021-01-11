@@ -74,7 +74,7 @@ describe('A DPoPWebIdExtractor', (): void => {
     it('calls the target extractor with the correct parameters.', async(): Promise<void> => {
       await webIdExtractor.handleSafe(request);
       expect(targetExtractor.handle).toHaveBeenCalledTimes(1);
-      expect(targetExtractor.handle).toHaveBeenCalledWith(request);
+      expect(targetExtractor.handle).toHaveBeenCalledWith({ request });
     });
 
     it('calls the DPoP verifier with the correct parameters.', async(): Promise<void> => {

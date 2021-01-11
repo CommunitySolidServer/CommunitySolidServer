@@ -6,4 +6,4 @@ import type { RepresentationMetadata } from '../../representation/Representation
  * Parses the metadata of a {@link HttpRequest} into a {@link RepresentationMetadata}.
  */
 export abstract class MetadataExtractor extends
-  AsyncHandler<HttpRequest, RepresentationMetadata> {}
+  AsyncHandler<{ request: HttpRequest }, RepresentationMetadata> {}

@@ -34,7 +34,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     if (!dpop) {
       throw new BadRequestHttpError('No DPoP header specified.');
     }
-    const resource = await this.targetExtractor.handleSafe(request);
+    const resource = await this.targetExtractor.handleSafe({ request });
 
     try {
       const { webid: webId } = await this.verify(
