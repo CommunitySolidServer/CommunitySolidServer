@@ -11,19 +11,19 @@ import { Provider } from 'oidc-provider';
 import instance from 'oidc-provider/lib/helpers/weak_cache';
 import type { HttpHandler, HttpHandlerInput } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { InteractionHttpHandler } from './InteractionHttpHandler';
-import type { ProviderConfiguration } from './ProviderConfiguration';
-import type { ProviderConfigurationFactory } from './ProviderConfigurationFactory';
+import type { IdPInteractionHttpHandler } from './interaction/IdPInteractionHttpHandler';
+import type { IdPConfiguration } from './configuration/IdPConfiguration';
+import type { IdPConfigurationFactory } from './configuration/IdPConfigurationFactory';
 
 export class SolidIdentityProvider extends Provider implements HttpHandler {
-  private readonly interactionHttpHandler: InteractionHttpHandler;
+  private readonly interactionHttpHandler: IdPInteractionHttpHandler;
 
   public constructor(
     issuer: string,
-    configurationFactory: ProviderConfigurationFactory,
+    configurationFactory: IdPConfigurationFactory,
   ) {
     const configuration = configurationFactory.createConfiguration();
-    const augmentedConfig: ProviderConfiguration = {
+    const augmentedConfig: IdPConfiguration = {
       ...configuration,
       claims: {
         ...configuration.claims,

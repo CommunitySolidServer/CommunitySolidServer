@@ -1,4 +1,4 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { getLoggerFor } from '../../../logging/LogUtil';
 import { BaseInteractionHttpHandler } from './BaseInteractionHttpHandler';
 
 export class LoginInteractionHttpHandler extends BaseInteractionHttpHandler {
