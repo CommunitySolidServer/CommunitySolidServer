@@ -25,6 +25,7 @@
       "IdentityProvider:_configurationFactory": {
         "@id": "urn:solid-server:default:IdPConfigurationFactory"
       },
+      "IdentityProvider:_openIDConfigurationRoute": "/.well-known/openid-configuration",
       "IdentityProvider:_interactionRoutePrefix": "/interaction/"
     },
     {
