@@ -17,20 +17,21 @@
       }
     },
     {
-      "@id": "urn:solid-server:default:SolidIdentityProvider",
-      "@type": "SolidIdentityProvider",
-      "SolidIdentityProvider:_issuer": {
+      "@id": "urn:solid-server:default:IdentityProvider",
+      "@type": "IdentityProvider",
+      "IdentityProvider:_issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "SolidIdentityProvider:_configurationFactory": {
+      "IdentityProvider:_configurationFactory": {
         "@id": "urn:solid-server:default:IdPConfigurationFactory"
-      }
+      },
+      "IdentityProvider:_interactionRoutePrefix": "/interaction/"
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
-      "@type": "SolidIdentityProviderHttpHandler",
-      "SolidIdentityProviderHttpHandler:_provider": {
-        "@id": "urn:solid-server:default:SolidIdentityProvider"
+      "@type": "IdentityProviderHttpHandler",
+      "IdentityProviderHttpHandler:_provider": {
+        "@id": "urn:solid-server:default:IdentityProvider"
       }
     }
   ]

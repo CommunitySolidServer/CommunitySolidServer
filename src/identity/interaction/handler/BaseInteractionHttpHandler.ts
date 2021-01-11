@@ -1,9 +1,7 @@
 import { parse } from 'url';
 import { MethodNotAllowedHttpError } from '../../../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
-import type {
-  IdPInteractionHttpHandlerInput,
-} from '../IdPInteractionHttpHandler';
+import { IdentityProviderHttpHandlerInput } from '../../IdentityProviderHttpHandler';
 import { IdPInteractionHttpHandler } from '../IdPInteractionHttpHandler';
 
 export interface BaseInteractionHttpHandlerArgs {
@@ -27,7 +25,7 @@ export abstract class BaseInteractionHttpHandler extends IdPInteractionHttpHandl
   }
 
   public async canHandle(
-    input: IdPInteractionHttpHandlerInput,
+    input: IdentityProviderHttpHandlerInput,
   ): Promise<void> {
     if (!input.request.url) {
       throw new Error('Cannot handle request without a url');
