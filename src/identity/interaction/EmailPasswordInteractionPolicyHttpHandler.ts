@@ -1,8 +1,8 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
+import { IdentityProviderHttpHandlerInput } from '../IdentityProviderHttpHandler';
 import type {
-  IdPInteractionHttpHandler,
-  IdPInteractionHttpHandlerInput,
+  IdPInteractionHttpHandler
 } from './IdPInteractionHttpHandler';
 import {
   IdPInteractionPolicyHttpHandler,
@@ -32,11 +32,11 @@ export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPol
     return `/interaction/${ctx.oidc.uid}`;
   }
 
-  public async canHandle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async canHandle(input: IdentityProviderHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.canHandle(input);
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdentityProviderHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.handle(input);
   }
 }

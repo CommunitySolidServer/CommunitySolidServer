@@ -86,8 +86,8 @@ export * from './identity/interaction/IdPInteractionHttpHandler';
 export * from './identity/interaction/IdPInteractionPolicyHttpHandler';
 export * from './identity/configuration/IdPConfiguration';
 export * from './identity/configuration/IdPConfigurationFactory';
-export * from './identity/SolidIdentityProvider';
-export * from './identity/SolidIdentityProviderHttpHandler';
+export * from './identity/IdentityProvider';
+export * from './identity/IdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
 export * from './identity/configuration/DevIdPConfigurationFactory';

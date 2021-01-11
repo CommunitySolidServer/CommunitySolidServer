@@ -9,18 +9,21 @@ import { Provider } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
-import type { HttpHandler, HttpHandlerInput } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { IdPInteractionHttpHandler } from './interaction/IdPInteractionHttpHandler';
 import type { IdPConfiguration } from './configuration/IdPConfiguration';
 import type { IdPConfigurationFactory } from './configuration/IdPConfigurationFactory';
+import type { IdentityProviderHttpHandlerInput } from './IdentityProviderHttpHandler';
+import type { AsyncHandler } from '../util/AsyncHandler';
 
-export class SolidIdentityProvider extends Provider implements HttpHandler {
+export class IdentityProvider extends Provider implements AsyncHandler<IdentityProviderHttpHandlerInput> {
   private readonly interactionHttpHandler: IdPInteractionHttpHandler;
+  public readonly interactionRoutePrefix: string;
 
   public constructor(
     issuer: string,
     configurationFactory: IdPConfigurationFactory,
+    interactionRoutePrefix: string,
   ) {
     const configuration = configurationFactory.createConfiguration();
     const augmentedConfig: IdPConfiguration = {
@@ -53,6 +56,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     };
     super(issuer, augmentedConfig);
     this.interactionHttpHandler = configuration.interactions;
+    this.interactionRoutePrefix = interactionRoutePrefix;
   }
 
   /**
@@ -61,7 +65,7 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
    * idp cannot handle the request.
    * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
    */
-  public async canHandle(input: HttpHandlerInput): Promise<void> {
+  public async canHandle(input: IdentityProviderHttpHandlerInput): Promise<void> {
     // Get the routes from the configuration. `instance` is needed because the configuration
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
@@ -70,15 +74,11 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
       instance(this).configuration().routes,
     );
     validRoutes.push('/.well-known/openid-configuration');
+    const url = input.request.url ? parse(input.request.url).pathname as string : "";
 
     // Throw an error if the request URL is not part of the valid routes
-    if (!input.request.url || (!validRoutes.includes(parse(input.request.url).pathname as string))) {
-      try {
-        await this.interactionHttpHandler.canHandle({ ...input, provider: this });
-      }
-      catch {
-        throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
-      }
+    if (!validRoutes.includes(url) && !url.startsWith(this.interactionRoutePrefix)) {
+      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
     }
   }
 
@@ -88,13 +88,14 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
    *
    * @returns A promise resolving when the handling is finished. Return value depends on the given type.
    */
-  public async handle(input: HttpHandlerInput): Promise<void> {
-    // This casting might seem strange, but "callback" is a Koa callback which does
-    // actually return a Promise, despite what the typings say.
-    // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
-    try {
-      await this.interactionHttpHandler.handleSafe({ ...input, provider: this });
-    } catch {
+  public async handle(input: IdentityProviderHttpHandlerInput): Promise<void> {
+    if (input.request.url && parse(input.request.url).pathname as string === this.interactionRoutePrefix) {
+      return this.interactionHttpHandler.handleSafe({ ...input, provider: this });
+    }
+    else {
+      // This casting might seem strange, but "callback" is a Koa callback which does
+      // actually return a Promise, despite what the typings say.
+      // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
       return super.callback(
         input.request,
         input.response,
@@ -102,8 +103,9 @@ export class SolidIdentityProvider extends Provider implements HttpHandler {
     }
   }
 
-  public async handleSafe(data: HttpHandlerInput): Promise<void> {
-    await this.canHandle(data);
-    return this.handle(data);
+  public async handleSafe(input: IdentityProviderHttpHandlerInput): Promise<void> {
+    await this.canHandle(input);
+
+    return this.handle(input);
   }
 }

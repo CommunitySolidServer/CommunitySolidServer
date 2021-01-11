@@ -1,7 +1,5 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-import type {
-  IdPInteractionHttpHandlerInput,
-} from '../IdPInteractionHttpHandler';
+import { IdentityProviderHttpHandlerInput } from '../../IdentityProviderHttpHandler';
 import { BaseInteractionHttpHandler } from './BaseInteractionHttpHandler';
 
 export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
@@ -14,7 +12,7 @@ export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
     });
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdentityProviderHttpHandlerInput): Promise<void> {
     this.logger.info('Get Interaction');
 
     // Uncomment later
