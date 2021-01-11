@@ -82,28 +82,27 @@ export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
 // SolidIdentityProvider
-export * from './identity/InteractionHttpHandler';
-export * from './identity/InteractionPolicyHttpHandler';
-export * from './identity/IdentityProviderAdapterFactory';
-export * from './identity/ProviderConfiguration';
-export * from './identity/ProviderConfigurationFactory';
+export * from './identity/interaction/IdPInteractionHttpHandler';
+export * from './identity/interaction/IdPInteractionPolicyHttpHandler';
+export * from './identity/configuration/IdPConfiguration';
+export * from './identity/configuration/IdPConfigurationFactory';
 export * from './identity/SolidIdentityProvider';
 export * from './identity/SolidIdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
-export * from './identity/configurations/DevConfigurationFactory';
+export * from './identity/configuration/DevIdPConfigurationFactory';
 
-// SolidIdentityProvider/memoryAdapters
-export * from './identity/adapters/InMemoryAdapter';
+// SolidIdentityProvider/Storage
+export * from './identity/storage/InMemoryIdPStorageAdapter';
 
 // SolidIdentityProvider/InteractionPolicies
-export * from './identity/interaction-policies/email-password/EmailPasswordInteractionPolicyHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/AbortInteractionHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/BaseInteractionHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/ConfirmInteractionHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/ContinueInteractionHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/GetInteractionHttpHandler';
-export * from './identity/interaction-policies/email-password/interactionHttpHandlers/LoginInteractionHttpHandler';
+export * from './identity/interaction/EmailPasswordInteractionPolicyHttpHandler';
+export * from './identity/interaction/handler/AbortInteractionHttpHandler';
+export * from './identity/interaction/handler/BaseInteractionHttpHandler';
+export * from './identity/interaction/handler/ConfirmInteractionHttpHandler';
+export * from './identity/interaction/handler/ContinueInteractionHttpHandler';
+export * from './identity/interaction/handler/GetInteractionHttpHandler';
+export * from './identity/interaction/handler/LoginInteractionHttpHandler';
 
 // Logging
 export * from './logging/LazyLogger';

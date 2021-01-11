@@ -1,7 +1,7 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { getLoggerFor } from '../../../logging/LogUtil';
 import type {
-  InteractionHttpHandlerInput,
-} from '../../../InteractionHttpHandler';
+  IdPInteractionHttpHandlerInput,
+} from '../IdPInteractionHttpHandler';
 import { BaseInteractionHttpHandler } from './BaseInteractionHttpHandler';
 
 export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
@@ -14,7 +14,7 @@ export class GetInteractionHttpHandler extends BaseInteractionHttpHandler {
     });
   }
 
-  public async handle(input: InteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
     this.logger.info('Get Interaction');
 
     // Uncomment later

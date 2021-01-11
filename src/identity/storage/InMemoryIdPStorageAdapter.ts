@@ -1,7 +1,7 @@
 import LRUCache from 'lru-cache';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 
-export class InMemoryAdapter implements Adapter {
+export class InMemoryIdPStorageAdapter implements Adapter {
   private readonly model: string;
   private readonly lru: LRUCache<string, string | string[] | AdapterPayload>;
 
@@ -31,7 +31,7 @@ export class InMemoryAdapter implements Adapter {
   }
 
   public async consume(id: string): Promise<undefined | void> {
-    (this.lru.get(this.key(id)) as AdapterPayload).consumed = InMemoryAdapter.epochTime();
+    (this.lru.get(this.key(id)) as AdapterPayload).consumed = InMemoryIdPStorageAdapter.epochTime();
   }
 
   public async destroy(id: string): Promise<undefined | void> {
@@ -44,12 +44,12 @@ export class InMemoryAdapter implements Adapter {
   }
 
   public async findByUid(uid: string): Promise<AdapterPayload | undefined | void> {
-    const id = this.lru.get(InMemoryAdapter.sessionUidKeyFor(uid));
+    const id = this.lru.get(InMemoryIdPStorageAdapter.sessionUidKeyFor(uid));
     return this.find(id as string);
   }
 
   public async findByUserCode(userCode: string): Promise<AdapterPayload | undefined | void> {
-    const id = this.lru.get(InMemoryAdapter.userCodeKeyFor(userCode));
+    const id = this.lru.get(InMemoryIdPStorageAdapter.userCodeKeyFor(userCode));
     return this.find(id as string);
   }
 
@@ -57,12 +57,12 @@ export class InMemoryAdapter implements Adapter {
     const key: string = this.key(id);
 
     if (this.model === 'Session') {
-      this.lru.set(InMemoryAdapter.sessionUidKeyFor(payload.uid as string), id, expiresIn * 1000);
+      this.lru.set(InMemoryIdPStorageAdapter.sessionUidKeyFor(payload.uid as string), id, expiresIn * 1000);
     }
 
     const { grantId, userCode } = payload;
     if (grantId) {
-      const grantKey = InMemoryAdapter.grantKeyFor(grantId);
+      const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
       const grant = this.lru.get(grantKey);
       if (!grant) {
         this.lru.set(grantKey, [ key ]);
@@ -72,14 +72,14 @@ export class InMemoryAdapter implements Adapter {
     }
 
     if (userCode) {
-      this.lru.set(InMemoryAdapter.userCodeKeyFor(userCode), id, expiresIn * 1000);
+      this.lru.set(InMemoryIdPStorageAdapter.userCodeKeyFor(userCode), id, expiresIn * 1000);
     }
 
     this.lru.set(key, payload, expiresIn * 1000);
   }
 
   public async revokeByGrantId(grantId: string): Promise<undefined | void> {
-    const grantKey = InMemoryAdapter.grantKeyFor(grantId);
+    const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
     const grant = this.lru.get(grantKey);
     if (grant) {
       (grant as string[]).forEach((token): void => this.lru.del(token));

@@ -2,21 +2,21 @@
 /* eslint-disable id-length */
 /* eslint-disable max-len */
 import type { Adapter } from 'oidc-provider';
-import type { InteractionPolicyHttpHandler } from '../InteractionPolicyHttpHandler';
-import type { ProviderConfiguration } from '../ProviderConfiguration';
-import { ProviderConfigurationFactory } from '../ProviderConfigurationFactory';
+import type { IdPInteractionPolicyHttpHandler } from '../interaction/IdPInteractionPolicyHttpHandler';
+import type { IdPConfiguration } from './IdPConfiguration';
+import { IdPConfigurationFactory } from './IdPConfigurationFactory';
 
-export class DevConfigurationFactory extends ProviderConfigurationFactory {
-  private readonly interactionPolicyHttpHandler: InteractionPolicyHttpHandler;
-  private readonly memoryAdapter: Adapter;
+export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
+  private readonly interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler;
+  private readonly storageAdapter: Adapter;
 
-  public constructor(interactionPolicyHttpHandler: InteractionPolicyHttpHandler, memoryAdapter: Adapter) {
+  public constructor(interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler, storageAdapter: Adapter) {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
-    this.memoryAdapter = memoryAdapter;
+    this.storageAdapter = storageAdapter;
   }
 
-  public createConfiguration(): ProviderConfiguration {
+  public createConfiguration(): IdPConfiguration {
     // Aliasing the "this" variable is an anti-pattern that is better served by using
     // arrow functions. Unfortunately, the adapter function MUST be a named function
     // See https://github.com/panva/node-oidc-provider/issues/799
@@ -24,7 +24,7 @@ export class DevConfigurationFactory extends ProviderConfigurationFactory {
     const that = this;
     return {
       adapter: function loadAdapter(): Adapter {
-        return that.memoryAdapter;
+        return that.storageAdapter;
       },
       clients: [
         // {
