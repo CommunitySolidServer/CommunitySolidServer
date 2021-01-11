@@ -30,9 +30,9 @@ export abstract class AsyncHandler<TIn = void, TOut = void> {
    *
    * @returns The result of the handle function of the handler.
    */
-  public async handleSafe(data: TIn): Promise<TOut> {
-    await this.canHandle(data);
+  public async handleSafe(input: TIn): Promise<TOut> {
+    await this.canHandle(input);
 
-    return this.handle(data);
+    return this.handle(input);
   }
 }
