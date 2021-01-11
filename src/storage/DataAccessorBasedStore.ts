@@ -22,7 +22,7 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
-import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../util/Vocabularies';
+import { CONTENT_TYPE, HTTP, LDP, PIM, RDF, VANN } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
 
@@ -63,10 +63,18 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     const metadata = await this.accessor.getMetadata(identifier);
+    let representation: Representation;
 
-    return this.isExistingContainer(metadata) ?
-      new BasicRepresentation(metadata.quads(), metadata, INTERNAL_QUADS) :
-      new BasicRepresentation(await this.accessor.getData(identifier), metadata);
+    if (this.isExistingContainer(metadata)) {
+      // Generate a container representation from the metadata
+      const data = metadata.quads();
+      metadata.addQuad(LDP.terms.namespace, VANN.terms.preferredNamespacePrefix, 'ldp');
+      representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
+    } else {
+      // Retrieve a document representation from the accessor
+      representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
+    }
+    return representation;
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
