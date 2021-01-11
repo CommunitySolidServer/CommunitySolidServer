@@ -36,7 +36,7 @@ export class CliRunner {
         mainModulePath: { type: 'string', alias: 'm' },
         podTemplateFolder: { type: 'string', alias: 't' },
         port: { type: 'number', alias: 'p', default: 3000 },
-        rootFilePath: { type: 'string', alias: 'f', default: './data' },
+        rootFilePath: { type: 'string', alias: 'f', default: './' },
         sparqlEndpoint: { type: 'string', alias: 's' },
       })
       .help();
