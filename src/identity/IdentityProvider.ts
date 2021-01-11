@@ -18,11 +18,13 @@ import type { AsyncHandler } from '../util/AsyncHandler';
 
 export class IdentityProvider extends Provider implements AsyncHandler<IdentityProviderHttpHandlerInput> {
   private readonly interactionHttpHandler: IdPInteractionHttpHandler;
+  private readonly openIDConfigurationRoute: string;
   public readonly interactionRoutePrefix: string;
 
   public constructor(
     issuer: string,
     configurationFactory: IdPConfigurationFactory,
+    openIDConfigurationRoute: string,
     interactionRoutePrefix: string,
   ) {
     const configuration = configurationFactory.createConfiguration();
@@ -56,6 +58,7 @@ export class IdentityProvider extends Provider implements AsyncHandler<IdentityP
     };
     super(issuer, augmentedConfig);
     this.interactionHttpHandler = configuration.interactions;
+    this.openIDConfigurationRoute = openIDConfigurationRoute;
     this.interactionRoutePrefix = interactionRoutePrefix;
   }
 
@@ -73,7 +76,7 @@ export class IdentityProvider extends Provider implements AsyncHandler<IdentityP
     const validRoutes: string[] = Object.values(
       instance(this).configuration().routes,
     );
-    validRoutes.push('/.well-known/openid-configuration');
+    validRoutes.push(this.openIDConfigurationRoute);
     const url = input.request.url ? parse(input.request.url).pathname as string : "";
 
     // Throw an error if the request URL is not part of the valid routes
