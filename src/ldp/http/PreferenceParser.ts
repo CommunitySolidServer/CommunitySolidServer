@@ -5,4 +5,4 @@ import type { RepresentationPreferences } from '../representation/Representation
 /**
  * Creates {@link RepresentationPreferences} based on the incoming HTTP headers in a {@link HttpRequest}.
  */
-export abstract class PreferenceParser extends AsyncHandler<HttpRequest, RepresentationPreferences> {}
+export abstract class PreferenceParser extends AsyncHandler<{ request: HttpRequest }, RepresentationPreferences> {}

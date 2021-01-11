@@ -27,7 +27,7 @@ const parsers: {
  * Supports Accept, Accept-Charset, Accept-Encoding, Accept-Language and Accept-DateTime.
  */
 export class AcceptPreferenceParser extends PreferenceParser {
-  public async handle({ headers }: HttpRequest): Promise<RepresentationPreferences> {
+  public async handle({ request: { headers }}: { request: HttpRequest }): Promise<RepresentationPreferences> {
     const preferences: RepresentationPreferences = {};
     for (const { name, header, parse } of parsers) {
       const value = headers[header];

@@ -11,7 +11,7 @@ import { TargetExtractor } from './TargetExtractor';
  * TODO: input requires more extensive cleaning/parsing based on headers (see #22).
  */
 export class BasicTargetExtractor extends TargetExtractor {
-  public async handle({ url, connection, headers }: HttpRequest): Promise<ResourceIdentifier> {
+  public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
     if (!url) {
       throw new Error('Missing URL');
     }

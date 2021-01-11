@@ -36,9 +36,9 @@ export class BasicRequestParser extends RequestParser {
     if (!method) {
       throw new Error('No method specified on the HTTP request');
     }
-    const target = await this.targetExtractor.handleSafe(request);
-    const preferences = await this.preferenceParser.handleSafe(request);
-    const metadata = await this.metadataExtractor.handleSafe(request);
+    const target = await this.targetExtractor.handleSafe({ request });
+    const preferences = await this.preferenceParser.handleSafe({ request });
+    const metadata = await this.metadataExtractor.handleSafe({ request });
     const body = await this.bodyParser.handleSafe({ request, metadata });
 
     return { method, target, preferences, body };
