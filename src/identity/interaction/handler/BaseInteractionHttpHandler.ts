@@ -1,17 +1,17 @@
 import { parse } from 'url';
-import { MethodNotAllowedHttpError } from '../../../../util/errors/MethodNotAllowedHttpError';
-import { NotFoundHttpError } from '../../../../util/errors/NotFoundHttpError';
+import { MethodNotAllowedHttpError } from '../../../util/errors/MethodNotAllowedHttpError';
+import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
 import type {
-  InteractionHttpHandlerInput,
-} from '../../../InteractionHttpHandler';
-import { InteractionHttpHandler } from '../../../InteractionHttpHandler';
+  IdPInteractionHttpHandlerInput,
+} from '../IdPInteractionHttpHandler';
+import { IdPInteractionHttpHandler } from '../IdPInteractionHttpHandler';
 
 export interface BaseInteractionHttpHandlerArgs {
   allowedMethods: string[];
   pathnamePostfix: string;
 }
 
-export abstract class BaseInteractionHttpHandler extends InteractionHttpHandler {
+export abstract class BaseInteractionHttpHandler extends IdPInteractionHttpHandler {
   private readonly allowedMethods: string[];
   private readonly pathnameRegex: RegExp;
 
@@ -27,7 +27,7 @@ export abstract class BaseInteractionHttpHandler extends InteractionHttpHandler 
   }
 
   public async canHandle(
-    input: InteractionHttpHandlerInput,
+    input: IdPInteractionHttpHandlerInput,
   ): Promise<void> {
     if (!input.request.url) {
       throw new Error('Cannot handle request without a url');

@@ -1,17 +1,17 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { getLoggerFor } from '../../../logging/LogUtil';
 import { BaseInteractionHttpHandler } from './BaseInteractionHttpHandler';
 
-export class ContinueInteractionHttpHandler extends BaseInteractionHttpHandler {
+export class ConfirmInteractionHttpHandler extends BaseInteractionHttpHandler {
   private readonly logger = getLoggerFor(this);
 
   public constructor() {
     super({
       allowedMethods: [ 'POST' ],
-      pathnamePostfix: 'continue',
+      pathnamePostfix: 'confirm',
     });
   }
 
   public async handle(): Promise<void> {
-    this.logger.info('Continue Interaction');
+    this.logger.info('Confirmation Interaction');
   }
 }

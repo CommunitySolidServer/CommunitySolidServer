@@ -2,18 +2,18 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:MemoryAdapter",
-      "@type": "InMemoryAdapter",
-      "InMemoryAdapter:_model": "IdpMemory"
+      "@id": "urn:solid-server:default:IdPStorageAdapter",
+      "@type": "InMemoryIdPStorageAdapter",
+      "InMemoryIdPStorageAdapter:_model": "IdentityProvider"
     },
     {
-      "@id": "urn:solid-server:default:ProviderConfigurationFactory",
-      "@type": "DevConfigurationFactory",
-      "DevConfigurationFactory:_interactionPolicyHttpHandler": {
+      "@id": "urn:solid-server:default:IdPConfigurationFactory",
+      "@type": "DevIdPConfigurationFactory",
+      "DevIdPConfigurationFactory:_interactionPolicyHttpHandler": {
         "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
       },
-      "DevConfigurationFactory:_memoryAdapter": {
-        "@id": "urn:solid-server:default:MemoryAdapter"
+      "DevIdPConfigurationFactory:_storageAdapter": {
+        "@id": "urn:solid-server:default:IdPStorageAdapter"
       }
     },
     {
@@ -23,7 +23,7 @@
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "SolidIdentityProvider:_configurationFactory": {
-        "@id": "urn:solid-server:default:ProviderConfigurationFactory"
+        "@id": "urn:solid-server:default:IdPConfigurationFactory"
       }
     },
     {
