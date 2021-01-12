@@ -112,6 +112,7 @@ export * from './identity/configuration/DevIdPConfigurationFactory';
 
 // SolidIdentityProvider/Storage
 export * from './identity/storage/InMemoryIdPStorageAdapter';
+export * from './identity/storage/ResourceStoreStorageAdapter';
 
 // SolidIdentityProvider/InteractionPolicies
 export * from './identity/interaction/EmailPasswordInteractionPolicyHttpHandler';
