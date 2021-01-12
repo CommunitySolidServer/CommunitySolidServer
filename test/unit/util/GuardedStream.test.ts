@@ -26,12 +26,7 @@ describe('GuardedStream', (): void => {
       expect(isGuarded(stream)).toBe(true);
       expect(isGuarded(guarded)).toBe(true);
 
-      const listen = new Promise((resolve, reject): void => {
-        stream.on('end', resolve);
-        stream.on('error', reject);
-      });
-      await expect(readableToString(stream)).resolves.toBe('data');
-      await expect(listen).resolves.toBeUndefined();
+      await expect(readableToString(guarded)).resolves.toBe('data');
     });
 
     it('returns the stream if it is already guarded.', async(): Promise<void> => {
@@ -45,26 +40,21 @@ describe('GuardedStream', (): void => {
       expect(isGuarded(stream)).toBe(true);
       expect(isGuarded(guarded)).toBe(true);
 
-      expect(stream.listenerCount('error')).toBe(1);
-      expect(stream.listenerCount('newListener')).toBe(1);
-      expect(stream.listenerCount('removeListener')).toBe(0);
+      expect(guarded.listenerCount('error')).toBe(1);
+      expect(guarded.listenerCount('newListener')).toBe(1);
+      expect(guarded.listenerCount('removeListener')).toBe(0);
 
-      const listen = new Promise((resolve, reject): void => {
-        stream.on('end', resolve);
-        stream.on('error', reject);
-      });
-      await expect(readableToString(stream)).resolves.toBe('data');
-      await expect(listen).resolves.toBeUndefined();
+      await expect(readableToString(guarded)).resolves.toBe('data');
     });
 
     it('emits errors when listeners are currently attached.', async(): Promise<void> => {
       const stream = guardStream(Readable.from([ 'data' ]));
-      const listen = new Promise((resolve, reject): void => {
-        stream.on('end', resolve);
-        stream.on('error', reject);
-      });
-      stream.emit('error', new Error('error'));
-      await expect(listen).rejects.toThrow(new Error('error'));
+      const listener = jest.fn();
+      stream.on('error', listener);
+      const error = new Error('error');
+      stream.emit('error', error);
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(listener).toHaveBeenLastCalledWith(error);
     });
 
     it('emits guarded errors when new listeners are attached.', async(): Promise<void> => {
@@ -118,50 +108,57 @@ describe('GuardedStream', (): void => {
       const errorCb2 = jest.fn();
       stream.on('error', errorCb);
       stream.on('error', errorCb2);
-      expect(stream.listenerCount('error')).toBe(2);
-      expect(stream.listenerCount('newListener')).toBe(0);
-      expect(stream.listenerCount('removeListener')).toBe(1);
+      expect(stream.listenerCount('error')).toBe(3);
+      expect(stream.listenerCount('newListener')).toBe(1);
       stream.removeListener('error', errorCb2);
-      expect(stream.listenerCount('error')).toBe(1);
-      expect(stream.listenerCount('newListener')).toBe(0);
-      expect(stream.listenerCount('removeListener')).toBe(1);
+      expect(stream.listenerCount('error')).toBe(2);
+      expect(stream.listenerCount('newListener')).toBe(1);
       stream.removeListener('error', errorCb);
       expect(stream.listenerCount('error')).toBe(1);
       expect(stream.listenerCount('newListener')).toBe(1);
-      expect(stream.listenerCount('removeListener')).toBe(0);
 
-      stream.emit('error', new Error('error'));
-
-      const listen = new Promise((resolve, reject): void => {
-        stream.on('end', resolve);
-        stream.on('error', reject);
-      });
-      await expect(listen).rejects.toThrow(new Error('error'));
-    });
-
-    it('logs a warning if nobody listens to the error.', async(): Promise<void> => {
-      const error = new Error('failure');
-      const stream = guardStream(Readable.from([ 'data' ]));
+      const error = new Error('error');
       stream.emit('error', error);
 
-      jest.advanceTimersByTime(100);
-      stream.emit('error', new Error('other'));
-      stream.emit('error', new Error('other'));
+      const errorCb3 = jest.fn();
+      stream.on('error', errorCb3);
 
+      await new Promise((resolve): any => setImmediate(resolve));
+
+      expect(errorCb).toHaveBeenCalledTimes(0);
+      expect(errorCb2).toHaveBeenCalledTimes(0);
+      expect(errorCb3).toHaveBeenCalledTimes(1);
+      expect(errorCb3).toHaveBeenLastCalledWith(error);
+    });
+
+    it('logs an error if nobody listens to the error.', async(): Promise<void> => {
+      const errors = [ new Error('0'), new Error('1'), new Error('2') ];
+      const stream = guardStream(Readable.from([ 'data' ]));
+      stream.emit('error', errors[0]);
+
+      jest.advanceTimersByTime(100);
+      stream.emit('error', errors[1]);
+      stream.emit('error', errors[2]);
+
+      // Only the first error gets logged
       jest.advanceTimersByTime(900);
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenCalledWith(
-        'No error listener was attached but error was thrown: failure', { error },
+        'No error listener was attached but error was thrown: 0', { error: errors[0] },
       );
 
       jest.advanceTimersByTime(1000);
       expect(logger.error).toHaveBeenCalledTimes(1);
 
-      const listen = new Promise((resolve, reject): void => {
-        stream.on('end', resolve);
-        stream.on('error', reject);
-      });
-      await expect(listen).rejects.toThrow(error);
+      const errorCb = jest.fn();
+      stream.on('error', errorCb);
+
+      await new Promise((resolve): any => setImmediate(resolve));
+
+      expect(errorCb).toHaveBeenCalledTimes(3);
+      expect(errorCb).toHaveBeenNthCalledWith(1, errors[0]);
+      expect(errorCb).toHaveBeenNthCalledWith(2, errors[1]);
+      expect(errorCb).toHaveBeenNthCalledWith(3, errors[2]);
     });
   });
 });
