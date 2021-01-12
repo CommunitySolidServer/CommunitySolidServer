@@ -3,8 +3,14 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:IdPStorageAdapter",
-      "@type": "InMemoryIdPStorageAdapter",
-      "InMemoryIdPStorageAdapter:_model": "IdentityProvider"
+      "@type": "ResourceStoreStorageAdapter",
+      "ResourceStoreStorageAdapter:_baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "ResourceStoreStorageAdapter:_idpResourcePrefix": "idp/",
+      "ResourceStoreStorageAdapter:_store": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      }
     },
     {
       "@id": "urn:solid-server:default:IdPConfigurationFactory",
