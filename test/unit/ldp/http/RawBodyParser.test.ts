@@ -18,27 +18,46 @@ describe('A RawBodyparser', (): void => {
     await expect(bodyParser.canHandle({} as any)).resolves.toBeUndefined();
   });
 
-  it('returns empty output if there was no content length or transfer encoding.', async(): Promise<void> => {
+  it('returns empty output if there is no content length or transfer encoding.', async(): Promise<void> => {
     input.request = streamifyArray([ '' ]) as HttpRequest;
     input.request.headers = {};
     await expect(bodyParser.handle(input)).resolves.toBeUndefined();
   });
 
-  it('errors when a content length was specified without content type.', async(): Promise<void> => {
-    input.request = streamifyArray([ 'abc' ]) as HttpRequest;
+  // https://github.com/solid/community-server/issues/498
+  it('returns empty output if the content length is 0 and there is no content type.', async(): Promise<void> => {
+    input.request = streamifyArray([ '' ]) as HttpRequest;
     input.request.headers = { 'content-length': '0' };
-    await expect(bodyParser.handle(input)).rejects
-      .toThrow('HTTP request body was passed without Content-Type header');
+    await expect(bodyParser.handle(input)).resolves.toBeUndefined();
   });
 
-  it('errors when a transfer encoding was specified without content type.', async(): Promise<void> => {
+  it('errors when a content length is specified without content type.', async(): Promise<void> => {
+    input.request = streamifyArray([ 'abc' ]) as HttpRequest;
+    input.request.headers = { 'content-length': '1' };
+    await expect(bodyParser.handle(input)).rejects
+      .toThrow('HTTP request body was passed without a Content-Type header');
+  });
+
+  it('errors when a transfer encoding is specified without content type.', async(): Promise<void> => {
     input.request = streamifyArray([ 'abc' ]) as HttpRequest;
     input.request.headers = { 'transfer-encoding': 'chunked' };
     await expect(bodyParser.handle(input)).rejects
-      .toThrow('HTTP request body was passed without Content-Type header');
+      .toThrow('HTTP request body was passed without a Content-Type header');
   });
 
-  it('returns a Representation if there was data.', async(): Promise<void> => {
+  it('returns a Representation if there is empty data.', async(): Promise<void> => {
+    input.request = streamifyArray([]) as HttpRequest;
+    input.request.headers = { 'content-length': '0', 'content-type': 'text/turtle' };
+    const result = (await bodyParser.handle(input))!;
+    expect(result).toEqual({
+      binary: true,
+      data: input.request,
+      metadata: input.metadata,
+    });
+    await expect(arrayifyStream(result.data)).resolves.toEqual([]);
+  });
+
+  it('returns a Representation if there is non-empty data.', async(): Promise<void> => {
     input.request = streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
     input.request.headers = { 'transfer-encoding': 'chunked', 'content-type': 'text/turtle' };
     const result = (await bodyParser.handle(input))!;
