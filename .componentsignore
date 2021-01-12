@@ -1,11 +1,10 @@
 [
+  "Adapter",
   "BasicRepresentation",
+  "Configuration",
   "Error",
   "EventEmitter",
-  "ValuePreferencesArg"
+  "LRUCache",
   "Provider",
-  "Configuration",
-  "OidcProvider",
-  "Adapter",
-  "LRUCache"
+  "ValuePreferencesArg"
 ]
