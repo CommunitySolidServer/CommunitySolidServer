@@ -60,6 +60,16 @@ export function trimTrailingSlashes(path: string): string {
 }
 
 /**
+ * Extracts the extension (without dot) from a path.
+ * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
+ * @param path - Input path to parse.
+ */
+export function getExtension(path: string): string {
+  const extension = /\.([^./]+)$/u.exec(path);
+  return extension ? extension[1] : '';
+}
+
+/**
  * Converts a URI path to the canonical version by splitting on slashes,
  * decoding any percent-based encodings,
  * and then encoding any special characters.
