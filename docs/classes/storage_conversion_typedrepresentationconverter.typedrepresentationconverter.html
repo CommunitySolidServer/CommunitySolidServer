@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TypedRepresentationConverter | Community Solid Server - v0.4.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.4.0">
+	<title>TypedRepresentationConverter | Community Solid Server - v0.4.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.4.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.4.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.4.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.4.0</a>
+					<a href="../modules.html">Community Solid Server - v0.4.1</a>
 				</li>
 				<li>
 					<a href="../modules/storage_conversion_typedrepresentationconverter.html">storage/conversion/TypedRepresentationConverter</a>
@@ -118,6 +118,13 @@
 								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a></li>
+							</ul>
+						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
@@ -137,16 +144,51 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Typed<wbr>Representation<wbr>Converter<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Typed<wbr>Representation<wbr>Converter<span class="tsd-signature-symbol">(</span>inputTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ValuePreferencesArg</span>, outputTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ValuePreferencesArg</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#constructor">constructor</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L28">src/storage/conversion/TypedRepresentationConverter.ts:28</a></li>
+								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>inputTypes: <span class="tsd-signature-type">ValuePreferencesArg</span><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+								<li>
+									<h5>outputTypes: <span class="tsd-signature-type">ValuePreferencesArg</span><span class="tsd-signature-symbol"> = ...</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></h4>
 						</li>
 					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="inputtypes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> input<wbr>Types</h3>
+					<div class="tsd-signature tsd-kind-icon">input<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L27">src/storage/conversion/TypedRepresentationConverter.ts:27</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="outputtypes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> output<wbr>Types</h3>
+					<div class="tsd-signature tsd-kind-icon">output<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L28">src/storage/conversion/TypedRepresentationConverter.ts:28</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -162,7 +204,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/storage/conversion/TypedRepresentationConverter.ts#L23">src/storage/conversion/TypedRepresentationConverter.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L53">src/storage/conversion/TypedRepresentationConverter.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -182,7 +224,7 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getinputtypes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Input<wbr>Types</h3>
+					<h3>get<wbr>Input<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Input<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
@@ -190,7 +232,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/storage/conversion/TypedRepresentationConverter.ts#L13">src/storage/conversion/TypedRepresentationConverter.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L39">src/storage/conversion/TypedRepresentationConverter.ts:39</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -204,7 +246,7 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getoutputtypes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Output<wbr>Types</h3>
+					<h3>get<wbr>Output<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
@@ -212,7 +254,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/storage/conversion/TypedRepresentationConverter.ts#L18">src/storage/conversion/TypedRepresentationConverter.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/storage/conversion/TypedRepresentationConverter.ts#L46">src/storage/conversion/TypedRepresentationConverter.ts:46</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,12 +277,13 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/AsyncHandler.ts#L23">src/util/AsyncHandler.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/AsyncHandler.ts#L24">src/util/AsyncHandler.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Handles the given input. This should only be done if the <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#canhandle">canHandle</a> function returned <code>true</code>.</p>
+									<p>Handles the given input. This should only be done if the <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#canhandle">canHandle</a> function returned <code>true</code>.
+									Therefore, consider using the <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#handlesafe">handleSafe</a> function instead.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -261,14 +304,14 @@
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/AsyncHandler.ts#L33">src/util/AsyncHandler.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -281,14 +324,15 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The data to handle.</p>
+										<p>Input data that will be handled if it can be handled.</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>The result of the handle function of the handler.</p>
+							<p>A promise resolving if the input can be handled, rejecting with an Error if not.
+							Return value depends on the given type.</p>
 						</li>
 					</ul>
 				</section>
@@ -314,6 +358,12 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
 								<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
@@ -362,6 +412,9 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 			</ul>
 		</div>
 	</div>

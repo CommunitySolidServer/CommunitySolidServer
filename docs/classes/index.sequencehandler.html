@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SequenceHandler | Community Solid Server - v0.4.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.4.0">
+	<title>SequenceHandler | Community Solid Server - v0.4.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.4.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.4.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.4.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.4.0</a>
+					<a href="../modules.html">Community Solid Server - v0.4.1</a>
 				</li>
 				<li>
 					<a href="../modules/index.html">index</a>
@@ -141,7 +141,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -172,7 +172,7 @@
 					<div class="tsd-signature tsd-kind-icon">handlers<span class="tsd-signature-symbol">:</span> <a href="util_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,7 +190,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -204,12 +204,12 @@
 								<li>
 									<h5>input: <span class="tsd-signature-type">TIn</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Input data that would be handled potentially.</p>
+										<p>Input data that could potentially be handled.</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A promise resolving if this input can be handled, rejecting with an Error if not.</p>
+							<p>A promise resolving if the input can be handled, rejecting with an Error if not.</p>
 						</li>
 					</ul>
 				</section>
@@ -224,7 +224,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/SequenceHandler.ts#L16">src/util/SequenceHandler.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/SequenceHandler.ts#L16">src/util/SequenceHandler.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -241,14 +241,14 @@
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/867af28/src/util/AsyncHandler.ts#L33">src/util/AsyncHandler.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -261,14 +261,15 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <span class="tsd-signature-type">TIn</span></h5>
+									<h5>input: <span class="tsd-signature-type">TIn</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The data to handle.</p>
+										<p>Input data that will be handled if it can be handled.</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>The result of the handle function of the handler.</p>
+							<p>A promise resolving if the input can be handled, rejecting with an Error if not.
+							Return value depends on the given type.</p>
 						</li>
 					</ul>
 				</section>
