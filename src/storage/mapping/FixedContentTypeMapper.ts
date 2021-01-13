@@ -47,7 +47,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
       throw new NotImplementedHttpError(`Unsupported content type ${contentType}, only ${this.contentType} is allowed`);
     }
 
-    this.logger.info(`The path for ${identifier.path} is ${filePath}`);
+    this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
     return {
       identifier,
       filePath,
@@ -64,7 +64,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
     const relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
       const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
-      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
+      this.logger.debug(`Container filepath ${filePath} maps to URL ${path}`);
       return {
         identifier: { path },
         filePath,
@@ -72,7 +72,7 @@ export class FixedContentTypeMapper implements FileIdentifierMapper {
     }
 
     const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
-    this.logger.info(`File ${filePath} maps to URL ${path}`);
+    this.logger.debug(`File ${filePath} maps to URL ${path}`);
 
     return {
       identifier: { path },

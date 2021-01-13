@@ -103,7 +103,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
         filePath = joinFilePath(folder, fileName);
       }
 
-      this.logger.info(`The path for ${identifier.path} is ${filePath}`);
+      this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
       return {
         identifier,
         filePath,
@@ -122,7 +122,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
       filePath += `$.${extension}`;
     }
 
-    this.logger.info(`The path for ${identifier.path} is ${filePath}`);
+    this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
     return {
       identifier,
       filePath,
@@ -146,7 +146,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     let relative = filePath.slice(this.rootFilepath.length);
     if (isContainer) {
       const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
-      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
+      this.logger.debug(`Container filepath ${filePath} maps to URL ${path}`);
       return {
         identifier: { path },
         filePath,
@@ -161,7 +161,7 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
     }
 
     const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
-    this.logger.info(`File ${filePath} (${contentType}) maps to URL ${path}`);
+    this.logger.debug(`File ${filePath} (${contentType}) maps to URL ${path}`);
 
     return {
       identifier: { path },
