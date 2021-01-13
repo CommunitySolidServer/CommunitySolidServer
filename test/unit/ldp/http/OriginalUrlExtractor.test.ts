@@ -1,7 +1,7 @@
-import { BasicTargetExtractor } from '../../../../src/ldp/http/BasicTargetExtractor';
+import { OriginalUrlExtractor } from '../../../../src/ldp/http/OriginalUrlExtractor';
 
-describe('A BasicTargetExtractor', (): void => {
-  const extractor = new BasicTargetExtractor();
+describe('A OriginalUrlExtractor', (): void => {
+  const extractor = new OriginalUrlExtractor();
 
   it('can handle any input.', async(): Promise<void> => {
     await expect(extractor.canHandle({} as any)).resolves.toBeUndefined();
