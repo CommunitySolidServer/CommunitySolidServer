@@ -1,4 +1,4 @@
-import type { SolidTokenVerifierFunction, RequestMethod } from '@solid/identity-token-verifier';
+import type { RequestMethod } from '@solid/identity-token-verifier';
 import { createSolidTokenVerifier } from '@solid/identity-token-verifier';
 import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -12,14 +12,16 @@ import { CredentialsExtractor } from './CredentialsExtractor';
  * Credentials extractor that extracts a WebID from a DPoP-bound access token.
  */
 export class DPoPWebIdExtractor extends CredentialsExtractor {
+  private readonly originalUrlExtractor: TargetExtractor;
+  private readonly verify = createSolidTokenVerifier();
   protected readonly logger = getLoggerFor(this);
-  private readonly targetExtractor: TargetExtractor;
-  private readonly verify: SolidTokenVerifierFunction;
 
-  public constructor(targetExtractor: TargetExtractor) {
+  /**
+   * @param originalUrlExtractor - Reconstructs the original URL as requested by the client
+   */
+  public constructor(originalUrlExtractor: TargetExtractor) {
     super();
-    this.targetExtractor = targetExtractor;
-    this.verify = createSolidTokenVerifier();
+    this.originalUrlExtractor = originalUrlExtractor;
   }
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
@@ -34,15 +36,20 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     if (!dpop) {
       throw new BadRequestHttpError('No DPoP header specified.');
     }
-    const resource = await this.targetExtractor.handleSafe({ request });
 
+    // Reconstruct the original URL as requested by the client,
+    // since this is the one it used to authorize the request
+    const originalUrl = await this.originalUrlExtractor.handleSafe({ request });
+
+    // Validate the Authorization and DPoP header headers
+    // and extract the WebID provided by the client
     try {
       const { webid: webId } = await this.verify(
         authorization as string,
         {
           header: dpop as string,
           method: method as RequestMethod,
-          url: resource.path,
+          url: originalUrl.path,
         },
       );
       this.logger.info(`Verified WebID via DPoP-bound access token: ${webId}`);
