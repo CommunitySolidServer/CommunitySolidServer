@@ -1,12 +1,35 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.4.1"></a>
+## [v0.4.1](https://github.com/solid/community-server/compare/v0.4.0...v0.4.1) - 2021-01-13
+
+### Added
+* [feat: Only convert when needed.](https://github.com/solid/community-server/commit/2efebf91fc0f18bda0369a8ef5fdbfa2542ae10f)
+* [feat: Add BaseResourceStore.](https://github.com/solid/community-server/commit/998296a4bbb96711d5e533e5398a3988c7461d42)
+* [fix: Update acl authorizer to make write rights imply append rights](https://github.com/solid/community-server/commit/61aa2e12bddf3fd2be8f6265750d26c09e5e24a9)
+* [feat: Add transformSafely.](https://github.com/solid/community-server/commit/995a2dc74d552fc13311d284affd5407fce9a4c2)
+* [refactor: Make request related handle calls consistent](https://github.com/solid/community-server/commit/f17054c64756b74567d0f6e3c05f154fffa449b2)
+* [feat: Store target identifier when parsing metadata](https://github.com/solid/community-server/commit/76def28a684f3068b5bbb6e52a5a9a209bd42df6)
+* [fix: Use base IRI when parsing SPARQL update queries](https://github.com/solid/community-server/commit/775aaa79cd92f63e7ed31244d50c9c2e1666b700)
+* [feat: Add Content-Type constructor to metadata.](https://github.com/solid/community-server/commit/be1af89b56dbdc339932d09f77ef6426a56a5fe2)
+* [feat: Add BasicRepresentation.](https://github.com/solid/community-server/commit/66e636878f30e67980a35683d379bed25ed9bfc5)
+* [feat: Use ldp: prefix in container representations.](https://github.com/solid/community-server/commit/ba42861699d9c7e6d787c099e0f9ab5eabdfbe7f)
+
+### Fixed
+* [fix: Prevent POST BasicRequestParserests from creating intermediate containers](https://github.com/solid/community-server/commit/a5bc8d22a9ce028a8bd8b17ca3658832d4f35ec9)
+* [fix: Don't get normalized metadata for root containers](https://github.com/solid/community-server/commit/5995057240670ff0227bebe991f76520baf83353)
+* [fix: Take baseIRI into account when calling parseQuads](https://github.com/solid/community-server/commit/fea726ae7db9addbfa138452ad171ed0f6a60cd9)
+* [test: Move diamond identifier test to ldp handler tests](https://github.com/solid/community-server/commit/d3c8069aa37a6e3f9d6859b4e5bbae030eeef013)
+* [fix: Generalize typing on pushQuad.](https://github.com/solid/community-server/commit/27a115022bd8f5a3e45d78f7dd262ef9929ba365)
+* [fix: Allow Content-Type: 0 on GET.](https://github.com/solid/community-server/commit/16ef86acef515342903a0c3ab668f40223892e77)
+* [fix: Always keep guarded error listener attached](https://github.com/solid/community-server/commit/27cc1ec15ee01cddc25d57b1e1f8a7537666927c)
+
+
 <a name="v0.4.0"></a>
 ## [v0.4.0](https://github.com/solid/community-server/compare/v0.3.0...v0.4.0) - 2021-01-06
 
-### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
-
-#### Added
+### Added
 * [feat: Create new resources when patching](https://github.com/solid/community-server/commit/7011b766b4d6a39a4edcfde19856d9a4b933fda6)
 * [feat: Add read-only store.](https://github.com/solid/community-server/commit/038d5728e306248057c3a8d3782050328de618e8)
 * [feat: Create ContainerManager for containing container conventions](https://github.com/solid/community-server/commit/9c080c2101876e2a0008194cba5416fa4fe0ce15)
@@ -31,7 +54,7 @@ All notable changes to this project will be documented in this file.
 * [feat: Allow querying metadata.](https://github.com/solid/community-server/commit/3b63786ae09c43d486126c0d52bbfec34eb74e4f)
 * [feat: Support writer prefixes.](https://github.com/solid/community-server/commit/87752ddf205a00f81b8597a3f5a3e9ea2aac057f)
 
-#### Changed
+### Changed
 * [refactor: Split off AclInitializer.](https://github.com/solid/community-server/commit/8fbb4f592e6873afca1ae7e1aa7062588630fcf9)
 * [refactor: Split off LoggerInitializer.](https://github.com/solid/community-server/commit/b0ecf1c1d8bb07ccbc25724f0f7ee6b8c948d2fd)
 * [refactor: Split off ServerInitializer.](https://github.com/solid/community-server/commit/04a91858c2ebbbe640f5f1b6ab8f1f55ddbb26ef)
@@ -45,7 +68,7 @@ All notable changes to this project will be documented in this file.
 * [refactor: Use record for representation preference.](https://github.com/solid/community-server/commit/48289125932617bda0e4939b20c0d768d745e360)
 * [refactor: Rename RepresentationPreference into ValuePreferences.](https://github.com/solid/community-server/commit/09ae95933359ea5d5cd59f711b0f467123255ec0)
 
-#### Fixed
+### Fixed
 * [fix: Only set content-type for documents in sparql store](https://github.com/solid/community-server/commit/d7e189cdd874253ee058c7fc6cd2b4fac878e136)
 * [fix: Allow quad data for containers](https://github.com/solid/community-server/commit/d5bf4e1e675ce63e6a92a8db5c34209e07283231)
 * [fix: Do not write error if response already started.](https://github.com/solid/community-server/commit/907caa1e93c1b66df0b76389e1fc7b3cfdc4d3e4)
@@ -72,7 +95,7 @@ All notable changes to this project will be documented in this file.
 <a name="v0.3.0"></a>
 ## [v0.3.0](https://github.com/solid/community-server/compare/v0.2.0...v0.3.0) - 2020-12-03
 
-#### Added
+### Added
 * [feat: Store status, body and metadata in ResponseDescription](https://github.com/solid/community-server/commit/1260c5c14e26e70dc1dafa211ab35c7981c4bd22)
 * [feat: Create MetadataSerializer](https://github.com/solid/community-server/commit/aebccd45c029a0367171748702cb54c5323e683d)
 * [feat: Reject unacceptable content types](https://github.com/solid/community-server/commit/69ed2e069fcf02515de2c0a8cbd353d7ad7f1fa7)
@@ -99,7 +122,7 @@ All notable changes to this project will be documented in this file.
 * [feat: add template based data generator](https://github.com/solid/community-server/commit/f387b36dc2b318fbcb92b01648da3d02e1d87b3e)
 * [feat: integrate pod creation](https://github.com/solid/community-server/commit/1a043aca3f1ca828ee1cb28b97b510ccd15bb965)
 
-#### Changed
+### Changed
 * [refactor: Create multiple composite handlers](https://github.com/solid/community-server/commit/840965cdef1959ede73874316fce78f59e545c2c)
 * [refactor: Make piping consistent](https://github.com/solid/community-server/commit/95ab0b4e760107a06a641b86faac7b385a8b1440)
 * [refactor: Remove identifier parameter](https://github.com/solid/community-server/commit/acebf030c7094fa69828e1e170424f442ab24656)
@@ -118,7 +141,7 @@ All notable changes to this project will be documented in this file.
 * [change: Move WebSocketAdvertiser to middleware.](https://github.com/solid/community-server/commit/fc3942b372f1b227b2c326661bdc2a036cc1eb20)
 * [refactor: Refactor runCli to take optional arguments.](https://github.com/solid/community-server/commit/528688bc4c3fd48f6e42586ff3da28822197fda9)
 
-#### Fixed
+### Fixed
 * [fix: Integrate wrapStreamError to prevent uncaught errors](https://github.com/solid/community-server/commit/e4183333fd523615d24e4d2832224bdd7c45a3d6)
 * [fix: Correctly handle acl behaviour for acl identifiers](https://github.com/solid/community-server/commit/ee312910d7f6bc08bd3176168fd6876ffc3d0146)
 * [fix: Update quad converter config parameters](https://github.com/solid/community-server/commit/59f99e1728e47e691315995ebb6dc06df99264b5)
