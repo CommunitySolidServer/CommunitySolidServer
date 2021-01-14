@@ -1,7 +1,7 @@
 import { mkdirSync } from 'fs';
 import { ComponentsManager } from 'componentsjs';
 import * as rimraf from 'rimraf';
-import { joinFilePath, toSystemFilePath } from '../../src/util/PathUtil';
+import { joinFilePath } from '../../src/util/PathUtil';
 
 export const BASE = 'http://test.com';
 
@@ -15,7 +15,7 @@ export async function instantiateFromConfig(componentUrl: string, configFile: st
   const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error' });
 
   // Instantiate the component from the config
-  const configPath = toSystemFilePath(joinFilePath(__dirname, 'config', configFile));
+  const configPath = joinFilePath(__dirname, 'config', configFile);
   await manager.configRegistry.register(configPath);
   return await manager.instantiate(componentUrl, { variables });
 }

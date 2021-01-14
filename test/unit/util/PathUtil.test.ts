@@ -1,4 +1,3 @@
-import { sep } from 'path';
 import {
   decodeUriPathComponents,
   encodeUriPathComponents,
@@ -6,7 +5,6 @@ import {
   joinFilePath,
   normalizeFilePath,
   toCanonicalUriPath,
-  toSystemFilePath,
 } from '../../../src/util/PathUtil';
 
 describe('PathUtil', (): void => {
@@ -27,12 +25,6 @@ describe('PathUtil', (): void => {
 
     it('joins Windows paths.', async(): Promise<void> => {
       expect(joinFilePath('c:\\foo\\bar\\', '..', '/baz')).toEqual(`c:/foo/baz`);
-    });
-  });
-
-  describe('toSystemFilePath', (): void => {
-    it('converts a POSIX path to an OS-specific path.', async(): Promise<void> => {
-      expect(toSystemFilePath('c:/foo/bar/')).toEqual(`c:${sep}foo${sep}bar${sep}`);
     });
   });
 
