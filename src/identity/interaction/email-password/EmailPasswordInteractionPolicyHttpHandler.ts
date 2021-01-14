@@ -1,12 +1,12 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
-import { IdentityProviderHttpHandlerInput } from '../IdentityProviderHttpHandler';
+import type { IdentityProviderHttpHandlerInput } from '../../IdentityProviderHttpHandler';
 import type {
-  IdPInteractionHttpHandler
-} from './IdPInteractionHttpHandler';
+  IdPInteractionHttpHandler,
+} from '../IdPInteractionHttpHandler';
 import {
   IdPInteractionPolicyHttpHandler,
-} from './IdPInteractionPolicyHttpHandler';
+} from '../IdPInteractionPolicyHttpHandler';
 
 export interface EmailPasswordInteractionPolicyHttpHandlerArgs {
   interactionHttpHandler: IdPInteractionHttpHandler;

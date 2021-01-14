@@ -1,5 +1,4 @@
 import type { Adapter, AdapterPayload } from 'oidc-provider';
-import { promisify } from 'util';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -51,11 +50,13 @@ export class ResourceStoreStorageAdapter implements Adapter {
     const representation: Representation = await this.store.getRepresentation(this.resourceIdentifier(id), {});
 
     const resource = await new Promise((resolve, reject): void => {
-      let resource = "";
-      representation.data.on('data', data => { resource += data.toString() });
+      let resource = '';
+      representation.data.on('data', data => {
+        resource += data.toString();
+      });
       representation.data.on('end', () => resolve(resource));
       representation.data.on('error', reject);
-    }) as string;
+    });
 
     return JSON.parse(resource) as AdapterPayload | undefined;
   }
@@ -73,7 +74,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
   public async upsert(id: string, payload: AdapterPayload, expiresIn: number): Promise<undefined | void> {
     const resourceIdentifier: ResourceIdentifier = this.resourceIdentifier(id);
 
-    // if (this.model === 'Session') {
+    // If (this.model === 'Session') {
     //   this.lru.set(InMemoryIdPStorageAdapter.sessionUidKeyFor(payload.uid as string), id, expiresIn * 1000);
     // }
 
@@ -97,7 +98,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
   }
 
   public async revokeByGrantId(grantId: string): Promise<undefined | void> {
-    // const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
+    // Const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
     // const grant = this.lru.get(grantKey);
     // if (grant) {
     //   (grant as string[]).forEach((token): void => this.lru.del(token));

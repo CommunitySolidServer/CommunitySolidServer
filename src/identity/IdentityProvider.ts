@@ -9,12 +9,12 @@ import { Provider } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
+import type { AsyncHandler } from '../util/AsyncHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { IdPInteractionHttpHandler } from './interaction/IdPInteractionHttpHandler';
 import type { IdPConfiguration } from './configuration/IdPConfiguration';
 import type { IdPConfigurationFactory } from './configuration/IdPConfigurationFactory';
 import type { IdentityProviderHttpHandlerInput } from './IdentityProviderHttpHandler';
-import type { AsyncHandler } from '../util/AsyncHandler';
+import type { IdPInteractionHttpHandler } from './interaction/IdPInteractionHttpHandler';
 
 export class IdentityProvider extends Provider implements AsyncHandler<IdentityProviderHttpHandlerInput> {
   private readonly interactionHttpHandler: IdPInteractionHttpHandler;
@@ -77,7 +77,7 @@ export class IdentityProvider extends Provider implements AsyncHandler<IdentityP
       instance(this).configuration().routes,
     );
     validRoutes.push(this.openIDConfigurationRoute);
-    const url = input.request.url ? parse(input.request.url).pathname as string : "";
+    const url = input.request.url ? parse(input.request.url).pathname as string : '';
 
     // Throw an error if the request URL is not part of the valid routes
     if (!validRoutes.includes(url) && !url.startsWith(this.interactionRoutePrefix)) {
@@ -95,15 +95,14 @@ export class IdentityProvider extends Provider implements AsyncHandler<IdentityP
     if (input.request.url && parse(input.request.url).pathname as string === this.interactionRoutePrefix) {
       return this.interactionHttpHandler.handleSafe({ ...input, provider: this });
     }
-    else {
-      // This casting might seem strange, but "callback" is a Koa callback which does
-      // actually return a Promise, despite what the typings say.
-      // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
-      return super.callback(
-        input.request,
-        input.response,
-      ) as unknown as Promise<void>;
-    }
+
+    // This casting might seem strange, but "callback" is a Koa callback which does
+    // actually return a Promise, despite what the typings say.
+    // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
+    return super.callback(
+      input.request,
+      input.response,
+    ) as unknown as Promise<void>;
   }
 
   public async handleSafe(input: IdentityProviderHttpHandlerInput): Promise<void> {
