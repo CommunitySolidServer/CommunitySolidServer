@@ -64,7 +64,7 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
 
     const data = response._getData().toString();
-    expect(data).toContain(`<${BASE}/> a ldp:Container`);
+    expect(data).toContain(`<> a ldp:Container`);
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
   });
 
@@ -266,7 +266,7 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     response = await resourceHelper.performRequest(new URL(`${BASE}/${slug}/`), 'GET', { accept: 'text/turtle' });
     expect(response.statusCode).toBe(200);
 
-    const parser = new Parser();
+    const parser = new Parser({ baseIRI: `${BASE}/${slug}/` });
     const quads = parser.parse(response._getData());
     expect(quads.some((entry): boolean => entry.equals(quad(
       namedNode(`${BASE}/${slug}/`),
