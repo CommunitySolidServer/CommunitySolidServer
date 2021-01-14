@@ -115,13 +115,13 @@ export * from './identity/storage/InMemoryIdPStorageAdapter';
 export * from './identity/storage/ResourceStoreStorageAdapter';
 
 // SolidIdentityProvider/InteractionPolicies
-export * from './identity/interaction/EmailPasswordInteractionPolicyHttpHandler';
-export * from './identity/interaction/handler/AbortInteractionHttpHandler';
-export * from './identity/interaction/handler/BaseInteractionHttpHandler';
-export * from './identity/interaction/handler/ConfirmInteractionHttpHandler';
-export * from './identity/interaction/handler/ContinueInteractionHttpHandler';
-export * from './identity/interaction/handler/GetInteractionHttpHandler';
-export * from './identity/interaction/handler/LoginInteractionHttpHandler';
+export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
+export * from './identity/interaction/email-password/handler/AbortInteractionHttpHandler';
+export * from './identity/interaction/email-password/handler/BaseInteractionHttpHandler';
+export * from './identity/interaction/email-password/handler/ConfirmInteractionHttpHandler';
+export * from './identity/interaction/email-password/handler/ContinueInteractionHttpHandler';
+export * from './identity/interaction/email-password/handler/GetInteractionHttpHandler';
+export * from './identity/interaction/email-password/handler/LoginInteractionHttpHandler';
 
 // Logging
 export * from './logging/LazyLogger';
