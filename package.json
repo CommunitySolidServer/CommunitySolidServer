@@ -70,7 +70,8 @@
   "files": [
     "bin",
     "dist",
-    "config"
+    "config",
+    "templates"
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",
