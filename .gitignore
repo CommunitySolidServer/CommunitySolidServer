@@ -5,3 +5,4 @@ docs
 node_modules
 .eslintcache
 tsconfig.tsbuildinfo
+componentsjs-error-state.json

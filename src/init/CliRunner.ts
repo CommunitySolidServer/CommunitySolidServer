@@ -1,8 +1,8 @@
 /* eslint-disable unicorn/no-process-exit */
 
 import type { ReadStream, WriteStream } from 'tty';
-import type { LoaderProperties } from 'componentsjs';
-import { Loader } from 'componentsjs';
+import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
+import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
 import { joinFilePath, toSystemFilePath, ensureTrailingSlash } from '../util/PathUtil';
@@ -31,7 +31,6 @@ export class CliRunner {
       .options({
         baseUrl: { type: 'string', alias: 'b' },
         config: { type: 'string', alias: 'c' },
-        globalModules: { type: 'boolean', alias: 'g' },
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
         mainModulePath: { type: 'string', alias: 'm' },
         podTemplateFolder: { type: 'string', alias: 't' },
@@ -42,9 +41,10 @@ export class CliRunner {
       .help();
 
     // Gather settings for instantiating the server
-    const loaderProperties: LoaderProperties = {
+    const loaderProperties: IComponentsManagerBuilderOptions<Initializer> = {
       mainModulePath: toSystemFilePath(this.resolveFilePath(params.mainModulePath)),
-      scanGlobal: params.globalModules,
+      dumpErrorState: true,
+      logLevel: params.loggingLevel as LogLevel,
     };
     const configFile = this.resolveFilePath(params.config, 'config/config-default.json');
     const variables = this.createVariables(params);
@@ -95,12 +95,15 @@ export class CliRunner {
   /**
    * Creates the server initializer
    */
-  protected async createInitializer(loaderProperties: LoaderProperties, configFile: string,
-    variables: Record<string, any>): Promise<Initializer> {
-    const loader = new Loader(loaderProperties);
-    await loader.registerAvailableModuleResources();
+  protected async createInitializer(
+    componentsProperties: IComponentsManagerBuilderOptions<Initializer>,
+    configFile: string,
+    variables: Record<string, any>,
+  ): Promise<Initializer> {
+    const componentsManager = await ComponentsManager.build(componentsProperties);
 
     const initializer = 'urn:solid-server:default:Initializer';
-    return await loader.instantiateFromUrl(initializer, configFile, undefined, { variables }) as Initializer;
+    await componentsManager.configRegistry.register(configFile);
+    return await componentsManager.instantiate(initializer, { variables });
   }
 }
