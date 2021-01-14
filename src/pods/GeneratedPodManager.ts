@@ -1,8 +1,8 @@
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
+import { containsResource } from '../storage/StoreUtil';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import type { Agent } from './agent/Agent';
 import type { IdentifierGenerator } from './generate/IdentifierGenerator';
 import type { ResourcesGenerator } from './generate/ResourcesGenerator';
@@ -33,15 +33,8 @@ export class GeneratedPodManager implements PodManager {
   public async createPod(agent: Agent): Promise<ResourceIdentifier> {
     const podIdentifier = this.idGenerator.generate(agent.login);
     this.logger.info(`Creating pod ${podIdentifier.path}`);
-    try {
-      const result = await this.store.getRepresentation(podIdentifier, {});
-      result.data.destroy();
+    if (await containsResource(this.store, podIdentifier)) {
       throw new ConflictHttpError(`There already is a resource at ${podIdentifier.path}`);
-    } catch (error: unknown) {
-      // We want the identifier to not exist
-      if (!(error instanceof NotFoundHttpError)) {
-        throw error;
-      }
     }
 
     const resources = this.resourcesGenerator.generate(podIdentifier, agent);
