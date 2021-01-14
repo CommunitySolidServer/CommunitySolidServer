@@ -22,7 +22,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       const upgradeRequest = {
         headers: {
           host: 'mypod.example',
-          'sec-websocket-protocol': 'solid/0.1.0-alpha, other/1.0.0',
+          'sec-websocket-protocol': 'solid-0.1, other/1.0.0',
         },
         socket: {
           secure: true,
@@ -36,9 +36,8 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
     });
 
     it('sends a protocol message.', (): void => {
-      expect(webSocket.messages).toHaveLength(2);
-      expect(webSocket.messages.shift()).toBe('protocol solid/0.1.0-alpha');
-      expect(webSocket.messages.shift()).toBe('warning Unstandardized protocol version, proceed with care');
+      expect(webSocket.messages).toHaveLength(1);
+      expect(webSocket.messages.shift()).toBe('protocol solid-0.1');
     });
 
     it('warns when receiving an unexpected message.', (): void => {
@@ -146,9 +145,9 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       socket: {},
     } as any as HttpRequest;
     await protocol.handle({ webSocket, upgradeRequest } as any);
-    expect(webSocket.messages).toHaveLength(3);
+    expect(webSocket.messages).toHaveLength(2);
     expect(webSocket.messages.pop())
-      .toBe('warning Missing Sec-WebSocket-Protocol header, expected value \'solid/0.1.0-alpha\'');
+      .toBe('warning Missing Sec-WebSocket-Protocol header, expected value \'solid-0.1\'');
     expect(webSocket.close).toHaveBeenCalledTimes(0);
   });
 
@@ -161,8 +160,8 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       socket: {},
     } as any as HttpRequest;
     await protocol.handle({ webSocket, upgradeRequest } as any);
-    expect(webSocket.messages).toHaveLength(3);
-    expect(webSocket.messages.pop()).toBe('error Client does not support protocol solid/0.1.0-alpha');
+    expect(webSocket.messages).toHaveLength(2);
+    expect(webSocket.messages.pop()).toBe('error Client does not support protocol solid-0.1');
     expect(webSocket.close).toHaveBeenCalledTimes(1);
     expect(webSocket.listenerCount('message')).toBe(0);
     expect(webSocket.listenerCount('close')).toBe(0);
@@ -174,13 +173,13 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
     const upgradeRequest = {
       headers: {
         forwarded: 'proto=https;host=other.example',
-        'sec-websocket-protocol': 'solid/0.1.0-alpha',
+        'sec-websocket-protocol': 'solid-0.1',
       },
       socket: {},
     } as any as HttpRequest;
     await protocol.handle({ webSocket, upgradeRequest } as any);
     webSocket.emit('message', 'sub https://other.example/protocol/foo');
-    expect(webSocket.messages).toHaveLength(3);
+    expect(webSocket.messages).toHaveLength(2);
     expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
   });
 });
