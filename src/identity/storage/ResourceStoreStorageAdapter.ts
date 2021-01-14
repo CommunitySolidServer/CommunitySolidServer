@@ -38,7 +38,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
 
   public async consume(id: string): Promise<undefined | void> {
     const resource = this.resourceIdentifier(id);
-    const x = `<${resource}> <p> "${ResourceStoreStorageAdapter.epochTime()}"`;
+    const x = `<${resource.path}> <p> "${ResourceStoreStorageAdapter.epochTime()}"`;
     await this.store.setRepresentation(this.resourceIdentifier(id), new BasicRepresentation(x, resource, TEXT_TURTLE));
   }
 
@@ -49,12 +49,12 @@ export class ResourceStoreStorageAdapter implements Adapter {
   public async find(id: string): Promise<AdapterPayload | undefined | void> {
     const representation: Representation = await this.store.getRepresentation(this.resourceIdentifier(id), {});
 
-    const resource = await new Promise((resolve, reject): void => {
-      let resource = '';
-      representation.data.on('data', data => {
-        resource += data.toString();
+    const resource = await new Promise<string>((resolve, reject): void => {
+      let potentialResource = '';
+      representation.data.on('data', (data): void => {
+        potentialResource += data.toString();
       });
-      representation.data.on('end', () => resolve(resource));
+      representation.data.on('end', (): void => resolve(potentialResource));
       representation.data.on('error', reject);
     });
 
@@ -94,7 +94,10 @@ export class ResourceStoreStorageAdapter implements Adapter {
     // }
 
     // this.lru.set(key, payload, expiresIn * 1000);
-    await this.store.setRepresentation(resourceIdentifier, new BasicRepresentation(JSON.stringify(payload), resourceIdentifier, APPLICATION_OCTET_STREAM));
+    await this.store.setRepresentation(
+      resourceIdentifier,
+      new BasicRepresentation(JSON.stringify(payload), resourceIdentifier, APPLICATION_OCTET_STREAM),
+    );
   }
 
   public async revokeByGrantId(grantId: string): Promise<undefined | void> {
