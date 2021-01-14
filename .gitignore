@@ -1,8 +1,9 @@
-coverage
-data
-dist
-docs
-node_modules
-.eslintcache
+/.acl
+/.eslintcache
+/componentsjs-error-state.json
+/coverage
+/data
+/dist
+/docs
+/node_modules
 tsconfig.tsbuildinfo
-componentsjs-error-state.json
