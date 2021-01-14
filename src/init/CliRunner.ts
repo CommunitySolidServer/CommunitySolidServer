@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { joinFilePath, toSystemFilePath, ensureTrailingSlash } from '../util/PathUtil';
+import { joinFilePath, ensureTrailingSlash } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -42,7 +42,7 @@ export class CliRunner {
 
     // Gather settings for instantiating the server
     const loaderProperties: IComponentsManagerBuilderOptions<Initializer> = {
-      mainModulePath: toSystemFilePath(this.resolveFilePath(params.mainModulePath)),
+      mainModulePath: this.resolveFilePath(params.mainModulePath),
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
@@ -50,7 +50,7 @@ export class CliRunner {
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    this.createInitializer(loaderProperties, toSystemFilePath(configFile), variables)
+    this.createInitializer(loaderProperties, configFile, variables)
       .then(
         async(initializer): Promise<void> => initializer.handleSafe(),
         (error: Error): void => {

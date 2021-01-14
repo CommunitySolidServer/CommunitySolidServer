@@ -1,7 +1,7 @@
 import { ComponentsManager } from 'componentsjs';
 import { CliRunner } from '../../../src/init/CliRunner';
 import type { Initializer } from '../../../src/init/Initializer';
-import { joinFilePath, toSystemFilePath } from '../../../src/util/PathUtil';
+import { joinFilePath } from '../../../src/util/PathUtil';
 
 const initializer: jest.Mocked<Initializer> = {
   handleSafe: jest.fn(),
@@ -44,11 +44,11 @@ describe('CliRunner', (): void => {
     expect(ComponentsManager.build).toHaveBeenCalledWith({
       dumpErrorState: true,
       logLevel: 'info',
-      mainModulePath: toSystemFilePath(joinFilePath(__dirname, '../../../')),
+      mainModulePath: joinFilePath(__dirname, '../../../'),
     });
     expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
     expect(manager.configRegistry.register)
-      .toHaveBeenCalledWith(toSystemFilePath(joinFilePath(__dirname, '/../../../config/config-default.json')));
+      .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/config-default.json'));
     expect(manager.instantiate).toHaveBeenCalledTimes(1);
     expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
@@ -91,11 +91,11 @@ describe('CliRunner', (): void => {
     expect(ComponentsManager.build).toHaveBeenCalledWith({
       dumpErrorState: true,
       logLevel: 'debug',
-      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
+      mainModulePath: '/var/cwd/module/path',
     });
     expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
     expect(manager.configRegistry.register)
-      .toHaveBeenCalledWith(toSystemFilePath('/var/cwd/myconfig.json'));
+      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
     expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
       {
@@ -135,11 +135,11 @@ describe('CliRunner', (): void => {
     expect(ComponentsManager.build).toHaveBeenCalledWith({
       dumpErrorState: true,
       logLevel: 'debug',
-      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
+      mainModulePath: '/var/cwd/module/path',
     });
     expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
     expect(manager.configRegistry.register)
-      .toHaveBeenCalledWith(toSystemFilePath('/var/cwd/myconfig.json'));
+      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
     expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
       {

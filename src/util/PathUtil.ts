@@ -1,4 +1,4 @@
-import platform, { posix } from 'path';
+import { posix } from 'path';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
@@ -33,17 +33,6 @@ export function normalizeFilePath(path: string): string {
  */
 export function joinFilePath(basePath: string, ...paths: string[]): string {
   return posix.join(windowsToPosixPath(basePath), ...paths);
-}
-
-/**
- * Converts the path into an OS-dependent path.
- *
- * @param path - Path to check (POSIX).
- *
- * @returns The potentially changed path (OS-dependent).
- */
-export function toSystemFilePath(path: string): string {
-  return platform.normalize(path);
 }
 
 /**
