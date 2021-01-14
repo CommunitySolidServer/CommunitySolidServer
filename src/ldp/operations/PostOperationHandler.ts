@@ -28,9 +28,12 @@ export class PostOperationHandler extends OperationHandler {
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    if (!input.body) {
-      this.logger.warn('POST operations require a body');
-      throw new BadRequestHttpError('POST operations require a body');
+    // Solid, §2.1: "A Solid server MUST reject PUT, POST and PATCH requests
+    // without the Content-Type header with a status code of 400."
+    // https://solid.github.io/specification/protocol#http-server
+    if (!input.body?.metadata.contentType) {
+      this.logger.warn('No Content-Type header specified on POST request');
+      throw new BadRequestHttpError('No Content-Type header specified on POST request');
     }
     const identifier = await this.store.addResource(input.target, input.body);
     return new CreatedResponseDescription(identifier);
