@@ -92,7 +92,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       });
       this.logger.debug(`${store.size} quads in ${identifier.path}.`);
     } catch (error: unknown) {
-      // In case the resource does not exist yet we want to create it
+      // Solid, §5.1: "Clients who want to assign a URI to a resource, MUST use PUT and PATCH requests."
+      // https://solid.github.io/specification/protocol#resource-type-heuristics
       if (!(error instanceof NotFoundHttpError)) {
         throw error;
       }

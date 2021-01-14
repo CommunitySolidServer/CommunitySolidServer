@@ -8,7 +8,6 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
-import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
@@ -153,7 +152,7 @@ describe('A WebAclAuthorizer', (): void => {
     };
     const promise = authorizer.handle({ identifier, permissions, credentials });
     await expect(promise).rejects.toThrow('No ACL document found for root container');
-    await expect(promise).rejects.toThrow(InternalServerError);
+    await expect(promise).rejects.toThrow(ForbiddenHttpError);
   });
 
   it('allows an agent to append if they have write access.', async(): Promise<void> => {

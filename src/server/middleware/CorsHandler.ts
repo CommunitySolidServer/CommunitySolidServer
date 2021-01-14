@@ -22,6 +22,11 @@ interface SimpleCorsOptions {
 
 /**
  * Handler that sets CORS options on the response.
+ *
+ * Solid, §7.1: "A data pod MUST implement the CORS protocol [FETCH] such that, to the extent possible,
+ * the browser allows Solid apps to send any request and combination of request headers to the data pod,
+ * and the Solid app can read any response and response headers received from the data pod."
+ * Full details: https://solid.github.io/specification/protocol#cors-server
  */
 export class CorsHandler extends HttpHandler {
   private readonly corsHandler: RequestHandler;

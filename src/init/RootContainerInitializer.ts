@@ -14,6 +14,10 @@ import namedNode = DataFactory.namedNode;
 
 /**
  * Initializes ResourceStores by creating a root container if it didn't exist yet.
+ *
+ * Solid, §4.1: "When a server supports a data pod, it MUST provide one or more storages (pim:Storage) –
+ * a space of URIs in which data can be accessed. A storage is the root container for all of its contained resources."
+ * https://solid.github.io/specification/protocol#storage
  */
 export class RootContainerInitializer extends Initializer {
   protected readonly logger = getLoggerFor(this);
@@ -59,6 +63,9 @@ export class RootContainerInitializer extends Initializer {
 
     // Make sure the root container is a pim:Storage
     // This prevents deletion of the root container as storage root containers can not be deleted
+    // Solid, §4.1: "Servers exposing the storage resource MUST advertise by including the HTTP Link header
+    // with rel="type" targeting http://www.w3.org/ns/pim/space#Storage when responding to storage’s request URI."
+    // https://solid.github.io/specification/protocol#storage
     metadata.add(RDF.type, PIM.terms.Storage);
 
     this.logger.debug(`Creating root container at ${this.baseId.path}`);
