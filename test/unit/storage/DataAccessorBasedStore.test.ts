@@ -11,7 +11,7 @@ import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedSt
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
-import { InternalServerError } from '../../../src/util/errors/InternalServerError';
+import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
@@ -90,7 +90,9 @@ describe('A DataAccessorBasedStore', (): void => {
         DataFactory.namedNode(LDP.BasicContainer),
       ]},
     );
-    accessor.data[root] = { metadata: containerMetadata } as Representation;
+    const rootMetadata = new RepresentationMetadata(containerMetadata);
+    rootMetadata.identifier = namedNode(root);
+    accessor.data[root] = { metadata: rootMetadata } as Representation;
 
     representation = {
       binary: true,
@@ -117,6 +119,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
+      containerMetadata.identifier = namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaQuads = containerMetadata.quads();
       const result = await store.getRepresentation(resourceID);
@@ -243,8 +246,9 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}resource` };
       accessor.data[`${resourceID.path}/`] = representation;
       representation.metadata.identifier = DataFactory.namedNode(`${resourceID.path}/`);
-      await expect(store.setRepresentation(resourceID, representation))
-        .rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
+      const prom = store.setRepresentation(resourceID, representation);
+      await expect(prom).rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
+      await expect(prom).rejects.toThrow(ForbiddenHttpError);
     });
 
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
@@ -268,32 +272,11 @@ describe('A DataAccessorBasedStore', (): void => {
       mock.mockRestore();
     });
 
-    it('will error if the target has a different resource type.', async(): Promise<void> => {
-      const resourceID = { path: `${root}resource` };
-      accessor.data[resourceID.path] = representation;
-      representation.metadata.identifier = DataFactory.namedNode(resourceID.path);
-      const newRepresentation = { ...representation };
-      newRepresentation.metadata = new RepresentationMetadata(representation.metadata);
-      newRepresentation.metadata.add(RDF.type, LDP.terms.Container);
-      await expect(store.setRepresentation(resourceID, newRepresentation))
-        .rejects.toThrow(new ConflictHttpError('Input resource type does not match existing resource type.'));
-    });
-
     it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
-      );
-    });
-
-    it('will error if the DataAccessor did not store the required type triples.', async(): Promise<void> => {
-      const resourceID = { path: `${root}resource` };
-      accessor.data[resourceID.path] = representation;
-      representation.metadata.identifier = namedNode(resourceID.path);
-      representation.metadata.removeAll(RDF.type);
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
-        new InternalServerError('Unknown resource type.'),
       );
     });
 
@@ -360,9 +343,9 @@ describe('A DataAccessorBasedStore', (): void => {
     it('errors when a recursive container overlaps with an existing resource.', async(): Promise<void> => {
       const resourceID = { path: `${root}a/b/resource` };
       accessor.data[`${root}a`] = representation;
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
-        new ConflictHttpError(`Creating container ${root}a/ conflicts with an existing resource.`),
-      );
+      const prom = store.setRepresentation(resourceID, representation);
+      await expect(prom).rejects.toThrow(`Creating container ${root}a/ conflicts with an existing resource.`);
+      await expect(prom).rejects.toThrow(ForbiddenHttpError);
     });
 
     it('can write to root if it does not exist.', async(): Promise<void> => {

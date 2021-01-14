@@ -9,7 +9,7 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { InternalServerError } from '../util/errors/InternalServerError';
+import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -65,7 +65,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
 
-    if (this.isExistingContainer(metadata)) {
+    if (isContainerPath(metadata.identifier.value)) {
       // Generate a container representation from the metadata
       const data = metadata.quads();
       metadata.addQuad(LDP.terms.namespace, VANN.terms.preferredNamespacePrefix, 'ldp');
@@ -83,23 +83,31 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Ensure the representation is supported by the accessor
     await this.accessor.canHandle(representation);
 
-    // Using the parent metadata as we can also use that later to check if the nested containers maybe need to be made
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
 
-    // When a POST method request targets a resource without an existing representation,
-    // the server MUST respond with the 404 status code.
+    // Solid, §5.3: "When a POST method request targets a resource without an existing representation,
+    // the server MUST respond with the 404 status code."
+    // https://solid.github.io/specification/protocol#writing-resources
     if (!parentMetadata) {
       throw new NotFoundHttpError();
     }
 
-    if (parentMetadata && !this.isExistingContainer(parentMetadata)) {
+    // Not using `container` since `getSafeNormalizedMetadata` might return metadata for a different identifier.
+    // Solid, §5: "Servers MUST respond with the 405 status code to requests using HTTP methods
+    // that are not supported by the target resource."
+    // https://solid.github.io/specification/protocol#reading-writing-resources
+    if (parentMetadata && !isContainerPath(parentMetadata.identifier.value)) {
       throw new MethodNotAllowedHttpError('The given path is not a container.');
     }
 
+    // Solid, §5.1: "Servers MAY allow clients to suggest the URI of a resource created through POST,
+    // using the HTTP Slug header as defined in [RFC5023].
+    // Clients who want the server to assign a URI of a resource, MUST use the POST request."
+    // https://solid.github.io/specification/protocol#resource-type-heuristics
     const newID = this.createSafeUri(container, representation.metadata, parentMetadata);
 
-    // Write the data. New containers will need to be created if there is no parent.
-    await this.writeData(newID, representation, isContainerIdentifier(newID), !parentMetadata);
+    // Write the data. New containers should never be made for a POST request.
+    await this.writeData(newID, representation, isContainerIdentifier(newID), false);
 
     return newID;
   }
@@ -113,16 +121,19 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
 
-    // Might want to redirect in the future
+    // Might want to redirect in the future.
+    // See #480
+    // Solid, §3.1: "If two URIs differ only in the trailing slash, and the server has associated a resource with
+    // one of them, then the other URI MUST NOT correspond to another resource. Instead, the server MAY respond to
+    // requests for the latter URI with a 301 redirect to the former."
+    // https://solid.github.io/specification/protocol#uri-slash-semantics
     if (oldMetadata && oldMetadata.identifier.value !== identifier.path) {
-      throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
+      throw new ForbiddenHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    // If we already have a resource for the given identifier, make sure they match resource types
     const isContainer = this.isNewContainer(representation.metadata, identifier.path);
-    if (oldMetadata && isContainer !== this.isExistingContainer(oldMetadata)) {
-      throw new ConflictHttpError('Input resource type does not match existing resource type.');
-    }
+    // Solid, §3.1: "Paths ending with a slash denote a container resource."
+    // https://solid.github.io/specification/protocol#uri-slash-semantics
     if (isContainer !== isContainerIdentifier(identifier)) {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
@@ -138,12 +149,16 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
-    // "When a DELETE request targets storage’s root container or its associated ACL resource,
-    //  the server MUST respond with the 405 status code."
-    // https://solid.github.io/specification/#deleting-resources
+    // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
+    // the server MUST respond with the 405 status code."
+    // https://solid.github.io/specification/protocol#deleting-resources
     if (this.isRootStorage(metadata)) {
       throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
     }
+    // Solid, §5.4: "When a DELETE request is made to a container, the server MUST delete the container
+    // if it contains no resources. If the container contains resources,
+    // the server MUST respond with the 409 status code and response body describing the error."
+    // https://solid.github.io/specification/protocol#deleting-resources
     if (metadata.getAll(LDP.contains).length > 0) {
       throw new ConflictHttpError('Can only delete empty containers.');
     }
@@ -161,9 +176,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Returns the metadata matching the identifier, ignoring the presence of a trailing slash or not.
-   * This is used to support the following part of the spec:
-   * "If two URIs differ only in the trailing slash, and the server has associated a resource with one of them,
-   *  then the other URI MUST NOT correspond to another resource."
+   *
+   * Solid, §3.1: "If two URIs differ only in the trailing slash,
+   * and the server has associated a resource with one of them,
+   * then the other URI MUST NOT correspond to another resource."
+   * https://solid.github.io/specification/protocol#uri-slash-semantics
    *
    * First the identifier gets requested and if no result is found
    * the identifier with differing trailing slash is requested.
@@ -174,11 +191,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     try {
       return await this.accessor.getMetadata(identifier);
     } catch (error: unknown) {
-      // Trimming the trailing slash of a root container is undefined as there is no parent container
-      if (error instanceof NotFoundHttpError && !this.identifierStrategy.isRootContainer(identifier)) {
-        return this.accessor.getMetadata(
-          { path: hasSlash ? trimTrailingSlashes(identifier.path) : ensureTrailingSlash(identifier.path) },
-        );
+      if (error instanceof NotFoundHttpError) {
+        const otherIdentifier =
+          { path: hasSlash ? trimTrailingSlashes(identifier.path) : ensureTrailingSlash(identifier.path) };
+
+        // Only try to access other identifier if it is valid in the scope of the DataAccessor
+        this.validateIdentifier(otherIdentifier);
+        return this.accessor.getMetadata(otherIdentifier);
       }
       throw error;
     }
@@ -219,6 +238,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Root container should not have a parent container
+    // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
+    // in container representations derived from the URI path component of PUT and PATCH requests."
+    // https://solid.github.io/specification/protocol#writing-resources
     if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
@@ -251,11 +273,11 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw error;
     }
 
-    // Make sure there are no containment triples in the body
-    for (const quad of quads) {
-      if (quad.predicate.value === LDP.contains) {
-        throw new ConflictHttpError('Container bodies are not allowed to have containment triples.');
-      }
+    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s containment triples;
+    // if the server receives such a request, it MUST respond with a 409 status code."
+    // https://solid.github.io/specification/protocol#writing-resources
+    if (quads.some((quad): boolean => quad.predicate.value === LDP.contains)) {
+      throw new ConflictHttpError('Container bodies are not allowed to have containment triples.');
     }
 
     // Input content type doesn't matter anymore
@@ -267,6 +289,13 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Generates a new URI for a resource in the given container, potentially using the given slug.
+   *
+   * Solid, §5.3: "Servers MUST allow creating new resources with a POST request to URI path ending `/`.
+   * Servers MUST create a resource with URI path ending `/{id}` in container `/`.
+   * Servers MUST create a container with URI path ending `/{id}/` in container `/` for requests
+   * including the HTTP Link header with rel="type" targeting a valid LDP container type."
+   * https://solid.github.io/specification/protocol#writing-resources
+   *
    * @param container - Parent container of the new URI.
    * @param isContainer - Does the new URI represent a container?
    * @param slug - Slug to use for the new URI.
@@ -312,26 +341,11 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required.
    */
   protected isNewContainer(metadata: RepresentationMetadata, suffix?: string): boolean {
-    // Should not use `isExistingContainer` since the metadata might contain unrelated type triples
-    // It's not because there is no container type triple that the new resource is not a container
     if (this.hasContainerType(metadata.getAll(RDF.type))) {
       return true;
     }
     const slug = suffix ?? metadata.get(HTTP.slug)?.value;
     return Boolean(slug && isContainerPath(slug));
-  }
-
-  /**
-   * Checks if the given metadata represents a container, purely based on metadata type triples.
-   * Since type metadata always gets generated when writing resources this should never fail on stored resources.
-   * @param metadata - Metadata to check.
-   */
-  protected isExistingContainer(metadata: RepresentationMetadata): boolean {
-    const types = metadata.getAll(RDF.type);
-    if (!types.some((type): boolean => type.value === LDP.Resource)) {
-      throw new InternalServerError('Unknown resource type.');
-    }
-    return this.hasContainerType(types);
   }
 
   /**
@@ -356,8 +370,13 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected async createRecursiveContainers(container: ResourceIdentifier): Promise<void> {
     try {
       const metadata = await this.getNormalizedMetadata(container);
-      if (!this.isExistingContainer(metadata)) {
-        throw new ConflictHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
+      // See #480
+      // Solid, §3.1: "If two URIs differ only in the trailing slash, and the server has associated a resource with
+      // one of them, then the other URI MUST NOT correspond to another resource. Instead, the server MAY respond to
+      // requests for the latter URI with a 301 redirect to the former."
+      // https://solid.github.io/specification/protocol#uri-slash-semantics
+      if (!isContainerPath(metadata.identifier.value)) {
+        throw new ForbiddenHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
       }
     } catch (error: unknown) {
       if (error instanceof NotFoundHttpError) {
