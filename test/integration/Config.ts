@@ -1,5 +1,5 @@
 import { mkdirSync } from 'fs';
-import { Loader } from 'componentsjs';
+import { ComponentsManager } from 'componentsjs';
 import * as rimraf from 'rimraf';
 import { joinFilePath, toSystemFilePath } from '../../src/util/PathUtil';
 
@@ -12,12 +12,12 @@ export async function instantiateFromConfig(componentUrl: string, configFile: st
   variables?: Record<string, any>): Promise<any> {
   // Initialize the Components.js loader
   const mainModulePath = joinFilePath(__dirname, '../../');
-  const loader = new Loader({ mainModulePath });
-  await loader.registerAvailableModuleResources();
+  const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error' });
 
   // Instantiate the component from the config
   const configPath = toSystemFilePath(joinFilePath(__dirname, 'config', configFile));
-  return loader.instantiateFromUrl(componentUrl, configPath, undefined, { variables });
+  await manager.configRegistry.register(configPath);
+  return await manager.instantiate(componentUrl, { variables });
 }
 
 export function getTestFolder(name: string): string {

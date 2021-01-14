@@ -20,12 +20,12 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld": "dist/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld": "dist/components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/": "dist/components/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/config/": "config/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/dist/": "dist/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/": "dist/components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/config/": "config/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/dist/": "dist/"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -90,7 +90,7 @@
     "@types/yargs": "^15.0.5",
     "arrayify-stream": "^1.0.0",
     "async-lock": "^1.2.4",
-    "componentsjs": "^3.6.1",
+    "componentsjs": "^4.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fetch-sparql-endpoint": "^1.8.0",
@@ -117,7 +117,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
-    "componentsjs-generator": "^1.6.0",
+    "componentsjs-generator": "^2.0.0",
     "cross-fetch": "^3.0.6",
     "eslint": "^7.9.0",
     "eslint-config-es": "^3.20.3",
