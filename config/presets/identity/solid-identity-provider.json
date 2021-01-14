@@ -16,7 +16,7 @@
       "@id": "urn:solid-server:default:IdPConfigurationFactory",
       "@type": "DevIdPConfigurationFactory",
       "DevIdPConfigurationFactory:_interactionPolicyHttpHandler": {
-        "@id": "urn:solid-server:default:EmailPasswordInteractionPolicy"
+        "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
       },
       "DevIdPConfigurationFactory:_storageAdapter": {
         "@id": "urn:solid-server:default:IdPStorageAdapter"

@@ -4,5 +4,9 @@ import type { HttpResponse } from '../HttpResponse';
 export interface RenderHandlerInput {}
 
 export abstract class RenderHandler<
-  T extends { viewName: string }
-> extends AsyncHandler<{ response: HttpResponse; props: T }> {}
+  T extends Record<string, unknown>
+> extends AsyncHandler<{
+    response: HttpResponse;
+    viewName: string;
+    props: T;
+  }> {}

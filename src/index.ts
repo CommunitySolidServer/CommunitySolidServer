@@ -116,12 +116,6 @@ export * from './identity/storage/ResourceStoreStorageAdapter';
 
 // SolidIdentityProvider/InteractionPolicies
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
-export * from './identity/interaction/email-password/handler/AbortInteractionHttpHandler';
-export * from './identity/interaction/email-password/handler/BaseInteractionHttpHandler';
-export * from './identity/interaction/email-password/handler/ConfirmInteractionHttpHandler';
-export * from './identity/interaction/email-password/handler/ContinueInteractionHttpHandler';
-export * from './identity/interaction/email-password/handler/GetInteractionHttpHandler';
-export * from './identity/interaction/email-password/handler/LoginInteractionHttpHandler';
 
 // Logging
 export * from './logging/LazyLogger';
@@ -178,6 +172,12 @@ export * from './server/middleware/CorsHandler';
 export * from './server/middleware/HeaderHandler';
 export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
+
+// Server/Util
+export * from './server/util/GetPostRouterHandler';
+export * from './server/util/RenderEjsHandler';
+export * from './server/util/RenderHandler';
+export * from './server/util/RouterHandler';
 
 // Storage/Accessors
 export * from './storage/accessors/DataAccessor';

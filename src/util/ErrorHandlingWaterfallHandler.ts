@@ -1,12 +1,14 @@
-import type { AsyncHandler } from './AsyncHandler';
+import { AsyncHandler } from './AsyncHandler';
 import { WaterfallHandler } from './WaterfallHandler';
 
+export abstract class OnErrorHandler<TIn, TOut> extends AsyncHandler<{ error: unknown; input: TIn }, TOut> {}
+
 export class ErrorHandlingWaterfallHandler<TIn, TOut> extends WaterfallHandler<TIn, TOut> {
-  private readonly onErrorHandler: AsyncHandler<{ error: unknown; input: TIn }, TOut>;
+  private readonly onErrorHandler: OnErrorHandler<TIn, TOut>;
 
   public constructor(
     handlers: AsyncHandler<TIn, TOut>[],
-    onErrorHandler: AsyncHandler<{ error: unknown; input: TIn }, TOut>,
+    onErrorHandler: OnErrorHandler<TIn, TOut>,
   ) {
     super(handlers);
     this.onErrorHandler = onErrorHandler;
