@@ -51,6 +51,10 @@ export class AclInitializer extends Initializer {
 
   // Set up ACL so everything can still be done by default
   // Note that this will need to be adapted to go through all the correct channels later on
+  //
+  // Solid, §4.1: "The root container (pim:Storage) MUST have an ACL auxiliary resource directly associated to it.
+  // The associated ACL document MUST include an authorization policy with acl:Control access privilege."
+  // https://solid.github.io/specification/protocol#storage
   protected async setRootAclDocument(rootAcl: ResourceIdentifier): Promise<void> {
     const acl = `@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
 @prefix  foaf:  <http://xmlns.com/foaf/0.1/>.

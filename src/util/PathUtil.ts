@@ -88,6 +88,8 @@ export function encodeUriPathComponents(path: string): string {
  * @param path - Path to check.
  */
 export function isContainerPath(path: string): boolean {
+  // Solid, §3.1: "Paths ending with a slash denote a container resource."
+  // https://solid.github.io/specification/protocol#uri-slash-semantics
   return path.endsWith('/');
 }
 

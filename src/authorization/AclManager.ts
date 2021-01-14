@@ -2,6 +2,10 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 
 /**
  * Handles where acl resources are stored.
+ *
+ * Solid, §4.3.3: "A given Solid resource MUST NOT be directly associated with more than one ACL auxiliary resource.
+ * A given ACL auxiliary resource MUST NOT be directly associated with more than one Solid resource."
+ * https://solid.github.io/specification/protocol#auxiliary-resources-reserved
  */
 export interface AclManager {
   /**

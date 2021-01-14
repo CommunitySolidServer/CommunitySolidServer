@@ -57,6 +57,11 @@ export interface DataAccessor {
 
   /**
    * Deletes the resource and its corresponding metadata.
+   *
+   * Solid, §5.4: "When a contained resource is deleted, the server MUST also remove the corresponding containment
+   * triple, which has the effect of removing the deleted resource from the containing container."
+   * https://solid.github.io/specification/protocol#deleting-resources
+   *
    * @param identifier - Resource to delete.
    */
   deleteResource: (identifier: ResourceIdentifier) => Promise<void>;
