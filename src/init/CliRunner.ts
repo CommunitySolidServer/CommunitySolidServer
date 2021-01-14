@@ -88,7 +88,7 @@ export class CliRunner {
         this.resolveFilePath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
-         this.resolveFilePath(params.podTemplateFolder, 'templates'),
+         this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
     };
   }
 

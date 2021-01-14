@@ -38,7 +38,7 @@ async function genToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
 }
 
 describe('A TemplatedResourcesGenerator', (): void => {
-  const rootFilePath = 'templates';
+  const rootFilePath = 'templates/pod';
   // Using handlebars engine since it's smaller than any possible dummy
   const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine());
   let cache: { data: any };

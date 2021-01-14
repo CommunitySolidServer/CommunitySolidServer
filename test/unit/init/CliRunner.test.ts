@@ -59,7 +59,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
-          'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates'),
+          'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates/pod'),
         },
       },
     );
