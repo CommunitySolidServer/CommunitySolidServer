@@ -4,8 +4,8 @@ import { RepresentationMetadata } from '../ldp/representation/RepresentationMeta
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
+import { containsResource } from '../storage/StoreUtil';
 import { TEXT_TURTLE } from '../util/ContentTypes';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
 import { PIM, RDF } from '../util/Vocabularies';
@@ -27,27 +27,12 @@ export class RootContainerInitializer extends Initializer {
   }
 
   public async handle(): Promise<void> {
-    if (!await this.hasRootContainer()) {
+    this.logger.debug(`Checking for root container at ${this.baseId.path}`);
+    if (!await containsResource(this.store, this.baseId)) {
       await this.createRootContainer();
-    }
-  }
-
-  /**
-   * Verify if a root container already exists in a ResourceStore.
-   */
-  protected async hasRootContainer(): Promise<boolean> {
-    try {
-      this.logger.debug(`Checking for root container at ${this.baseId.path}`);
-      const result = await this.store.getRepresentation(this.baseId, {});
+    } else {
       this.logger.debug(`Existing root container found at ${this.baseId.path}`);
-      result.data.destroy();
-      return true;
-    } catch (error: unknown) {
-      if (!(error instanceof NotFoundHttpError)) {
-        throw error;
-      }
     }
-    return false;
   }
 
   /**

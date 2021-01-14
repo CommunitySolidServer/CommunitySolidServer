@@ -3,8 +3,8 @@ import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
+import { containsResource } from '../storage/StoreUtil';
 import { TEXT_TURTLE } from '../util/ContentTypes';
-import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { Initializer } from './Initializer';
 
@@ -30,22 +30,10 @@ export class AclInitializer extends Initializer {
 
   public async handle(): Promise<void> {
     const rootAcl = await this.aclManager.getAclDocument({ path: this.baseUrl });
-    if (!await this.hasRootAclDocument(rootAcl)) {
+    if (!await containsResource(this.store, rootAcl)) {
       await this.setRootAclDocument(rootAcl);
-    }
-  }
-
-  protected async hasRootAclDocument(rootAcl: ResourceIdentifier): Promise<boolean> {
-    try {
-      const result = await this.store.getRepresentation(rootAcl, {});
+    } else {
       this.logger.debug(`Existing root ACL document found at ${rootAcl.path}`);
-      result.data.destroy();
-      return true;
-    } catch (error: unknown) {
-      if (error instanceof NotFoundHttpError) {
-        return false;
-      }
-      throw error;
     }
   }
 
