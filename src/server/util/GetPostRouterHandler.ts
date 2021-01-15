@@ -1,17 +1,17 @@
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { HttpHandler, HttpHandlerInput } from '../HttpHandler';
-import { RouterHanlder } from './RouterHandler';
+import { RouterHandler } from './RouterHandler';
 
-export class GetPostRouterHandler extends RouterHanlder {
+export class GetPostRouterHandler extends RouterHandler {
   private readonly getHandler: HttpHandler;
   private readonly postHanlder: HttpHandler;
 
   public constructor(
-    pathname: string,
+    pathnames: string[],
     getHandler: HttpHandler,
     postHandler: HttpHandler,
   ) {
-    super(getHandler, [ 'GET', 'POST' ], [ pathname ]);
+    super(postHandler, [ 'GET', 'POST' ], pathnames);
     this.getHandler = getHandler;
     this.postHanlder = postHandler;
   }
