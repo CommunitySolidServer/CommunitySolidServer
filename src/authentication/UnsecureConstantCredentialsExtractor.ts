@@ -10,6 +10,8 @@ export class UnsecureConstantCredentialsExtractor extends CredentialsExtractor {
   private readonly agent: Credentials;
   private readonly logger = getLoggerFor(this);
 
+  public constructor(agent: string);
+  public constructor(agent: Credentials);
   public constructor(agent: string | Credentials) {
     super();
     this.agent = typeof agent === 'string' ? { webId: agent } : agent;
