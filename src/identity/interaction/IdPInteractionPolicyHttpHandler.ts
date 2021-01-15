@@ -1,9 +1,8 @@
 import type { CanBePromise, interactionPolicy, KoaContextWithOIDC } from 'oidc-provider';
-import { AsyncHandler } from '../../util/AsyncHandler';
-import type { IdentityProviderHttpHandlerInput } from '../IdentityProviderHttpHandler';
+import { IdPInteractionHttpHandler } from './IdPInteractionHttpHandler';
 
 export abstract class IdPInteractionPolicyHttpHandler
-  extends AsyncHandler<IdentityProviderHttpHandlerInput> {
+  extends IdPInteractionHttpHandler {
   public abstract readonly policy: interactionPolicy.Prompt[];
   public abstract url(ctx: KoaContextWithOIDC): CanBePromise<string>;
 }

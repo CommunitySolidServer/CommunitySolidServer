@@ -1,8 +1,8 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
-import type { IdentityProviderHttpHandlerInput } from '../../IdentityProviderHttpHandler';
+import { getLoggerFor } from '../../../logging/LogUtil';
 import type {
-  IdPInteractionHttpHandler,
+  IdPInteractionHttpHandler, IdPInteractionHttpHandlerInput,
 } from '../IdPInteractionHttpHandler';
 import {
   IdPInteractionPolicyHttpHandler,
@@ -15,6 +15,7 @@ export interface EmailPasswordInteractionPolicyHttpHandlerArgs {
 export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPolicyHttpHandler {
   public readonly policy: interactionPolicy.Prompt[];
   private readonly interactionHttpHandler: IdPInteractionHttpHandler;
+  private readonly logger = getLoggerFor(this);
 
   public constructor(args: EmailPasswordInteractionPolicyHttpHandlerArgs) {
     super();
@@ -32,11 +33,11 @@ export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPol
     return `/interaction/${ctx.oidc.uid}`;
   }
 
-  public async canHandle(input: IdentityProviderHttpHandlerInput): Promise<void> {
+  public async canHandle(input: IdPInteractionHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.canHandle(input);
   }
 
-  public async handle(input: IdentityProviderHttpHandlerInput): Promise<void> {
+  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.handle(input);
   }
 }

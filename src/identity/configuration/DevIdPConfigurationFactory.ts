@@ -1,22 +1,18 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable id-length */
 /* eslint-disable max-len */
-import type { Adapter } from 'oidc-provider';
-import type { IdPInteractionPolicyHttpHandler } from '../interaction/IdPInteractionPolicyHttpHandler';
-import type { IdPConfiguration } from './IdPConfiguration';
+import type { Adapter, Configuration } from 'oidc-provider';
 import { IdPConfigurationFactory } from './IdPConfigurationFactory';
 
 export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
-  private readonly interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler;
   private readonly storageAdapter: Adapter;
 
-  public constructor(interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler, storageAdapter: Adapter) {
+  public constructor(storageAdapter: Adapter) {
     super();
-    this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
     this.storageAdapter = storageAdapter;
   }
 
-  public createConfiguration(): IdPConfiguration {
+  public createConfiguration(): Configuration {
     // Aliasing the "this" variable is an anti-pattern that is better served by using
     // arrow functions. Unfortunately, the adapter function MUST be a named function
     // See https://github.com/panva/node-oidc-provider/issues/799
@@ -34,7 +30,6 @@ export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
         //   redirect_uris: ['http://sso-client.dev/providers/7/open_id', 'http://sso-client.dev/providers/8/open_id'],
         // }
       ],
-      interactions: this.interactionPolicyHttpHandler,
       cookies: {
         long: { signed: true, maxAge: (1 * 24 * 60 * 60) * 1000 },
         short: { signed: true },
