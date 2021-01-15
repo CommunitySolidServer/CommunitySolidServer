@@ -74,7 +74,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
   public async upsert(id: string, payload: AdapterPayload, expiresIn: number): Promise<undefined | void> {
     const resourceIdentifier: ResourceIdentifier = this.resourceIdentifier(id);
 
-    // if (this.model === 'Session') {
+    // If (this.model === 'Session') {
     //   this.lru.set(InMemoryIdPStorageAdapter.sessionUidKeyFor(payload.uid as string), id, expiresIn * 1000);
     // }
 
@@ -101,7 +101,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
   }
 
   public async revokeByGrantId(grantId: string): Promise<undefined | void> {
-    // const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
+    // Const grantKey = InMemoryIdPStorageAdapter.grantKeyFor(grantId);
     // const grant = this.lru.get(grantKey);
     // if (grant) {
     //   (grant as string[]).forEach((token): void => this.lru.del(token));
