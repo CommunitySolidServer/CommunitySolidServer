@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AclManager | Community Solid Server - v0.4.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.4.1">
+	<title>AclManager | Community Solid Server - v0.5.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.5.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.4.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.5.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.4.1</a>
+					<a href="../modules.html">Community Solid Server - v0.5.0</a>
 				</li>
 				<li>
 					<a href="../modules/index.html">index</a>
@@ -73,6 +73,9 @@
 					<div class="lead">
 						<p>Handles where acl resources are stored.</p>
 					</div>
+					<p>Solid, §4.3.3: &quot;A given Solid resource MUST NOT be directly associated with more than one ACL auxiliary resource.
+						A given ACL auxiliary resource MUST NOT be directly associated with more than one Solid resource.&quot;
+					<a href="https://solid.github.io/specification/protocol#auxiliary-resources-reserved">https://solid.github.io/specification/protocol#auxiliary-resources-reserved</a></p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -106,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Acl<wbr>Constrained<wbr>Resource<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/authorization/AclManager.ts#L36">src/authorization/AclManager.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/authorization/AclManager.ts#L40">src/authorization/AclManager.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -153,7 +156,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Acl<wbr>Document<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/authorization/AclManager.ts#L15">src/authorization/AclManager.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/authorization/AclManager.ts#L19">src/authorization/AclManager.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">is<wbr>Acl<wbr>Document<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/409782c/src/authorization/AclManager.ts#L25">src/authorization/AclManager.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/authorization/AclManager.ts#L29">src/authorization/AclManager.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
