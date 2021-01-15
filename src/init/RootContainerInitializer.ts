@@ -21,13 +21,13 @@ import namedNode = DataFactory.namedNode;
  */
 export class RootContainerInitializer extends Initializer {
   protected readonly logger = getLoggerFor(this);
-  private readonly baseId: ResourceIdentifier;
   private readonly store: ResourceStore;
+  private readonly baseId: ResourceIdentifier;
 
-  public constructor(baseUrl: string, store: ResourceStore) {
+  public constructor(settings: { store: ResourceStore; baseUrl: string }) {
     super();
-    this.baseId = { path: ensureTrailingSlash(baseUrl) };
-    this.store = store;
+    this.store = settings.store;
+    this.baseId = { path: ensureTrailingSlash(settings.baseUrl) };
   }
 
   public async handle(): Promise<void> {

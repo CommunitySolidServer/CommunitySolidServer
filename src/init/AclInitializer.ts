@@ -9,6 +9,7 @@ import { TEXT_TURTLE } from '../util/ContentTypes';
 import { ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import { Initializer } from './Initializer';
 
+const DEFAULT_ACL_PATH = joinFilePath(__dirname, '../../templates/root/.acl');
 /**
  * Ensures that a root ACL is present.
  */
@@ -17,16 +18,19 @@ export class AclInitializer extends Initializer {
   private readonly store: ResourceStore;
   private readonly aclManager: AclManager;
   private readonly root: ResourceIdentifier;
+  private readonly aclPath: string;
 
-  public constructor(
-    baseUrl: string,
-    store: ResourceStore,
-    aclManager: AclManager,
-  ) {
+  public constructor(settings: {
+    store: ResourceStore;
+    aclManager: AclManager;
+    baseUrl: string;
+    aclPath?: string;
+  }) {
     super();
-    this.store = store;
-    this.aclManager = aclManager;
-    this.root = { path: ensureTrailingSlash(baseUrl) };
+    this.store = settings.store;
+    this.aclManager = settings.aclManager;
+    this.root = { path: ensureTrailingSlash(settings.baseUrl) };
+    this.aclPath = settings.aclPath ?? DEFAULT_ACL_PATH;
   }
 
   public async handle(): Promise<void> {
@@ -42,7 +46,7 @@ export class AclInitializer extends Initializer {
   // The associated ACL document MUST include an authorization policy with acl:Control access privilege."
   // https://solid.github.io/specification/protocol#storage
   protected async setRootAclDocument(rootAcl: ResourceIdentifier): Promise<void> {
-    const acl = await fsPromises.readFile(joinFilePath(__dirname, '../../templates/root/.acl'), 'utf8');
+    const acl = await fsPromises.readFile(this.aclPath, 'utf8');
     this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
     await this.store.setRepresentation(rootAcl, new BasicRepresentation(acl, rootAcl, TEXT_TURTLE));
   }
