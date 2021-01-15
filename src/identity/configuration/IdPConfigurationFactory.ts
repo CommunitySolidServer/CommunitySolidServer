@@ -1,5 +1,5 @@
-import type { IdPConfiguration } from './IdPConfiguration';
+import type { Configuration } from 'oidc-provider';
 
 export abstract class IdPConfigurationFactory {
-  abstract createConfiguration(): IdPConfiguration;
+  abstract createConfiguration(): Configuration;
 }
