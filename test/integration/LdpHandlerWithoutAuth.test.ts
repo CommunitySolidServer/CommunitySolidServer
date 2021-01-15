@@ -214,8 +214,8 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
 
     response = await resourceHelper.getContainer(folderId);
     expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
-    expect(response._getBuffer().toString()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
+    expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
+    expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
     expect(response.getHeaders().link).toEqual(
       [ `<${LDP.Container}>; rel="type"`, `<${LDP.BasicContainer}>; rel="type"`, `<${LDP.Resource}>; rel="type"` ],
     );
