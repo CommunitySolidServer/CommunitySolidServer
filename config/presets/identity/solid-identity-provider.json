@@ -15,30 +15,28 @@
     {
       "@id": "urn:solid-server:default:IdPConfigurationFactory",
       "@type": "DevIdPConfigurationFactory",
-      "DevIdPConfigurationFactory:_interactionPolicyHttpHandler": {
-        "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
-      },
       "DevIdPConfigurationFactory:_storageAdapter": {
         "@id": "urn:solid-server:default:IdPStorageAdapter"
       }
     },
     {
-      "@id": "urn:solid-server:default:IdentityProvider",
-      "@type": "IdentityProvider",
-      "IdentityProvider:_issuer": {
+      "@id": "urn:solid-server:default:IdentityProviderFactory",
+      "@type": "IdentityProviderFactory",
+      "IdentityProviderFactory:_issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "IdentityProvider:_configurationFactory": {
+      "IdentityProviderFactory:_configurationFactory": {
         "@id": "urn:solid-server:default:IdPConfigurationFactory"
-      },
-      "IdentityProvider:_openIDConfigurationRoute": "/.well-known/openid-configuration",
-      "IdentityProvider:_interactionRoutePrefix": "/interaction/"
+      }
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "IdentityProviderHttpHandler",
-      "IdentityProviderHttpHandler:_provider": {
-        "@id": "urn:solid-server:default:IdentityProvider"
+      "IdentityProviderHttpHandler:_providerFactory": {
+        "@id": "urn:solid-server:default:IdentityProviderFactory"
+      },
+      "IdentityProviderHttpHandler:_interactionPolicyHttpHandler": {
+        "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
       }
     }
   ]

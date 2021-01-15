@@ -1,5 +1,10 @@
+import type { Provider } from 'oidc-provider';
+import type { HttpHandlerInput } from '../../server/HttpHandler';
 import { AsyncHandler } from '../../util/AsyncHandler';
-import type { IdentityProviderHttpHandlerInput } from '../IdentityProviderHttpHandler';
+
+export type IdPInteractionHttpHandlerInput = HttpHandlerInput & {
+  provider: Provider;
+};
 
 export abstract class IdPInteractionHttpHandler
-  extends AsyncHandler<IdentityProviderHttpHandlerInput> {}
+  extends AsyncHandler<IdPInteractionHttpHandlerInput> {}

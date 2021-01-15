@@ -102,9 +102,8 @@ export * from './ldp/UnsecureWebSocketsProtocol';
 // SolidIdentityProvider
 export * from './identity/interaction/IdPInteractionHttpHandler';
 export * from './identity/interaction/IdPInteractionPolicyHttpHandler';
-export * from './identity/configuration/IdPConfiguration';
 export * from './identity/configuration/IdPConfigurationFactory';
-export * from './identity/IdentityProvider';
+export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
@@ -114,8 +113,14 @@ export * from './identity/configuration/DevIdPConfigurationFactory';
 export * from './identity/storage/InMemoryIdPStorageAdapter';
 export * from './identity/storage/ResourceStoreStorageAdapter';
 
-// SolidIdentityProvider/InteractionPolicies
+// SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
+export * from './identity/interaction/email-password/handler/InitialInteractionChooser';
+export * from './identity/interaction/email-password/handler/OidcInteractionCompleter';
+export * from './identity/interaction/email-password/handler/RegisterHanlder';
+export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/LoginHandler';
 
 // Logging
 export * from './logging/LazyLogger';
@@ -178,6 +183,7 @@ export * from './server/util/GetPostRouterHandler';
 export * from './server/util/RenderEjsHandler';
 export * from './server/util/RenderHandler';
 export * from './server/util/RouterHandler';
+export * from './server/util/BasicOnErrorHttpHandler';
 
 // Storage/Accessors
 export * from './storage/accessors/DataAccessor';
@@ -281,3 +287,4 @@ export * from './util/RecordObject';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
 export * from './util/Vocabularies';
+export * from './util/ErrorHandlingWaterfallHandler';
