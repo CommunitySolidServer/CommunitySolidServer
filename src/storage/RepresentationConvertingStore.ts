@@ -3,26 +3,13 @@ import type { RepresentationPreferences } from '../ldp/representation/Representa
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { Conditions } from './Conditions';
-import { IfNeededConverter } from './conversion/IfNeededConverter';
 import { PassthroughConverter } from './conversion/PassthroughConverter';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';
 
 /**
- * Store that overrides all functions that take or output a {@link Representation},
- * so `getRepresentation`, `addResource`, and `setRepresentation`.
- *
- * For incoming representations, they will be converted if an incoming converter and preferences have been set.
- * The converted Representation will be passed along.
- *
- * For outgoing representations, they will be converted if there is an outgoing converter.
- *
- * Conversions will only happen if required and will not happen if the Representation is already in the correct format.
- *
- * In the future this class should take the preferences of the request into account.
- * Even if there is a match with the output from the store,
- * if there is a low weight for that type conversions might still be preferred.
+ * Store that provides (optional) conversion of incoming and outgoing {@link Representation}s.
  */
 export class RepresentationConvertingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   protected readonly logger = getLoggerFor(this);
@@ -41,8 +28,8 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   }) {
     super(source);
     const { inConverter, outConverter, inType } = options;
-    this.inConverter = inConverter ? new IfNeededConverter(inConverter) : new PassthroughConverter();
-    this.outConverter = outConverter ? new IfNeededConverter(outConverter) : new PassthroughConverter();
+    this.inConverter = inConverter ?? new PassthroughConverter();
+    this.outConverter = outConverter ?? new PassthroughConverter();
     this.inPreferences = !inType ? {} : { type: { [inType]: 1 }};
   }
 
