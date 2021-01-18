@@ -115,12 +115,13 @@ export * from './identity/storage/ResourceStoreStorageAdapter';
 
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
-export * from './identity/interaction/email-password/handler/InitialInteractionChooser';
+export * from './identity/interaction/email-password/handler/ChooseInitialInteractionHandler';
 export * from './identity/interaction/email-password/handler/OidcInteractionCompleter';
 export * from './identity/interaction/email-password/handler/RegisterHanlder';
 export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
+export * from './identity/interaction/email-password/handler/IdpPassthroughToRenderHandler';
 
 // Logging
 export * from './logging/LazyLogger';

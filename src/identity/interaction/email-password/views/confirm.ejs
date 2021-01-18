@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Authorize</title>
+    <style type="text/css">
+      <%- include('main.css', {}); %>
+     </style>
+  </head>
+  <body>
+    <div class="main-content">
+      <section class="main-content-section">
+        <div class="wrapper">
+          <h1 class="title--white">Authorize</h1>
+          <div class="login-panel">
+            <div class="panel-body">
+              <form autocomplete="off" action="<%= details.pathPrefix %>/interaction/<%= details.uid %>/confirm" method="post">
+                <button autofocus type="submit" name="submit" class="ids-link-filled">Continue</button>
+
+                <hr />
+                <div class="space-between">
+                  <a href="<%= details.returnTo %>" class="link">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

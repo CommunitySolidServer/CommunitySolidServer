@@ -3,19 +3,28 @@ import { renderFile } from 'ejs';
 import type { HttpResponse } from '../HttpResponse';
 import { RenderHandler } from './RenderHandler';
 
-export class RenderEjsHandler<
-  T extends Record<string, unknown>
-> extends RenderHandler<T> {
-  private readonly ejsTemplatesDirectory: string;
+export class RenderEjsHandler<T> extends RenderHandler<T> {
+  private readonly ejsTemplatePath: string;
+  private readonly rootFilePath: string;
 
-  public constructor(ejsTemplatesDirectory: string) {
+  public constructor(rootFilePath: string, ejsTemplatePath: string) {
     super();
-    this.ejsTemplatesDirectory = ejsTemplatesDirectory;
+    this.rootFilePath = rootFilePath;
+    this.ejsTemplatePath = ejsTemplatePath;
   }
 
-  public async handle(input: { response: HttpResponse; props: T; viewName: string }): Promise<void> {
-    const { viewName, props, response } = input;
-    const renderedHtml = await renderFile(path.join(this.ejsTemplatesDirectory, `${viewName}.ejs`), props);
+  public async handle(input: {
+    response: HttpResponse;
+    props: T;
+  }): Promise<void> {
+    const { props, response } = input;
+    const renderedHtml = await renderFile(
+      path.join(
+        this.rootFilePath,
+        this.ejsTemplatePath,
+      ),
+      props,
+    );
     // Content-Type must not be cammel case
     // eslint-disable-next-line @typescript-eslint/naming-convention
     response.writeHead(200, { 'Content-Type': 'text/html' });
