@@ -1,9 +1,11 @@
 import { mkdirSync } from 'fs';
+import type { IModuleState } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import * as rimraf from 'rimraf';
 import { joinFilePath } from '../../src/util/PathUtil';
 
 export const BASE = 'http://test.com';
+let cachedModuleState: IModuleState;
 
 /**
  * Returns a component instantiated from a Components.js configuration.
@@ -12,7 +14,8 @@ export async function instantiateFromConfig(componentUrl: string, configFile: st
   variables?: Record<string, any>): Promise<any> {
   // Initialize the Components.js loader
   const mainModulePath = joinFilePath(__dirname, '../../');
-  const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error' });
+  const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error', moduleState: cachedModuleState });
+  cachedModuleState = manager.moduleState;
 
   // Instantiate the component from the config
   const configPath = joinFilePath(__dirname, 'config', configFile);
