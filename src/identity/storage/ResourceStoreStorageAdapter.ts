@@ -6,6 +6,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { ensureTrailingSlash } from '../../util/PathUtil';
+import { readableToString } from '../../util/StreamUtil';
 
 export class ResourceStoreStorageAdapter implements Adapter {
   private readonly baseUrl: string;
@@ -49,16 +50,16 @@ export class ResourceStoreStorageAdapter implements Adapter {
   public async find(id: string): Promise<AdapterPayload | undefined | void> {
     const representation: Representation = await this.store.getRepresentation(this.resourceIdentifier(id), {});
 
-    const resource = await new Promise<string>((resolve, reject): void => {
-      let potentialResource = '';
-      representation.data.on('data', (data): void => {
-        potentialResource += data.toString();
-      });
-      representation.data.on('end', (): void => resolve(potentialResource));
-      representation.data.on('error', reject);
-    });
+    // const resource = await new Promise<string>((resolve, reject): void => {
+    //   let potentialResource = '';
+    //   representation.data.on('data', (data): void => {
+    //     potentialResource += data.toString();
+    //   });
+    //   representation.data.on('end', (): void => resolve(potentialResource));
+    //   representation.data.on('error', reject);
+    // });
 
-    return JSON.parse(resource) as AdapterPayload | undefined;
+    return JSON.parse(await readableToString(representation.data)) as AdapterPayload | undefined;
   }
 
   public async findByUid(uid: string): Promise<AdapterPayload | undefined | void> {
