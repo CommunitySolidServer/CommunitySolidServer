@@ -148,6 +148,47 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     ])).toBe(true);
   });
 
+  it('handles composite INSERT/DELETE updates.', async(): Promise<void> => {
+    await handler.handle({ identifier: { path: 'path' },
+      patch: { algebra: translate(
+        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
+        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> };' +
+        'DELETE WHERE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.' +
+        '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
+        { quads: true },
+      ) } as SparqlUpdatePatch });
+    expect(await basicChecks([
+      quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')),
+      quad(namedNode('http://test.com/s2'),
+        namedNode('http://test.com/p2'),
+        namedNode('http://test.com/o2')),
+    ])).toBe(true);
+  });
+
+  it('handles composite DELETE/INSERT updates.', async(): Promise<void> => {
+    await handler.handle({ identifier: { path: 'path' },
+      patch: { algebra: translate(
+        'DELETE DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.' +
+        '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> };' +
+        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
+        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
+        { quads: true },
+      ) } as SparqlUpdatePatch });
+    expect(await basicChecks([
+      quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')),
+      quad(namedNode('http://test.com/s1'),
+        namedNode('http://test.com/p1'),
+        namedNode('http://test.com/o1')),
+      quad(namedNode('http://test.com/s2'),
+        namedNode('http://test.com/p2'),
+        namedNode('http://test.com/o2')),
+    ])).toBe(true);
+  });
+
   it('rejects GRAPH inserts.', async(): Promise<void> => {
     const handle = handler.handle({ identifier: { path: 'path' },
       patch: { algebra: translate(

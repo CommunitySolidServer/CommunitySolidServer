@@ -22,8 +22,8 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
     if (!this.isSparql(body)) {
       throw new NotImplementedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }
-    if (!this.isDeleteInsert(body.algebra)) {
-      throw new NotImplementedHttpError('Cannot determine permissions of a PATCH without DELETE/INSERT.');
+    if (!this.isSupported(body.algebra)) {
+      throw new NotImplementedHttpError('Can only determine permissions of a PATCH with DELETE/INSERT operations.');
     }
   }
 
@@ -42,15 +42,33 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
     return Boolean((data as SparqlUpdatePatch).algebra);
   }
 
+  private isSupported(op: Algebra.Operation): boolean {
+    if (op.type === Algebra.types.DELETE_INSERT) {
+      return true;
+    }
+    if (op.type === Algebra.types.COMPOSITE_UPDATE) {
+      return (op as Algebra.CompositeUpdate).updates.every((update): boolean => this.isSupported(update));
+    }
+    return false;
+  }
+
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
     return op.type === Algebra.types.DELETE_INSERT;
   }
 
-  private needsAppend(update: Algebra.DeleteInsert): boolean {
-    return Boolean(update.insert && update.insert.length > 0);
+  private needsAppend(update: Algebra.Operation): boolean {
+    if (this.isDeleteInsert(update)) {
+      return Boolean(update.insert && update.insert.length > 0);
+    }
+
+    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.needsAppend(op));
   }
 
-  private needsWrite(update: Algebra.DeleteInsert): boolean {
-    return Boolean(update.delete && update.delete.length > 0);
+  private needsWrite(update: Algebra.Operation): boolean {
+    if (this.isDeleteInsert(update)) {
+      return Boolean(update.delete && update.delete.length > 0);
+    }
+
+    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.needsWrite(op));
   }
 }

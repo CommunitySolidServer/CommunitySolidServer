@@ -98,21 +98,14 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     expect(response._getData()).toHaveLength(0);
 
     // GET
-    requestUrl = new URL(id);
-    response = await performRequest(
-      handler,
-      requestUrl,
-      'GET',
-      { accept: 'text/turtle' },
-      [],
-    );
+    response = await performRequest(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
     expect(response.statusCode).toBe(200);
     expect(response._getData()).toContain(
       '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
     );
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
     const parser = new Parser();
-    const triples = parser.parse(response._getData());
+    let triples = parser.parse(response._getData());
     expect(triples).toBeRdfIsomorphic([
       quad(
         namedNode('http://test.com/s2'),
@@ -123,6 +116,36 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         namedNode('http://test.com/s3'),
         namedNode('http://test.com/p3'),
         namedNode('http://test.com/o3'),
+      ),
+    ]);
+
+    // PATCH
+    response = await performRequest(
+      handler,
+      requestUrl,
+      'PATCH',
+      { 'content-type': 'application/sparql-update', 'transfer-encoding': 'chunked' },
+      [ 'DELETE DATA { <s2> <http://test.com/p2> <http://test.com/o2> }; ',
+        'INSERT DATA {<s4> <http://test.com/p4> <http://test.com/o4>}',
+      ],
+    );
+    expect(response.statusCode).toBe(205);
+    expect(response._getData()).toHaveLength(0);
+
+    // GET
+    response = await performRequest(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
+    expect(response.statusCode).toBe(200);
+    triples = parser.parse(response._getData());
+    expect(triples).toBeRdfIsomorphic([
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode('http://test.com/s4'),
+        namedNode('http://test.com/p4'),
+        namedNode('http://test.com/o4'),
       ),
     ]);
   });

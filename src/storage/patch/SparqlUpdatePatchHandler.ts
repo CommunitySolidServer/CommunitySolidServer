@@ -41,11 +41,43 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     // Verify the patch
     const { identifier, patch } = input;
     const op = patch.algebra;
-    if (!this.isDeleteInsert(op)) {
+    this.validateUpdate(op);
+
+    const lock = await this.locker.acquire(identifier);
+    try {
+      await this.applyPatch(identifier, op);
+    } finally {
+      await lock.release();
+    }
+  }
+
+  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
+    return op.type === Algebra.types.DELETE_INSERT;
+  }
+
+  private isComposite(op: Algebra.Operation): op is Algebra.CompositeUpdate {
+    return op.type === Algebra.types.COMPOSITE_UPDATE;
+  }
+
+  /**
+   * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
+   */
+  private validateUpdate(op: Algebra.Operation): void {
+    if (this.isDeleteInsert(op)) {
+      this.validateDeleteInsert(op);
+    } else if (this.isComposite(op)) {
+      this.validateComposite(op);
+    } else {
       this.logger.warn(`Unsupported operation: ${op.type}`);
       throw new NotImplementedHttpError('Only DELETE/INSERT SPARQL update operations are supported');
     }
+  }
 
+  /**
+   * Checks if the input DELETE/INSERT is supported.
+   * This means: no GRAPH statements, no DELETE WHERE.
+   */
+  private validateDeleteInsert(op: Algebra.DeleteInsert): void {
     const def = defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
@@ -62,24 +94,21 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       this.logger.warn('WHERE statements are not supported');
       throw new NotImplementedHttpError('WHERE statements are not supported');
     }
-
-    const lock = await this.locker.acquire(identifier);
-    try {
-      await this.applyPatch(identifier, deletes, inserts);
-    } finally {
-      await lock.release();
-    }
-  }
-
-  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
-    return op.type === Algebra.types.DELETE_INSERT;
   }
 
   /**
-   * Applies the given deletes and inserts to the resource.
+   * Checks if the composite update only contains supported update components.
    */
-  private async applyPatch(identifier: ResourceIdentifier, deletes: Algebra.Pattern[], inserts: Algebra.Pattern[]):
-  Promise<void> {
+  private validateComposite(op: Algebra.CompositeUpdate): void {
+    for (const update of op.updates) {
+      this.validateUpdate(update);
+    }
+  }
+
+  /**
+   * Apply the given algebra operation to the given identifier.
+   */
+  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<void> {
     const store = new Store<BaseQuad>();
     try {
       // Read the quads of the current representation
@@ -100,13 +129,42 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       this.logger.debug(`Patching new resource ${identifier.path}.`);
     }
 
-    // Apply the patch
-    store.removeQuads(deletes);
-    store.addQuads(inserts);
-    this.logger.debug(`Removed ${deletes.length} and added ${inserts.length} quads to ${identifier.path}.`);
+    this.applyOperation(store, op);
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
     await this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS));
+  }
+
+  /**
+   * Apply the given algebra update operation to the store of quads.
+   */
+  private applyOperation(store: Store<BaseQuad>, op: Algebra.Operation): void {
+    if (this.isDeleteInsert(op)) {
+      this.applyDeleteInsert(store, op);
+    // Only other options is Composite after passing `validateUpdate`
+    } else {
+      this.applyComposite(store, op as Algebra.CompositeUpdate);
+    }
+  }
+
+  /**
+   * Apply the given composite update operation to the store of quads.
+   */
+  private applyComposite(store: Store<BaseQuad>, op: Algebra.CompositeUpdate): void {
+    for (const update of op.updates) {
+      this.applyOperation(store, update);
+    }
+  }
+
+  /**
+   * Apply the given DELETE/INSERT update operation to the store of quads.
+   */
+  private applyDeleteInsert(store: Store<BaseQuad>, op: Algebra.DeleteInsert): void {
+    const deletes = op.delete ?? [];
+    const inserts = op.insert ?? [];
+    store.removeQuads(deletes);
+    store.addQuads(inserts);
+    this.logger.debug(`Removed ${deletes.length} and added ${inserts.length} quads.`);
   }
 }
