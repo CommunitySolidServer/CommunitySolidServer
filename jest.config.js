@@ -14,19 +14,12 @@ module.exports = {
   ],
   testEnvironment: 'node',
   setupFilesAfterEnv: [ 'jest-rdf', '<rootDir>/test/util/SetupTests.ts' ],
+  collectCoverage: true,
   coveragePathIgnorePatterns: [
     '/dist/',
     '/node_modules/',
     '/test/',
   ],
-  coverageThreshold: {
-    './src': {
-      branches: 100,
-      functions: 100,
-      lines: 100,
-      statements: 100,
-    },
-  },
   // Slower machines had problems calling the WebSocket integration callbacks on time
   testTimeout: 10000,
 };

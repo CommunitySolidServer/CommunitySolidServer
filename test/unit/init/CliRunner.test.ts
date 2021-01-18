@@ -157,7 +157,9 @@ describe('CliRunner', (): void => {
 
   it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
     manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run();
+    new CliRunner().run({
+      argv: [ 'node', 'script' ],
+    });
     await new Promise((resolve): any => setImmediate(resolve));
 
     expect(write).toHaveBeenCalledTimes(2);
