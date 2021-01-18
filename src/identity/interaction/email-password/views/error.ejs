@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title><%= message %></title>
+    <style type="text/css">
+      <%- include('main.css', {}); %>
+     </style>
+  </head>
+  <body>
+    <div class="main-content">
+      <section class="main-content-section">
+        <div class="wrapper">
+          <section class="toaster-wrap--error toaster" style="margin-top: 114px">
+            <div class="toaster-wrap__content">
+              <p class="content__message">
+                <i class="icon fa fa-exclamation-circle"> </i> <%= message %>
+              </p>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
