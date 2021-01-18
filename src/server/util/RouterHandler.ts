@@ -4,7 +4,7 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 
-export class RouterHanlder extends HttpHandler {
+export class RouterHandler extends HttpHandler {
   protected readonly handler: HttpHandler;
   protected readonly allowedMethods: string[];
   protected readonly allowedPathnamesRegEx: RegExp[];
