@@ -56,7 +56,7 @@
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
     "test:integration": "jest test/integration",
-    "test:unit": "jest --collectCoverage test/unit",
+    "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
