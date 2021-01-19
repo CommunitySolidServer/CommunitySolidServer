@@ -104,7 +104,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:loggingLevel': 'debug',
           'urn:solid-server:default:variable:podTemplateFolder': '/var/cwd/templates',
           'urn:solid-server:default:variable:port': 4000,
-          'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
+          'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
         },
       },
