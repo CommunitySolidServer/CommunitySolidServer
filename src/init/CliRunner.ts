@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { joinFilePath, ensureTrailingSlash } from '../util/PathUtil';
+import { joinFilePath, ensureTrailingSlash, absoluteFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -71,7 +71,7 @@ export class CliRunner {
    */
   protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
     return typeof cwdPath === 'string' ?
-      joinFilePath(process.cwd(), cwdPath) :
+      absoluteFilePath(cwdPath) :
       joinFilePath(__dirname, '../../', modulePath);
   }
 
