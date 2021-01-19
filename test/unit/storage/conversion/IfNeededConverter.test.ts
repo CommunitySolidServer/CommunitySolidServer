@@ -100,4 +100,17 @@ describe('An IfNeededConverter', (): void => {
     expect(innerConverter.handle).toHaveBeenCalledTimes(1);
     expect(innerConverter.handle).toHaveBeenCalledWith(args);
   });
+
+  it('does not support conversion when there is no inner converter.', async(): Promise<void> => {
+    const emptyConverter = new IfNeededConverter();
+    const preferences = { type: { 'text/turtle': 0 }};
+    const args = { identifier, representation, preferences };
+
+    await expect(emptyConverter.canHandle(args)).rejects
+      .toThrow('The content type does not match the preferences');
+    await expect(emptyConverter.handle(args)).rejects
+      .toThrow('The content type does not match the preferences');
+    await expect(emptyConverter.handleSafe(args)).rejects
+      .toThrow('The content type does not match the preferences');
+  });
 });

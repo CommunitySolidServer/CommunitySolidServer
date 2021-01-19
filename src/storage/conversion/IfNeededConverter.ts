@@ -1,9 +1,12 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import { UnsupportedAsyncHandler } from '../../util/UnsupportedAsyncHandler';
 import { matchingMediaTypes } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
+
+const EMPTY_CONVERTER = new UnsupportedAsyncHandler('The content type does not match the preferences');
 
 /**
  * A {@link RepresentationConverter} that only converts representations
@@ -13,7 +16,7 @@ export class IfNeededConverter extends RepresentationConverter {
   private readonly converter: RepresentationConverter;
   protected readonly logger = getLoggerFor(this);
 
-  public constructor(converter: RepresentationConverter) {
+  public constructor(converter: RepresentationConverter = EMPTY_CONVERTER) {
     super();
     this.converter = converter;
   }
