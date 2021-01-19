@@ -86,4 +86,31 @@ describe('A server with authorization', (): void => {
     );
     expect(response.statusCode).toBe(401);
   });
+
+  // https://github.com/solid/community-server/issues/498
+  it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
+
+    // PUT
+    let requestUrl = new URL('http://test.com/foo/bar');
+    let response: MockResponse<any> = await performRequest(
+      handler,
+      requestUrl,
+      'PUT',
+      { 'content-length': '0', 'content-type': 'text/turtle' },
+      [],
+    );
+    expect(response.statusCode).toBe(205);
+
+    // GET
+    requestUrl = new URL('http://test.com/foo/bar');
+    response = await performRequest(
+      handler,
+      requestUrl,
+      'GET',
+      { 'content-length': '0' },
+      [],
+    );
+    expect(response.statusCode).toBe(200);
+  });
 });

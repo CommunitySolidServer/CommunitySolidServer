@@ -24,7 +24,8 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
     );
   }
 
-  public async handle({ representation: quads, preferences }: RepresentationConverterArgs): Promise<Representation> {
+  public async handle({ identifier, representation: quads, preferences }: RepresentationConverterArgs):
+  Promise<Representation> {
     const contentType = matchingMediaTypes(preferences.type, await this.getOutputTypes())[0];
     let data: Readable;
 
@@ -32,7 +33,8 @@ export class QuadToRdfConverter extends TypedRepresentationConverter {
     if (/(?:turtle|trig)$/u.test(contentType)) {
       const prefixes = Object.fromEntries(quads.metadata.quads(null, PREFERRED_PREFIX_TERM, null)
         .map(({ subject, object }): [string, string] => [ object.value, subject.value ]));
-      data = pipeSafely(quads.data, new StreamWriter({ format: contentType, prefixes }));
+      const options = { format: contentType, baseIRI: identifier.path, prefixes };
+      data = pipeSafely(quads.data, new StreamWriter(options));
     // Otherwise, write without prefixes
     } else {
       data = rdfSerializer.serialize(quads.data, { contentType }) as Readable;

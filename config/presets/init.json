@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
       "@id": "urn:solid-server:default:Initializer",
@@ -15,24 +15,24 @@
         {
           "@id": "urn:solid-server:default:RootContainerInitializer",
           "@type": "RootContainerInitializer",
-          "RootContainerInitializer:_baseUrl": {
-            "@id": "urn:solid-server:default:variable:baseUrl"
-          },
-          "RootContainerInitializer:_store": {
+          "RootContainerInitializer:_settings_store": {
             "@id": "urn:solid-server:default:ResourceStore"
+          },
+          "RootContainerInitializer:_settings_baseUrl": {
+            "@id": "urn:solid-server:default:variable:baseUrl"
           }
         },
         {
           "@id": "urn:solid-server:default:AclInitializer",
           "@type": "AclInitializer",
-          "AclInitializer:_baseUrl": {
-            "@id": "urn:solid-server:default:variable:baseUrl"
-          },
-          "AclInitializer:_store": {
+          "AclInitializer:_settings_store": {
             "@id": "urn:solid-server:default:ResourceStore"
           },
-          "AclInitializer:_aclManager": {
+          "AclInitializer:_settings_aclManager": {
             "@id": "urn:solid-server:default:AclManager"
+          },
+          "AclInitializer:_settings_baseUrl": {
+            "@id": "urn:solid-server:default:variable:baseUrl"
           }
         },
         {

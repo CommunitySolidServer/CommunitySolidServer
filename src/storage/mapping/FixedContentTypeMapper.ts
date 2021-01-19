@@ -1,83 +1,79 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
+import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import {
-  encodeUriPathComponents,
-  ensureTrailingSlash,
-  isContainerIdentifier,
-  normalizeFilePath,
-  trimTrailingSlashes,
-} from '../../util/PathUtil';
-import type { FileIdentifierMapper, ResourceLink } from './FileIdentifierMapper';
-import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
+import { BaseFileIdentifierMapper } from './BaseFileIdentifierMapper';
+import type { ResourceLink } from './FileIdentifierMapper';
 
 /**
  * A mapper that always returns a fixed content type for files.
  */
-export class FixedContentTypeMapper implements FileIdentifierMapper {
-  protected readonly logger = getLoggerFor(this);
+export class FixedContentTypeMapper extends BaseFileIdentifierMapper {
+  protected readonly contentType: string;
+  protected readonly pathSuffix: string;
+  protected readonly urlSuffix: string;
 
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
-  private readonly contentType: string;
-
-  public constructor(base: string, rootFilepath: string, contentType: string) {
-    this.baseRequestURI = trimTrailingSlashes(base);
-    this.rootFilepath = trimTrailingSlashes(normalizeFilePath(rootFilepath));
+  /**
+   * @param base - Base URL.
+   * @param rootFilepath - Base file path.
+   * @param contentType - Fixed content type that will be used for all resources.
+   * @param pathSuffix - An optional suffix that will be appended to all file paths.
+   *                     Requested file paths without this suffix will be rejected.
+   * @param urlSuffix - An optional suffix that will be appended to all URL.
+   *                    Requested URLs without this suffix will be rejected.
+   */
+  public constructor(
+    base: string,
+    rootFilepath: string,
+    contentType: string,
+    pathSuffix = '',
+    urlSuffix = '',
+  ) {
+    super(base, rootFilepath);
     this.contentType = contentType;
+    this.pathSuffix = pathSuffix;
+    this.urlSuffix = urlSuffix;
   }
 
-  public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    const path = getRelativePath(this.baseRequestURI, identifier);
-    validateRelativePath(path, identifier);
-
-    const filePath = getAbsolutePath(this.rootFilepath, path);
-
-    // Container
-    if (isContainerIdentifier(identifier)) {
-      this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
-      return {
-        identifier,
-        filePath,
-      };
-    }
-
+  protected async getContentTypeFromUrl(identifier: ResourceIdentifier, contentType?: string): Promise<string> {
     // Only allow the configured content type
     if (contentType && contentType !== this.contentType) {
       throw new NotImplementedHttpError(`Unsupported content type ${contentType}, only ${this.contentType} is allowed`);
     }
-
-    this.logger.info(`The path for ${identifier.path} is ${filePath}`);
-    return {
-      identifier,
-      filePath,
-      contentType: this.contentType,
-    };
+    return this.contentType;
   }
 
-  public async mapFilePathToUrl(filePath: string, isContainer: boolean): Promise<ResourceLink> {
-    if (!filePath.startsWith(this.rootFilepath)) {
-      this.logger.error(`Trying to access file ${filePath} outside of ${this.rootFilepath}`);
-      throw new Error(`File ${filePath} is not part of the file storage at ${this.rootFilepath}`);
+  protected async getContentTypeFromPath(): Promise<string> {
+    return this.contentType;
+  }
+
+  public async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
+  Promise<ResourceLink> {
+    // Handle URL suffix
+    if (this.urlSuffix) {
+      if (filePath.endsWith(this.urlSuffix)) {
+        filePath = filePath.slice(0, -this.urlSuffix.length);
+      } else {
+        this.logger.warn(`Trying to access URL ${filePath} outside without required suffix ${this.urlSuffix}`);
+        throw new NotFoundHttpError(
+          `Trying to access URL ${filePath} outside without required suffix ${this.urlSuffix}`,
+        );
+      }
     }
 
-    const relative = filePath.slice(this.rootFilepath.length);
-    if (isContainer) {
-      const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
-      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
-      return {
-        identifier: { path },
-        filePath,
-      };
+    return super.mapUrlToDocumentPath(identifier, filePath + this.pathSuffix, contentType);
+  }
+
+  protected async getDocumentUrl(relative: string): Promise<string> {
+    // Handle path suffix
+    if (this.pathSuffix) {
+      if (relative.endsWith(this.pathSuffix)) {
+        relative = relative.slice(0, -this.pathSuffix.length);
+      } else {
+        this.logger.warn(`Trying to access file ${relative} outside without required suffix ${this.pathSuffix}`);
+        throw new NotFoundHttpError(`File ${relative} is not part of the file storage at ${this.rootFilepath}`);
+      }
     }
 
-    const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
-    this.logger.info(`File ${filePath} maps to URL ${path}`);
-
-    return {
-      identifier: { path },
-      filePath,
-      contentType: this.contentType,
-    };
+    return super.getDocumentUrl(relative + this.urlSuffix);
   }
 }

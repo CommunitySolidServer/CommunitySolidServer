@@ -6,10 +6,10 @@ import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
 import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
-const VERSION = 'solid/0.1.0-alpha';
+const VERSION = 'solid-0.1';
 
 /**
- * Implementation of Solid WebSockets API Spec solid/0.1.0-alpha
+ * Implementation of Solid WebSockets API Spec solid-0.1
  * at https://github.com/solid/solid-spec/blob/master/api-websockets.md
  */
 class WebSocketListener extends EventEmitter {
@@ -30,7 +30,6 @@ class WebSocketListener extends EventEmitter {
   public start({ headers, socket }: HttpRequest): void {
     // Greet the client
     this.sendMessage('protocol', VERSION);
-    this.sendMessage('warning', 'Unstandardized protocol version, proceed with care');
 
     // Verify the WebSocket protocol version
     const protocolHeader = headers['sec-websocket-protocol'];
@@ -116,7 +115,7 @@ class WebSocketListener extends EventEmitter {
 
 /**
  * Provides live update functionality following
- * the Solid WebSockets API Spec solid/0.1.0-alpha
+ * the Solid WebSockets API Spec solid-0.1
  */
 export class UnsecureWebSocketsProtocol extends WebSocketHandler {
   private readonly logger = getLoggerFor(this);

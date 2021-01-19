@@ -1,6 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { containsResource } from '../../storage/StoreUtil';
 import type { ResourceStore } from '../ResourceStore';
 import type { PreferenceSupport } from './PreferenceSupport';
 import { RouterRule } from './RouterRule';
@@ -41,25 +41,9 @@ export class ConvertingRouterRule extends RouterRule {
     } else {
       // No content-type given so we can only check if one of the stores has data for the identifier
       store = await this.findStore(async(entry): Promise<boolean> =>
-        this.hasResource(entry.store, input.identifier));
+        containsResource(entry.store, input.identifier));
     }
     return store;
-  }
-
-  /**
-   * Helper function that checks if the given store contains the given identifier or not.
-   */
-  private async hasResource(store: ResourceStore, identifier: ResourceIdentifier): Promise<boolean> {
-    try {
-      const response = await store.getRepresentation(identifier, {});
-      response.data.destroy();
-      return true;
-    } catch (error: unknown) {
-      if (error instanceof NotFoundHttpError) {
-        return false;
-      }
-      throw error;
-    }
   }
 
   /**

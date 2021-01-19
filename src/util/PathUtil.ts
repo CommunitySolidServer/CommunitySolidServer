@@ -1,4 +1,4 @@
-import platform, { posix } from 'path';
+import { posix, win32 } from 'path';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
@@ -13,7 +13,7 @@ function windowsToPosixPath(path: string): string {
 }
 
 /**
- * Resolves relative segments in the path/
+ * Resolves relative segments in the path.
  *
  * @param path - Path to check (POSIX or Windows).
  *
@@ -36,14 +36,23 @@ export function joinFilePath(basePath: string, ...paths: string[]): string {
 }
 
 /**
- * Converts the path into an OS-dependent path.
+ * Resolves a path to its absolute form.
+ * Absolute inputs will not be changed (except changing Windows to POSIX).
+ * Relative inputs will be interpreted relative to process.cwd().
  *
- * @param path - Path to check (POSIX).
+ * @param path - Path to check (POSIX or Windows).
  *
- * @returns The potentially changed path (OS-dependent).
+ * @returns The potentially changed path (POSIX).
  */
-export function toSystemFilePath(path: string): string {
-  return platform.normalize(path);
+export function absoluteFilePath(path: string): string {
+  if (posix.isAbsolute(path)) {
+    return path;
+  }
+  if (win32.isAbsolute(path)) {
+    return windowsToPosixPath(path);
+  }
+
+  return joinFilePath(process.cwd(), path);
 }
 
 /**
@@ -68,6 +77,16 @@ export function ensureTrailingSlash(path: string): string {
  */
 export function trimTrailingSlashes(path: string): string {
   return path.replace(/\/+$/u, '');
+}
+
+/**
+ * Extracts the extension (without dot) from a path.
+ * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
+ * @param path - Input path to parse.
+ */
+export function getExtension(path: string): string {
+  const extension = /\.([^./]+)$/u.exec(path);
+  return extension ? extension[1] : '';
 }
 
 /**
@@ -99,6 +118,8 @@ export function encodeUriPathComponents(path: string): string {
  * @param path - Path to check.
  */
 export function isContainerPath(path: string): boolean {
+  // Solid, §3.1: "Paths ending with a slash denote a container resource."
+  // https://solid.github.io/specification/protocol#uri-slash-semantics
   return path.endsWith('/');
 }
 

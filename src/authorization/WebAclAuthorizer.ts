@@ -8,7 +8,6 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
-import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
@@ -41,17 +40,21 @@ export class WebAclAuthorizer extends Authorizer {
    * Will throw an error if this is not the case.
    * @param input - Relevant data needed to check if access can be granted.
    */
-  public async handle(input: AuthorizerArgs): Promise<void> {
-    const store = await this.getAclRecursive(input.identifier);
-    if (await this.aclManager.isAclDocument(input.identifier)) {
-      this.checkPermission(input.credentials, store, 'control');
-    } else {
-      (Object.keys(input.permissions) as (keyof PermissionSet)[]).forEach((key): void => {
-        if (input.permissions[key]) {
-          this.checkPermission(input.credentials, store, key);
-        }
-      });
+  public async handle({ identifier, permissions, credentials }: AuthorizerArgs): Promise<void> {
+    // Solid, §4.3.3: "To discover, read, create, or modify an ACL auxiliary resource, an acl:agent MUST
+    // have acl:Control privileges per the ACL inheritance algorithm on the resource directly associated with it."
+    // https://solid.github.io/specification/protocol#auxiliary-resources-reserved
+    const modes = await this.aclManager.isAclDocument(identifier) ?
+      [ 'control' ] :
+      (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
+
+    // Verify that all required modes are set for the given agent
+    this.logger.debug(`Checking if ${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
+    const store = await this.getAclRecursive(identifier);
+    for (const mode of modes) {
+      this.checkPermission(credentials, store, mode);
     }
+    this.logger.debug(`${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
   }
 
   /**
@@ -77,6 +80,9 @@ export class WebAclAuthorizer extends Authorizer {
         this.logger.warn(`Agent ${agent.webId} has no ${mode} permissions`);
         throw new ForbiddenHttpError();
       } else {
+        // Solid, §2.1: "When a client does not provide valid credentials when requesting a resource that requires it,
+        // the data pod MUST send a response with a 401 status code (unless 404 is preferred for security reasons)."
+        // https://solid.github.io/specification/protocol#http-server
         this.logger.warn(`Unauthenticated agent has no ${mode} permissions`);
         throw new UnauthorizedHttpError();
       }
@@ -154,7 +160,9 @@ export class WebAclAuthorizer extends Authorizer {
     this.logger.debug(`Traversing to the parent of ${id.path}`);
     if (this.identifierStrategy.isRootContainer(id)) {
       this.logger.error(`No ACL document found for root container ${id.path}`);
-      throw new InternalServerError('No ACL document found for root container');
+      // Solid, §10.1: "In the event that a server can’t apply an ACL to a resource, it MUST deny access."
+      // https://solid.github.io/specification/protocol#web-access-control
+      throw new ForbiddenHttpError('No ACL document found for root container');
     }
     const parent = this.identifierStrategy.getParentContainer(id);
     return this.getAclRecursive(parent, true);

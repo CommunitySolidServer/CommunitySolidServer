@@ -29,7 +29,7 @@ describe('A LockingResourceStore', (): void => {
     source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), new SingleRootIdentifierStrategy(base));
 
     // Initialize store
-    const initializer = new RootContainerInitializer(BASE, source);
+    const initializer = new RootContainerInitializer({ store: source, baseUrl: BASE });
     await initializer.handleSafe();
 
     locker = new SingleThreadedResourceLocker();

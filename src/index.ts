@@ -4,6 +4,7 @@ export * from './authentication/Credentials';
 export * from './authentication/CredentialsExtractor';
 export * from './authentication/DPoPWebIdExtractor';
 export * from './authentication/EmptyCredentialsExtractor';
+export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization
@@ -42,9 +43,9 @@ export * from './ldp/http/response/ResponseDescription';
 export * from './ldp/http/AcceptPreferenceParser';
 export * from './ldp/http/BasicRequestParser';
 export * from './ldp/http/BasicResponseWriter';
-export * from './ldp/http/BasicTargetExtractor';
 export * from './ldp/http/BodyParser';
 export * from './ldp/http/ErrorResponseWriter';
+export * from './ldp/http/OriginalUrlExtractor';
 export * from './ldp/http/Patch';
 export * from './ldp/http/PreferenceParser';
 export * from './ldp/http/RawBodyParser';
@@ -162,6 +163,8 @@ export * from './storage/accessors/SparqlDataAccessor';
 // Storage/Conversion
 export * from './storage/conversion/ChainedConverter';
 export * from './storage/conversion/ContentTypeReplacer';
+export * from './storage/conversion/IfNeededConverter';
+export * from './storage/conversion/PassthroughConverter';
 export * from './storage/conversion/ConversionUtil';
 export * from './storage/conversion/QuadToRdfConverter';
 export * from './storage/conversion/RdfToQuadConverter';
@@ -169,6 +172,7 @@ export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
 // Storage/Mapping
+export * from './storage/mapping/BaseFileIdentifierMapper';
 export * from './storage/mapping/ExtensionBasedMapper';
 export * from './storage/mapping/FileIdentifierMapper';
 export * from './storage/mapping/FixedContentTypeMapper';

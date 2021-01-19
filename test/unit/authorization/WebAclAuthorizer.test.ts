@@ -8,7 +8,6 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
-import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
@@ -36,7 +35,7 @@ describe('A WebAclAuthorizer', (): void => {
     permissions = {
       read: true,
       append: false,
-      write: false,
+      write: true,
     };
     credentials = {};
     identifier = { path: 'http://test.com/foo' };
@@ -57,6 +56,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
@@ -71,6 +71,7 @@ describe('A WebAclAuthorizer', (): void => {
           quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
           quad(nn('auth'), nn(`${acl}default`), nn(identifierStrategy.getParentContainer(identifier).path)),
           quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+          quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
         ]),
       } as Representation;
     };
@@ -82,6 +83,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     credentials.webId = 'http://test.com/user';
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
@@ -92,6 +94,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(UnauthorizedHttpError);
   });
@@ -102,6 +105,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
   });
@@ -112,6 +116,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agent`), nn('http://test.com/differentUser')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
@@ -135,6 +140,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     identifier = await aclManager.getAclDocument(identifier);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
@@ -153,7 +159,7 @@ describe('A WebAclAuthorizer', (): void => {
     };
     const promise = authorizer.handle({ identifier, permissions, credentials });
     await expect(promise).rejects.toThrow('No ACL document found for root container');
-    await expect(promise).rejects.toThrow(InternalServerError);
+    await expect(promise).rejects.toThrow(ForbiddenHttpError);
   });
 
   it('allows an agent to append if they have write access.', async(): Promise<void> => {

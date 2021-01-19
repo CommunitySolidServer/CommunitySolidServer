@@ -1,11 +1,11 @@
 /* eslint-disable unicorn/no-process-exit */
 
 import type { ReadStream, WriteStream } from 'tty';
-import type { LoaderProperties } from 'componentsjs';
-import { Loader } from 'componentsjs';
+import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
+import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { joinFilePath, toSystemFilePath, ensureTrailingSlash } from '../util/PathUtil';
+import { joinFilePath, ensureTrailingSlash, absoluteFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -31,7 +31,6 @@ export class CliRunner {
       .options({
         baseUrl: { type: 'string', alias: 'b' },
         config: { type: 'string', alias: 'c' },
-        globalModules: { type: 'boolean', alias: 'g' },
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
         mainModulePath: { type: 'string', alias: 'm' },
         podTemplateFolder: { type: 'string', alias: 't' },
@@ -42,15 +41,16 @@ export class CliRunner {
       .help();
 
     // Gather settings for instantiating the server
-    const loaderProperties: LoaderProperties = {
-      mainModulePath: toSystemFilePath(this.resolveFilePath(params.mainModulePath)),
-      scanGlobal: params.globalModules,
+    const loaderProperties: IComponentsManagerBuilderOptions<Initializer> = {
+      mainModulePath: this.resolveFilePath(params.mainModulePath),
+      dumpErrorState: true,
+      logLevel: params.loggingLevel as LogLevel,
     };
     const configFile = this.resolveFilePath(params.config, 'config/config-default.json');
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    this.createInitializer(loaderProperties, toSystemFilePath(configFile), variables)
+    this.createInitializer(loaderProperties, configFile, variables)
       .then(
         async(initializer): Promise<void> => initializer.handleSafe(),
         (error: Error): void => {
@@ -71,7 +71,7 @@ export class CliRunner {
    */
   protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
     return typeof cwdPath === 'string' ?
-      joinFilePath(process.cwd(), cwdPath) :
+      absoluteFilePath(cwdPath) :
       joinFilePath(__dirname, '../../', modulePath);
   }
 
@@ -88,19 +88,22 @@ export class CliRunner {
         this.resolveFilePath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
-         this.resolveFilePath(params.podTemplateFolder, 'templates'),
+         this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
     };
   }
 
   /**
    * Creates the server initializer
    */
-  protected async createInitializer(loaderProperties: LoaderProperties, configFile: string,
-    variables: Record<string, any>): Promise<Initializer> {
-    const loader = new Loader(loaderProperties);
-    await loader.registerAvailableModuleResources();
+  protected async createInitializer(
+    componentsProperties: IComponentsManagerBuilderOptions<Initializer>,
+    configFile: string,
+    variables: Record<string, any>,
+  ): Promise<Initializer> {
+    const componentsManager = await ComponentsManager.build(componentsProperties);
 
     const initializer = 'urn:solid-server:default:Initializer';
-    return await loader.instantiateFromUrl(initializer, configFile, undefined, { variables }) as Initializer;
+    await componentsManager.configRegistry.register(configFile);
+    return await componentsManager.instantiate(initializer, { variables });
   }
 }

@@ -9,7 +9,7 @@ import type { TargetExtractor } from './TargetExtractor';
 /**
  * Input parsers required for a {@link BasicRequestParser}.
  */
-export interface SimpleRequestParserArgs {
+export interface BasicRequestParserArgs {
   targetExtractor: TargetExtractor;
   preferenceParser: PreferenceParser;
   metadataExtractor: MetadataExtractor;
@@ -26,7 +26,7 @@ export class BasicRequestParser extends RequestParser {
   private readonly metadataExtractor!: MetadataExtractor;
   private readonly bodyParser!: BodyParser;
 
-  public constructor(args: SimpleRequestParserArgs) {
+  public constructor(args: BasicRequestParserArgs) {
     super();
     Object.assign(this, args);
   }

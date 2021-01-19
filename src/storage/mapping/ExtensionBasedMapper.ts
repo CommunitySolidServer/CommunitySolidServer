@@ -1,82 +1,22 @@
 import { promises as fsPromises } from 'fs';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
-import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../util/ContentTypes';
+import { TEXT_TURTLE } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import {
-  encodeUriPathComponents,
-  ensureTrailingSlash,
-  isContainerIdentifier,
-  joinFilePath,
-  normalizeFilePath,
-  trimTrailingSlashes,
-} from '../../util/PathUtil';
-import type { FileIdentifierMapper, FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
-import { getAbsolutePath, getRelativePath, validateRelativePath } from './MapperUtil';
+import { joinFilePath, getExtension } from '../../util/PathUtil';
+import { BaseFileIdentifierMapper } from './BaseFileIdentifierMapper';
+import type { FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
 
-export interface ResourcePath {
-
-  /**
-   * The path of the container.
-   */
-  containerPath: string;
-
-  /**
-   * The document name.
-   */
-  documentName?: string;
-}
-
-/**
- * A mapper that stores the content-type of resources in the file path extension.
- * In case the extension of the identifier does not correspond to the correct content-type,
- * a new extension will be appended (with a `$` in front of it).
- * E.g. if the path is `input.ttl` with content-type `text/plain`, the path would actually be `input.ttl$.txt`.
- * This new extension is stripped again when generating an identifier.
- *
- * Warning: Since this mapper iterates over all files in the requested directory,
- * it can experience performance issues over directories with a huge number of files (10.000+).
- * For typical directory structures, the performance of this mapper should be sufficient.
- * @see https://github.com/solid/community-server/issues/333
- */
-export class ExtensionBasedMapper implements FileIdentifierMapper {
-  protected readonly logger = getLoggerFor(this);
-
-  private readonly baseRequestURI: string;
-  private readonly rootFilepath: string;
+export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
   private readonly types: Record<string, any>;
 
   public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
-    this.baseRequestURI = trimTrailingSlashes(base);
-    this.rootFilepath = trimTrailingSlashes(normalizeFilePath(rootFilepath));
+    super(base, rootFilepath);
     this.types = { ...mime.types, ...overrideTypes };
   }
 
-  /**
-   * Maps the given resource identifier / URL to a file path.
-   * Determines the content-type if no content-type was provided.
-   * For containers the content-type input gets ignored.
-   * @param identifier - The input identifier.
-   * @param contentType - The (optional) content-type of the resource.
-   *
-   * @returns A ResourceLink with all the necessary metadata.
-   */
-  public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    const path = getRelativePath(this.baseRequestURI, identifier);
-    validateRelativePath(path, identifier);
-
-    let filePath = getAbsolutePath(this.rootFilepath, path);
-
-    // Container
-    if (isContainerIdentifier(identifier)) {
-      this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
-      return {
-        identifier,
-        filePath,
-      };
-    }
-
+  protected async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
+  Promise<ResourceLink> {
     // Would conflict with how new extensions are stored
     if (/\$\.\w+$/u.test(filePath)) {
       this.logger.warn(`Identifier ${identifier.path} contains a dollar sign before its extension`);
@@ -85,35 +25,23 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
 
     // Existing file
     if (!contentType) {
+      // Find a matching file
       const [ , folder, documentName ] = /^(.*\/)(.*)$/u.exec(filePath)!;
-
       let fileName: string | undefined;
       try {
         const files = await fsPromises.readdir(folder);
-        fileName = files.find(
-          (file): boolean =>
-            file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)),
-        );
+        fileName = files.find((file): boolean =>
+          file.startsWith(documentName) && /^(?:\$\..+)?$/u.test(file.slice(documentName.length)));
       } catch {
         // Parent folder does not exist (or is not a folder)
       }
-
-      // Matching file found
       if (fileName) {
         filePath = joinFilePath(folder, fileName);
       }
-
-      this.logger.info(`The path for ${identifier.path} is ${filePath}`);
-      return {
-        identifier,
-        filePath,
-        contentType: this.getContentTypeFromExtension(filePath),
-      };
-    }
-
+      contentType = await this.getContentTypeFromPath(filePath);
     // If the extension of the identifier matches a different content-type than the one that is given,
     // we need to add a new extension to match the correct type.
-    if (contentType !== this.getContentTypeFromExtension(filePath)) {
+    } else if (contentType !== await this.getContentTypeFromPath(filePath)) {
       const extension = mime.extension(contentType);
       if (!extension) {
         this.logger.warn(`No extension found for ${contentType}`);
@@ -121,74 +49,20 @@ export class ExtensionBasedMapper implements FileIdentifierMapper {
       }
       filePath += `$.${extension}`;
     }
-
-    this.logger.info(`The path for ${identifier.path} is ${filePath}`);
-    return {
-      identifier,
-      filePath,
-      contentType,
-    };
+    return super.mapUrlToDocumentPath(identifier, filePath, contentType);
   }
 
-  /**
-   * Maps the given file path to an URL and determines the content-type
-   * @param filePath - The input file path.
-   * @param isContainer - If the path corresponds to a file.
-   *
-   * @returns A ResourceLink with all the necessary metadata.
-   */
-  public async mapFilePathToUrl(filePath: string, isContainer: boolean): Promise<ResourceLink> {
-    if (!filePath.startsWith(this.rootFilepath)) {
-      this.logger.error(`Trying to access file ${filePath} outside of ${this.rootFilepath}`);
-      throw new Error(`File ${filePath} is not part of the file storage at ${this.rootFilepath}`);
-    }
-
-    let relative = filePath.slice(this.rootFilepath.length);
-    if (isContainer) {
-      const path = ensureTrailingSlash(this.baseRequestURI + encodeUriPathComponents(relative));
-      this.logger.info(`Container filepath ${filePath} maps to URL ${path}`);
-      return {
-        identifier: { path },
-        filePath,
-      };
-    }
-
-    // Files
-    const extension = this.getExtension(relative);
-    const contentType = this.getContentTypeFromExtension(relative);
+  protected async getDocumentUrl(relative: string): Promise<string> {
+    const extension = getExtension(relative);
     if (extension && relative.endsWith(`$.${extension}`)) {
       relative = relative.slice(0, -(extension.length + 2));
     }
-
-    const path = trimTrailingSlashes(this.baseRequestURI + encodeUriPathComponents(relative));
-    this.logger.info(`File ${filePath} (${contentType}) maps to URL ${path}`);
-
-    return {
-      identifier: { path },
-      filePath,
-      contentType,
-    };
+    return super.getDocumentUrl(relative);
   }
 
-  /**
-   * Get the content type from a file path, using its extension.
-   * @param path - The file path.
-   *
-   * @returns Content type of the file.
-   */
-  private getContentTypeFromExtension(path: string): string {
-    const extension = this.getExtension(path);
-    return (extension && this.types[extension.toLowerCase()]) || APPLICATION_OCTET_STREAM;
-  }
-
-  /**
-   * Extracts the extension (without dot) from a path.
-   * Custom functin since `path.extname` does not work on all cases (e.g. ".acl")
-   * @param path - Input path to parse.
-   */
-  private getExtension(path: string): string | null {
-    const extension = /\.([^./]+)$/u.exec(path);
-    return extension && extension[1];
+  protected async getContentTypeFromPath(filePath: string): Promise<string> {
+    return this.types[getExtension(filePath).toLowerCase()] ||
+      super.getContentTypeFromPath(filePath);
   }
 }
 
@@ -197,4 +71,3 @@ export class ExtensionBasedMapperFactory implements FileIdentifierMapperFactory<
     return new ExtensionBasedMapper(base, rootFilePath);
   }
 }
-

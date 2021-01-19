@@ -6,11 +6,9 @@ import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
 
 /**
- * Extracts an identifier from an incoming {@link HttpRequest}.
- * Uses URL library for basic parsing.
- * TODO: input requires more extensive cleaning/parsing based on headers (see #22).
+ * Reconstructs the original URL of an incoming {@link HttpRequest}.
  */
-export class BasicTargetExtractor extends TargetExtractor {
+export class OriginalUrlExtractor extends TargetExtractor {
   public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
     if (!url) {
       throw new Error('Missing URL');

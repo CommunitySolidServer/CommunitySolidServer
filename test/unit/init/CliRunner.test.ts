@@ -1,20 +1,24 @@
-import { Loader } from 'componentsjs';
+import { ComponentsManager } from 'componentsjs';
 import { CliRunner } from '../../../src/init/CliRunner';
 import type { Initializer } from '../../../src/init/Initializer';
-import { joinFilePath, toSystemFilePath } from '../../../src/util/PathUtil';
+import { joinFilePath } from '../../../src/util/PathUtil';
 
 const initializer: jest.Mocked<Initializer> = {
   handleSafe: jest.fn(),
 } as any;
 
-const loader: jest.Mocked<Loader> = {
-  instantiateFromUrl: jest.fn(async(): Promise<any> => initializer),
-  registerAvailableModuleResources: jest.fn(),
+const manager: jest.Mocked<ComponentsManager<Initializer>> = {
+  instantiate: jest.fn(async(): Promise<Initializer> => initializer),
+  configRegistry: {
+    register: jest.fn(),
+  },
 } as any;
 
 jest.mock('componentsjs', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  Loader: jest.fn((): Loader => loader),
+  ComponentsManager: {
+    build: jest.fn(async(): Promise<ComponentsManager<Initializer>> => manager),
+  },
 }));
 
 jest.spyOn(process, 'cwd').mockReturnValue('/var/cwd');
@@ -30,17 +34,24 @@ describe('CliRunner', (): void => {
     new CliRunner().run({
       argv: [ 'node', 'script' ],
     });
-    await initializer.handleSafe();
 
-    expect(Loader).toHaveBeenCalledTimes(1);
-    expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: toSystemFilePath(joinFilePath(__dirname, '../../../')),
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
     });
-    expect(loader.instantiateFromUrl).toHaveBeenCalledTimes(1);
-    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+
+    expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+    expect(ComponentsManager.build).toHaveBeenCalledWith({
+      dumpErrorState: true,
+      logLevel: 'info',
+      mainModulePath: joinFilePath(__dirname, '../../../'),
+    });
+    expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+    expect(manager.configRegistry.register)
+      .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/config-default.json'));
+    expect(manager.instantiate).toHaveBeenCalledTimes(1);
+    expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      toSystemFilePath(joinFilePath(__dirname, '/../../../config/config-default.json')),
-      undefined,
       {
         variables: {
           'urn:solid-server:default:variable:port': 3000,
@@ -48,12 +59,10 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
-          'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates'),
+          'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates/pod'),
         },
       },
     );
-    expect(loader.registerAvailableModuleResources).toHaveBeenCalledTimes(1);
-    expect(loader.registerAvailableModuleResources).toHaveBeenCalledWith();
     expect(initializer.handleSafe).toHaveBeenCalledTimes(1);
     expect(initializer.handleSafe).toHaveBeenCalledWith();
   });
@@ -65,7 +74,6 @@ describe('CliRunner', (): void => {
         '-b', 'http://pod.example/',
         '-c', 'myconfig.json',
         '-f', '/root',
-        '-g',
         '-l', 'debug',
         '-m', 'module/path',
         '-p', '4000',
@@ -73,24 +81,30 @@ describe('CliRunner', (): void => {
         '-t', 'templates',
       ],
     });
-    await initializer.handleSafe();
 
-    expect(Loader).toHaveBeenCalledTimes(1);
-    expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
-      scanGlobal: true,
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
     });
-    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+
+    expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+    expect(ComponentsManager.build).toHaveBeenCalledWith({
+      dumpErrorState: true,
+      logLevel: 'debug',
+      mainModulePath: '/var/cwd/module/path',
+    });
+    expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+    expect(manager.configRegistry.register)
+      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
+    expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      toSystemFilePath('/var/cwd/myconfig.json'),
-      undefined,
       {
         variables: {
           'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
           'urn:solid-server:default:variable:loggingLevel': 'debug',
           'urn:solid-server:default:variable:podTemplateFolder': '/var/cwd/templates',
           'urn:solid-server:default:variable:port': 4000,
-          'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
+          'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
         },
       },
@@ -103,7 +117,6 @@ describe('CliRunner', (): void => {
         'node', 'script',
         '--baseUrl', 'http://pod.example/',
         '--config', 'myconfig.json',
-        '--globalModules',
         '--loggingLevel', 'debug',
         '--mainModulePath', 'module/path',
         '--podTemplateFolder', 'templates',
@@ -112,17 +125,23 @@ describe('CliRunner', (): void => {
         '--sparqlEndpoint', 'http://localhost:5000/sparql',
       ],
     });
-    await initializer.handleSafe();
 
-    expect(Loader).toHaveBeenCalledTimes(1);
-    expect(Loader).toHaveBeenCalledWith({
-      mainModulePath: toSystemFilePath('/var/cwd/module/path'),
-      scanGlobal: true,
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
     });
-    expect(loader.instantiateFromUrl).toHaveBeenCalledWith(
+
+    expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+    expect(ComponentsManager.build).toHaveBeenCalledWith({
+      dumpErrorState: true,
+      logLevel: 'debug',
+      mainModulePath: '/var/cwd/module/path',
+    });
+    expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+    expect(manager.configRegistry.register)
+      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
+    expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
-      toSystemFilePath('/var/cwd/myconfig.json'),
-      undefined,
       {
         variables: {
           'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
@@ -137,8 +156,10 @@ describe('CliRunner', (): void => {
   });
 
   it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
-    loader.instantiateFromUrl.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run();
+    manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
+    new CliRunner().run({
+      argv: [ 'node', 'script' ],
+    });
     await new Promise((resolve): any => setImmediate(resolve));
 
     expect(write).toHaveBeenCalledTimes(2);

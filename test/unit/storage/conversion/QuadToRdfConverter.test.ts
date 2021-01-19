@@ -12,11 +12,11 @@ import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
-  const identifier: ResourceIdentifier = { path: 'path' };
+  const identifier: ResourceIdentifier = { path: 'http://example.org/foo/bar/' };
   let metadata: RepresentationMetadata;
 
   beforeEach((): void => {
-    metadata = new RepresentationMetadata(INTERNAL_QUADS);
+    metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
   });
 
   it('supports parsing quads.', async(): Promise<void> => {
@@ -35,7 +35,7 @@ describe('A QuadToRdfConverter', (): void => {
       .resolves.toEqual(outputPreferences);
   });
 
-  it('can handle quad to turtle conversions.', async(): Promise<void> => {
+  it('can handle quad to Turtle conversions.', async(): Promise<void> => {
     const representation = { metadata } as Representation;
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
@@ -47,7 +47,7 @@ describe('A QuadToRdfConverter', (): void => {
     await expect(converter.canHandle({ identifier, representation, preferences })).resolves.toBeUndefined();
   });
 
-  it('converts quads to turtle.', async(): Promise<void> => {
+  it('converts quads to Turtle.', async(): Promise<void> => {
     const representation = {
       data: streamifyArray([ triple(
         namedNode('http://test.com/s'),
@@ -69,7 +69,7 @@ describe('A QuadToRdfConverter', (): void => {
     );
   });
 
-  it('converts quads with prefixes to turtle.', async(): Promise<void> => {
+  it('converts quads with prefixes to Turtle.', async(): Promise<void> => {
     metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc');
     metadata.addQuad('http://test.com/', PREFERRED_PREFIX_TERM, 'test');
     const representation = {
@@ -82,16 +82,30 @@ describe('A QuadToRdfConverter', (): void => {
     } as Representation;
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
-    expect(result).toMatchObject({
-      binary: true,
-      metadata: expect.any(RepresentationMetadata),
-    });
     expect(result.metadata.contentType).toEqual('text/turtle');
     await expect(stringifyStream(result.data)).resolves.toEqual(
       `@prefix dc: <http://purl.org/dc/terms/>.
 @prefix test: <http://test.com/>.
 
 test:s dc:modified test:o.
+`,
+    );
+  });
+
+  it('uses the base IRI when converting quads to Turtle.', async(): Promise<void> => {
+    const representation = {
+      data: streamifyArray([ triple(
+        namedNode('http://example.org/foo/bar/'),
+        namedNode('http://example.org/foo/bar/#abc'),
+        namedNode('http://example.org/foo/bar/def/ghi'),
+      ) ]),
+      metadata,
+    } as Representation;
+    const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
+    const result = await converter.handle({ identifier, representation, preferences });
+    expect(result.metadata.contentType).toEqual('text/turtle');
+    await expect(stringifyStream(result.data)).resolves.toEqual(
+      `<> <#abc> <def/ghi>.
 `,
     );
   });

@@ -3,15 +3,15 @@ import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
 import { AcceptPreferenceParser } from '../../src/ldp/http/AcceptPreferenceParser';
 import { BasicRequestParser } from '../../src/ldp/http/BasicRequestParser';
-import { BasicTargetExtractor } from '../../src/ldp/http/BasicTargetExtractor';
 import { BasicMetadataExtractor } from '../../src/ldp/http/metadata/BasicMetadataExtractor';
 import { ContentTypeParser } from '../../src/ldp/http/metadata/ContentTypeParser';
+import { OriginalUrlExtractor } from '../../src/ldp/http/OriginalUrlExtractor';
 import { RawBodyParser } from '../../src/ldp/http/RawBodyParser';
 import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 
 describe('A BasicRequestParser with simple input parsers', (): void => {
-  const targetExtractor = new BasicTargetExtractor();
+  const targetExtractor = new OriginalUrlExtractor();
   const preferenceParser = new AcceptPreferenceParser();
   const metadataExtractor = new BasicMetadataExtractor([ new ContentTypeParser() ]);
   const bodyParser = new RawBodyParser();

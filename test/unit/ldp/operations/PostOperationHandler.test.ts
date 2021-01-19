@@ -20,12 +20,15 @@ describe('A PostOperationHandler', (): void => {
       .rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('errors if there is no body.', async(): Promise<void> => {
-    await expect(handler.handle({ method: 'POST' } as Operation)).rejects.toThrow(BadRequestHttpError);
+  it('errors if there is no body or content-type.', async(): Promise<void> => {
+    await expect(handler.handle({ } as Operation)).rejects.toThrow(BadRequestHttpError);
+    await expect(handler.handle({ body: { metadata: new RepresentationMetadata() }} as Operation))
+      .rejects.toThrow(BadRequestHttpError);
   });
 
   it('adds the given representation to the store and returns the correct response.', async(): Promise<void> => {
-    const result = await handler.handle({ method: 'POST', body: { }} as Operation);
+    const metadata = new RepresentationMetadata('text/turtle');
+    const result = await handler.handle({ method: 'POST', body: { metadata }} as Operation);
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
     expect(result.metadata?.get(HTTP.location)?.value).toBe('newPath');

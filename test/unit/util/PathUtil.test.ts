@@ -1,16 +1,15 @@
-import { sep } from 'path';
 import {
+  absoluteFilePath,
   decodeUriPathComponents,
   encodeUriPathComponents,
   ensureTrailingSlash,
   joinFilePath,
   normalizeFilePath,
   toCanonicalUriPath,
-  toSystemFilePath,
 } from '../../../src/util/PathUtil';
 
 describe('PathUtil', (): void => {
-  describe('normalizeFilePath', (): void => {
+  describe('#normalizeFilePath', (): void => {
     it('normalizes POSIX paths.', async(): Promise<void> => {
       expect(normalizeFilePath('/foo/bar/../baz')).toEqual('/foo/baz');
     });
@@ -20,7 +19,7 @@ describe('PathUtil', (): void => {
     });
   });
 
-  describe('joinFilePath', (): void => {
+  describe('#joinFilePath', (): void => {
     it('joins POSIX paths.', async(): Promise<void> => {
       expect(joinFilePath('/foo/bar/', '..', '/baz')).toEqual('/foo/baz');
     });
@@ -30,9 +29,17 @@ describe('PathUtil', (): void => {
     });
   });
 
-  describe('toSystemFilePath', (): void => {
-    it('converts a POSIX path to an OS-specific path.', async(): Promise<void> => {
-      expect(toSystemFilePath('c:/foo/bar/')).toEqual(`c:${sep}foo${sep}bar${sep}`);
+  describe('#absoluteFilePath', (): void => {
+    it('does not change absolute posix paths.', async(): Promise<void> => {
+      expect(absoluteFilePath('/foo/bar/')).toEqual('/foo/bar/');
+    });
+
+    it('converts absolute win32 paths to posix paths.', async(): Promise<void> => {
+      expect(absoluteFilePath('C:\\foo\\bar')).toEqual('C:/foo/bar');
+    });
+
+    it('makes relative paths absolute.', async(): Promise<void> => {
+      expect(absoluteFilePath('foo/bar/')).toEqual(joinFilePath(process.cwd(), 'foo/bar/'));
     });
   });
 

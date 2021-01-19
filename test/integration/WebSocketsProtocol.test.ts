@@ -16,7 +16,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
-        'urn:solid-server:default:variable:podTemplateFolder': 'templates',
+        'urn:solid-server:default:variable:podTemplateFolder': 'templates/pod',
       },
     ) as HttpServerFactory;
     server = factory.startServer(port);
@@ -49,7 +49,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
     const messages = new Array<string>();
 
     beforeAll(async(): Promise<void> => {
-      client = new WebSocket(`ws://localhost:${port}`, [ 'solid/0.1.0-alpha' ], { headers });
+      client = new WebSocket(`ws://localhost:${port}`, [ 'solid-0.1' ], { headers });
       client.on('message', (message: string): any => messages.push(message));
       await new Promise((resolve): any => client.on('open', resolve));
     });
@@ -64,8 +64,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
 
     it('sends the protocol version.', (): void => {
       expect(messages).toEqual([
-        'protocol solid/0.1.0-alpha',
-        'warning Unstandardized protocol version, proceed with care',
+        'protocol solid-0.1',
       ]);
     });
 

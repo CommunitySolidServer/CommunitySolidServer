@@ -8,7 +8,7 @@ describe('A RootContainerInitializer', (): void => {
     getRepresentation: jest.fn().mockRejectedValue(new NotFoundHttpError()),
     setRepresentation: jest.fn(),
   } as any;
-  const initializer = new RootContainerInitializer(baseUrl, store);
+  const initializer = new RootContainerInitializer({ store, baseUrl });
 
   afterEach((): void => {
     jest.clearAllMocks();
