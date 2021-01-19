@@ -2,7 +2,7 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { UnsupportedAsyncHandler } from '../../util/UnsupportedAsyncHandler';
-import { matchingMediaTypes } from './ConversionUtil';
+import { hasMatchingMediaTypes } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -46,7 +46,7 @@ export class IfNeededConverter extends RepresentationConverter {
     if (!contentType) {
       throw new InternalServerError('Content-Type is required for data conversion.');
     }
-    const noMatchingMediaType = matchingMediaTypes(preferences.type, { [contentType]: 1 }).length === 0;
+    const noMatchingMediaType = !hasMatchingMediaTypes(preferences.type, { [contentType]: 1 });
     if (noMatchingMediaType) {
       this.logger.debug(`Conversion needed for ${identifier
         .path} from ${representation.metadata.contentType} to satisfy ${Object.entries(preferences.type)

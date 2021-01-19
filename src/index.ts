@@ -131,6 +131,7 @@ export * from './storage/accessors/SparqlDataAccessor';
 
 // Storage/Conversion
 export * from './storage/conversion/ChainedConverter';
+export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/PassthroughConverter';
