@@ -206,5 +206,6 @@ export * from './util/RecordObject';
 export * from './util/SequenceHandler';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
+export * from './util/UnsupportedAsyncHandler';
 export * from './util/Vocabularies';
 export * from './util/WaterfallHandler';
