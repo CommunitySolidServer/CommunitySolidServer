@@ -18,6 +18,8 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
     props: T;
   }): Promise<void> {
     const { props, response } = input;
+    console.log(this.ejsTemplatePath);
+    console.log(this.rootFilePath);
     const renderedHtml = await renderFile(
       path.join(
         this.rootFilePath,
