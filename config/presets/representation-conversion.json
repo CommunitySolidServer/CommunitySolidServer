@@ -82,7 +82,11 @@
       "@type": "WaterfallHandler",
       "WaterfallHandler:_handlers": [
         {
-          "@type": "IfNeededConverter"
+          "@id": "urn:solid-server:default:IndexConverter",
+        },
+        {
+          "@type": "IfNeededConverter",
+          "comment": "Only continue converting if the requester cannot accept the available content type",
         },
         {
           "@id": "urn:solid-server:default:ContentTypeReplacer"
