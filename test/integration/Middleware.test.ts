@@ -34,6 +34,27 @@ describe('An Express server with middleware', (): void => {
     server.close();
   });
 
+  it('sets a Vary header containing Accept.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Accept\s*(,|$)/iu),
+    }));
+  });
+
+  it('sets a Vary header containing Authorization.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Authorization\s*(,|$)/iu),
+    }));
+  });
+
+  it('sets a Vary header containing Origin.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Origin\s*(,|$)/iu),
+    }));
+  });
+
   it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
     const res = await request(server).get('/');
     expect(res.header).toEqual(expect.objectContaining({
