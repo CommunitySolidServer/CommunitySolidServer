@@ -107,10 +107,16 @@ export * from './identity/interaction/util/getFormDataRequestBody';
 
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
+
+// SolidIdentityProvider/InteractionPolicies/Handler
 export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordRegisterHanlder';
+export * from './identity/interaction/email-password/handler/EmailPasswordRegisterHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
+
+// SolidIdentityProvider/InteractionPolicies/Storage
+export * from './identity/interaction/email-password/storage/EmailPasswordStorageAdapter';
+export * from './identity/interaction/email-password/storage/EmailPasswordResourceStoreStorageAdapter';
 
 // Logging
 export * from './logging/LazyLogger';
