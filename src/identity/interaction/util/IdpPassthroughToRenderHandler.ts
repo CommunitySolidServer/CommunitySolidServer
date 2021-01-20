@@ -1,5 +1,5 @@
-import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
-import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
+import type { IdPInteractionHttpHandlerInput } from '../IdPInteractionHttpHandler';
+import { IdPInteractionHttpHandler } from '../IdPInteractionHttpHandler';
 import type { IdpRenderHandler } from './IdpRenderHandler';
 
 export class IdpPassthroughToRenderHandler extends IdPInteractionHttpHandler {

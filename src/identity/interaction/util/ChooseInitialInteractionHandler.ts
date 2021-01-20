@@ -1,6 +1,6 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
-import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
+import { getLoggerFor } from '../../../logging/LogUtil';
+import type { IdPInteractionHttpHandlerInput } from '../IdPInteractionHttpHandler';
+import { IdPInteractionHttpHandler } from '../IdPInteractionHttpHandler';
 import type { IdpRenderHandler } from './IdpRenderHandler';
 
 export interface RenderHandlerMap {
