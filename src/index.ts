@@ -96,15 +96,21 @@ export * from './identity/configuration/DevIdPConfigurationFactory';
 export * from './identity/storage/InMemoryIdPStorageAdapter';
 export * from './identity/storage/ResourceStoreStorageAdapter';
 
+// SolidIdentityProvider/InteractionPolicies/Util
+export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';
+export * from './identity/interaction/util/ChooseInitialInteractionHandler';
+export * from './identity/interaction/util/IdpPassthroughToRenderHandler';
+export * from './identity/interaction/util/IdpRenderHandler';
+export * from './identity/interaction/util/OidcInteractionCompleter';
+export * from './identity/interaction/util/WebIdOwnershipValidator';
+export * from './identity/interaction/util/getFormDataRequestBody';
+
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
-export * from './identity/interaction/email-password/handler/ChooseInitialInteractionHandler';
-export * from './identity/interaction/email-password/handler/OidcInteractionCompleter';
-export * from './identity/interaction/email-password/handler/RegisterHanlder';
-export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
-export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
-export * from './identity/interaction/email-password/handler/LoginHandler';
-export * from './identity/interaction/email-password/handler/IdpPassthroughToRenderHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordRegisterHanlder';
+export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
 
 // Logging
 export * from './logging/LazyLogger';

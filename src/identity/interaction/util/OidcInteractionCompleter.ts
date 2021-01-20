@@ -1,6 +1,6 @@
-import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpResponse } from '../../../../server/HttpResponse';
-import { AsyncHandler } from '../../../../util/AsyncHandler';
+import { getLoggerFor } from '../../../logging/LogUtil';
+import type { HttpResponse } from '../../../server/HttpResponse';
+import { AsyncHandler } from '../../../util/AsyncHandler';
 
 export interface OidcInteractionCompleterInput {
   webId: string;
