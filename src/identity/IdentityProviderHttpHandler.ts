@@ -1,5 +1,5 @@
 import { parse } from 'url';
-import type { Provider } from 'oidc-provider';
+import type { Configuration, Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
 // configuration, which, in turn, is needed to get the routes the provider is using.
 // It is probably very difficult to get the configuration because Panva does not want
@@ -38,10 +38,13 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
     // https://github.com/panva/node-oidc-provider/blob/master/lib/provider.js#L88-L91
-    const validRoutes: string[] = Object.values(
-      instance(this.provider).configuration().routes,
-    );
+    const routesMap: Record<string, string> = instance(this.provider).configuration().routes;
+    const validRoutes: string[] = Object.values(routesMap);
     validRoutes.push('/.well-known/openid-configuration');
+    // URL.parse is deprecated, but as of the time this comment was written, there
+    // doesn't seem to be a perfect replacement for it, so we will keep it until there
+    // is a perfect replacement
+    // https://github.com/nodejs/node/issues/12682#issuecomment-736510378
     const url = input.request.url ? parse(input.request.url).pathname as string : '';
 
     let interactionHttpHandlerCanHandle = true;
@@ -51,8 +54,15 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       interactionHttpHandlerCanHandle = false;
     }
 
+    // Account for special case where the interaction policy calls back to "/auth/:uid"
+    const isSpecialCallbackRoute =
+      new RegExp(
+        `^${routesMap.authorization}/[_A-Za-z0-9\\-]+/?$`,
+        'u',
+      ).test(url);
+
     // Throw an error if the request URL is not part of the valid routes
-    if (!validRoutes.includes(url) && !interactionHttpHandlerCanHandle) {
+    if (!isSpecialCallbackRoute && !validRoutes.includes(url) && !interactionHttpHandlerCanHandle) {
       throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
     }
   }
