@@ -11,7 +11,6 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import type { ResourceLocker } from '../../util/locking/ResourceLocker';
 import type { ResourceStore } from '../ResourceStore';
 import { PatchHandler } from './PatchHandler';
 
@@ -23,12 +22,10 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly source: ResourceStore;
-  private readonly locker: ResourceLocker;
 
-  public constructor(source: ResourceStore, locker: ResourceLocker) {
+  public constructor(source: ResourceStore) {
     super();
     this.source = source;
-    this.locker = locker;
   }
 
   public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
@@ -43,12 +40,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const op = patch.algebra;
     this.validateUpdate(op);
 
-    const lock = await this.locker.acquire(identifier);
-    try {
-      await this.applyPatch(identifier, op);
-    } finally {
-      await lock.release();
-    }
+    await this.applyPatch(identifier, op);
   }
 
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
