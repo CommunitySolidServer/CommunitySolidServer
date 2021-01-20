@@ -1,4 +1,4 @@
-import { RenderHandler } from '../../../../server/util/RenderHandler';
+import { RenderHandler } from '../../../server/util/RenderHandler';
 
 export interface IdpRenderhandlerProps {
   details: {
