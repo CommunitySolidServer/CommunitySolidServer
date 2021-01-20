@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { createReadStream } from 'fs';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
@@ -52,7 +52,7 @@ export class ConstantConverter extends RepresentationConverter {
     representation.data.destroy();
 
     // Create a new representation from the constant file
-    const data = await fs.readFile(this.filePath, 'utf8');
+    const data = createReadStream(this.filePath, 'utf8');
     return new BasicRepresentation(data, representation.metadata, this.contentType);
   }
 }
