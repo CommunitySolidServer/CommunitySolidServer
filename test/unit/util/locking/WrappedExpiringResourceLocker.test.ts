@@ -1,87 +1,86 @@
-import type { EventEmitter } from 'events';
-import streamifyArray from 'streamify-array';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
 import { WrappedExpiringResourceLocker } from '../../../../src/util/locking/WrappedExpiringResourceLocker';
 
+jest.useFakeTimers();
+
 describe('A WrappedExpiringResourceLocker', (): void => {
-  let order: string[];
+  const identifier = { path: 'path' };
+  let syncCb: () => string;
+  let asyncCb: () => Promise<string>;
+  let wrappedLocker: ResourceLocker;
+  let locker: WrappedExpiringResourceLocker;
+  const expiration = 1000;
 
   beforeEach(async(): Promise<void> => {
-    order = [];
+    wrappedLocker = {
+      withReadLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      Promise<T> => whileLocked()),
+      withWriteLock: jest.fn(async<T>(id: ResourceIdentifier, whileLocked: () => T | Promise<T>):
+      Promise<T> => whileLocked()),
+    };
+
+    syncCb = jest.fn((): string => 'sync');
+    asyncCb = jest.fn(async(): Promise<string> => new Promise((resolve): void => {
+      setImmediate((): void => resolve('async'));
+    }));
+
+    locker = new WrappedExpiringResourceLocker(wrappedLocker, expiration);
   });
 
-  async function registerEventOrder(eventSource: EventEmitter, event: string): Promise<void> {
-    await new Promise((resolve): any => {
-      eventSource.prependListener(event, (): any => {
-        order.push(event);
-        resolve();
-      });
-    });
-  }
+  it('calls the wrapped locker for locking.', async(): Promise<void> => {
+    let prom = locker.withReadLock(identifier, syncCb);
+    await expect(prom).resolves.toBe('sync');
+    expect(wrappedLocker.withReadLock).toHaveBeenCalledTimes(1);
+    expect((wrappedLocker.withReadLock as jest.Mock).mock.calls[0][0]).toBe(identifier);
 
-  it('emits an error event when releasing the lock errors.', async(): Promise<void> => {
-    jest.useFakeTimers();
+    prom = locker.withWriteLock(identifier, syncCb);
+    await expect(prom).resolves.toBe('sync');
+    expect(wrappedLocker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect((wrappedLocker.withWriteLock as jest.Mock).mock.calls[0][0]).toBe(identifier);
+  });
 
-    // Create a locker that fails upon release
-    const faultyLocker = {
-      acquire(): any {
-        return {
-          async release(): Promise<never> {
-            throw new Error('Release error');
-          },
-        };
-      },
-    };
-    const expiringLocker = new WrappedExpiringResourceLocker(faultyLocker, 1000);
-    const expiringLock = await expiringLocker.acquire({} as any);
-    const errorCallback = jest.fn();
-    expiringLock.on('error', errorCallback);
+  it('calls the functions that need to be locked through the wrapped locker.', async(): Promise<void> => {
+    let prom = locker.withReadLock(identifier, syncCb);
+    await expect(prom).resolves.toBe('sync');
+    expect(syncCb).toHaveBeenCalledTimes(1);
 
-    // Let the lock expire
+    prom = locker.withReadLock(identifier, asyncCb);
+    await expect(prom).resolves.toBe('async');
+    expect(asyncCb).toHaveBeenCalledTimes(1);
+  });
+
+  it('throws an error if the locked function resolves too slow.', async(): Promise<void> => {
+    async function slowCb(): Promise<void> {
+      return new Promise((resolve): any => setTimeout(resolve, 5000));
+    }
+    const prom = locker.withReadLock(identifier, slowCb);
     jest.advanceTimersByTime(1000);
-    await Promise.resolve();
-
-    // Verify the error has been emitted
-    expect(errorCallback).toHaveBeenCalledTimes(1);
-    expect(errorCallback).toHaveBeenLastCalledWith(new Error('Release error'));
+    await expect(prom).rejects.toThrow(`Lock expired after ${expiration}ms on ${identifier.path}`);
   });
 
-  it('releases the lock on the resource when data has been read.', async(): Promise<void> => {
-    // Mock the inner ResourceLocker.
-    const release = jest.fn(async(): Promise<any> => order.push('release'));
-    const lock = { release };
-    const locker = {
-      acquire: jest.fn(async(): Promise<any> => {
-        order.push('acquire');
-        return lock;
-      }),
-    };
+  it('can reset the timer within the locked function.', async(): Promise<void> => {
+    async function refreshCb(maintainLock: () => void): Promise<string> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout((): void => resolve('refresh'), 1500);
+      });
+    }
+    const prom = locker.withReadLock(identifier, refreshCb);
+    jest.advanceTimersByTime(1500);
+    await expect(prom).resolves.toBe('refresh');
+  });
 
-    const expiringLocker = new WrappedExpiringResourceLocker(locker, 1000);
-    const expiringLock = await expiringLocker.acquire({} as any);
-
-    // Mimic the behavior of a LockingResourceStore to test the expiringLock methods called.
-    const source = streamifyArray([ 1, 2, 3 ]);
-    // eslint-disable-next-line jest/valid-expect-in-promise
-    new Promise((resolve): void => {
-      source.on('end', resolve);
-      source.on('close', resolve);
-    }).then((): any => expiringLock.release(), null);
-    const readable = Object.create(source, {
-      read: {
-        value(size: number): any {
-          expiringLock.renew();
-          return source.read(size);
-        },
-      },
-    });
-
-    // Read all data from the "representation"
-    readable.on('data', (): any => true);
-    await registerEventOrder(readable, 'end');
-
-    // Verify the lock was acquired and released at the right time
-    expect(locker.acquire).toHaveBeenCalledTimes(1);
-    expect(lock.release).toHaveBeenCalledTimes(1);
-    expect(order).toEqual([ 'acquire', 'end', 'release' ]);
+  it('can still error after resetting the timer.', async(): Promise<void> => {
+    async function refreshCb(maintainLock: () => void): Promise<void> {
+      return new Promise((resolve): any => {
+        setTimeout(maintainLock, 750);
+        setTimeout(maintainLock, 1500);
+        setTimeout(resolve, 5000);
+      });
+    }
+    const prom = locker.withReadLock(identifier, refreshCb);
+    jest.advanceTimersByTime(5000);
+    await expect(prom).rejects.toThrow(`Lock expired after ${expiration}ms on ${identifier.path}`);
   });
 });
