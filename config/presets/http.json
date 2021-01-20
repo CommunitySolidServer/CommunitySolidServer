@@ -29,6 +29,9 @@
           "@type": "WaterfallHandler",
           "WaterfallHandler:_handlers": [
             {
+              "@id": "urn:solid-server:default:StaticAssetHandler"
+            },
+            {
               "@id": "urn:solid-server:default:PodManagerHandler"
             },
             {

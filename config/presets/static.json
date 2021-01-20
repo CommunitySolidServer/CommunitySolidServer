@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:IndexConverter",
+      "@type": "UnsupportedAsyncHandler",
+      "comment": "This value can be used to set a custom handler for index files"
+    },
+    {
+      "@id": "urn:solid-server:default:StaticAssetHandler",
+      "@type": "UnsupportedAsyncHandler",
+      "comment": "This value can be used to set a custom handler for static assets"
+    }
+  ]
+}

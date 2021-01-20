@@ -2,6 +2,7 @@ import { createReadStream } from 'fs';
 import * as mime from 'mime-types';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
@@ -25,10 +26,10 @@ export class StaticAssetHandler extends HttpHandler {
 
   public async canHandle({ request }: HttpHandlerInput): Promise<void> {
     if (request.method !== 'GET' && request.method !== 'HEAD') {
-      throw new Error('Only GET and HEAD requests are supported');
+      throw new NotImplementedHttpError('Only GET and HEAD requests are supported');
     }
     if (!(this.getAssetUrl(request) in this.assets)) {
-      throw new Error(`No static resource at ${request.url}`);
+      throw new NotImplementedHttpError(`No static resource at ${request.url}`);
     }
   }
 
