@@ -1,13 +1,12 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import type { ExpiringLock } from './ExpiringLock';
+import { InternalServerError } from '../errors/InternalServerError';
 import type { ExpiringResourceLocker } from './ExpiringResourceLocker';
 import type { ResourceLocker } from './ResourceLocker';
-import { WrappedExpiringLock } from './WrappedExpiringLock';
+import Timeout = NodeJS.Timeout;
 
 /**
- * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.
- * Differs from {@Link ResourceLocker} by adding expiration logic.
+ * Wraps around an existing {@link ResourceLocker} and adds expiration logic to prevent locks from getting stuck.
  */
 export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
   protected readonly logger = getLoggerFor(this);
@@ -24,14 +23,53 @@ export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
     this.expiration = expiration;
   }
 
+  public async withReadLock<T>(identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    return this.locker.withReadLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
+  }
+
+  public async withWriteLock<T>(identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    return this.locker.withWriteLock(identifier, async(): Promise<T> => this.expiringPromise(identifier, whileLocked));
+  }
+
   /**
-   * Lock the given resource with a lock providing expiration functionality.
-   * @param identifier - Identifier of the resource that needs to be locked.
-   *
-   * @returns A promise containing the expiring lock on the resource.
+   * Creates a Promise that either resolves the given input function or rejects if time runs out,
+   * whichever happens first. The input function can reset the timer by calling the `maintainLock` function
+   * it receives. The ResourceIdentifier is only used for logging.
    */
-  public async acquire(identifier: ResourceIdentifier): Promise<ExpiringLock> {
-    const innerLock = await this.locker.acquire(identifier);
-    return new WrappedExpiringLock(innerLock, this.expiration);
+  private async expiringPromise<T>(identifier: ResourceIdentifier,
+    whileLocked: (maintainLock: () => void) => T | Promise<T>): Promise<T> {
+    let timer: Timeout;
+    let createTimeout: () => Timeout;
+
+    // Promise that throws an error when the timer finishes
+    const timerPromise = new Promise<never>((resolve, reject): void => {
+      // Starts the timer that will cause this promise to error after a given time
+      createTimeout = (): Timeout => setTimeout((): void => {
+        this.logger.error(`Lock expired after ${this.expiration}ms on ${identifier.path}`);
+        reject(new InternalServerError(`Lock expired after ${this.expiration}ms on ${identifier.path}`));
+      }, this.expiration);
+
+      timer = createTimeout();
+    });
+
+    // Restarts the timer
+    const renewTimer = (): void => {
+      this.logger.verbose(`Renewed expiring lock on ${identifier.path}`);
+      clearTimeout(timer);
+      timer = createTimeout();
+    };
+
+    // Runs the main function and cleans up the timer afterwards
+    async function runWithTimeout(): Promise<T> {
+      try {
+        return await whileLocked(renewTimer);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    return Promise.race([ timerPromise, runWithTimeout() ]);
   }
 }

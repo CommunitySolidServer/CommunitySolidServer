@@ -190,7 +190,6 @@ export * from './util/identifiers/IdentifierStrategy';
 export * from './util/identifiers/SingleRootIdentifierStrategy';
 
 // Util/Locking
-export * from './util/locking/ExpiringLock';
 export * from './util/locking/ExpiringResourceLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
