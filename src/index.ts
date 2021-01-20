@@ -121,6 +121,7 @@ export * from './server/WebSocketHandler';
 // Server/Middleware
 export * from './server/middleware/CorsHandler';
 export * from './server/middleware/HeaderHandler';
+export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Storage/Accessors
