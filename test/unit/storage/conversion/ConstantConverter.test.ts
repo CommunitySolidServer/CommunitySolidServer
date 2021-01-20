@@ -1,9 +1,9 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
 
-const readFile = jest.spyOn(fs, 'readFile').mockResolvedValue('file contents');
+const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
 
 describe('A ConstantConverter', (): void => {
   const identifier = { path: 'identifier' };
@@ -58,8 +58,8 @@ describe('A ConstantConverter', (): void => {
 
     expect(representation.data.destroy).toHaveBeenCalledTimes(1);
 
-    expect(readFile).toHaveBeenCalledTimes(1);
-    expect(readFile).toHaveBeenCalledWith('abc/def/index.html', 'utf8');
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('abc/def/index.html', 'utf8');
 
     expect(converted.metadata.contentType).toBe('text/html');
     expect(await arrayifyStream(converted.data)).toEqual([ 'file contents' ]);

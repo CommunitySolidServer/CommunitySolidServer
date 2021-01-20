@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { createReadStream } from 'fs';
 import type { AclManager } from '../authorization/AclManager';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
@@ -10,6 +10,7 @@ import { ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import { Initializer } from './Initializer';
 
 const DEFAULT_ACL_PATH = joinFilePath(__dirname, '../../templates/root/.acl');
+
 /**
  * Ensures that a root ACL is present.
  */
@@ -33,21 +34,17 @@ export class AclInitializer extends Initializer {
     this.aclPath = settings.aclPath ?? DEFAULT_ACL_PATH;
   }
 
-  public async handle(): Promise<void> {
-    const rootAcl = await this.aclManager.getAclDocument(this.root);
-    if (!await containsResource(this.store, rootAcl)) {
-      await this.setRootAclDocument(rootAcl);
-    } else {
-      this.logger.debug(`Existing root ACL document found at ${rootAcl.path}`);
-    }
-  }
-
   // Solid, §4.1: "The root container (pim:Storage) MUST have an ACL auxiliary resource directly associated to it.
   // The associated ACL document MUST include an authorization policy with acl:Control access privilege."
   // https://solid.github.io/specification/protocol#storage
-  protected async setRootAclDocument(rootAcl: ResourceIdentifier): Promise<void> {
-    const acl = await fsPromises.readFile(this.aclPath, 'utf8');
-    this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
-    await this.store.setRepresentation(rootAcl, new BasicRepresentation(acl, rootAcl, TEXT_TURTLE));
+  public async handle(): Promise<void> {
+    const rootAcl = await this.aclManager.getAclDocument(this.root);
+    if (await containsResource(this.store, rootAcl)) {
+      this.logger.debug(`Existing root ACL document found at ${rootAcl.path}`);
+    } else {
+      this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
+      const aclDocument = createReadStream(this.aclPath, 'utf8');
+      await this.store.setRepresentation(rootAcl, new BasicRepresentation(aclDocument, rootAcl, TEXT_TURTLE));
+    }
   }
 }
