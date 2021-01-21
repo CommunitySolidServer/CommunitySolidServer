@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RepresentationConvertingStore | Community Solid Server - v0.5.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.5.0">
+	<title>RepresentationConvertingStore | Community Solid Server - v0.6.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.5.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.5.0</a>
+					<a href="../modules.html">Community Solid Server - v0.6.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_representationconvertingstore.html">storage/RepresentationConvertingStore</a>
@@ -71,16 +71,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Store that overrides all functions that take or output a <a href="../interfaces/ldp_representation_representation.representation.html">Representation</a>,
-						so <code>getRepresentation</code>, <code>addResource</code>, and <code>setRepresentation</code>.</p>
+						<p>Store that provides (optional) conversion of incoming and outgoing <a href="../interfaces/ldp_representation_representation.representation.html">Representation</a>s.</p>
 					</div>
-					<p>For incoming representations, they will be converted if an incoming converter and preferences have been set.
-					The converted Representation will be passed along.</p>
-					<p>For outgoing representations, they will be converted if there is an outgoing converter.</p>
-					<p>Conversions will only happen if required and will not happen if the Representation is already in the correct format.</p>
-					<p>In the future this class should take the preferences of the request into account.
-						Even if there is a match with the output from the store,
-					if there is a low weight for that type conversions might still be preferred.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -118,7 +110,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#inconverter" class="tsd-kind-icon">in<wbr>Converter</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#intype" class="tsd-kind-icon">in<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#inpreferences" class="tsd-kind-icon">in<wbr>Preferences</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="storage_representationconvertingstore.representationconvertingstore.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#outconverter" class="tsd-kind-icon">out<wbr>Converter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_representationconvertingstore.representationconvertingstore.html#source" class="tsd-kind-icon">source</a></li>
@@ -128,11 +120,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_representationconvertingstore.representationconvertingstore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#convertinrepresentation" class="tsd-kind-icon">convert<wbr>InRepresentation</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#convertrepresentation" class="tsd-kind-icon">convert<wbr>Representation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_representationconvertingstore.representationconvertingstore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_representationconvertingstore.representationconvertingstore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_representationconvertingstore.representationconvertingstore.html#matchespreferences" class="tsd-kind-icon">matches<wbr>Preferences</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_representationconvertingstore.representationconvertingstore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_representationconvertingstore.representationconvertingstore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a></li>
 							</ul>
@@ -153,7 +142,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L33">src/storage/RepresentationConvertingStore.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L19">src/storage/RepresentationConvertingStore.ts:19</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -196,21 +185,21 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="inconverter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> in<wbr>Converter</h3>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> in<wbr>Converter</h3>
 					<div class="tsd-signature tsd-kind-icon">in<wbr>Converter<span class="tsd-signature-symbol">:</span> <a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L30">src/storage/RepresentationConvertingStore.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L17">src/storage/RepresentationConvertingStore.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="intype" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> in<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">in<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="inpreferences" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> in<wbr>Preferences</h3>
+					<div class="tsd-signature tsd-kind-icon">in<wbr>Preferences<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L33">src/storage/RepresentationConvertingStore.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L19">src/storage/RepresentationConvertingStore.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -220,17 +209,17 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L28">src/storage/RepresentationConvertingStore.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L15">src/storage/RepresentationConvertingStore.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="outconverter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> out<wbr>Converter</h3>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> out<wbr>Converter</h3>
 					<div class="tsd-signature tsd-kind-icon">out<wbr>Converter<span class="tsd-signature-symbol">:</span> <a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L31">src/storage/RepresentationConvertingStore.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L18">src/storage/RepresentationConvertingStore.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -241,7 +230,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#source">source</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/PassthroughStore.ts#L14">src/storage/PassthroughStore.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/PassthroughStore.ts#L14">src/storage/PassthroughStore.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -252,20 +241,20 @@
 					<a name="addresource" class="tsd-anchor"></a>
 					<h3>add<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Resource<span class="tsd-signature-symbol">(</span>container<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#addresource">addResource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L55">src/storage/RepresentationConvertingStore.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L42">src/storage/RepresentationConvertingStore.ts:42</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>container: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 								</li>
 								<li>
 									<h5>representation: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
@@ -275,69 +264,6 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="convertinrepresentation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> convert<wbr>InRepresentation</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">convert<wbr>InRepresentation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L105">src/storage/RepresentationConvertingStore.ts:105</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Helper function that converts an incoming representation if necessary.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
-								</li>
-								<li>
-									<h5>representation: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="convertrepresentation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> convert<wbr>Representation</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">convert<wbr>Representation<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a>, converter<span class="tsd-signature-symbol">?: </span><a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L87">src/storage/RepresentationConvertingStore.ts:87</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Helper function that converts a Representation using the given args and converter,
-									if the conversion is necessary and there is a converter.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> converter: <a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -352,7 +278,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#deleteresource">deleteResource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/PassthroughStore.ts#L25">src/storage/PassthroughStore.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/PassthroughStore.ts#L25">src/storage/PassthroughStore.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -379,7 +305,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#getrepresentation">getRepresentation</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L49">src/storage/RepresentationConvertingStore.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L36">src/storage/RepresentationConvertingStore.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -398,37 +324,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="matchespreferences" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> matches<wbr>Preferences</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">matches<wbr>Preferences<span class="tsd-signature-symbol">(</span>representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, preferences<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L72">src/storage/RepresentationConvertingStore.ts:72</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Helper function that checks if the given representation matches the given preferences.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>representation: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
-								</li>
-								<li>
-									<h5>preferences: <a href="../interfaces/ldp_representation_representationpreferences.representationpreferences.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationPreferences</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="modifyresource" class="tsd-anchor"></a>
 					<h3>modify<wbr>Resource</h3>
@@ -440,7 +335,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#modifyresource">modifyResource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/PassthroughStore.ts#L34">src/storage/PassthroughStore.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/PassthroughStore.ts#L34">src/storage/PassthroughStore.ts:34</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -470,7 +365,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_passthroughstore.passthroughstore.html">PassthroughStore</a>.<a href="storage_passthroughstore.passthroughstore.html#setrepresentation">setRepresentation</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/RepresentationConvertingStore.ts#L63">src/storage/RepresentationConvertingStore.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/RepresentationConvertingStore.ts#L50">src/storage/RepresentationConvertingStore.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -516,7 +411,7 @@
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#inconverter" class="tsd-kind-icon">in<wbr>Converter</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="storage_representationconvertingstore.representationconvertingstore.html#intype" class="tsd-kind-icon">in<wbr>Type</a>
+								<a href="storage_representationconvertingstore.representationconvertingstore.html#inpreferences" class="tsd-kind-icon">in<wbr>Preferences</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#logger" class="tsd-kind-icon">logger</a>
@@ -530,20 +425,11 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="storage_representationconvertingstore.representationconvertingstore.html#convertinrepresentation" class="tsd-kind-icon">convert<wbr>InRepresentation</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="storage_representationconvertingstore.representationconvertingstore.html#convertrepresentation" class="tsd-kind-icon">convert<wbr>Representation</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="storage_representationconvertingstore.representationconvertingstore.html#matchespreferences" class="tsd-kind-icon">matches<wbr>Preferences</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="storage_representationconvertingstore.representationconvertingstore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a>
@@ -581,14 +467,13 @@
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 			</ul>
 		</div>
 	</div>

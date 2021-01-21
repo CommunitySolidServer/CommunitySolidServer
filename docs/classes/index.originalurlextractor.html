@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BasicTargetExtractor | Community Solid Server - v0.5.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.5.0">
+	<title>OriginalUrlExtractor | Community Solid Server - v0.6.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.5.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,16 +52,16 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.5.0</a>
+					<a href="../modules.html">Community Solid Server - v0.6.0</a>
 				</li>
 				<li>
-					<a href="../modules/ldp_http_basictargetextractor.html">ldp/http/BasicTargetExtractor</a>
+					<a href="../modules/index.html">index</a>
 				</li>
 				<li>
-					<a href="ldp_http_basictargetextractor.basictargetextractor.html">BasicTargetExtractor</a>
+					<a href="index.originalurlextractor.html">OriginalUrlExtractor</a>
 				</li>
 			</ul>
-			<h1>Class BasicTargetExtractor</h1>
+			<h1>Class OriginalUrlExtractor</h1>
 		</div>
 	</div>
 </header>
@@ -71,9 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Extracts an identifier from an incoming <a href="../modules/server_httprequest.html#httprequest">HttpRequest</a>.
-							Uses URL library for basic parsing.
-						TODO: input requires more extensive cleaning/parsing based on headers (see #22).</p>
+						<p>Reconstructs the original URL of an incoming <a href="../modules/index.html#httprequest">HttpRequest</a>.</p>
 					</div>
 				</div>
 			</section>
@@ -84,7 +82,7 @@
 						<a href="ldp_http_targetextractor.targetextractor.html" class="tsd-signature-type" data-tsd-kind="Class">TargetExtractor</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">BasicTargetExtractor</span>
+								<span class="target">OriginalUrlExtractor</span>
 							</li>
 						</ul>
 					</li>
@@ -97,15 +95,15 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="ldp_http_basictargetextractor.basictargetextractor.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="index.originalurlextractor.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="ldp_http_basictargetextractor.basictargetextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="ldp_http_basictargetextractor.basictargetextractor.html#handle" class="tsd-kind-icon">handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="ldp_http_basictargetextractor.basictargetextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="index.originalurlextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="index.originalurlextractor.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="index.originalurlextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 							</ul>
 						</section>
 					</div>
@@ -117,14 +115,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Basic<wbr>Target<wbr>Extractor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_http_basictargetextractor.basictargetextractor.html" class="tsd-signature-type" data-tsd-kind="Class">BasicTargetExtractor</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Original<wbr>Url<wbr>Extractor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_http_originalurlextractor.originalurlextractor.html" class="tsd-signature-type" data-tsd-kind="Class">OriginalUrlExtractor</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="ldp_http_targetextractor.targetextractor.html">TargetExtractor</a>.<a href="ldp_http_targetextractor.targetextractor.html#constructor">constructor</a></p>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="ldp_http_basictargetextractor.basictargetextractor.html" class="tsd-signature-type" data-tsd-kind="Class">BasicTargetExtractor</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="ldp_http_originalurlextractor.originalurlextractor.html" class="tsd-signature-type" data-tsd-kind="Class">OriginalUrlExtractor</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -142,7 +140,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="ldp_http_targetextractor.targetextractor.html">TargetExtractor</a>.<a href="ldp_http_targetextractor.targetextractor.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -181,7 +179,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="ldp_http_targetextractor.targetextractor.html">TargetExtractor</a>.<a href="ldp_http_targetextractor.targetextractor.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/ldp/http/BasicTargetExtractor.ts#L14">src/ldp/http/BasicTargetExtractor.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/ldp/http/OriginalUrlExtractor.ts#L12">src/ldp/http/OriginalUrlExtractor.ts:12</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -210,14 +208,14 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="ldp_http_targetextractor.targetextractor.html">TargetExtractor</a>.<a href="ldp_http_targetextractor.targetextractor.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Helper function that first runs the canHandle function followed by the handle function.
-										Throws the error of the <a href="ldp_http_basictargetextractor.basictargetextractor.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
-									or returns the result of the <a href="ldp_http_basictargetextractor.basictargetextractor.html#handle">handle</a> function otherwise.</p>
+										Throws the error of the <a href="index.originalurlextractor.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
+									or returns the result of the <a href="index.originalurlextractor.html#handle">handle</a> function otherwise.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -249,7 +247,7 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/ldp_http_basictargetextractor.html">ldp/http/<wbr>Basic<wbr>Target<wbr>Extractor</a>
+						<a href="../modules/index.html">index</a>
 					</li>
 				</ul>
 			</nav>
@@ -258,19 +256,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="ldp_http_basictargetextractor.basictargetextractor.html" class="tsd-kind-icon">Basic<wbr>Target<wbr>Extractor</a>
+						<a href="index.originalurlextractor.html" class="tsd-kind-icon">Original<wbr>Url<wbr>Extractor</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-								<a href="ldp_http_basictargetextractor.basictargetextractor.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="index.originalurlextractor.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="ldp_http_basictargetextractor.basictargetextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+								<a href="index.originalurlextractor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="ldp_http_basictargetextractor.basictargetextractor.html#handle" class="tsd-kind-icon">handle</a>
+								<a href="index.originalurlextractor.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="ldp_http_basictargetextractor.basictargetextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+								<a href="index.originalurlextractor.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
 							</li>
 						</ul>
 					</li>

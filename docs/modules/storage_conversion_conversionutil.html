@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>storage/conversion/ConversionUtil | Community Solid Server - v0.5.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.5.0">
+	<title>storage/conversion/ConversionUtil | Community Solid Server - v0.6.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.5.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.5.0</a>
+					<a href="../modules.html">Community Solid Server - v0.6.0</a>
 				</li>
 				<li>
 					<a href="storage_conversion_conversionutil.html">storage/conversion/ConversionUtil</a>
@@ -72,6 +72,7 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#hasmatchingmediatypes" class="tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#supportsmediatypeconversion" class="tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion</a></li>
@@ -83,6 +84,50 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="hasmatchingmediatypes" class="tsd-anchor"></a>
+					<h3>has<wbr>Matching<wbr>Media<wbr>Types</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferredTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, availableTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/conversion/ConversionUtil.ts#L69">src/storage/conversion/ConversionUtil.ts:69</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Determines whether any available type satisfies the preferences.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>BadRequestHttpError
+										If the type preferences are undefined or if there are duplicate preferences.</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> preferredTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences for output type.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> availableTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media types to compare to the preferences.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>Whether there is at least one preference match.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="matchesmediatype" class="tsd-anchor"></a>
 					<h3>matches<wbr>Media<wbr>Type</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -92,7 +137,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/conversion/ConversionUtil.ts#L66">src/storage/conversion/ConversionUtil.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/conversion/ConversionUtil.ts#L81">src/storage/conversion/ConversionUtil.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -131,7 +176,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/conversion/ConversionUtil.ts#L21">src/storage/conversion/ConversionUtil.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/conversion/ConversionUtil.ts#L21">src/storage/conversion/ConversionUtil.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -179,7 +224,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/conversion/ConversionUtil.ts#L97">src/storage/conversion/ConversionUtil.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/conversion/ConversionUtil.ts#L112">src/storage/conversion/ConversionUtil.ts:112</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -240,6 +285,9 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#hasmatchingmediatypes" class="tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types</a>
+					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="storage_conversion_conversionutil.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a>
 					</li>

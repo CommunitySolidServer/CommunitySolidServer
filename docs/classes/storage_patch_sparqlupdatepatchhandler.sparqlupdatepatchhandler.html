@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SparqlUpdatePatchHandler | Community Solid Server - v0.5.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.5.0">
+	<title>SparqlUpdatePatchHandler | Community Solid Server - v0.6.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.5.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.5.0</a>
+					<a href="../modules.html">Community Solid Server - v0.6.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_patch_sparqlupdatepatchhandler.html">storage/patch/SparqlUpdatePatchHandler</a>
@@ -110,11 +110,18 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applycomposite" class="tsd-kind-icon">apply<wbr>Composite</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applydeleteinsert" class="tsd-kind-icon">apply<wbr>Delete<wbr>Insert</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applyoperation" class="tsd-kind-icon">apply<wbr>Operation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applypatch" class="tsd-kind-icon">apply<wbr>Patch</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#handle" class="tsd-kind-icon">handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#iscomposite" class="tsd-kind-icon">is<wbr>Composite</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#isdeleteinsert" class="tsd-kind-icon">is<wbr>Delete<wbr>Insert</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validatecomposite" class="tsd-kind-icon">validate<wbr>Composite</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validatedeleteinsert" class="tsd-kind-icon">validate<wbr>Delete<wbr>Insert</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validateupdate" class="tsd-kind-icon">validate<wbr>Update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -133,7 +140,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_patch_patchhandler.patchhandler.html">PatchHandler</a>.<a href="storage_patch_patchhandler.patchhandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L26">src/storage/patch/SparqlUpdatePatchHandler.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L26">src/storage/patch/SparqlUpdatePatchHandler.ts:26</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -158,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">locker<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_locking_resourcelocker.resourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceLocker</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L26">src/storage/patch/SparqlUpdatePatchHandler.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L26">src/storage/patch/SparqlUpdatePatchHandler.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,7 +175,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L23">src/storage/patch/SparqlUpdatePatchHandler.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L23">src/storage/patch/SparqlUpdatePatchHandler.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -178,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L25">src/storage/patch/SparqlUpdatePatchHandler.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L25">src/storage/patch/SparqlUpdatePatchHandler.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,21 +193,114 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="applypatch" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Patch</h3>
+					<a name="applycomposite" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Composite</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">apply<wbr>Patch<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, deletes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Pattern</span><span class="tsd-signature-symbol">[]</span>, inserts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Pattern</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">apply<wbr>Composite<span class="tsd-signature-symbol">(</span>store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CompositeUpdate</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L81">src/storage/patch/SparqlUpdatePatchHandler.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L154">src/storage/patch/SparqlUpdatePatchHandler.ts:154</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Applies the given deletes and inserts to the resource.</p>
+									<p>Apply the given composite update operation to the store of quads.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>op: <span class="tsd-signature-type">CompositeUpdate</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="applydeleteinsert" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Delete<wbr>Insert</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">apply<wbr>Delete<wbr>Insert<span class="tsd-signature-symbol">(</span>store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DeleteInsert</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L163">src/storage/patch/SparqlUpdatePatchHandler.ts:163</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Apply the given DELETE/INSERT update operation to the store of quads.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>op: <span class="tsd-signature-type">DeleteInsert</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="applyoperation" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Operation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">apply<wbr>Operation<span class="tsd-signature-symbol">(</span>store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Operation</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L142">src/storage/patch/SparqlUpdatePatchHandler.ts:142</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Apply the given algebra update operation to the store of quads.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>op: <span class="tsd-signature-type">Operation</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="applypatch" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Patch</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">apply<wbr>Patch<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Operation</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L111">src/storage/patch/SparqlUpdatePatchHandler.ts:111</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Apply the given algebra operation to the given identifier.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -209,10 +309,7 @@
 									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 								</li>
 								<li>
-									<h5>deletes: <span class="tsd-signature-type">Pattern</span><span class="tsd-signature-symbol">[]</span></h5>
-								</li>
-								<li>
-									<h5>inserts: <span class="tsd-signature-type">Pattern</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>op: <span class="tsd-signature-type">Operation</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -230,7 +327,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_patch_patchhandler.patchhandler.html">PatchHandler</a>.<a href="storage_patch_patchhandler.patchhandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L34">src/storage/patch/SparqlUpdatePatchHandler.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L34">src/storage/patch/SparqlUpdatePatchHandler.ts:34</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -262,7 +359,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_patch_patchhandler.patchhandler.html">PatchHandler</a>.<a href="storage_patch_patchhandler.patchhandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L40">src/storage/patch/SparqlUpdatePatchHandler.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L40">src/storage/patch/SparqlUpdatePatchHandler.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -294,7 +391,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_patch_patchhandler.patchhandler.html">PatchHandler</a>.<a href="storage_patch_patchhandler.patchhandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -328,6 +425,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="iscomposite" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Composite</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Composite<span class="tsd-signature-symbol">(</span>op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Operation</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">op</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">CompositeUpdate</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L58">src/storage/patch/SparqlUpdatePatchHandler.ts:58</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>op: <span class="tsd-signature-type">Operation</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">op</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">CompositeUpdate</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="isdeleteinsert" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Delete<wbr>Insert</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -337,7 +457,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/c469df2/src/storage/patch/SparqlUpdatePatchHandler.ts#L74">src/storage/patch/SparqlUpdatePatchHandler.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L54">src/storage/patch/SparqlUpdatePatchHandler.ts:54</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -347,6 +467,91 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">op</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">DeleteInsert</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="validatecomposite" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> validate<wbr>Composite</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Composite<span class="tsd-signature-symbol">(</span>op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CompositeUpdate</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L102">src/storage/patch/SparqlUpdatePatchHandler.ts:102</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the composite update only contains supported update components.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>op: <span class="tsd-signature-type">CompositeUpdate</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="validatedeleteinsert" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> validate<wbr>Delete<wbr>Insert</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Delete<wbr>Insert<span class="tsd-signature-symbol">(</span>op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DeleteInsert</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L80">src/storage/patch/SparqlUpdatePatchHandler.ts:80</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input DELETE/INSERT is supported.
+									This means: no GRAPH statements, no DELETE WHERE.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>op: <span class="tsd-signature-type">DeleteInsert</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="validateupdate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> validate<wbr>Update</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Update<span class="tsd-signature-symbol">(</span>op<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Operation</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/storage/patch/SparqlUpdatePatchHandler.ts#L65">src/storage/patch/SparqlUpdatePatchHandler.ts:65</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>op: <span class="tsd-signature-type">Operation</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -383,6 +588,15 @@
 								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#source" class="tsd-kind-icon">source</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applycomposite" class="tsd-kind-icon">apply<wbr>Composite</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applydeleteinsert" class="tsd-kind-icon">apply<wbr>Delete<wbr>Insert</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applyoperation" class="tsd-kind-icon">apply<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#applypatch" class="tsd-kind-icon">apply<wbr>Patch</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
@@ -395,7 +609,19 @@
 								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#iscomposite" class="tsd-kind-icon">is<wbr>Composite</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#isdeleteinsert" class="tsd-kind-icon">is<wbr>Delete<wbr>Insert</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validatecomposite" class="tsd-kind-icon">validate<wbr>Composite</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validatedeleteinsert" class="tsd-kind-icon">validate<wbr>Delete<wbr>Insert</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_patch_sparqlupdatepatchhandler.sparqlupdatepatchhandler.html#validateupdate" class="tsd-kind-icon">validate<wbr>Update</a>
 							</li>
 						</ul>
 					</li>
