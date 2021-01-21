@@ -94,6 +94,7 @@
     "arrayify-stream": "^1.0.0",
     "assert": "^2.0.0",
     "async-lock": "^1.2.4",
+    "bcrypt": "^5.0.0",
     "clownface": "^1.2.0",
     "componentsjs": "^4.0.1",
     "cors": "^2.8.5",
@@ -122,6 +123,7 @@
   "devDependencies": {
     "@microsoft/tsdoc-config": "^0.13.6",
     "@tsconfig/node12": "^1.0.7",
+    "@types/bcrypt": "^3.0.0",
     "@types/clownface": "^1.2.0",
     "@types/ejs": "^3.0.5",
     "@types/jest": "^26.0.13",
