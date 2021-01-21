@@ -1,11 +1,11 @@
-import type {
-  AnyObject,
+import type { AnyObject,
   CanBePromise,
   interactionPolicy as InteractionPolicy,
   KoaContextWithOIDC,
   Configuration,
-} from 'oidc-provider';
+  Account } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
+
 import type { IdPConfigurationFactory } from './configuration/IdPConfigurationFactory';
 
 export class IdentityProviderFactory {
@@ -20,14 +20,27 @@ export class IdentityProviderFactory {
     this.configurationFactory = configurationFactory;
   }
 
-  public createProvider(interactionPolicy: {
+  public createProvider(interactionPolicyOptions: {
     policy?: InteractionPolicy.Prompt[];
     url?: (ctx: KoaContextWithOIDC) => CanBePromise<string>;
   }): Provider {
     const configuration = this.configurationFactory.createConfiguration();
     const augmentedConfig: Configuration = {
       ...configuration,
-      interactions: interactionPolicy,
+      interactions: {
+        policy: interactionPolicyOptions.policy,
+        url: interactionPolicyOptions.url,
+      },
+      async findAccount(ctx: KoaContextWithOIDC, sub: string): Promise<Account> {
+        return {
+          accountId: sub,
+          async claims(): Promise<{ sub: string; [key: string]: any }> {
+            return {
+              sub,
+            };
+          },
+        };
+      },
       claims: {
         ...configuration.claims,
         webid: [ 'webid', 'client_webid' ],
