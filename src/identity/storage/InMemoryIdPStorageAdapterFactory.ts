@@ -1,5 +1,6 @@
 import LRUCache from 'lru-cache';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
+import { StorageAdapterFacotry } from './StorageAdapterFactory';
 
 export class InMemoryIdPStorageAdapter implements Adapter {
   private readonly model: string;
@@ -87,3 +88,10 @@ export class InMemoryIdPStorageAdapter implements Adapter {
     }
   }
 }
+
+export class InMemoryIdPStorageAdapterFatory extends StorageAdapterFacotry {
+  public createStorageAdapter(name: string): Adapter {
+    return new InMemoryIdPStorageAdapter(name);
+  }
+}
+
