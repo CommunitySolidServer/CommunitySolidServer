@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.6.0"></a>
+## [v0.6.0](https://github.com/solid/community-server/compare/v0.5.0...v0.6.0) - 2021-01-21
+
+### Added
+* [feat: Export UnsecureConstantCredentialsExtractor.](https://github.com/solid/community-server/commit/542901488fb043d47575206f87d0106f656e0974)
+* [feat: Add IfNeededConverter and PassthroughConverter.](https://github.com/solid/community-server/commit/676350046631b75b136ad01ccca0ce6a64104526)
+* [feat: Support composite PATCH updates](https://github.com/solid/community-server/commit/36761e81249c9d7e787083de08135f1f22b5c23d)
+* [Add optional path and url suffixes to FixedContentTypeMapper](https://github.com/solid/community-server/commit/4ac0167c8d2b25a5bc5169617f04f2f9f3eece88)
+* [feat: Implement UnsupportedAsyncHandler.](https://github.com/solid/community-server/commit/dd9d8731226d22e24643ee8565f4369480bae260)
+* [feat: Add ConstantConverter.](https://github.com/solid/community-server/commit/5416d66a31f4388c99352a3def81a4d06b085e78)
+* [feat: Set Vary header.](https://github.com/solid/community-server/commit/693d48b9eb965c4a479e137eea157eb1943b40a9)
+* [feat: Add StaticAssetHandler.](https://github.com/solid/community-server/commit/5a123155541c9e9b1d08c8ad0be52d4dc4e2eabf)
+* [feat: Add placeholders for static assets to configuration.](https://github.com/solid/community-server/commit/75d0d4152af004a6363f5c097ed2e70a230bbc93)
+
+### Changed
+* [refactor: Rename BasicTargetExtractor to OriginalUrlExtractor.](https://github.com/solid/community-server/commit/3a4ec487208ef9b85e8b5bfb700ebbff82d6984a)
+
+### Fixed
+* [fix: Accept absolute paths in CliRunner](https://github.com/solid/community-server/commit/cf6270d161b2a77eb5f8237974055d33a841042d)
+
+
 <a name="v0.4.1"></a>
 ## [v0.4.1](https://github.com/solid/community-server/compare/v0.4.0...v0.4.1) - 2021-01-13
 
