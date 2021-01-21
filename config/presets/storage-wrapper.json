@@ -5,7 +5,7 @@
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
-        "@id": "urn:solid-server:default:ResourceStore_Patching"
+        "@id": "urn:solid-server:default:ResourceStore_Locking"
       },
       "MonitoringStore:_identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
@@ -21,6 +21,18 @@
     },
 
     {
+      "@id": "urn:solid-server:default:ResourceStore_Locking",
+      "@type": "LockingResourceStore",
+      "LockingResourceStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
+      },
+      "LockingResourceStore:_locks": {
+        "@id": "urn:solid-server:default:ResourceLocker"
+      }
+
+    },
+
+    {
       "@id": "urn:solid-server:default:ResourceStore_Patching",
       "@type": "PatchingStore",
       "PatchingStore:_source": {
@@ -31,9 +43,6 @@
         "@type": "SparqlUpdatePatchHandler",
         "SparqlUpdatePatchHandler:_source": {
           "@id": "urn:solid-server:default:ResourceStore_ToTurtle"
-        },
-        "SparqlUpdatePatchHandler:_locker": {
-          "@id": "urn:solid-server:default:ResourceLocker"
         }
       }
     },
