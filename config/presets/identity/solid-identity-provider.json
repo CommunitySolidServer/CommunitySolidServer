@@ -2,21 +2,21 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:IdPStorageAdapter",
-      "@type": "ResourceStoreStorageAdapter",
-      "ResourceStoreStorageAdapter:_baseUrl": {
+      "@id": "urn:solid-server:default:IdPStorageAdapterFactory",
+      "@type": "ResourceStoreStorageAdapterFactory",
+      "ResourceStoreStorageAdapterFactory:_args_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "ResourceStoreStorageAdapter:_idpResourcePrefix": "idp/",
-      "ResourceStoreStorageAdapter:_store": {
+      "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
+      "ResourceStoreStorageAdapterFactory:_args_store": {
         "@id": "urn:solid-server:default:ResourceStore"
       }
     },
     {
       "@id": "urn:solid-server:default:IdPConfigurationFactory",
       "@type": "DevIdPConfigurationFactory",
-      "DevIdPConfigurationFactory:_storageAdapter": {
-        "@id": "urn:solid-server:default:IdPStorageAdapter"
+      "DevIdPConfigurationFactory:_storageAdapterFactory": {
+        "@id": "urn:solid-server:default:IdPStorageAdapterFactory"
       }
     },
     {
