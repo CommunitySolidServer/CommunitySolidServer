@@ -1,13 +1,11 @@
 import assert from 'assert';
 import { hash, compare } from 'bcrypt';
 import { v4 } from 'uuid';
-import { BasicRepresentation } from '../../../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../../storage/ResourceStore';
-import { APPLICATION_OCTET_STREAM } from '../../../../util/ContentTypes';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
-import { readableToString } from '../../../../util/StreamUtil';
+import type { KeyValueInterface } from '../../../storage/getKeyValueInterfaceFromResourceStore';
+import { getKeyValueInterfaceFromResourceStore } from '../../../storage/getKeyValueInterfaceFromResourceStore';
 import { EmailPasswordStorageAdapter } from './EmailPasswordStorageAdapter';
 
 export interface EmailPasswordResourceStoreStorageAdapterArgs {
@@ -34,13 +32,15 @@ export interface EmailPasswordResourceStoreStorageAdapterForgotPasswordConfirmat
 
 export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStorageAdapter {
   private readonly baseUrl: string;
-  private readonly store: ResourceStore;
+  private readonly store: KeyValueInterface;
   private readonly saltRounds: number;
 
   public constructor(args: EmailPasswordResourceStoreStorageAdapterArgs) {
     super();
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathname}`;
-    this.store = args.store;
+    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${
+      args.storagePathname
+    }`;
+    this.store = getKeyValueInterfaceFromResourceStore(args.store);
     this.saltRounds = args.saltRounds;
   }
 
@@ -48,92 +48,78 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
     return { path: `${this.baseUrl}/${encodeURIComponent(key)}` };
   }
 
-  private getForgotPasswordConfirmationRecordResourceIdentifier(key: string): ResourceIdentifier {
+  private getForgotPasswordConfirmationRecordResourceIdentifier(
+    key: string,
+  ): ResourceIdentifier {
     return { path: `${this.baseUrl}/${encodeURIComponent(key)}` };
   }
 
-  private async get<T>(resourceIdentifier: ResourceIdentifier): Promise<T | undefined> {
-    try {
-      const representation: Representation =
-        await this.store.getRepresentation(resourceIdentifier, {});
-      return JSON.parse(
-        await readableToString(representation.data),
-      ) as T | undefined;
-    } catch {
-      // Do nothing just return undefined
-    }
-  }
-
-  private async set<T>(resourceIdentifier: ResourceIdentifier, payload: T): Promise<void> {
-    await this.store.setRepresentation(
-      resourceIdentifier,
-      new BasicRepresentation(
-        JSON.stringify(payload),
-        resourceIdentifier,
-        APPLICATION_OCTET_STREAM,
-      ),
-    );
-  }
-
-  private async delete(identifier: ResourceIdentifier): Promise<void> {
-    await this.store.deleteResource(identifier);
-  }
-
   public async authenticate(email: string, password: string): Promise<string> {
-    const account =
-      await this.get<EmailPasswordResourceStoreStorageAdapterAccountPayload>(this.getAccountResourceIdentifier(email));
+    const account = (await this.store.get(
+      this.getAccountResourceIdentifier(email),
+    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
     assert(account, 'No account by that email');
     assert(await compare(password, account.password), 'Incorrect password');
     return account.webId;
   }
 
-  public async create(email: string, webId: string, password: string): Promise<void> {
+  public async create(
+    email: string,
+    webId: string,
+    password: string,
+  ): Promise<void> {
     const resourceIdentifier = this.getAccountResourceIdentifier(email);
-    const existingAccount =
-      await this.get<EmailPasswordResourceStoreStorageAdapterAccountPayload>(resourceIdentifier);
+    const existingAccount = (await this.store.get(
+      resourceIdentifier,
+    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
     assert(!existingAccount, 'Account already exists');
     const payload: EmailPasswordResourceStoreStorageAdapterAccountPayload = {
       email,
       webId,
       password: await hash(password, this.saltRounds),
     };
-    await this.set<EmailPasswordResourceStoreStorageAdapterAccountPayload>(resourceIdentifier, payload);
+    await this.store.set(resourceIdentifier, payload);
   }
 
   public async changePassword(email: string, password: string): Promise<void> {
-    const account =
-      await this.get<EmailPasswordResourceStoreStorageAdapterAccountPayload>(this.getAccountResourceIdentifier(email));
+    const account = (await this.store.get(
+      this.getAccountResourceIdentifier(email),
+    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
     assert(account, 'Account does not exist');
     account.password = await hash(password, this.saltRounds);
-    await this.set<EmailPasswordResourceStoreStorageAdapterAccountPayload>(
-      this.getAccountResourceIdentifier(email),
-      account,
-    );
+    await this.store.set(this.getAccountResourceIdentifier(email), account);
   }
 
   public async deleteAccount(email: string): Promise<void> {
-    await this.delete(this.getAccountResourceIdentifier(email));
+    await this.store.remove(this.getAccountResourceIdentifier(email));
   }
 
-  public async generateForgotPasswordConfirmationRecord(email: string): Promise<string> {
+  public async generateForgotPasswordConfirmationRecord(
+    email: string,
+  ): Promise<string> {
     const recordId = v4();
-    await this.set<EmailPasswordResourceStoreStorageAdapterForgotPasswordConfirmationRecordPayload>(
+    await this.store.set(
       this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
       { recordId, email },
     );
     return recordId;
   }
 
-  public async getForgotPasswordConfirmationRecord(recordId: string): Promise<string> {
-    const forgotPasswordConfirmationRecord =
-      await this.get<EmailPasswordResourceStoreStorageAdapterForgotPasswordConfirmationRecordPayload>(
-        this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
-      );
+  public async getForgotPasswordConfirmationRecord(
+    recordId: string,
+  ): Promise<string> {
+    const forgotPasswordConfirmationRecord = (await this.store.get(
+      this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
+    )) as EmailPasswordResourceStoreStorageAdapterForgotPasswordConfirmationRecordPayload;
     assert(forgotPasswordConfirmationRecord, 'The request no longer exists');
     return forgotPasswordConfirmationRecord.email;
   }
 
-  public async deleteForgotPasswordConfirmationRecord(recordId: string): Promise<void> {
-    await this.delete(this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId));
+  public async deleteForgotPasswordConfirmationRecord(
+    recordId: string,
+  ): Promise<void> {
+    await this.store.remove(
+      this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
+    );
   }
 }

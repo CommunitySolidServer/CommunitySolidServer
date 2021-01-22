@@ -34,6 +34,7 @@ export class CliRunner {
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
         mainModulePath: { type: 'string', alias: 'm' },
         podTemplateFolder: { type: 'string', alias: 't' },
+        viewsFolder: { type: 'string', alias: 'v' },
         port: { type: 'number', alias: 'p', default: 3000 },
         rootFilePath: { type: 'string', alias: 'f', default: './' },
         sparqlEndpoint: { type: 'string', alias: 's' },
@@ -89,6 +90,8 @@ export class CliRunner {
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
          this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
+      'urn:solid-server:default:variable:viewsFolder':
+         this.resolveFilePath(params.viewsFolder, 'templates/views'),
     };
   }
 

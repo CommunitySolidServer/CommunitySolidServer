@@ -24,6 +24,10 @@
     {
       "@id": "urn:solid-server:default:variable:podTemplateFolder",
       "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:viewsFolder",
+      "@type": "Variable"
     }
   ]
 }

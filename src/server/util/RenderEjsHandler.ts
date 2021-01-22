@@ -5,11 +5,11 @@ import { RenderHandler } from './RenderHandler';
 
 export class RenderEjsHandler<T> extends RenderHandler<T> {
   private readonly ejsTemplatePath: string;
-  private readonly rootFilePath: string;
+  private readonly viewsFolder: string;
 
-  public constructor(rootFilePath: string, ejsTemplatePath: string) {
+  public constructor(viewsFolder: string, ejsTemplatePath: string) {
     super();
-    this.rootFilePath = rootFilePath;
+    this.viewsFolder = viewsFolder;
     this.ejsTemplatePath = ejsTemplatePath;
   }
 
@@ -18,11 +18,9 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
     props: T;
   }): Promise<void> {
     const { props, response } = input;
-    console.log(this.ejsTemplatePath);
-    console.log(this.rootFilePath);
     const renderedHtml = await renderFile(
       path.join(
-        this.rootFilePath,
+        this.viewsFolder,
         this.ejsTemplatePath,
       ),
       props,

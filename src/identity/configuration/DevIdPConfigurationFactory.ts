@@ -2,14 +2,15 @@
 /* eslint-disable id-length */
 /* eslint-disable max-len */
 import type { Adapter, Configuration } from 'oidc-provider';
+import type { StorageAdapterFacotry } from '../storage/StorageAdapterFactory';
 import { IdPConfigurationFactory } from './IdPConfigurationFactory';
 
 export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
-  private readonly storageAdapter: Adapter;
+  private readonly storageAdapterFactory: StorageAdapterFacotry;
 
-  public constructor(storageAdapter: Adapter) {
+  public constructor(storageAdapterFactory: StorageAdapterFacotry) {
     super();
-    this.storageAdapter = storageAdapter;
+    this.storageAdapterFactory = storageAdapterFactory;
   }
 
   public createConfiguration(): Configuration {
@@ -19,8 +20,8 @@ export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this;
     return {
-      adapter: function loadAdapter(): Adapter {
-        return that.storageAdapter;
+      adapter: function loadAdapter(name: string): Adapter {
+        return that.storageAdapterFactory.createStorageAdapter(name);
       },
       clients: [
         // {

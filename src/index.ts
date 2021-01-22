@@ -93,8 +93,8 @@ export * from './identity/IdentityProviderHttpHandler';
 export * from './identity/configuration/DevIdPConfigurationFactory';
 
 // SolidIdentityProvider/Storage
-export * from './identity/storage/InMemoryIdPStorageAdapter';
-export * from './identity/storage/ResourceStoreStorageAdapter';
+export * from './identity/storage/StorageAdapterFactory';
+export * from './identity/storage/ResourceStoreStorageAdapterFactory';
 
 // SolidIdentityProvider/InteractionPolicies/Util
 export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';

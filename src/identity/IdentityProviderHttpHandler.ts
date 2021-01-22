@@ -1,5 +1,5 @@
 import { parse } from 'url';
-import type { Configuration, Provider } from 'oidc-provider';
+import type { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
 // configuration, which, in turn, is needed to get the routes the provider is using.
 // It is probably very difficult to get the configuration because Panva does not want
