@@ -4,12 +4,12 @@ import { translate } from 'sparqlalgebrajs';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { isNativeError } from '../../util/errors/ErrorUtil';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { pipeSafely, readableToString } from '../../util/StreamUtil';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
 import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
-
 /**
  * {@link BodyParser} that supports `application/sparql-update` content.
  * Will convert the incoming update string to algebra in a {@link SparqlUpdatePatch}.
@@ -34,7 +34,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       algebra = translate(sparql, { quads: true, baseIRI: metadata.identifier.value });
     } catch (error: unknown) {
       this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
-      if (error instanceof Error) {
+      if (isNativeError(error)) {
         throw new BadRequestHttpError(error.message);
       }
       throw new BadRequestHttpError();

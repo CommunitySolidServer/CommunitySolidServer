@@ -7,4 +7,8 @@ export class NotImplementedHttpError extends HttpError {
   public constructor(message?: string) {
     super(501, 'NotImplementedHttpError', message);
   }
+
+  public static isInstance(error: any): error is NotImplementedHttpError {
+    return HttpError.isInstance(error) && error.statusCode === 501;
+  }
 }

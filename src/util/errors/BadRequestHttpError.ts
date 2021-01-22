@@ -12,4 +12,8 @@ export class BadRequestHttpError extends HttpError {
   public constructor(message?: string) {
     super(400, 'BadRequestHttpError', message ?? 'The given input is not supported by the server configuration.');
   }
+
+  public static isInstance(error: any): error is BadRequestHttpError {
+    return HttpError.isInstance(error) && error.statusCode === 400;
+  }
 }

@@ -53,7 +53,7 @@ export class RoutingResourceStore implements ResourceStore {
     try {
       return await this.rule.handleSafe({ identifier });
     } catch (error: unknown) {
-      if (error instanceof NotImplementedHttpError) {
+      if (NotImplementedHttpError.isInstance(error)) {
         throw new NotFoundHttpError();
       }
       throw error;
