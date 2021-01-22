@@ -6,4 +6,8 @@ export class InternalServerError extends HttpError {
   public constructor(message?: string) {
     super(500, 'InternalServerError', message);
   }
+
+  public static isInstance(error: any): error is InternalServerError {
+    return HttpError.isInstance(error) && error.statusCode === 500;
+  }
 }

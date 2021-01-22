@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../logging/LogUtil';
 import type { AsyncHandler } from './AsyncHandler';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
+import { isNativeError } from './errors/ErrorUtil';
 import { HttpError } from './errors/HttpError';
 import { InternalServerError } from './errors/InternalServerError';
 
@@ -84,9 +85,9 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
 
         return handler;
       } catch (error: unknown) {
-        if (error instanceof HttpError) {
+        if (HttpError.isInstance(error)) {
           errors.push(error);
-        } else if (error instanceof Error) {
+        } else if (isNativeError(error)) {
           errors.push(new InternalServerError(error.message));
         } else {
           errors.push(new InternalServerError('Unknown error'));
