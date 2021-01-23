@@ -98,6 +98,10 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
     email: string,
   ): Promise<string> {
     const recordId = v4();
+    assert(
+      await this.store.get(this.getAccountResourceIdentifier(email)),
+      'Accound does not exist',
+    );
     await this.store.set(
       this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
       { recordId, email },
@@ -107,11 +111,13 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
 
   public async getForgotPasswordConfirmationRecord(
     recordId: string,
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     const forgotPasswordConfirmationRecord = (await this.store.get(
       this.getForgotPasswordConfirmationRecordResourceIdentifier(recordId),
     )) as EmailPasswordResourceStoreStorageAdapterForgotPasswordConfirmationRecordPayload;
-    assert(forgotPasswordConfirmationRecord, 'The request no longer exists');
+    if (!forgotPasswordConfirmationRecord) {
+      return;
+    }
     return forgotPasswordConfirmationRecord.email;
   }
 
