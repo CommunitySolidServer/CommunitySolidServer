@@ -23,7 +23,7 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
         this.viewsFolder,
         this.ejsTemplatePath,
       ),
-      props,
+      props || {},
     );
     // Content-Type must not be cammel case
     // eslint-disable-next-line @typescript-eslint/naming-convention

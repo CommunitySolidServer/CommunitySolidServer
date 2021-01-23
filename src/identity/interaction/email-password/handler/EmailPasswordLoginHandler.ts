@@ -27,28 +27,41 @@ export class EmailPasswordLoginHandler extends IdPInteractionHttpHandler {
   }
 
   public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
+    const interactionDetails = await input.provider.interactionDetails(
+      input.request,
+      input.response,
+    );
     let prefilledEmail = '';
     try {
-      const { email, password, remember } = await getFormDataRequestBody(input.request);
+      const { email, password, remember } = await getFormDataRequestBody(
+        input.request,
+      );
 
       // Qualify email
-      assert(typeof email === 'string', 'Email required');
+      assert(email && typeof email === 'string', 'Email required');
       prefilledEmail = email;
 
       // Qualify password
-      assert(typeof password === 'string', 'Password required');
+      assert(password && typeof password === 'string', 'Password required');
 
       // Qualify shouldRemember
       const shouldRemember = Boolean(remember);
 
       // Perform registration
-      const webId = await this.emailPasswordStorageAdapter.authenticate(email, password);
+      const webId = await this.emailPasswordStorageAdapter.authenticate(
+        email,
+        password,
+      );
 
       // Complete the interaction interaction
-      await this.oidcInteractionCompleter.handle({ ...input, webId, shouldRemember });
+      await this.oidcInteractionCompleter.handle({
+        ...input,
+        webId,
+        shouldRemember,
+      });
     } catch (err: unknown) {
-      const errorMessage: string = err instanceof Error ? err.message : 'An unknown error occurred';
+      const errorMessage: string =
+        err instanceof Error ? err.message : 'An unknown error occurred';
       await this.renderHandler.handle({
         response: input.response,
         props: {

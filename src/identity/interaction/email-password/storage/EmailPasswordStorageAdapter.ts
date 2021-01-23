@@ -30,18 +30,19 @@ export abstract class EmailPasswordStorageAdapter {
   abstract deleteAccount(email: string): Promise<void>;
   /**
    * Creates a Forgot Password Confirmation Record. This will be to remember that
-   * a user has made a request to reset a password.
+   * a user has made a request to reset a password. Throws and error if the email doesn't
+   * exist
    * @param email - the user's email
    * @returns the record id. This should be included in the reset password link
    */
   abstract generateForgotPasswordConfirmationRecord(email: string): Promise<string>;
   /**
-   * Gets the email associated with the forgot password confirmation record or
-   * throws an error if it's not present
+   * Gets the email associated with the forgot password confirmation record or undefined
+   * if it's not present
    * @param recordId - the record id retrieved from the link
    * @returns the user's email
    */
-  abstract getForgotPasswordConfirmationRecord(recordId: string): Promise<string>;
+  abstract getForgotPasswordConfirmationRecord(recordId: string): Promise<string | undefined>;
   /**
    * Deletes the Forgot Password Confirmation Record
    * @param recordId - the record id of the forgot password confirmation record
