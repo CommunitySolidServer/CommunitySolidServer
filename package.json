@@ -111,7 +111,7 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
-    "@microsoft/tsdoc-config": "^0.13.6",
+    "@microsoft/tsdoc-config": "^0.14.0",
     "@tsconfig/node12": "^1.0.7",
     "@types/jest": "^26.0.13",
     "@types/rimraf": "^3.0.0",
