@@ -34,8 +34,4 @@ export class SuffixAuxiliaryIdentifierStrategy implements AuxiliaryIdentifierStr
     }
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
-
-  public canDeleteRoot(): boolean {
-    return true;
-  }
 }

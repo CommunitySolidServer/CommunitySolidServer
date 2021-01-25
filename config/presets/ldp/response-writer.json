@@ -42,8 +42,8 @@
         },
         {
           "@type": "AclLinkMetadataWriter",
-          "AclLinkMetadataWriter:_aclManager": {
-            "@id": "urn:solid-server:default:AclManager"
+          "AclLinkMetadataWriter:_aclStrategy": {
+            "@id": "urn:solid-server:default:AclIdentifierStrategy"
           }
         }
       ]

@@ -14,14 +14,14 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
   private readonly identifierStrategy: AuxiliaryIdentifierStrategy;
   private readonly metadataGenerator?: MetadataGenerator;
   private readonly validator?: Validator;
-  private readonly canDelete: boolean;
+  private readonly rootRequired: boolean;
 
   public constructor(identifierStrategy: AuxiliaryIdentifierStrategy, metadataGenerator?: MetadataGenerator,
-    validator?: Validator, canDeleteRoot = false) {
+    validator?: Validator, isRootRequired = false) {
     this.identifierStrategy = identifierStrategy;
     this.metadataGenerator = metadataGenerator;
     this.validator = validator;
-    this.canDelete = canDeleteRoot;
+    this.rootRequired = isRootRequired;
   }
 
   public getAuxiliaryIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
@@ -40,8 +40,8 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
     return this.identifierStrategy.getAssociatedIdentifier(identifier);
   }
 
-  public requiresRootAuxiliary(): boolean {
-    return this.canDelete;
+  public isRootRequired(): boolean {
+    return this.rootRequired;
   }
 
   public async addMetadata(metadata: RepresentationMetadata): Promise<void> {
