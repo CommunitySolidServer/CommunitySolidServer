@@ -1,8 +1,8 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import streamifyArray from 'streamify-array';
 import type { Credentials } from '../../../src/authentication/Credentials';
-import type { AclManager } from '../../../src/authorization/AclManager';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
@@ -18,13 +18,11 @@ const acl = 'http://www.w3.org/ns/auth/acl#';
 
 describe('A WebAclAuthorizer', (): void => {
   let authorizer: WebAclAuthorizer;
-  const aclManager: AclManager = {
-    getAclDocument: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
-      id.path.endsWith('.acl') ? id : { path: `${id.path}.acl` },
-    isAclDocument: async(id: ResourceIdentifier): Promise<boolean> => id.path.endsWith('.acl'),
-    getAclConstrainedResource: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
-      !id.path.endsWith('.acl') ? id : { path: id.path.slice(0, -4) },
-  };
+  const aclStrategy: AuxiliaryIdentifierStrategy = {
+    getAuxiliaryIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: `${id.path}.acl` }),
+    isAuxiliaryIdentifier: (id: ResourceIdentifier): boolean => id.path.endsWith('.acl'),
+    getAssociatedIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: id.path.slice(0, -4) }),
+  } as any;
   let store: ResourceStore;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
   let permissions: PermissionSet;
@@ -44,11 +42,11 @@ describe('A WebAclAuthorizer', (): void => {
     store = {
       getRepresentation: jest.fn(),
     } as any;
-    authorizer = new WebAclAuthorizer(aclManager, store, identifierStrategy);
+    authorizer = new WebAclAuthorizer(aclStrategy, store, identifierStrategy);
   });
 
   it('handles all inputs.', async(): Promise<void> => {
-    authorizer = new WebAclAuthorizer(aclManager, null as any, identifierStrategy);
+    authorizer = new WebAclAuthorizer(aclStrategy, null as any, identifierStrategy);
     await expect(authorizer.canHandle({} as any)).resolves.toBeUndefined();
   });
 
@@ -130,7 +128,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
     ]) } as Representation);
-    const aclIdentifier = await aclManager.getAclDocument(identifier);
+    const aclIdentifier = aclStrategy.getAuxiliaryIdentifier(identifier);
     await expect(authorizer.handle({ identifier: aclIdentifier, permissions, credentials })).resolves.toBeUndefined();
   });
 
@@ -143,7 +141,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    identifier = await aclManager.getAclDocument(identifier);
+    identifier = aclStrategy.getAuxiliaryIdentifier(identifier);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 

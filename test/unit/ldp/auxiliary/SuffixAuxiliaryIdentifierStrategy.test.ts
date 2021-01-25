@@ -38,8 +38,4 @@ describe('A SuffixAuxiliaryManager', (): void => {
   it('removes the suffix to create the associated identifier.', async(): Promise<void> => {
     expect(strategy.getAssociatedIdentifier(auxiliaryId)).toEqual(associatedId);
   });
-
-  it('returns true on canDeleteRoot.', async(): Promise<void> => {
-    expect(strategy.canDeleteRoot()).toEqual(true);
-  });
 });

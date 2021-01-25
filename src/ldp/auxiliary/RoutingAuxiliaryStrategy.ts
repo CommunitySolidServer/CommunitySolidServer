@@ -18,9 +18,9 @@ export class RoutingAuxiliaryStrategy extends RoutingAuxiliaryIdentifierStrategy
     super(sources);
   }
 
-  public requiresRootAuxiliary(identifier: ResourceIdentifier): boolean {
+  public isRootRequired(identifier: ResourceIdentifier): boolean {
     const source = this.getMatchingSource(identifier);
-    return source.requiresRootAuxiliary(identifier);
+    return source.isRootRequired(identifier);
   }
 
   public async addMetadata(metadata: RepresentationMetadata): Promise<void> {

@@ -1,6 +1,7 @@
 import type { Quad, Term } from 'n3';
 import { Store } from 'n3';
 import type { Credentials } from '../authentication/Credentials';
+import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import type { Representation } from '../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
@@ -12,7 +13,6 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { ACL, FOAF } from '../util/Vocabularies';
-import type { AclManager } from './AclManager';
 import type { AuthorizerArgs } from './Authorizer';
 import { Authorizer } from './Authorizer';
 
@@ -24,13 +24,14 @@ import { Authorizer } from './Authorizer';
 export class WebAclAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly aclManager: AclManager;
+  private readonly aclStrategy: AuxiliaryIdentifierStrategy;
   private readonly resourceStore: ResourceStore;
   private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(aclManager: AclManager, resourceStore: ResourceStore, identifierStrategy: IdentifierStrategy) {
+  public constructor(aclStrategy: AuxiliaryIdentifierStrategy, resourceStore: ResourceStore,
+    identifierStrategy: IdentifierStrategy) {
     super();
-    this.aclManager = aclManager;
+    this.aclStrategy = aclStrategy;
     this.resourceStore = resourceStore;
     this.identifierStrategy = identifierStrategy;
   }
@@ -44,7 +45,7 @@ export class WebAclAuthorizer extends Authorizer {
     // Solid, §4.3.3: "To discover, read, create, or modify an ACL auxiliary resource, an acl:agent MUST
     // have acl:Control privileges per the ACL inheritance algorithm on the resource directly associated with it."
     // https://solid.github.io/specification/protocol#auxiliary-resources-reserved
-    const modes = await this.aclManager.isAclDocument(identifier) ?
+    const modes = this.aclStrategy.isAuxiliaryIdentifier(identifier) ?
       [ 'control' ] :
       (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
 
@@ -141,12 +142,13 @@ export class WebAclAuthorizer extends Authorizer {
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
-      const acl = await this.aclManager.getAclDocument(id);
+      const isAcl = this.aclStrategy.isAuxiliaryIdentifier(id);
+      const acl = isAcl ? id : this.aclStrategy.getAuxiliaryIdentifier(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
-      const resourceId = await this.aclManager.getAclConstrainedResource(id);
+      const resourceId = isAcl ? this.aclStrategy.getAssociatedIdentifier(id) : id;
       return this.filterData(data, recurse ? ACL.default : ACL.accessTo, resourceId.path);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {

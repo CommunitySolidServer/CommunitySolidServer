@@ -27,7 +27,7 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
 
-  public requiresRootAuxiliary(): boolean {
+  public isRootRequired(): boolean {
     return true;
   }
 
@@ -77,13 +77,13 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
     expect(sources[1].addMetadata).toHaveBeenLastCalledWith(metadata);
   });
 
-  it('#canDeleteRoot returns the result of the correct source.', async(): Promise<void> => {
-    sources[0].requiresRootAuxiliary = jest.fn();
-    sources[1].requiresRootAuxiliary = jest.fn();
-    strategy.requiresRootAuxiliary(dummy2Id);
-    expect(sources[0].requiresRootAuxiliary).toHaveBeenCalledTimes(0);
-    expect(sources[1].requiresRootAuxiliary).toHaveBeenCalledTimes(1);
-    expect(sources[1].requiresRootAuxiliary).toHaveBeenLastCalledWith(dummy2Id);
+  it('#isRootRequired returns the result of the correct source.', async(): Promise<void> => {
+    sources[0].isRootRequired = jest.fn();
+    sources[1].isRootRequired = jest.fn();
+    strategy.isRootRequired(dummy2Id);
+    expect(sources[0].isRootRequired).toHaveBeenCalledTimes(0);
+    expect(sources[1].isRootRequired).toHaveBeenCalledTimes(1);
+    expect(sources[1].isRootRequired).toHaveBeenLastCalledWith(dummy2Id);
   });
 
   it('#validates using the correct validator.', async(): Promise<void> => {

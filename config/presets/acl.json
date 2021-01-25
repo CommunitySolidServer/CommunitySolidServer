@@ -2,14 +2,34 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:AclManager",
-      "@type": "UrlBasedAclManager"
+      "@id": "urn:solid-server:default:AclIdentifierStrategy",
+      "@type": "SuffixAuxiliaryIdentifierStrategy",
+      "SuffixAuxiliaryIdentifierStrategy:_suffix": ".acl"
     },
+    {
+      "@id": "urn:solid-server:default:AclStrategy",
+      "@type": "ComposedAuxiliaryStrategy",
+      "ComposedAuxiliaryStrategy:_identifierStrategy": {
+        "@id": "urn:solid-server:default:AclIdentifierStrategy"
+      },
+      "ComposedAuxiliaryStrategy:_metadataGenerator": {
+        "@type": "LinkMetadataGenerator",
+        "LinkMetadataGenerator:_link": "http://www.w3.org/ns/auth/acl#accessControl",
+        "LinkMetadataGenerator:_identifierStrategy": {
+          "@id": "urn:solid-server:default:AclIdentifierStrategy"
+        }
+      },
+      "ComposedAuxiliaryStrategy:_validator": {
+        "@id": "urn:solid-server:default:RdfValidator"
+      },
+      "ComposedAuxiliaryStrategy:_isRootRequired": true
+    },
+
     {
       "@id": "urn:solid-server:default:AclAuthorizer",
       "@type": "WebAclAuthorizer",
-      "WebAclAuthorizer:_aclManager": {
-        "@id": "urn:solid-server:default:AclManager"
+      "WebAclAuthorizer:_aclStrategy": {
+        "@id": "urn:solid-server:default:AclIdentifierStrategy"
       },
       "WebAclAuthorizer:_resourceStore": {
         "@id": "urn:solid-server:default:ResourceStore"
