@@ -19,6 +19,7 @@ describe('A MethodPermissionsExtractor', (): void => {
       read: true,
       append: false,
       write: false,
+      control: false,
     });
   });
 
@@ -27,6 +28,7 @@ describe('A MethodPermissionsExtractor', (): void => {
       read: true,
       append: false,
       write: false,
+      control: false,
     });
   });
 
@@ -35,6 +37,7 @@ describe('A MethodPermissionsExtractor', (): void => {
       read: false,
       append: true,
       write: false,
+      control: false,
     });
   });
 
@@ -43,6 +46,7 @@ describe('A MethodPermissionsExtractor', (): void => {
       read: false,
       append: true,
       write: true,
+      control: false,
     });
   });
 
@@ -51,6 +55,7 @@ describe('A MethodPermissionsExtractor', (): void => {
       read: false,
       append: true,
       write: true,
+      control: false,
     });
   });
 });

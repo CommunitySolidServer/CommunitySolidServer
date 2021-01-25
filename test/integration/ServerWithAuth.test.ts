@@ -36,7 +36,7 @@ describe('A server with authorization', (): void => {
   });
 
   it('can create new entries.', async(): Promise<void> => {
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');
 
     // POST
     let requestUrl = new URL('http://test.com/');
@@ -62,7 +62,7 @@ describe('A server with authorization', (): void => {
   });
 
   it('cannot create new entries if not allowed.', async(): Promise<void> => {
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'authenticated');
 
     // POST
     let requestUrl = new URL('http://test.com/');
@@ -89,7 +89,7 @@ describe('A server with authorization', (): void => {
 
   // https://github.com/solid/community-server/issues/498
   it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');
 
     // PUT
     let requestUrl = new URL('http://test.com/foo/bar');
