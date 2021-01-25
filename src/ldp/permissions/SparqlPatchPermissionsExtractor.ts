@@ -35,7 +35,8 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
     const read = false;
     const write = this.needsWrite(update);
     const append = write || this.needsAppend(update);
-    return { read, write, append };
+    const control = false;
+    return { read, write, append, control };
   }
 
   private isSparql(data: Representation): data is SparqlUpdatePatch {

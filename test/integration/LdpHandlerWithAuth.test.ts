@@ -62,7 +62,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
   it('can add a file to the store, read it and delete it if allowed.', async():
   Promise<void> => {
     // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');
 
     // Create file
     let response = await resourceHelper.createResource(
@@ -85,7 +85,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
   it('can not add a file to the store if not allowed.', async():
   Promise<void> => {
     // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true }, 'authenticated');
+    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'authenticated');
 
     // Try to create file
     const response = await resourceHelper.createResource(
@@ -97,7 +97,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
   it('can not add/delete, but only read files if allowed.', async():
   Promise<void> => {
     // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: false, append: false }, 'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: false, append: false, control: false }, 'agent');
 
     // Try to create file
     let response = await resourceHelper.createResource(
@@ -118,7 +118,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
 
   it('can add files but not write to them if append is allowed.', async(): Promise<void> => {
     // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: false, append: true }, 'agent');
+    await aclHelper.setSimpleAcl({ read: true, write: false, append: true, control: false }, 'agent');
 
     // Add a file
     let response = await resourceHelper.createResource(

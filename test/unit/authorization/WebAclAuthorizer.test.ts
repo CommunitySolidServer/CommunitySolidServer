@@ -36,6 +36,7 @@ describe('A WebAclAuthorizer', (): void => {
       read: true,
       append: false,
       write: true,
+      control: false,
     };
     credentials = {};
     identifier = { path: 'http://test.com/foo' };
@@ -169,6 +170,7 @@ describe('A WebAclAuthorizer', (): void => {
       read: false,
       write: false,
       append: true,
+      control: false,
     };
     store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
