@@ -1,4 +1,5 @@
 import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
+import { RoutingAuxiliaryStrategy } from '../../src/ldp/auxiliary/RoutingAuxiliaryStrategy';
 import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../src/ldp/representation/Representation';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
@@ -29,9 +30,15 @@ describe('A LockingResourceStore', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
 
+    // Not relevant for these tests
+    const strategy = new RoutingAuxiliaryStrategy([]);
+
     const base = 'http://test.com/';
     path = `${base}path`;
-    source = new DataAccessorBasedStore(new InMemoryDataAccessor(base), new SingleRootIdentifierStrategy(base));
+    source = new DataAccessorBasedStore(
+      new InMemoryDataAccessor(base),
+      new SingleRootIdentifierStrategy(base),
+    );
 
     // Initialize store
     const initializer = new RootContainerInitializer({ store: source, baseUrl: BASE });
@@ -40,7 +47,7 @@ describe('A LockingResourceStore', (): void => {
     locker = new EqualReadWriteLocker(new SingleThreadedResourceLocker());
     expiringLocker = new WrappedExpiringReadWriteLocker(locker, 1000);
 
-    store = new LockingResourceStore(source, expiringLocker);
+    store = new LockingResourceStore(source, expiringLocker, strategy);
 
     // Spy on a real ResourceLocker and ResourceStore instance
     getRepresentationSpy = jest.spyOn(source, 'getRepresentation');
