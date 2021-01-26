@@ -38,8 +38,10 @@
       },
       "LockingResourceStore:_locks": {
         "@id": "urn:solid-server:default:ResourceLocker"
+      },
+      "LockingResourceStore:_strategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
-
     },
 
     {
