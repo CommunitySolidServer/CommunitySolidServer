@@ -23,6 +23,7 @@ export * from './init/RootContainerInitializer';
 export * from './init/ServerInitializer';
 
 // LDP/HTTP/Metadata
+export * from './ldp/http/metadata/AclLinkMetadataWriter';
 export * from './ldp/http/metadata/BasicMetadataExtractor';
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';

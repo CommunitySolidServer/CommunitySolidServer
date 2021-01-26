@@ -39,6 +39,12 @@
               "LinkRelMetadataWriter:_linkRelMap_value": "type"
             }
           ]
+        },
+        {
+          "@type": "AclLinkMetadataWriter",
+          "AclLinkMetadataWriter:_aclManager": {
+            "@id": "urn:solid-server:default:AclManager"
+          }
         }
       ]
     },

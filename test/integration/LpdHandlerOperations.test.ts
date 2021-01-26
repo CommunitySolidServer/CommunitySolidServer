@@ -47,7 +47,8 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     expect(response._getData()).toContain(
       '<http://test.com/s> <http://test.com/p> <http://test.com/o>.',
     );
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE
     response = await performRequest(handler, requestUrl, 'DELETE', {}, []);
@@ -103,7 +104,8 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     expect(response._getData()).toContain(
       '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.',
     );
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
     const parser = new Parser();
     let triples = parser.parse(response._getData());
     expect(triples).toBeRdfIsomorphic([
@@ -190,7 +192,8 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
       [],
     );
     expect(response.statusCode).toBe(200);
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
     const parser = new Parser();
     const triples = parser.parse(response._getData());
     expect(triples).toBeRdfIsomorphic([

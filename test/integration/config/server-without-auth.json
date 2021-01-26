@@ -46,6 +46,11 @@
       "PassthroughStore:_source": {
         "@id": "urn:solid-server:default:MemoryResourceStore"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:AclManager",
+      "@type": "UrlBasedAclManager",
+      "comment": "Needed for AclLinkMetadataWriter"
     }
   ]
 }

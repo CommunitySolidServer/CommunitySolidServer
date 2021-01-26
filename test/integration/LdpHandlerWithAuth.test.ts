@@ -76,7 +76,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE2');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE file
     await resourceHelper.deleteResource(id);
@@ -109,7 +110,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     // GET permanent file
     response = await resourceHelper.getResource('http://test.com/permanent.txt');
     expect(response._getBuffer().toString()).toContain('TEST');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<http://test.com/permanent.txt.acl>; rel="acl"`);
 
     // Try to delete permanent file
     response = await resourceHelper.deleteResource('http://test.com/permanent.txt', true);
