@@ -92,6 +92,18 @@ describe('An Express server with middleware', (): void => {
     expect(exposed.split(/\s*,\s*/u)).toContain('Location');
   });
 
+  it('exposes the MS-Author-Via header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('MS-Author-Via');
+  });
+
+  it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('Updates-Via');
+  });
+
   it('sends incoming requests to the handler.', async(): Promise<void> => {
     const response = request(server).get('/').set('Host', 'test.com');
     expect(response).toBeDefined();

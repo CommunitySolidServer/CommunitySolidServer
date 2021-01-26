@@ -6,6 +6,15 @@
       "@type": "SequenceHandler",
       "SequenceHandler:_handlers": [
         {
+          "@type": "ConstantMetadataWriter",
+          "ConstantMetadataWriter:_headers": [
+            {
+              "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
+              "ConstantMetadataWriter:_headers_value": "SPARQL"
+            }
+          ]
+        },
+        {
           "@type": "MappedMetadataWriter",
           "MappedMetadataWriter:_headerMap": [
             {

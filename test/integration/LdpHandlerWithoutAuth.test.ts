@@ -81,6 +81,7 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE0');
     expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders()['ms-author-via']).toBe('SPARQL');
 
     // DELETE
     await resourceHelper.deleteResource(id);
