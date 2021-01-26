@@ -16,6 +16,6 @@ export class WebSocketAdvertiser extends HttpHandler {
   }
 
   public async handle({ response }: { response: HttpResponse }): Promise<void> {
-    addHeader(response, 'updates-via', this.socketUrl);
+    addHeader(response, 'Updates-Via', this.socketUrl);
   }
 }

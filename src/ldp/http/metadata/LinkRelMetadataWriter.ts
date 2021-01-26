@@ -24,7 +24,7 @@ export class LinkRelMetadataWriter extends MetadataWriter {
       const values = input.metadata.getAll(key).map((term): string => `<${term.value}>; rel="${this.linkRelMap[key]}"`);
       if (values.length > 0) {
         this.logger.debug(`Adding Link header ${values}`);
-        addHeader(input.response, 'link', values);
+        addHeader(input.response, 'Link', values);
       }
     }
   }
