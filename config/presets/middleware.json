@@ -3,8 +3,8 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:Middleware",
-      "@type": "SequenceHandler",
-      "SequenceHandler:_handlers": [
+      "@type": "ParallelHandler",
+      "ParallelHandler:_handlers": [
         {
           "@type": "CorsHandler",
           "CorsHandler:_options_methods": [
