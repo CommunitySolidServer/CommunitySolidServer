@@ -1,7 +1,7 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { UnsupportedAsyncHandler } from '../../util/UnsupportedAsyncHandler';
+import { UnsupportedAsyncHandler } from '../../util/handlers/UnsupportedAsyncHandler';
 import { hasMatchingMediaTypes } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';

@@ -187,6 +187,12 @@ export * from './util/errors/SystemError';
 export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
 
+// Util/Handlers
+export * from './util/handlers/AsyncHandler';
+export * from './util/handlers/SequenceHandler';
+export * from './util/handlers/UnsupportedAsyncHandler';
+export * from './util/handlers/WaterfallHandler';
+
 // Util/Identifiers
 export * from './util/identifiers/IdentifierStrategy';
 export * from './util/identifiers/SingleRootIdentifierStrategy';
@@ -198,16 +204,12 @@ export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringResourceLocker';
 
 // Util
-export * from './util/AsyncHandler';
 export * from './util/ContentTypes';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
 export * from './util/PathUtil';
 export * from './util/QuadUtil';
 export * from './util/RecordObject';
-export * from './util/SequenceHandler';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
-export * from './util/UnsupportedAsyncHandler';
 export * from './util/Vocabularies';
-export * from './util/WaterfallHandler';

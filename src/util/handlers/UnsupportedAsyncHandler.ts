@@ -1,5 +1,5 @@
+import { NotImplementedHttpError } from '../errors/NotImplementedHttpError';
 import { AsyncHandler } from './AsyncHandler';
-import { NotImplementedHttpError } from './errors/NotImplementedHttpError';
 
 /**
  * Handler that does not support any input and will always throw an error.
