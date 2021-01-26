@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../src/ldp/representation/Representation';
@@ -17,12 +16,6 @@ import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { BASE } from './Config';
 
 jest.useFakeTimers();
-
-async function readOnce(stream: Readable): Promise<any> {
-  return await new Promise((resolve): void => {
-    stream.once('data', resolve);
-  });
-}
 
 describe('A LockingResourceStore', (): void => {
   let path: string;
@@ -82,11 +75,13 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 750ms and read
     jest.advanceTimersByTime(750);
-    await expect(readOnce(representation.data)).resolves.toBe(1);
+    expect(representation.data.destroyed).toBe(false);
+    representation.data.read();
 
     // Wait 750ms and read
     jest.advanceTimersByTime(750);
-    await expect(readOnce(representation.data)).resolves.toBe(2);
+    expect(representation.data.destroyed).toBe(false);
+    representation.data.read();
 
     // Wait 1000ms and watch the stream be destroyed
     jest.advanceTimersByTime(1000);
