@@ -113,6 +113,8 @@ export * from './identity/interaction/email-password/handler/EmailPasswordForgot
 export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordRegisterHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordGetResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';
 
 // SolidIdentityProvider/InteractionPolicies/Storage
 export * from './identity/interaction/email-password/storage/EmailPasswordStorageAdapter';

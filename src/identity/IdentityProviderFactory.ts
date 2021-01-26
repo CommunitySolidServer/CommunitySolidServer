@@ -37,6 +37,7 @@ export class IdentityProviderFactory {
           async claims(): Promise<{ sub: string; [key: string]: any }> {
             return {
               sub,
+              webid: sub,
             };
           },
         };
@@ -53,6 +54,10 @@ export class IdentityProviderFactory {
         claimsParameter: { enabled: true },
       },
       subjectTypes: [ 'public', 'pairwise' ],
+      formats: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        AccessToken: 'jwt',
+      },
       extraAccessTokenClaims(
         ctx,
         token,

@@ -33,26 +33,41 @@ export class EmailPasswordRegisterHandler extends IdPInteractionHttpHandler {
   }
 
   public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
+    const interactionDetails = await input.provider.interactionDetails(
+      input.request,
+      input.response,
+    );
     let prefilledEmail = '';
     let prefilledWebId = '';
     try {
-      const { email, webId, password, confirmPassword, remember } = await getFormDataRequestBody(input.request);
+      const {
+        email,
+        webId,
+        password,
+        confirmPassword,
+        remember,
+      } = await getFormDataRequestBody(input.request);
 
       // Qualify email
-      assert(typeof email === 'string', 'Email required');
+      assert(email && typeof email === 'string', 'Email required');
       assert(emailRegex.test(email), 'Invalid email');
       prefilledEmail = email;
 
       // Qualify WebId
-      assert(typeof webId === 'string', 'WebId required');
+      assert(webId && typeof webId === 'string', 'WebId required');
       prefilledWebId = webId;
       await this.webIdOwnershipValidator.assertWebId(webId);
 
       // Qualify password
-      assert(typeof password === 'string', 'Password required');
-      assert(typeof confirmPassword === 'string', 'Confirm Password required');
-      assert(password === confirmPassword, 'Password and confirm password do not match');
+      assert(password && typeof password === 'string', 'Password required');
+      assert(
+        confirmPassword && typeof confirmPassword === 'string',
+        'Confirm Password required',
+      );
+      assert(
+        password === confirmPassword,
+        'Password and confirm password do not match',
+      );
 
       // Qualify shouldRemember
       const shouldRemember = Boolean(remember);
@@ -61,9 +76,14 @@ export class EmailPasswordRegisterHandler extends IdPInteractionHttpHandler {
       await this.emailPasswordStorageAdapter.create(email, webId, password);
 
       // Complete the interaction interaction
-      await this.oidcInteractionCompleter.handle({ ...input, webId, shouldRemember });
+      await this.oidcInteractionCompleter.handle({
+        ...input,
+        webId,
+        shouldRemember,
+      });
     } catch (err: unknown) {
-      const errorMessage: string = err instanceof Error ? err.message : 'An unknown error occurred';
+      const errorMessage: string =
+        err instanceof Error ? err.message : 'An unknown error occurred';
       await this.renderHandler.handle({
         response: input.response,
         props: {
