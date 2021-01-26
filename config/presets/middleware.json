@@ -18,6 +18,7 @@
           ],
           "CorsHandler:_options_credentials": true,
           "CorsHandler:_options_exposedHeaders": [
+            "Accept-Patch",
             "Location",
             "MS-Author-Via",
             "Updates-Via"

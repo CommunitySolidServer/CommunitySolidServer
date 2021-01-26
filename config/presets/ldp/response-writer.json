@@ -9,6 +9,10 @@
           "@type": "ConstantMetadataWriter",
           "ConstantMetadataWriter:_headers": [
             {
+              "ConstantMetadataWriter:_headers_key": "Accept-Patch",
+              "ConstantMetadataWriter:_headers_value": "application/sparql-update"
+            },
+            {
               "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
               "ConstantMetadataWriter:_headers_value": "SPARQL"
             }
