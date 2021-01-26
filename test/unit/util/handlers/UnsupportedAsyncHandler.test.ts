@@ -1,5 +1,5 @@
-import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
-import { UnsupportedAsyncHandler } from '../../../src/util/UnsupportedAsyncHandler';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { UnsupportedAsyncHandler } from '../../../../src/util/handlers/UnsupportedAsyncHandler';
 
 describe('An UnsupportedAsyncHandler', (): void => {
   it('throws a default error when no message is set.', async(): Promise<void> => {

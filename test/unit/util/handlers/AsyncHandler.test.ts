@@ -1,5 +1,5 @@
-import { AsyncHandler } from '../../../src/util/AsyncHandler';
-import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
+import { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
+import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('An AsyncHandler', (): void => {
   it('supports any input by default.', async(): Promise<void> => {
