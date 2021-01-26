@@ -10,6 +10,7 @@ import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { ACL, FOAF } from '../util/Vocabularies';
@@ -34,6 +35,12 @@ export class WebAclAuthorizer extends Authorizer {
     this.aclStrategy = aclStrategy;
     this.resourceStore = resourceStore;
     this.identifierStrategy = identifierStrategy;
+  }
+
+  public async canHandle({ identifier }: AuthorizerArgs): Promise<void> {
+    if (this.aclStrategy.isAuxiliaryIdentifier(identifier)) {
+      throw new NotImplementedHttpError('WebAclAuthorizer does not support permissions on acl files.');
+    }
   }
 
   /**
@@ -128,7 +135,7 @@ export class WebAclAuthorizer extends Authorizer {
   /**
    * Returns the acl triples that are relevant for the given identifier.
    * These can either be from a corresponding acl file or an acl file higher up with defaults.
-   * Rethrows any non-NotFoundHttpErrors thrown by the AclManager or ResourceStore.
+   * Rethrows any non-NotFoundHttpErrors thrown by the ResourceStore.
    * @param id - ResourceIdentifier of which we need the acl triples.
    * @param recurse - Only used internally for recursion.
    *
@@ -137,14 +144,12 @@ export class WebAclAuthorizer extends Authorizer {
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
-      const isAcl = this.aclStrategy.isAuxiliaryIdentifier(id);
-      const acl = isAcl ? id : this.aclStrategy.getAuxiliaryIdentifier(id);
+      const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
-      const resourceId = isAcl ? this.aclStrategy.getAssociatedIdentifier(id) : id;
-      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, resourceId.path);
+      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);

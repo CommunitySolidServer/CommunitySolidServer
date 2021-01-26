@@ -26,7 +26,27 @@
     },
 
     {
-      "@id": "urn:solid-server:default:AclAuthorizer",
+      "@id": "urn:solid-server:default:AclBasedAuthorizer",
+      "@type": "WaterfallHandler",
+      "WaterfallHandler:_handlers": [
+        {
+          "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
+          "@type": "AuxiliaryAuthorizer",
+          "AuxiliaryAuthorizer:_resourceAuthorizer": {
+            "@id": "urn:solid-server:default:WebAclAuthorizer"
+          },
+          "AuxiliaryAuthorizer:_auxStrategy": {
+            "@id": "urn:solid-server:default:AuxiliaryStrategy"
+          }
+        },
+        {
+          "@id": "urn:solid-server:default:WebAclAuthorizer"
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:WebAclAuthorizer",
       "@type": "WebAclAuthorizer",
       "WebAclAuthorizer:_aclStrategy": {
         "@id": "urn:solid-server:default:AclIdentifierStrategy"
