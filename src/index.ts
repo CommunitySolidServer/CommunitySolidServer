@@ -24,6 +24,7 @@ export * from './init/ServerInitializer';
 
 // LDP/HTTP/Metadata
 export * from './ldp/http/metadata/BasicMetadataExtractor';
+export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
 export * from './ldp/http/metadata/LinkRelMetadataWriter';
 export * from './ldp/http/metadata/LinkTypeParser';
