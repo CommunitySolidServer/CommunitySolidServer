@@ -4,8 +4,9 @@ import type { PermissionSet } from './PermissionSet';
 import { PermissionsExtractor } from './PermissionsExtractor';
 
 const READ_METHODS = new Set([ 'GET', 'HEAD' ]);
-const WRITE_METHODS = new Set([ 'POST', 'PUT', 'DELETE' ]);
-const SUPPORTED_METHODS = new Set([ ...READ_METHODS, ...WRITE_METHODS ]);
+const WRITE_METHODS = new Set([ 'PUT', 'DELETE' ]);
+const APPEND_METHODS = new Set([ 'POST' ]);
+const SUPPORTED_METHODS = new Set([ ...READ_METHODS, ...WRITE_METHODS, ...APPEND_METHODS ]);
 
 /**
  * Generates permissions for the base set of methods that always require the same permissions.
@@ -21,6 +22,7 @@ export class MethodPermissionsExtractor extends PermissionsExtractor {
   public async handle({ method }: Operation): Promise<PermissionSet> {
     const read = READ_METHODS.has(method);
     const write = WRITE_METHODS.has(method);
-    return { read, write, append: write };
+    const append = write || APPEND_METHODS.has(method);
+    return { read, write, append };
   }
 }
