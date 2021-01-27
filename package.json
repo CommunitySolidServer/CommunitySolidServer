@@ -93,6 +93,7 @@
     "async-lock": "^1.2.4",
     "componentsjs": "^4.0.1",
     "cors": "^2.8.5",
+    "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
