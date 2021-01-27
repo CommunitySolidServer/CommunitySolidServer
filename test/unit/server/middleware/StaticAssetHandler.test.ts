@@ -1,17 +1,23 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import fs from 'fs';
+import { PassThrough } from 'stream';
 import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
 import { StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
+import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import type { SystemError } from '../../../../src/util/errors/SystemError';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream')
-  .mockReturnValue(streamifyArray([ 'file contents' ]) as any);
+  .mockImplementation((): any => streamifyArray([ 'file contents' ]));
 
 describe('a StaticAssetHandler', (): void => {
   const handler = new StaticAssetHandler({
     '/foo/bar/style': '/assets/styles/bar.css',
     '/foo/bar/main': '/assets/scripts/bar.js',
     '/foo/bar/unknown': '/assets/bar.unknown',
+    '/foo/bar/folder1/': '/assets/folders/1/',
+    '/foo/bar/folder2/': '/assets/folders/2',
+    '/foo/bar/folder2/subfolder/': '/assets/folders/3',
   });
 
   afterEach(jest.clearAllMocks);
@@ -59,7 +65,6 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'application/javascript');
 
     await responseEnd;
-    expect(createReadStream).toHaveBeenCalledTimes(0);
     expect(response._getData()).toBe('');
   });
 
@@ -87,15 +92,98 @@ describe('a StaticAssetHandler', (): void => {
     expect(createReadStream).toHaveBeenCalledWith('/assets/bar.unknown', 'utf8');
   });
 
+  it('throws a 404 when the asset does not exist.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/main' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    const error = new Error() as SystemError;
+    error.code = 'ENOENT';
+    const stream = new PassThrough();
+    stream._read = (): any => stream.emit('error', error);
+    createReadStream.mockReturnValueOnce(stream as any);
+
+    await expect(handler.handleSafe({ request, response } as any)).rejects
+      .toThrow(NotFoundHttpError);
+  });
+
+  it('throws a 404 when the asset is folder.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/main' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    const error = new Error() as SystemError;
+    error.code = 'EISDIR';
+    const stream = new PassThrough();
+    stream._read = (): any => stream.emit('error', error);
+    createReadStream.mockReturnValueOnce(stream as any);
+
+    await expect(handler.handleSafe({ request, response } as any)).rejects
+      .toThrow(NotFoundHttpError);
+  });
+
   it('handles a request for an asset that errors.', async(): Promise<void> => {
     const request = { method: 'GET', url: '/foo/bar/main' };
     const response = createResponse({ eventEmitter: EventEmitter });
     const responseEnd = new Promise((resolve): any => response.on('end', resolve));
-    await handler.handleSafe({ request, response } as any);
+    const error = new Error();
+    const stream = new PassThrough();
+    stream._read = (): any => stream.emit('error', error);
+    createReadStream.mockReturnValueOnce(stream as any);
 
-    createReadStream.mock.results[0].value.emit('error', new Error());
+    await handler.handleSafe({ request, response } as any);
 
     await responseEnd;
     expect(response._getData()).toBe('');
+  });
+
+  it('handles a request to a known folder URL defined without slash.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder1/abc/def.css' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/1/abc/def.css', 'utf8');
+  });
+
+  it('handles a request to a known folder URL defined with slash.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder2/abc/def.css?abc=def' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/abc/def.css', 'utf8');
+  });
+
+  it('prefers the longest path handler.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder2/subfolder/abc/def.css?' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/3/abc/def.css', 'utf8');
+  });
+
+  it('handles a request to a known folder URL with spaces.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder2/a%20b%20c/def.css' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/a b c/def.css', 'utf8');
+  });
+
+  it('does not handle a request to a known folder URL with parent path segments.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/folder1/../def.css' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await expect(handler.canHandle({ request, response } as any)).rejects.toThrow();
   });
 });
