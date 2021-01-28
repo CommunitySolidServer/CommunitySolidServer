@@ -79,7 +79,7 @@ export class StaticAssetHandler extends HttpHandler {
     this.logger.debug(`Serving ${request.url} via static asset ${filePath}`);
 
     // Resolve when asset loading succeeds
-    const asset = createReadStream(filePath, 'utf8');
+    const asset = createReadStream(filePath);
     return new Promise((resolve, reject): void => {
       // Write a 200 response when the asset becomes readable
       asset.once('readable', (): void => {
