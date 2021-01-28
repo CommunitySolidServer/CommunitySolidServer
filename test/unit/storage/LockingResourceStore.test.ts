@@ -4,7 +4,7 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
-import type { ExpiringResourceLocker } from '../../../src/util/locking/ExpiringResourceLocker';
+import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 
 function emptyFn(): void {
@@ -13,7 +13,7 @@ function emptyFn(): void {
 
 describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
-  let locker: ExpiringResourceLocker;
+  let locker: ExpiringReadWriteLocker;
   let source: ResourceStore;
   let order: string[];
   let timeoutTrigger: EventEmitter;

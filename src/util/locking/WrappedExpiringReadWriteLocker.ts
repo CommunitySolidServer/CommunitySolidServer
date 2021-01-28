@@ -1,24 +1,24 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
-import type { ExpiringResourceLocker } from './ExpiringResourceLocker';
-import type { ResourceLocker } from './ResourceLocker';
+import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
+import type { ReadWriteLocker } from './ReadWriteLocker';
 import Timeout = NodeJS.Timeout;
 
 /**
- * Wraps around an existing {@link ResourceLocker} and adds expiration logic to prevent locks from getting stuck.
+ * Wraps around an existing {@link ReadWriteLocker} and adds expiration logic to prevent locks from getting stuck.
  */
-export class WrappedExpiringResourceLocker implements ExpiringResourceLocker {
+export class WrappedExpiringReadWriteLocker implements ExpiringReadWriteLocker {
   protected readonly logger = getLoggerFor(this);
 
-  protected readonly locker: ResourceLocker;
+  protected readonly locker: ReadWriteLocker;
   protected readonly expiration: number;
 
   /**
    * @param locker - Instance of ResourceLocker to use for acquiring a lock.
    * @param expiration - Time in ms after which the lock expires.
    */
-  public constructor(locker: ResourceLocker, expiration: number) {
+  public constructor(locker: ReadWriteLocker, expiration: number) {
     this.locker = locker;
     this.expiration = expiration;
   }

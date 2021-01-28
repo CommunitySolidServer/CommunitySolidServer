@@ -1,12 +1,12 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import type { ResourceLocker } from './ResourceLocker';
+import type { ReadWriteLocker } from './ReadWriteLocker';
 
 /**
- * A {@link ResourceLocker} where the locks expire after a given time.
+ * A {@link ReadWriteLocker} where the locks expire after a given time.
  */
-export interface ExpiringResourceLocker extends ResourceLocker {
+export interface ExpiringReadWriteLocker extends ReadWriteLocker {
   /**
-   * As {@link ResourceLocker.withReadLock} but the locked function gets called with a `maintainLock` callback function
+   * As {@link ReadWriteLocker.withReadLock} but the locked function gets called with a `maintainLock` callback function
    * to reset the lock expiration every time it is called.
    * The resulting promise will reject once the lock expires.
    *
@@ -18,8 +18,8 @@ export interface ExpiringResourceLocker extends ResourceLocker {
   => Promise<T>;
 
   /**
-   * As {@link ResourceLocker.withWriteLock} but the locked function gets called with a `maintainLock` callback function
-   * to reset the lock expiration every time it is called.
+   * As {@link ReadWriteLocker.withWriteLock} but the locked function gets called with a `maintainLock`
+   * callback function to reset the lock expiration every time it is called.
    * The resulting promise will reject once the lock expires.
    *
    * @param identifier - Identifier of the resource that needs to be locked.

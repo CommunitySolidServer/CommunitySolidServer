@@ -49,11 +49,14 @@
 
     {
       "@id": "urn:solid-server:default:ResourceLocker",
-      "@type": "WrappedExpiringResourceLocker",
-      "WrappedExpiringResourceLocker:_locker": {
-        "@type": "SingleThreadedResourceLocker"
+      "@type": "WrappedExpiringReadWriteLocker",
+      "WrappedExpiringReadWriteLocker:_locker": {
+        "@type": "EqualReadWriteLocker",
+        "EqualReadWriteLocker:_locker": {
+          "@type": "SingleThreadedResourceLocker"
+        }
       },
-      "WrappedExpiringResourceLocker:_expiration": 3000
+      "WrappedExpiringReadWriteLocker:_expiration": 3000
     },
 
 

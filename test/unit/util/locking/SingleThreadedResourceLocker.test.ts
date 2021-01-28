@@ -1,62 +1,71 @@
+import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { SingleThreadedResourceLocker } from '../../../../src/util/locking/SingleThreadedResourceLocker';
 
 describe('A SingleThreadedResourceLocker', (): void => {
   let locker: SingleThreadedResourceLocker;
-  const identifier = { path: 'path' };
-  let syncCb: () => string;
-  let asyncCb: () => Promise<string>;
+  const identifier = { path: 'http://test.com/foo' };
   beforeEach(async(): Promise<void> => {
     locker = new SingleThreadedResourceLocker();
-    syncCb = jest.fn((): string => 'sync');
-    asyncCb = jest.fn(async(): Promise<string> => new Promise((resolve): void => {
-      setImmediate((): void => resolve('async'));
-    }));
   });
 
-  it('can run simple functions with a read lock.', async(): Promise<void> => {
-    let prom = locker.withReadLock(identifier, syncCb);
-    await expect(prom).resolves.toBe('sync');
-    expect(syncCb).toHaveBeenCalledTimes(1);
-
-    prom = locker.withReadLock(identifier, asyncCb);
-    await expect(prom).resolves.toBe('async');
-    expect(asyncCb).toHaveBeenCalledTimes(1);
+  it('can lock and unlock a resource.', async(): Promise<void> => {
+    await expect(locker.acquire(identifier)).resolves.toBeUndefined();
+    await expect(locker.release(identifier)).resolves.toBeUndefined();
   });
 
-  it('can run simple functions with a write lock.', async(): Promise<void> => {
-    let prom = locker.withWriteLock(identifier, syncCb);
-    await expect(prom).resolves.toBe('sync');
-    expect(syncCb).toHaveBeenCalledTimes(1);
-
-    prom = locker.withWriteLock(identifier, asyncCb);
-    await expect(prom).resolves.toBe('async');
-    expect(asyncCb).toHaveBeenCalledTimes(1);
+  it('can lock a resource again after it was unlocked.', async(): Promise<void> => {
+    await expect(locker.acquire(identifier)).resolves.toBeUndefined();
+    await expect(locker.release(identifier)).resolves.toBeUndefined();
+    await expect(locker.acquire(identifier)).resolves.toBeUndefined();
   });
 
+  it('errors when unlocking a resource that was not locked.', async(): Promise<void> => {
+    await expect(locker.acquire(identifier)).resolves.toBeUndefined();
+    await expect(locker.release(identifier)).resolves.toBeUndefined();
+    await expect(locker.release(identifier)).rejects.toThrow(InternalServerError);
+  });
+
+  /* eslint-disable jest/valid-expect-in-promise */
   it('blocks lock acquisition until they are released.', async(): Promise<void> => {
     const results: number[] = [];
+    const lock1 = locker.acquire(identifier);
+    const lock2 = locker.acquire(identifier);
+    const lock3 = locker.acquire(identifier);
 
-    const promSlow = locker.withWriteLock(identifier, async(): Promise<void> =>
-      new Promise((resolve): void => {
-        setImmediate((): void => {
-          results.push(1);
-          resolve();
-        });
-      }));
-
-    const promFast = locker.withWriteLock(identifier, (): void => {
+    // Note the different order of calls
+    const prom2 = lock2.then(async(): Promise<void> => {
       results.push(2);
+      return locker.release(identifier);
     });
-
-    await Promise.all([ promFast, promSlow ]);
-    expect(results).toEqual([ 1, 2 ]);
+    const prom3 = lock3.then(async(): Promise<void> => {
+      results.push(3);
+      return locker.release(identifier);
+    });
+    const prom1 = lock1.then(async(): Promise<void> => {
+      results.push(1);
+      return locker.release(identifier);
+    });
+    await Promise.all([ prom2, prom3, prom1 ]);
+    expect(results).toEqual([ 1, 2, 3 ]);
   });
 
-  it('propagates errors.', async(): Promise<void> => {
-    asyncCb = jest.fn(async(): Promise<string> => new Promise((resolve, reject): void => {
-      setImmediate((): void => reject(new Error('test')));
-    }));
-    const prom = locker.withReadLock(identifier, asyncCb);
-    await expect(prom).rejects.toThrow('test');
+  it('can acquire different keys simultaneously.', async(): Promise<void> => {
+    const results: number[] = [];
+    const lock1 = locker.acquire({ path: 'path1' });
+    const lock2 = locker.acquire({ path: 'path2' });
+    const lock3 = locker.acquire({ path: 'path3' });
+    await lock2.then(async(): Promise<void> => {
+      results.push(2);
+      return locker.release({ path: 'path2' });
+    });
+    await lock3.then(async(): Promise<void> => {
+      results.push(3);
+      return locker.release({ path: 'path3' });
+    });
+    await lock1.then(async(): Promise<void> => {
+      results.push(1);
+      return locker.release({ path: 'path1' });
+    });
+    expect(results).toEqual([ 2, 3, 1 ]);
   });
 });
