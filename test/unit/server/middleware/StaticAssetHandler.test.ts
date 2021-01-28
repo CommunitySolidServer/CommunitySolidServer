@@ -51,7 +51,7 @@ describe('a StaticAssetHandler', (): void => {
 
     await responseEnd;
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/styles/bar.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/styles/bar.css');
     expect(response._getData()).toBe('file contents');
   });
 
@@ -77,7 +77,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/styles/bar.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/styles/bar.css');
   });
 
   it('handles a request for an asset with an unknown content type.', async(): Promise<void> => {
@@ -89,7 +89,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'application/octet-stream');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/bar.unknown', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/bar.unknown');
   });
 
   it('throws a 404 when the asset does not exist.', async(): Promise<void> => {
@@ -142,7 +142,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/1/abc/def.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/1/abc/def.css');
   });
 
   it('handles a request to a known folder URL defined with slash.', async(): Promise<void> => {
@@ -154,7 +154,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/abc/def.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/abc/def.css');
   });
 
   it('prefers the longest path handler.', async(): Promise<void> => {
@@ -166,7 +166,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/3/abc/def.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/3/abc/def.css');
   });
 
   it('handles a request to a known folder URL with spaces.', async(): Promise<void> => {
@@ -178,7 +178,7 @@ describe('a StaticAssetHandler', (): void => {
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/css');
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
-    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/a b c/def.css', 'utf8');
+    expect(createReadStream).toHaveBeenCalledWith('/assets/folders/2/a b c/def.css');
   });
 
   it('does not handle a request to a known folder URL with parent path segments.', async(): Promise<void> => {
