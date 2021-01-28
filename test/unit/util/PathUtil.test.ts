@@ -52,17 +52,33 @@ describe('PathUtil', (): void => {
     });
   });
 
-  describe('UriPath functions', (): void => {
-    it('makes sure only the necessary parts are encoded with toCanonicalUriPath.', async(): Promise<void> => {
+  describe('#toCanonicalUriPath', (): void => {
+    it('encodes only the necessary parts.', async(): Promise<void> => {
       expect(toCanonicalUriPath('/a%20path&/name')).toEqual('/a%20path%26/name');
     });
 
-    it('decodes all parts of a path with decodeUriPathComponents.', async(): Promise<void> => {
+    it('leaves the query string untouched.', async(): Promise<void> => {
+      expect(toCanonicalUriPath('/a%20path&/name?abc=def&xyz')).toEqual('/a%20path%26/name?abc=def&xyz');
+    });
+  });
+
+  describe('#decodeUriPathComponents', (): void => {
+    it('decodes all parts of a path.', async(): Promise<void> => {
       expect(decodeUriPathComponents('/a%20path&/name')).toEqual('/a path&/name');
     });
 
-    it('encodes all parts of a path with encodeUriPathComponents.', async(): Promise<void> => {
+    it('leaves the query string untouched.', async(): Promise<void> => {
+      expect(decodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toEqual('/a path&/name?abc=def&xyz');
+    });
+  });
+
+  describe('#encodeUriPathComponents', (): void => {
+    it('encodes all parts of a path.', async(): Promise<void> => {
       expect(encodeUriPathComponents('/a%20path&/name')).toEqual('/a%2520path%26/name');
+    });
+
+    it('leaves the query string untouched.', async(): Promise<void> => {
+      expect(encodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toEqual('/a%2520path%26/name?abc=def&xyz');
     });
   });
 });
