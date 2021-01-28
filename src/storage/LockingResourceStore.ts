@@ -5,7 +5,7 @@ import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import type { ExpiringResourceLocker } from '../util/locking/ExpiringResourceLocker';
+import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
@@ -19,9 +19,9 @@ export class LockingResourceStore implements AtomicResourceStore {
   protected readonly logger = getLoggerFor(this);
 
   private readonly source: ResourceStore;
-  private readonly locks: ExpiringResourceLocker;
+  private readonly locks: ExpiringReadWriteLocker;
 
-  public constructor(source: ResourceStore, locks: ExpiringResourceLocker) {
+  public constructor(source: ResourceStore, locks: ExpiringReadWriteLocker) {
     this.source = source;
     this.locks = locks;
   }
