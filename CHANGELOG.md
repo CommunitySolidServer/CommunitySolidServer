@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.7.0"></a>
+## [v0.7.0](https://github.com/solid/community-server/compare/v0.6.0...v0.7.0) - 2021-01-28
+
+### Added
+* [feat: Update config to include LockingResourceStore](https://github.com/solid/community-server/commit/69c31446ddad03308037d8b7992ea0e220dd2ed2)
+* [feat: Add ConstantMetadataWriter.](https://github.com/solid/community-server/commit/fe3957f0aeb8e55da65de4c88a1f5beb7d098b42)
+* [feat: Set MS-Author-Via header.](https://github.com/solid/community-server/commit/8c2f737fe0b7ce8bd435290fcee5b2c65823fce4)
+* [feat: Set Accept-Patch header.](https://github.com/solid/community-server/commit/153d2d9fe44a8993da94ebc513e7b520f0b7eea8)
+* [feat: Add acl link header writer](https://github.com/solid/community-server/commit/2c3300028e0bd182a2296db83dfb74db3daaf219)
+* [feat: Add ParallelHandler.](https://github.com/solid/community-server/commit/817cf3ac0d8f2d37cd950c52e5a0f74bd3644e33)
+* [feat: Support folders in StaticAssetHandler.](https://github.com/solid/community-server/commit/2563335403c859e49682dd61c5c3564cff930103)
+
+### Changed
+* [feat: Update ResourceLocker interface](https://github.com/solid/community-server/commit/4d440c6c69dfd1d37d9ad9f955e30df48a35bcef)
+* [feat: Update WrappedExpiringResourceLocker to new interface](https://github.com/solid/community-server/commit/b59357ec30b01f05cb948a64b425def893e442d8)
+* [fix: Remove locking from the SparqlUpdatePatchHandler](https://github.com/solid/community-server/commit/077f5d7069ff94108b56d4ebbfc5881a8280955c)
+* [feat: Update LockingResourceStore to use new locking interface](https://github.com/solid/community-server/commit/c17402517e144444f9b1048ff83d47ee9815d90e)
+
+### Fixed
+* [fix: Only require append permissions on POST requests](https://github.com/solid/community-server/commit/93e53b3d24f6071f8ec98a916ca6d8aa0ae80e97)
+
+
 <a name="v0.6.0"></a>
 ## [v0.6.0](https://github.com/solid/community-server/compare/v0.5.0...v0.6.0) - 2021-01-21
 
