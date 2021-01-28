@@ -69,6 +69,18 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
   });
 
+  it('can read a folder listing with a query string.', async():
+  Promise<void> => {
+    const response = await resourceHelper.getResource(`${BASE}/?abc=def&xyz`);
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
+
+    const data = response._getData().toString();
+    expect(data).toContain(`<> a ldp:Container`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
+  });
+
   it('can add a file to the store, read it and delete it.', async():
   Promise<void> => {
     // POST
