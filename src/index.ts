@@ -207,6 +207,7 @@ export * from './util/identifiers/SingleRootIdentifierStrategy';
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/GreedyReadWriteLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
