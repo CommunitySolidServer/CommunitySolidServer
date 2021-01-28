@@ -2,7 +2,7 @@ import { Factory } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { SparqlPatchPermissionsExtractor } from '../../../../src/ldp/permissions/SparqlPatchPermissionsExtractor';
-import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A SparqlPatchPermissionsExtractor', (): void => {
   const extractor = new SparqlPatchPermissionsExtractor();
@@ -13,16 +13,23 @@ describe('A SparqlPatchPermissionsExtractor', (): void => {
     await expect(extractor.canHandle(operation)).resolves.toBeUndefined();
     (operation.body as SparqlUpdatePatch).algebra = factory.createCompositeUpdate([ factory.createDeleteInsert() ]);
     await expect(extractor.canHandle(operation)).resolves.toBeUndefined();
-    await expect(extractor.canHandle({ ...operation, method: 'GET' }))
-      .rejects.toThrow(new BadRequestHttpError('Cannot determine permissions of GET, only PATCH.'));
-    await expect(extractor.canHandle({ ...operation, body: undefined }))
-      .rejects.toThrow(new BadRequestHttpError('Cannot determine permissions of PATCH operations without a body.'));
-    await expect(extractor.canHandle({ ...operation, body: {} as SparqlUpdatePatch }))
-      .rejects.toThrow(new BadRequestHttpError('Cannot determine permissions of non-SPARQL patches.'));
-    await expect(extractor.canHandle({ ...operation,
-      body: { algebra: factory.createMove('DEFAULT', 'DEFAULT') } as unknown as SparqlUpdatePatch }))
-      .rejects
-      .toThrow(new BadRequestHttpError('Can only determine permissions of a PATCH with DELETE/INSERT operations.'));
+
+    let result = extractor.canHandle({ ...operation, method: 'GET' });
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot determine permissions of GET, only PATCH.');
+
+    result = extractor.canHandle({ ...operation, body: undefined });
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot determine permissions of PATCH operations without a body.');
+
+    result = extractor.canHandle({ ...operation, body: {} as SparqlUpdatePatch });
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot determine permissions of non-SPARQL patches.');
+
+    result = extractor.canHandle({ ...operation,
+      body: { algebra: factory.createMove('DEFAULT', 'DEFAULT') } as unknown as SparqlUpdatePatch });
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Can only determine permissions of a PATCH with DELETE/INSERT operations.');
   });
 
   it('requires append for INSERT operations.', async(): Promise<void> => {

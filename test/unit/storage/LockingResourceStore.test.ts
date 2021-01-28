@@ -216,7 +216,7 @@ describe('A LockingResourceStore', (): void => {
 
     timeoutTrigger.emit('timeout');
 
-    await expect(prom).rejects.toThrow(new Error('timeout'));
+    await expect(prom).rejects.toThrow('timeout');
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
     expect((locker.withReadLock as jest.Mock).mock.calls[0][0]).toEqual({ path: 'path' });
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);

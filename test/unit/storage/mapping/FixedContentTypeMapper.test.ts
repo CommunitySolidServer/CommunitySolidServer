@@ -17,13 +17,15 @@ describe('An FixedContentTypeMapper', (): void => {
       });
 
       it('throws 404 if the relative path does not start with a slash.', async(): Promise<void> => {
-        await expect(mapper.mapUrlToFilePath({ path: `${trimTrailingSlashes(base)}test` }))
-          .rejects.toThrow(new BadRequestHttpError('URL needs a / after the base'));
+        const result = mapper.mapUrlToFilePath({ path: `${trimTrailingSlashes(base)}test` });
+        await expect(result).rejects.toThrow(BadRequestHttpError);
+        await expect(result).rejects.toThrow('URL needs a / after the base');
       });
 
       it('throws 400 if the input path contains relative parts.', async(): Promise<void> => {
-        await expect(mapper.mapUrlToFilePath({ path: `${base}test/../test2` }))
-          .rejects.toThrow(new BadRequestHttpError('Disallowed /.. segment in URL'));
+        const result = mapper.mapUrlToFilePath({ path: `${base}test/../test2` });
+        await expect(result).rejects.toThrow(BadRequestHttpError);
+        await expect(result).rejects.toThrow('Disallowed /.. segment in URL');
       });
 
       it('returns the corresponding file path for container identifiers.', async(): Promise<void> => {

@@ -27,7 +27,7 @@ describe('StreamUtil', (): void => {
       };
       const output = new PassThrough();
       const piped = pipeSafely(input, output);
-      await expect(readableToString(piped)).rejects.toThrow(new Error('error'));
+      await expect(readableToString(piped)).rejects.toThrow('error');
     });
 
     it('supports mapping errors to something else.', async(): Promise<void> => {
@@ -38,7 +38,7 @@ describe('StreamUtil', (): void => {
       };
       const output = new PassThrough();
       const piped = pipeSafely(input, output, (): any => new Error('other error'));
-      await expect(readableToString(piped)).rejects.toThrow(new Error('other error'));
+      await expect(readableToString(piped)).rejects.toThrow('other error');
     });
   });
 
