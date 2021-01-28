@@ -72,6 +72,6 @@ describe('A RoutingResourceStore', (): void => {
       throw new Error('error');
     };
     await expect(store.getRepresentation(identifier, 'preferences' as any, 'conditions' as any))
-      .rejects.toThrow(new Error('error'));
+      .rejects.toThrow('error');
   });
 });

@@ -39,8 +39,9 @@ describe('A FileDataAccessor', (): void => {
 
   it('can only handle binary data.', async(): Promise<void> => {
     await expect(accessor.canHandle({ binary: true } as Representation)).resolves.toBeUndefined();
-    await expect(accessor.canHandle({ binary: false } as Representation)).rejects
-      .toThrow(new UnsupportedMediaTypeHttpError('Only binary data is supported.'));
+    const result = accessor.canHandle({ binary: false } as Representation);
+    await expect(result).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    await expect(result).rejects.toThrow('Only binary data is supported.');
   });
 
   describe('getting data', (): void => {
@@ -82,7 +83,7 @@ describe('A FileDataAccessor', (): void => {
       jest.requireMock('fs').promises.lstat = (): any => {
         throw new Error('error');
       };
-      await expect(accessor.getMetadata({ path: base })).rejects.toThrow(new Error('error'));
+      await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
     });
 
     it('throws a 404 if the trailing slash does not match its type.', async(): Promise<void> => {
@@ -150,8 +151,9 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws an error when writing to a metadata path.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata))
-        .rejects.toThrow(new ConflictHttpError('Not allowed to create files with the metadata extension.'));
+      const result = accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata);
+      await expect(result).rejects.toThrow(ConflictHttpError);
+      await expect(result).rejects.toThrow('Not allowed to create files with the metadata extension.');
     });
 
     it('writes the data to the corresponding file.', async(): Promise<void> => {
@@ -187,7 +189,7 @@ describe('A FileDataAccessor', (): void => {
         throw new Error('error');
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
-        .rejects.toThrow(new Error('error'));
+        .rejects.toThrow('error');
     });
 
     it('throws if something went wrong writing a file.', async(): Promise<void> => {
@@ -196,7 +198,7 @@ describe('A FileDataAccessor', (): void => {
         return null;
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
-        .rejects.toThrow(new Error('error'));
+        .rejects.toThrow('error');
     });
 
     it('deletes the metadata file if something went wrong writing the file.', async(): Promise<void> => {
@@ -206,7 +208,7 @@ describe('A FileDataAccessor', (): void => {
       };
       metadata.add('likes', 'apples');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
-        .rejects.toThrow(new Error('error'));
+        .rejects.toThrow('error');
       expect(cache.data['resource.meta']).toBeUndefined();
     });
 
@@ -246,7 +248,7 @@ describe('A FileDataAccessor', (): void => {
 
       metadata.contentType = 'text/plain';
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
-        .rejects.toThrow(new Error('error'));
+        .rejects.toThrow('error');
     });
   });
 
@@ -270,7 +272,7 @@ describe('A FileDataAccessor', (): void => {
       jest.requireMock('fs').promises.mkdir = (): any => {
         throw new Error('error');
       };
-      await expect(accessor.writeContainer({ path: base }, metadata)).rejects.toThrow(new Error('error'));
+      await expect(accessor.writeContainer({ path: base }, metadata)).rejects.toThrow('error');
     });
 
     it('writes metadata to the corresponding metadata file.', async(): Promise<void> => {
