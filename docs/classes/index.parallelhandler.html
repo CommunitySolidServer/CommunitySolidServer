@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SequenceHandler | Community Solid Server - v0.6.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
+	<title>ParallelHandler | Community Solid Server - v0.7.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.7.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,16 +52,16 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.6.0</a>
+					<a href="../modules.html">Community Solid Server - v0.7.0</a>
 				</li>
 				<li>
-					<a href="../modules/util_sequencehandler.html">util/SequenceHandler</a>
+					<a href="../modules/index.html">index</a>
 				</li>
 				<li>
-					<a href="util_sequencehandler.sequencehandler.html">SequenceHandler</a>
+					<a href="index.parallelhandler.html">ParallelHandler</a>
 				</li>
 			</ul>
-			<h1>Class SequenceHandler&lt;TIn, TOut&gt;</h1>
+			<h1>Class ParallelHandler&lt;TIn, TOut&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -71,9 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A composite handler that will try to run all supporting handlers sequentially
-							and return the value of the last supported handler.
-						The <code>canHandle</code> check of this handler will always succeed.</p>
+						<p>A composite handler that executes handlers in parallel.</p>
 					</div>
 				</div>
 			</section>
@@ -92,10 +90,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="util_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span>
+						<a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">SequenceHandler</span>
+								<span class="target">ParallelHandler</span>
 							</li>
 						</ul>
 					</li>
@@ -108,21 +106,21 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited"><a href="util_sequencehandler.sequencehandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited"><a href="index.parallelhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="util_sequencehandler.sequencehandler.html#handlers" class="tsd-kind-icon">handlers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="index.parallelhandler.html#handlers" class="tsd-kind-icon">handlers</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="util_sequencehandler.sequencehandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="util_sequencehandler.sequencehandler.html#handle" class="tsd-kind-icon">handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="util_sequencehandler.sequencehandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="index.parallelhandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="index.parallelhandler.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="index.parallelhandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 							</ul>
 						</section>
 					</div>
@@ -134,14 +132,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Sequence<wbr>Handler&lt;TIn, TOut&gt;<span class="tsd-signature-symbol">(</span>handlers<span class="tsd-signature-symbol">: </span><a href="util_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_sequencehandler.sequencehandler.html" class="tsd-signature-type" data-tsd-kind="Class">SequenceHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Parallel<wbr>Handler&lt;TIn, TOut&gt;<span class="tsd-signature-symbol">(</span>handlers<span class="tsd-signature-symbol">: </span><a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_handlers_parallelhandler.parallelhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ParallelHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#constructor">constructor</a></p>
+								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/ParallelHandler.ts#L7">src/util/handlers/ParallelHandler.ts:7</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -156,10 +154,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>handlers: <a href="util_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>handlers: <a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="util_sequencehandler.sequencehandler.html" class="tsd-signature-type" data-tsd-kind="Class">SequenceHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="util_handlers_parallelhandler.parallelhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ParallelHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -169,47 +167,37 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="handlers" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> handlers</h3>
-					<div class="tsd-signature tsd-kind-icon">handlers<span class="tsd-signature-symbol">:</span> <a href="util_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">handlers<span class="tsd-signature-symbol">:</span> <a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/SequenceHandler.ts#L9">src/util/SequenceHandler.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/ParallelHandler.ts#L7">src/util/handlers/ParallelHandler.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="canhandle" class="tsd-anchor"></a>
 					<h3>can<wbr>Handle</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#canhandle">canHandle</a></p>
+								<p>Overrides <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L13">src/util/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/ParallelHandler.ts#L14">src/util/handlers/ParallelHandler.ts:14</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Checks if the input data can be handled by this class.
-									Throws an error if it can&#39;t handle the data.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>input: <span class="tsd-signature-type">TIn</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Input data that could potentially be handled.</p>
-									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A promise resolving if the input can be handled, rejecting with an Error if not.</p>
 						</li>
 					</ul>
 				</section>
@@ -217,14 +205,14 @@
 					<a name="handle" class="tsd-anchor"></a>
 					<h3>handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#handle">handle</a></p>
+								<p>Overrides <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/SequenceHandler.ts#L16">src/util/SequenceHandler.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/ParallelHandler.ts#L19">src/util/handlers/ParallelHandler.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -233,7 +221,7 @@
 									<h5>input: <span class="tsd-signature-type">TIn</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -241,21 +229,21 @@
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TIn</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="util_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_asynchandler.asynchandler.html#handlesafe">handleSafe</a></p>
+								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Helper function that first runs the canHandle function followed by the handle function.
-										Throws the error of the <a href="util_sequencehandler.sequencehandler.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
-									or returns the result of the <a href="util_sequencehandler.sequencehandler.html#handle">handle</a> function otherwise.</p>
+										Throws the error of the <a href="index.parallelhandler.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
+									or returns the result of the <a href="index.parallelhandler.html#handle">handle</a> function otherwise.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -267,7 +255,7 @@
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TOut</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A promise resolving if the input can be handled, rejecting with an Error if not.
 							Return value depends on the given type.</p>
 						</li>
@@ -282,7 +270,7 @@
 						<a href="../modules.html">Exports</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/util_sequencehandler.html">util/<wbr>Sequence<wbr>Handler</a>
+						<a href="../modules/index.html">index</a>
 					</li>
 				</ul>
 			</nav>
@@ -291,22 +279,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="util_sequencehandler.sequencehandler.html" class="tsd-kind-icon">Sequence<wbr>Handler</a>
+						<a href="index.parallelhandler.html" class="tsd-kind-icon">Parallel<wbr>Handler</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
-								<a href="util_sequencehandler.sequencehandler.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="index.parallelhandler.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="util_sequencehandler.sequencehandler.html#handlers" class="tsd-kind-icon">handlers</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="util_sequencehandler.sequencehandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+								<a href="index.parallelhandler.html#handlers" class="tsd-kind-icon">handlers</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-								<a href="util_sequencehandler.sequencehandler.html#handle" class="tsd-kind-icon">handle</a>
+								<a href="index.parallelhandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+								<a href="index.parallelhandler.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="util_sequencehandler.sequencehandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+								<a href="index.parallelhandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
 							</li>
 						</ul>
 					</li>

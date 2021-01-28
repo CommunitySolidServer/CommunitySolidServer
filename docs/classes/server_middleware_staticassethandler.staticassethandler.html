@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>StaticAssetHandler | Community Solid Server - v0.6.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.6.0">
+	<title>StaticAssetHandler | Community Solid Server - v0.7.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.6.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.7.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.6.0</a>
+					<a href="../modules.html">Community Solid Server - v0.7.0</a>
 				</li>
 				<li>
 					<a href="../modules/server_middleware_staticassethandler.html">server/middleware/StaticAssetHandler</a>
@@ -101,15 +101,17 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#assets" class="tsd-kind-icon">assets</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#mappings" class="tsd-kind-icon">mappings</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#pathmatcher" class="tsd-kind-icon">path<wbr>Matcher</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="server_middleware_staticassethandler.staticassethandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#getasseturl" class="tsd-kind-icon">get<wbr>Asset<wbr>Url</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#createpathmatcher" class="tsd-kind-icon">create<wbr>Path<wbr>Matcher</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="server_middleware_staticassethandler.staticassethandler.html#getfilepath" class="tsd-kind-icon">get<wbr>File<wbr>Path</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="server_middleware_staticassethandler.staticassethandler.html#handle" class="tsd-kind-icon">handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="server_middleware_staticassethandler.staticassethandler.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 							</ul>
@@ -130,7 +132,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L16">src/server/middleware/StaticAssetHandler.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L20">src/server/middleware/StaticAssetHandler.ts:20</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -143,7 +145,8 @@
 								<li>
 									<h5>assets: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>A mapping from URL paths to file paths.</p>
+										<p>A mapping from URL paths to paths,
+										where URL paths ending in a slash are interpreted as entire folders.</p>
 									</div>
 								</li>
 							</ul>
@@ -155,22 +158,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="assets" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> assets</h3>
-					<div class="tsd-signature tsd-kind-icon">assets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L15">src/server/middleware/StaticAssetHandler.ts:15</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="logger" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> logger</h3>
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L16">src/server/middleware/StaticAssetHandler.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L20">src/server/middleware/StaticAssetHandler.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mappings" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> mappings</h3>
+					<div class="tsd-signature tsd-kind-icon">mappings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L18">src/server/middleware/StaticAssetHandler.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="pathmatcher" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> path<wbr>Matcher</h3>
+					<div class="tsd-signature tsd-kind-icon">path<wbr>Matcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L19">src/server/middleware/StaticAssetHandler.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -188,7 +201,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L27">src/server/middleware/StaticAssetHandler.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L69">src/server/middleware/StaticAssetHandler.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -202,18 +215,51 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="getasseturl" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Asset<wbr>Url</h3>
+					<a name="createpathmatcher" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> create<wbr>Path<wbr>Matcher</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Asset<wbr>Url<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><a href="../modules/util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IncomingMessage</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Path<wbr>Matcher<span class="tsd-signature-symbol">(</span>assets<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RegExp</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L55">src/server/middleware/StaticAssetHandler.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L36">src/server/middleware/StaticAssetHandler.ts:36</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a regular expression that matches the URL paths.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>assets: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RegExp</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getfilepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>File<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>File<wbr>Path<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><a href="../modules/util_guardedstream.html#guarded" class="tsd-signature-type" data-tsd-kind="Type alias">Guarded</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IncomingMessage</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L55">src/server/middleware/StaticAssetHandler.ts:55</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Obtains the file path corresponding to the asset URL</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -235,7 +281,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/server/middleware/StaticAssetHandler.ts#L36">src/server/middleware/StaticAssetHandler.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/server/middleware/StaticAssetHandler.ts#L76">src/server/middleware/StaticAssetHandler.ts:76</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -259,7 +305,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/038693a/src/util/AsyncHandler.ts#L35">src/util/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -308,16 +354,22 @@
 								<a href="server_middleware_staticassethandler.staticassethandler.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="server_middleware_staticassethandler.staticassethandler.html#assets" class="tsd-kind-icon">assets</a>
+								<a href="server_middleware_staticassethandler.staticassethandler.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="server_middleware_staticassethandler.staticassethandler.html#logger" class="tsd-kind-icon">logger</a>
+								<a href="server_middleware_staticassethandler.staticassethandler.html#mappings" class="tsd-kind-icon">mappings</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="server_middleware_staticassethandler.staticassethandler.html#pathmatcher" class="tsd-kind-icon">path<wbr>Matcher</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="server_middleware_staticassethandler.staticassethandler.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="server_middleware_staticassethandler.staticassethandler.html#getasseturl" class="tsd-kind-icon">get<wbr>Asset<wbr>Url</a>
+								<a href="server_middleware_staticassethandler.staticassethandler.html#createpathmatcher" class="tsd-kind-icon">create<wbr>Path<wbr>Matcher</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="server_middleware_staticassethandler.staticassethandler.html#getfilepath" class="tsd-kind-icon">get<wbr>File<wbr>Path</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="server_middleware_staticassethandler.staticassethandler.html#handle" class="tsd-kind-icon">handle</a>
