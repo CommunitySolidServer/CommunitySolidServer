@@ -17,7 +17,7 @@ export async function performRequest(
   data: string[],
 ): Promise<MockResponse<any>> {
   const request = streamifyArray(data) as HttpRequest;
-  request.url = requestUrl.pathname;
+  request.url = `${requestUrl.pathname}${requestUrl.search}`;
   request.method = method;
   request.headers = headers;
   request.headers.host = requestUrl.host;
