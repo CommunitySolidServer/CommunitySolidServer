@@ -10,17 +10,6 @@
       "@id": "urn:solid-server:default:StaticAssetHandler",
       "@type": "UnsupportedAsyncHandler",
       "comment": "This value can be used to set a custom handler for static assets"
-    },
-    {
-      "@id": "urn:solid-server:default:FaviconHandler",
-      "@type": "StaticAssetHandler",
-      "comment": "Serves the favicon",
-      "StaticAssetHandler:_assets": [
-        {
-          "StaticAssetHandler:_assets_key": "/favicon.ico",
-          "StaticAssetHandler:_assets_value": "./templates/root/favicon.ico"
-        }
-      ]
     }
   ]
 }
