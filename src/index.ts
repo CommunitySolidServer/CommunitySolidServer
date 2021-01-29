@@ -121,6 +121,9 @@ export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/OidcInteractionCompleter';
 export * from './identity/interaction/util/WebIdOwnershipValidator';
 export * from './identity/interaction/util/getFormDataRequestBody';
+export * from './identity/interaction/util/EjsTemplateRenderer';
+export * from './identity/interaction/util/EmailSender';
+export * from './identity/interaction/util/TemplateRenderer';
 
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
