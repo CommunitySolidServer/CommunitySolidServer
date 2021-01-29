@@ -40,6 +40,16 @@ export function pipeSafely<T extends Writable>(readable: NodeJS.ReadableStream, 
     // in order to prevent memory leaks."
     destination.destroy(mapError ? mapError(error) : error);
   });
+
+  // Make sure we have no dangling streams in case of unpiping, which can happen if there's an error.
+  // This can also happen if a stream naturally closes so most calls here will not be indication of a problem.
+  // From https://nodejs.org/api/stream.html#stream_errors_while_writing :
+  // "If a Readable stream pipes into a Writable stream when Writable emits an error,
+  // the Readable stream will be unpiped."
+  destination.on('unpipe', (source): void => {
+    source.destroy();
+  });
+
   return guardStream(destination);
 }
 
