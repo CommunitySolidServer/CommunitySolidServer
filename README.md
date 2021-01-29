@@ -35,15 +35,37 @@ If you are interested in helping out with the development of this server,
 be sure to have a look at the [📓 developer notes](https://github.com/solid/community-server/wiki/Notes-for-developers)
 and [🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
-## Running locally
+## Running the server
+
+### Configuring the server
+
+Community Solid Server uses [ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all configuration for the server. There are a variety of configuration files for common use cases in the `config` folder.
+
+| Parameter | Default | Description |
+| --------- | ------- | ----------- |
+| `--port, -p` | `3000` | |
+| `--baseUrl. -b` | `"http:localhost:$PORT"` | |
+| `--config, -c` | `"config/config-default.json"` | `config-default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config-file.json` |
+| `--mainModulePath, -m` | | Configures ComponentJS |
+| `--globalModules, -g` | | Configures ComponentJS |
+| `--loggingLevel, -l` | `"info"`| |
+| `--podTemplateFolder, -t` | `"templates"` | |
+| `--rootFilePath, -f` | `"./"` | |
+| `--sparqlEndpoint, -s` | | |
+
+### Installing and running locally
 
 ```shell
-npm ci
-npm start
+$ npm ci
+$ npm start [-- ARGS]
 ```
 
-This will start up a server running on port 3000 with a backend storing all data in memory.
-More configurations with different backends can be found in the `config` folder.
+### Installing and running with `docker`
+
+```shell
+$ docker build . -t solid/community-server
+$ docker run solid/community-server [ARGS]
+```
 
 ## Interacting with the server
 
