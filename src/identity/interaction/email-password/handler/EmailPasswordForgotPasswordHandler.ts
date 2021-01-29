@@ -4,8 +4,10 @@ import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
 import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
+import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
+import type { TemplateRenderer } from '../../util/TemplateRenderer';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
 
 export interface EmailPasswordForgotPasswordHandlerArgs {
@@ -13,6 +15,8 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
   messageRenderHandler: IdpRenderHandler;
   emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
   baseUrl: string;
+  emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
+  emailSender: EmailSender;
 }
 
 export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandler {
@@ -21,6 +25,8 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
   private readonly baseUrl: string;
   private readonly logger = getLoggerFor(this);
+  private readonly emailTamplateRenderer: TemplateRenderer<{ resetLink: string }>;
+  private readonly emailSender: EmailSender;
 
   public constructor(args: EmailPasswordForgotPasswordHandlerArgs) {
     super();
@@ -28,6 +34,8 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
     this.messageRenderHandler = args.messageRenderHandler;
     this.emailPasswordStorageAdapter = args.emailPasswordStorageAdapter;
     this.baseUrl = args.baseUrl;
+    this.emailTamplateRenderer = args.emailTemplateRenderer;
+    this.emailSender = args.emailSender;
   }
 
   private async sendResponse(
@@ -75,7 +83,14 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
       )}/resetpassword?rid=${recordId}`;
 
       // Send email
-      this.logger.info(`Reset link: ${resetLink}`);
+      const renderedEmail = await this.emailTamplateRenderer.render({
+        resetLink,
+      });
+      await this.emailSender.sendEmail(email, {
+        subject: 'Reset your password',
+        text: `To reset your password, go to this link: ${resetLink}`,
+        html: renderedEmail,
+      });
 
       await this.sendResponse(input, interactionDetails, email);
     } catch (err: unknown) {
