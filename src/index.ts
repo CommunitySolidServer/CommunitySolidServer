@@ -78,6 +78,7 @@ export * from './ldp/operations/PostOperationHandler';
 export * from './ldp/operations/PutOperationHandler';
 
 // LDP/Permissions
+export * from './ldp/permissions/AclPermissionsExtractor';
 export * from './ldp/permissions/PermissionSet';
 export * from './ldp/permissions/PermissionsExtractor';
 export * from './ldp/permissions/MethodPermissionsExtractor';

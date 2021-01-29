@@ -6,6 +6,12 @@
       "@type": "WaterfallHandler",
       "WaterfallHandler:_handlers": [
         {
+          "@type": "AclPermissionsExtractor",
+          "AclPermissionsExtractor:_aclStrategy": {
+            "@id": "urn:solid-server:default:AclIdentifierStrategy"
+          }
+        },
+        {
           "@type": "MethodPermissionsExtractor"
         },
         {

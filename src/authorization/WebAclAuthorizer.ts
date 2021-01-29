@@ -42,12 +42,7 @@ export class WebAclAuthorizer extends Authorizer {
    * @param input - Relevant data needed to check if access can be granted.
    */
   public async handle({ identifier, permissions, credentials }: AuthorizerArgs): Promise<void> {
-    // Solid, §4.3.3: "To discover, read, create, or modify an ACL auxiliary resource, an acl:agent MUST
-    // have acl:Control privileges per the ACL inheritance algorithm on the resource directly associated with it."
-    // https://solid.github.io/specification/protocol#auxiliary-resources-reserved
-    const modes = this.aclStrategy.isAuxiliaryIdentifier(identifier) ?
-      [ 'control' ] :
-      (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
+    const modes = (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
 
     // Verify that all required modes are set for the given agent
     this.logger.debug(`Checking if ${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);

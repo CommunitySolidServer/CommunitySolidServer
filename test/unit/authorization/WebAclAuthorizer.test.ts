@@ -120,18 +120,6 @@ describe('A WebAclAuthorizer', (): void => {
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
-  it('allows access to the acl file if control is allowed.', async(): Promise<void> => {
-    credentials.webId = 'http://test.com/user';
-    identifier.path = 'http://test.com/foo';
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
-      quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
-    ]) } as Representation);
-    const aclIdentifier = aclStrategy.getAuxiliaryIdentifier(identifier);
-    await expect(authorizer.handle({ identifier: aclIdentifier, permissions, credentials })).resolves.toBeUndefined();
-  });
-
   it('errors if an agent tries to edit the acl file without control permissions.', async(): Promise<void> => {
     credentials.webId = 'http://test.com/user';
     identifier.path = 'http://test.com/foo';
