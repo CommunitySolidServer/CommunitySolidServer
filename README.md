@@ -143,7 +143,7 @@ A Docker image is available to run the containerised Solid Community Server agai
 For example to run it against your current user's `~/Solid` directory and `http://localhost:3000`:
 
 ```shell
-docker run --rm -v ~/Solid:/data -p 3000:3000 -it solid/solid-community-server:latest
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it ghcr.io/solid/solid-community-server:latest
 ```
 
 The filestorage is just the default configuration, you can override with any of the configurations included with the server:
