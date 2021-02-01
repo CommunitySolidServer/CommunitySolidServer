@@ -1,9 +1,12 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { matchingMediaTypes } from './ConversionUtil';
+import { UnsupportedAsyncHandler } from '../../util/handlers/UnsupportedAsyncHandler';
+import { hasMatchingMediaTypes } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
+
+const EMPTY_CONVERTER = new UnsupportedAsyncHandler('The content type does not match the preferences');
 
 /**
  * A {@link RepresentationConverter} that only converts representations
@@ -13,7 +16,7 @@ export class IfNeededConverter extends RepresentationConverter {
   private readonly converter: RepresentationConverter;
   protected readonly logger = getLoggerFor(this);
 
-  public constructor(converter: RepresentationConverter) {
+  public constructor(converter: RepresentationConverter = EMPTY_CONVERTER) {
     super();
     this.converter = converter;
   }
@@ -43,7 +46,7 @@ export class IfNeededConverter extends RepresentationConverter {
     if (!contentType) {
       throw new InternalServerError('Content-Type is required for data conversion.');
     }
-    const noMatchingMediaType = matchingMediaTypes(preferences.type, { [contentType]: 1 }).length === 0;
+    const noMatchingMediaType = !hasMatchingMediaTypes(preferences.type, { [contentType]: 1 });
     if (noMatchingMediaType) {
       this.logger.debug(`Conversion needed for ${identifier
         .path} from ${representation.metadata.contentType} to satisfy ${Object.entries(preferences.type)

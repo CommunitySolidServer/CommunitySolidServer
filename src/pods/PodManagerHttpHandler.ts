@@ -5,6 +5,7 @@ import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
+import { isNativeError } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { AgentParser } from './agent/AgentParser';
@@ -59,7 +60,7 @@ export class PodManagerHttpHandler extends HttpHandler {
 
       await this.responseWriter.handleSafe({ response, result: new CreatedResponseDescription(id) });
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (isNativeError(error)) {
         await this.responseWriter.handleSafe({ response, result: error });
       } else {
         await this.responseWriter.handleSafe({ response, result: new InternalServerError('Unexpected error') });

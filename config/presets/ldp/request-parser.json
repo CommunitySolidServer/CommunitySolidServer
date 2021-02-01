@@ -27,7 +27,8 @@
     },
     {
       "@id": "urn:solid-server:default:TargetExtractor",
-      "@type": "OriginalUrlExtractor"
+      "@type": "OriginalUrlExtractor",
+      "OriginalUrlExtractor:_options_includeQueryString": false
     }
   ]
 }

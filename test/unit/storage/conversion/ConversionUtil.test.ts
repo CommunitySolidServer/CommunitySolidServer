@@ -59,8 +59,8 @@ describe('ConversionUtil', (): void => {
 
     it('errors if there invalid types.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'b/x': 1 };
-      expect((): any => matchingMediaTypes(preferences, { noType: 1 }))
-        .toThrow(new InternalServerError(`Unexpected type preference: noType`));
+      expect((): any => matchingMediaTypes(preferences, { noType: 1 })).toThrow(InternalServerError);
+      expect((): any => matchingMediaTypes(preferences, { noType: 1 })).toThrow('Unexpected type preference: noType');
     });
 
     it('filters out internal types.', async(): Promise<void> => {

@@ -3,18 +3,31 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:MetadataSerializer",
-      "@type": "SequenceHandler",
-      "SequenceHandler:_handlers": [
+      "@type": "ParallelHandler",
+      "ParallelHandler:_handlers": [
+        {
+          "@type": "ConstantMetadataWriter",
+          "ConstantMetadataWriter:_headers": [
+            {
+              "ConstantMetadataWriter:_headers_key": "Accept-Patch",
+              "ConstantMetadataWriter:_headers_value": "application/sparql-update"
+            },
+            {
+              "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
+              "ConstantMetadataWriter:_headers_value": "SPARQL"
+            }
+          ]
+        },
         {
           "@type": "MappedMetadataWriter",
           "MappedMetadataWriter:_headerMap": [
             {
               "MappedMetadataWriter:_headerMap_key": "http://www.w3.org/ns/ma-ont#format",
-              "MappedMetadataWriter:_headerMap_value": "content-type"
+              "MappedMetadataWriter:_headerMap_value": "Content-Type"
             },
             {
               "MappedMetadataWriter:_headerMap_key": "urn:solid:http:location",
-              "MappedMetadataWriter:_headerMap_value": "location"
+              "MappedMetadataWriter:_headerMap_value": "Location"
             }
           ]
         },
@@ -26,6 +39,12 @@
               "LinkRelMetadataWriter:_linkRelMap_value": "type"
             }
           ]
+        },
+        {
+          "@type": "AclLinkMetadataWriter",
+          "AclLinkMetadataWriter:_aclManager": {
+            "@id": "urn:solid-server:default:AclManager"
+          }
         }
       ]
     },

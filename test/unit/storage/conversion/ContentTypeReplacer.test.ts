@@ -25,8 +25,9 @@ describe('A ContentTypeReplacer', (): void => {
     const representation = { metadata };
     const preferences = { type: { 'application/json': 1 }};
 
-    await expect(converter.canHandle({ representation, preferences } as any))
-      .rejects.toThrow(new Error('Cannot convert from text/plain to application/json'));
+    const result = converter.canHandle({ representation, preferences } as any);
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot convert from text/plain to application/json');
   });
 
   it('throws on an unsupported output type.', async(): Promise<void> => {
@@ -34,8 +35,9 @@ describe('A ContentTypeReplacer', (): void => {
     const representation = { metadata };
     const preferences = { type: { 'application/json': 1 }};
 
-    await expect(converter.canHandle({ representation, preferences } as any))
-      .rejects.toThrow(new Error('Cannot convert from application/n-triples to application/json'));
+    const result = converter.canHandle({ representation, preferences } as any);
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot convert from application/n-triples to application/json');
   });
 
   it('does not replace when no content type is given.', async(): Promise<void> => {
@@ -43,8 +45,9 @@ describe('A ContentTypeReplacer', (): void => {
     const representation = { binary, data, metadata };
     const preferences = { type: { 'application/json': 1 }};
 
-    await expect(converter.canHandle({ representation, preferences } as any))
-      .rejects.toThrow(new NotImplementedHttpError('Cannot convert from unknown to application/json'));
+    const result = converter.canHandle({ representation, preferences } as any);
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Cannot convert from unknown to application/json');
   });
 
   it('replaces a supported content type when no preferences are given.', async(): Promise<void> => {

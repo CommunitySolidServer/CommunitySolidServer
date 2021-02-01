@@ -9,6 +9,13 @@ import { TargetExtractor } from './TargetExtractor';
  * Reconstructs the original URL of an incoming {@link HttpRequest}.
  */
 export class OriginalUrlExtractor extends TargetExtractor {
+  private readonly includeQueryString: boolean;
+
+  public constructor(options: { includeQueryString?: boolean } = {}) {
+    super();
+    this.includeQueryString = options.includeQueryString ?? true;
+  }
+
   public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
     if (!url) {
       throw new Error('Missing URL');
@@ -37,7 +44,13 @@ export class OriginalUrlExtractor extends TargetExtractor {
 
     // URL object applies punycode encoding to domain
     const base = `${protocol}://${host}`;
-    const path = new URL(toCanonicalUriPath(url), base).href;
-    return { path };
+    const originalUrl = new URL(toCanonicalUriPath(url), base);
+
+    // Drop the query string if requested
+    if (!this.includeQueryString) {
+      originalUrl.search = '';
+    }
+
+    return { path: originalUrl.href };
   }
 }

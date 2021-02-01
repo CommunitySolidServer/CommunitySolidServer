@@ -1,6 +1,6 @@
 import type { Provider } from 'oidc-provider';
 import type { HttpHandlerInput } from '../../server/HttpHandler';
-import { AsyncHandler } from '../../util/AsyncHandler';
+import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 export type IdPInteractionHttpHandlerInput = HttpHandlerInput & {
   provider: Provider;

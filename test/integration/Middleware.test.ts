@@ -34,6 +34,27 @@ describe('An Express server with middleware', (): void => {
     server.close();
   });
 
+  it('sets a Vary header containing Accept.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Accept\s*(,|$)/iu),
+    }));
+  });
+
+  it('sets a Vary header containing Authorization.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Authorization\s*(,|$)/iu),
+    }));
+  });
+
+  it('sets a Vary header containing Origin.', async(): Promise<void> => {
+    const res = await request(server).get('/');
+    expect(res.header).toEqual(expect.objectContaining({
+      vary: expect.stringMatching(/(^|,)\s*Origin\s*(,|$)/iu),
+    }));
+  });
+
   it('sends server identification in the X-Powered-By header.', async(): Promise<void> => {
     const res = await request(server).get('/');
     expect(res.header).toEqual(expect.objectContaining({
@@ -65,10 +86,28 @@ describe('An Express server with middleware', (): void => {
     expect(res.header).toEqual(expect.objectContaining({ 'access-control-allow-origin': 'test.com' }));
   });
 
+  it('exposes the Accept-Patch header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Patch');
+  });
+
   it('exposes the Location header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
     expect(exposed.split(/\s*,\s*/u)).toContain('Location');
+  });
+
+  it('exposes the MS-Author-Via header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('MS-Author-Via');
+  });
+
+  it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('Updates-Via');
   });
 
   it('sends incoming requests to the handler.', async(): Promise<void> => {

@@ -90,27 +90,35 @@ export function getExtension(path: string): string {
 }
 
 /**
+ * Performs a transformation on the path components of a URI.
+ */
+function transformPathComponents(path: string, transform: (part: string) => string): string {
+  const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
+  const transformed = base.split('/').map(transform).join('/');
+  return !queryString ? transformed : `${transformed}${queryString}`;
+}
+
+/**
  * Converts a URI path to the canonical version by splitting on slashes,
- * decoding any percent-based encodings,
- * and then encoding any special characters.
+ * decoding any percent-based encodings, and then encoding any special characters.
  */
 export function toCanonicalUriPath(path: string): string {
-  return path.split('/').map((part): string =>
-    encodeURIComponent(decodeURIComponent(part))).join('/');
+  return transformPathComponents(path, (part): string =>
+    encodeURIComponent(decodeURIComponent(part)));
 }
 
 /**
  * Decodes all components of a URI path.
  */
 export function decodeUriPathComponents(path: string): string {
-  return path.split('/').map(decodeURIComponent).join('/');
+  return transformPathComponents(path, decodeURIComponent);
 }
 
 /**
  * Encodes all (non-slash) special characters in a URI path.
  */
 export function encodeUriPathComponents(path: string): string {
-  return path.split('/').map(encodeURIComponent).join('/');
+  return transformPathComponents(path, encodeURIComponent);
 }
 
 /**

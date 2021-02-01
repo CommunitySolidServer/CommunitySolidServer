@@ -151,14 +151,15 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.getMetadata = async(): Promise<any> => {
         throw new Error('randomError');
       };
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(new Error('randomError'));
+      await expect(store.addResource(resourceID, representation)).rejects.toThrow('randomError');
     });
 
     it('does not allow adding resources to existing non-containers.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource/` };
       accessor.data[resourceID.path] = representation;
-      await expect(store.addResource(resourceID, representation))
-        .rejects.toThrow(new MethodNotAllowedHttpError('The given path is not a container.'));
+      const result = store.addResource(resourceID, representation);
+      await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
+      await expect(result).rejects.toThrow('The given path is not a container.');
     });
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
@@ -326,8 +327,9 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom(
         [ `<${`${root}resource/`}> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
       );
-      await expect(store.setRepresentation(resourceID, representation))
-        .rejects.toThrow(new ConflictHttpError('Container bodies are not allowed to have containment triples.'));
+      const result = store.setRepresentation(resourceID, representation);
+      await expect(result).rejects.toThrow(ConflictHttpError);
+      await expect(result).rejects.toThrow('Container bodies are not allowed to have containment triples.');
     });
 
     it('creates recursive containers when needed.', async(): Promise<void> => {
@@ -366,8 +368,9 @@ describe('A DataAccessorBasedStore', (): void => {
 
   describe('modifying a Representation', (): void => {
     it('is not supported.', async(): Promise<void> => {
-      await expect(store.modifyResource())
-        .rejects.toThrow(new NotImplementedHttpError('Patches are not supported by the default store.'));
+      const result = store.modifyResource();
+      await expect(result).rejects.toThrow(NotImplementedHttpError);
+      await expect(result).rejects.toThrow('Patches are not supported by the default store.');
     });
   });
 
@@ -380,15 +383,17 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will error when deleting a root storage container.', async(): Promise<void> => {
       representation.metadata.add(RDF.type, PIM.terms.Storage);
       accessor.data[`${root}container`] = representation;
-      await expect(store.deleteResource({ path: `${root}container` }))
-        .rejects.toThrow(new MethodNotAllowedHttpError('Cannot delete a root storage container.'));
+      const result = store.deleteResource({ path: `${root}container` });
+      await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
+      await expect(result).rejects.toThrow('Cannot delete a root storage container.');
     });
 
     it('will error when deleting non-empty containers.', async(): Promise<void> => {
       accessor.data[`${root}container`] = representation;
       accessor.data[`${root}container`].metadata.add(LDP.contains, DataFactory.namedNode(`${root}otherThing`));
-      await expect(store.deleteResource({ path: `${root}container` }))
-        .rejects.toThrow(new ConflictHttpError('Can only delete empty containers.'));
+      const result = store.deleteResource({ path: `${root}container` });
+      await expect(result).rejects.toThrow(ConflictHttpError);
+      await expect(result).rejects.toThrow('Can only delete empty containers.');
     });
 
     it('will delete resources.', async(): Promise<void> => {

@@ -1,5 +1,5 @@
-import { AsyncHandler } from '../util/AsyncHandler';
-import { OnErrorHandler } from '../util/ErrorHandlingWaterfallHandler';
+import { AsyncHandler } from '../util/handlers/AsyncHandler';
+import { OnErrorHandler } from '../util/handlers/ErrorHandlingWaterfallHandler';
 import type { HttpRequest } from './HttpRequest';
 import type { HttpResponse } from './HttpResponse';
 

@@ -15,6 +15,7 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: [ 'jest-rdf', '<rootDir>/test/util/SetupTests.ts' ],
   collectCoverage: true,
+  coverageReporters: [ 'text', 'lcov' ],
   coveragePathIgnorePatterns: [
     '/dist/',
     '/node_modules/',
