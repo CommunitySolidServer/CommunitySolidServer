@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=12.17 <15"
+    "node": ">=12.17"
   },
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
@@ -47,7 +47,7 @@
     "docker:start": "./test/docker/docker-start.sh",
     "docker:stop": "./test/docker/docker-stop.sh",
     "docs": "typedoc",
-    "jest": "jest",
+    "jest": "jest --coverageReporters text-summary --",
     "lint": "eslint . --cache --ignore-path .gitignore",
     "prepare": "npm run build",
     "start": "node ./bin/server.js",
@@ -55,9 +55,9 @@
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
-    "test:integration": "jest test/integration",
+    "test:integration": "jest --coverageReporters text-summary -- test/integration",
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
-    "test:watch": "jest --watch test/unit",
+    "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
     "version": "manual-git-changelog onversion",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
@@ -90,7 +90,7 @@
     "@types/streamify-array": "^1.0.0",
     "@types/uuid": "^8.3.0",
     "@types/ws": "^7.4.0",
-    "@types/yargs": "^15.0.5",
+    "@types/yargs": "^16.0.0",
     "arrayify-stream": "^1.0.0",
     "assert": "^2.0.0",
     "async-lock": "^1.2.4",
@@ -99,6 +99,7 @@
     "componentsjs": "^4.0.1",
     "cors": "^2.8.5",
     "ejs": "^3.1.5",
+    "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
@@ -122,7 +123,7 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
-    "@microsoft/tsdoc-config": "^0.13.6",
+    "@microsoft/tsdoc-config": "^0.14.0",
     "@tsconfig/node12": "^1.0.7",
     "@types/bcrypt": "^3.0.0",
     "@types/clownface": "^1.2.0",
@@ -136,7 +137,7 @@
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
-    "componentsjs-generator": "^2.0.0",
+    "componentsjs-generator": "^2.1.0",
     "cross-fetch": "^3.0.6",
     "eslint": "^7.9.0",
     "eslint-config-es": "^3.20.3",

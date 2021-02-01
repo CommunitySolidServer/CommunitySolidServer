@@ -76,7 +76,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE2');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE file
     await resourceHelper.deleteResource(id);
@@ -109,10 +110,31 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
     // GET permanent file
     response = await resourceHelper.getResource('http://test.com/permanent.txt');
     expect(response._getBuffer().toString()).toContain('TEST');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<http://test.com/permanent.txt.acl>; rel="acl"`);
 
     // Try to delete permanent file
     response = await resourceHelper.deleteResource('http://test.com/permanent.txt', true);
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('can add files but not write to them if append is allowed.', async(): Promise<void> => {
+    // Set acl
+    await aclHelper.setSimpleAcl({ read: true, write: false, append: true }, 'agent');
+
+    // Add a file
+    let response = await resourceHelper.createResource(
+      '../assets/testfile2.txt', 'testfile2.txt', 'text/plain', true,
+    );
+    expect(response.statusCode).toBe(201);
+
+    const id = response._getHeaders().location;
+    response = await resourceHelper.performRequestWithBody(
+      new URL(id),
+      'PUT',
+      { 'content-type': 'text/plain', 'transfer-encoding': 'chunked' },
+      Buffer.from('data'),
+    );
     expect(response.statusCode).toBe(401);
   });
 });

@@ -149,7 +149,7 @@ export class WebAclAuthorizer extends Authorizer {
       const resourceId = await this.aclManager.getAclConstrainedResource(id);
       return this.filterData(data, recurse ? ACL.default : ACL.accessTo, resourceId.path);
     } catch (error: unknown) {
-      if (error instanceof NotFoundHttpError) {
+      if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
       } else {
         this.logger.error(`Error reading ACL for ${id.path}: ${(error as Error).message}`, { error });

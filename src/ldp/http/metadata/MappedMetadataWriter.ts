@@ -8,18 +8,18 @@ import { MetadataWriter } from './MetadataWriter';
  * The header value(s) will be the same as the corresponding object value(s).
  */
 export class MappedMetadataWriter extends MetadataWriter {
-  private readonly headerMap: Record<string, string>;
+  private readonly headerMap: [string, string][];
 
   public constructor(headerMap: Record<string, string>) {
     super();
-    this.headerMap = headerMap;
+    this.headerMap = Object.entries(headerMap);
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    for (const key of Object.keys(this.headerMap)) {
-      const values = input.metadata.getAll(key).map((term): string => term.value);
-      if (values.length > 0) {
-        addHeader(input.response, this.headerMap[key], values);
+    for (const [ predicate, header ] of this.headerMap) {
+      const terms = input.metadata.getAll(predicate);
+      if (terms.length > 0) {
+        addHeader(input.response, header, terms.map((term): string => term.value));
       }
     }
   }

@@ -1,6 +1,6 @@
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import type { ResourceStore } from '../storage/ResourceStore';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
+import type { ResourceStore } from './ResourceStore';
 
 export async function containsResource(store: ResourceStore, identifier: ResourceIdentifier): Promise<boolean> {
   try {
@@ -8,7 +8,7 @@ export async function containsResource(store: ResourceStore, identifier: Resourc
     result.data.destroy();
     return true;
   } catch (error: unknown) {
-    if (error instanceof NotFoundHttpError) {
+    if (NotFoundHttpError.isInstance(error)) {
       return false;
     }
     throw error;

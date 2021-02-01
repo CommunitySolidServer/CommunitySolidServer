@@ -73,8 +73,7 @@ export class ResourceHelper {
     data: Buffer,
   ): Promise<MockResponse<any>> {
     const request = Readable.from([ data ]) as HttpRequest;
-
-    request.url = requestUrl.pathname;
+    request.url = `${requestUrl.pathname}${requestUrl.search}`;
     request.method = method;
     request.headers = headers;
     request.headers.host = requestUrl.host;

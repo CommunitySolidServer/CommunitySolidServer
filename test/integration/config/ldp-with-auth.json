@@ -11,6 +11,7 @@
     "files-scs:config/presets/ldp/response-writer.json",
     "files-scs:config/presets/ldp/request-parser.json",
     "files-scs:config/presets/representation-conversion.json",
+    "files-scs:config/presets/static.json",
     "files-scs:config/presets/storage/backend/storage-memory.json",
     "files-scs:config/presets/storage/backend/storage-filesystem.json",
     "files-scs:config/presets/storage/backend/storage-sparql-endpoint.json",

@@ -1,6 +1,6 @@
 import type { InteractionResults } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { AsyncHandler } from '../../../util/AsyncHandler';
+import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { IdPInteractionHttpHandlerInput } from '../IdPInteractionHttpHandler';
 
 export interface OidcInteractionCompleterInput extends IdPInteractionHttpHandlerInput {

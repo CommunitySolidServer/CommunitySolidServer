@@ -29,6 +29,12 @@
           "@type": "WaterfallHandler",
           "WaterfallHandler:_handlers": [
             {
+              "@id": "urn:solid-server:default:FaviconHandler"
+            },
+            {
+              "@id": "urn:solid-server:default:StaticAssetHandler"
+            },
+            {
               "@id": "urn:solid-server:default:PodManagerHandler"
             },
             {
@@ -38,6 +44,17 @@
               "@id": "urn:solid-server:default:LdpHandler"
             }
           ]
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:FaviconHandler",
+      "@type": "StaticAssetHandler",
+      "comment": "Serves the favicon",
+      "StaticAssetHandler:_assets": [
+        {
+          "StaticAssetHandler:_assets_key": "/favicon.ico",
+          "StaticAssetHandler:_assets_value": "./templates/root/favicon.ico"
         }
       ]
     }

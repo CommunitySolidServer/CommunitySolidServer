@@ -42,7 +42,7 @@ describe('An InMemoryDataAccessor', (): void => {
 
     it('throws an error if part of the path matches a document.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
-      await expect(accessor.getData({ path: `${base}resource/resource2` })).rejects.toThrow(new Error('Invalid path.'));
+      await expect(accessor.getData({ path: `${base}resource/resource2` })).rejects.toThrow('Invalid path.');
     });
 
     it('returns the corresponding data every time.', async(): Promise<void> => {
@@ -158,7 +158,7 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
 
       await expect(accessor.writeContainer({ path: `${base}resource/container` }, metadata))
-        .rejects.toThrow(new Error('Invalid path.'));
+        .rejects.toThrow('Invalid path.');
     });
   });
 

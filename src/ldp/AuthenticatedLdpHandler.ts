@@ -6,6 +6,7 @@ import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
+import { isNativeError } from '../util/errors/ErrorUtil';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
@@ -95,7 +96,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     try {
       writeData = { response: input.response, result: await this.runHandlers(input.request) };
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (isNativeError(error)) {
         writeData = { response: input.response, result: error };
       } else {
         throw error;

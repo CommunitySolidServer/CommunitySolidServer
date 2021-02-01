@@ -26,6 +26,17 @@ describe('A OriginalUrlExtractor', (): void => {
       .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
+  it('returns an input URL with query string.', async(): Promise<void> => {
+    const noQuery = new OriginalUrlExtractor({ includeQueryString: false });
+    await expect(noQuery.handle({ request: { url: '/url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
+      .resolves.toEqual({ path: 'http://test.com/url' });
+  });
+
+  it('drops the query string when includeQueryString is set to false.', async(): Promise<void> => {
+    await expect(extractor.handle({ request: { url: '/url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
+      .resolves.toEqual({ path: 'http://test.com/url?abc=def&xyz' });
+  });
+
   it('supports host:port combinations.', async(): Promise<void> => {
     await expect(extractor.handle({ request: { url: 'url', headers: { host: 'localhost:3000' }} as any }))
       .resolves.toEqual({ path: 'http://localhost:3000/url' });

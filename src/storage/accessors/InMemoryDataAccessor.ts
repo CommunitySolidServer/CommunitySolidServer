@@ -72,7 +72,7 @@ export class InMemoryDataAccessor implements DataAccessor {
       entry.metadata = metadata;
     } catch (error: unknown) {
       // Create new entry if it didn't exist yet
-      if (error instanceof NotFoundHttpError) {
+      if (NotFoundHttpError.isInstance(error)) {
         const { parent, name } = this.getParentEntry(identifier);
         parent.entries[name] = {
           entries: {},

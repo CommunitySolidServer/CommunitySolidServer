@@ -12,7 +12,7 @@ describe('LazyLogger', (): void => {
 
   it('throws when no logger factory is set in the lazy logger factory.', async(): Promise<void> => {
     expect((): any => logger.log('debug', 'my message', { abc: true }))
-      .toThrow(new Error('No logger factory has been set. Can be caused by logger invocation during initialization.'));
+      .toThrow('No logger factory has been set. Can be caused by logger invocation during initialization.');
   });
 
   it('creates a new logger using the factory.', async(): Promise<void> => {

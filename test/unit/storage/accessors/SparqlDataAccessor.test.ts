@@ -7,9 +7,9 @@ import type { Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
-import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
@@ -235,16 +235,18 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('errors when trying to write to a metadata document.', async(): Promise<void> => {
-    await expect(accessor.writeDocument({ path: 'meta:http://test.com/container/resource' }, data, metadata))
-      .rejects.toThrow(new ConflictHttpError('Not allowed to create NamedNodes with the metadata extension.'));
+    const result = accessor.writeDocument({ path: 'meta:http://test.com/container/resource' }, data, metadata);
+    await expect(result).rejects.toThrow(ConflictHttpError);
+    await expect(result).rejects.toThrow('Not allowed to create NamedNodes with the metadata extension.');
   });
 
   it('errors when writing triples in a non-default graph.', async(): Promise<void> => {
     data = guardedStreamFrom(
       [ quad(namedNode('http://name'), namedNode('http://pred'), literal('value'), namedNode('badGraph!')) ],
     );
-    await expect(accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata))
-      .rejects.toThrow(new BadRequestHttpError('Only triples in the default graph are supported.'));
+    const result = accessor.writeDocument({ path: 'http://test.com/container/resource' }, data, metadata);
+    await expect(result).rejects.toThrow(NotImplementedHttpError);
+    await expect(result).rejects.toThrow('Only triples in the default graph are supported.');
   });
 
   it('errors when the SPARQL endpoint fails during reading.', async(): Promise<void> => {

@@ -30,11 +30,11 @@ describe('A MethodPermissionsExtractor', (): void => {
     });
   });
 
-  it('requires write for POST operations.', async(): Promise<void> => {
+  it('requires append for POST operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'POST' } as Operation)).resolves.toEqual({
       read: false,
       append: true,
-      write: true,
+      write: false,
     });
   });
 

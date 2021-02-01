@@ -66,6 +66,19 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     const data = response._getData().toString();
     expect(data).toContain(`<> a ldp:Container`);
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
+  });
+
+  it('can read a folder listing with a query string.', async():
+  Promise<void> => {
+    const response = await resourceHelper.getResource(`${BASE}/?abc=def&xyz`);
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
+
+    const data = response._getData().toString();
+    expect(data).toContain(`<> a ldp:Container`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
   });
 
   it('can add a file to the store, read it and delete it.', async():
@@ -80,7 +93,10 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE0');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders()['accept-patch']).toBe('application/sparql-update');
+    expect(response.getHeaders()['ms-author-via']).toBe('SPARQL');
 
     // DELETE
     await resourceHelper.deleteResource(id);
@@ -97,7 +113,8 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE0');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // PUT
     response = await resourceHelper.replaceResource(
@@ -108,7 +125,8 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE1');
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE
     await resourceHelper.deleteResource(id);
@@ -123,9 +141,10 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     // GET
     response = await resourceHelper.getContainer(id);
     expect(response.statusCode).toBe(200);
-    expect(response.getHeaders().link).toEqual(
-      [ `<${LDP.Container}>; rel="type"`, `<${LDP.BasicContainer}>; rel="type"`, `<${LDP.Resource}>; rel="type"` ],
-    );
+    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE
     await resourceHelper.deleteResource(id);
@@ -145,7 +164,8 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     // GET File
     response = await resourceHelper.getResource(id);
     expect(response.statusCode).toBe(200);
-    expect(response.getHeaders().link).toBe(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
 
     // DELETE
     await resourceHelper.deleteResource(id);
@@ -216,9 +236,10 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.statusCode).toBe(200);
     expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
     expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
-    expect(response.getHeaders().link).toEqual(
-      [ `<${LDP.Container}>; rel="type"`, `<${LDP.BasicContainer}>; rel="type"`, `<${LDP.Resource}>; rel="type"` ],
-    );
+    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
+    expect(response.getHeaders().link).toContain(`<${folderId}.acl>; rel="acl"`);
 
     // DELETE
     await resourceHelper.deleteResource(fileId);

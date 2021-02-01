@@ -21,8 +21,9 @@ describe('A SlugParser', (): void => {
 
   it('errors if there are multiple slug headers.', async(): Promise<void> => {
     request.headers.slug = [ 'slugA', 'slugB' ];
-    await expect(parser.parse(request, metadata))
-      .rejects.toThrow(new BadRequestHttpError('Request has multiple Slug headers'));
+    const result = parser.parse(request, metadata);
+    await expect(result).rejects.toThrow(BadRequestHttpError);
+    await expect(result).rejects.toThrow('Request has multiple Slug headers');
   });
 
   it('stores the slug metadata.', async(): Promise<void> => {

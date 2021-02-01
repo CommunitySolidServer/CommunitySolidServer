@@ -56,6 +56,21 @@ string[] {
 }
 
 /**
+ * Determines whether any available type satisfies the preferences.
+ *
+ * @param preferredTypes - Preferences for output type.
+ * @param availableTypes - Media types to compare to the preferences.
+ *
+ * @throws BadRequestHttpError
+ * If the type preferences are undefined or if there are duplicate preferences.
+ *
+ * @returns Whether there is at least one preference match.
+ */
+export function hasMatchingMediaTypes(preferredTypes?: ValuePreferences, availableTypes?: ValuePreferences): boolean {
+  return matchingMediaTypes(preferredTypes, availableTypes).length !== 0;
+}
+
+/**
  * Checks if the given two media types/ranges match each other.
  * Takes wildcards into account.
  * @param mediaA - Media type to match.

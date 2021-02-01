@@ -1,5 +1,6 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpResponse } from '../../server/HttpResponse';
+import { isNativeError } from '../../util/errors/ErrorUtil';
 import { HttpError } from '../../util/errors/HttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { ResponseDescription } from './response/ResponseDescription';
@@ -12,14 +13,14 @@ export class ErrorResponseWriter extends ResponseWriter {
   protected readonly logger = getLoggerFor(this);
 
   public async canHandle(input: { response: HttpResponse; result: ResponseDescription | Error }): Promise<void> {
-    if (!(input.result instanceof Error)) {
+    if (!isNativeError(input.result)) {
       throw new NotImplementedHttpError('Only errors are supported');
     }
   }
 
   public async handle(input: { response: HttpResponse; result: Error }): Promise<void> {
     let code = 500;
-    if (input.result instanceof HttpError) {
+    if (HttpError.isInstance(input.result)) {
       code = input.result.statusCode;
     }
     input.response.setHeader('content-type', 'text/plain');

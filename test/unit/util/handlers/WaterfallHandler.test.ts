@@ -1,8 +1,8 @@
-import type { AsyncHandler } from '../../../src/util/AsyncHandler';
-import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
-import { HttpError } from '../../../src/util/errors/HttpError';
-import { WaterfallHandler } from '../../../src/util/WaterfallHandler';
-import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
+import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { HttpError } from '../../../../src/util/errors/HttpError';
+import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
+import { WaterfallHandler } from '../../../../src/util/handlers/WaterfallHandler';
+import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A WaterfallHandler', (): void => {
   describe('with no handlers', (): void => {
