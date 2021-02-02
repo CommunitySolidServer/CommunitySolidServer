@@ -34,7 +34,6 @@ export * from './ldp/auxiliary/SuffixAuxiliaryIdentifierStrategy';
 export * from './ldp/auxiliary/Validator';
 
 // LDP/HTTP/Metadata
-export * from './ldp/http/metadata/AclLinkMetadataWriter';
 export * from './ldp/http/metadata/BasicMetadataExtractor';
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
