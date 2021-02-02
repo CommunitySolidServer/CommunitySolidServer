@@ -3,5 +3,5 @@
  * throw an error if the WebId is not valid.
  */
 export abstract class WebIdOwnershipValidator {
-  abstract assertWebId(webId: string): Promise<void>;
+  abstract assertWebId(webId: string, interactionId: String): Promise<void>;
 }

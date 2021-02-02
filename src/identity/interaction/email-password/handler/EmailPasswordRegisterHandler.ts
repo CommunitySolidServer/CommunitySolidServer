@@ -56,7 +56,7 @@ export class EmailPasswordRegisterHandler extends IdPInteractionHttpHandler {
       // Qualify WebId
       assert(webId && typeof webId === 'string', 'WebId required');
       prefilledWebId = webId;
-      await this.webIdOwnershipValidator.assertWebId(webId);
+      await this.webIdOwnershipValidator.assertWebId(webId, interactionDetails.uid);
 
       // Qualify password
       assert(password && typeof password === 'string', 'Password required');
