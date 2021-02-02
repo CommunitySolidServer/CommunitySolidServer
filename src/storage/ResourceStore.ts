@@ -11,6 +11,9 @@ import type { Conditions } from './Conditions';
  * dedicated method needs to be called. A fifth method enables the optimization
  * of partial updates with PATCH. It is up to the implementer of the interface to
  * (not) make an implementation atomic.
+ *
+ * ResourceStores are also responsible for taking auxiliary resources into account
+ * should those be relevant to the store.
  */
 export interface ResourceStore {
   /**

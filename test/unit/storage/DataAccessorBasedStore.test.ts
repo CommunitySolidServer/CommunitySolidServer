@@ -3,6 +3,8 @@ import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
+import type { AuxiliaryStrategy } from '../../../src/ldp/auxiliary/AuxiliaryStrategy';
+import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
@@ -69,11 +71,50 @@ class SimpleDataAccessor implements DataAccessor {
   }
 }
 
+class SimpleSuffixStrategy implements AuxiliaryStrategy {
+  private readonly suffix: string;
+
+  public constructor(suffix: string) {
+    this.suffix = suffix;
+  }
+
+  public getAuxiliaryIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+    return { path: `${identifier.path}${this.suffix}` };
+  }
+
+  public getAuxiliaryIdentifiers(identifier: ResourceIdentifier): ResourceIdentifier[] {
+    return [ this.getAuxiliaryIdentifier(identifier) ];
+  }
+
+  public isAuxiliaryIdentifier(identifier: ResourceIdentifier): boolean {
+    return identifier.path.endsWith(this.suffix);
+  }
+
+  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+    return { path: identifier.path.slice(0, -this.suffix.length) };
+  }
+
+  public isRootRequired(): boolean {
+    return false;
+  }
+
+  public async addMetadata(metadata: RepresentationMetadata): Promise<void> {
+    const identifier = { path: metadata.identifier.value };
+    // Random triple to test on
+    metadata.add(identifier.path, this.getAuxiliaryIdentifier(identifier).path);
+  }
+
+  public async validate(): Promise<void> {
+    // Always validates
+  }
+}
+
 describe('A DataAccessorBasedStore', (): void => {
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
   const root = 'http://test.com/';
   const identifierStrategy = new SingleRootIdentifierStrategy(root);
+  let auxStrategy: AuxiliaryStrategy;
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
   const resourceData = 'text';
@@ -81,7 +122,8 @@ describe('A DataAccessorBasedStore', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new SimpleDataAccessor();
 
-    store = new DataAccessorBasedStore(accessor, identifierStrategy);
+    auxStrategy = new SimpleSuffixStrategy('.dummy');
+    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
@@ -110,22 +152,41 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will return the stored representation for resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
+      representation.metadata.identifier = DataFactory.namedNode(resourceID.path);
       accessor.data[resourceID.path] = representation;
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: true });
       expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
       expect(result.metadata.contentType).toEqual('text/plain');
+      expect(result.metadata.get(resourceID.path)?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       containerMetadata.identifier = namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
-      const metaQuads = containerMetadata.quads();
+      const metaMirror = new RepresentationMetadata(containerMetadata);
+      await auxStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
-      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaQuads);
+      expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
+      expect(result.metadata.get(resourceID.path)?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
+    });
+
+    it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+      containerMetadata.identifier = namedNode(resourceID.path);
+      containerMetadata.add(LDP.terms.contains, [
+        DataFactory.namedNode(`${root}container/.dummy`),
+        DataFactory.namedNode(`${root}container/resource`),
+        DataFactory.namedNode(`${root}container/resource.dummy`),
+      ]);
+      accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      const result = await store.getRepresentation(resourceID);
+      const contains = result.metadata.getAll(LDP.terms.contains);
+      expect(contains).toHaveLength(1);
+      expect(contains[0].value).toEqual(`${root}container/resource`);
     });
   });
 
@@ -229,6 +290,15 @@ describe('A DataAccessorBasedStore', (): void => {
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
       });
     });
+
+    it('errors if the slug would cause an auxiliary resource URI to be generated.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(HTTP.slug, 'test.dummy');
+      const result = store.addResource(resourceID, representation);
+      await expect(result).rejects.toThrow(ForbiddenHttpError);
+      await expect(result).rejects.toThrow('Slug bodies that would result in an auxiliary resource are forbidden');
+    });
   });
 
   describe('setting a Representation', (): void => {
@@ -285,6 +355,12 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}container/` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+    });
+
+    it('errors when trying to create an auxiliary resource with invalid data.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource.dummy` };
+      auxStrategy.validate = jest.fn().mockRejectedValue(new Error('bad data!'));
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow('bad data!');
     });
 
     it('can write resources.', async(): Promise<void> => {
@@ -390,16 +466,29 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will error when deleting a root storage container.', async(): Promise<void> => {
       representation.metadata.add(RDF.type, PIM.terms.Storage);
-      accessor.data[`${root}container`] = representation;
-      const result = store.deleteResource({ path: `${root}container` });
+      accessor.data[`${root}container/`] = representation;
+      const result = store.deleteResource({ path: `${root}container/` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow('Cannot delete a root storage container.');
     });
 
+    it('will error when deleting an auxiliary of a root storage container if not allowed.', async(): Promise<void> => {
+      const storageMetadata = new RepresentationMetadata(representation.metadata);
+      storageMetadata.add(RDF.type, PIM.terms.Storage);
+      accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
+      accessor.data[`${root}container/.dummy`] = representation;
+      auxStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      const result = store.deleteResource({ path: `${root}container/.dummy` });
+      await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
+      await expect(result).rejects.toThrow(
+        'Cannot delete http://test.com/container/.dummy from a root storage container.',
+      );
+    });
+
     it('will error when deleting non-empty containers.', async(): Promise<void> => {
-      accessor.data[`${root}container`] = representation;
-      accessor.data[`${root}container`].metadata.add(LDP.contains, DataFactory.namedNode(`${root}otherThing`));
-      const result = store.deleteResource({ path: `${root}container` });
+      accessor.data[`${root}container/`] = representation;
+      accessor.data[`${root}container/`].metadata.add(LDP.contains, DataFactory.namedNode(`${root}otherThing`));
+      const result = store.deleteResource({ path: `${root}container/` });
       await expect(result).rejects.toThrow(ConflictHttpError);
       await expect(result).rejects.toThrow('Can only delete empty containers.');
     });
@@ -408,6 +497,65 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
       expect(accessor.data[`${root}resource`]).toBeUndefined();
+    });
+
+    it('will delete a root storage auxiliary resource of a non-root container.', async(): Promise<void> => {
+      const storageMetadata = new RepresentationMetadata(representation.metadata);
+      accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
+      accessor.data[`${root}container/.dummy`] = representation;
+      auxStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toBeUndefined();
+      expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
+    });
+
+    it('will delete related auxiliary resources.', async(): Promise<void> => {
+      accessor.data[`${root}container/`] = representation;
+      accessor.data[`${root}container/.dummy`] = representation;
+      await expect(store.deleteResource({ path: `${root}container/` })).resolves.toBeUndefined();
+      expect(accessor.data[`${root}container/`]).toBeUndefined();
+      expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
+    });
+
+    it('will still delete a resource if deleting auxiliary resources causes errors.', async(): Promise<void> => {
+      accessor.data[`${root}resource`] = representation;
+      accessor.data[`${root}resource.dummy`] = representation;
+      const deleteFn = accessor.deleteResource;
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
+        if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
+          throw new Error('auxiliary error!');
+        }
+        await deleteFn.call(accessor, identifier);
+      });
+      const { logger } = store as any;
+      logger.error = jest.fn();
+      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
+      expect(accessor.data[`${root}resource`]).toBeUndefined();
+      expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenLastCalledWith(
+        'Problem deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
+      );
+    });
+
+    it('can also handle auxiliary deletion to throw non-native errors.', async(): Promise<void> => {
+      accessor.data[`${root}resource`] = representation;
+      accessor.data[`${root}resource.dummy`] = representation;
+      const deleteFn = accessor.deleteResource;
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
+        if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
+          throw 'auxiliary error!';
+        }
+        await deleteFn.call(accessor, identifier);
+      });
+      const { logger } = store as any;
+      logger.error = jest.fn();
+      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
+      expect(accessor.data[`${root}resource`]).toBeUndefined();
+      expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
+      expect(logger.error).toHaveBeenCalledTimes(1);
+      expect(logger.error).toHaveBeenLastCalledWith(
+        'Problem deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
+      );
     });
   });
 });
