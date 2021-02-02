@@ -38,6 +38,7 @@ describe('A LockingResourceStore', (): void => {
     source = new DataAccessorBasedStore(
       new InMemoryDataAccessor(base),
       new SingleRootIdentifierStrategy(base),
+      strategy,
     );
 
     // Initialize store

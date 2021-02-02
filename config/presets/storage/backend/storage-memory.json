@@ -16,6 +16,9 @@
       },
       "DataAccessorBasedStore:_identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
+      },
+      "DataAccessorBasedStore:_auxiliaryStrategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
     }
   ]

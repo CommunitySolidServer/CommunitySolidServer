@@ -216,7 +216,6 @@ export class RepresentationMetadata {
     return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj));
   }
 
-  // TODO: test all 3
   /**
    * Helper function to simplify add/remove
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
