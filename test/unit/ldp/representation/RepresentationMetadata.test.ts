@@ -154,6 +154,15 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.quads()).toBeRdfIsomorphic([ newQuad ].concat(inputQuads));
     });
 
+    it('can add multiple values for a predicate.', async(): Promise<void> => {
+      const newQuads = [
+        quad(identifier, namedNode('new'), namedNode('triple')),
+        quad(identifier, namedNode('new'), namedNode('triple2')),
+      ];
+      metadata.add(namedNode('new'), [ namedNode('triple'), namedNode('triple2') ]);
+      expect(metadata.quads()).toBeRdfIsomorphic(newQuads.concat(inputQuads));
+    });
+
     it('can remove a single value for a predicate.', async(): Promise<void> => {
       metadata.remove(inputQuads[0].predicate as NamedNode, inputQuads[0].object as Literal);
       expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.slice(1));
@@ -162,6 +171,11 @@ describe('A RepresentationMetadata', (): void => {
     it('can remove single values as string.', async(): Promise<void> => {
       metadata.remove(inputQuads[0].predicate as NamedNode, inputQuads[0].object.value);
       expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.slice(1));
+    });
+
+    it('can remove multiple values for a predicate.', async(): Promise<void> => {
+      metadata.remove(namedNode('has'), [ inputQuads[0].object, inputQuads[1].object ] as NamedNode[]);
+      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.slice(2));
     });
 
     it('can remove all values for a predicate.', async(): Promise<void> => {
@@ -192,6 +206,11 @@ describe('A RepresentationMetadata', (): void => {
     it('can set the value of a predicate.', async(): Promise<void> => {
       metadata.set(namedNode('has'), literal('singleValue'));
       expect(metadata.get(namedNode('has'))).toEqualRdfTerm(literal('singleValue'));
+    });
+
+    it('can set multiple values of a predicate.', async(): Promise<void> => {
+      metadata.set(namedNode('has'), [ literal('value1'), literal('value2') ]);
+      expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray([ literal('value1'), literal('value2') ]);
     });
 
     it('has a shorthand for content-type.', async(): Promise<void> => {
