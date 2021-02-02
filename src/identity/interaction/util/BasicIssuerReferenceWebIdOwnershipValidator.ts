@@ -45,7 +45,7 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
     const matchingInteractionId = webIdNode.has(SOLID_OIDC_ISSUER_REGISTRATION_TOKEN, literal(interactionId));
     if (matchingIssuers.values.length === 0 || matchingInteractionId.values.length === 0) {
       let errorMessage = matchingIssuers.values.length === 0 ? `<${webId}> <${SOLID_OIDC_ISSUER.value}> <${this.issuer}> .\n` : '' ;
-      errorMessage = errorMessage.concat(matchingInteractionId.values.length === 0 ? `<${this.issuer}> <${SOLID_OIDC_ISSUER_REGISTRATION_TOKEN.value}> <${interactionId}> .\n` : '');
+      errorMessage = errorMessage.concat(matchingInteractionId.values.length === 0 ? `<${this.issuer}> <${SOLID_OIDC_ISSUER_REGISTRATION_TOKEN.value}> "${interactionId}" .\n` : '');
       errorMessage = errorMessage.concat('Must be added to the WebId')
       throw new Error(errorMessage);
     }
