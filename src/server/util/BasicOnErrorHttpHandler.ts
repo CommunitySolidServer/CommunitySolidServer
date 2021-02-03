@@ -9,6 +9,8 @@ export class BasicOnErrorHttpHandler extends OnErrorHttpHandler {
     if (input.error instanceof Error) {
       input.input.response.end(`${input.error.stack}`);
     }
-    input.input.response.end('Error');
+    else {
+      input.input.response.end('Error');
+    }
   }
 }
