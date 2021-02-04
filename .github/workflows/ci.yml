@@ -68,6 +68,8 @@ jobs:
         run: npm run test:integration
       - name: Run deployment tests
         run: npm run test:deploy
+      - name: Run Solid test-suite
+        run: bash test/system/run-solid-test-suite.sh
 
   test-windows:
     runs-on: windows-latest
