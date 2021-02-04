@@ -38,7 +38,7 @@ export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
       },
       conformIdTokenClaims: false,
       features: {
-        devInteractions: { enabled: true },
+        devInteractions: { enabled: false },
         deviceFlow: { enabled: true },
         introspection: { enabled: true },
         revocation: { enabled: true },
