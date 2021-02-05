@@ -1,5 +1,6 @@
 import type { ValuePreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import {
+  hasMatchingMediaTypes,
   matchesMediaType,
   matchingMediaTypes,
   supportsMediaTypeConversion,
@@ -7,7 +8,7 @@ import {
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
 describe('ConversionUtil', (): void => {
-  describe('supportsMediaTypeConversion', (): void => {
+  describe('#supportsMediaTypeConversion', (): void => {
     it('requires preferences.', async(): Promise<void> => {
       expect((): any => supportsMediaTypeConversion()).toThrow();
     });
@@ -79,6 +80,17 @@ describe('ConversionUtil', (): void => {
       const preferences: ValuePreferences = { '*/*': 1, 'internal/quads': 0.5 };
       expect(matchingMediaTypes(preferences, { 'a/x': 1, 'internal/quads': 1 }))
         .toEqual([ 'a/x', 'internal/quads' ]);
+    });
+  });
+
+  describe('#hasMatchingMediatypes', (): void => {
+    it('returns false if there are no matches.', async(): Promise<void> => {
+      expect(hasMatchingMediaTypes()).toEqual(false);
+    });
+
+    it('returns true if there are matches.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
+      expect(hasMatchingMediaTypes(preferences, { 'b/x': 1, 'c/x': 1 })).toEqual(true);
     });
   });
 
