@@ -62,7 +62,7 @@ describe('An Express server with middleware', (): void => {
     }));
   });
 
-  it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
+  it('returns all relevant headers for an OPTIONS request.', async(): Promise<void> => {
     const res = await request(server)
       .options('/')
       .set('Access-Control-Allow-Credentials', 'true')
@@ -73,7 +73,13 @@ describe('An Express server with middleware', (): void => {
     expect(res.header).toEqual(expect.objectContaining({
       'access-control-allow-origin': '*',
       'access-control-allow-headers': 'content-type',
+      'updates-via': 'wss://example.pod/',
+      'x-powered-by': 'Community Solid Server',
     }));
+    const { vary } = res.header;
+    expect(vary).toMatch(/(^|,)\s*Accept\s*(,|$)/iu);
+    expect(vary).toMatch(/(^|,)\s*Authorization\s*(,|$)/iu);
+    expect(vary).toMatch(/(^|,)\s*Origin\s*(,|$)/iu);
     const corsMethods = res.header['access-control-allow-methods'].split(',')
       .map((method: string): string => method.trim());
     const allowedMethods = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ];

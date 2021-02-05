@@ -22,6 +22,7 @@ interface SimpleCorsOptions {
 
 /**
  * Handler that sets CORS options on the response.
+ * In case of an OPTIONS request this handler will close the connection after adding its headers.
  *
  * Solid, §7.1: "A data pod MUST implement the CORS protocol [FETCH] such that, to the extent possible,
  * the browser allows Solid apps to send any request and combination of request headers to the data pod,
