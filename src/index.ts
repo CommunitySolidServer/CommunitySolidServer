@@ -22,6 +22,18 @@ export * from './init/LoggerInitializer';
 export * from './init/RootContainerInitializer';
 export * from './init/ServerInitializer';
 
+// LDP/Authorization
+export * from './ldp/auxiliary/AuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/AuxiliaryStrategy';
+export * from './ldp/auxiliary/ComposedAuxiliaryStrategy';
+export * from './ldp/auxiliary/LinkMetadataGenerator';
+export * from './ldp/auxiliary/MetadataGenerator';
+export * from './ldp/auxiliary/RdfValidator';
+export * from './ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/RoutingAuxiliaryStrategy';
+export * from './ldp/auxiliary/SuffixAuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/Validator';
+
 // LDP/HTTP/Metadata
 export * from './ldp/http/metadata/AclLinkMetadataWriter';
 export * from './ldp/http/metadata/BasicMetadataExtractor';
