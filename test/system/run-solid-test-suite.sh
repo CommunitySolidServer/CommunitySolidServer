@@ -17,6 +17,7 @@ npm ci
 export SERVER_ROOT=http://localhost:3000
 export ALICE_WEBID_DOC=$SERVER_ROOT/profile.ttl
 export ALICE_WEBID=$ALICE_WEBID#me
+export SKIP_WPS=1
 curl -X PUT $ALICE_WEBID_DOC -d '<#me> <http://www.w3.org/ns/pim/space#storage> </>.'
 npm run jest
 
