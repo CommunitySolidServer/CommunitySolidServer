@@ -1,10 +1,10 @@
-import type { Server, RequestListener, IncomingMessage, ServerResponse } from "http";
-import { createServer } from "http";
-import { getLoggerFor } from "../logging/LogUtil";
-import { isNativeError } from "../util/errors/ErrorUtil";
-import { guardStream } from "../util/GuardedStream";
-import type { HttpHandler } from "./HttpHandler";
-import type { HttpServerFactory } from "./HttpServerFactory";
+import type { Server, IncomingMessage, ServerResponse } from 'http';
+import { createServer } from 'http';
+import { getLoggerFor } from '../logging/LogUtil';
+import { isNativeError } from '../util/errors/ErrorUtil';
+import { guardStream } from '../util/GuardedStream';
+import type { HttpHandler } from './HttpHandler';
+import type { HttpServerFactory } from './HttpServerFactory';
 
 export class BaseHttpServerFactory implements HttpServerFactory {
   protected readonly logger = getLoggerFor(this);
@@ -32,9 +32,12 @@ export class BaseHttpServerFactory implements HttpServerFactory {
           if (response.headersSent) {
             response.end();
           } else {
-            response.writeHead(500, {
-              'Content-Type': 'text/plain; charset=utf-8',
-            }).end(errMsg);
+            response.setHeader('Content-Type', 'text/plain; charset=utf-8');
+            response.writeHead(500).end(errMsg);
+          }
+        } finally {
+          if (!response.headersSent) {
+            response.writeHead(404).end();
           }
         }
       },
