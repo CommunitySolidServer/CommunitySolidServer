@@ -93,6 +93,7 @@ export * from './identity/IdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
 export * from './identity/configuration/DevIdPConfigurationFactory';
+export * from './identity/configuration/KeyGeneratingIdpConfigurationFactory';
 
 // SolidIdentityProvider/Storage
 export * from './identity/storage/StorageAdapterFactory';

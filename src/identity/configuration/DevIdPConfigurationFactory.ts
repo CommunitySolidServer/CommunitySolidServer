@@ -13,7 +13,7 @@ export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
     this.storageAdapterFactory = storageAdapterFactory;
   }
 
-  public createConfiguration(): Configuration {
+  public async createConfiguration(): Promise<Configuration> {
     // Aliasing the "this" variable is an anti-pattern that is better served by using
     // arrow functions. Unfortunately, the adapter function MUST be a named function
     // See https://github.com/panva/node-oidc-provider/issues/799

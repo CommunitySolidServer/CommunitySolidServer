@@ -15,7 +15,9 @@ import type { IdentityProviderFactory } from './IdentityProviderFactory';
 import type { IdPInteractionPolicyHttpHandler } from './interaction/IdPInteractionPolicyHttpHandler';
 
 export class IdentityProviderHttpHandler extends HttpHandler {
-  private readonly provider: Provider;
+  private readonly providerFactory: IdentityProviderFactory;
+  private provider: Provider | undefined;
+  private providerCreationPromise: Promise<Provider> | undefined;
   private readonly interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler;
 
   public constructor(
@@ -24,7 +26,24 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   ) {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
-    this.provider = providerFactory.createProvider(this.interactionPolicyHttpHandler);
+    this.providerFactory = providerFactory;
+    // Providers must be generated asynchronously, but you can't await
+    // promises in the constructor.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.getGuaranteedProvider();
+  }
+
+  /**
+   * Create the provider or retrieve it if it has already been created
+   */
+  private async getGuaranteedProvider(): Promise<Provider> {
+    if (!this.provider) {
+      if (!this.providerCreationPromise) {
+        this.providerCreationPromise = this.providerFactory.createProvider(this.interactionPolicyHttpHandler);
+      }
+      this.provider = await this.providerCreationPromise;
+    }
+    return this.provider;
   }
 
   /**
@@ -34,11 +53,13 @@ export class IdentityProviderHttpHandler extends HttpHandler {
    * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
    */
   public async canHandle(input: HttpHandlerInput): Promise<void> {
+    const provider = await this.getGuaranteedProvider();
+
     // Get the routes from the configuration. `instance` is needed because the configuration
     // is not actually stored in the provider object, but rather in a WeakMap accessed by
     // the provider instance.
     // https://github.com/panva/node-oidc-provider/blob/master/lib/provider.js#L88-L91
-    const routesMap: Record<string, string> = instance(this.provider).configuration().routes;
+    const routesMap: Record<string, string> = instance(provider).configuration().routes;
     const validRoutes: string[] = Object.values(routesMap);
     validRoutes.push('/.well-known/openid-configuration');
     // URL.parse is deprecated, but as of the time this comment was written, there
@@ -49,7 +70,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
 
     let interactionHttpHandlerCanHandle = true;
     try {
-      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider: this.provider });
+      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider });
     } catch {
       interactionHttpHandlerCanHandle = false;
     }
@@ -74,17 +95,19 @@ export class IdentityProviderHttpHandler extends HttpHandler {
    * @returns A promise resolving when the handling is finished. Return value depends on the given type.
    */
   public async handle(input: HttpHandlerInput): Promise<void> {
+    const provider = await this.getGuaranteedProvider();
+
     try {
-      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider: this.provider });
+      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider });
     } catch {
       // This casting might seem strange, but "callback" is a Koa callback which does
       // actually return a Promise, despite what the typings say.
       // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
-      return this.provider.callback(
+      return provider.callback(
         input.request,
         input.response,
       ) as unknown as Promise<void>;
     }
-    return this.interactionPolicyHttpHandler.handle({ ...input, provider: this.provider });
+    return this.interactionPolicyHttpHandler.handle({ ...input, provider });
   }
 }
