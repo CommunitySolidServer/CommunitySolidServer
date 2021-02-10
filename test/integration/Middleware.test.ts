@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import type { ExpressHttpServerFactory } from '../../src/server/ExpressHttpServerFactory';
+import type { BaseHttpServerFactory } from '../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
@@ -20,13 +20,13 @@ describe('An Express server with middleware', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ExpressHttpServerFactory', 'server-middleware.json', {
+      'urn:solid-server:default:HttpServerFactory', 'server-middleware.json', {
         'urn:solid-server:default:PodManagerHandler': new StaticAsyncHandler(false, null),
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },
-    ) as ExpressHttpServerFactory;
+    ) as BaseHttpServerFactory;
     server = factory.startServer(port);
   });
 

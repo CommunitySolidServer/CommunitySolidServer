@@ -114,6 +114,7 @@ export * from './pods/PodManagerHttpHandler';
 
 // Server
 export * from './server/ExpressHttpServerFactory';
+export * from './server/BaseHttpServerFactory';
 export * from './server/HttpHandler';
 export * from './server/HttpRequest';
 export * from './server/HttpResponse';
