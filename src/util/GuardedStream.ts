@@ -35,8 +35,10 @@ export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is G
  * See https://github.com/solid/community-server/pull/462#issuecomment-758013492 .
  */
 function guardingErrorListener(this: Guarded, error: Error): void {
-  // Only fall back to this if no other listeners are attached
-  if (this.listenerCount('error') === 1) {
+  // Only fall back to this if no new listeners are attached since guarding started.
+  // Not storing the index when guarding starts since listeners could be removed.
+  const idx = this.listeners('error').indexOf(guardingErrorListener);
+  if (idx === this.listenerCount('error') - 1) {
     this[guardedErrors].push(error);
     if (!this[guardedTimeout]) {
       this[guardedTimeout] = setTimeout((): void => {
@@ -50,8 +52,8 @@ function guardingErrorListener(this: Guarded, error: Error): void {
 /**
  * Callback that is used when a new listener is attached and there are errors that were not emitted yet.
  */
-function emitStoredErrors(this: Guarded, event: string): void {
-  if (event === 'error') {
+function emitStoredErrors(this: Guarded, event: string, func: (error: Error) => void): void {
+  if (event === 'error' && func !== guardingErrorListener) {
     // Cancel an error timeout
     if (this[guardedTimeout]) {
       clearTimeout(this[guardedTimeout]!);
@@ -74,7 +76,13 @@ function emitStoredErrors(this: Guarded, event: string): void {
 /**
  * Makes sure that listeners always receive the error event of a stream,
  * even if it was thrown before the listener was attached.
- * If the input is already guarded nothing will happen.
+ *
+ * When guarding a stream it is assumed that error listeners already attached should be ignored,
+ * only error listeners attached after the stream is guarded will prevent an error from being logged.
+ *
+ * If the input is already guarded the guard will be reset,
+ * which means ignoring error listeners already attached.
+ *
  * @param stream - Stream that can potentially throw an error.
  *
  * @returns The stream.
@@ -85,6 +93,10 @@ export function guardStream<T extends NodeJS.EventEmitter>(stream: T): Guarded<T
     guarded[guardedErrors] = [];
     guarded.on('error', guardingErrorListener);
     guarded.on('newListener', emitStoredErrors);
+  } else {
+    // This makes sure the guarding error listener is the last one in the list again
+    guarded.removeListener('error', guardingErrorListener);
+    guarded.on('error', guardingErrorListener);
   }
   return guarded;
 }

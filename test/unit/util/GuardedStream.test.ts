@@ -89,7 +89,7 @@ describe('GuardedStream', (): void => {
       expect(endListener).toHaveBeenCalledTimes(0);
     });
 
-    it('does not time out when a listener was already attached.', async(): Promise<void> => {
+    it('ignores error listeners that were already attached.', async(): Promise<void> => {
       const stream = Readable.from([ 'data' ]);
       stream.addListener('error', jest.fn());
       guardStream(stream);
@@ -97,7 +97,21 @@ describe('GuardedStream', (): void => {
       stream.emit('error', new Error('error'));
 
       jest.advanceTimersByTime(1000);
-      expect(logger.error).toHaveBeenCalledTimes(0);
+      expect(logger.error).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores error listeners after calling guardStream a second time.', async(): Promise<void> => {
+      const stream = Readable.from([ 'data' ]);
+      guardStream(stream);
+      stream.addListener('error', jest.fn());
+
+      // This will cause the above error listener to be ignored for logging purposes
+      guardStream(stream);
+
+      stream.emit('error', new Error('error'));
+
+      jest.advanceTimersByTime(1000);
+      expect(logger.error).toHaveBeenCalledTimes(1);
     });
 
     it('still works if error listeners get removed and added again.', async(): Promise<void> => {
