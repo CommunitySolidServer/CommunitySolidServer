@@ -1,4 +1,6 @@
 import type { Readable } from 'stream';
+import { promisify } from 'util';
+import eos from 'end-of-stream';
 import type { Patch } from '../ldp/http/Patch';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
@@ -9,6 +11,7 @@ import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteL
 import type { AtomicResourceStore } from './AtomicResourceStore';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
+const endOfStream = promisify(eos);
 
 /**
  * Store that for every call acquires a lock before executing it on the requested resource,
@@ -121,11 +124,7 @@ export class LockingResourceStore implements AtomicResourceStore {
    */
   protected async waitForStreamToEnd(source: Readable): Promise<void> {
     try {
-      await new Promise((resolve, reject): void => {
-        source.on('error', reject);
-        source.on('end', resolve);
-        source.on('close', resolve);
-      });
+      await endOfStream(source);
     } catch {
       // Destroy the stream in case of errors
       if (!source.destroyed) {
