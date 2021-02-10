@@ -8,6 +8,7 @@ import type { Provider } from 'oidc-provider';
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import instance from 'oidc-provider/lib/helpers/weak_cache';
+import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -19,6 +20,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   private provider: Provider | undefined;
   private providerCreationPromise: Promise<Provider> | undefined;
   private readonly interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler;
+  private readonly logger = getLoggerFor(this);
 
   public constructor(
     providerFactory: IdentityProviderFactory,
@@ -27,10 +29,6 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
     this.providerFactory = providerFactory;
-    // Providers must be generated asynchronously, but you can't await
-    // promises in the constructor.
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.getGuaranteedProvider();
   }
 
   /**
@@ -41,7 +39,12 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       if (!this.providerCreationPromise) {
         this.providerCreationPromise = this.providerFactory.createProvider(this.interactionPolicyHttpHandler);
       }
-      this.provider = await this.providerCreationPromise;
+      try {
+        this.provider = await this.providerCreationPromise;
+      } catch (err: unknown) {
+        this.logger.error(err as string);
+        throw err;
+      }
     }
     return this.provider;
   }
