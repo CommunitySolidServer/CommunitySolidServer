@@ -15,7 +15,7 @@ class SimpleHttpHandler extends HttpHandler {
   }
 }
 
-describe('An Express server with middleware', (): void => {
+describe('An http server with middleware', (): void => {
   let server: Server;
 
   beforeAll(async(): Promise<void> => {
