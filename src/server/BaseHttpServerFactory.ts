@@ -6,22 +6,27 @@ import { guardStream } from '../util/GuardedStream';
 import type { HttpHandler } from './HttpHandler';
 import type { HttpServerFactory } from './HttpServerFactory';
 
+/**
+ * HttpServerFactory based on the native Node.js http module
+ */
 export class BaseHttpServerFactory implements HttpServerFactory {
   protected readonly logger = getLoggerFor(this);
 
+  /** The main HttpHandler */
   private readonly handler: HttpHandler;
 
   public constructor(handler: HttpHandler) {
     this.handler = handler;
   }
 
+  /**
+   * Creates and starts an HTTP server
+   * @param port - Port on which the server listens
+   */
   public startServer(port: number): Server {
     this.logger.info(`Starting server at http://localhost:${port}/`);
-    return this.createApp().listen(port);
-  }
 
-  protected createApp(): Server {
-    return createServer(
+    const server = createServer(
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
           this.logger.info(`Received request for ${request.url}`);
@@ -42,5 +47,7 @@ export class BaseHttpServerFactory implements HttpServerFactory {
         }
       },
     );
+
+    return server.listen(port);
   }
 }
