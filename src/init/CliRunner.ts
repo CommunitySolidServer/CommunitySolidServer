@@ -90,8 +90,8 @@ export class CliRunner {
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
          this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
-      'urn:solid-server:default:variable:viewsFolder':
-         this.resolveFilePath(params.viewsFolder, 'templates/views'),
+      'urn:solid-server:default:variable:webViewsFolder':
+         this.resolveFilePath(params.webViewsFolder, 'templates/views'),
     };
   }
 
