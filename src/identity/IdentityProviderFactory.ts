@@ -20,11 +20,11 @@ export class IdentityProviderFactory {
     this.configurationFactory = configurationFactory;
   }
 
-  public createProvider(interactionPolicyOptions: {
+  public async createProvider(interactionPolicyOptions: {
     policy?: InteractionPolicy.Prompt[];
     url?: (ctx: KoaContextWithOIDC) => CanBePromise<string>;
-  }): Provider {
-    const configuration = this.configurationFactory.createConfiguration();
+  }): Promise<Provider> {
+    const configuration = await this.configurationFactory.createConfiguration();
     const augmentedConfig: Configuration = {
       ...configuration,
       interactions: {

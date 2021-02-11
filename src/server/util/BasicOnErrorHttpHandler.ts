@@ -8,8 +8,7 @@ export class BasicOnErrorHttpHandler extends OnErrorHttpHandler {
   public async handle(input: { error: unknown; input: HttpHandlerInput }): Promise<void> {
     if (input.error instanceof Error) {
       input.input.response.end(`${input.error.stack}`);
-    }
-    else {
+    } else {
       input.input.response.end('Error');
     }
   }
