@@ -118,8 +118,8 @@ export class CliRunner {
          this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
       'urn:solid-server:default:variable:podConfigJson':
         this.resolveFilePath(params.podConfigJson),
-      'urn:solid-server:default:variable:viewsFolder':
-         this.resolveFilePath(params.viewsFolder, 'templates/views'),
+      'urn:solid-server:default:variable:webViewsFolder':
+         this.resolveFilePath(params.webViewsFolder, 'templates/views'),
     };
   }
 

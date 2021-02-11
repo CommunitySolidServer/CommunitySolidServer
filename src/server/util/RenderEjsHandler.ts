@@ -4,13 +4,13 @@ import type { HttpResponse } from '../HttpResponse';
 import { RenderHandler } from './RenderHandler';
 
 export class RenderEjsHandler<T> extends RenderHandler<T> {
-  private readonly ejsTemplatePath: string;
-  private readonly viewsFolder: string;
+  private readonly templatePath: string;
+  private readonly templateFile: string;
 
-  public constructor(viewsFolder: string, ejsTemplatePath: string) {
+  public constructor(templatePath: string, templateFile: string) {
     super();
-    this.viewsFolder = viewsFolder;
-    this.ejsTemplatePath = ejsTemplatePath;
+    this.templatePath = templatePath;
+    this.templateFile = templateFile;
   }
 
   public async handle(input: {
@@ -20,8 +20,8 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
     const { props, response } = input;
     const renderedHtml = await renderFile(
       path.join(
-        this.viewsFolder,
-        this.ejsTemplatePath,
+        this.templatePath,
+        this.templateFile,
       ),
       props || {},
     );
