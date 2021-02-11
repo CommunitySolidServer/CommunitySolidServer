@@ -1,7 +1,7 @@
 import type { Server } from 'http';
 import request from 'supertest';
 import WebSocket from 'ws';
-import { ExpressHttpServerFactory } from '../../../src/server/ExpressHttpServerFactory';
+import { BaseHttpServerFactory } from '../../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../../src/server/HttpHandler';
 import { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
@@ -31,7 +31,7 @@ describe('SimpleWebSocketHandler', (): void => {
   beforeAll(async(): Promise<void> => {
     const httpHandler = new SimpleHttpHandler();
     webSocketHandler = new SimpleWebSocketHandler();
-    const httpServerFactory = new ExpressHttpServerFactory(httpHandler);
+    const httpServerFactory = new BaseHttpServerFactory(httpHandler);
     const webSocketServerFactory = new WebSocketServerFactory(httpServerFactory, webSocketHandler);
     server = webSocketServerFactory.startServer(5556);
   });

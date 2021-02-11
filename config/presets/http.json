@@ -5,16 +5,16 @@
       "@id": "urn:solid-server:default:ServerFactory",
       "@type": "WebSocketServerFactory",
       "WebSocketServerFactory:_baseServerFactory": {
-        "@id": "urn:solid-server:default:ExpressHttpServerFactory"
+        "@id": "urn:solid-server:default:HttpServerFactory"
       },
       "WebSocketServerFactory:_webSocketHandler": {
         "@id": "urn:solid-server:default:WebSocketHandler"
       }
     },
     {
-      "@id": "urn:solid-server:default:ExpressHttpServerFactory",
-      "@type": "ExpressHttpServerFactory",
-      "ExpressHttpServerFactory:_handler": {
+      "@id": "urn:solid-server:default:HttpServerFactory",
+      "@type": "BaseHttpServerFactory",
+      "BaseHttpServerFactory:_handler": {
         "@id": "urn:solid-server:default:HttpHandler"
       }
     },

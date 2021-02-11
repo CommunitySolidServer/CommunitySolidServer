@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import { ExpressHttpServerFactory } from '../../../src/server/ExpressHttpServerFactory';
+import { BaseHttpServerFactory } from '../../../src/server/BaseHttpServerFactory';
 import type { HttpHandler } from '../../../src/server/HttpHandler';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 
@@ -11,11 +11,11 @@ const handler: jest.Mocked<HttpHandler> = {
   }),
 } as any;
 
-describe('ExpressHttpServerFactory', (): void => {
+describe('BaseHttpServerFactory', (): void => {
   let server: Server;
 
   beforeAll(async(): Promise<void> => {
-    const factory = new ExpressHttpServerFactory(handler);
+    const factory = new BaseHttpServerFactory(handler);
     server = factory.startServer(5555);
   });
 
