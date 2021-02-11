@@ -28,13 +28,12 @@ export class EmailSender {
     text: string;
     html: string;
   }): Promise<void> {
-    const thing = await this.mailTransporter.sendMail({
+    await this.mailTransporter.sendMail({
       from: this.senderName,
       to: emailAddress,
       subject: content.subject,
       text: content.text,
       html: content.html,
     });
-    console.log(thing);
   }
 }
