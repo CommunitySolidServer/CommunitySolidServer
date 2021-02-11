@@ -45,13 +45,13 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
   }
 
   private getAccountResourceIdentifier(key: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/${encodeURIComponent(key)}` };
+    return { path: `${this.baseUrl}/account/${encodeURIComponent(key)}` };
   }
 
   private getForgotPasswordConfirmationRecordResourceIdentifier(
     key: string,
   ): ResourceIdentifier {
-    return { path: `${this.baseUrl}/${encodeURIComponent(key)}` };
+    return { path: `${this.baseUrl}/forgot-password-resource-identifier/${encodeURIComponent(key)}` };
   }
 
   public async authenticate(email: string, password: string): Promise<string> {

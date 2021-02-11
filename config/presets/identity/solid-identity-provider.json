@@ -14,9 +14,15 @@
     },
     {
       "@id": "urn:solid-server:default:IdPConfigurationFactory",
-      "@type": "DevIdPConfigurationFactory",
-      "DevIdPConfigurationFactory:_storageAdapterFactory": {
+      "@type": "KeyGeneratingIdpConfigurationFactory",
+      "KeyGeneratingIdpConfigurationFactory:_storageAdapterFactory": {
         "@id": "urn:solid-server:default:IdPStorageAdapterFactory"
+      },
+      "KeyGeneratingIdpConfigurationFactory:_baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "KeyGeneratingIdpConfigurationFactory:_resourceStore": {
+        "@id": "urn:solid-server:default:ResourceStore"
       }
     },
     {
