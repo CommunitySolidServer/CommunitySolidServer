@@ -95,7 +95,6 @@
     "@types/ws": "^7.4.0",
     "@types/yargs": "^16.0.0",
     "arrayify-stream": "^1.0.0",
-    "assert": "^2.0.0",
     "async-lock": "^1.2.4",
     "bcrypt": "^5.0.0",
     "clownface": "^1.2.0",

@@ -30,7 +30,7 @@ export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPol
   }
 
   public async url(ctx: KoaContextWithOIDC): Promise<string> {
-    return `/interaction/${ctx.oidc.uid}`;
+    return `/idp/interaction/${ctx.oidc.uid}`;
   }
 
   public async canHandle(input: IdPInteractionHttpHandlerInput): Promise<void> {

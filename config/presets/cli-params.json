@@ -31,7 +31,7 @@
       "@type": "Variable"
     },
     {
-      "@id": "urn:solid-server:default:variable:viewsFolder",
+      "@id": "urn:solid-server:default:variable:webViewsFolder",
       "@type": "Variable"
     }
   ]
