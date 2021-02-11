@@ -103,7 +103,7 @@ export class FileDataAccessor implements DataAccessor {
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
     try {
-      await fsPromises.mkdir(link.filePath);
+      await fsPromises.mkdir(link.filePath, { recursive: true });
     } catch (error: unknown) {
       // Don't throw if directory already exists
       if (!isSystemError(error) || error.code !== 'EEXIST') {
