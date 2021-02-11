@@ -99,8 +99,16 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
       expect(metadata.contentType).toBe('text/turtle');
       expect(metadata.get(RDF.type)?.value).toBe(LDP.Resource);
+      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+    });
+
+    it('does not generate size metadata for a container.', async(): Promise<void> => {
+      cache.data = { container: {}};
+      metadata = await accessor.getMetadata({ path: `${base}container/` });
+      expect(metadata.get(POSIX.size)).toBeUndefined();
+      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
     });
 
     it('generates the metadata for a container and its non-meta children.', async(): Promise<void> => {
@@ -110,6 +118,7 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.getAll(RDF.type)).toEqualRdfTermArray(
         [ LDP.terms.Container, LDP.terms.BasicContainer, LDP.terms.Resource ],
       );
+      expect(metadata.get(POSIX.size)).toBeUndefined();
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
@@ -120,6 +129,7 @@ describe('A FileDataAccessor', (): void => {
         quad.subject.value === `${base}container/resource`);
       const childMetadata = new RepresentationMetadata({ path: `${base}container/resource` }).addQuads(childQuads);
       expect(childMetadata.get(RDF.type)?.value).toBe(LDP.Resource);
+      expect(childMetadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(childMetadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(childMetadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
         XSD.terms.integer));

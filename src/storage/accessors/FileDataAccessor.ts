@@ -330,6 +330,9 @@ export class FileDataAccessor implements DataAccessor {
     pushQuad(quads, subject, POSIX.terms.mtime, toLiteral(
       Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer,
     ));
+    if (!stats.isDirectory()) {
+      pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
+    }
     return quads;
   }
 
