@@ -2,6 +2,7 @@ import type { ParsedUrlQuery } from 'querystring';
 import { parse } from 'querystring';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { UnsupportedMediaTypeHttpError } from '../../../util/errors/UnsupportedMediaTypeHttpError';
+import { readableToString } from '../../../util/StreamUtil';
 
 /**
  * Architecturally, this file doesn't make any sense. It simply exists in this form
@@ -14,20 +15,6 @@ export async function getFormDataRequestBody(request: HttpRequest): Promise<Pars
   if (request.headers['content-type'] !== 'application/x-www-form-urlencoded') {
     throw new UnsupportedMediaTypeHttpError();
   }
-  return new Promise<ParsedUrlQuery>((resolve, reject): void => {
-    let body = '';
-    request.on('data', (chunk): void => {
-      body += chunk;
-    });
-    request.on('error', (error): void => {
-      reject(error);
-    });
-    request.on('end', (): void => {
-      try {
-        resolve(parse(body));
-      } catch (err: unknown) {
-        reject(err);
-      }
-    });
-  });
+  const body = await readableToString(request);
+  return parse(body);
 }

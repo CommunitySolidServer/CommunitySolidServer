@@ -1,4 +1,5 @@
 import { parse } from 'url';
+import escapeStringRegexp from 'escape-string-regexp';
 import type { Provider } from 'oidc-provider';
 // This import probably looks very hacky and it is. Weak Cache is required to get the oidc
 // configuration, which, in turn, is needed to get the routes the provider is using.
@@ -50,9 +51,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   }
 
   /**
-   * Handles a request. Returns a promise that will either resolve if a response is
-   * given (including if the response is an error page) and throw an error if the
-   * idp cannot handle the request.
+   * Checks whether or not the identity provider can handle a request. There are two ways
+   * an IdP can handle a request. Firstly, the provider itself can handle it, and secondly
+   * the Interaction Policy can handle it.
    * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
    */
   public async canHandle(input: HttpHandlerInput): Promise<void> {
@@ -81,7 +82,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     // Account for special case where the interaction policy calls back to "/auth/:uid"
     const isSpecialCallbackRoute =
       new RegExp(
-        `^${routesMap.authorization}/[_A-Za-z0-9\\-]+/?$`,
+        escapeStringRegexp(`^${routesMap.authorization}/[_A-Za-z0-9\\-]+/?$`),
         'u',
       ).test(url);
 
