@@ -216,8 +216,10 @@ export * from './util/handlers/UnsupportedAsyncHandler';
 export * from './util/handlers/WaterfallHandler';
 
 // Util/Identifiers
+export * from './util/identifiers/BaseIdentifierStrategy';
 export * from './util/identifiers/IdentifierStrategy';
 export * from './util/identifiers/SingleRootIdentifierStrategy';
+export * from './util/identifiers/SubdomainIdentifierStrategy';
 
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';

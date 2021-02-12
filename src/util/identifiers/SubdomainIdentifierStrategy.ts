@@ -1,22 +1,24 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { ensureTrailingSlash } from '../PathUtil';
+import { ensureTrailingSlash, createSubdomainRegexp } from '../PathUtil';
 import { BaseIdentifierStrategy } from './BaseIdentifierStrategy';
 
 /**
- * An IdentifierStrategy that assumes there is only 1 root and all other identifiers are made by appending to that root.
+ * An IdentifierStrategy that interprets all subdomains of the given base URL as roots.
  */
-export class SingleRootIdentifierStrategy extends BaseIdentifierStrategy {
+export class SubdomainIdentifierStrategy extends BaseIdentifierStrategy {
   private readonly baseUrl: string;
+  private readonly regex: RegExp;
   protected readonly logger = getLoggerFor(this);
 
   public constructor(baseUrl: string) {
     super();
     this.baseUrl = ensureTrailingSlash(baseUrl);
+    this.regex = createSubdomainRegexp(this.baseUrl);
   }
 
   public supportsIdentifier(identifier: ResourceIdentifier): boolean {
-    const supported = identifier.path.startsWith(this.baseUrl);
+    const supported = this.regex.test(identifier.path);
     this.logger.debug(supported ?
       `Identifier ${identifier.path} is part of ${this.baseUrl}` :
       `Identifier ${identifier.path} is not part of ${this.baseUrl}`);
@@ -24,6 +26,7 @@ export class SingleRootIdentifierStrategy extends BaseIdentifierStrategy {
   }
 
   public isRootContainer(identifier: ResourceIdentifier): boolean {
-    return identifier.path === this.baseUrl;
+    const match = this.regex.exec(identifier.path);
+    return Array.isArray(match) && match[0].length === identifier.path.length;
   }
 }
