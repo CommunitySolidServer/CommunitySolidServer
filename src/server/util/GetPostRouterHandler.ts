@@ -2,6 +2,11 @@ import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHtt
 import type { HttpHandler, HttpHandlerInput } from '../HttpHandler';
 import { RouterHandler } from './RouterHandler';
 
+/**
+ * A router handler that handles both GET and POST for
+ * a single route. This could be used to render a form
+ * and handle its submission.
+ */
 export class GetPostRouterHandler extends RouterHandler {
   private readonly getHandler: HttpHandler;
   private readonly postHandler: HttpHandler;

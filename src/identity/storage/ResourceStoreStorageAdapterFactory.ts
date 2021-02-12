@@ -10,6 +10,10 @@ export interface ResourceStoreStorageAdapterArgs {
   store: KeyValueStore;
 }
 
+/**
+ * An IdP storage adapter that uses a ResourceStore
+ * to persist data.
+ */
 export class ResourceStoreStorageAdapter implements Adapter {
   private readonly baseUrl: string;
   private readonly name: string;
@@ -128,6 +132,9 @@ export class ResourceStoreStorageAdapter implements Adapter {
   }
 }
 
+/**
+ * The factory for a ResourceStoreStorageAdapter
+ */
 export class ResourceStoreStorageAdapterFactory extends StorageAdapterFactory {
   private readonly args: ResourceStoreStorageAdapterArgs;
 

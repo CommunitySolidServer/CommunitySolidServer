@@ -2,6 +2,11 @@ import path from 'path';
 import { renderFile } from 'ejs';
 import { TemplateRenderer } from './TemplateRenderer';
 
+/**
+ * Renders options using a given EJS template location and
+ * returns the result as a string. This is good for rendering
+ * emails.
+ */
 export class EjsTemplateRenderer<T> extends TemplateRenderer<T> {
   private readonly templatePath: string;
   private readonly templateFile: string;

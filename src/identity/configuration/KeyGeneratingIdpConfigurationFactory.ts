@@ -8,9 +8,13 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStore } from '../storage/KeyValueStore';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
-import { IdPConfigurationFactory } from './IdPConfigurationFactory';
+import { IdpConfigurationFactory } from './IdpConfigurationFactory';
 
-export class KeyGeneratingIdpConfigurationFactory extends IdPConfigurationFactory {
+/**
+ * An IdP Configuration Factory that generates and saves keys
+ * to the provided key value store.
+ */
+export class KeyGeneratingIdpConfigurationFactory extends IdpConfigurationFactory {
   private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
   private readonly store: KeyValueStore;
