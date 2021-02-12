@@ -4,8 +4,8 @@
     {
       "@id": "urn:solid-server:default:MemoryDataAccessor",
       "@type": "InMemoryDataAccessor",
-      "InMemoryDataAccessor:_base": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
+      "InMemoryDataAccessor:_strategy": {
+        "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     },
     {

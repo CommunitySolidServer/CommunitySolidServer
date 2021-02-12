@@ -2,23 +2,35 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
+import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
 
+class DummyStrategy extends BaseIdentifierStrategy {
+  public supportsIdentifier(): boolean {
+    return true;
+  }
+
+  public isRootContainer(identifier: ResourceIdentifier): boolean {
+    return identifier.path.endsWith('root/');
+  }
+}
+
 describe('An InMemoryDataAccessor', (): void => {
-  const base = 'http://test.com/';
+  const base = 'http://test.com/root/';
   let accessor: InMemoryDataAccessor;
   let metadata: RepresentationMetadata;
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    accessor = new InMemoryDataAccessor(base);
+    accessor = new InMemoryDataAccessor(new DummyStrategy());
 
-    // Create default root container
+    // Most tests depend on there already being a root container
     await accessor.writeContainer({ path: `${base}` }, new RepresentationMetadata());
 
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
@@ -41,7 +53,7 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('throws an error if part of the path matches a document.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeDocument({ path: `${base}resource/` }, data, metadata)).resolves.toBeUndefined();
       await expect(accessor.getData({ path: `${base}resource/resource2` })).rejects.toThrow('Invalid path.');
     });
 
@@ -77,7 +89,8 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       await expect(accessor.writeDocument({ path: `${base}container/resource` }, data, metadata))
         .resolves.toBeUndefined();
-      await expect(accessor.writeContainer({ path: `${base}container/container2` }, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeContainer({ path: `${base}container/container2/` }, metadata))
+        .resolves.toBeUndefined();
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
         [ DataFactory.namedNode(`${base}container/resource`), DataFactory.namedNode(`${base}container/container2/`) ],
@@ -155,7 +168,7 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('errors when writing to an invalid container path..', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeDocument({ path: `${base}resource/` }, data, metadata)).resolves.toBeUndefined();
 
       await expect(accessor.writeContainer({ path: `${base}resource/container` }, metadata))
         .rejects.toThrow('Invalid path.');
@@ -183,6 +196,28 @@ describe('An InMemoryDataAccessor', (): void => {
       await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
       const resultMetadata = await accessor.getMetadata({ path: `${base}` });
       expect(resultMetadata.quads()).toBeRdfIsomorphic(metadata.quads());
+    });
+  });
+
+  describe('handling multiple root containers', (): void => {
+    const base2 = 'http://test2.com/root/';
+
+    beforeEach(async(): Promise<void> => {
+      await accessor.writeContainer({ path: `${base2}` }, new RepresentationMetadata());
+    });
+
+    it('can write to different root containers.', async(): Promise<void> => {
+      await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
+      data = guardedStreamFrom([ 'data2' ]);
+      await expect(accessor.writeDocument({ path: `${base2}resource` }, data, metadata)).resolves.toBeUndefined();
+
+      await expect(readableToString(await accessor.getData({ path: `${base}resource` }))).resolves.toBe('data');
+      await expect(readableToString(await accessor.getData({ path: `${base2}resource` }))).resolves.toBe('data2');
+    });
+
+    it('deleting a root container does not delete others.', async(): Promise<void> => {
+      await expect(accessor.deleteResource({ path: base })).resolves.toBeUndefined();
+      await expect(accessor.getMetadata({ path: base2 })).resolves.toBeDefined();
     });
   });
 });
