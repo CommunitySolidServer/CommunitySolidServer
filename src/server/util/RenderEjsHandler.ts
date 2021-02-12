@@ -3,6 +3,10 @@ import { renderFile } from 'ejs';
 import type { HttpResponse } from '../HttpResponse';
 import { RenderHandler } from './RenderHandler';
 
+/**
+ * A Render Handler that uses EJS templates to render
+ * a response.
+ */
 export class RenderEjsHandler<T> extends RenderHandler<T> {
   private readonly templatePath: string;
   private readonly templateFile: string;

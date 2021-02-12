@@ -1,13 +1,16 @@
 import type { InteractionResults } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { AsyncHandler } from '../../../util/AsyncHandler';
-import type { IdPInteractionHttpHandlerInput } from '../IdPInteractionHttpHandler';
+import type { IdpInteractionHttpHandlerInput } from '../IdpInteractionHttpHandler';
 
-export interface OidcInteractionCompleterInput extends IdPInteractionHttpHandlerInput {
+export interface OidcInteractionCompleterInput extends IdpInteractionHttpHandlerInput {
   webId: string;
   shouldRemember?: boolean;
 }
 
+/**
+ * Completes an IdP interaction, logging the user in.
+ */
 export class OidcInteractionCompleter extends AsyncHandler<OidcInteractionCompleterInput> {
   private readonly logger = getLoggerFor(this);
 

@@ -2,6 +2,9 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../server/HttpHandler';
 import { OnErrorHttpHandler } from '../../server/OnErrorHttpHandler';
 
+/**
+ * A basic OnErrorHttpHandler that simply prints the error.
+ */
 export class BasicOnErrorHttpHandler extends OnErrorHttpHandler {
   private readonly logger = getLoggerFor(this);
 

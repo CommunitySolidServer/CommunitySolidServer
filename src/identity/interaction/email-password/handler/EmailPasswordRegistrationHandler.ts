@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
-import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
+import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
+import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
@@ -17,7 +17,11 @@ interface EmailPasswordRegisterHandlerArgs {
   oidcInteractionCompleter: OidcInteractionCompleter;
 }
 
-export class EmailPasswordRegistrationHandler extends IdPInteractionHttpHandler {
+/**
+ * Handles the submission of the registration form. Creates the
+ * user and logs them in if successful.
+ */
+export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler {
   private readonly renderHandler: IdpRenderHandler;
   private readonly webIdOwnershipValidator: WebIdOwnershipValidator;
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
@@ -32,7 +36,7 @@ export class EmailPasswordRegistrationHandler extends IdPInteractionHttpHandler 
     this.oidcInteractionCompleter = args.oidcInteractionCompleter;
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(
       input.request,
       input.response,

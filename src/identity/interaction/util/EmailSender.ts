@@ -14,6 +14,9 @@ export interface EmailSenderArgs {
   senderName?: string;
 }
 
+/**
+ * Sends an email
+ */
 export class EmailSender {
   private readonly mailTransporter: Mail;
   private readonly senderName: string;

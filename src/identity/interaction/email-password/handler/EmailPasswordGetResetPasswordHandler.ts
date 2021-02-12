@@ -6,6 +6,10 @@ import { HttpHandler } from '../../../../server/HttpHandler';
 import type { RenderHandler } from '../../../../server/util/RenderHandler';
 import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordResetPasswordRenderHandler';
 
+/**
+ * Handles the creation of the Reset Password form after
+ * the user clicks on it from the link provided in the email.
+ */
 export class EmailPasswordGetResetPasswordHandler extends HttpHandler {
   private readonly renderHandler: RenderHandler<{
     errorMessage: string;

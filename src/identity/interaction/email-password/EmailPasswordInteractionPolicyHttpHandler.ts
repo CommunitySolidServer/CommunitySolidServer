@@ -2,19 +2,26 @@ import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type {
-  IdPInteractionHttpHandler, IdPInteractionHttpHandlerInput,
-} from '../IdPInteractionHttpHandler';
+  IdpInteractionHttpHandler, IdpInteractionHttpHandlerInput,
+} from '../IdpInteractionHttpHandler';
 import {
-  IdPInteractionPolicyHttpHandler,
-} from '../IdPInteractionPolicyHttpHandler';
+  IdpInteractionPolicyHttpHandler,
+} from '../IdpInteractionPolicyHttpHandler';
 
 export interface EmailPasswordInteractionPolicyHttpHandlerArgs {
-  interactionHttpHandler: IdPInteractionHttpHandler;
+  interactionHttpHandler: IdpInteractionHttpHandler;
 }
 
-export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPolicyHttpHandler {
+/**
+ * The InteractionPolicyHttpHandler for the EmailPassword Interaction
+ * This interaction identifies the user with their email and validates
+ * the user with a password. If the user forgets their password, they
+ * can reset it by typing in their email. The scheme for interactions
+ * is /idp/interaction/:uid
+ */
+export class EmailPasswordInteractionPolicyHttpHandler extends IdpInteractionPolicyHttpHandler {
   public readonly policy: interactionPolicy.Prompt[];
-  private readonly interactionHttpHandler: IdPInteractionHttpHandler;
+  private readonly interactionHttpHandler: IdpInteractionHttpHandler;
   private readonly logger = getLoggerFor(this);
 
   public constructor(args: EmailPasswordInteractionPolicyHttpHandlerArgs) {
@@ -33,11 +40,11 @@ export class EmailPasswordInteractionPolicyHttpHandler extends IdPInteractionPol
     return `/idp/interaction/${ctx.oidc.uid}`;
   }
 
-  public async canHandle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async canHandle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.canHandle(input);
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     return this.interactionHttpHandler.handle(input);
   }
 }
