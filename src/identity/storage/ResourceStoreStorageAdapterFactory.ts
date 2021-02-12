@@ -1,28 +1,26 @@
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import type { ResourceStore } from '../../storage/ResourceStore';
 import { trimTrailingSlashes } from '../../util/PathUtil';
-import type { KeyValueInterface } from './getKeyValueInterfaceFromResourceStore';
-import { getKeyValueInterfaceFromResourceStore } from './getKeyValueInterfaceFromResourceStore';
-import { StorageAdapterFacotry } from './StorageAdapterFactory';
+import type { KeyValueStore } from './KeyValueStore';
+import { StorageAdapterFactory } from './StorageAdapterFactory';
 
 export interface ResourceStoreStorageAdapterArgs {
   baseUrl: string;
   storagePathname: string;
-  store: ResourceStore;
+  store: KeyValueStore;
 }
 
 export class ResourceStoreStorageAdapter implements Adapter {
   private readonly baseUrl: string;
   private readonly name: string;
-  private readonly store: KeyValueInterface;
+  private readonly store: KeyValueStore;
 
   public constructor(name: string, args: ResourceStoreStorageAdapterArgs) {
     this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${
       args.storagePathname
     }`;
     this.name = name;
-    this.store = getKeyValueInterfaceFromResourceStore(args.store);
+    this.store = args.store;
   }
 
   private grantKeyFor(id: string): ResourceIdentifier {
@@ -130,7 +128,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
   }
 }
 
-export class ResourceStoreStorageAdapterFactory extends StorageAdapterFacotry {
+export class ResourceStoreStorageAdapterFactory extends StorageAdapterFactory {
   private readonly args: ResourceStoreStorageAdapterArgs;
 
   public constructor(args: ResourceStoreStorageAdapterArgs) {

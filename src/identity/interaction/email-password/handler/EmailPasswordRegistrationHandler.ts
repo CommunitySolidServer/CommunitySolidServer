@@ -2,7 +2,7 @@ import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
 import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { WebIdOwnershipValidator } from '../../util/WebIdOwnershipValidator';
@@ -17,7 +17,7 @@ interface EmailPasswordRegisterHandlerArgs {
   oidcInteractionCompleter: OidcInteractionCompleter;
 }
 
-export class EmailPasswordRegisterHandler extends IdPInteractionHttpHandler {
+export class EmailPasswordRegistrationHandler extends IdPInteractionHttpHandler {
   private readonly renderHandler: IdpRenderHandler;
   private readonly webIdOwnershipValidator: WebIdOwnershipValidator;
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
@@ -56,7 +56,7 @@ export class EmailPasswordRegisterHandler extends IdPInteractionHttpHandler {
       // Qualify WebId
       assert(webId && typeof webId === 'string', 'WebId required');
       prefilledWebId = webId;
-      await this.webIdOwnershipValidator.assertWebId(webId, interactionDetails.uid);
+      await this.webIdOwnershipValidator.assertWebIdOwnership(webId, interactionDetails.uid);
 
       // Qualify password
       assert(password && typeof password === 'string', 'Password required');

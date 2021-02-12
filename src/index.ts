@@ -96,6 +96,8 @@ export * from './identity/configuration/DevIdPConfigurationFactory';
 export * from './identity/configuration/KeyGeneratingIdpConfigurationFactory';
 
 // SolidIdentityProvider/Storage
+export * from './identity/storage/KeyValueStore';
+export * from './identity/storage/PassthroughKeyValueStore';
 export * from './identity/storage/StorageAdapterFactory';
 export * from './identity/storage/ResourceStoreStorageAdapterFactory';
 
@@ -106,7 +108,7 @@ export * from './identity/interaction/util/IdpPassthroughToRenderHandler';
 export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/OidcInteractionCompleter';
 export * from './identity/interaction/util/WebIdOwnershipValidator';
-export * from './identity/interaction/util/getFormDataRequestBody';
+export * from './identity/interaction/util/FormDataUtil';
 export * from './identity/interaction/util/EjsTemplateRenderer';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/TemplateRenderer';
@@ -117,7 +119,7 @@ export * from './identity/interaction/email-password/EmailPasswordInteractionPol
 // SolidIdentityProvider/InteractionPolicies/Handler
 export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordRegisterHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordRegistrationHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordGetResetPasswordHandler';
 export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';

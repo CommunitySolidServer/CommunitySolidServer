@@ -2,7 +2,7 @@ import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
 import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';

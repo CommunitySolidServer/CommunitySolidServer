@@ -35,17 +35,17 @@ export abstract class EmailPasswordStorageAdapter {
    * @param email - the user's email
    * @returns the record id. This should be included in the reset password link
    */
-  abstract generateForgotPasswordConfirmationRecord(email: string): Promise<string>;
+  abstract generateForgotPasswordRecord(email: string): Promise<string>;
   /**
    * Gets the email associated with the forgot password confirmation record or undefined
    * if it's not present
    * @param recordId - the record id retrieved from the link
    * @returns the user's email
    */
-  abstract getForgotPasswordConfirmationRecord(recordId: string): Promise<string | undefined>;
+  abstract getForgotPasswordRecord(recordId: string): Promise<string | undefined>;
   /**
    * Deletes the Forgot Password Confirmation Record
    * @param recordId - the record id of the forgot password confirmation record
    */
-  abstract deleteForgotPasswordConfirmationRecord(recordId: string): Promise<void>;
+  abstract deleteForgotPasswordRecord(recordId: string): Promise<void>;
 }
