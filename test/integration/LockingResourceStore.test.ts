@@ -35,9 +35,10 @@ describe('A LockingResourceStore', (): void => {
 
     const base = 'http://test.com/';
     path = `${base}path`;
+    const idStrategy = new SingleRootIdentifierStrategy(base);
     source = new DataAccessorBasedStore(
-      new InMemoryDataAccessor(base),
-      new SingleRootIdentifierStrategy(base),
+      new InMemoryDataAccessor(idStrategy),
+      idStrategy,
       strategy,
     );
 
