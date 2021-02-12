@@ -2,6 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/presets/acl.json",
+    "files-scs:config/presets/identifiers/suffix-identifiers.json",
     "files-scs:config/presets/init.json",
     "files-scs:config/presets/ldp.json",
     "files-scs:config/presets/ldp/credentials-extractor.json",

@@ -21,10 +21,7 @@
         "@id": "urn:solid-server:default:ResourceStore"
       },
       "GeneratedPodManager:_idGenerator": {
-        "@type": "SuffixIdentifierGenerator",
-        "SuffixIdentifierGenerator:_base": {
-          "@id": "urn:solid-server:default:variable:baseUrl"
-        }
+        "@id": "urn:solid-server:default:IdentifierGenerator"
       },
       "GeneratedPodManager:_resourcesGenerator": {
         "@id": "urn:solid-server:default:ResourcesGenerator"

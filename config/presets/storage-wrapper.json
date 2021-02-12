@@ -10,14 +10,6 @@
     },
 
     {
-      "@id": "urn:solid-server:default:IdentifierStrategy",
-      "@type": "SingleRootIdentifierStrategy",
-      "SingleRootIdentifierStrategy:_baseUrl": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
-      }
-    },
-
-    {
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
       "RoutingAuxiliaryStrategy:_sources": [
