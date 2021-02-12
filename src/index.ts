@@ -156,7 +156,7 @@ export * from './pods/PodManager';
 export * from './pods/PodManagerHttpHandler';
 
 // Server
-export * from './server/ExpressHttpServerFactory';
+export * from './server/BaseHttpServerFactory';
 export * from './server/HttpHandler';
 export * from './server/OnErrorHttpHandler';
 export * from './server/HttpRequest';
@@ -194,6 +194,12 @@ export * from './storage/conversion/QuadToRdfConverter';
 export * from './storage/conversion/RdfToQuadConverter';
 export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
+
+// Storage/KeyValueStorage
+export * from './storage/keyvalue/JsonResourceStorage';
+export * from './storage/keyvalue/KeyValueStorage';
+export * from './storage/keyvalue/MemoryMapStorage';
+export * from './storage/keyvalue/ResourceIdentifierStorage';
 
 // Storage/Mapping
 export * from './storage/mapping/BaseFileIdentifierMapper';
@@ -251,10 +257,13 @@ export * from './util/identifiers/IdentifierStrategy';
 export * from './util/identifiers/SingleRootIdentifierStrategy';
 
 // Util/Locking
-export * from './util/locking/ExpiringResourceLocker';
+export * from './util/locking/ExpiringReadWriteLocker';
+export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/GreedyReadWriteLocker';
+export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
-export * from './util/locking/WrappedExpiringResourceLocker';
+export * from './util/locking/WrappedExpiringReadWriteLocker';
 
 // Util
 export * from './util/ContentTypes';

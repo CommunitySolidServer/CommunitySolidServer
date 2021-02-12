@@ -31,8 +31,7 @@ export class InMemoryDataAccessor implements DataAccessor {
 
     const metadata = new RepresentationMetadata({ path: this.base });
     metadata.addQuads(generateResourceQuads(DataFactory.namedNode(this.base), true));
-    const rootContainer = { entries: {}, metadata };
-    this.store = { entries: { '': rootContainer }};
+    this.store = { entries: { }};
   }
 
   public async canHandle(): Promise<void> {

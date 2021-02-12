@@ -10,6 +10,8 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
  * Since more specific media ranges override less specific ones,
  * this will be ignored if there is a specific internal type preference.
  *
+ * This should be called even if there are no preferredTypes since this also filters out internal types.
+ *
  * @param preferredTypes - Preferences for output type.
  * @param availableTypes - Media types to compare to the preferences.
  *
@@ -24,8 +26,9 @@ string[] {
   const preferred = { ...preferredTypes };
   if (Object.keys(preferredTypes).length === 0) {
     preferred['*/*'] = 1;
+  }
   // Prevent accidental use of internal types
-  } else if (!(INTERNAL_ALL in preferred)) {
+  if (!(INTERNAL_ALL in preferred)) {
     preferred[INTERNAL_ALL] = 0;
   }
 

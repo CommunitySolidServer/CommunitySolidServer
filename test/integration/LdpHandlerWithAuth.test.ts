@@ -2,30 +2,26 @@ import { createReadStream } from 'fs';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { LDP, BasicRepresentation, joinFilePath } from '../../src/';
 import { AclHelper, ResourceHelper } from '../util/TestHelpers';
-import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
+import { BASE, getTestFolder, removeFolder, instantiateFromConfig } from './Config';
 
 const rootFilePath = getTestFolder('full-config-acl');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     storeUrn: 'urn:solid-server:default:MemoryResourceStore',
-    setup: jest.fn(),
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
     storeUrn: 'urn:solid-server:default:FileResourceStore',
-    setup: (): void => createFolder(rootFilePath),
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
-describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, setup, teardown }): void => {
+describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, teardown }): void => {
   let handler: HttpHandler;
   let aclHelper: AclHelper;
   let resourceHelper: ResourceHelper;
 
   beforeAll(async(): Promise<void> => {
-    // Set up the internal store
-    await setup();
     const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': BASE,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
@@ -46,6 +42,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, se
       variables,
     ) as Record<string, any>;
     ({ handler, store, initializer } = instances);
+
+    // Set up the internal store
     await initializer.handleSafe();
 
     // Create test helpers for manipulating the components

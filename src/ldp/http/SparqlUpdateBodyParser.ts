@@ -1,4 +1,3 @@
-import { PassThrough } from 'stream';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -6,7 +5,7 @@ import { APPLICATION_SPARQL_UPDATE } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { isNativeError } from '../../util/errors/ErrorUtil';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
-import { pipeSafely, readableToString } from '../../util/StreamUtil';
+import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
 import type { BodyParserArgs } from './BodyParser';
 import { BodyParser } from './BodyParser';
 import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
@@ -25,12 +24,9 @@ export class SparqlUpdateBodyParser extends BodyParser {
   }
 
   public async handle({ request, metadata }: BodyParserArgs): Promise<SparqlUpdatePatch> {
-    const options = { objectMode: request.readableObjectMode };
-    const toAlgebraStream = pipeSafely(request, new PassThrough(options));
-    const dataCopy = pipeSafely(request, new PassThrough(options));
+    const sparql = await readableToString(request);
     let algebra: Algebra.Operation;
     try {
-      const sparql = await readableToString(toAlgebraStream);
       algebra = translate(sparql, { quads: true, baseIRI: metadata.identifier.value });
     } catch (error: unknown) {
       this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
@@ -44,7 +40,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
     return {
       algebra,
       binary: true,
-      data: dataCopy,
+      data: guardedStreamFrom(sparql),
       metadata,
     };
   }

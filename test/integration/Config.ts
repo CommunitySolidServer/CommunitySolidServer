@@ -1,4 +1,3 @@
-import { mkdirSync } from 'fs';
 import type { IModuleState } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import * as rimraf from 'rimraf';
@@ -25,10 +24,6 @@ export async function instantiateFromConfig(componentUrl: string, configFile: st
 
 export function getTestFolder(name: string): string {
   return joinFilePath(__dirname, '../tmp', name);
-}
-
-export function createFolder(folder: string): void {
-  mkdirSync(folder, { recursive: true });
 }
 
 export function removeFolder(folder: string): void {

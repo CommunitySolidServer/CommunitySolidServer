@@ -385,7 +385,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         // Make sure the parent exists first
-        await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+        if (!this.identifierStrategy.isRootContainer(container)) {
+          await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+        }
         await this.writeData(container, new BasicRepresentation([], container), true);
       } else {
         throw error;
