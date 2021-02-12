@@ -9,7 +9,10 @@
       },
       "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
       "ResourceStoreStorageAdapterFactory:_args_store": {
-        "@id": "urn:solid-server:default:ResourceStore"
+        "@type": "PassthroughKeyValueStore",
+        "PassthroughKeyValueStore:_store": {
+          "@id": "urn:solid-server:default:ResourceStore"
+        }
       }
     },
     {

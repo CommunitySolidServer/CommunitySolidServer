@@ -74,7 +74,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     // doesn't seem to be a perfect replacement for it, so we will keep it until there
     // is a perfect replacement
     // https://github.com/nodejs/node/issues/12682#issuecomment-736510378
-    const url = input.request.url ? parse(input.request.url).pathname as string : '';
+    const url = input.request.url ? parse(input.request.url).pathname! : '';
 
     let interactionHttpHandlerCanHandle = true;
     try {
@@ -86,7 +86,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     // Account for special case where the interaction policy calls back to "/auth/:uid"
     const isSpecialCallbackRoute =
       new RegExp(
-        escapeStringRegexp(`^${routesMap.authorization}/[_A-Za-z0-9\\-]+/?$`),
+        `^${escapeStringRegexp(routesMap.authorization)}/[_A-Za-z0-9\\-]+/?$`,
         'u',
       ).test(url);
 
