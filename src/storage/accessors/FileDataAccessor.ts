@@ -326,11 +326,13 @@ export class FileDataAccessor implements DataAccessor {
    */
   private generatePosixQuads(subject: NamedNode, stats: Stats): Quad[] {
     const quads: Quad[] = [];
-    pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
     pushQuad(quads, subject, DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
     pushQuad(quads, subject, POSIX.terms.mtime, toLiteral(
       Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer,
     ));
+    if (!stats.isDirectory()) {
+      pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
+    }
     return quads;
   }
 

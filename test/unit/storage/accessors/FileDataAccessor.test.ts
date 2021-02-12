@@ -104,6 +104,13 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
     });
 
+    it('does not generate size metadata for a container.', async(): Promise<void> => {
+      cache.data = { container: {}};
+      metadata = await accessor.getMetadata({ path: `${base}container/` });
+      expect(metadata.get(POSIX.size)).toBeUndefined();
+      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+    });
+
     it('generates the metadata for a container and its non-meta children.', async(): Promise<void> => {
       cache.data = { container: { resource: 'data', 'resource.meta': 'metadata', notAFile: 5, container2: {}}};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
@@ -111,7 +118,7 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.getAll(RDF.type)).toEqualRdfTermArray(
         [ LDP.terms.Container, LDP.terms.BasicContainer, LDP.terms.Resource ],
       );
-      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral(0, XSD.terms.integer));
+      expect(metadata.get(POSIX.size)).toBeUndefined();
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
       expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
