@@ -117,6 +117,7 @@ export * from './pods/agent/AgentParser';
 export * from './pods/generate/HandlebarsTemplateEngine';
 export * from './pods/generate/IdentifierGenerator';
 export * from './pods/generate/ResourcesGenerator';
+export * from './pods/generate/SubdomainIdentifierGenerator';
 export * from './pods/generate/SuffixIdentifierGenerator';
 export * from './pods/generate/TemplateEngine';
 export * from './pods/generate/TemplatedResourcesGenerator';
