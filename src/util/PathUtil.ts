@@ -138,3 +138,30 @@ export function isContainerPath(path: string): boolean {
 export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
   return isContainerPath(identifier.path);
 }
+
+/**
+ * Splits a URL (or similar) string into a part containing its scheme and one containing the rest.
+ * E.g., `http://test.com/` results in `{ scheme: 'http://', rest: 'test.com/' }`.
+ * @param url - String to parse.
+ */
+export function extractScheme(url: string): { scheme: string; rest: string} {
+  const match = /^([^:]+:\/\/)(.*)$/u.exec(url)!;
+  return { scheme: match[1], rest: match[2] };
+}
+
+/**
+ * Creates a regular expression that matches URLs containing the given baseUrl, or a subdomain of the given baseUrl.
+ * In case there is a subdomain, the first match of the regular expression will be that subdomain.
+ *
+ * Examples with baseUrl `http://test.com/foo/`:
+ *  - Will match `http://test.com/foo/`
+ *  - Will match `http://test.com/foo/bar/baz`
+ *  - Will match `http://alice.bob.test.com/foo/bar/baz`, first match result will be `alice.bob`
+ *  - Will not match `http://test.com/`
+ *  - Will not match `http://alicetest.com/foo/`
+ * @param baseUrl - Base URL for the regular expression.
+ */
+export function createSubdomainRegexp(baseUrl: string): RegExp {
+  const { scheme, rest } = extractScheme(baseUrl);
+  return new RegExp(`^${scheme}(?:([^/]+)\\.)?${rest}`, 'u');
+}

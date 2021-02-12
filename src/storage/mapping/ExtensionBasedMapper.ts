@@ -53,16 +53,24 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
   }
 
   protected async getDocumentUrl(relative: string): Promise<string> {
-    const extension = getExtension(relative);
-    if (extension && relative.endsWith(`$.${extension}`)) {
-      relative = relative.slice(0, -(extension.length + 2));
-    }
-    return super.getDocumentUrl(relative);
+    return super.getDocumentUrl(this.stripExtension(relative));
   }
 
   protected async getContentTypeFromPath(filePath: string): Promise<string> {
     return this.types[getExtension(filePath).toLowerCase()] ||
       super.getContentTypeFromPath(filePath);
+  }
+
+  /**
+   * Helper function that removes the internal extension, one starting with $., from the given path.
+   * Nothing happens if no such extension is present.
+   */
+  protected stripExtension(path: string): string {
+    const extension = getExtension(path);
+    if (extension && path.endsWith(`$.${extension}`)) {
+      path = path.slice(0, -(extension.length + 2));
+    }
+    return path;
   }
 }
 
