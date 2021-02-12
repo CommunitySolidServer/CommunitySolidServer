@@ -159,6 +159,7 @@ export * from './pods/PodManagerHttpHandler';
 // Server
 export * from './server/ExpressHttpServerFactory';
 export * from './server/HttpHandler';
+export * from './server/OnErrorHttpHandler';
 export * from './server/HttpRequest';
 export * from './server/HttpResponse';
 export * from './server/WebSocketServerFactory';
