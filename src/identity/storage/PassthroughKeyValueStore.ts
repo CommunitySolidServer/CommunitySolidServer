@@ -11,6 +11,9 @@ export interface StoredData {
   expires?: string;
 }
 
+/**
+ * A KeyValueStore that wraps a provided ResourceStore
+ */
 export class PassthroughKeyValueStore implements KeyValueStore {
   private readonly store: ResourceStore;
 

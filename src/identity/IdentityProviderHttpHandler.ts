@@ -14,18 +14,22 @@ import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
-import type { IdPInteractionPolicyHttpHandler } from './interaction/IdPInteractionPolicyHttpHandler';
+import type { IdpInteractionPolicyHttpHandler } from './interaction/IdpInteractionPolicyHttpHandler';
 
+/**
+ * Handles requests incoming the IdP and instantiates the IdP to
+ * be passed to all child IdpInteractionHttpHandlers
+ */
 export class IdentityProviderHttpHandler extends HttpHandler {
   private readonly providerFactory: IdentityProviderFactory;
   private provider: Provider | undefined;
   private providerCreationPromise: Promise<Provider> | undefined;
-  private readonly interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler;
+  private readonly interactionPolicyHttpHandler: IdpInteractionPolicyHttpHandler;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     providerFactory: IdentityProviderFactory,
-    interactionPolicyHttpHandler: IdPInteractionPolicyHttpHandler,
+    interactionPolicyHttpHandler: IdpInteractionPolicyHttpHandler,
   ) {
     super();
     this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;

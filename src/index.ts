@@ -100,14 +100,13 @@ export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
 
 // SolidIdentityProvider
-export * from './identity/interaction/IdPInteractionHttpHandler';
-export * from './identity/interaction/IdPInteractionPolicyHttpHandler';
-export * from './identity/configuration/IdPConfigurationFactory';
+export * from './identity/interaction/IdpInteractionHttpHandler';
+export * from './identity/interaction/IdpInteractionPolicyHttpHandler';
+export * from './identity/configuration/IdpConfigurationFactory';
 export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
-export * from './identity/configuration/DevIdPConfigurationFactory';
 export * from './identity/configuration/KeyGeneratingIdpConfigurationFactory';
 
 // SolidIdentityProvider/Storage

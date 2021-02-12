@@ -1,5 +1,9 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 
+/**
+ * A simple key value interface that's used in non-LDP related
+ * storage classes
+ */
 export interface KeyValueStore {
   get: (resourceIdentifier: ResourceIdentifier) => Promise<unknown | undefined>;
   set: (

@@ -5,11 +5,7 @@ import { UnsupportedMediaTypeHttpError } from '../../../util/errors/UnsupportedM
 import { readableToString } from '../../../util/StreamUtil';
 
 /**
- * Architecturally, this file doesn't make any sense. It simply exists in this form
- * because I'm trying to get a complete product as quickly as possible. In the future
- * we can quibble over exactly how to structure this. I don't care where it
- * goes, as long as I'm able to convert a request into a record without dealing
- * with any of the LDP specific libraries.
+ * Takes in a request and parses its body as 'application/x-www-form-urlencoded'
  */
 export async function getFormDataRequestBody(request: HttpRequest): Promise<ParsedUrlQuery> {
   if (request.headers['content-type'] !== 'application/x-www-form-urlencoded') {

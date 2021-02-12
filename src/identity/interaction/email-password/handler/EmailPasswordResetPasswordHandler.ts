@@ -13,6 +13,10 @@ export interface EmailPasswordResetPasswordHandlerArgs {
   messageRenderHandler: RenderHandler<{ message: string }>;
 }
 
+/**
+ * Handles the submission of the ResetPassword form, the form
+ * that is linked in the reset password email.
+ */
 export class EmailPasswordResetPasswordHandler extends HttpHandler {
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
   private readonly renderHandler: EmailPasswordResetPasswordRenderHandler;

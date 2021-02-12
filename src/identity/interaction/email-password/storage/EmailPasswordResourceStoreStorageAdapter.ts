@@ -13,17 +13,28 @@ export interface EmailPasswordResourceStoreStorageAdapterArgs {
   saltRounds: number;
 }
 
-export interface EmailPasswordResourceStoreStorageAdapterAccountPayload {
+/**
+ * A payload to persist a user account
+ */
+export interface EmailPasswordAccountPayload {
   webId: string;
   email: string;
   password: string;
 }
 
-export interface ForgotPasswordPayload {
+/**
+ * A payload to persist the fact that a user
+ * has requested to reset their password
+ */
+export interface EmailPasswordForgotPasswordPayload {
   email: string;
   recordId: string;
 }
 
+/**
+ * A EmailPasswordStorageAdapter that uses a ResoucreStore
+ * to persist its information.
+ */
 export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStorageAdapter {
   private readonly baseUrl: string;
   private readonly store: KeyValueStore;
@@ -51,7 +62,7 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
   public async authenticate(email: string, password: string): Promise<string> {
     const account = (await this.store.get(
       this.getAccountResourceIdentifier(email),
-    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
+    )) as EmailPasswordAccountPayload;
     assert(account, 'No account by that email');
     assert(await compare(password, account.password), 'Incorrect password');
     return account.webId;
@@ -65,9 +76,9 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
     const resourceIdentifier = this.getAccountResourceIdentifier(email);
     const existingAccount = (await this.store.get(
       resourceIdentifier,
-    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
+    )) as EmailPasswordAccountPayload;
     assert(!existingAccount, 'Account already exists');
-    const payload: EmailPasswordResourceStoreStorageAdapterAccountPayload = {
+    const payload: EmailPasswordAccountPayload = {
       email,
       webId,
       password: await hash(password, this.saltRounds),
@@ -78,7 +89,7 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
   public async changePassword(email: string, password: string): Promise<void> {
     const account = (await this.store.get(
       this.getAccountResourceIdentifier(email),
-    )) as EmailPasswordResourceStoreStorageAdapterAccountPayload;
+    )) as EmailPasswordAccountPayload;
     assert(account, 'Account does not exist');
     account.password = await hash(password, this.saltRounds);
     await this.store.set(this.getAccountResourceIdentifier(email), account);
@@ -108,7 +119,7 @@ export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStora
   ): Promise<string | undefined> {
     const forgotPasswordRecord = (await this.store.get(
       this.getForgotPasswordRecordResourceIdentifier(recordId),
-    )) as ForgotPasswordPayload;
+    )) as EmailPasswordForgotPasswordPayload;
     if (!forgotPasswordRecord) {
       return;
     }
