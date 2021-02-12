@@ -14,7 +14,7 @@
           <h1 class="title--white">Sign In</h1>
           <div class="login-panel">
             <div class="panel-body">
-              <form autocomplete="off" action="<%= details.pathPrefix %>/interaction/<%= details.uid %>/login" method="post">
+              <form autocomplete="off" action="<%= details.pathPrefix %>/idp/interaction/<%= details.uid %>/login" method="post">
 
                 <%if (errorMessage) { %>
                   <div class="input-wrap">
@@ -43,8 +43,8 @@
                 <hr />
                 <div class="space-between">
                   
-                  <a href="/interaction/<%= details.uid %>/register" class="link">Register</a>
-                  <a href="/interaction/<%= details.uid %>/forgotpassword" class="link">Forgot Password</a>
+                  <a href="/idp/interaction/<%= details.uid %>/register" class="link">Register</a>
+                  <a href="/idp/interaction/<%= details.uid %>/forgotpassword" class="link">Forgot Password</a>
                 </div>
               </form>
             </div>

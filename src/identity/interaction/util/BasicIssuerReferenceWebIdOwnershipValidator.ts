@@ -58,7 +58,7 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
           '';
       errorMessage = errorMessage.concat(
         !hasRegistrationToken ?
-          `<${this.issuer}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${interactionId}" .\n` :
+          `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${interactionId}" .\n` :
           '',
       );
       errorMessage = errorMessage.concat('Must be added to the WebId');
