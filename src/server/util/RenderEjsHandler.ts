@@ -25,7 +25,7 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
       ),
       props || {},
     );
-    // Content-Type must not be cammel case
+    // Content-Type must not be camel case
     // eslint-disable-next-line @typescript-eslint/naming-convention
     response.writeHead(200, { 'Content-Type': 'text/html' });
     response.end(renderedHtml);

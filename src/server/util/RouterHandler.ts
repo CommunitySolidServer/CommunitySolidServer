@@ -43,9 +43,10 @@ export class RouterHandler extends HttpHandler {
     if (!this.allowedPathnamesRegEx.some((regex): boolean => regex.test(pathname))) {
       throw new NotFoundHttpError(`Cannot handle route ${pathname}`);
     }
+    await this.handler.canHandle(input);
   }
 
   public async handle(input: HttpHandlerInput): Promise<void> {
-    await this.handler.handleSafe(input);
+    await this.handler.handle(input);
   }
 }

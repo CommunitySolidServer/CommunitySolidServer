@@ -1,6 +1,6 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../server/HttpHandler';
-import { OnErrorHttpHandler } from '../../server/HttpHandler';
+import { OnErrorHttpHandler } from '../../server/OnErrorHttpHandler';
 
 export class BasicOnErrorHttpHandler extends OnErrorHttpHandler {
   private readonly logger = getLoggerFor(this);
