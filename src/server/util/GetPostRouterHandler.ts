@@ -1,10 +1,10 @@
-import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import type { HttpHandler, HttpHandlerInput } from '../HttpHandler';
 import { RouterHandler } from './RouterHandler';
 
 export class GetPostRouterHandler extends RouterHandler {
   private readonly getHandler: HttpHandler;
-  private readonly postHanlder: HttpHandler;
+  private readonly postHandler: HttpHandler;
 
   public constructor(
     pathnames: string[],
@@ -13,16 +13,16 @@ export class GetPostRouterHandler extends RouterHandler {
   ) {
     super(postHandler, [ 'GET', 'POST' ], pathnames);
     this.getHandler = getHandler;
-    this.postHanlder = postHandler;
+    this.postHandler = postHandler;
   }
 
   public async handle(input: HttpHandlerInput): Promise<void> {
     if (input.request.method === 'GET') {
       await this.getHandler.handle(input);
     } else if (input.request.method === 'POST') {
-      await this.postHanlder.handle(input);
+      await this.postHandler.handle(input);
     } else {
-      throw new NotFoundHttpError(`Cannot ${input.request.method} to this route.`);
+      throw new MethodNotAllowedHttpError(`Cannot ${input.request.method} to this route.`);
     }
   }
 }
