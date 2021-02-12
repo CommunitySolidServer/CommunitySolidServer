@@ -5,7 +5,7 @@ import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
 import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { TemplateRenderer } from '../../util/TemplateRenderer';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
@@ -71,7 +71,7 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
       // Create forgot password confirmation record
       let recordId: string;
       try {
-        recordId = await this.emailPasswordStorageAdapter.generateForgotPasswordConfirmationRecord(
+        recordId = await this.emailPasswordStorageAdapter.generateForgotPasswordRecord(
           email,
         );
       } catch {

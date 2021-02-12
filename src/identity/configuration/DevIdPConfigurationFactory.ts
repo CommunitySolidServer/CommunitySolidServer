@@ -2,13 +2,13 @@
 /* eslint-disable id-length */
 /* eslint-disable max-len */
 import type { Adapter, Configuration } from 'oidc-provider';
-import type { StorageAdapterFacotry } from '../storage/StorageAdapterFactory';
+import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
 import { IdPConfigurationFactory } from './IdPConfigurationFactory';
 
 export class DevIdPConfigurationFactory extends IdPConfigurationFactory {
-  private readonly storageAdapterFactory: StorageAdapterFacotry;
+  private readonly storageAdapterFactory: StorageAdapterFactory;
 
-  public constructor(storageAdapterFactory: StorageAdapterFacotry) {
+  public constructor(storageAdapterFactory: StorageAdapterFactory) {
     super();
     this.storageAdapterFactory = storageAdapterFactory;
   }

@@ -6,27 +6,25 @@ import { JWK } from 'node-jose';
 import type { Adapter, Configuration } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import type { ResourceStore } from '../../storage/ResourceStore';
-import type { KeyValueInterface } from '../storage/getKeyValueInterfaceFromResourceStore';
-import { getKeyValueInterfaceFromResourceStore } from '../storage/getKeyValueInterfaceFromResourceStore';
-import type { StorageAdapterFacotry } from '../storage/StorageAdapterFactory';
+import type { KeyValueStore } from '../storage/KeyValueStore';
+import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
 import { IdPConfigurationFactory } from './IdPConfigurationFactory';
 
 export class KeyGeneratingIdpConfigurationFactory extends IdPConfigurationFactory {
-  private readonly storageAdapterFactory: StorageAdapterFacotry;
+  private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
-  private readonly store: KeyValueInterface;
+  private readonly store: KeyValueStore;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
-    storageAdapterFactory: StorageAdapterFacotry,
+    storageAdapterFactory: StorageAdapterFactory,
     baseUrl: string,
-    resourceStore: ResourceStore,
+    store: KeyValueStore,
   ) {
     super();
     this.storageAdapterFactory = storageAdapterFactory;
     this.baseUrl = baseUrl;
-    this.store = getKeyValueInterfaceFromResourceStore(resourceStore);
+    this.store = store;
   }
 
   private getJwksKey(): ResourceIdentifier {

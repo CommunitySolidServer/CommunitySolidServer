@@ -21,8 +21,11 @@
       "KeyGeneratingIdpConfigurationFactory:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "KeyGeneratingIdpConfigurationFactory:_resourceStore": {
-        "@id": "urn:solid-server:default:ResourceStore"
+      "KeyGeneratingIdpConfigurationFactory:_store": {
+        "@type": "PassthroughKeyValueStore",
+        "PassthroughKeyValueStore:_store": {
+          "@id": "urn:solid-server:default:ResourceStore"
+        }
       }
     },
     {

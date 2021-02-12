@@ -121,6 +121,11 @@ export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#'
   'integer',
 );
 
+export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
+  'oidcIssuer',
+  'oidcIssuerRegistrationToken',
+);
+
 // Alias for commonly used types
 export const CONTENT_TYPE = MA.format;
 export const CONTENT_TYPE_TERM = MA.terms.format;
