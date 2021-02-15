@@ -51,10 +51,7 @@ describe('A server with a pod handler', (): void => {
     res = await fetch(`${pod}.acl`);
     expect(res.status).toBe(200);
     let body = await readableToString(res.body as any);
-    expect(body).toBe(`@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-
-<#owner> acl:agent <${agent.webId}>.
-`);
+    expect(body).toContain(`acl:agent <${agent.webId}>`);
 
     res = await fetch(`${pod}profile/card`);
     expect(res.status).toBe(200);
