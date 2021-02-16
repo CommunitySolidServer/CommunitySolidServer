@@ -70,7 +70,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   });
 
   it('errors an invalid object was thrown by a handler.', async(): Promise< void> => {
-    args.authorizer.handle = async(): Promise<void> => {
+    args.authorizer.handle = async(): Promise<any> => {
       throw 'apple';
     };
     const handler = new AuthenticatedLdpHandler(args);

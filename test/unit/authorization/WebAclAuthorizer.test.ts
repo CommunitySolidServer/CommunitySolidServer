@@ -1,5 +1,6 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import type { Credentials } from '../../../src/authentication/Credentials';
+import { WebAclAuthorization } from '../../../src/authorization/WebAclAuthorization';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
@@ -29,6 +30,7 @@ describe('A WebAclAuthorizer', (): void => {
   let permissions: PermissionSet;
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
+  let authorization: WebAclAuthorization;
 
   beforeEach(async(): Promise<void> => {
     permissions = {
@@ -39,6 +41,20 @@ describe('A WebAclAuthorizer', (): void => {
     };
     credentials = {};
     identifier = { path: 'http://test.com/foo' };
+    authorization = new WebAclAuthorization(
+      {
+        read: false,
+        append: false,
+        write: false,
+        control: false,
+      },
+      {
+        read: false,
+        append: false,
+        write: false,
+        control: false,
+      },
+    );
 
     store = {
       getRepresentation: jest.fn(),
@@ -60,7 +76,9 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.everyone, { read: true, write: true, append: true });
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access if there is a parent acl file allowing all agents.', async(): Promise<void> => {
@@ -77,7 +95,9 @@ describe('A WebAclAuthorizer', (): void => {
         ]),
       } as Representation;
     };
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.everyone, { read: true, write: true, append: true });
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access to authorized agents if the acl files allows all authorized users.', async(): Promise<void> => {
@@ -88,7 +108,8 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     credentials.webId = 'http://test.com/user';
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('errors if authorization is required but the agent is not authorized.', async(): Promise<void> => {
@@ -109,7 +130,8 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('errors if a specific agents wants to access files not assigned to them.', async(): Promise<void> => {
@@ -153,6 +175,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 });

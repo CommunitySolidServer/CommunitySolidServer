@@ -9,8 +9,10 @@ export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization
 export * from './authorization/AllowEverythingAuthorizer';
+export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryAuthorizer';
+export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
 // Init
