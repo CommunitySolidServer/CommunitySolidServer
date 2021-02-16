@@ -94,7 +94,7 @@ export function getExtension(path: string): string {
  */
 function transformPathComponents(path: string, transform: (part: string) => string): string {
   const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
-  const transformed = base.split('/').map(transform).join('/');
+  const transformed = base.split('/').map((element): string => transform(element)).join('/');
   return !queryString ? transformed : `${transformed}${queryString}`;
 }
 

@@ -28,7 +28,7 @@ describe('A Solid server', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
-    await new Promise((resolve, reject): void => {
+    await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
   });
