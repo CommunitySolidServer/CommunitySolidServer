@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
-import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
+import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
@@ -13,7 +13,11 @@ export interface EmailPasswordLoginHandlerArgs {
   renderHandler: IdpRenderHandler;
 }
 
-export class EmailPasswordLoginHandler extends IdPInteractionHttpHandler {
+/**
+ * Handles the submission of the Login Form and logs
+ * the user in.
+ */
+export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
   private readonly renderHandler: IdpRenderHandler;
@@ -26,7 +30,7 @@ export class EmailPasswordLoginHandler extends IdPInteractionHttpHandler {
     this.renderHandler = args.renderHandler;
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(
       input.request,
       input.response,

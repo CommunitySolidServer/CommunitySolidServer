@@ -305,6 +305,14 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
 
+    it('can write resources even if root does not exist.', async(): Promise<void> => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete accessor.data[root];
+      const resourceID = { path: `${root}resource` };
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+    });
+
     it('can write containers with quad data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
 

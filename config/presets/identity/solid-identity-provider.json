@@ -9,7 +9,10 @@
       },
       "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
       "ResourceStoreStorageAdapterFactory:_args_store": {
-        "@id": "urn:solid-server:default:ResourceStore"
+        "@type": "PassthroughKeyValueStore",
+        "PassthroughKeyValueStore:_store": {
+          "@id": "urn:solid-server:default:ResourceStore"
+        }
       }
     },
     {
@@ -21,8 +24,11 @@
       "KeyGeneratingIdpConfigurationFactory:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "KeyGeneratingIdpConfigurationFactory:_resourceStore": {
-        "@id": "urn:solid-server:default:ResourceStore"
+      "KeyGeneratingIdpConfigurationFactory:_store": {
+        "@type": "PassthroughKeyValueStore",
+        "PassthroughKeyValueStore:_store": {
+          "@id": "urn:solid-server:default:ResourceStore"
+        }
       }
     },
     {

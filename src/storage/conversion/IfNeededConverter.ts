@@ -36,11 +36,6 @@ export class IfNeededConverter extends RepresentationConverter {
   }
 
   protected needsConversion({ identifier, representation, preferences }: RepresentationConverterArgs): boolean {
-    // No conversion needed if no preferences were specified
-    if (!preferences.type) {
-      return false;
-    }
-
     // No conversion is needed if there are any matches for the provided content type
     const { contentType } = representation.metadata;
     if (!contentType) {
@@ -49,8 +44,9 @@ export class IfNeededConverter extends RepresentationConverter {
     const noMatchingMediaType = !hasMatchingMediaTypes(preferences.type, { [contentType]: 1 });
     if (noMatchingMediaType) {
       this.logger.debug(`Conversion needed for ${identifier
-        .path} from ${representation.metadata.contentType} to satisfy ${Object.entries(preferences.type)
-        .map(([ value, weight ]): string => `${value};q=${weight}`).join(', ')}`);
+        .path} from ${representation.metadata.contentType} to satisfy ${!preferences.type ?
+        '""' :
+        Object.entries(preferences.type).map(([ value, weight ]): string => `${value};q=${weight}`).join(', ')}`);
     }
     return noMatchingMediaType;
   }

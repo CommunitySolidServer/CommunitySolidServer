@@ -4,6 +4,12 @@ import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 
+/**
+ * An HttpHandler that checks if a given method and path are satisfied
+ * and allows its handler to be executed if so.
+ * This performs the same function as `app.get('/sampleRoute', () => {})`
+ * in express.
+ */
 export class RouterHandler extends HttpHandler {
   protected readonly handler: HttpHandler;
   protected readonly allowedMethods: string[];
@@ -43,9 +49,10 @@ export class RouterHandler extends HttpHandler {
     if (!this.allowedPathnamesRegEx.some((regex): boolean => regex.test(pathname))) {
       throw new NotFoundHttpError(`Cannot handle route ${pathname}`);
     }
+    await this.handler.canHandle(input);
   }
 
   public async handle(input: HttpHandlerInput): Promise<void> {
-    await this.handler.handleSafe(input);
+    await this.handler.handle(input);
   }
 }

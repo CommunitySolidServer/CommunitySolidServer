@@ -28,9 +28,9 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
     });
   });
 
-  it('returns a 200.', async(): Promise<void> => {
+  it('returns a 404 if no data was initialized.', async(): Promise<void> => {
     const response = await fetch(serverUrl, { headers });
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(404);
   });
 
   it('sets the Updates-Via header.', async(): Promise<void> => {

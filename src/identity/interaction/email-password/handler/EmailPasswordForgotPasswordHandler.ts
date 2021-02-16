@@ -2,10 +2,10 @@ import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
-import type { IdPInteractionHttpHandlerInput } from '../../IdPInteractionHttpHandler';
-import { IdPInteractionHttpHandler } from '../../IdPInteractionHttpHandler';
+import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
+import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { TemplateRenderer } from '../../util/TemplateRenderer';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
@@ -19,7 +19,10 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
   emailSender: EmailSender;
 }
 
-export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandler {
+/**
+ * Handles the submission of the ForgotPassword form
+ */
+export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandler {
   private readonly renderHandler: IdpRenderHandler;
   private readonly messageRenderHandler: IdpRenderHandler;
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
@@ -56,7 +59,7 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
     });
   }
 
-  public async handle(input: IdPInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(
       input.request,
       input.response,
@@ -71,7 +74,7 @@ export class EmailPasswordForgotPasswordHandler extends IdPInteractionHttpHandle
       // Create forgot password confirmation record
       let recordId: string;
       try {
-        recordId = await this.emailPasswordStorageAdapter.generateForgotPasswordConfirmationRecord(
+        recordId = await this.emailPasswordStorageAdapter.generateForgotPasswordRecord(
           email,
         );
       } catch {

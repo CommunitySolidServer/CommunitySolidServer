@@ -17,6 +17,15 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
         'urn:solid-server:default:variable:baseUrl': BASE,
       },
     ) as HttpHandler;
+
+    // The tests depend on there being a root container here
+    await performRequest(
+      handler,
+      new URL('http://test.com/'),
+      'PUT',
+      { 'content-type': 'text/turtle', 'transfer-encoding': 'chunked' },
+      [ ],
+    );
   });
 
   it('can add, read and delete data based on incoming requests.', async(): Promise<void> => {

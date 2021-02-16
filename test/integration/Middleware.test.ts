@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import type { ExpressHttpServerFactory } from '../../src/server/ExpressHttpServerFactory';
+import type { BaseHttpServerFactory } from '../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
@@ -15,18 +15,18 @@ class SimpleHttpHandler extends HttpHandler {
   }
 }
 
-describe('An Express server with middleware', (): void => {
+describe('An http server with middleware', (): void => {
   let server: Server;
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ExpressHttpServerFactory', 'server-middleware.json', {
+      'urn:solid-server:default:HttpServerFactory', 'server-middleware.json', {
         'urn:solid-server:default:PodManagerHandler': new StaticAsyncHandler(false, null),
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },
-    ) as ExpressHttpServerFactory;
+    ) as BaseHttpServerFactory;
     server = factory.startServer(port);
   });
 
@@ -62,7 +62,7 @@ describe('An Express server with middleware', (): void => {
     }));
   });
 
-  it('returns CORS headers for an OPTIONS request.', async(): Promise<void> => {
+  it('returns all relevant headers for an OPTIONS request.', async(): Promise<void> => {
     const res = await request(server)
       .options('/')
       .set('Access-Control-Allow-Credentials', 'true')
@@ -73,7 +73,13 @@ describe('An Express server with middleware', (): void => {
     expect(res.header).toEqual(expect.objectContaining({
       'access-control-allow-origin': '*',
       'access-control-allow-headers': 'content-type',
+      'updates-via': 'wss://example.pod/',
+      'x-powered-by': 'Community Solid Server',
     }));
+    const { vary } = res.header;
+    expect(vary).toMatch(/(^|,)\s*Accept\s*(,|$)/iu);
+    expect(vary).toMatch(/(^|,)\s*Authorization\s*(,|$)/iu);
+    expect(vary).toMatch(/(^|,)\s*Origin\s*(,|$)/iu);
     const corsMethods = res.header['access-control-allow-methods'].split(',')
       .map((method: string): string => method.trim());
     const allowedMethods = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE' ];

@@ -38,6 +38,21 @@ describe('An IfNeededConverter', (): void => {
     expect(innerConverter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
+  it('performs conversion when there are no preferences but the content-type is internal.', async(): Promise<void> => {
+    const preferences = {};
+    const internalRepresentation = {
+      metadata: { contentType: 'internal/quads' },
+    } as any;
+    const args = { identifier, representation: internalRepresentation, preferences };
+
+    await expect(converter.handleSafe(args)).resolves.toBe(converted);
+
+    expect(innerConverter.canHandle).toHaveBeenCalledTimes(0);
+    expect(innerConverter.handle).toHaveBeenCalledTimes(0);
+    expect(innerConverter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(innerConverter.handleSafe).toHaveBeenCalledWith(args);
+  });
+
   it('errors if no content type is specified on the representation.', async(): Promise<void> => {
     const preferences = { type: { 'text/turtle': 1 }};
     const args = { identifier, representation: { metadata: {}} as any, preferences };

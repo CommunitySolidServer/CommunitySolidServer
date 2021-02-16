@@ -103,7 +103,7 @@ export class FileDataAccessor implements DataAccessor {
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
     try {
-      await fsPromises.mkdir(link.filePath);
+      await fsPromises.mkdir(link.filePath, { recursive: true });
     } catch (error: unknown) {
       // Don't throw if directory already exists
       if (!isSystemError(error) || error.code !== 'EEXIST') {
@@ -326,11 +326,13 @@ export class FileDataAccessor implements DataAccessor {
    */
   private generatePosixQuads(subject: NamedNode, stats: Stats): Quad[] {
     const quads: Quad[] = [];
-    pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
     pushQuad(quads, subject, DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
     pushQuad(quads, subject, POSIX.terms.mtime, toLiteral(
       Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer,
     ));
+    if (!stats.isDirectory()) {
+      pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
+    }
     return quads;
   }
 

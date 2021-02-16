@@ -1,33 +1,29 @@
 import { DataFactory, Parser } from 'n3';
 import type { MockResponse } from 'node-mocks-http';
-import { ensureTrailingSlash } from '../../src/';
+import { ensureTrailingSlash, PIM, RDF } from '../../src/';
 import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
 import { ResourceHelper } from '../util/TestHelpers';
-import { BASE, getTestFolder, createFolder, removeFolder, instantiateFromConfig } from './Config';
+import { BASE, getTestFolder, removeFolder, instantiateFromConfig } from './Config';
 const { literal, namedNode, quad } = DataFactory;
 
 const rootFilePath = getTestFolder('full-config-no-auth');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
     storeUrn: 'urn:solid-server:default:MemoryResourceStore',
-    setup: jest.fn(),
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
     storeUrn: 'urn:solid-server:default:FileResourceStore',
-    setup: (): void => createFolder(rootFilePath),
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
-describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn, setup, teardown }): void => {
+describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn, teardown }): void => {
   let handler: HttpHandler;
   let resourceHelper: ResourceHelper;
 
   beforeAll(async(): Promise<void> => {
-    // Set up the internal store
-    await setup();
     const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': BASE,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
@@ -47,6 +43,8 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
       variables,
     ) as Record<string, any>;
     ({ handler, initializer } = instances);
+
+    // Set up the internal store
     await initializer.handleSafe();
 
     // Create test helpers for manipulating the components
@@ -63,10 +61,15 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
 
-    const data = response._getData().toString();
-    expect(data).toContain(`<> a ldp:Container`);
+    const parser = new Parser({ baseIRI: `${BASE}/` });
+    const quads = parser.parse(response._getData().toString());
+    expect(quads.some((entry): boolean => entry.equals(
+      quad(namedNode(`${BASE}/`), RDF.terms.type, LDP.terms.Container),
+    ))).toBeTruthy();
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
+    // This is only here because we're accessing the root container
+    expect(response.getHeaders().link).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
   it('can read a folder listing with a query string.', async():
@@ -75,10 +78,14 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
 
-    const data = response._getData().toString();
-    expect(data).toContain(`<> a ldp:Container`);
+    const parser = new Parser({ baseIRI: `${BASE}/` });
+    const quads = parser.parse(response._getData().toString());
+    expect(quads.some((entry): boolean => entry.equals(
+      quad(namedNode(`${BASE}/`), RDF.terms.type, LDP.terms.Container),
+    ))).toBeTruthy();
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
   it('can add a file to the store, read it and delete it.', async():

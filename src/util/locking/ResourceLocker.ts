@@ -1,30 +1,23 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 
 /**
- * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.
+ * An interface for classes that only have 1 way to lock interfaces.
+ * In general this should only be used by components implementing the {@link ReadWriteLocker} interface.
+ * Other components that require locking of resources should use that interface.
  */
 export interface ResourceLocker {
   /**
-   * Run the given function while the resource is locked.
-   * The lock will be released when the (async) input function resolves.
-   * This function should be used for operations that only require reading the resource.
-   *
-   * @param identifier - Identifier of the resource that needs to be locked.
-   * @param whileLocked - A function to execute while the resource is locked.
-   *
-   * @returns A promise resolving when the lock is released.
+   * Acquires a lock on the requested identifier.
+   * The promise will resolve when the lock has been acquired.
+   * @param identifier - Resource to acquire a lock on.
    */
-  withReadLock: <T>(identifier: ResourceIdentifier, whileLocked: () => T | Promise<T>) => Promise<T>;
+  acquire: (identifier: ResourceIdentifier) => Promise<void>;
 
   /**
-   * Run the given function while the resource is locked.
-   * The lock will be released when the (async) input function resolves.
-   * This function should be used for operations that could modify the resource.
-   *
-   * @param identifier - Identifier of the resource that needs to be locked.
-   * @param whileLocked - A function to execute while the resource is locked.
-   *
-   * @returns A promise resolving when the lock is released.
+   * Releases a lock on the requested identifier.
+   * The promise will resolve when the lock has been released.
+   * In case there is no lock on the resource an error should be thrown.
+   * @param identifier - Resource to release the lock on.
    */
-  withWriteLock: <T>(identifier: ResourceIdentifier, whileLocked: () => T | Promise<T>) => Promise<T>;
+  release: (identifier: ResourceIdentifier) => Promise<void>;
 }

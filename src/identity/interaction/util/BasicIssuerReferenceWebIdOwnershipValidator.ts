@@ -1,13 +1,10 @@
-import { literal, namedNode } from '@rdfjs/dataset';
+import { literal, namedNode, quad } from '@rdfjs/dataset';
 import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
-import type { AnyPointer } from 'clownface';
-import clownface from 'clownface';
 import type { DatasetCore } from 'rdf-js';
+import { getLoggerFor } from '../../../logging/LogUtil';
+import { SOLID } from '../../../util/Vocabularies';
 import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
-
-const SOLID_OIDC_ISSUER = namedNode('http://www.w3.org/ns/solid/terms#oidcIssuer');
-const SOLID_OIDC_ISSUER_REGISTRATION_TOKEN = namedNode('http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken');
 
 /**
  * Validates is a WebId is okay to register based on if it
@@ -19,34 +16,52 @@ const SOLID_OIDC_ISSUER_REGISTRATION_TOKEN = namedNode('http://www.w3.org/ns/sol
  */
 export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipValidator {
   private readonly issuer: string;
+  private readonly logger = getLoggerFor(this);
 
   public constructor(issuer: string) {
     super();
     this.issuer = issuer;
   }
 
-  public async assertWebId(webId: string, interactionId: string): Promise<void> {
+  public async assertWebIdOwnership(
+    webId: string,
+    interactionId: string,
+  ): Promise<void> {
     let rawResponse: DatasetResponse<DatasetCore>;
     try {
-      rawResponse = await fetch(webId) as DatasetResponse<DatasetCore>;
-    } catch {
+      rawResponse = (await fetch(webId)) as DatasetResponse<DatasetCore>;
+    } catch (err: unknown) {
+      this.logger.error(err as string);
       throw new Error('Cannot fetch WebId');
     }
-    let dataset: AnyPointer;
+    let dataset: DatasetCore;
     try {
-      dataset = clownface({
-        dataset: await rawResponse.dataset(),
-      });
-    } catch {
-      throw new Error('Could not parse WebId rdf');
+      dataset = await rawResponse.dataset();
+    } catch (err: unknown) {
+      this.logger.error(err as string);
+      throw new Error(`Could not parse rdf in ${webId}`);
     }
-    const webIdNode = dataset.namedNode(namedNode(webId));
-    const matchingIssuers = webIdNode.has(SOLID_OIDC_ISSUER, namedNode(this.issuer));
-    const matchingInteractionId = webIdNode.has(SOLID_OIDC_ISSUER_REGISTRATION_TOKEN, literal(interactionId));
-    if (matchingIssuers.values.length === 0 || matchingInteractionId.values.length === 0) {
-      let errorMessage = matchingIssuers.values.length === 0 ? `<${webId}> <${SOLID_OIDC_ISSUER.value}> <${this.issuer}> .\n` : '' ;
-      errorMessage = errorMessage.concat(matchingInteractionId.values.length === 0 ? `<${this.issuer}> <${SOLID_OIDC_ISSUER_REGISTRATION_TOKEN.value}> "${interactionId}" .\n` : '');
-      errorMessage = errorMessage.concat('Must be added to the WebId')
+    const hasIssuer = dataset.has(
+      quad(namedNode(webId), SOLID.terms.oidcIssuer, namedNode(this.issuer)),
+    );
+    const hasRegistrationToken = dataset.has(
+      quad(
+        namedNode(webId),
+        SOLID.terms.oidcIssuerRegistrationToken,
+        literal(interactionId),
+      ),
+    );
+    if (!hasIssuer || !hasRegistrationToken) {
+      let errorMessage =
+        !hasIssuer ?
+          `<${webId}> <${SOLID.terms.oidcIssuer.value}> <${this.issuer}> .\n` :
+          '';
+      errorMessage = errorMessage.concat(
+        !hasRegistrationToken ?
+          `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${interactionId}" .\n` :
+          '',
+      );
+      errorMessage = errorMessage.concat('Must be added to the WebId');
       throw new Error(errorMessage);
     }
   }

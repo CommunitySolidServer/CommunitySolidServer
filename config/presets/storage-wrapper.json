@@ -49,11 +49,23 @@
 
     {
       "@id": "urn:solid-server:default:ResourceLocker",
-      "@type": "WrappedExpiringResourceLocker",
-      "WrappedExpiringResourceLocker:_locker": {
-        "@type": "SingleThreadedResourceLocker"
+      "@type": "WrappedExpiringReadWriteLocker",
+      "WrappedExpiringReadWriteLocker:_locker": {
+        "@type": "GreedyReadWriteLocker",
+        "GreedyReadWriteLocker:_locker": {
+          "@type": "SingleThreadedResourceLocker"
+        },
+        "GreedyReadWriteLocker:_storage": {
+          "@type": "ResourceIdentifierStorage",
+          "ResourceIdentifierStorage:_source": {
+            "@type": "MemoryMapStorage"
+          }
+        },
+        "GreedyReadWriteLocker:_suffixes_count": "count",
+        "GreedyReadWriteLocker:_suffixes_read": "read",
+        "GreedyReadWriteLocker:_suffixes_write": "write"
       },
-      "WrappedExpiringResourceLocker:_expiration": 3000
+      "WrappedExpiringReadWriteLocker:_expiration": 3000
     },
 
 

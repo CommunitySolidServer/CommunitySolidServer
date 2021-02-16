@@ -1,15 +1,15 @@
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
-import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
-import { WrappedExpiringResourceLocker } from '../../../../src/util/locking/WrappedExpiringResourceLocker';
+import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
+import { WrappedExpiringReadWriteLocker } from '../../../../src/util/locking/WrappedExpiringReadWriteLocker';
 
 jest.useFakeTimers();
 
-describe('A WrappedExpiringResourceLocker', (): void => {
+describe('A WrappedExpiringReadWriteLocker', (): void => {
   const identifier = { path: 'path' };
   let syncCb: () => string;
   let asyncCb: () => Promise<string>;
-  let wrappedLocker: ResourceLocker;
-  let locker: WrappedExpiringResourceLocker;
+  let wrappedLocker: ReadWriteLocker;
+  let locker: WrappedExpiringReadWriteLocker;
   const expiration = 1000;
 
   beforeEach(async(): Promise<void> => {
@@ -25,7 +25,7 @@ describe('A WrappedExpiringResourceLocker', (): void => {
       setImmediate((): void => resolve('async'));
     }));
 
-    locker = new WrappedExpiringResourceLocker(wrappedLocker, expiration);
+    locker = new WrappedExpiringReadWriteLocker(wrappedLocker, expiration);
   });
 
   it('calls the wrapped locker for locking.', async(): Promise<void> => {

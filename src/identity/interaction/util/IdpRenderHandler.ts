@@ -8,4 +8,7 @@ export interface IdpRenderhandlerProps {
   prefilled: Record<string, any>;
 }
 
+/**
+ * A special Render Handler that renders an Idp form
+ */
 export abstract class IdpRenderHandler extends RenderHandler<IdpRenderhandlerProps> {}

@@ -3,7 +3,7 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { RenderHandler } from '../../../../server/util/RenderHandler';
-import { getFormDataRequestBody } from '../../util/getFormDataRequestBody';
+import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
 import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordResetPasswordRenderHandler';
 
@@ -13,6 +13,10 @@ export interface EmailPasswordResetPasswordHandlerArgs {
   messageRenderHandler: RenderHandler<{ message: string }>;
 }
 
+/**
+ * Handles the submission of the ResetPassword form, the form
+ * that is linked in the reset password email.
+ */
 export class EmailPasswordResetPasswordHandler extends HttpHandler {
   private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
   private readonly renderHandler: EmailPasswordResetPasswordRenderHandler;
@@ -50,11 +54,11 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
       assert(password === confirmPassword, 'Passwords do not match');
 
       // Reset password
-      const email = await this.emailPasswordStorageAdapter.getForgotPasswordConfirmationRecord(
+      const email = await this.emailPasswordStorageAdapter.getForgotPasswordRecord(
         recordId,
       );
       assert(email, 'This reset password link is no longer valid.');
-      await this.emailPasswordStorageAdapter.deleteForgotPasswordConfirmationRecord(
+      await this.emailPasswordStorageAdapter.deleteForgotPasswordRecord(
         recordId,
       );
 
