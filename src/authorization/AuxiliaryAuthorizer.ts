@@ -1,6 +1,7 @@
 import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import { getLoggerFor } from '../logging/LogUtil';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import type { Authorization } from './Authorization';
 import type { AuthorizerArgs } from './Authorizer';
 import { Authorizer } from './Authorizer';
 
@@ -26,13 +27,13 @@ export class AuxiliaryAuthorizer extends Authorizer {
     return this.resourceAuthorizer.canHandle(resourceAuth);
   }
 
-  public async handle(auxiliaryAuth: AuthorizerArgs): Promise<void> {
+  public async handle(auxiliaryAuth: AuthorizerArgs): Promise<Authorization> {
     const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
     this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} on ${resourceAuth.identifier.path}`);
     return this.resourceAuthorizer.handle(resourceAuth);
   }
 
-  public async handleSafe(auxiliaryAuth: AuthorizerArgs): Promise<void> {
+  public async handleSafe(auxiliaryAuth: AuthorizerArgs): Promise<Authorization> {
     const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
     this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} to ${resourceAuth.identifier.path}`);
     return this.resourceAuthorizer.handleSafe(resourceAuth);

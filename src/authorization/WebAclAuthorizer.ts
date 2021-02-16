@@ -16,6 +16,7 @@ import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy'
 import { ACL, FOAF } from '../util/Vocabularies';
 import type { AuthorizerArgs } from './Authorizer';
 import { Authorizer } from './Authorizer';
+import { WebAclAuthorization } from './WebAclAuthorization';
 
 /**
  * Handles most web access control predicates such as
@@ -48,36 +49,60 @@ export class WebAclAuthorizer extends Authorizer {
    * Will throw an error if this is not the case.
    * @param input - Relevant data needed to check if access can be granted.
    */
-  public async handle({ identifier, permissions, credentials }: AuthorizerArgs): Promise<void> {
+  public async handle({ identifier, permissions, credentials }: AuthorizerArgs): Promise<WebAclAuthorization> {
     const modes = (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
 
     // Verify that all required modes are set for the given agent
     this.logger.debug(`Checking if ${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
     const store = await this.getAclRecursive(identifier);
+    const authorization = this.createAuthorization(credentials, store);
     for (const mode of modes) {
-      this.checkPermission(credentials, store, mode);
+      this.checkPermission(credentials, authorization, mode);
     }
     this.logger.debug(`${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
+    return authorization;
   }
 
   /**
-   * Checks if any of the triples in the store grant the agent permission to use the given mode.
+   * Creates an Authorization object based on the quads found in the store.
+   * @param agent - Agent who's credentials will be used for the `user` field.
+   * @param store - Store containing all relevant authorization triples.
+   */
+  private createAuthorization(agent: Credentials, store: Store): WebAclAuthorization {
+    const publicPermissions = this.createPermissions({}, store);
+    const userPermissions = this.createPermissions(agent, store);
+
+    return new WebAclAuthorization(userPermissions, publicPermissions);
+  }
+
+  /**
+   * Creates the authorization permissions for the given credentials.
+   * @param credentials - Credentials to find the permissions for.
+   * @param store - Store containing all relevant authorization triples.
+   */
+  private createPermissions(credentials: Credentials, store: Store): PermissionSet {
+    const permissions: PermissionSet = {
+      read: false,
+      write: false,
+      append: false,
+      control: false,
+    };
+    for (const mode of (Object.keys(permissions) as (keyof PermissionSet)[])) {
+      permissions[mode] = this.hasPermission(credentials, store, mode);
+    }
+    return permissions;
+  }
+
+  /**
+   * Checks if the authorization grants the agent permission to use the given mode.
    * Throws a {@link ForbiddenHttpError} or {@link UnauthorizedHttpError} depending on the credentials
    * if access is not allowed.
    * @param agent - Agent that wants access.
-   * @param store - A store containing the relevant triples for authorization.
-   * @param mode - Which mode is requested. Probable one of ('write' | 'read' | 'append' | 'control').
+   * @param authorization - An Authorization containing the permissions the agent has on the resource.
+   * @param mode - Which mode is requested.
    */
-  private checkPermission(agent: Credentials, store: Store, mode: string): void {
-    const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
-    const auths = this.getModePermissions(store, modeString);
-
-    // Having write permissions implies having append permissions
-    if (modeString === ACL.Append) {
-      auths.push(...this.getModePermissions(store, ACL.Write));
-    }
-
-    if (!auths.some((term): boolean => this.hasAccess(agent, term, store))) {
+  private checkPermission(agent: Credentials, authorization: WebAclAuthorization, mode: keyof PermissionSet): void {
+    if (!authorization.user[mode]) {
       const isLoggedIn = typeof agent.webId === 'string';
       if (isLoggedIn) {
         this.logger.warn(`Agent ${agent.webId} has no ${mode} permissions`);
@@ -90,6 +115,24 @@ export class WebAclAuthorizer extends Authorizer {
         throw new UnauthorizedHttpError();
       }
     }
+  }
+
+  /**
+   * Checks if the given agent has permission to execute the given mode based on the triples in the store.
+   * @param agent - Agent that wants access.
+   * @param store - A store containing the relevant triples for authorization.
+   * @param mode - Which mode is requested.
+   */
+  private hasPermission(agent: Credentials, store: Store, mode: keyof PermissionSet): boolean {
+    const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
+    const auths = this.getModePermissions(store, modeString);
+
+    // Having write permissions implies having append permissions
+    if (modeString === ACL.Append) {
+      auths.push(...this.getModePermissions(store, ACL.Write));
+    }
+
+    return auths.some((term): boolean => this.hasAccess(agent, term, store));
   }
 
   /**
