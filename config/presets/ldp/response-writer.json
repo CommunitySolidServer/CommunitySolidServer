@@ -43,6 +43,9 @@
               "LinkRelMetadataWriter:_linkRelMap_value": "acl"
             }
           ]
+        },
+        {
+          "@type": "WacAllowMetadataWriter"
         }
       ]
     },

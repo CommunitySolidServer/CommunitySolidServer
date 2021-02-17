@@ -112,5 +112,6 @@ describe('A server with authorization', (): void => {
       [],
     );
     expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()['wac-allow']).toBe('user="read write append",public="read write append"');
   });
 });

@@ -75,6 +75,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
     expect(response._getBuffer().toString()).toContain('TESTFILE2');
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders()['wac-allow']).toBe('user="read write append",public="read write append"');
 
     // DELETE file
     await resourceHelper.deleteResource(id);
@@ -107,6 +108,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
     expect(response._getBuffer().toString()).toContain('TEST');
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<http://test.com/permanent.txt.acl>; rel="acl"`);
+    expect(response.getHeaders()['wac-allow']).toBe('user="read",public="read"');
 
     // Try to delete permanent file
     response = await resourceHelper.deleteResource('http://test.com/permanent.txt', true);
@@ -147,5 +149,6 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
 
     const response = await resourceHelper.performRequest(new URL('http://test.com/.acl'), 'GET', { accept: '*/*' });
     expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()['wac-allow']).toBe('user="control",public="control"');
   });
 });
