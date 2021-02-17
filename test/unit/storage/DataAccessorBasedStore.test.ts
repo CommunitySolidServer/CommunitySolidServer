@@ -229,6 +229,24 @@ describe('A DataAccessorBasedStore', (): void => {
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
       });
     });
+    // This test is to be added later
+    // more info can be found in this github issue:
+    // https://github.com/solid/community-server/issues/574
+    // it('generates http://test.com/%26%2F%26 when slug is &/%26.', async(): Promise<void> => {
+    //   const resourceID = { path: root };
+    //   representation.metadata.removeAll(RDF.type);
+    //   representation.metadata.add(HTTP.slug, '&/%26');
+    //   const result = await store.addResource(resourceID, representation);
+    //   expect(result).toEqual({ path: `${root}%26%2F%26` });
+    // });
+    it('will trim excessive trailing slashes in slug.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.data = guardedStreamFrom([ `` ]);
+      representation.metadata.add(HTTP.slug, 'slashes///////////');
+      const result = await store.addResource(resourceID, representation);
+      expect(result).toEqual({ path: `${root}slashes/` });
+    });
   });
 
   describe('setting a Representation', (): void => {

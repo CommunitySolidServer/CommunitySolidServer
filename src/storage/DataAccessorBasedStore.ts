@@ -20,6 +20,7 @@ import {
   isContainerIdentifier,
   isContainerPath,
   trimTrailingSlashes,
+  toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
@@ -305,8 +306,25 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
-    return { path:
-        `${ensureTrailingSlash(container.path)}${slug ? trimTrailingSlashes(slug) : uuid()}${isContainer ? '/' : ''}` };
+    let path = ensureTrailingSlash(container.path);
+    path += slug ? this.cleanSlug(slug) : uuid();
+    path += isContainer ? '/' : '';
+    return { path };
+  }
+
+  /**
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
+   * e.g.: cleanslug('&/%26') returns '%26%2F%26'
+   * @param slug - the slug to clean
+   */
+  protected cleanSlug(slug: string): string {
+    let res = trimTrailingSlashes(slug);
+    res = toCanonicalUriPath(res);
+    // This line of code is to be added later
+    // more info can be found in this github issue:
+    // https://github.com/solid/community-server/issues/574
+    // res = res.split('/').join(encodeURIComponent('/'));
+    return res;
   }
 
   /**
