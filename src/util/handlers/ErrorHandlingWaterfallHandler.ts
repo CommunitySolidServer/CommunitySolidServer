@@ -1,7 +1,6 @@
-import { AsyncHandler } from './AsyncHandler';
+import type { AsyncHandler } from './AsyncHandler';
+import type { OnErrorHandler } from './OnErrorHandler';
 import { WaterfallHandler } from './WaterfallHandler';
-
-export abstract class OnErrorHandler<TIn, TOut> extends AsyncHandler<{ error: unknown; input: TIn }, TOut> {}
 
 /**
  * A special kind of waterfall handler that will defer to an "onErrorHandler" if one

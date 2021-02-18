@@ -1,4 +1,4 @@
-import { OnErrorHandler } from '../util/handlers/ErrorHandlingWaterfallHandler';
+import { OnErrorHandler } from '../util/handlers/OnErrorHandler';
 import type { HttpHandlerInput } from './HttpHandler';
 
 /**
