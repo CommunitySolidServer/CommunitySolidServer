@@ -169,7 +169,7 @@ export class WebAclAuthorizer extends Authorizer {
     if (typeof agent.webId !== 'string') {
       return false;
     }
-    if (store.countQuads(auth, ACL.agentClass, FOAF.AuthenticatedAgent, null) > 0) {
+    if (store.countQuads(auth, ACL.agentClass, ACL.AuthenticatedAgent, null) > 0) {
       return true;
     }
     return store.countQuads(auth, ACL.agent, agent.webId, null) > 0;

@@ -102,7 +102,7 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('allows access to authorized agents if the acl files allows all authorized users.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
+      quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
@@ -114,7 +114,7 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('errors if authorization is required but the agent is not authorized.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
+      quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
