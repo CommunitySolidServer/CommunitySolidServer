@@ -34,9 +34,7 @@ export class RouterHandler extends HttpHandler {
       throw new Error('Cannot handle request without a method');
     }
     if (
-      !this.allowedMethods.some(
-        (method): boolean => method === input.request.method,
-      )
+      !this.allowedMethods.includes(input.request.method)
     ) {
       throw new MethodNotAllowedHttpError(
         `${input.request.method} is not allowed.`,
