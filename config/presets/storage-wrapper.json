@@ -21,6 +21,16 @@
     },
 
     {
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "@type": "RoutingAuxiliaryStrategy",
+      "RoutingAuxiliaryStrategy:_sources": [
+        {
+          "@id": "urn:solid-server:default:AclStrategy"
+        }
+      ]
+    },
+
+    {
       "@id": "urn:solid-server:default:ResourceStore_Locking",
       "@type": "LockingResourceStore",
       "LockingResourceStore:_source": {
@@ -28,8 +38,10 @@
       },
       "LockingResourceStore:_locks": {
         "@id": "urn:solid-server:default:ResourceLocker"
+      },
+      "LockingResourceStore:_strategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
-
     },
 
     {

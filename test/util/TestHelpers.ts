@@ -29,12 +29,11 @@ export class AclHelper {
       '<http://test.com/#auth> a acl:Authorization',
     ];
 
-    for (const perm of [ 'Read', 'Append', 'Write', 'Delete' ]) {
+    for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
       if (permissions[perm.toLowerCase() as keyof PermissionSet]) {
         acl.push(`;\n acl:mode acl:${perm}`);
       }
     }
-    acl.push(';\n acl:mode acl:Control');
     acl.push(`;\n acl:accessTo <${this.id}>`);
     acl.push(`;\n acl:default <${this.id}>`);
     acl.push(

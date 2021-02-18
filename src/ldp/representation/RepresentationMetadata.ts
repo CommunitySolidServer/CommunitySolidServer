@@ -155,7 +155,9 @@ export class RepresentationMetadata {
   }
 
   /**
-   * @param quads - Quad to add to the metadata.
+   * @param subject - Subject of quad to add.
+   * @param predicate - Predicate of quad to add.
+   * @param object - Object of quad to add.
    */
   public addQuad(
     subject: NamedNode | BlankNode | string,
@@ -175,7 +177,9 @@ export class RepresentationMetadata {
   }
 
   /**
-   * @param quads - Quad to remove from the metadata.
+   * @param subject - Subject of quad to remove.
+   * @param predicate - Predicate of quad to remove.
+   * @param object - Object of quad to remove.
    */
   public removeQuad(
     subject: NamedNode | BlankNode | string,
@@ -197,19 +201,33 @@ export class RepresentationMetadata {
   /**
    * Adds a value linked to the identifier. Strings get converted to literals.
    * @param predicate - Predicate linking identifier to value.
-   * @param object - Value to add.
+   * @param object - Value(s) to add.
    */
-  public add(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    return this.addQuad(this.id, predicate, object);
+  public add(predicate: NamedNode | string, object: MetadataValue): this {
+    return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj));
   }
 
   /**
    * Removes the given value from the metadata. Strings get converted to literals.
    * @param predicate - Predicate linking identifier to value.
-   * @param object - Value to remove.
+   * @param object - Value(s) to remove.
    */
-  public remove(predicate: NamedNode | string, object: NamedNode | Literal | string): this {
-    return this.removeQuad(this.id, predicate, object);
+  public remove(predicate: NamedNode | string, object: MetadataValue): this {
+    return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj));
+  }
+
+  /**
+   * Helper function to simplify add/remove
+   * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
+   */
+  private forQuads(predicate: NamedNode | string, object: MetadataValue,
+    forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
+    const predicateNode = toCachedNamedNode(predicate);
+    const objects = Array.isArray(object) ? object : [ object ];
+    for (const obj of objects) {
+      forFn(predicateNode, toObjectTerm(obj, true));
+    }
+    return this;
   }
 
   /**
@@ -256,9 +274,9 @@ export class RepresentationMetadata {
    * Sets the value for the given predicate, removing all other instances.
    * In case the object is undefined this is identical to `removeAll(predicate)`.
    * @param predicate - Predicate linking to the value.
-   * @param object - Value to set.
+   * @param object - Value(s) to set.
    */
-  public set(predicate: NamedNode | string, object?: NamedNode | Literal | string): this {
+  public set(predicate: NamedNode | string, object?: MetadataValue): this {
     this.removeAll(predicate);
     if (object) {
       this.add(predicate, object);

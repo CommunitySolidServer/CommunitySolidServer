@@ -127,7 +127,9 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     this.logger.verbose(`Required permissions are read: ${read}, write: ${write}, append: ${append}`);
 
     try {
-      await this.authorizer.handleSafe({ credentials, identifier: operation.target, permissions });
+      const authorization = await this.authorizer
+        .handleSafe({ credentials, identifier: operation.target, permissions });
+      operation.authorization = authorization;
     } catch (error: unknown) {
       this.logger.verbose(`Authorization failed: ${(error as any).message}`);
       throw error;

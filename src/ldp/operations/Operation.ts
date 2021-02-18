@@ -1,3 +1,4 @@
+import type { Authorization } from '../../authorization/Authorization';
 import type { Representation } from '../representation/Representation';
 import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -18,6 +19,10 @@ export interface Operation {
    * Representation preferences of the response. Will be empty if there are none.
    */
   preferences: RepresentationPreferences;
+  /**
+   * This value will be set if the Operation was authorized by an Authorizer.
+   */
+  authorization?: Authorization;
   /**
    * Optional representation of the body.
    */
