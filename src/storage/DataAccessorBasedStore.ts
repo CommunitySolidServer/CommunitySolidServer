@@ -320,10 +320,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected cleanSlug(slug: string): string {
     let res = trimTrailingSlashes(slug);
     res = toCanonicalUriPath(res);
-    // This line of code is to be added later
-    // more info can be found in this github issue:
-    // https://github.com/solid/community-server/issues/574
-    // res = res.split('/').join(encodeURIComponent('/'));
+    res = res.split('/').join(encodeURIComponent('/'));
     return res;
   }
 

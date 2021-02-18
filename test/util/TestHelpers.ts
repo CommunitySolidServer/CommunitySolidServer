@@ -100,11 +100,15 @@ export class ResourceHelper {
       joinFilePath(__dirname, fileLocation),
     );
 
+    const regex = new RegExp(/(.*\/)?([^\s/]+\/?)/u, 'u').exec(slug);
+    const firstSlugPart = regex && regex[1] ? regex[1] : '';
+    const lastSlugPart = regex && regex[2] ? regex[2] : '';
+
     const response: MockResponse<any> = await this.performRequestWithBody(
-      this.baseUrl,
+      new URL(this.baseUrl.toString() + firstSlugPart),
       'POST',
       { 'content-type': contentType,
-        slug,
+        slug: lastSlugPart,
         'transfer-encoding': 'chunked' },
       fileData,
     );
@@ -155,11 +159,15 @@ export class ResourceHelper {
   }
 
   public async createContainer(slug: string): Promise<MockResponse<any>> {
+    const regex = new RegExp(/(.*\/)?([^\s/]+\/?)/u, 'u').exec(slug);
+    const firstSlugPart = regex && regex[1] ? regex[1] : '';
+    const lastSlugPart = regex && regex[2] ? regex[2] : '';
+
     const response: MockResponse<any> = await this.performRequest(
-      this.baseUrl,
+      new URL(this.baseUrl.toString() + firstSlugPart),
       'POST',
       {
-        slug,
+        slug: lastSlugPart,
         link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
         'content-type': 'text/turtle',
         'transfer-encoding': 'chunked',
