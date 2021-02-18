@@ -59,6 +59,7 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'accessTo',
   'agent',
   'agentClass',
+  'AuthenticatedAgent',
   'default',
   'mode',
 
@@ -79,7 +80,6 @@ export const DC = createUriAndTermNamespace('http://purl.org/dc/terms/',
 
 export const FOAF = createUriAndTermNamespace('http://xmlns.com/foaf/0.1/',
   'Agent',
-  'AuthenticatedAgent',
 );
 
 export const HTTP = createUriAndTermNamespace('urn:solid:http:',
