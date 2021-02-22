@@ -348,10 +348,11 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
-    let path = ensureTrailingSlash(container.path);
-    path += slug ? this.cleanSlug(slug) : uuid();
-    path += isContainer ? '/' : '';
-    return { path };
+    const base = ensureTrailingSlash(container.path);
+    const cleanedSlug = slug ? this.cleanSlug(slug) : null;
+    const name = cleanedSlug ?? uuid();
+    const suffix = isContainer ? '/' : '';
+    return { path: `${base}${name}${suffix}` };
   }
 
   /**
@@ -360,7 +361,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - the slug to clean
    */
   protected cleanSlug(slug: string): string {
-    if (trimTrailingSlashes(slug).includes('/')) {
+    if (/\/[^/]/u.test(slug)) {
       throw new BadRequestHttpError('Slugs should not contain slashes');
     }
     return toCanonicalUriPath(trimTrailingSlashes(slug));

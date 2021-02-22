@@ -145,21 +145,21 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
 
   it('can create a folder and delete it.', async(): Promise<void> => {
     const containerPath = 'secondfolder/';
-    const contiainerUrl = `${BASE}/${containerPath}`;
+    const containerUrl = `${BASE}/${containerPath}`;
     // PUT
     let response = await resourceHelper.createContainer(containerPath);
 
     // GET
-    response = await resourceHelper.getContainer(contiainerUrl);
+    response = await resourceHelper.getContainer(containerUrl);
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${contiainerUrl}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${containerUrl}.acl>; rel="acl"`);
 
     // DELETE
-    await resourceHelper.deleteResource(contiainerUrl);
-    await resourceHelper.shouldNotExist(contiainerUrl);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('can make a folder and put a file in it.', async(): Promise<void> => {

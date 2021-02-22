@@ -99,7 +99,7 @@ export class ResourceHelper {
     );
 
     const response: MockResponse<any> = await this.performRequestWithBody(
-      new URL(this.baseUrl.toString() + path),
+      new URL(path, this.baseUrl),
       'PUT',
       { 'content-type': contentType,
         'transfer-encoding': 'chunked' },
@@ -152,7 +152,7 @@ export class ResourceHelper {
 
   public async createContainer(path: string): Promise<MockResponse<any>> {
     const response: MockResponse<any> = await this.performRequest(
-      new URL(this.baseUrl.toString() + path),
+      new URL(path, this.baseUrl),
       'PUT',
       {
         link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
