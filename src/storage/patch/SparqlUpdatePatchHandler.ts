@@ -73,6 +73,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const def = defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
+    const where: BaseQuad[] = typeof op.where !== 'undefined' ? op.where.patterns : [];
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
       this.logger.warn('GRAPH statement in DELETE clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
@@ -81,7 +82,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       this.logger.warn('GRAPH statement in INSERT clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
-    if (op.where ?? deletes.some((pattern): boolean =>
+    if (!(where.length === 0) && where.some((pattern): boolean =>
       someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
       this.logger.warn('WHERE statements are not supported');
       throw new NotImplementedHttpError('WHERE statements are not supported');
