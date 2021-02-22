@@ -360,10 +360,10 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - the slug to clean
    */
   protected cleanSlug(slug: string): string {
-    let res = trimTrailingSlashes(slug);
-    res = toCanonicalUriPath(res);
-    res = res.split('/').join(encodeURIComponent('/'));
-    return res;
+    if (trimTrailingSlashes(slug).includes('/')) {
+      throw new BadRequestHttpError('Slugs should not contain slashes');
+    }
+    return toCanonicalUriPath(trimTrailingSlashes(slug));
   }
 
   /**

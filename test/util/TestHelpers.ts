@@ -2,7 +2,6 @@ import { EventEmitter } from 'events';
 import { promises as fs } from 'fs';
 import type { IncomingHttpHeaders } from 'http';
 import { Readable } from 'stream';
-import * as url from 'url';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
@@ -93,28 +92,22 @@ export class ResourceHelper {
     return response;
   }
 
-  public async createResource(fileLocation: string, slug: string, contentType: string, mayFail = false):
+  public async createResource(fileLocation: string, path: string, contentType: string, mayFail = false):
   Promise<MockResponse<any>> {
     const fileData = await fs.readFile(
       joinFilePath(__dirname, fileLocation),
     );
 
-    const regex = new RegExp(/(.*\/)?([^\s/]+\/?)/u, 'u').exec(slug);
-    const firstSlugPart = regex && regex[1] ? regex[1] : '';
-    const lastSlugPart = regex && regex[2] ? regex[2] : '';
-
     const response: MockResponse<any> = await this.performRequestWithBody(
-      new URL(this.baseUrl.toString() + firstSlugPart),
-      'POST',
+      new URL(this.baseUrl.toString() + path),
+      'PUT',
       { 'content-type': contentType,
-        slug: lastSlugPart,
         'transfer-encoding': 'chunked' },
       fileData,
     );
     if (!mayFail) {
-      expect(response.statusCode).toBe(201);
+      expect(response.statusCode).toBe(205);
       expect(response._getData()).toHaveLength(0);
-      expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
     }
     return response;
   }
@@ -157,24 +150,18 @@ export class ResourceHelper {
     return response;
   }
 
-  public async createContainer(slug: string): Promise<MockResponse<any>> {
-    const regex = new RegExp(/(.*\/)?([^\s/]+\/?)/u, 'u').exec(slug);
-    const firstSlugPart = regex && regex[1] ? regex[1] : '';
-    const lastSlugPart = regex && regex[2] ? regex[2] : '';
-
+  public async createContainer(path: string): Promise<MockResponse<any>> {
     const response: MockResponse<any> = await this.performRequest(
-      new URL(this.baseUrl.toString() + firstSlugPart),
-      'POST',
+      new URL(this.baseUrl.toString() + path),
+      'PUT',
       {
-        slug: lastSlugPart,
         link: '<http://www.w3.org/ns/ldp#Container>; rel="type"',
         'content-type': 'text/turtle',
         'transfer-encoding': 'chunked',
       },
     );
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(205);
     expect(response._getData()).toHaveLength(0);
-    expect(response._getHeaders().location).toContain(url.format(this.baseUrl));
     return response;
   }
 
