@@ -14,7 +14,7 @@ RUN npm audit --production --audit-level=high
 COPY . .
 
 ## Install and build the Solid community server (prepare script cannot run in wd)
-RUN npm ci && npm run build
+RUN npm ci --ignore-scripts && npm run build
 
 
 
