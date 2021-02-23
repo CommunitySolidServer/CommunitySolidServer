@@ -99,6 +99,7 @@ export * from './identity/storage/KeyValueStore';
 export * from './identity/storage/PassthroughKeyValueStore';
 export * from './identity/storage/StorageAdapterFactory';
 export * from './identity/storage/ResourceStoreStorageAdapterFactory';
+export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';
 
 // SolidIdentityProvider/InteractionPolicies/Util
 export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';

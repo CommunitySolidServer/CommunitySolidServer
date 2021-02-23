@@ -48,16 +48,13 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
       ),
     );
     if (!hasIssuer || !hasRegistrationToken) {
-      let errorMessage =
-        !hasIssuer ?
-          `<${webId}> <${SOLID.terms.oidcIssuer.value}> <${this.issuer}> .\n` :
-          '';
-      errorMessage = errorMessage.concat(
-        !hasRegistrationToken ?
-          `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${interactionId}" .\n` :
-          '',
-      );
-      errorMessage = errorMessage.concat('Must be added to the WebId');
+      let errorMessage = !hasIssuer ?
+        `<${webId}> <${SOLID.terms.oidcIssuer.value}> <${this.issuer}> .\n` :
+        '';
+      errorMessage += !hasRegistrationToken ?
+        `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${interactionId}" .\n` :
+        '';
+      errorMessage += 'Must be added to the WebId';
       throw new Error(errorMessage);
     }
   }
