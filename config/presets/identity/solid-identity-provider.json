@@ -16,15 +16,15 @@
       }
     },
     {
-      "@id": "urn:solid-server:default:IdPConfigurationFactory",
-      "@type": "KeyGeneratingIdpConfigurationFactory",
-      "KeyGeneratingIdpConfigurationFactory:_storageAdapterFactory": {
+      "@id": "urn:solid-server:default:IdPConfigurationGenerator",
+      "@type": "KeyGeneratingIdpConfigurationGenerator",
+      "KeyGeneratingIdpConfigurationGenerator:_storageAdapterFactory": {
         "@id": "urn:solid-server:default:IdPStorageAdapterFactory"
       },
-      "KeyGeneratingIdpConfigurationFactory:_baseUrl": {
+      "KeyGeneratingIdpConfigurationGenerator:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "KeyGeneratingIdpConfigurationFactory:_store": {
+      "KeyGeneratingIdpConfigurationGenerator:_store": {
         "@type": "PassthroughKeyValueStore",
         "PassthroughKeyValueStore:_store": {
           "@id": "urn:solid-server:default:ResourceStore"
@@ -38,11 +38,11 @@
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "IdentityProviderFactory:_configurationFactory": {
-        "@id": "urn:solid-server:default:IdPConfigurationFactory"
+        "@id": "urn:solid-server:default:IdPConfigurationGenerator"
       }
     },
     {
-      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
       "@type": "IdentityProviderHttpHandler",
       "IdentityProviderHttpHandler:_providerFactory": {
         "@id": "urn:solid-server:default:IdentityProviderFactory"
@@ -50,6 +50,14 @@
       "IdentityProviderHttpHandler:_interactionPolicyHttpHandler": {
         "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "RouterHandler",
+      "RouterHandler:_allowedMethods": [ "GET", "POST", "PUT", "DELTE", "OPTIONS" ],
+      "RouterHandler:_allowedPathnames": [ "^\/idp\/.*", "^\/\\.well-known\/openid-configuration" ],
+      "RouterHandler:_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+
     }
   ]
 }

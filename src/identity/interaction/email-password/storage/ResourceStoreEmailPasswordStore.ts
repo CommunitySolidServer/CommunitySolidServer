@@ -4,9 +4,9 @@ import { v4 } from 'uuid';
 import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { KeyValueStore } from '../../../storage/KeyValueStore';
-import { EmailPasswordStorageAdapter } from './EmailPasswordStorageAdapter';
+import { EmailPasswordStore } from './EmailPasswordStore';
 
-export interface EmailPasswordResourceStoreStorageAdapterArgs {
+export interface ResourceStoreEmailPasswordStoreArgs {
   baseUrl: string;
   storagePathname: string;
   store: KeyValueStore;
@@ -35,12 +35,12 @@ export interface EmailPasswordForgotPasswordPayload {
  * A EmailPasswordStorageAdapter that uses a ResoucreStore
  * to persist its information.
  */
-export class EmailPasswordResourceStoreStorageAdapter extends EmailPasswordStorageAdapter {
+export class ResourceStoreEmailPasswordStore extends EmailPasswordStore {
   private readonly baseUrl: string;
   private readonly store: KeyValueStore;
   private readonly saltRounds: number;
 
-  public constructor(args: EmailPasswordResourceStoreStorageAdapterArgs) {
+  public constructor(args: ResourceStoreEmailPasswordStoreArgs) {
     super();
     this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${
       args.storagePathname

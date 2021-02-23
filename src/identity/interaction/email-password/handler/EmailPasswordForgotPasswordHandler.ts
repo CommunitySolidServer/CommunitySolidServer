@@ -8,12 +8,12 @@ import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { TemplateRenderer } from '../../util/TemplateRenderer';
-import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
+import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordForgotPasswordHandlerArgs {
   renderHandler: IdpRenderHandler;
   messageRenderHandler: IdpRenderHandler;
-  emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  emailPasswordStorageAdapter: EmailPasswordStore;
   baseUrl: string;
   emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   emailSender: EmailSender;
@@ -25,7 +25,7 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
 export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandler {
   private readonly renderHandler: IdpRenderHandler;
   private readonly messageRenderHandler: IdpRenderHandler;
-  private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly baseUrl: string;
   private readonly logger = getLoggerFor(this);
   private readonly emailTamplateRenderer: TemplateRenderer<{ resetLink: string }>;

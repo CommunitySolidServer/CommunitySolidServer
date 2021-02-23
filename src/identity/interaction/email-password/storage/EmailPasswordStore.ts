@@ -1,7 +1,7 @@
 /**
  * A storage adapter needed for the email-password interaction
  */
-export abstract class EmailPasswordStorageAdapter {
+export abstract class EmailPasswordStore {
   /**
    * Authenticate if the username and password are correct and return the webId
    * if it is. Return an error if it is not.
