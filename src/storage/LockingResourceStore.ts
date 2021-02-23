@@ -48,9 +48,9 @@ export class LockingResourceStore implements AtomicResourceStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<void> => this.source.setRepresentation(identifier, representation, conditions));
+      async(): Promise<ResourceIdentifier[]> => this.source.setRepresentation(identifier, representation, conditions));
   }
 
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
@@ -58,9 +58,10 @@ export class LockingResourceStore implements AtomicResourceStore {
       async(): Promise<void> => this.source.deleteResource(identifier, conditions));
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
+      async(): Promise<ResourceIdentifier[]> => this.source.modifyResource(identifier, patch, conditions));
   }
 
   /**

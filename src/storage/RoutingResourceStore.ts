@@ -31,7 +31,7 @@ export class RoutingResourceStore implements ResourceStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return (await this.getStore(identifier, representation)).setRepresentation(identifier, representation, conditions);
   }
 
@@ -40,7 +40,7 @@ export class RoutingResourceStore implements ResourceStore {
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions):
-  Promise<void> {
+  Promise<ResourceIdentifier[]> {
     return (await this.getStore(identifier)).modifyResource(identifier, patch, conditions);
   }
 

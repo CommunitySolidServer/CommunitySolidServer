@@ -27,21 +27,32 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
-    await this.source.modifyResource(identifier, patch, conditions);
-    this.emitChanged(identifier, null);
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    const created = await this.source.modifyResource(identifier, patch, conditions);
+    const containersChanged = created
+      .filter(resource => !this.identifierStrategy.isRootContainer(resource))
+      .map(resource => this.identifierStrategy.getParentContainer(resource));
+    this.emitChanged(identifier, containersChanged);
+    return created;
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
-    await this.source.setRepresentation(identifier, representation, conditions);
-    this.emitChanged(identifier);
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    const created = await this.source.setRepresentation(identifier, representation, conditions);
+    console.log('setRepresentation in MonitoringStore', created);
+    const containersChanged = created
+      .filter(resource => !this.identifierStrategy.isRootContainer(resource))
+      .map(resource => this.identifierStrategy.getParentContainer(resource));
+
+    this.emitChanged(identifier, containersChanged);
+    return created;
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier> {
     const identifier = await this.source.addResource(container, representation, conditions);
-    this.emitChanged(identifier, container);
+    this.emitChanged(identifier, [ container ]);
     return identifier;
   }
 
@@ -50,15 +61,17 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     this.emitChanged(identifier);
   }
 
-  private emitChanged(resource: ResourceIdentifier, container?: ResourceIdentifier | null): void {
+  private emitChanged(resource: ResourceIdentifier, containers?: ResourceIdentifier[]): void {
     // Determine the container if none was passed
-    if (typeof container === 'undefined' && !this.identifierStrategy.isRootContainer(resource)) {
-      container = this.identifierStrategy.getParentContainer(resource);
+    if (typeof containers === 'undefined' && !this.identifierStrategy.isRootContainer(resource)) {
+      containers = [ this.identifierStrategy.getParentContainer(resource) ];
     }
 
     // Signal a change on the container if requested
-    if (container) {
-      this.emit('changed', container);
+    if (containers) {
+      containers.forEach((container): void => {
+        this.emit('changed', container);
+      });
     }
 
     // Signal a change on the resource

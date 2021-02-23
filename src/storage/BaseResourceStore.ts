@@ -25,12 +25,13 @@ export class BaseResourceStore implements ResourceStore {
     throw new NotImplementedHttpError();
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError();
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError();
   }
 }

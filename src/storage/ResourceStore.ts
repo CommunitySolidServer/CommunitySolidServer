@@ -50,13 +50,13 @@ export interface ResourceStore {
    * @param representation - New representation of the resource.
    * @param conditions - Optional conditions.
    *
-   * @returns A promise resolving when the update is finished.
+   * @returns A promise resolving to a list of resources that were created when the update is finished.
    */
   setRepresentation: (
     identifier: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<void>;
+  ) => Promise<ResourceIdentifier[]>;
 
   /**
    * Delete a resource.
@@ -73,7 +73,11 @@ export interface ResourceStore {
    * @param patch - Description of which parts to update.
    * @param conditions - Optional conditions.
    *
-   * @returns A promise resolving when the update is finished.
+   * @returns A promise resolving to a list of resources that were created when the update is finished.
    */
-  modifyResource: (identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions) => Promise<void>;
+  modifyResource: (
+    identifier: ResourceIdentifier,
+    patch: Patch,
+    conditions?: Conditions
+  ) => Promise<ResourceIdentifier[]>;
 }

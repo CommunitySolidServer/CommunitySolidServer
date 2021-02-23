@@ -133,7 +133,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     return newID;
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
+  public async setRepresentation(identifier: ResourceIdentifier,
+    representation: Representation): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
 
     // Ensure the representation is supported by the accessor
@@ -160,10 +161,10 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Potentially have to create containers if it didn't exist yet
-    await this.writeData(identifier, representation, isContainer, !oldMetadata);
+    return await this.writeData(identifier, representation, isContainer, !oldMetadata);
   }
 
-  public async modifyResource(): Promise<void> {
+  public async modifyResource(): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
@@ -266,7 +267,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param createContainers - Should parent containers (potentially) be created?
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers?: boolean): Promise<void> {
+    createContainers?: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     const { metadata } = representation;
@@ -283,17 +284,26 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.auxiliaryStrategy.validate(representation);
     }
 
+    let created: ResourceIdentifier[] = [];
+
     // Root container should not have a parent container
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
     if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
-      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
+      created = await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
 
+    const resourceWasCreated: boolean = true; // FIXME: find this out somehow
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
+
+    if (resourceWasCreated) {
+      created.push(identifier);
+    }
+    console.log('writeData', created);
+    return created;
   }
 
   /**
@@ -445,7 +455,8 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<void> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+    let created: ResourceIdentifier[] = [];
     try {
       const metadata = await this.getNormalizedMetadata(container);
       // See #480
@@ -460,12 +471,15 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (NotFoundHttpError.isInstance(error)) {
         // Make sure the parent exists first
         if (!this.identifierStrategy.isRootContainer(container)) {
-          await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+          created = await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
         }
         await this.writeData(container, new BasicRepresentation([], container), true);
+        created.push(container);
       } else {
         throw error;
       }
     }
+    console.log('createRecursiveContainers', created);
+    return created;
   }
 }
