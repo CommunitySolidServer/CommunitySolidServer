@@ -51,6 +51,10 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     return op.type === Algebra.types.COMPOSITE_UPDATE;
   }
 
+  private isBasicGraphPattern(op: Algebra.Operation | undefined): op is Algebra.Bgp {
+    return typeof op !== 'undefined' && op.type === Algebra.types.BGP;
+  }
+
   /**
    * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
    */
@@ -73,7 +77,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const def = defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
-    const where: BaseQuad[] = typeof op.where !== 'undefined' ? op.where.patterns : [];
+    const where: BaseQuad[] = this.isBasicGraphPattern(op.where) ? op.where.patterns : [];
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {
       this.logger.warn('GRAPH statement in DELETE clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
