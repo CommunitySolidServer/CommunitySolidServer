@@ -22,28 +22,6 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     this.identifierStrategy = identifierStrategy;
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
-    const identifier = await this.source.addResource(container, representation, conditions);
-
-    // Both the container contents and the resource itself have changed
-    this.emit('changed', container);
-    this.emit('changed', identifier);
-
-    return identifier;
-  }
-
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
-    await this.source.deleteResource(identifier, conditions);
-
-    // Both the container contents and the resource itself have changed
-    if (!this.identifierStrategy.isRootContainer(identifier)) {
-      const container = this.identifierStrategy.getParentContainer(identifier);
-      this.emit('changed', container);
-    }
-    this.emit('changed', identifier);
-  }
-
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     return this.source.getRepresentation(identifier, preferences, conditions);
@@ -51,12 +29,39 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
     await this.source.modifyResource(identifier, patch, conditions);
-    this.emit('changed', identifier);
+    this.emitChanged(identifier, null);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<void> {
     await this.source.setRepresentation(identifier, representation, conditions);
-    this.emit('changed', identifier);
+    this.emitChanged(identifier);
+  }
+
+  public async addResource(container: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier> {
+    const identifier = await this.source.addResource(container, representation, conditions);
+    this.emitChanged(identifier, container);
+    return identifier;
+  }
+
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
+    await this.source.deleteResource(identifier, conditions);
+    this.emitChanged(identifier);
+  }
+
+  private emitChanged(resource: ResourceIdentifier, container?: ResourceIdentifier | null): void {
+    // Determine the container if none was passed
+    if (typeof container === 'undefined' && !this.identifierStrategy.isRootContainer(resource)) {
+      container = this.identifierStrategy.getParentContainer(resource);
+    }
+
+    // Signal a change on the container if requested
+    if (container) {
+      this.emit('changed', container);
+    }
+
+    // Signal a change on the resource
+    this.emit('changed', resource);
   }
 }

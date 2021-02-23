@@ -62,11 +62,12 @@ describe('A MonitoringStore', (): void => {
     expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
 
-  it('fires a resource change event after completing setRepresentation.', async(): Promise<void> => {
+  it('fires a container and resource change event after completing setRepresentation.', async(): Promise<void> => {
     const result = store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation);
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
-    expect(changedCallback).toHaveBeenCalledTimes(1);
+    expect(changedCallback).toHaveBeenCalledTimes(2);
+    expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/' });
     expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar' });
   });
 
@@ -76,7 +77,7 @@ describe('A MonitoringStore', (): void => {
     expect(source.deleteResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, undefined);
   });
 
-  it('fires resource and container change events after completing deleteResource.', async(): Promise<void> => {
+  it('fires container and resource change events after completing deleteResource.', async(): Promise<void> => {
     const result = store.deleteResource({ path: 'http://example.org/foo/bar' });
     expect(changedCallback).toHaveBeenCalledTimes(0);
     await result;
