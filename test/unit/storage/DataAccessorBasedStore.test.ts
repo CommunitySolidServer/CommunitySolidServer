@@ -336,7 +336,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom([ `<${`${root}`}> a <coolContainer>.` ]);
 
       await expect(store.setRepresentation(resourceID, representation))
-        .resolves.toBeUndefined();
+        .resolves.toEqual([{ path: 'http://test.com/' }]);
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenLastCalledWith(resourceID);
 
@@ -365,7 +365,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can write resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([{ path: 'http://test.com/resource' }]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
 
@@ -376,7 +376,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([{ path: 'http://test.com/container/' }]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
@@ -385,7 +385,9 @@ describe('A DataAccessorBasedStore', (): void => {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete accessor.data[root];
       const resourceID = { path: `${root}resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: 'http://test.com/' }, { path: 'http://test.com/resource' },
+      ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
 
@@ -398,7 +400,9 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom(
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
       );
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: 'http://test.com/container/' },
+      ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
@@ -418,7 +422,11 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('creates recursive containers when needed.', async(): Promise<void> => {
       const resourceID = { path: `${root}a/b/resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: 'http://test.com/a/' },
+        { path: 'http://test.com/a/b/' },
+        { path: 'http://test.com/a/b/resource' },
+      ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[`${root}a/`].metadata.getAll(RDF.type).map((type): string => type.value))
         .toContain(LDP.Container);
@@ -443,7 +451,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([{ path: 'http://test.com/' }]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(Object.keys(accessor.data)).toHaveLength(1);
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
