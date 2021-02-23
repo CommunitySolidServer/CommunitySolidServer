@@ -34,13 +34,15 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     }
   }
 
-  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
+  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}):
+  Promise<ResourceIdentifier[]> {
     // Verify the patch
     const { identifier, patch } = input;
     const op = patch.algebra;
     this.validateUpdate(op);
 
     await this.applyPatch(identifier, op);
+    return [ identifier ];
   }
 
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {

@@ -170,17 +170,20 @@ describe('An InMemoryDataAccessor', (): void => {
     it('removes the corresponding resource.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
-      await expect(accessor.deleteResource({ path: `${base}resource` })).resolves.toBeUndefined();
-      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}resource` })).resolves
+        .toEqual([{ path: 'http://test.com/resource' }]);
+      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves
+        .toEqual([{ path: 'http://test.com/container/' }]);
       await expect(accessor.getMetadata({ path: `${base}resource` })).rejects.toThrow(NotFoundHttpError);
       await expect(accessor.getMetadata({ path: `${base}container/` })).rejects.toThrow(NotFoundHttpError);
     });
 
     it('can delete the root container and write to it again.', async(): Promise<void> => {
-      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
-      await expect(accessor.getMetadata({ path: `${base}` })).rejects.toThrow(NotFoundHttpError);
+      await expect(accessor.deleteResource({ path: base })).resolves
+        .toEqual([{ path: base }]);
+      await expect(accessor.getMetadata({ path: base })).rejects.toThrow(NotFoundHttpError);
       await expect(accessor.getMetadata({ path: `${base}test/` })).rejects.toThrow(NotFoundHttpError);
-      await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
+      await expect(accessor.writeContainer({ path: base }, metadata)).resolves.toBeUndefined();
       const resultMetadata = await accessor.getMetadata({ path: `${base}` });
       expect(resultMetadata.quads()).toBeRdfIsomorphic(metadata.quads());
     });

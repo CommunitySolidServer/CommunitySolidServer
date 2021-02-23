@@ -7,7 +7,7 @@ describe('A DeleteOperationHandler', (): void => {
   const store = {} as unknown as ResourceStore;
   const handler = new DeleteOperationHandler(store);
   beforeEach(async(): Promise<void> => {
-    store.deleteResource = jest.fn(async(): Promise<void> => undefined);
+    store.deleteResource = jest.fn(async(): Promise<any> => undefined);
   });
 
   it('only supports DELETE operations.', async(): Promise<void> => {

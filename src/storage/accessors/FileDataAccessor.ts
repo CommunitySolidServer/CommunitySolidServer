@@ -117,12 +117,15 @@ export class FileDataAccessor implements DataAccessor {
   /**
    * Removes the corresponding file/folder (and metadata file).
    */
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
+    const metadataLink = await this.getMetadataLink(link.identifier);
     const stats = await this.getStats(link.filePath);
+    const modified: ResourceIdentifier[] = [ identifier ];
 
     try {
-      await fsPromises.unlink((await this.getMetadataLink(link.identifier)).filePath);
+      await fsPromises.unlink(metadataLink.filePath);
+      modified.push(metadataLink.identifier);
     } catch (error: unknown) {
       // Ignore if it doesn't exist
       if (!isSystemError(error) || error.code !== 'ENOENT') {
@@ -137,6 +140,8 @@ export class FileDataAccessor implements DataAccessor {
     } else {
       throw new NotFoundHttpError();
     }
+
+    return modified;
   }
 
   /**

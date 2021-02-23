@@ -48,7 +48,7 @@ export class RepresentationConvertingStore<T extends ResourceStore = ResourceSto
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     representation = await this.inConverter.handleSafe({ identifier, representation, preferences: this.inPreferences });
     return this.source.setRepresentation(identifier, representation, conditions);
   }

@@ -134,9 +134,10 @@ export class SparqlDataAccessor implements DataAccessor {
   /**
    * Removes all graph data relevant to the given identifier.
    */
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     const { name, parent } = this.getRelatedNames(identifier);
-    return this.sendSparqlUpdate(this.sparqlDelete(name, parent));
+    await this.sendSparqlUpdate(this.sparqlDelete(name, parent));
+    return [ identifier ];
   }
 
   /**
