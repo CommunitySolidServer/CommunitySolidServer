@@ -40,11 +40,11 @@ class SimpleDataAccessor implements DataAccessor {
     }
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     this.checkExists(identifier);
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.data[identifier.path];
-    return undefined;
+    return [ identifier ];
   }
 
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
@@ -353,8 +353,8 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}`}> a <coolContainer>.` ]);
 
-      await expect(store.setRepresentation(resourceID, representation))
-        .resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves
+        .toEqual([{ path: `${root}` }]);
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenLastCalledWith(resourceID);
 
@@ -383,7 +383,10 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can write resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: 'http://test.com/' },
+        { path: 'http://test.com/resource' },
+      ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
 
@@ -394,7 +397,10 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}` },
+        { path: `${root}container/` },
+      ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
@@ -403,7 +409,10 @@ describe('A DataAccessorBasedStore', (): void => {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete accessor.data[root];
       const resourceID = { path: `${root}resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}` },
+        { path: `${root}resource` },
+      ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
 
@@ -416,7 +425,10 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom(
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
       );
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}` },
+        { path: `${root}container/` },
+      ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
@@ -436,7 +448,11 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('creates recursive containers when needed.', async(): Promise<void> => {
       const resourceID = { path: `${root}a/b/resource` };
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}a/` },
+        { path: `${root}a/b/` },
+        { path: `${root}a/b/resource` },
+      ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[`${root}a/`].metadata.getAll(RDF.type).map((type): string => type.value))
         .toContain(LDP.Container);
@@ -461,7 +477,9 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toBeUndefined();
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}` },
+      ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(Object.keys(accessor.data)).toHaveLength(1);
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
@@ -513,7 +531,9 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will delete resources.', async(): Promise<void> => {
       accessor.data[`${root}resource`] = representation;
-      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
+      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
+        { path: `${root}resource` },
+      ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
     });
 
@@ -522,14 +542,19 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
       auxStrategy.isRootRequired = jest.fn().mockReturnValue(true);
-      await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toBeUndefined();
+      await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
+        { path: `${root}container/.dummy` },
+      ]);
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
     });
 
     it('will delete related auxiliary resources.', async(): Promise<void> => {
       accessor.data[`${root}container/`] = representation;
       accessor.data[`${root}container/.dummy`] = representation;
-      await expect(store.deleteResource({ path: `${root}container/` })).resolves.toBeUndefined();
+      await expect(store.deleteResource({ path: `${root}container/` })).resolves.toEqual([
+        { path: `${root}container/` },
+        { path: `${root}container/.dummy` },
+      ]);
       expect(accessor.data[`${root}container/`]).toBeUndefined();
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
     });
@@ -538,15 +563,18 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> => {
         if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
           throw new Error('auxiliary error!');
         }
         await deleteFn.call(accessor, identifier);
+        return [ identifier ];
       });
       const { logger } = store as any;
       logger.error = jest.fn();
-      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
+      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
+        { path: `${root}resource` },
+      ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
@@ -559,15 +587,18 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> => {
         if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
           throw 'auxiliary error!';
         }
         await deleteFn.call(accessor, identifier);
+        return [ identifier ];
       });
       const { logger } = store as any;
       logger.error = jest.fn();
-      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toBeUndefined();
+      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
+        { path: `${root}resource` },
+      ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);

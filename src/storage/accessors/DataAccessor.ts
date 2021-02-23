@@ -63,6 +63,8 @@ export interface DataAccessor {
    * https://solid.github.io/specification/protocol#deleting-resources
    *
    * @param identifier - Resource to delete.
+   *
+   * @returns Identifiers of resources that were possibly modified.
    */
-  deleteResource: (identifier: ResourceIdentifier) => Promise<void>;
+  deleteResource: (identifier: ResourceIdentifier) => Promise<ResourceIdentifier[]>;
 }

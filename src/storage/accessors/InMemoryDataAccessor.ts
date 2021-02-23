@@ -83,13 +83,14 @@ export class InMemoryDataAccessor implements DataAccessor {
     }
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     const { parent, name } = this.getParentEntry(identifier);
     if (!parent.entries[name]) {
       throw new NotFoundHttpError();
     }
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete parent.entries[name];
+    return [ identifier ];
   }
 
   private isDataEntry(entry: CacheEntry): entry is DataEntry {

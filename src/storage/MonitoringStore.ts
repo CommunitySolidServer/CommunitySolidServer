@@ -33,8 +33,9 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return identifier;
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
-    await this.source.deleteResource(identifier, conditions);
+  public async deleteResource(identifier: ResourceIdentifier,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    const modified = await this.source.deleteResource(identifier, conditions);
 
     // Both the container contents and the resource itself have changed
     if (!this.identifierStrategy.isRootContainer(identifier)) {
@@ -42,6 +43,8 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
       this.emit('changed', container);
     }
     this.emit('changed', identifier);
+
+    return modified;
   }
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
@@ -49,14 +52,17 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
-    await this.source.modifyResource(identifier, patch, conditions);
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    const modified = await this.source.modifyResource(identifier, patch, conditions);
     this.emit('changed', identifier);
+    return modified;
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
-    await this.source.setRepresentation(identifier, representation, conditions);
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    const modified = await this.source.setRepresentation(identifier, representation, conditions);
     this.emit('changed', identifier);
+    return modified;
   }
 }

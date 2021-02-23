@@ -333,7 +333,8 @@ describe('A FileDataAccessor', (): void => {
 
     it('deletes the corresponding file for document.', async(): Promise<void> => {
       cache.data = { resource: 'apple' };
-      await expect(accessor.deleteResource({ path: `${base}resource` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}resource` })).resolves
+        .toEqual([{ path: `${base}resource` }]);
       expect(cache.data.resource).toBeUndefined();
     });
 
@@ -344,22 +345,31 @@ describe('A FileDataAccessor', (): void => {
 
     it('removes the corresponding folder for containers.', async(): Promise<void> => {
       cache.data = { container: {}};
-      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves
+        .toEqual([{ path: `${base}container/` }]);
       expect(cache.data.container).toBeUndefined();
     });
 
     it('removes the corresponding metadata.', async(): Promise<void> => {
       cache.data = { container: { resource: 'apple', 'resource.meta': 'metaApple', '.meta': 'metadata' }};
-      await expect(accessor.deleteResource({ path: `${base}container/resource` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}container/resource` })).resolves.toEqual([
+        { path: `${base}container/resource` },
+        { path: `${base}container/resource.meta` },
+      ]);
       expect(cache.data.container.resource).toBeUndefined();
       expect(cache.data.container['resource.meta']).toBeUndefined();
-      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}container/` })).resolves.toEqual([
+        { path: `${base}container/` },
+        { path: `${base}container/.meta` },
+      ]);
       expect(cache.data.container).toBeUndefined();
     });
 
     it('can delete the root container.', async(): Promise<void> => {
       cache.data = { };
-      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toBeUndefined();
+      await expect(accessor.deleteResource({ path: `${base}` })).resolves.toEqual([
+        { path: base },
+      ]);
       expect(cache.data).toBeUndefined();
     });
   });
