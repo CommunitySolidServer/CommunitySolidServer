@@ -1,6 +1,7 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PatchOperationHandler } from '../../../../src/ldp/operations/PatchOperationHandler';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
@@ -9,7 +10,7 @@ describe('A PatchOperationHandler', (): void => {
   const store = {} as unknown as ResourceStore;
   const handler = new PatchOperationHandler(store);
   beforeEach(async(): Promise<void> => {
-    store.modifyResource = jest.fn(async(): Promise<void> => undefined);
+    store.modifyResource = jest.fn(async(): Promise<ResourceIdentifier[]> => []);
   });
 
   it('only supports PATCH operations.', async(): Promise<void> => {

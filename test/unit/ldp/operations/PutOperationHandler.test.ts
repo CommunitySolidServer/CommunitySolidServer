@@ -1,6 +1,7 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PutOperationHandler } from '../../../../src/ldp/operations/PutOperationHandler';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
@@ -10,7 +11,7 @@ describe('A PutOperationHandler', (): void => {
   const handler = new PutOperationHandler(store);
   beforeEach(async(): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    store.setRepresentation = jest.fn(async(): Promise<void> => {});
+    store.setRepresentation = jest.fn(async(): Promise<ResourceIdentifier[]> => []);
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {

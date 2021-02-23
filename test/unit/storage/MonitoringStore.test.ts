@@ -14,9 +14,9 @@ describe('A MonitoringStore', (): void => {
     source = {
       getRepresentation: jest.fn(async(): Promise<any> => ({ success: true })),
       addResource: jest.fn(async(): Promise<any> => ({ path: 'http://example.org/foo/bar/new' })),
-      setRepresentation: jest.fn(async(): Promise<any> => undefined),
+      setRepresentation: jest.fn(async(): Promise<any> => [{ path: 'http://example.org/foo/bar/' }]),
       deleteResource: jest.fn(async(): Promise<any> => undefined),
-      modifyResource: jest.fn(async(): Promise<any> => undefined),
+      modifyResource: jest.fn(async(): Promise<any> => []),
     };
     store = new MonitoringStore(source, identifierStrategy);
     changedCallback = jest.fn();
@@ -57,7 +57,7 @@ describe('A MonitoringStore', (): void => {
 
   it('calls setRepresentation directly from the source.', async(): Promise<void> => {
     await expect(store.setRepresentation({ path: 'http://example.org/foo/bar' }, {} as Representation))
-      .resolves.toBeUndefined();
+      .resolves.toEqual([{ path: 'http://example.org/foo/bar/' }]);
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(source.setRepresentation).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
@@ -96,7 +96,7 @@ describe('A MonitoringStore', (): void => {
 
   it('calls modifyResource directly from the source.', async(): Promise<void> => {
     await expect(store.modifyResource({ path: 'http://example.org/foo/bar' }, {} as Patch))
-      .resolves.toBeUndefined();
+      .resolves.toEqual([]);
     expect(source.modifyResource).toHaveBeenCalledTimes(1);
     expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
