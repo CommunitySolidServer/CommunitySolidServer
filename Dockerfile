@@ -13,14 +13,13 @@ RUN npm audit --production --audit-level=high
 ## Copy the dockerfile's context's community server files
 COPY . .
 
-## Install and build the Solid community server
-RUN npm ci
-
+## Install and build the Solid community server (prepare script cannot run in wd)
+RUN npm ci && npm run build
 
 
 
 # Runtime stage
-FROM node:lts
+FROM node:lts-alpine
 
 ## Add contact informations for questions about the container
 LABEL maintainer="Solid Community Server Docker Image Maintainer <matthieubosquet@gmail.com>"
