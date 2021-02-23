@@ -4,11 +4,11 @@ import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { RenderHandler } from '../../../../server/util/RenderHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
+import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordResetPasswordRenderHandler';
 
 export interface EmailPasswordResetPasswordHandlerArgs {
-  emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  emailPasswordStorageAdapter: EmailPasswordStore;
   renderHandler: RenderHandler<{ errorMessage: string }>;
   messageRenderHandler: RenderHandler<{ message: string }>;
 }
@@ -18,7 +18,7 @@ export interface EmailPasswordResetPasswordHandlerArgs {
  * that is linked in the reset password email.
  */
 export class EmailPasswordResetPasswordHandler extends HttpHandler {
-  private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly renderHandler: EmailPasswordResetPasswordRenderHandler;
   private readonly messageRenderHandler: RenderHandler<{ message: string }>;
   private readonly logger = getLoggerFor(this);

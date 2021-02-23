@@ -1,18 +1,7 @@
-import { parse } from 'url';
-import escapeStringRegexp from 'escape-string-regexp';
 import type { Provider } from 'oidc-provider';
-// This import probably looks very hacky and it is. Weak Cache is required to get the oidc
-// configuration, which, in turn, is needed to get the routes the provider is using.
-// It is probably very difficult to get the configuration because Panva does not want
-// it to be possible, but we must get the configuration to satisfy the needs of the CSS
-// architecture. See the "canHandle" method for an explantaion
-// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import instance from 'oidc-provider/lib/helpers/weak_cache';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
-import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
 import type { IdpInteractionPolicyHttpHandler } from './interaction/IdpInteractionPolicyHttpHandler';
 
@@ -55,46 +44,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   }
 
   /**
-   * Checks whether or not the identity provider can handle a request. There are two ways
-   * an IdP can handle a request. Firstly, the provider itself can handle it, and secondly
-   * the Interaction Policy can handle it.
-   * NOTE: This method has a lot of hacks in it to get it to work with node-oidc-provider.
+   * No canhandle method is provided because this should always accept.
+   * A routerhandler should be placed above this class to restrict the routes it can use.
    */
-  public async canHandle(input: HttpHandlerInput): Promise<void> {
-    const provider = await this.getGuaranteedProvider();
-
-    // Get the routes from the configuration. `instance` is needed because the configuration
-    // is not actually stored in the provider object, but rather in a WeakMap accessed by
-    // the provider instance.
-    // https://github.com/panva/node-oidc-provider/blob/master/lib/provider.js#L88-L91
-    const routesMap: Record<string, string> = instance(provider).configuration().routes;
-    const validRoutes: string[] = Object.values(routesMap);
-    validRoutes.push('/.well-known/openid-configuration');
-    // URL.parse is deprecated, but as of the time this comment was written, there
-    // doesn't seem to be a perfect replacement for it, so we will keep it until there
-    // is a perfect replacement
-    // https://github.com/nodejs/node/issues/12682#issuecomment-736510378
-    const url = input.request.url ? parse(input.request.url).pathname! : '';
-
-    let interactionHttpHandlerCanHandle = true;
-    try {
-      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider });
-    } catch {
-      interactionHttpHandlerCanHandle = false;
-    }
-
-    // Account for special case where the interaction policy calls back to "/auth/:uid"
-    const isSpecialCallbackRoute =
-      new RegExp(
-        `^${escapeStringRegexp(routesMap.authorization)}/[_A-Za-z0-9\\-]+/?$`,
-        'u',
-      ).test(url);
-
-    // Throw an error if the request URL is not part of the valid routes
-    if (!isSpecialCallbackRoute && !validRoutes.includes(url) && !interactionHttpHandlerCanHandle) {
-      throw new NotImplementedHttpError(`Solid Identity Provider cannot handle request URL ${input.request.url}`);
-    }
-  }
 
   /**
    * Handles the given input. This should only be done if the {@link canHandle} function returned `true`.

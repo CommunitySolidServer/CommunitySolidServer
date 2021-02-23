@@ -8,13 +8,13 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStore } from '../storage/KeyValueStore';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
-import { IdpConfigurationFactory } from './IdpConfigurationFactory';
+import { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 
 /**
  * An IdP Configuration Factory that generates and saves keys
  * to the provided key value store.
  */
-export class KeyGeneratingIdpConfigurationFactory extends IdpConfigurationFactory {
+export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGenerator {
   private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
   private readonly store: KeyValueStore;
@@ -74,10 +74,10 @@ export class KeyGeneratingIdpConfigurationFactory extends IdpConfigurationFactor
     // arrow functions. Unfortunately, the adapter function MUST be a named function
     // See https://github.com/panva/node-oidc-provider/issues/799
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
+    const { storageAdapterFactory } = this;
     return {
       adapter: function loadAdapter(name: string): Adapter {
-        return that.storageAdapterFactory.createStorageAdapter(name);
+        return storageAdapterFactory.createStorageAdapter(name);
       },
       cookies: {
         long: { signed: true, maxAge: 1 * 24 * 60 * 60 * 1000 },
@@ -102,6 +102,20 @@ export class KeyGeneratingIdpConfigurationFactory extends IdpConfigurationFactor
         RefreshToken: 1 * 24 * 60 * 60,
       },
       subjectTypes: [ 'public', 'pairwise' ],
+      routes: {
+        authorization: '/idp/auth',
+        check_session: '/idp/session/check',
+        code_verification: '/idp/device',
+        device_authorization: '/idp/device/auth',
+        end_session: '/idp/session/end',
+        introspection: '/idp/token/introspection',
+        jwks: '/idp/jwks',
+        pushed_authorization_request: '/idp/request',
+        registration: '/idp/reg',
+        revocation: '/idp/token/revocation',
+        token: '/idp/token',
+        userinfo: '/idp/me',
+      },
     };
   }
 }
