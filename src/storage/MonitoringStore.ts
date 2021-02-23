@@ -31,8 +31,8 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
     const created = await this.source.modifyResource(identifier, patch, conditions);
     const containersChanged = created
-      .filter(resource => !this.identifierStrategy.isRootContainer(resource))
-      .map(resource => this.identifierStrategy.getParentContainer(resource));
+      .filter((resource): boolean => !this.identifierStrategy.isRootContainer(resource))
+      .map((resource): ResourceIdentifier => this.identifierStrategy.getParentContainer(resource));
     this.emitChanged(identifier, containersChanged);
     return created;
   }
@@ -40,10 +40,9 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
     const created = await this.source.setRepresentation(identifier, representation, conditions);
-    console.log('setRepresentation in MonitoringStore', created);
     const containersChanged = created
-      .filter(resource => !this.identifierStrategy.isRootContainer(resource))
-      .map(resource => this.identifierStrategy.getParentContainer(resource));
+      .filter((resource): boolean => !this.identifierStrategy.isRootContainer(resource))
+      .map((resource): ResourceIdentifier => this.identifierStrategy.getParentContainer(resource));
 
     this.emitChanged(identifier, containersChanged);
     return created;

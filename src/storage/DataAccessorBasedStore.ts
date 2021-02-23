@@ -294,7 +294,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       created = await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
     }
 
-    const resourceWasCreated: boolean = true; // FIXME: find this out somehow
+    // FIXME: find this out somehow
+    // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+    const resourceWasCreated: boolean = true;
+
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
@@ -302,7 +305,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (resourceWasCreated) {
       created.push(identifier);
     }
-    console.log('writeData', created);
     return created;
   }
 
@@ -479,7 +481,6 @@ export class DataAccessorBasedStore implements ResourceStore {
         throw error;
       }
     }
-    console.log('createRecursiveContainers', created);
     return created;
   }
 }

@@ -24,7 +24,8 @@ export class ReadOnlyStore<T extends ResourceStore = ResourceStore> extends Pass
     throw new ForbiddenHttpError();
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<ResourceIdentifier[]> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions):
+  Promise<ResourceIdentifier[]> {
     throw new ForbiddenHttpError();
   }
 

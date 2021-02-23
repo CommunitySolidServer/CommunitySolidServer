@@ -34,7 +34,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     }
   }
 
-  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<ResourceIdentifier[]> {
+  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}):
+  Promise<ResourceIdentifier[]> {
     // Verify the patch
     const { identifier, patch } = input;
     const op = patch.algebra;
@@ -125,7 +126,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    return this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS));
+    return this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable,
+      INTERNAL_QUADS));
   }
 
   /**
