@@ -102,12 +102,12 @@ export * from './ldp/UnsecureWebSocketsProtocol';
 // SolidIdentityProvider
 export * from './identity/interaction/IdpInteractionHttpHandler';
 export * from './identity/interaction/IdpInteractionPolicyHttpHandler';
-export * from './identity/configuration/IdpConfigurationFactory';
+export * from './identity/configuration/IdpConfigurationGenerator';
 export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
 
 // SolidIdentityProvider/Configurations
-export * from './identity/configuration/KeyGeneratingIdpConfigurationFactory';
+export * from './identity/configuration/KeyGeneratingIdpConfigurationGenerator';
 
 // SolidIdentityProvider/Storage
 export * from './identity/storage/KeyValueStore';
@@ -139,8 +139,8 @@ export * from './identity/interaction/email-password/handler/EmailPasswordGetRes
 export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';
 
 // SolidIdentityProvider/InteractionPolicies/Storage
-export * from './identity/interaction/email-password/storage/EmailPasswordStorageAdapter';
-export * from './identity/interaction/email-password/storage/EmailPasswordResourceStoreStorageAdapter';
+export * from './identity/interaction/email-password/storage/EmailPasswordStore';
+export * from './identity/interaction/email-password/storage/ResourceStoreEmailPasswordStore';
 
 // Logging
 export * from './logging/LazyLogger';

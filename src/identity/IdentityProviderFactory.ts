@@ -6,18 +6,18 @@ import type { AnyObject,
   Account } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 
-import type { IdpConfigurationFactory } from './configuration/IdpConfigurationFactory';
+import type { IdpConfigurationGenerator } from './configuration/IdpConfigurationGenerator';
 
 /**
  * Creates an identity provider
  */
 export class IdentityProviderFactory {
   private readonly issuer: string;
-  private readonly configurationFactory: IdpConfigurationFactory;
+  private readonly configurationFactory: IdpConfigurationGenerator;
 
   public constructor(
     issuer: string,
-    configurationFactory: IdpConfigurationFactory,
+    configurationFactory: IdpConfigurationGenerator,
   ) {
     this.issuer = issuer;
     this.configurationFactory = configurationFactory;

@@ -5,10 +5,10 @@ import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
-import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
+import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordLoginHandlerArgs {
-  emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  emailPasswordStorageAdapter: EmailPasswordStore;
   oidcInteractionCompleter: OidcInteractionCompleter;
   renderHandler: IdpRenderHandler;
 }
@@ -18,7 +18,7 @@ export interface EmailPasswordLoginHandlerArgs {
  * the user in.
  */
 export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
-  private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
   private readonly renderHandler: IdpRenderHandler;
   private readonly logger = getLoggerFor(this);

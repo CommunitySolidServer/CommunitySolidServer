@@ -6,14 +6,14 @@ import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { WebIdOwnershipValidator } from '../../util/WebIdOwnershipValidator';
-import type { EmailPasswordStorageAdapter } from '../storage/EmailPasswordStorageAdapter';
+import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/u;
 
 interface EmailPasswordRegisterHandlerArgs {
   renderHandler: IdpRenderHandler;
   webIdOwnershipValidator: WebIdOwnershipValidator;
-  emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  emailPasswordStorageAdapter: EmailPasswordStore;
   oidcInteractionCompleter: OidcInteractionCompleter;
 }
 
@@ -24,7 +24,7 @@ interface EmailPasswordRegisterHandlerArgs {
 export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler {
   private readonly renderHandler: IdpRenderHandler;
   private readonly webIdOwnershipValidator: WebIdOwnershipValidator;
-  private readonly emailPasswordStorageAdapter: EmailPasswordStorageAdapter;
+  private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
   private readonly logger = getLoggerFor(this);
 
