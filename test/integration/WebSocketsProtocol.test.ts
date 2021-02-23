@@ -68,14 +68,20 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       ]);
     });
 
-    describe('when the client subscribes to a resource', (): void => {
+    describe('when the client subscribes to resources', (): void => {
       beforeAll(async(): Promise<void> => {
-        client.send(`sub https://example.pod/my-resource`);
+        client.send('sub https://example.pod/my-resource');
+        client.send('sub https://example.pod/other-resource');
+        client.send('sub https://example.pod/');
         await new Promise((resolve): any => client.once('message', resolve));
       });
 
       it('acknowledges the subscription.', async(): Promise<void> => {
-        expect(messages).toEqual([ `ack https://example.pod/my-resource` ]);
+        expect(messages).toEqual([
+          'ack https://example.pod/my-resource',
+          'ack https://example.pod/other-resource',
+          'ack https://example.pod/',
+        ]);
       });
 
       it('notifies the client of resource updates.', async(): Promise<void> => {
@@ -87,7 +93,10 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
           },
           body: '{}',
         });
-        expect(messages).toEqual([ `pub https://example.pod/my-resource` ]);
+        expect(messages).toEqual([
+          'pub https://example.pod/',
+          'pub https://example.pod/my-resource',
+        ]);
       });
     });
   });

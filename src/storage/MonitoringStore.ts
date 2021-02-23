@@ -3,7 +3,6 @@ import type { Patch } from '../ldp/http/Patch';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
@@ -14,37 +13,10 @@ import type { ResourceStore } from './ResourceStore';
 export class MonitoringStore<T extends ResourceStore = ResourceStore>
   extends EventEmitter implements ResourceStore {
   private readonly source: T;
-  private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(source: T, identifierStrategy: IdentifierStrategy) {
+  public constructor(source: T) {
     super();
     this.source = source;
-    this.identifierStrategy = identifierStrategy;
-  }
-
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
-    const identifier = await this.source.addResource(container, representation, conditions);
-
-    // Both the container contents and the resource itself have changed
-    this.emit('changed', container);
-    this.emit('changed', identifier);
-
-    return identifier;
-  }
-
-  public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
-    const modified = await this.source.deleteResource(identifier, conditions);
-
-    // Both the container contents and the resource itself have changed
-    if (!this.identifierStrategy.isRootContainer(identifier)) {
-      const container = this.identifierStrategy.getParentContainer(identifier);
-      this.emit('changed', container);
-    }
-    this.emit('changed', identifier);
-
-    return modified;
   }
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
@@ -52,17 +24,32 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     return this.source.getRepresentation(identifier, preferences, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+  public async addResource(container: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier> {
+    const identifier = await this.source.addResource(container, representation, conditions);
+    this.emitChanged([ container, identifier ]);
+    return identifier;
+  }
+
+  public async deleteResource(identifier: ResourceIdentifier,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
-    const modified = await this.source.modifyResource(identifier, patch, conditions);
-    this.emit('changed', identifier);
-    return modified;
+    return this.emitChanged(await this.source.deleteResource(identifier, conditions));
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
-    const modified = await this.source.setRepresentation(identifier, representation, conditions);
-    this.emit('changed', identifier);
-    return modified;
+    return this.emitChanged(await this.source.setRepresentation(identifier, representation, conditions));
+  }
+
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    return this.emitChanged(await this.source.modifyResource(identifier, patch, conditions));
+  }
+
+  private emitChanged(identifiers: ResourceIdentifier[]): typeof identifiers {
+    for (const identifier of identifiers) {
+      this.emit('changed', identifier);
+    }
+    return identifiers;
   }
 }

@@ -210,8 +210,7 @@ describe('A SparqlDataAccessor', (): void => {
   it('removes all references when deleting a resource.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/container/' },
       { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
-    await expect(accessor.deleteResource({ path: 'http://test.com/container/' })).resolves
-      .toEqual([{ path: 'http://test.com/container/' }]);
+    await expect(accessor.deleteResource({ path: 'http://test.com/container/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
     expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
@@ -225,8 +224,7 @@ describe('A SparqlDataAccessor', (): void => {
   it('does not try to remove containment triples when deleting a root container.', async(): Promise<void> => {
     metadata = new RepresentationMetadata({ path: 'http://test.com/' },
       { [RDF.type]: [ LDP.terms.Resource, LDP.terms.Container ]});
-    await expect(accessor.deleteResource({ path: 'http://test.com/' })).resolves
-      .toEqual([{ path: 'http://test.com/' }]);
+    await expect(accessor.deleteResource({ path: 'http://test.com/' })).resolves.toBeUndefined();
 
     expect(fetchUpdate).toHaveBeenCalledTimes(1);
     expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);

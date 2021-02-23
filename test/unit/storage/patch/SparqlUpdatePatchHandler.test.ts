@@ -59,7 +59,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
 
   async function handle(query: string): Promise<void> {
     const sparqlPrefix = 'prefix : <http://test.com/>\n';
-    return handler.handle({ identifier: { path: 'path' },
+    await handler.handle({ identifier: { path: 'path' },
       patch: { algebra: translate(sparqlPrefix.concat(query), { quads: true }) } as SparqlUpdatePatch });
   }
 

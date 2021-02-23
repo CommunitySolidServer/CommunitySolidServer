@@ -200,13 +200,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
     // resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const deleted = [];
+    const deleted = [ identifier ];
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
     }
-
-    deleted.unshift(...await this.accessor.deleteResource(identifier));
+    await this.accessor.deleteResource(identifier);
     return deleted;
   }
 

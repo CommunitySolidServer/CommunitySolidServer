@@ -41,8 +41,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     const op = patch.algebra;
     this.validateUpdate(op);
 
-    await this.applyPatch(identifier, op);
-    return [ identifier ];
+    return this.applyPatch(identifier, op);
   }
 
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
@@ -109,7 +108,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<void> {
+  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<ResourceIdentifier[]> {
     const store = new Store<BaseQuad>();
     try {
       // Read the quads of the current representation
@@ -134,7 +133,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    await this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS));
+    const patched = new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS);
+    return this.source.setRepresentation(identifier, patched);
   }
 
   /**

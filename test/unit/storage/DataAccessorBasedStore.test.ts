@@ -40,11 +40,10 @@ class SimpleDataAccessor implements DataAccessor {
     }
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
     this.checkExists(identifier);
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete this.data[identifier.path];
-    return [ identifier ];
   }
 
   public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
@@ -563,12 +562,11 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> => {
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
         if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
           throw new Error('auxiliary error!');
         }
         await deleteFn.call(accessor, identifier);
-        return [ identifier ];
       });
       const { logger } = store as any;
       logger.error = jest.fn();
@@ -587,12 +585,11 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> => {
+      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
         if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
           throw 'auxiliary error!';
         }
         await deleteFn.call(accessor, identifier);
-        return [ identifier ];
       });
       const { logger } = store as any;
       logger.error = jest.fn();
