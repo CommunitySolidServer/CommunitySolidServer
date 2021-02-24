@@ -59,4 +59,8 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     await this.source.setRepresentation(identifier, representation, conditions);
     this.emit('changed', identifier);
   }
+
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    return this.source.resourceExists(identifier);
+  }
 }

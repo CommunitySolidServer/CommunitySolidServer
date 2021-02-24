@@ -63,6 +63,11 @@ export class LockingResourceStore implements AtomicResourceStore {
       async(): Promise<void> => this.source.modifyResource(identifier, patch, conditions));
   }
 
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    return this.locks.withWriteLock(this.getLockIdentifier(identifier),
+      async(): Promise<boolean> => this.source.resourceExists(identifier));
+  }
+
   /**
    * Acquires the correct identifier to lock this resource.
    * For auxiliary resources this means the associated identifier.

@@ -39,4 +39,8 @@ export class PassthroughStore<T extends ResourceStore = ResourceStore> implement
     conditions?: Conditions): Promise<void> {
     return this.source.setRepresentation(identifier, representation, conditions);
   }
+
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    return this.source.resourceExists(identifier);
+  }
 }

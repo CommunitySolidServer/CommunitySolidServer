@@ -17,6 +17,7 @@ describe('A MonitoringStore', (): void => {
       setRepresentation: jest.fn(async(): Promise<any> => undefined),
       deleteResource: jest.fn(async(): Promise<any> => undefined),
       modifyResource: jest.fn(async(): Promise<any> => undefined),
+      resourceExists: jest.fn(async(): Promise<any> => undefined),
     };
     store = new MonitoringStore(source, identifierStrategy);
     changedCallback = jest.fn();
@@ -106,5 +107,11 @@ describe('A MonitoringStore', (): void => {
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
     expect(changedCallback).toHaveBeenCalledWith({ path: 'http://example.org/foo/bar' });
+  });
+
+  it('calls resourceExists directly from the source.', async(): Promise<void> => {
+    await expect(store.resourceExists({ path: 'http://example.org/foo/bar' })).resolves.toBeUndefined();
+    expect(source.resourceExists).toHaveBeenCalledTimes(1);
+    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
   });
 });

@@ -4,7 +4,6 @@ import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
-import { containsResource } from '../storage/StoreUtil';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import { Initializer } from './Initializer';
@@ -39,7 +38,7 @@ export class AclInitializer extends Initializer {
   // https://solid.github.io/specification/protocol#storage
   public async handle(): Promise<void> {
     const rootAcl = this.aclStrategy.getAuxiliaryIdentifier(this.root);
-    if (await containsResource(this.store, rootAcl)) {
+    if (await this.store.resourceExists(rootAcl)) {
       this.logger.debug(`Existing root ACL document found at ${rootAcl.path}`);
     } else {
       this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);

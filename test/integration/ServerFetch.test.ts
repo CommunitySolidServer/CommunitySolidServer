@@ -25,7 +25,7 @@ describe('A Solid server', (): void => {
     ({ factory, initializer } = instances);
     await initializer.handleSafe();
     server = factory.startServer(port);
-  });
+  }, 20000);
 
   afterAll(async(): Promise<void> => {
     await new Promise((resolve, reject): void => {

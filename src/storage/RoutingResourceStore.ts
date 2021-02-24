@@ -44,6 +44,11 @@ export class RoutingResourceStore implements ResourceStore {
     return (await this.getStore(identifier)).modifyResource(identifier, patch, conditions);
   }
 
+  public async resourceExists(identifier: ResourceIdentifier):
+  Promise<boolean> {
+    return (await this.getStore(identifier)).resourceExists(identifier);
+  }
+
   private async getStore(identifier: ResourceIdentifier, representation?: Representation): Promise<ResourceStore> {
     if (representation) {
       return this.rule.handleSafe({ identifier, representation });

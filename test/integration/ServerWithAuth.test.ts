@@ -33,7 +33,7 @@ describe('A server with authorization', (): void => {
 
     // Create test helpers for manipulating the components
     aclHelper = new AclHelper(store, BASE);
-  });
+  }, 20000);
 
   it('can create new entries.', async(): Promise<void> => {
     await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');

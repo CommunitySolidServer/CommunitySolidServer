@@ -24,4 +24,8 @@ describe('A BaseResourceStore', (): void => {
   it('errors on modifyResource.', async(): Promise<void> => {
     await expect(store.modifyResource(any, any)).rejects.toThrow(NotImplementedHttpError);
   });
+
+  it('errors on resourceExists.', async(): Promise<void> => {
+    await expect(store.resourceExists(any)).rejects.toThrow(NotImplementedHttpError);
+  });
 });

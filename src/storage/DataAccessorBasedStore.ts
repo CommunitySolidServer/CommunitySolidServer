@@ -468,4 +468,17 @@ export class DataAccessorBasedStore implements ResourceStore {
       }
     }
   }
+
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    try {
+      const result = await this.getRepresentation(identifier);
+      result.data.destroy();
+      return true;
+    } catch (error: unknown) {
+      if (NotFoundHttpError.isInstance(error)) {
+        return false;
+      }
+      throw error;
+    }
+  }
 }

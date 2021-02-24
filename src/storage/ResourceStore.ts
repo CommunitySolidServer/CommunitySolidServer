@@ -76,4 +76,12 @@ export interface ResourceStore {
    * @returns A promise resolving when the update is finished.
    */
   modifyResource: (identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions) => Promise<void>;
+
+  /**
+   * Partially update a resource.
+   * @param identifier - Identifier of resource to check.
+   *
+   * @returns A promise resolving if the resource already exists
+   */
+  resourceExists: (identifier: ResourceIdentifier) => Promise<boolean>;
 }

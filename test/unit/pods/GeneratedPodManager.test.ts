@@ -1,4 +1,3 @@
-import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { Agent } from '../../../src/pods/agent/Agent';
 import type { IdentifierGenerator } from '../../../src/pods/generate/IdentifierGenerator';
@@ -6,7 +5,6 @@ import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/Re
 import { GeneratedPodManager } from '../../../src/pods/GeneratedPodManager';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 
 describe('A GeneratedPodManager', (): void => {
   const base = 'http://test.com/';
@@ -26,10 +24,8 @@ describe('A GeneratedPodManager', (): void => {
       webId: 'http://secure/webId',
     };
     store = {
-      getRepresentation: jest.fn((): any => {
-        throw new NotFoundHttpError();
-      }),
       setRepresentation: jest.fn(),
+      resourceExists: jest.fn().mockImplementation((): any => false),
     } as any;
     generatorData = [
       { identifier: { path: '/path/' }, representation: '/' as any },
@@ -45,7 +41,7 @@ describe('A GeneratedPodManager', (): void => {
   });
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
-    (store.getRepresentation as jest.Mock).mockImplementationOnce((): any => new BasicRepresentation([], {}));
+    (store.resourceExists as jest.Mock).mockImplementationOnce((): any => true);
     const result = manager.createPod(agent);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);

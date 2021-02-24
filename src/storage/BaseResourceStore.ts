@@ -33,4 +33,8 @@ export class BaseResourceStore implements ResourceStore {
     conditions?: Conditions): Promise<void> {
     throw new NotImplementedHttpError();
   }
+
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    throw new NotImplementedHttpError();
+  }
 }
