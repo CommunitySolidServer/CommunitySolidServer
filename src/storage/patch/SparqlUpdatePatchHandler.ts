@@ -51,6 +51,14 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     return op.type === Algebra.types.COMPOSITE_UPDATE;
   }
 
+  private isBasicGraphPatternWithoutVariables(op: Algebra.Operation): op is Algebra.Bgp {
+    if (op.type !== Algebra.types.BGP) {
+      return false;
+    }
+    return !(op.patterns as BaseQuad[]).some((pattern): boolean =>
+      someTerms(pattern, (term): boolean => term.termType === 'Variable'));
+  }
+
   /**
    * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
    */
@@ -67,7 +75,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   /**
    * Checks if the input DELETE/INSERT is supported.
-   * This means: no GRAPH statements, no DELETE WHERE.
+   * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
    */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
     const def = defaultGraph();
@@ -81,8 +89,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       this.logger.warn('GRAPH statement in INSERT clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
-    if (op.where ?? deletes.some((pattern): boolean =>
-      someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
+    if (!(typeof op.where === 'undefined' || this.isBasicGraphPatternWithoutVariables(op.where))) {
       this.logger.warn('WHERE statements are not supported');
       throw new NotImplementedHttpError('WHERE statements are not supported');
     }

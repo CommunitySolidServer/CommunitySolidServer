@@ -104,7 +104,7 @@
     "rdf-parse": "^1.7.0",
     "rdf-serialize": "^1.1.0",
     "rdf-terms": "^1.5.1",
-    "sparqlalgebrajs": "^2.3.1",
+    "sparqlalgebrajs": "^2.5.0",
     "sparqljs": "^3.1.2",
     "streamify-array": "^1.0.1",
     "uuid": "^8.3.0",
