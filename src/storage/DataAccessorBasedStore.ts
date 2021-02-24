@@ -349,15 +349,14 @@ export class DataAccessorBasedStore implements ResourceStore {
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
     const base = ensureTrailingSlash(container.path);
-    const cleanedSlug = slug ? this.cleanSlug(slug) : null;
-    const name = cleanedSlug ?? uuid();
+    const name = (slug && this.cleanSlug(slug)) ?? uuid();
     const suffix = isContainer ? '/' : '';
     return { path: `${base}${name}${suffix}` };
   }
 
   /**
    * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
-   * e.g.: cleanslug('&/%26') returns '%26%2F%26'
+   * e.g.: cleanslug('&%26') returns '%26%26'
    * @param slug - the slug to clean
    */
   protected cleanSlug(slug: string): string {

@@ -299,7 +299,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toEqual({ path: `${root}%26%26` });
     });
 
-    it('errors if the slug conatians a slash.', async(): Promise<void> => {
+    it('errors if the slug contains a slash.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
       representation.data = guardedStreamFrom([ `` ]);
