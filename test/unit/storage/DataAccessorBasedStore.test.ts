@@ -291,6 +291,24 @@ describe('A DataAccessorBasedStore', (): void => {
       });
     });
 
+    it('generates http://test.com/%26%26 when slug is &%26.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(HTTP.slug, '&%26');
+      const result = await store.addResource(resourceID, representation);
+      expect(result).toEqual({ path: `${root}%26%26` });
+    });
+
+    it('errors if the slug contains a slash.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.data = guardedStreamFrom([ `` ]);
+      representation.metadata.add(HTTP.slug, 'sla/sh/es');
+      const result = store.addResource(resourceID, representation);
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow('Slugs should not contain slashes');
+    });
+
     it('errors if the slug would cause an auxiliary resource URI to be generated.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
@@ -559,3 +577,4 @@ describe('A DataAccessorBasedStore', (): void => {
     });
   });
 });
+

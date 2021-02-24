@@ -22,6 +22,7 @@ import {
   isContainerIdentifier,
   isContainerPath,
   trimTrailingSlashes,
+  toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
@@ -347,8 +348,22 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
-    return { path:
-        `${ensureTrailingSlash(container.path)}${slug ? trimTrailingSlashes(slug) : uuid()}${isContainer ? '/' : ''}` };
+    const base = ensureTrailingSlash(container.path);
+    const name = (slug && this.cleanSlug(slug)) ?? uuid();
+    const suffix = isContainer ? '/' : '';
+    return { path: `${base}${name}${suffix}` };
+  }
+
+  /**
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
+   * e.g.: cleanslug('&%26') returns '%26%26'
+   * @param slug - the slug to clean
+   */
+  protected cleanSlug(slug: string): string {
+    if (/\/[^/]/u.test(slug)) {
+      throw new BadRequestHttpError('Slugs should not contain slashes');
+    }
+    return toCanonicalUriPath(trimTrailingSlashes(slug));
   }
 
   /**
