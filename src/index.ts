@@ -103,7 +103,6 @@ export * from './identity/storage/ResourceStoreStorageAdapterFactory';
 // SolidIdentityProvider/InteractionPolicies/Util
 export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';
 export * from './identity/interaction/util/ChooseInitialInteractionHandler';
-export * from './identity/interaction/util/IdpPassthroughToRenderHandler';
 export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/OidcInteractionCompleter';
 export * from './identity/interaction/util/WebIdOwnershipValidator';
@@ -111,6 +110,8 @@ export * from './identity/interaction/util/FormDataUtil';
 export * from './identity/interaction/util/EjsTemplateRenderer';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/TemplateRenderer';
+export * from './identity/interaction/util/IdpInteractionError';
+export * from './identity/interaction/util/IdpRouteController';
 
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
 export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
@@ -171,7 +172,6 @@ export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
-export * from './server/util/GetPostRouterHandler';
 export * from './server/util/RenderEjsHandler';
 export * from './server/util/RenderHandler';
 export * from './server/util/RouterHandler';
