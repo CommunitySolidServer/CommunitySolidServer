@@ -37,6 +37,7 @@ export class CliRunner {
         port: { type: 'number', alias: 'p', default: 3000 },
         rootFilePath: { type: 'string', alias: 'f', default: './' },
         sparqlEndpoint: { type: 'string', alias: 's' },
+        podConfigJson: { type: 'string', default: './pod-config.json' },
       })
       .help();
 
@@ -89,6 +90,8 @@ export class CliRunner {
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podTemplateFolder':
          this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
+      'urn:solid-server:default:variable:podConfigJson':
+        this.resolveFilePath(params.podConfigJson),
     };
   }
 
