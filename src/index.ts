@@ -18,6 +18,7 @@ export * from './authorization/WebAclAuthorizer';
 // Init
 export * from './init/AclInitializer';
 export * from './init/CliRunner';
+export * from './init/ConfigPodInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/RootContainerInitializer';
