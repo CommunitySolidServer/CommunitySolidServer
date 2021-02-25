@@ -2,6 +2,7 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
+import { addGeneratedResources } from './generate/GenerateUtil';
 import type { IdentifierGenerator } from './generate/IdentifierGenerator';
 import type { ResourcesGenerator } from './generate/ResourcesGenerator';
 import type { PodManager } from './PodManager';
@@ -36,12 +37,7 @@ export class GeneratedPodManager implements PodManager {
       throw new ConflictHttpError(`There already is a resource at ${podIdentifier.path}`);
     }
 
-    const resources = this.resourcesGenerator.generate(podIdentifier, settings);
-    let count = 0;
-    for await (const { identifier, representation } of resources) {
-      await this.store.setRepresentation(identifier, representation);
-      count += 1;
-    }
+    const count = await addGeneratedResources(podIdentifier, settings, this.resourcesGenerator, this.store);
     this.logger.info(`Added ${count} resources to ${podIdentifier.path}`);
     return podIdentifier;
   }
