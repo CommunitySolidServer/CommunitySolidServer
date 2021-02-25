@@ -17,6 +17,7 @@ describe('A RoutingResourceStore', (): void => {
       setRepresentation: jest.fn(),
       modifyResource: jest.fn(),
       deleteResource: jest.fn(),
+      resourceExists: jest.fn(),
     };
 
     rule = new StaticAsyncHandler(true, source);
@@ -57,6 +58,12 @@ describe('A RoutingResourceStore', (): void => {
       .resolves.toBeUndefined();
     expect(source.deleteResource).toHaveBeenCalledTimes(1);
     expect(source.deleteResource).toHaveBeenLastCalledWith(identifier, 'conditions');
+  });
+
+  it('calls resourceExists on the resulting store.', async(): Promise<void> => {
+    await expect(store.resourceExists(identifier)).resolves.toBeUndefined();
+    expect(source.resourceExists).toHaveBeenCalledTimes(1);
+    expect(source.resourceExists).toHaveBeenLastCalledWith(identifier, undefined);
   });
 
   it('throws a 404 if there is no body and no store was found.', async(): Promise<void> => {

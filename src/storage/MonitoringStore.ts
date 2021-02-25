@@ -19,6 +19,10 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
     this.source = source;
   }
 
+  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
+    return this.source.resourceExists(identifier, conditions);
+  }
+
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     return this.source.getRepresentation(identifier, preferences, conditions);

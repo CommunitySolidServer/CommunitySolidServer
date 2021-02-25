@@ -16,6 +16,15 @@ import type { Conditions } from './Conditions';
  * should those be relevant to the store.
  */
 export interface ResourceStore {
+
+  /**
+   * Check if a resource exists.
+   * @param identifier - Identifier of resource to check.
+   *
+   * @returns A promise resolving if the resource already exists
+   */
+  resourceExists: (identifier: ResourceIdentifier, conditions?: Conditions) => Promise<boolean>;
+
   /**
    * Retrieves a representation of a resource.
    * @param identifier - Identifier of the resource to read.

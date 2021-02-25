@@ -604,5 +604,28 @@ describe('A DataAccessorBasedStore', (): void => {
       );
     });
   });
+
+  describe('resource Exists', (): void => {
+    it('should return false when the resource does not exist.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      await expect(store.resourceExists(resourceID)).resolves.toBeFalsy();
+    });
+
+    it('should return true when the resource exists.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      accessor.data[resourceID.path] = representation;
+      await expect(store.resourceExists(resourceID)).resolves.toBeTruthy();
+    });
+
+    it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const originalMetaData = accessor.getMetadata;
+      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+        throw new Error('error');
+      });
+      await expect(store.resourceExists(resourceID)).rejects.toThrow('error');
+      accessor.getMetadata = originalMetaData;
+    });
+  });
 });
 

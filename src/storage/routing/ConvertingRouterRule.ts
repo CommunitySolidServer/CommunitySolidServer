@@ -1,6 +1,5 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { containsResource } from '../../storage/StoreUtil';
 import type { ResourceStore } from '../ResourceStore';
 import type { PreferenceSupport } from './PreferenceSupport';
 import { RouterRule } from './RouterRule';
@@ -40,8 +39,7 @@ export class ConvertingRouterRule extends RouterRule {
         entry.supportChecker.supports({ identifier, representation }));
     } else {
       // No content-type given so we can only check if one of the stores has data for the identifier
-      store = await this.findStore(async(entry): Promise<boolean> =>
-        containsResource(entry.store, input.identifier));
+      store = await this.findStore(async(entry): Promise<boolean> => entry.store.resourceExists(input.identifier));
     }
     return store;
   }

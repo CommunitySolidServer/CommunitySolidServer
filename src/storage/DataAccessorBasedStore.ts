@@ -67,6 +67,19 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    try {
+      this.validateIdentifier(identifier);
+      await this.accessor.getMetadata(identifier);
+      return true;
+    } catch (error: unknown) {
+      if (NotFoundHttpError.isInstance(error)) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     this.validateIdentifier(identifier);
 

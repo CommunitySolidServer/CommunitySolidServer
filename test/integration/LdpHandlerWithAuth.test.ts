@@ -42,7 +42,6 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
       variables,
     ) as Record<string, any>;
     ({ handler, store, initializer } = instances);
-
     // Set up the internal store
     await initializer.handleSafe();
 
