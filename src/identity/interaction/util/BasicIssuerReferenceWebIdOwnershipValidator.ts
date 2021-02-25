@@ -7,12 +7,8 @@ import { SOLID } from '../../../util/Vocabularies';
 import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
 
 /**
- * Validates is a WebId is okay to register based on if it
+ * Validates whether a WebId is okay to register based on if it
  * references this as an issuer.
- *
- * Note: This file uses clownface because I like clownface.
- * If needed, we can refactor it to use whatever rdf library
- * Ruben prefers.
  */
 export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipValidator {
   private readonly issuer: string;
