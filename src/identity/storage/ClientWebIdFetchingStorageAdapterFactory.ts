@@ -30,7 +30,7 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
     const payload = await this.adapter.find(id);
 
     // If we're looking up a Client and the Client is undefined, check to
-    // see if it's a valide Client WebId
+    // see if it's a valid Client WebId
     if (!payload && this.name === 'Client') {
       try {
         // Fetch and parse the Client WebId document
