@@ -60,6 +60,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
           'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates/pod'),
+          'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
         },
       },
     );
@@ -79,6 +80,7 @@ describe('CliRunner', (): void => {
         '-p', '4000',
         '-s', 'http://localhost:5000/sparql',
         '-t', 'templates',
+        '--podConfigJson', '/different-path.json',
       ],
     });
 
@@ -106,6 +108,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
         },
       },
     );
@@ -123,6 +126,7 @@ describe('CliRunner', (): void => {
         '--port', '4000',
         '--rootFilePath', 'root',
         '--sparqlEndpoint', 'http://localhost:5000/sparql',
+        '--podConfigJson', '/different-path.json',
       ],
     });
 
@@ -150,6 +154,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
         },
       },
     );

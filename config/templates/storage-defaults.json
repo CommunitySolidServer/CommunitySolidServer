@@ -1,0 +1,51 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/presets/acl.json",
+    "files-scs:config/presets/representation-conversion.json",
+    "files-scs:config/presets/static.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Configures classes that are used by all other storage-*.json configurations."
+    },
+
+    {
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "comment": "Copied from storage-wrapper.json since a variable is required in there",
+      "@type": "RoutingAuxiliaryStrategy",
+      "RoutingAuxiliaryStrategy:_sources": [
+        {
+          "@id": "urn:solid-server:default:AclStrategy"
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:template:IdentifierStrategy",
+      "@type": "SingleRootIdentifierStrategy",
+      "SingleRootIdentifierStrategy:_baseUrl": {
+        "@id": "urn:solid-server:template:variable:baseUrl"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:template:ResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "DataAccessorBasedStore:_accessor": {
+        "@id": "urn:solid-server:template:DataAccessor"
+      },
+      "DataAccessorBasedStore:_identifierStrategy": {
+        "@id": "urn:solid-server:template:IdentifierStrategy"
+      },
+      "DataAccessorBasedStore:_auxiliaryStrategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:template:variable:baseUrl",
+      "@type": "Variable"
+    }
+  ]
+}

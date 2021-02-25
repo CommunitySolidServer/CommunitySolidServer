@@ -1,0 +1,37 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/templates/storage-defaults.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Sets up a file data accessor with corresponding extension based file mapper."
+    },
+
+    {
+      "@id": "urn:solid-server:template:FileIdentifierMapper",
+      "@type": "ExtensionBasedMapper",
+      "ExtensionBasedMapper:_base": {
+        "@id": "urn:solid-server:template:variable:baseUrl"
+      },
+      "ExtensionBasedMapper:_rootFilepath": {
+        "@id": "urn:solid-server:template:variable:rootFilePath"
+      },
+      "ExtensionBasedMapper:_overrideTypes_acl": "text/turtle",
+      "ExtensionBasedMapper:_overrideTypes_meta": "text/turtle"
+    },
+
+    {
+      "@id": "urn:solid-server:template:DataAccessor",
+      "@type": "FileDataAccessor",
+      "FileDataAccessor:_resourceMapper": {
+        "@id": "urn:solid-server:template:FileIdentifierMapper"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:template:variable:rootFilePath",
+      "@type": "Variable"
+    }
+  ]
+}
