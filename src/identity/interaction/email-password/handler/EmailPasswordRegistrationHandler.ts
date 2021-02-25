@@ -1,9 +1,9 @@
 import assert from 'assert';
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { HttpError } from '../../../../util/errors/HttpError';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
+import { IdpInteractionError } from '../../util/IdpInteractionError';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { WebIdOwnershipValidator } from '../../util/WebIdOwnershipValidator';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
@@ -11,7 +11,6 @@ import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/u;
 
 interface EmailPasswordRegisterHandlerArgs {
-  renderHandler: IdpRenderHandler;
   webIdOwnershipValidator: WebIdOwnershipValidator;
   emailPasswordStorageAdapter: EmailPasswordStore;
   oidcInteractionCompleter: OidcInteractionCompleter;
@@ -22,25 +21,19 @@ interface EmailPasswordRegisterHandlerArgs {
  * user and logs them in if successful.
  */
 export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler {
-  private readonly renderHandler: IdpRenderHandler;
   private readonly webIdOwnershipValidator: WebIdOwnershipValidator;
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(args: EmailPasswordRegisterHandlerArgs) {
     super();
-    this.renderHandler = args.renderHandler;
     this.webIdOwnershipValidator = args.webIdOwnershipValidator;
     this.emailPasswordStorageAdapter = args.emailPasswordStorageAdapter;
     this.oidcInteractionCompleter = args.oidcInteractionCompleter;
   }
 
   public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(
-      input.request,
-      input.response,
-    );
+    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     let prefilledEmail = '';
     let prefilledWebId = '';
     try {
@@ -86,19 +79,17 @@ export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler 
         shouldRemember,
       });
     } catch (err: unknown) {
-      const errorMessage: string =
-        err instanceof Error ? err.message : 'An unknown error occurred';
-      await this.renderHandler.handle({
-        response: input.response,
-        props: {
-          details: interactionDetails,
-          errorMessage,
-          prefilled: {
-            email: prefilledEmail,
-            webId: prefilledWebId,
-          },
-        },
-      });
+      const prefilled = {
+        email: prefilledEmail,
+        webId: prefilledWebId,
+      };
+      if (err instanceof HttpError) {
+        throw new IdpInteractionError(err.statusCode, err.message, prefilled);
+      } else if (err instanceof Error) {
+        throw new IdpInteractionError(500, err.message, prefilled);
+      } else {
+        throw new IdpInteractionError(500, 'Unknown Error', prefilled);
+      }
     }
   }
 }

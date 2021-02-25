@@ -1,16 +1,15 @@
 import assert from 'assert';
-import { getLoggerFor } from '../../../../logging/LogUtil';
+import { HttpError } from '../../../../util/errors/HttpError';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
+import { IdpInteractionError } from '../../util/IdpInteractionError';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordLoginHandlerArgs {
   emailPasswordStorageAdapter: EmailPasswordStore;
   oidcInteractionCompleter: OidcInteractionCompleter;
-  renderHandler: IdpRenderHandler;
 }
 
 /**
@@ -20,21 +19,14 @@ export interface EmailPasswordLoginHandlerArgs {
 export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
-  private readonly renderHandler: IdpRenderHandler;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(args: EmailPasswordLoginHandlerArgs) {
     super();
     this.emailPasswordStorageAdapter = args.emailPasswordStorageAdapter;
     this.oidcInteractionCompleter = args.oidcInteractionCompleter;
-    this.renderHandler = args.renderHandler;
   }
 
   public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(
-      input.request,
-      input.response,
-    );
     let prefilledEmail = '';
     try {
       const { email, password, remember } = await getFormDataRequestBody(
@@ -42,7 +34,7 @@ export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
       );
 
       // Qualify email
-      assert(email && typeof email === 'string', 'Email required');
+      assert(email && typeof email === 'string', 'EmailRequired');
       prefilledEmail = email;
 
       // Qualify password
@@ -64,18 +56,16 @@ export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
         shouldRemember,
       });
     } catch (err: unknown) {
-      const errorMessage: string =
-        err instanceof Error ? err.message : 'An unknown error occurred';
-      await this.renderHandler.handle({
-        response: input.response,
-        props: {
-          details: interactionDetails,
-          errorMessage,
-          prefilled: {
-            email: prefilledEmail,
-          },
-        },
-      });
+      const prefilled = {
+        email: prefilledEmail,
+      };
+      if (err instanceof HttpError) {
+        throw new IdpInteractionError(err.statusCode, err.message, prefilled);
+      } else if (err instanceof Error) {
+        throw new IdpInteractionError(500, err.message, prefilled);
+      } else {
+        throw new IdpInteractionError(500, 'Unknown Error', prefilled);
+      }
     }
   }
 }

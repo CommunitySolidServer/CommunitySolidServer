@@ -1,17 +1,18 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
+import { HttpError } from '../../../../util/errors/HttpError';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
+import { IdpInteractionError } from '../../util/IdpInteractionError';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { TemplateRenderer } from '../../util/TemplateRenderer';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordForgotPasswordHandlerArgs {
-  renderHandler: IdpRenderHandler;
   messageRenderHandler: IdpRenderHandler;
   emailPasswordStorageAdapter: EmailPasswordStore;
   baseUrl: string;
@@ -23,7 +24,6 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
  * Handles the submission of the ForgotPassword form
  */
 export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandler {
-  private readonly renderHandler: IdpRenderHandler;
   private readonly messageRenderHandler: IdpRenderHandler;
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly baseUrl: string;
@@ -33,7 +33,6 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
 
   public constructor(args: EmailPasswordForgotPasswordHandlerArgs) {
     super();
-    this.renderHandler = args.renderHandler;
     this.messageRenderHandler = args.messageRenderHandler;
     this.emailPasswordStorageAdapter = args.emailPasswordStorageAdapter;
     this.baseUrl = args.baseUrl;
@@ -97,16 +96,14 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
 
       await this.sendResponse(input, interactionDetails, email);
     } catch (err: unknown) {
-      const errorMessage: string =
-        err instanceof Error ? err.message : 'An unknown error occurred';
-      await this.renderHandler.handle({
-        response: input.response,
-        props: {
-          details: interactionDetails,
-          errorMessage,
-          prefilled: {},
-        },
-      });
+      const prefilled = {};
+      if (err instanceof HttpError) {
+        throw new IdpInteractionError(err.statusCode, err.message, prefilled);
+      } else if (err instanceof Error) {
+        throw new IdpInteractionError(500, err.message, prefilled);
+      } else {
+        throw new IdpInteractionError(500, 'Unknown Error', prefilled);
+      }
     }
   }
 }
