@@ -17,6 +17,7 @@ describe('A MemoryMapStorage', (): void => {
   it('returns data if it was set beforehand.', async(): Promise<void> => {
     await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
     await expect(storage.get(identifier1)).resolves.toBe('apple');
+    await expect(storage.entries().next()).resolves.toEqual({ done: false, value: [ identifier1, 'apple' ]});
   });
 
   it('can check if data is present.', async(): Promise<void> => {

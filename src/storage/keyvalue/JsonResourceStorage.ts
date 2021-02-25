@@ -1,6 +1,7 @@
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { readableToString } from '../../util/StreamUtil';
 import type { ResourceStore } from '../ResourceStore';
 import type { KeyValueStorage } from './KeyValueStorage';
@@ -60,5 +61,10 @@ export class JsonResourceStorage implements KeyValueStorage<ResourceIdentifier, 
       }
       return false;
     }
+  }
+
+  public entries(): never {
+    // We don't know which resources are in the store
+    throw new NotImplementedHttpError();
   }
 }

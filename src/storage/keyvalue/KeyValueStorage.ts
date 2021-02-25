@@ -33,4 +33,9 @@ export interface KeyValueStorage<TKey, TValue> {
    * @returns If there was a value to delete.
    */
   delete: (key: TKey) => Promise<boolean>;
+
+  /**
+   * An iterable of entries in the storage.
+   */
+  entries: () => AsyncIterableIterator<[TKey, TValue]>;
 }

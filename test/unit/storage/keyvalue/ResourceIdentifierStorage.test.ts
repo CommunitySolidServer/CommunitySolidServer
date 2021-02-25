@@ -13,6 +13,9 @@ describe('A ResourceIdentifierStorage', (): void => {
       has: jest.fn(),
       set: jest.fn(),
       delete: jest.fn(),
+      entries: jest.fn(async function* (): any {
+        yield [ 'a', 1 ];
+      }),
     };
     storage = new ResourceIdentifierStorage(source);
   });
@@ -33,5 +36,8 @@ describe('A ResourceIdentifierStorage', (): void => {
     await storage.delete(identifier);
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith(path);
+
+    await storage.entries().next();
+    expect(source.entries).toHaveBeenCalledTimes(1);
   });
 });
