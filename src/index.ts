@@ -190,6 +190,7 @@ export * from './storage/patch/PatchHandler';
 export * from './storage/patch/SparqlUpdatePatchHandler';
 
 // Storage/Routing
+export * from './storage/routing/BaseUrlRouterRule';
 export * from './storage/routing/ConvertingRouterRule';
 export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
