@@ -109,8 +109,10 @@ export * from './logging/VoidLoggerFactory';
 export * from './logging/WinstonLoggerFactory';
 
 // Pods/Generate
+export * from './pods/generate/GenerateUtil';
 export * from './pods/generate/HandlebarsTemplateEngine';
 export * from './pods/generate/IdentifierGenerator';
+export * from './pods/generate/PodGenerator';
 export * from './pods/generate/ResourcesGenerator';
 export * from './pods/generate/SubdomainIdentifierGenerator';
 export * from './pods/generate/SuffixIdentifierGenerator';
@@ -123,6 +125,7 @@ export * from './pods/settings/PodSettingsJsonParser';
 export * from './pods/settings/PodSettingsParser';
 
 // Pods
+export * from './pods/ConfigPodManager';
 export * from './pods/GeneratedPodManager';
 export * from './pods/PodManager';
 export * from './pods/PodManagerHttpHandler';
