@@ -16,6 +16,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   let handler: SparqlUpdatePatchHandler;
   let source: ResourceStore;
   let startQuads: Quad[];
+  const fullfilledDataInsert = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 . }';
 
   beforeEach(async(): Promise<void> => {
     startQuads = [ quad(
@@ -56,6 +57,12 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     return true;
   }
 
+  async function handle(query: string): Promise<void> {
+    const sparqlPrefix = 'prefix : <http://test.com/>\n';
+    await handler.handle({ identifier: { path: 'path' },
+      patch: { algebra: translate(sparqlPrefix.concat(query), { quads: true }) } as SparqlUpdatePatch });
+  }
+
   it('only accepts SPARQL updates.', async(): Promise<void> => {
     const input = { identifier: { path: 'path' },
       patch: { algebra: {}} as SparqlUpdatePatch };
@@ -65,12 +72,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles INSERT DATA updates.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
-        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    await handle(fullfilledDataInsert);
     expect(await basicChecks(startQuads.concat(
       [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
         quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')) ],
@@ -78,11 +80,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles DELETE DATA updates.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE DATA { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    await handle('DELETE DATA { :startS1 :startP1 :startO1 }');
     expect(await basicChecks(
       [ quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
@@ -91,11 +89,8 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles DELETE WHERE updates with no variables.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE WHERE { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    const query = 'DELETE WHERE { :startS1 :startP1 :startO1 }';
+    await handle(query);
     expect(await basicChecks(
       [ quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
@@ -104,13 +99,8 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles DELETE/INSERT updates with empty WHERE.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }\n' +
-        'INSERT { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }\n' +
-        'WHERE {}',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    const query = 'DELETE { :startS1 :startP1 :startO1 } INSERT { :s1 :p1 :o1 . } WHERE {}';
+    await handle(query);
     expect(await basicChecks([
       quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
@@ -122,14 +112,9 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles composite INSERT/DELETE updates.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
-        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> };' +
-        'DELETE WHERE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.' +
-        '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    const query = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 };' +
+      'DELETE WHERE { :s1 :p1 :o1 . :startS1 :startP1 :startO1 }';
+    await handle(query);
     expect(await basicChecks([
       quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
@@ -141,14 +126,9 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles composite DELETE/INSERT updates.', async(): Promise<void> => {
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.' +
-        '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> };' +
-        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
-        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    const query = 'DELETE DATA { :s1 :p1 :o1 . :startS1 :startP1 :startO1 } ;' +
+      'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 }';
+    await handle(query);
     expect(await basicChecks([
       quad(namedNode('http://test.com/startS2'),
         namedNode('http://test.com/startP2'),
@@ -163,80 +143,49 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('rejects GRAPH inserts.', async(): Promise<void> => {
-    const handle = handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'INSERT DATA { GRAPH <http://test.com/graph> { ' +
-          '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('GRAPH statements are not supported');
+    const query = 'INSERT DATA { GRAPH :graph { :s1 :p1 :o1 } }';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('rejects GRAPH deletes.', async(): Promise<void> => {
-    const handle = handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE DATA { GRAPH <http://test.com/graph> { ' +
-          '<http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> } }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('GRAPH statements are not supported');
+    const query = 'DELETE DATA { GRAPH :graph { :s1 :p1 :o1 } }';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('rejects DELETE/INSERT updates with a non-empty WHERE.', async(): Promise<void> => {
-    const handle = handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE { <http://test.com/startS1> <http://test.com/startP1> <http://test.com/startO1> }\n' +
-        'INSERT { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }\n' +
-        'WHERE { ?s ?p ?o }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('WHERE statements are not supported');
+    const query = 'DELETE { :s1 :p1 :o1 } INSERT { :s1 :p1 :o1 } WHERE { ?s ?p ?o }';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
+  });
+
+  it('rejects INSERT WHERE updates with a UNION.', async(): Promise<void> => {
+    const query = 'INSERT { :s1 :p1 :o1 . } WHERE { { :s1 :p1 :o1 } UNION { :s1 :p1 :o2 } }';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('rejects DELETE WHERE updates with variables.', async(): Promise<void> => {
-    const handle = handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'DELETE WHERE { ?v <http://test.com/startP1> <http://test.com/startO1> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('WHERE statements are not supported');
+    const query = 'DELETE WHERE { ?v :startP1 :startO1 }';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('rejects non-DELETE/INSERT updates.', async(): Promise<void> => {
-    const handle = handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'MOVE DEFAULT TO GRAPH <http://test.com/newGraph>',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
-    await expect(handle).rejects.toThrow('Only DELETE/INSERT SPARQL update operations are supported');
+    const query = 'MOVE DEFAULT TO GRAPH :newGraph';
+    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('throws the error returned by the store if there is one.', async(): Promise<void> => {
     source.getRepresentation = jest.fn(async(): Promise<any> => {
       throw new Error('error');
     });
-
-    const input = { identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. ' +
-        '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
-        { quads: true },
-      ) } as SparqlUpdatePatch };
-    await expect(handler.handle(input)).rejects.toThrow('error');
+    await expect(handle(fullfilledDataInsert)).rejects.toThrow('error');
   });
 
   it('creates a new resource if it does not exist yet.', async(): Promise<void> => {
-    // There is no initial data
     startQuads = [];
     source.getRepresentation = jest.fn((): any => {
       throw new NotFoundHttpError();
     });
-
-    await handler.handle({ identifier: { path: 'path' },
-      patch: { algebra: translate(
-        'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }',
-        { quads: true },
-      ) } as SparqlUpdatePatch });
+    const query = 'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }';
+    await handle(query);
     expect(await basicChecks(startQuads.concat(
       [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')) ],
     ))).toBe(true);

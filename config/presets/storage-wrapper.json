@@ -6,9 +6,6 @@
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
         "@id": "urn:solid-server:default:ResourceStore_Locking"
-      },
-      "MonitoringStore:_identifierStrategy": {
-        "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     },
 

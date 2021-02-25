@@ -90,187 +90,203 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
 
   it('can add a file to the store, read it and delete it.', async():
   Promise<void> => {
-    // POST
+    const filePath = 'testfile0.txt';
+    const fileUrl = `${BASE}/${filePath}`;
+    // PUT
     let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', 'testfile0.txt', 'text/plain',
+      '../assets/testfile0.txt', filePath, 'text/plain',
     );
-    const id = response._getHeaders().location;
 
     // GET
-    response = await resourceHelper.getResource(id);
+    response = await resourceHelper.getResource(fileUrl);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE0');
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
     expect(response.getHeaders()['accept-patch']).toBe('application/sparql-update');
     expect(response.getHeaders()['ms-author-via']).toBe('SPARQL');
 
     // DELETE
-    await resourceHelper.deleteResource(id);
-    await resourceHelper.shouldNotExist(id);
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
   });
 
   it('can add and overwrite a file.', async(): Promise<void> => {
+    const filePath = 'file.txt';
+    const fileUrl = `${BASE}/${filePath}`;
+    // PUT
     let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', 'file.txt', 'text/plain',
+      '../assets/testfile0.txt', filePath, 'text/plain',
     );
-    const id = response._getHeaders().location;
 
     // GET
-    response = await resourceHelper.getResource(id);
+    response = await resourceHelper.getResource(fileUrl);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE0');
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
 
     // PUT
     response = await resourceHelper.replaceResource(
-      '../assets/testfile1.txt', id, 'text/plain',
+      '../assets/testfile1.txt', fileUrl, 'text/plain',
     );
 
     // GET
-    response = await resourceHelper.getResource(id);
+    response = await resourceHelper.getResource(fileUrl);
     expect(response.statusCode).toBe(200);
     expect(response._getBuffer().toString()).toContain('TESTFILE1');
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
 
     // DELETE
-    await resourceHelper.deleteResource(id);
-    await resourceHelper.shouldNotExist(id);
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
   });
 
   it('can create a folder and delete it.', async(): Promise<void> => {
-    // POST
-    let response = await resourceHelper.createContainer('secondfolder/');
-    const id = response._getHeaders().location;
+    const containerPath = 'secondfolder/';
+    const containerUrl = `${BASE}/${containerPath}`;
+    // PUT
+    let response = await resourceHelper.createContainer(containerPath);
 
     // GET
-    response = await resourceHelper.getContainer(id);
+    response = await resourceHelper.getContainer(containerUrl);
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${containerUrl}.acl>; rel="acl"`);
 
     // DELETE
-    await resourceHelper.deleteResource(id);
-    await resourceHelper.shouldNotExist(id);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('can make a folder and put a file in it.', async(): Promise<void> => {
     // Create folder
-    await resourceHelper.createContainer('testfolder0/');
+    const containerPath = 'testfolder0/';
+    const containerUrl = `${BASE}/${containerPath}`;
+    await resourceHelper.createContainer(containerPath);
 
     // Create file
+    const filePath = 'testfolder0/testfile0.txt';
+    const fileUrl = `${BASE}/${filePath}`;
     let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', 'testfolder0/testfile0.txt', 'text/plain',
+      '../assets/testfile0.txt', filePath, 'text/plain',
     );
-    const id = response._getHeaders().location;
 
     // GET File
-    response = await resourceHelper.getResource(id);
+    response = await resourceHelper.getResource(fileUrl);
     expect(response.statusCode).toBe(200);
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${id}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
 
     // DELETE
-    await resourceHelper.deleteResource(id);
-    await resourceHelper.shouldNotExist(id);
-    await resourceHelper.deleteResource('http://test.com/testfolder0/');
-    await resourceHelper.shouldNotExist('http://test.com/testfolder0/');
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('cannot remove a folder when the folder contains a file.', async(): Promise<void> => {
     // Create folder
-    let response = await resourceHelper.createContainer('testfolder1/');
-    const folderId = response._getHeaders().location;
+    const containerPath = 'testfolder1/';
+    const containerUrl = `${BASE}/${containerPath}`;
+    let response = await resourceHelper.createContainer(containerPath);
 
     // Create file
+    const filePath = 'testfolder1/testfile0.txt';
+    const fileUrl = `${BASE}/${filePath}`;
     await resourceHelper.createResource(
-      '../assets/testfile0.txt', 'testfolder1/testfile0.txt', 'text/plain',
+      '../assets/testfile0.txt', filePath, 'text/plain',
     );
 
     // Try DELETE folder
-    response = await resourceHelper.performRequest(new URL(folderId), 'DELETE', {});
+    response = await resourceHelper.performRequest(new URL(containerUrl), 'DELETE', {});
     expect(response.statusCode).toBe(409);
     expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
     // DELETE
-    await resourceHelper.deleteResource('http://test.com/testfolder1/testfile0.txt');
-    await resourceHelper.shouldNotExist('http://test.com/testfolder1/testfile0.txt');
-    await resourceHelper.deleteResource(folderId);
-    await resourceHelper.shouldNotExist(folderId);
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('cannot remove a folder when the folder contains a subfolder.', async(): Promise<void> => {
     // Create folder
-    let response = await resourceHelper.createContainer('testfolder2/');
-    const folderId = response._getHeaders().location;
+    const containerPath = 'testfolder2/';
+    const containerUrl = `${BASE}/${containerPath}`;
+    let response = await resourceHelper.createContainer(containerPath);
 
     // Create subfolder
-    response = await resourceHelper.createContainer('testfolder2/subfolder0');
-    const subFolderId = response._getHeaders().location;
+    const subContainerPath = `${containerPath}subfolder0/`;
+    const subContainerUrl = `${BASE}/${subContainerPath}`;
+    response = await resourceHelper.createContainer(subContainerPath);
 
     // Try DELETE folder
-    response = await resourceHelper.performRequest(new URL(folderId), 'DELETE', {});
+    response = await resourceHelper.performRequest(new URL(containerUrl), 'DELETE', {});
     expect(response.statusCode).toBe(409);
     expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
 
     // DELETE
-    await resourceHelper.deleteResource(subFolderId);
-    await resourceHelper.shouldNotExist(subFolderId);
-    await resourceHelper.deleteResource(folderId);
-    await resourceHelper.shouldNotExist(folderId);
+    await resourceHelper.deleteResource(subContainerUrl);
+    await resourceHelper.shouldNotExist(subContainerUrl);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('can read the contents of a folder.', async(): Promise<void> => {
     // Create folder
-    let response = await resourceHelper.createContainer('testfolder3/');
-    const folderId = response._getHeaders().location;
+    const containerPath = 'testfolder3/';
+    const containerUrl = `${BASE}/${containerPath}`;
+    let response = await resourceHelper.createContainer(containerPath);
 
     // Create subfolder
+    const subContainerPath = `${containerPath}subfolder0/`;
+    const subContainerUrl = `${BASE}/${subContainerPath}`;
     response = await resourceHelper.createContainer('testfolder3/subfolder0/');
-    const subFolderId = response._getHeaders().location;
 
     // Create file
+    const filePath = `${containerPath}testfile0.txt`;
+    const fileUrl = `${BASE}/${filePath}`;
     response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', 'testfolder3/testfile0.txt', 'text/plain',
+      '../assets/testfile0.txt', filePath, 'text/plain',
     );
-    const fileId = response._getHeaders().location;
 
-    response = await resourceHelper.getContainer(folderId);
+    response = await resourceHelper.getContainer(containerUrl);
     expect(response.statusCode).toBe(200);
-    expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/subfolder0/> .');
-    expect(response._getData()).toContain('<http://www.w3.org/ns/ldp#contains> <http://test.com/testfolder3/testfile0.txt> .');
+    expect(response._getData()).toContain(`<http://www.w3.org/ns/ldp#contains> <${subContainerUrl}> .`);
+    expect(response._getData()).toContain(`<http://www.w3.org/ns/ldp#contains> <${fileUrl}> .`);
     expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
     expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${folderId}.acl>; rel="acl"`);
+    expect(response.getHeaders().link).toContain(`<${containerUrl}.acl>; rel="acl"`);
 
     // DELETE
-    await resourceHelper.deleteResource(fileId);
-    await resourceHelper.shouldNotExist(fileId);
-    await resourceHelper.deleteResource(subFolderId);
-    await resourceHelper.shouldNotExist(subFolderId);
-    await resourceHelper.deleteResource(folderId);
-    await resourceHelper.shouldNotExist(folderId);
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
+    await resourceHelper.deleteResource(subContainerUrl);
+    await resourceHelper.shouldNotExist(subContainerUrl);
+    await resourceHelper.deleteResource(containerUrl);
+    await resourceHelper.shouldNotExist(containerUrl);
   });
 
   it('can upload and delete a image.', async(): Promise<void> => {
+    const filePath = 'image.png';
+    const fileUrl = `${BASE}/${filePath}`;
     let response = await resourceHelper.createResource(
-      '../assets/testimage.png', 'image.png', 'image/png',
+      '../assets/testimage.png', filePath, 'image/png',
     );
-    const fileId = response._getHeaders().location;
 
     // GET
-    response = await resourceHelper.getResource(fileId);
+    response = await resourceHelper.getResource(fileUrl);
     expect(response.statusCode).toBe(200);
     expect(response._getHeaders()['content-type']).toBe('image/png');
 
     // DELETE
-    await resourceHelper.deleteResource(fileId);
-    await resourceHelper.shouldNotExist(fileId);
+    await resourceHelper.deleteResource(fileUrl);
+    await resourceHelper.shouldNotExist(fileUrl);
   });
 
   it('can create a container with a diamond identifier in the data.', async(): Promise<void> => {

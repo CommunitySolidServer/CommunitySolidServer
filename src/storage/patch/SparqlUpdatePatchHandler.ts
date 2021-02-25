@@ -34,13 +34,14 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     }
   }
 
-  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
+  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}):
+  Promise<ResourceIdentifier[]> {
     // Verify the patch
     const { identifier, patch } = input;
     const op = patch.algebra;
     this.validateUpdate(op);
 
-    await this.applyPatch(identifier, op);
+    return this.applyPatch(identifier, op);
   }
 
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
@@ -49,6 +50,14 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   private isComposite(op: Algebra.Operation): op is Algebra.CompositeUpdate {
     return op.type === Algebra.types.COMPOSITE_UPDATE;
+  }
+
+  private isBasicGraphPatternWithoutVariables(op: Algebra.Operation): op is Algebra.Bgp {
+    if (op.type !== Algebra.types.BGP) {
+      return false;
+    }
+    return !(op.patterns as BaseQuad[]).some((pattern): boolean =>
+      someTerms(pattern, (term): boolean => term.termType === 'Variable'));
   }
 
   /**
@@ -67,7 +76,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   /**
    * Checks if the input DELETE/INSERT is supported.
-   * This means: no GRAPH statements, no DELETE WHERE.
+   * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
    */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
     const def = defaultGraph();
@@ -81,8 +90,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
       this.logger.warn('GRAPH statement in INSERT clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
-    if (op.where ?? deletes.some((pattern): boolean =>
-      someTerms(pattern, (term): boolean => term.termType === 'Variable'))) {
+    if (!(typeof op.where === 'undefined' || this.isBasicGraphPatternWithoutVariables(op.where))) {
       this.logger.warn('WHERE statements are not supported');
       throw new NotImplementedHttpError('WHERE statements are not supported');
     }
@@ -100,7 +108,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<void> {
+  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<ResourceIdentifier[]> {
     const store = new Store<BaseQuad>();
     try {
       // Read the quads of the current representation
@@ -125,7 +133,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
 
     // Write the result
-    await this.source.setRepresentation(identifier, new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS));
+    const patched = new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS);
+    return this.source.setRepresentation(identifier, patched);
   }
 
   /**

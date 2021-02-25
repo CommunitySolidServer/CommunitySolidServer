@@ -9,7 +9,7 @@ describe('A PatchOperationHandler', (): void => {
   const store = {} as unknown as ResourceStore;
   const handler = new PatchOperationHandler(store);
   beforeEach(async(): Promise<void> => {
-    store.modifyResource = jest.fn(async(): Promise<void> => undefined);
+    store.modifyResource = jest.fn(async(): Promise<any> => undefined);
   });
 
   it('only supports PATCH operations.', async(): Promise<void> => {

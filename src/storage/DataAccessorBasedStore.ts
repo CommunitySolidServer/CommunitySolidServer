@@ -22,6 +22,7 @@ import {
   isContainerIdentifier,
   isContainerPath,
   trimTrailingSlashes,
+  toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
@@ -133,7 +134,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     return newID;
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation):
+  Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
 
     // Ensure the representation is supported by the accessor
@@ -160,14 +162,14 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Potentially have to create containers if it didn't exist yet
-    await this.writeData(identifier, representation, isContainer, !oldMetadata);
+    return this.writeData(identifier, representation, isContainer, !oldMetadata);
   }
 
-  public async modifyResource(): Promise<void> {
+  public async modifyResource(): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -198,11 +200,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
     // resources"
     // https://solid.github.io/specification/protocol#deleting-resources
+    const deleted = [ identifier ];
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-      await this.safelyDeleteAuxiliaryResources(this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier));
+      const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
+      deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
     }
-
-    return this.accessor.deleteResource(identifier);
+    await this.accessor.deleteResource(identifier);
+    return deleted;
   }
 
   /**
@@ -264,9 +268,11 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param representation - Corresponding Representation.
    * @param isContainer - Is the incoming resource a container?
    * @param createContainers - Should parent containers (potentially) be created?
+   *
+   * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers?: boolean): Promise<void> {
+    createContainers?: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     const { metadata } = representation;
@@ -287,13 +293,22 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
-      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
+    const modified = [];
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const container = this.identifierStrategy.getParentContainer(identifier);
+      if (!createContainers) {
+        modified.push(container);
+      } else {
+        const created = await this.createRecursiveContainers(container);
+        modified.push(...created.length === 0 ? [ container ] : created);
+      }
     }
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
+
+    return [ ...modified, identifier ];
   }
 
   /**
@@ -347,8 +362,22 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
-    return { path:
-        `${ensureTrailingSlash(container.path)}${slug ? trimTrailingSlashes(slug) : uuid()}${isContainer ? '/' : ''}` };
+    const base = ensureTrailingSlash(container.path);
+    const name = (slug && this.cleanSlug(slug)) ?? uuid();
+    const suffix = isContainer ? '/' : '';
+    return { path: `${base}${name}${suffix}` };
+  }
+
+  /**
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
+   * e.g.: cleanslug('&%26') returns '%26%26'
+   * @param slug - the slug to clean
+   */
+  protected cleanSlug(slug: string): string {
+    if (/\/[^/]/u.test(slug)) {
+      throw new BadRequestHttpError('Slugs should not contain slashes');
+    }
+    return toCanonicalUriPath(trimTrailingSlashes(slug));
   }
 
   /**
@@ -427,10 +456,12 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Deletes the given array of auxiliary identifiers.
    * Does not throw an error if something goes wrong.
    */
-  protected async safelyDeleteAuxiliaryResources(identifiers: ResourceIdentifier[]): Promise<void[]> {
-    return Promise.all(identifiers.map(async(identifier): Promise<void> => {
+  protected async safelyDeleteAuxiliaryResources(identifiers: ResourceIdentifier[]): Promise<ResourceIdentifier[]> {
+    const deleted: ResourceIdentifier[] = [];
+    await Promise.all(identifiers.map(async(identifier): Promise<void> => {
       try {
         await this.accessor.deleteResource(identifier);
+        deleted.push(identifier);
       } catch (error: unknown) {
         if (!NotFoundHttpError.isInstance(error)) {
           const errorMsg = isNativeError(error) ? error.message : error;
@@ -438,6 +469,7 @@ export class DataAccessorBasedStore implements ResourceStore {
         }
       }
     }));
+    return deleted;
   }
 
   /**
@@ -445,7 +477,8 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<void> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+    // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
       // See #480
@@ -456,17 +489,19 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (!isContainerPath(metadata.identifier.value)) {
         throw new ForbiddenHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
       }
+      return [];
     } catch (error: unknown) {
-      if (NotFoundHttpError.isInstance(error)) {
-        // Make sure the parent exists first
-        if (!this.identifierStrategy.isRootContainer(container)) {
-          await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-        }
-        await this.writeData(container, new BasicRepresentation([], container), true);
-      } else {
+      if (!NotFoundHttpError.isInstance(error)) {
         throw error;
       }
     }
+
+    // Create the container, starting with its parent
+    const ancestors = this.identifierStrategy.isRootContainer(container) ?
+      [] :
+      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+    await this.writeData(container, new BasicRepresentation([], container), true);
+    return [ ...ancestors, container ];
   }
 
   public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
