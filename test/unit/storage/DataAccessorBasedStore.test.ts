@@ -617,14 +617,14 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(store.resourceExists(resourceID)).resolves.toBeTruthy();
     });
 
-    it('should rethrow any unexpedted errors from validateIdentifier.', async(): Promise<void> => {
-      const resourceID = { path: `fail` };
-      const originalValidateIdentifier = store.validateIdentifier;
-      store.validateIdentifier = (): void => {
+    it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const originalMetaData = accessor.getMetadata;
+      accessor.getMetadata = jest.fn(async(): Promise<any> => {
         throw new Error('error');
-      };
+      });
       await expect(store.resourceExists(resourceID)).rejects.toThrow('error');
-      store.validateIdentifier = originalValidateIdentifier;
+      accessor.getMetadata = originalMetaData;
     });
   });
 });

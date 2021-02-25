@@ -225,7 +225,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Verify if the given identifier matches the stored base.
    */
-  public validateIdentifier(identifier: ResourceIdentifier): void {
+  protected validateIdentifier(identifier: ResourceIdentifier): void {
     if (!this.identifierStrategy.supportsIdentifier(identifier)) {
       throw new NotFoundHttpError();
     }
