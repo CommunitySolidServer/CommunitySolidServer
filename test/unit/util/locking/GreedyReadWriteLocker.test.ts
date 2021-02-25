@@ -52,7 +52,7 @@ describe('A GreedyReadWriteLocker', (): void => {
       has: async(identifier: ResourceIdentifier): Promise<boolean> => map.has(identifier.path),
       set: async(identifier: ResourceIdentifier, value: number): Promise<any> => map.set(identifier.path, value),
       delete: async(identifier: ResourceIdentifier): Promise<boolean> => map.delete(identifier.path),
-    };
+    } as any;
 
     locker = new GreedyReadWriteLocker(sourceLocker, storage);
   });

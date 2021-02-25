@@ -28,4 +28,10 @@ export class MemoryMapStorage<TKey, TValue> implements KeyValueStorage<TKey, TVa
   public async delete(key: TKey): Promise<boolean> {
     return this.data.delete(key);
   }
+
+  public async* entries(): AsyncIterableIterator<[TKey, TValue]> {
+    for (const entry of this.data.entries()) {
+      yield entry;
+    }
+  }
 }

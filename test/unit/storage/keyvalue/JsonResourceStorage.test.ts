@@ -4,6 +4,7 @@ import type { ResourceIdentifier } from '../../../../src/ldp/representation/Reso
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { readableToString } from '../../../../src/util/StreamUtil';
 
 describe('A JsonResourceStorage', (): void => {
@@ -44,6 +45,7 @@ describe('A JsonResourceStorage', (): void => {
   it('returns data if it was set beforehand.', async(): Promise<void> => {
     await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
     await expect(storage.get(identifier1)).resolves.toBe('apple');
+    expect(storage.entries).toThrow(NotImplementedHttpError);
   });
 
   it('can check if data is present.', async(): Promise<void> => {
