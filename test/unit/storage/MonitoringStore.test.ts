@@ -109,6 +109,6 @@ describe('A MonitoringStore', (): void => {
   it('calls resourceExists directly from the source.', async(): Promise<void> => {
     await expect(store.resourceExists({ path: 'http://example.org/foo/bar' })).resolves.toBeUndefined();
     expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' });
+    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, undefined);
   });
 });

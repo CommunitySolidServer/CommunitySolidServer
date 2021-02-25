@@ -9,7 +9,7 @@ import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 describe('A GeneratedPodManager', (): void => {
   const base = 'http://test.com/';
   let agent: Agent;
-  let store: ResourceStore;
+  let store: jest.Mocked<ResourceStore>;
   let generatorData: Resource[];
   const idGenerator: IdentifierGenerator = {
     generate: (slug: string): ResourceIdentifier => ({ path: `${base}${slug}/` }),
@@ -25,7 +25,7 @@ describe('A GeneratedPodManager', (): void => {
     };
     store = {
       setRepresentation: jest.fn(),
-      resourceExists: jest.fn().mockImplementation((): any => false),
+      resourceExists: jest.fn(),
     } as any;
     generatorData = [
       { identifier: { path: '/path/' }, representation: '/' as any },
@@ -41,7 +41,7 @@ describe('A GeneratedPodManager', (): void => {
   });
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
-    (store.resourceExists as jest.Mock).mockImplementationOnce((): any => true);
+    store.resourceExists.mockResolvedValueOnce(true);
     const result = manager.createPod(agent);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);

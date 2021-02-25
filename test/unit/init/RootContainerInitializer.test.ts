@@ -16,7 +16,7 @@ describe('A RootContainerInitializer', (): void => {
   });
 
   it('invokes ResourceStore initialization.', async(): Promise<void> => {
-    (store.resourceExists as jest.Mock).mockImplementationOnce((): any => false);
+    store.resourceExists.mockResolvedValueOnce(false);
     await initializer.handle();
 
     expect(store.resourceExists).toHaveBeenCalledTimes(1);
@@ -25,7 +25,7 @@ describe('A RootContainerInitializer', (): void => {
   });
 
   it('does not invoke ResourceStore initialization when a root container already exists.', async(): Promise<void> => {
-    (store.resourceExists as jest.Mock).mockImplementationOnce((): any => true);
+    store.resourceExists.mockResolvedValueOnce(true);
     store.getRepresentation.mockReturnValueOnce(Promise.resolve({
       data: { destroy: jest.fn() },
     } as any));

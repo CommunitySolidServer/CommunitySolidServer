@@ -63,7 +63,7 @@ describe('A RoutingResourceStore', (): void => {
   it('calls resourceExists on the resulting store.', async(): Promise<void> => {
     await expect(store.resourceExists(identifier)).resolves.toBeUndefined();
     expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith(identifier);
+    expect(source.resourceExists).toHaveBeenLastCalledWith(identifier, undefined);
   });
 
   it('throws a 404 if there is no body and no store was found.', async(): Promise<void> => {

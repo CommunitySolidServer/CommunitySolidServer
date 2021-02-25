@@ -52,7 +52,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
     // Write test resource
     await store.setRepresentation({ path: `${BASE}/permanent.txt` },
       new BasicRepresentation(createReadStream(joinFilePath(__dirname, '../assets/permanent.txt')), 'text/plain'));
-  }, 20000);
+  });
 
   afterAll(async(): Promise<void> => {
     await teardown();

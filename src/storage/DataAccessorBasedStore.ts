@@ -67,6 +67,19 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    try {
+      this.validateIdentifier(identifier);
+      await this.accessor.getMetadata(identifier);
+      return true;
+    } catch (error: unknown) {
+      if (NotFoundHttpError.isInstance(error)) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     this.validateIdentifier(identifier);
 
@@ -212,7 +225,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Verify if the given identifier matches the stored base.
    */
-  protected validateIdentifier(identifier: ResourceIdentifier): void {
+  public validateIdentifier(identifier: ResourceIdentifier): void {
     if (!this.identifierStrategy.supportsIdentifier(identifier)) {
       throw new NotFoundHttpError();
     }
@@ -502,18 +515,5 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     await this.writeData(container, new BasicRepresentation([], container), true);
     return [ ...ancestors, container ];
-  }
-
-  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
-    try {
-      const result = await this.getRepresentation(identifier);
-      result.data.destroy();
-      return true;
-    } catch (error: unknown) {
-      if (NotFoundHttpError.isInstance(error)) {
-        return false;
-      }
-      throw error;
-    }
   }
 }

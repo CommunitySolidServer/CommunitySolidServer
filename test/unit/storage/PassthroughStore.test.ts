@@ -53,6 +53,6 @@ describe('A PassthroughStore', (): void => {
   it('calls resourceExists directly from the source.', async(): Promise<void> => {
     await expect(store.resourceExists({ path: 'existsPath' })).resolves.toBe('exists');
     expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'existsPath' });
+    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'existsPath' }, undefined);
   });
 });

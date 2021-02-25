@@ -60,7 +60,7 @@ describe('AclInitializer', (): void => {
   });
 
   it('does not invoke ACL initialization when a root ACL already exists.', async(): Promise<void> => {
-    (store.resourceExists as jest.Mock).mockImplementationOnce((): any => true);
+    store.resourceExists.mockResolvedValueOnce(true);
 
     const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
     await initializer.handle();

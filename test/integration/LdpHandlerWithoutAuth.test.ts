@@ -49,7 +49,7 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
 
     // Create test helpers for manipulating the components
     resourceHelper = new ResourceHelper(handler, BASE);
-  }, 20000);
+  });
 
   afterAll(async(): Promise<void> => {
     await teardown();

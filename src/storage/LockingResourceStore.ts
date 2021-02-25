@@ -35,6 +35,11 @@ export class LockingResourceStore implements AtomicResourceStore {
     this.strategy = strategy;
   }
 
+  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
+    return this.locks.withReadLock(this.getLockIdentifier(identifier),
+      async(): Promise<boolean> => this.source.resourceExists(identifier, conditions));
+  }
+
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     return this.lockedRepresentationRun(this.getLockIdentifier(identifier),
@@ -63,11 +68,6 @@ export class LockingResourceStore implements AtomicResourceStore {
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return this.locks.withWriteLock(this.getLockIdentifier(identifier),
       async(): Promise<ResourceIdentifier[]> => this.source.modifyResource(identifier, patch, conditions));
-  }
-
-  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
-    return this.locks.withWriteLock(this.getLockIdentifier(identifier),
-      async(): Promise<boolean> => this.source.resourceExists(identifier));
   }
 
   /**

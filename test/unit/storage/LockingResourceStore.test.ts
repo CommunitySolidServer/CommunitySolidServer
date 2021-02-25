@@ -287,12 +287,12 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
   });
 
-  it('resourceExists should only acquire and release the write lock.', async(): Promise<void> => {
+  it('resourceExists should only acquire and release the read lock.', async(): Promise<void> => {
     await store.resourceExists(associatedId);
-    expect(locker.withReadLock).toHaveBeenCalledTimes(0);
-    expect(locker.withWriteLock).toHaveBeenCalledTimes(1);
+    expect(locker.withReadLock).toHaveBeenCalledTimes(1);
+    expect(locker.withWriteLock).toHaveBeenCalledTimes(0);
     expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith(associatedId);
-    expect(order).toEqual([ 'lock write', 'resourceExists', 'unlock write' ]);
+    expect(source.resourceExists).toHaveBeenLastCalledWith(associatedId, undefined);
+    expect(order).toEqual([ 'lock read', 'resourceExists', 'unlock read' ]);
   });
 });
