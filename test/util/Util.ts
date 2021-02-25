@@ -162,7 +162,14 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
       },
       readFile(path: string): string {
         const { folder, name } = getFolder(path);
+        if (!folder[name]) {
+          throwSystemError('ENOENT');
+        }
         return folder[name];
+      },
+      writeFile(path: string, data: string): void {
+        const { folder, name } = getFolder(path);
+        folder[name] = data;
       },
     },
   };
