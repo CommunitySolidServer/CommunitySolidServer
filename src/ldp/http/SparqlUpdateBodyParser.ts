@@ -16,9 +16,8 @@ import type { SparqlUpdatePatch } from './SparqlUpdatePatch';
 export class SparqlUpdateBodyParser extends BodyParser {
   protected readonly logger = getLoggerFor(this);
 
-  public async canHandle({ request }: BodyParserArgs): Promise<void> {
-    const contentType = request.headers['content-type'];
-    if (contentType !== APPLICATION_SPARQL_UPDATE) {
+  public async canHandle({ metadata }: BodyParserArgs): Promise<void> {
+    if (metadata.contentType !== APPLICATION_SPARQL_UPDATE) {
       throw new UnsupportedMediaTypeHttpError('This parser only supports SPARQL UPDATE data.');
     }
   }

@@ -107,6 +107,21 @@ describe('An integrated AuthenticatedLdpHandler', (): void => {
     expect(response.statusCode).toBe(205);
     expect(response._getData()).toHaveLength(0);
 
+    // PATCH using a content-type header with charset
+    requestUrl = new URL(id);
+    response = await performRequest(
+      handler,
+      requestUrl,
+      'PATCH',
+      { 'content-type': ' application/sparql-update ; charset=UTF-8', 'transfer-encoding': 'chunked' },
+      [ 'DELETE { <s1> <http://test.com/p1> <http://test.com/o1> }',
+        'INSERT {<s3> <http://test.com/p3> <http://test.com/o3>}',
+        'WHERE {}',
+      ],
+    );
+    expect(response.statusCode).toBe(205);
+    expect(response._getData()).toHaveLength(0);
+
     // GET
     response = await performRequest(handler, requestUrl, 'GET', { accept: 'text/turtle' }, []);
     expect(response.statusCode).toBe(200);
