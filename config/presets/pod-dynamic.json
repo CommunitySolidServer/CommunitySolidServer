@@ -8,7 +8,9 @@
     {
       "@id": "urn:solid-server:default:PodConfigurationStorage",
       "@type": "JsonFileStorage",
-      "JsonFileStorage:_filePath": "urn:solid-server:default:variable:podConfigJson",
+      "JsonFileStorage:_filePath": {
+        "@id": "urn:solid-server:default:variable:podConfigJson"
+      },
       "JsonFileStorage:_locker": {
         "@id": "urn:solid-server:default:ResourceLocker"
       }
