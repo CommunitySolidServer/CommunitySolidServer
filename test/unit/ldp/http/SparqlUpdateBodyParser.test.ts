@@ -23,6 +23,10 @@ describe('A SparqlUpdateBodyParser', (): void => {
     await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     input.metadata.contentType = 'text/plain';
     await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    input.metadata.contentType = 'application/sparql-update;charset=utf-8';
+    await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    input.metadata.contentType = 'application/sparql-update ; foo=bar';
+    await expect(bodyParser.canHandle(input)).rejects.toThrow(UnsupportedMediaTypeHttpError);
     input.metadata.contentType = 'application/sparql-update';
     await expect(bodyParser.canHandle(input)).resolves.toBeUndefined();
   });
