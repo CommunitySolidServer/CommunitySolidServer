@@ -29,13 +29,20 @@ export class CliRunner {
     const { argv: params } = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
       .check((args, options): boolean => {
+        // Arguments that are not in the perdefined options are not allowed
+        if (args._ && args._.length > 0) {
+          throw new Error(`Arguments are not supported: "${args._.toString().split(',').join('", "')}"`);
+        }
         for (const key in args) {
+          // _ and $0 are always present with yargs
           if (key !== '_' && key !== '$0') {
+            // Check if the argument occurs in the provided options list
             if (!options[key]) {
-              throw new Error(`"${key}" is not a supported argument!`);
+              throw new Error(`Unknown option: "${key}"`);
             }
+            // Check if the argument actually has a value ('> ./bin/server.js -s' is not valid)
             if (!args[key]) {
-              throw new Error(`Please provide a value for argument "${key}"`);
+              throw new Error(`Missing value for argument "${key}"`);
             }
           }
         }
