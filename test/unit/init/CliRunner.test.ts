@@ -179,7 +179,6 @@ describe('CliRunner', (): void => {
 
     expect(write).toHaveBeenCalledTimes(0);
 
-    expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
 
