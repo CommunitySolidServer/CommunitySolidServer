@@ -2,9 +2,9 @@ import type { RequestParser } from '../../../src/ldp/http/RequestParser';
 import { CreatedResponseDescription } from '../../../src/ldp/http/response/CreatedResponseDescription';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
-import type { AgentParser } from '../../../src/pods/agent/AgentParser';
 import type { PodManager } from '../../../src/pods/PodManager';
 import { PodManagerHttpHandler } from '../../../src/pods/PodManagerHttpHandler';
+import type { PodSettingsParser } from '../../../src/pods/settings/PodSettingsParser';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
@@ -15,19 +15,19 @@ import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 describe('A PodManagerHttpHandler', (): void => {
   const requestPath = '/pods';
   let requestParser: RequestParser;
-  let agentParser: AgentParser;
+  let podSettingsParser: PodSettingsParser;
   let manager: PodManager;
   let responseWriter: ResponseWriter;
   let handler: PodManagerHttpHandler;
 
   beforeEach(async(): Promise<void> => {
     requestParser = { handleSafe: jest.fn((): any => 'requestParser') } as any;
-    agentParser = new StaticAsyncHandler(true, 'agentParser' as any);
+    podSettingsParser = new StaticAsyncHandler(true, 'podSettingsParser' as any);
     manager = {
       createPod: jest.fn(),
     };
     responseWriter = { handleSafe: jest.fn((): any => 'response') } as any;
-    handler = new PodManagerHttpHandler({ requestPath, requestParser, agentParser, manager, responseWriter });
+    handler = new PodManagerHttpHandler({ requestPath, requestParser, podSettingsParser, manager, responseWriter });
   });
 
   it('only supports requests to /pods.', async(): Promise<void> => {

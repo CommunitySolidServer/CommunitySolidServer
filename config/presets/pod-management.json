@@ -34,8 +34,8 @@
       "PodManagerHttpHandler:_args_requestParser": {
         "@id": "urn:solid-server:default:RequestParser"
       },
-      "PodManagerHttpHandler:_args_agentParser": {
-        "@type": "AgentJsonParser"
+      "PodManagerHttpHandler:_args_podSettingsParser": {
+        "@type": "PodSettingsJsonParser"
       },
       "PodManagerHttpHandler:_args_manager": {
         "@id": "urn:solid-server:default:PodManager"

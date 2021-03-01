@@ -9,6 +9,7 @@ export interface Resource {
 
 /**
  * Generator used to create resources relative to a given base identifier.
+ * Note that this is not an AsyncHandler since it returns an AsyncIterable instead of a promise.
  */
 export interface ResourcesGenerator {
   /**

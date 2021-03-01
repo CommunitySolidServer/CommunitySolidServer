@@ -10,7 +10,7 @@ const baseUrl = `http://localhost:${port}/`;
 
 describe('A server with a pod handler', (): void => {
   let server: Server;
-  const agent = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
+  const settings = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
@@ -29,8 +29,8 @@ describe('A server with a pod handler', (): void => {
     });
   });
 
-  it('creates a pod when posting an Agent to /pods.', async(): Promise<void> => {
-    const pod = `${baseUrl}${agent.login}/`;
+  it('creates a pod when posting PodSettings to /pods.', async(): Promise<void> => {
+    const pod = `${baseUrl}${settings.login}/`;
 
     // Pod should not exist yet
     let res = await fetch(pod);
@@ -42,16 +42,16 @@ describe('A server with a pod handler', (): void => {
       headers: {
         'content-type': 'application/json',
       },
-      body: JSON.stringify(agent),
+      body: JSON.stringify(settings),
     });
     expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(`${baseUrl}${agent.login}/`);
+    expect(res.headers.get('location')).toBe(`${baseUrl}${settings.login}/`);
 
     // Check if all resources are created
     res = await fetch(`${pod}.acl`);
     expect(res.status).toBe(200);
     let body = await readableToString(res.body as any);
-    expect(body).toContain(`acl:agent <${agent.webId}>`);
+    expect(body).toContain(`acl:agent <${settings.webId}>`);
 
     res = await fetch(`${pod}profile/card`);
     expect(res.status).toBe(200);
@@ -59,9 +59,9 @@ describe('A server with a pod handler', (): void => {
     body = await readableToString(res.body as any);
     expect(body).toBe(`@prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-<${agent.webId}>
+<${settings.webId}>
     a foaf:Person ;
-    foaf:name "${agent.name}".
+    foaf:name "${settings.name}".
 `);
   });
 });

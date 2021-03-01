@@ -1,14 +1,14 @@
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
-import type { Agent } from '../../../src/pods/agent/Agent';
 import type { IdentifierGenerator } from '../../../src/pods/generate/IdentifierGenerator';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';
 import { GeneratedPodManager } from '../../../src/pods/GeneratedPodManager';
+import type { PodSettings } from '../../../src/pods/settings/PodSettings';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 
 describe('A GeneratedPodManager', (): void => {
   const base = 'http://test.com/';
-  let agent: Agent;
+  let settings: PodSettings;
   let store: jest.Mocked<ResourceStore>;
   let generatorData: Resource[];
   const idGenerator: IdentifierGenerator = {
@@ -18,7 +18,7 @@ describe('A GeneratedPodManager', (): void => {
   let manager: GeneratedPodManager;
 
   beforeEach(async(): Promise<void> => {
-    agent = {
+    settings = {
       login: 'user',
       name: 'first last',
       webId: 'http://secure/webId',
@@ -42,13 +42,13 @@ describe('A GeneratedPodManager', (): void => {
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(true);
-    const result = manager.createPod(agent);
+    const result = manager.createPod(settings);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);
   });
 
   it('generates an identifier and writes containers before writing the resources in them.', async(): Promise<void> => {
-    await expect(manager.createPod(agent)).resolves.toEqual({ path: `${base}${agent.login}/` });
+    await expect(manager.createPod(settings)).resolves.toEqual({ path: `${base}${settings.login}/` });
 
     expect(store.setRepresentation).toHaveBeenCalledTimes(3);
     expect(store.setRepresentation).toHaveBeenNthCalledWith(1, { path: '/path/' }, '/');

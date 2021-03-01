@@ -1,15 +1,15 @@
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import { AgentJsonParser } from '../../../../src/pods/agent/AgentJsonParser';
+import { PodSettingsJsonParser } from '../../../../src/pods/settings/PodSettingsJsonParser';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 
-describe('An AgentJsonParser', (): void => {
+describe('An PodSettingsJsonParser', (): void => {
   let metadata: RepresentationMetadata;
   let representation: Representation;
-  const parser = new AgentJsonParser();
+  const parser = new PodSettingsJsonParser();
 
   beforeEach(async(): Promise<void> => {
     metadata = new RepresentationMetadata('application/json');
@@ -31,19 +31,7 @@ describe('An AgentJsonParser', (): void => {
     representation.data = guardedStreamFrom([ JSON.stringify({ login: 'login' }) ]);
     const result = parser.handle(representation);
     await expect(result).rejects.toThrow(BadRequestHttpError);
-    await expect(result).rejects.toThrow('Input data is missing Agent key webId');
-  });
-
-  it('errors if unknown keys are present.', async(): Promise<void> => {
-    representation.data = guardedStreamFrom([ JSON.stringify({
-      login: 'login',
-      webId: 'webId',
-      name: 'name',
-      unknown: 'unknown',
-    }) ]);
-    const result = parser.handle(representation);
-    await expect(result).rejects.toThrow(BadRequestHttpError);
-    await expect(result).rejects.toThrow('unknown is not a valid Agent key');
+    await expect(result).rejects.toThrow('Input data is missing key webId');
   });
 
   it('generates a User object.', async(): Promise<void> => {

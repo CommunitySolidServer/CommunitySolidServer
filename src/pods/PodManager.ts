@@ -1,5 +1,5 @@
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
-import type { Agent } from './agent/Agent';
+import type { PodSettings } from './settings/PodSettings';
 
 /**
  * Covers all functions related to pod management.
@@ -7,9 +7,9 @@ import type { Agent } from './agent/Agent';
  */
 export interface PodManager {
   /**
-   * Creates a pod for the given agent data.
-   * @param agent - Data of the agent that needs a pod.
+   * Creates a pod for the given settings.
+   * @param settings - Settings describing the pod.
    * @returns {@link ResourceIdentifier} of the newly created pod.
    */
-  createPod: (agent: Agent) => Promise<ResourceIdentifier>;
+  createPod: (settings: PodSettings) => Promise<ResourceIdentifier>;
 }

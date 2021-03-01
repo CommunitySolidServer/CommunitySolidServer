@@ -26,7 +26,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
-  const agent = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
+  const settings = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
   const podHost = `alice.localhost:${port}`;
   const podUrl = `http://${podHost}/`;
 
@@ -75,7 +75,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
       let res = await fetch(`${baseUrl}alice`, {
         method: 'PUT',
         headers: {
-          authorization: `WebID ${agent.webId}`,
+          authorization: `WebID ${settings.webId}`,
           'content-type': 'text/plain',
         },
         body: 'this is new data!',
@@ -95,7 +95,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
         headers: {
           'content-type': 'application/json',
         },
-        body: JSON.stringify(agent),
+        body: JSON.stringify(settings),
       });
       expect(res.status).toBe(201);
       expect(res.headers.get('location')).toBe(podUrl);
@@ -115,7 +115,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
       const res = await fetch(`${baseUrl}.acl`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${agent.webId}`,
+          authorization: `WebID ${settings.webId}`,
         },
       });
       expect(res.status).toBe(200);
@@ -125,7 +125,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
       let res = await fetch(`${baseUrl}alice`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${agent.webId}`,
+          authorization: `WebID ${settings.webId}`,
         },
       });
       expect(res.status).toBe(404);
@@ -134,7 +134,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
         method: 'PUT',
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${agent.webId}`,
+          authorization: `WebID ${settings.webId}`,
           'content-type': 'text/plain',
         },
         body: 'this is new data!',
@@ -144,7 +144,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
       res = await fetch(`${baseUrl}alice`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${agent.webId}`,
+          authorization: `WebID ${settings.webId}`,
         },
       });
       expect(res.status).toBe(200);
@@ -157,7 +157,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
         headers: {
           'content-type': 'application/json',
         },
-        body: JSON.stringify(agent),
+        body: JSON.stringify(settings),
       });
       expect(res.status).toBe(409);
     });
