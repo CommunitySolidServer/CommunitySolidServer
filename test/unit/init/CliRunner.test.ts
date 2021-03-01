@@ -182,4 +182,34 @@ describe('CliRunner', (): void => {
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
+
+  it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', '--foo',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+  });
+
+  it('exists when no value is passed to the main executable for an argument.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', '-s',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+  });
 });

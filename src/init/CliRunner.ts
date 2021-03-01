@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { joinFilePath, ensureTrailingSlash, absoluteFilePath } from '../util/PathUtil';
+import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -28,6 +28,19 @@ export class CliRunner {
     // Parse the command-line arguments
     const { argv: params } = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
+      .check((args, options): boolean => {
+        for (const key in args) {
+          if (key !== '_' && key !== '$0') {
+            if (!options[key]) {
+              throw new Error(`"${key}" is not a supported argument!`);
+            }
+            if (!args[key]) {
+              throw new Error(`Please provide a value for argument "${key}"`);
+            }
+          }
+        }
+        return true;
+      })
       .options({
         baseUrl: { type: 'string', alias: 'b' },
         config: { type: 'string', alias: 'c' },
