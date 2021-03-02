@@ -157,3 +157,8 @@ Common usage:
   ```shell
   docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
   ```
+- If you run the Docker image on your selfhosted infrastructure, you need to supply the domainname:
+  ```shell
+  docker run --rm -p 3000:3000 -it css:latest -c /config/my-config.json -b http://example.org
+  ```
+  Note that you should not use `https` here as your reverse proxy strips that away for the server.
