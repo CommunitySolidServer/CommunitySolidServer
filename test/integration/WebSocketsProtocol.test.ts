@@ -23,7 +23,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
-    await new Promise((resolve, reject): void => {
+    await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
   });

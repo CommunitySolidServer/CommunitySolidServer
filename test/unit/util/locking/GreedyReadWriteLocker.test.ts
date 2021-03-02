@@ -166,7 +166,7 @@ describe('A GreedyReadWriteLocker', (): void => {
 
     // We want to make sure the write operation only starts while the read operation is busy
     // Otherwise the internal write lock might not be acquired yet
-    const delayedLockWrite = new Promise((resolve): void => {
+    const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resourceId, (): any => {
@@ -201,7 +201,7 @@ describe('A GreedyReadWriteLocker', (): void => {
       emitter.on('releaseRead', resolve);
     });
 
-    const delayedLockWrite = new Promise((resolve): void => {
+    const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resource2Id, (): any => {
@@ -236,7 +236,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     const promRead1 = new Promise((resolve): any => emitter.on('releaseRead1', resolve));
     const promRead2 = new Promise((resolve): any => emitter.on('releaseRead2', resolve));
 
-    const delayedLockWrite = new Promise((resolve): void => {
+    const delayedLockWrite = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withWriteLock(resourceId, (): any => {
@@ -246,7 +246,7 @@ describe('A GreedyReadWriteLocker', (): void => {
       });
     });
 
-    const delayedLockRead2 = new Promise((resolve): void => {
+    const delayedLockRead2 = new Promise<void>((resolve): void => {
       emitter.on('readStarted', (): void => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withReadLock(resourceId, async(): Promise<void> => {
@@ -290,7 +290,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     });
 
     // We want to make sure the read operation only starts while the write operation is busy
-    const delayedLockRead = new Promise((resolve): void => {
+    const delayedLockRead = new Promise<void>((resolve): void => {
       emitter.on('writeStarted', (): void => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         locker.withReadLock(resourceId, (): any => {
