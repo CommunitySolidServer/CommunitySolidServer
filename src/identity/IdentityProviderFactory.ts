@@ -61,6 +61,9 @@ export class IdentityProviderFactory {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         AccessToken: 'jwt',
       },
+      audiences(): string {
+        return 'solid';
+      },
       extraAccessTokenClaims(
         ctx,
         token,
@@ -70,6 +73,7 @@ export class IdentityProviderFactory {
             webid: (token as any).accountId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             client_webid: 'http://localhost:3001/',
+            aud: 'solid',
           };
         }
         return {};
