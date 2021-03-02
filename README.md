@@ -135,3 +135,25 @@ curl -I -H "Accept: text/plain" \
 ```shell
 curl -X OPTIONS -i http://localhost:3000/myfile.txt
 ```
+
+## Run using Docker
+
+A Docker image is available to run the containerised Solid Community Server against your filesystem.
+
+Common usage:
+- Build the Docker image
+  ```shell
+  docker build --rm -f Dockerfile -t css:latest .
+  ```
+- Run the image against your `~/Solid` directory on `http://localhost:3000`
+  ```shell
+  docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
+  ```
+- Use alternative versions of the built in config. The filestorage is just the default configuration, you can override with any of the configurations included with the server
+  ```shell
+  docker run --rm -p 3000:3000 -it css:latest -c config/config-default.json
+  ```
+  Or override it with your own config mapped to the right directory
+  ```shell
+  docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
+  ```
