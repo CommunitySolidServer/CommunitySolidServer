@@ -25,7 +25,7 @@ export async function performRequest(
     eventEmitter: EventEmitter,
   });
 
-  const endPromise = new Promise((resolve): void => {
+  const endPromise = new Promise<void>((resolve): void => {
     response.on('end', (): void => {
       expect(response._isEndCalled()).toBeTruthy();
       resolve();

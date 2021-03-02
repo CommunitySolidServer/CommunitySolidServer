@@ -44,7 +44,7 @@ describe('A BasicResponseWriter', (): void => {
     const data = guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]);
     result = { statusCode: 201, data };
 
-    const end = new Promise((resolve): void => {
+    const end = new Promise<void>((resolve): void => {
       response.on('end', (): void => {
         expect(response._isEndCalled()).toBeTruthy();
         expect(response._getStatusCode()).toBe(201);
@@ -78,7 +78,7 @@ describe('A BasicResponseWriter', (): void => {
     response = new PassThrough();
     response.writeHead = jest.fn();
 
-    const end = new Promise((resolve): void => {
+    const end = new Promise<void>((resolve): void => {
       response.on('error', (error: Error): void => {
         expect(error).toEqual(new Error('bad data!'));
         resolve();
