@@ -5,7 +5,7 @@ FROM node:lts AS build
 WORKDIR /community-server
 
 ## Copy the package.json for audit
-COPY package*.json .
+COPY package*.json ./
 
 ## Verify if there are known vulnerabilities in the dependencies
 RUN npm audit --production --audit-level=high
