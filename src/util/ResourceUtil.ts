@@ -1,7 +1,12 @@
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
+
+import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
+import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { pushQuad } from './QuadUtil';
+import { guardedStreamFrom } from './StreamUtil';
 import { LDP, RDF } from './Vocabularies';
 
 /**
@@ -32,4 +37,15 @@ export function generateResourceQuads(subject: NamedNode, isContainer: boolean):
 export function generateContainmentQuads(containerURI: NamedNode, childURIs: string[]): Quad[] {
   return new RepresentationMetadata(containerURI,
     { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
+}
+
+export async function cloneRepresentation(representation: Representation): Promise<BasicRepresentation> {
+  const data = await arrayifyStream(representation.data);
+  const result = new BasicRepresentation(
+    data,
+    new RepresentationMetadata(representation.metadata, representation.metadata.contentType),
+    representation.metadata.contentType,
+  );
+  representation.data = guardedStreamFrom(data);
+  return result;
 }

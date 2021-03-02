@@ -1,8 +1,7 @@
 import arrayifyStream from 'arrayify-stream';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { guardedStreamFrom } from '../../util/StreamUtil';
-import { BasicRepresentation } from '../representation/BasicRepresentation';
+import { cloneRepresentation } from '../../util/ResourceUtil';
 import type { Representation } from '../representation/Representation';
 import { Validator } from './Validator';
 
@@ -23,23 +22,12 @@ export class RdfValidator extends Validator {
     if (representation.metadata.contentType === INTERNAL_QUADS) {
       return;
     }
-
-    // eslint-disable-next-line unicorn/expiring-todo-comments
-    // TODO: Everything below should be part of a utility cloneRepresentation function.
-
     const identifier = { path: representation.metadata.identifier.value };
-
-    // Read data in memory first so it does not get lost
-    const data = await arrayifyStream(representation.data);
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-
     // Creating new representation since converter might edit metadata
-    const tempRepresentation = new BasicRepresentation(data, identifier, representation.metadata.contentType);
+    const tempRepresentation = await cloneRepresentation(representation);
     const result = await this.converter.handleSafe({ identifier, representation: tempRepresentation, preferences });
     // Drain stream to make sure data was parsed correctly
     await arrayifyStream(result.data);
-
-    // Stream has been drained so need to create new stream
-    representation.data = guardedStreamFrom(data);
   }
 }
