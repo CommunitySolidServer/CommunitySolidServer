@@ -124,6 +124,7 @@ export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#'
 export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
+  'oidcRegistration',
 );
 
 // Alias for commonly used types

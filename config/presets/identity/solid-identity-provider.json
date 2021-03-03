@@ -3,15 +3,18 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:IdPStorageAdapterFactory",
-      "@type": "ResourceStoreStorageAdapterFactory",
-      "ResourceStoreStorageAdapterFactory:_args_baseUrl": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
-      },
-      "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
-      "ResourceStoreStorageAdapterFactory:_args_store": {
-        "@type": "PassthroughKeyValueStore",
-        "PassthroughKeyValueStore:_store": {
-          "@id": "urn:solid-server:default:ResourceStore"
+      "@type": "ClientWebIdFetchingStorageAdapterFactory",
+      "ClientWebIdFetchingStorageAdapterFactory:_wrappedAdapterFactory": {
+        "@type": "ResourceStoreStorageAdapterFactory",
+        "ResourceStoreStorageAdapterFactory:_args_baseUrl": {
+          "@id": "urn:solid-server:default:variable:baseUrl"
+        },
+        "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
+        "ResourceStoreStorageAdapterFactory:_args_store": {
+          "@type": "PassthroughKeyValueStore",
+          "PassthroughKeyValueStore:_store": {
+            "@id": "urn:solid-server:default:ResourceStore"
+          }
         }
       }
     },
