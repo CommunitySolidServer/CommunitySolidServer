@@ -24,9 +24,19 @@ export class RdfValidator extends Validator {
     }
     const identifier = { path: representation.metadata.identifier.value };
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-    // Creating new representation since converter might edit metadata
-    const tempRepresentation = await cloneRepresentation(representation);
-    const result = await this.converter.handleSafe({ identifier, representation: tempRepresentation, preferences });
+    let result;
+    try {
+      // Creating new representation since converter might edit metadata
+      const tempRepresentation = await cloneRepresentation(representation);
+      result = await this.converter.handleSafe({
+        identifier,
+        representation: tempRepresentation,
+        preferences,
+      });
+    } catch {
+      representation.data.destroy();
+      throw new Error('bad data!');
+    }
     // Drain stream to make sure data was parsed correctly
     await arrayifyStream(result.data);
   }

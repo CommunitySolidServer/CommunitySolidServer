@@ -1,12 +1,12 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
-
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { pushQuad } from './QuadUtil';
 import { guardedStreamFrom } from './StreamUtil';
+
 import { LDP, RDF } from './Vocabularies';
 
 /**
@@ -39,12 +39,19 @@ export function generateContainmentQuads(containerURI: NamedNode, childURIs: str
     { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
 }
 
+/**
+ * Helper function to clone a representation, the original representation can still be used.
+ * This function loads the entire stream in memory.
+ * @param representation - The representation to clone.
+ *
+ * @returns The cloned representation.
+ */
 export async function cloneRepresentation(representation: Representation): Promise<BasicRepresentation> {
   const data = await arrayifyStream(representation.data);
   const result = new BasicRepresentation(
     data,
-    new RepresentationMetadata(representation.metadata, representation.metadata.contentType),
-    representation.metadata.contentType,
+    new RepresentationMetadata(representation.metadata),
+    representation.binary,
   );
   representation.data = guardedStreamFrom(data);
   return result;

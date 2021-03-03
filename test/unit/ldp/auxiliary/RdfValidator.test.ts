@@ -1,10 +1,9 @@
-import 'jest-rdf';
-
 import { RdfValidator } from '../../../../src/ldp/auxiliary/RdfValidator';
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
+import 'jest-rdf';
 
 describe('An RdfValidator', (): void => {
   let converter: RepresentationConverter;
@@ -39,5 +38,7 @@ describe('An RdfValidator', (): void => {
     converter.handleSafe = jest.fn().mockRejectedValue(new Error('bad data!'));
     const representation = new BasicRepresentation('data', 'content-type');
     await expect(validator.handle(representation)).rejects.toThrow('bad data!');
+    // Make sure the data on the readable has not been reset
+    expect(representation.data.destroyed).toBe(true);
   });
 });
