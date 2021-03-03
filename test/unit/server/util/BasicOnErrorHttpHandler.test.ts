@@ -1,5 +1,6 @@
 import { createRequest, createResponse } from 'node-mocks-http';
-import { guardStream, HttpError, HttpHandlerInput, HttpRequest, HttpResponse } from '../../../../src';
+import type { HttpHandlerInput, HttpRequest, HttpResponse } from '../../../../src';
+import { guardStream, HttpError } from '../../../../src';
 import { BasicOnErrorHttpHandler } from '../../../../src/server/util/BasicOnErrorHttpHandler';
 
 describe('BasicOnErrorHttpHandler', (): void => {

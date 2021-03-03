@@ -311,4 +311,3 @@ export * from './util/RecordObject';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
 export * from './util/Vocabularies';
-export * from './util/ErrorHandlingWaterfallHandler';
