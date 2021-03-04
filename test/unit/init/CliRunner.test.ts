@@ -31,13 +31,8 @@ describe('CliRunner', (): void => {
   });
 
   it('starts the server with default settings.', async(): Promise<void> => {
-    new CliRunner().run({
+    await new CliRunner().run({
       argv: [ 'node', 'script' ],
-    });
-
-    // Wait until initializer has been called, because we can't await CliRunner.run.
-    await new Promise((resolve): void => {
-      setImmediate(resolve);
     });
 
     expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -69,7 +64,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts abbreviated flags.', async(): Promise<void> => {
-    new CliRunner().run({
+    await new CliRunner().run({
       argv: [
         'node', 'script',
         '-b', 'http://pod.example/',
@@ -82,11 +77,6 @@ describe('CliRunner', (): void => {
         '-t', 'templates',
         '--podConfigJson', '/different-path.json',
       ],
-    });
-
-    // Wait until initializer has been called, because we can't await CliRunner.run.
-    await new Promise((resolve): void => {
-      setImmediate(resolve);
     });
 
     expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -115,7 +105,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts full flags.', async(): Promise<void> => {
-    new CliRunner().run({
+    await new CliRunner().run({
       argv: [
         'node', 'script',
         '--baseUrl', 'http://pod.example/',
@@ -128,11 +118,6 @@ describe('CliRunner', (): void => {
         '--sparqlEndpoint', 'http://localhost:5000/sparql',
         '--podConfigJson', '/different-path.json',
       ],
-    });
-
-    // Wait until initializer has been called, because we can't await CliRunner.run.
-    await new Promise((resolve): void => {
-      setImmediate(resolve);
     });
 
     expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -162,10 +147,9 @@ describe('CliRunner', (): void => {
 
   it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
     manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run({
+    await new CliRunner().run({
       argv: [ 'node', 'script' ],
     });
-    await new Promise((resolve): any => setImmediate(resolve));
 
     expect(write).toHaveBeenCalledTimes(2);
     expect(write).toHaveBeenNthCalledWith(1,
@@ -179,10 +163,41 @@ describe('CliRunner', (): void => {
 
   it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
     initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run();
-    await new Promise((resolve): any => setImmediate(resolve));
+    await new CliRunner().run();
 
     expect(write).toHaveBeenCalledTimes(0);
+
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
+    await new CliRunner().run({
+      argv: [
+        'node', 'script', '--foo',
+      ],
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
+    await new CliRunner().run({
+      argv: [
+        'node', 'script', '-s',
+      ],
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
+    await new CliRunner().run({
+      argv: [
+        'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt',
+      ],
+    });
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);

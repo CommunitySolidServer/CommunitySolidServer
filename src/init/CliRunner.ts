@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { joinFilePath, ensureTrailingSlash, absoluteFilePath } from '../util/PathUtil';
+import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
 export class CliRunner {
@@ -16,7 +16,7 @@ export class CliRunner {
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public run({
+  public async run({
     argv = process.argv,
     stderr = process.stderr,
   }: {
@@ -24,10 +24,30 @@ export class CliRunner {
     stdin?: ReadStream;
     stdout?: WriteStream;
     stderr?: WriteStream;
-  } = {}): void {
+  } = {}): Promise<void> {
     // Parse the command-line arguments
     const { argv: params } = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
+      .check((args, options): boolean => {
+        // Only take flags as arguments, not filenames
+        if (args._ && args._.length > 0) {
+          throw new Error(`Unsupported arguments: ${args._.join('", "')}`);
+        }
+        for (const key in args) {
+          // Skip filename arguments (_) and the script name ($0)
+          if (key !== '_' && key !== '$0') {
+            // Check if the argument occurs in the provided options list
+            if (!options[key]) {
+              throw new Error(`Unknown option: "${key}"`);
+            }
+            // Check if the argument actually has a value ('> ./bin/server.js -s' is not valid)
+            if (!args[key]) {
+              throw new Error(`Missing value for argument "${key}"`);
+            }
+          }
+        }
+        return true;
+      })
       .options({
         baseUrl: { type: 'string', alias: 'b' },
         config: { type: 'string', alias: 'c' },
@@ -51,7 +71,7 @@ export class CliRunner {
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    this.createInitializer(loaderProperties, configFile, variables)
+    await this.createInitializer(loaderProperties, configFile, variables)
       .then(
         async(initializer): Promise<void> => initializer.handleSafe(),
         (error: Error): void => {
