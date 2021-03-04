@@ -33,9 +33,9 @@ export class RdfValidator extends Validator {
         representation: tempRepresentation,
         preferences,
       });
-    } catch {
+    } catch (error: unknown) {
       representation.data.destroy();
-      throw new Error('bad data!');
+      throw error;
     }
     // Drain stream to make sure data was parsed correctly
     await arrayifyStream(result.data);
