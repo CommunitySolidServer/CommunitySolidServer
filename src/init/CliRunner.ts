@@ -29,9 +29,9 @@ export class CliRunner {
     const { argv: params } = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
       .check((args, options): boolean => {
-        // Arguments that are not in the perdefined options are not allowed
+        // Only take flags as arguments, not filenames
         if (args._ && args._.length > 0) {
-          throw new Error(`Arguments are not supported: "${args._.toString().split(',').join('", "')}"`);
+          throw new Error(`Unsupported arguments: ${args._.join('", "')}`);
         }
         for (const key in args) {
           // _ and $0 are always present with yargs
