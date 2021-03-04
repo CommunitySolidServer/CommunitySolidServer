@@ -202,4 +202,15 @@ describe('CliRunner', (): void => {
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
+
+  it('exits when invalid parameters are passed to the main executable.', async(): Promise<void> => {
+    await new CliRunner().run({
+      argv: [
+        'node', 'script', '-ll',
+      ],
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
 });

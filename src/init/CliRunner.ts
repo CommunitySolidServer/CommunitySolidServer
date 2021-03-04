@@ -44,6 +44,10 @@ export class CliRunner {
             if (!args[key]) {
               throw new Error(`Missing value for argument "${key}"`);
             }
+            // Check if the argument only has 1 value
+            if (Array.isArray(args[key])) {
+              throw new Error(`Multiple values were provided for: "${key}", [${args[key]}]`);
+            }
           }
         }
         return true;
