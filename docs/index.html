@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v0.7.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
+	<title>Community Solid Server - v0.8.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.8.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">Community Solid Server - v0.7.0</a>
+					<a href="index.html" class="title">Community Solid Server - v0.8.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>Community Solid Server - v0.7.0</h1>
+			<h1>Community Solid Server - v0.8.0</h1>
 		</div>
 	</div>
 </header>
@@ -177,6 +177,24 @@
 				</a>
 				<pre><code class="language-shell"><span style="color: #000000">curl -X OPTIONS -i http://localhost:3000/myfile.txt</span>
 </code></pre>
+				<a href="#run-using-docker" id="run-using-docker" style="color: inherit; text-decoration: none;">
+					<h2>Run using Docker</h2>
+				</a>
+				<p>A Docker image is available to run the containerised Solid Community Server against your filesystem.</p>
+				<p>Common usage:</p>
+				<ul>
+					<li>Build the Docker image<pre><code class="language-shell"><span style="color: #000000">docker build --rm -f Dockerfile -t css:latest </span><span style="color: #795E26">.</span>
+</code></pre>
+					</li>
+					<li>Run the image against your <code>~/Solid</code> directory on <code>http://localhost:3000</code><pre><code class="language-shell"><span style="color: #000000">docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest</span>
+</code></pre>
+					</li>
+					<li>Use alternative versions of the built in config. The filestorage is just the default configuration, you can override with any of the configurations included with the server<pre><code class="language-shell"><span style="color: #000000">docker run --rm -p 3000:3000 -it css:latest -c config/config-default.json</span>
+</code></pre>
+						Or override it with your own config mapped to the right directory<pre><code class="language-shell"><span style="color: #000000">docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json</span>
+</code></pre>
+					</li>
+				</ul>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -207,16 +225,19 @@
 						<a href="modules/authentication_unsecurewebidextractor.html">authentication/<wbr>Unsecure<wbr>Web<wbr>IdExtractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/authorization_aclmanager.html">authorization/<wbr>Acl<wbr>Manager</a>
+						<a href="modules/authorization_alloweverythingauthorizer.html">authorization/<wbr>Allow<wbr>Everything<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/authorization_alloweverythingauthorizer.html">authorization/<wbr>Allow<wbr>Everything<wbr>Authorizer</a>
+						<a href="modules/authorization_authorization.html">authorization/<wbr>Authorization</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/authorization_authorizer.html">authorization/<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/authorization_urlbasedaclmanager.html">authorization/<wbr>Url<wbr>Based<wbr>Acl<wbr>Manager</a>
+						<a href="modules/authorization_auxiliaryauthorizer.html">authorization/<wbr>Auxiliary<wbr>Authorizer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/authorization_webaclauthorization.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorization</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
@@ -229,6 +250,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_clirunner.html">init/<wbr>Cli<wbr>Runner</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/init_configpodinitializer.html">init/<wbr>Config<wbr>Pod<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_initializer.html">init/<wbr>Initializer</a>
@@ -247,6 +271,36 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_unsecurewebsocketsprotocol.html">ldp/<wbr>Unsecure<wbr>Web<wbr>Sockets<wbr>Protocol</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_auxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_auxiliarystrategy.html">ldp/auxiliary/<wbr>Auxiliary<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_composedauxiliarystrategy.html">ldp/auxiliary/<wbr>Composed<wbr>Auxiliary<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_linkmetadatagenerator.html">ldp/auxiliary/<wbr>Link<wbr>Metadata<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_metadatagenerator.html">ldp/auxiliary/<wbr>Metadata<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_rdfvalidator.html">ldp/auxiliary/<wbr>Rdf<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_routingauxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Routing<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_routingauxiliarystrategy.html">ldp/auxiliary/<wbr>Routing<wbr>Auxiliary<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_suffixauxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Suffix<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_auxiliary_validator.html">ldp/auxiliary/<wbr>Validator</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_acceptpreferenceparser.html">ldp/http/<wbr>Accept<wbr>Preference<wbr>Parser</a>
@@ -291,9 +345,6 @@
 						<a href="modules/ldp_http_targetextractor.html">ldp/http/<wbr>Target<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_acllinkmetadatawriter.html">ldp/http/metadata/<wbr>Acl<wbr>Link<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_metadata_basicmetadataextractor.html">ldp/http/metadata/<wbr>Basic<wbr>Metadata<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -322,6 +373,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_metadata_slugparser.html">ldp/http/metadata/<wbr>Slug<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_http_metadata_wacallowmetadatawriter.html">ldp/http/metadata/<wbr>Wac<wbr>Allow<wbr>Metadata<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_response_createdresponsedescription.html">ldp/http/response/<wbr>Created<wbr>Response<wbr>Description</a>
@@ -358,6 +412,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_operations_putoperationhandler.html">ldp/operations/<wbr>Put<wbr>Operation<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ldp_permissions_aclpermissionsextractor.html">ldp/permissions/<wbr>Acl<wbr>Permissions<wbr>Extractor</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_permissions_methodpermissionsextractor.html">ldp/permissions/<wbr>Method<wbr>Permissions<wbr>Extractor</a>
@@ -417,6 +474,9 @@
 						<a href="modules/logging_winstonloggerfactory.html">logging/<wbr>Winston<wbr>Logger<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/pods_configpodmanager.html">pods/<wbr>Config<wbr>Pod<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/pods_generatedpodmanager.html">pods/<wbr>Generated<wbr>Pod<wbr>Manager</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -426,13 +486,13 @@
 						<a href="modules/pods_podmanagerhttphandler.html">pods/<wbr>Pod<wbr>Manager<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/pods_agent_agent.html">pods/agent/<wbr>Agent</a>
+						<a href="modules/pods_generate_basecomponentsjsfactory.html">pods/generate/<wbr>Base<wbr>Components<wbr>JsFactory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/pods_agent_agentjsonparser.html">pods/agent/<wbr>Agent<wbr>Json<wbr>Parser</a>
+						<a href="modules/pods_generate_componentsjsfactory.html">pods/generate/<wbr>Components<wbr>JsFactory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/pods_agent_agentparser.html">pods/agent/<wbr>Agent<wbr>Parser</a>
+						<a href="modules/pods_generate_generateutil.html">pods/generate/<wbr>Generate<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_handlebarstemplateengine.html">pods/generate/<wbr>Handlebars<wbr>Template<wbr>Engine</a>
@@ -441,7 +501,13 @@
 						<a href="modules/pods_generate_identifiergenerator.html">pods/generate/<wbr>Identifier<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_podgenerator.html">pods/generate/<wbr>Pod<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_resourcesgenerator.html">pods/generate/<wbr>Resources<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_subdomainidentifiergenerator.html">pods/generate/<wbr>Subdomain<wbr>Identifier<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_suffixidentifiergenerator.html">pods/generate/<wbr>Suffix<wbr>Identifier<wbr>Generator</a>
@@ -450,10 +516,37 @@
 						<a href="modules/pods_generate_templateengine.html">pods/generate/<wbr>Template<wbr>Engine</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_templatedpodgenerator.html">pods/generate/<wbr>Templated<wbr>Pod<wbr>Generator</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_templatedresourcesgenerator.html">pods/generate/<wbr>Templated<wbr>Resources<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/server_expresshttpserverfactory.html">server/<wbr>Express<wbr>Http<wbr>Server<wbr>Factory</a>
+						<a href="modules/pods_generate_variables_baseurlhandler.html">pods/generate/variables/<wbr>Base<wbr>Url<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_variables_rootfilepathhandler.html">pods/generate/variables/<wbr>Root<wbr>File<wbr>Path<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_variables_variablehandler.html">pods/generate/variables/<wbr>Variable<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_variables_variablesetter.html">pods/generate/variables/<wbr>Variable<wbr>Setter</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_generate_variables_variables.html">pods/generate/variables/<wbr>Variables</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_settings_podsettings.html">pods/settings/<wbr>Pod<wbr>Settings</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_settings_podsettingsjsonparser.html">pods/settings/<wbr>Pod<wbr>Settings<wbr>Json<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/pods_settings_podsettingsparser.html">pods/settings/<wbr>Pod<wbr>Settings<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/server_basehttpserverfactory.html">server/<wbr>Base<wbr>Http<wbr>Server<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/server_httphandler.html">server/<wbr>Http<wbr>Handler</a>
@@ -522,9 +615,6 @@
 						<a href="modules/storage_routingresourcestore.html">storage/<wbr>Routing<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/storage_storeutil.html">storage/<wbr>Store<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/storage_accessors_dataaccessor.html">storage/accessors/<wbr>Data<wbr>Accessor</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -567,6 +657,21 @@
 						<a href="modules/storage_conversion_typedrepresentationconverter.html">storage/conversion/<wbr>Typed<wbr>Representation<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_jsonfilestorage.html">storage/keyvalue/<wbr>Json<wbr>File<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_jsonresourcestorage.html">storage/keyvalue/<wbr>Json<wbr>Resource<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_keyvaluestorage.html">storage/keyvalue/<wbr>Key<wbr>Value<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_memorymapstorage.html">storage/keyvalue/<wbr>Memory<wbr>Map<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_resourceidentifierstorage.html">storage/keyvalue/<wbr>Resource<wbr>Identifier<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/storage_mapping_basefileidentifiermapper.html">storage/mapping/<wbr>Base<wbr>File<wbr>Identifier<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -579,13 +684,16 @@
 						<a href="modules/storage_mapping_fixedcontenttypemapper.html">storage/mapping/<wbr>Fixed<wbr>Content<wbr>Type<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_mapperutil.html">storage/mapping/<wbr>Mapper<wbr>Util</a>
+						<a href="modules/storage_mapping_subdomainextensionbasedmapper.html">storage/mapping/<wbr>Subdomain<wbr>Extension<wbr>Based<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_patch_patchhandler.html">storage/patch/<wbr>Patch<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_patch_sparqlupdatepatchhandler.html">storage/patch/<wbr>Sparql<wbr>Update<wbr>Patch<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_routing_baseurlrouterrule.html">storage/routing/<wbr>Base<wbr>Url<wbr>Router<wbr>Rule</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_routing_convertingrouterrule.html">storage/routing/<wbr>Converting<wbr>Router<wbr>Rule</a>
@@ -681,13 +789,28 @@
 						<a href="modules/util_handlers_waterfallhandler.html">util/handlers/<wbr>Waterfall<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/util_identifiers_baseidentifierstrategy.html">util/identifiers/<wbr>Base<wbr>Identifier<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/util_identifiers_identifierstrategy.html">util/identifiers/<wbr>Identifier<wbr>Strategy</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_identifiers_singlerootidentifierstrategy.html">util/identifiers/<wbr>Single<wbr>Root<wbr>Identifier<wbr>Strategy</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_expiringresourcelocker.html">util/locking/<wbr>Expiring<wbr>Resource<wbr>Locker</a>
+						<a href="modules/util_identifiers_subdomainidentifierstrategy.html">util/identifiers/<wbr>Subdomain<wbr>Identifier<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_locking_equalreadwritelocker.html">util/locking/<wbr>Equal<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_locking_expiringreadwritelocker.html">util/locking/<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_locking_greedyreadwritelocker.html">util/locking/<wbr>Greedy<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_locking_readwritelocker.html">util/locking/<wbr>Read<wbr>Write<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_locking_resourcelocker.html">util/locking/<wbr>Resource<wbr>Locker</a>
@@ -696,7 +819,7 @@
 						<a href="modules/util_locking_singlethreadedresourcelocker.html">util/locking/<wbr>Single<wbr>Threaded<wbr>Resource<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_wrappedexpiringresourcelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Resource<wbr>Locker</a>
+						<a href="modules/util_locking_wrappedexpiringreadwritelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
 					</li>
 				</ul>
 			</nav>

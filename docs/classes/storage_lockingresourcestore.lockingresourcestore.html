@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>LockingResourceStore | Community Solid Server - v0.7.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
+	<title>LockingResourceStore | Community Solid Server - v0.8.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.8.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.7.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.8.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.7.0</a>
+					<a href="../modules.html">Community Solid Server - v0.8.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_lockingresourcestore.html">storage/LockingResourceStore</a>
@@ -75,6 +75,8 @@
 							and releases it afterwards.
 						In case the request returns a Representation the lock will only be released when the data stream is finished.</p>
 					</div>
+					<p>For auxiliary resources the lock will be applied to the associated resource.
+					The actual operation is still executed on the auxiliary resource.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -107,6 +109,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_lockingresourcestore.lockingresourcestore.html#locks" class="tsd-kind-icon">locks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="storage_lockingresourcestore.lockingresourcestore.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_lockingresourcestore.lockingresourcestore.html#source" class="tsd-kind-icon">source</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_lockingresourcestore.lockingresourcestore.html#strategy" class="tsd-kind-icon">strategy</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -115,9 +118,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="storage_lockingresourcestore.lockingresourcestore.html#createexpiringrepresentation" class="tsd-kind-icon">create<wbr>Expiring<wbr>Representation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="storage_lockingresourcestore.lockingresourcestore.html#getlockidentifier" class="tsd-kind-icon">get<wbr>Lock<wbr>Identifier</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="storage_lockingresourcestore.lockingresourcestore.html#lockedrepresentationrun" class="tsd-kind-icon">locked<wbr>Representation<wbr>Run</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#resourceexists" class="tsd-kind-icon">resource<wbr>Exists</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_lockingresourcestore.lockingresourcestore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="storage_lockingresourcestore.lockingresourcestore.html#waitforstreamtoend" class="tsd-kind-icon">wait<wbr>For<wbr>Stream<wbr>ToEnd</a></li>
 							</ul>
@@ -131,13 +136,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Locking<wbr>Resource<wbr>Store<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a>, locks<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_locking_expiringresourcelocker.expiringresourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringResourceLocker</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_lockingresourcestore.lockingresourcestore.html" class="tsd-signature-type" data-tsd-kind="Class">LockingResourceStore</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Locking<wbr>Resource<wbr>Store<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a>, locks<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_locking_expiringreadwritelocker.expiringreadwritelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringReadWriteLocker</a>, strategy<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">AuxiliaryIdentifierStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_lockingresourcestore.lockingresourcestore.html" class="tsd-signature-type" data-tsd-kind="Class">LockingResourceStore</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L22">src/storage/LockingResourceStore.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L30">src/storage/LockingResourceStore.ts:30</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -146,7 +151,10 @@
 									<h5>source: <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></h5>
 								</li>
 								<li>
-									<h5>locks: <a href="../interfaces/util_locking_expiringresourcelocker.expiringresourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringResourceLocker</a></h5>
+									<h5>locks: <a href="../interfaces/util_locking_expiringreadwritelocker.expiringreadwritelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringReadWriteLocker</a></h5>
+								</li>
+								<li>
+									<h5>strategy: <a href="../interfaces/ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">AuxiliaryIdentifierStrategy</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_lockingresourcestore.lockingresourcestore.html" class="tsd-signature-type" data-tsd-kind="Class">LockingResourceStore</a></h4>
@@ -159,10 +167,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="locks" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> locks</h3>
-					<div class="tsd-signature tsd-kind-icon">locks<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_locking_expiringresourcelocker.expiringresourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringResourceLocker</a></div>
+					<div class="tsd-signature tsd-kind-icon">locks<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_locking_expiringreadwritelocker.expiringreadwritelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringReadWriteLocker</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L22">src/storage/LockingResourceStore.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L29">src/storage/LockingResourceStore.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -172,7 +180,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L19">src/storage/LockingResourceStore.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L26">src/storage/LockingResourceStore.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -182,7 +190,17 @@
 					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L21">src/storage/LockingResourceStore.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L28">src/storage/LockingResourceStore.ts:28</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="strategy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> strategy</h3>
+					<div class="tsd-signature tsd-kind-icon">strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">AuxiliaryIdentifierStrategy</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L30">src/storage/LockingResourceStore.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -199,7 +217,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L35">src/storage/LockingResourceStore.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L49">src/storage/LockingResourceStore.ts:49</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -228,7 +246,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L101">src/storage/LockingResourceStore.ts:101</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L127">src/storage/LockingResourceStore.ts:127</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -271,13 +289,13 @@
 					<a name="deleteresource" class="tsd-anchor"></a>
 					<h3>delete<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L47">src/storage/LockingResourceStore.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L61">src/storage/LockingResourceStore.ts:61</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -289,7 +307,36 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a name="getlockidentifier" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Lock<wbr>Identifier</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Lock<wbr>Identifier<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L77">src/storage/LockingResourceStore.ts:77</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Acquires the correct identifier to lock this resource.
+									For auxiliary resources this means the associated identifier.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -303,7 +350,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L29">src/storage/LockingResourceStore.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L43">src/storage/LockingResourceStore.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -332,7 +379,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L67">src/storage/LockingResourceStore.ts:67</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L93">src/storage/LockingResourceStore.ts:93</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -378,13 +425,13 @@
 					<a name="modifyresource" class="tsd-anchor"></a>
 					<h3>modify<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">modify<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, patch<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">modify<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, patch<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L52">src/storage/LockingResourceStore.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L67">src/storage/LockingResourceStore.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -399,7 +446,33 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="resourceexists" class="tsd-anchor"></a>
+					<h3>resource<wbr>Exists</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">resource<wbr>Exists<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L38">src/storage/LockingResourceStore.ts:38</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -407,13 +480,13 @@
 					<a name="setrepresentation" class="tsd-anchor"></a>
 					<h3>set<wbr>Representation</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L41">src/storage/LockingResourceStore.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L55">src/storage/LockingResourceStore.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -428,7 +501,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -442,7 +515,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/LockingResourceStore.ts#L122">src/storage/LockingResourceStore.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/LockingResourceStore.ts#L148">src/storage/LockingResourceStore.ts:148</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -497,6 +570,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#source" class="tsd-kind-icon">source</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_lockingresourcestore.lockingresourcestore.html#strategy" class="tsd-kind-icon">strategy</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a>
 							</li>
@@ -506,6 +582,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="storage_lockingresourcestore.lockingresourcestore.html#getlockidentifier" class="tsd-kind-icon">get<wbr>Lock<wbr>Identifier</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a>
 							</li>
@@ -514,6 +593,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#modifyresource" class="tsd-kind-icon">modify<wbr>Resource</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="storage_lockingresourcestore.lockingresourcestore.html#resourceexists" class="tsd-kind-icon">resource<wbr>Exists</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_lockingresourcestore.lockingresourcestore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a>

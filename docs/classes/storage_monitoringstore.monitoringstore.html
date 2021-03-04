@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MonitoringStore | Community Solid Server - v0.7.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
+	<title>MonitoringStore | Community Solid Server - v0.8.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.8.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.7.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.8.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.7.0</a>
+					<a href="../modules.html">Community Solid Server - v0.8.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_monitoringstore.html">storage/MonitoringStore</a>
@@ -116,7 +116,6 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_monitoringstore.monitoringstore.html#identifierstrategy" class="tsd-kind-icon">identifier<wbr>Strategy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_monitoringstore.monitoringstore.html#source" class="tsd-kind-icon">source</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#errormonitor" class="tsd-kind-icon">error<wbr>Monitor</a></li>
@@ -129,6 +128,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_monitoringstore.monitoringstore.html#addresource" class="tsd-kind-icon">add<wbr>Resource</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_monitoringstore.monitoringstore.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_monitoringstore.monitoringstore.html#emitchanged" class="tsd-kind-icon">emit<wbr>Changed</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_monitoringstore.monitoringstore.html#getrepresentation" class="tsd-kind-icon">get<wbr>Representation</a></li>
@@ -143,6 +143,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#rawlisteners" class="tsd-kind-icon">raw<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_monitoringstore.monitoringstore.html#resourceexists" class="tsd-kind-icon">resource<wbr>Exists</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_monitoringstore.monitoringstore.html#setrepresentation" class="tsd-kind-icon">set<wbr>Representation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="storage_monitoringstore.monitoringstore.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
@@ -157,13 +158,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Monitoring<wbr>Store&lt;T&gt;<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, identifierStrategy<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_monitoringstore.monitoringstore.html" class="tsd-signature-type" data-tsd-kind="Class">MonitoringStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Monitoring<wbr>Store&lt;T&gt;<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_monitoringstore.monitoringstore.html" class="tsd-signature-type" data-tsd-kind="Class">MonitoringStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L17">src/storage/MonitoringStore.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L15">src/storage/MonitoringStore.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -177,9 +178,6 @@
 								<li>
 									<h5>source: <span class="tsd-signature-type">T</span></h5>
 								</li>
-								<li>
-									<h5>identifierStrategy: <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></h5>
-								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_monitoringstore.monitoringstore.html" class="tsd-signature-type" data-tsd-kind="Class">MonitoringStore</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -189,22 +187,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="identifierstrategy" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> identifier<wbr>Strategy</h3>
-					<div class="tsd-signature tsd-kind-icon">identifier<wbr>Strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L17">src/storage/MonitoringStore.ts:17</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="source" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> source</h3>
 					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">T</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L16">src/storage/MonitoringStore.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L15">src/storage/MonitoringStore.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -295,7 +283,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L25">src/storage/MonitoringStore.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L31">src/storage/MonitoringStore.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -318,13 +306,13 @@
 					<a name="deleteresource" class="tsd-anchor"></a>
 					<h3>delete<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L36">src/storage/MonitoringStore.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L38">src/storage/MonitoringStore.ts:38</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -336,7 +324,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -363,6 +351,29 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="emitchanged" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> emit<wbr>Changed</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">emit<wbr>Changed<span class="tsd-signature-symbol">(</span>identifiers<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L53">src/storage/MonitoringStore.ts:53</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifiers: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -410,7 +421,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L47">src/storage/MonitoringStore.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L26">src/storage/MonitoringStore.ts:26</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -479,13 +490,13 @@
 					<a name="modifyresource" class="tsd-anchor"></a>
 					<h3>modify<wbr>Resource</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">modify<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, patch<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">modify<wbr>Resource<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, patch<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_http_patch.patch.html" class="tsd-signature-type" data-tsd-kind="Interface">Patch</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L52">src/storage/MonitoringStore.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L48">src/storage/MonitoringStore.ts:48</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,7 +511,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -814,6 +825,32 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="resourceexists" class="tsd-anchor"></a>
+					<h3>resource<wbr>Exists</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">resource<wbr>Exists<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L22">src/storage/MonitoringStore.ts:22</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="setmaxlisteners" class="tsd-anchor"></a>
 					<h3>set<wbr>Max<wbr>Listeners</h3>
@@ -841,13 +878,13 @@
 					<a name="setrepresentation" class="tsd-anchor"></a>
 					<h3>set<wbr>Representation</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Representation<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, representation<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a>, conditions<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/storage/MonitoringStore.ts#L57">src/storage/MonitoringStore.ts:57</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/storage/MonitoringStore.ts#L43">src/storage/MonitoringStore.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -862,7 +899,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> conditions: <a href="../interfaces/storage_conditions.conditions.html" class="tsd-signature-type" data-tsd-kind="Interface">Conditions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -923,9 +960,6 @@
 								<a href="storage_monitoringstore.monitoringstore.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="storage_monitoringstore.monitoringstore.html#identifierstrategy" class="tsd-kind-icon">identifier<wbr>Strategy</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_monitoringstore.monitoringstore.html#source" class="tsd-kind-icon">source</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
@@ -945,6 +979,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="storage_monitoringstore.monitoringstore.html#emit" class="tsd-kind-icon">emit</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_monitoringstore.monitoringstore.html#emitchanged" class="tsd-kind-icon">emit<wbr>Changed</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="storage_monitoringstore.monitoringstore.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a>
@@ -988,6 +1025,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="storage_monitoringstore.monitoringstore.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="storage_monitoringstore.monitoringstore.html#resourceexists" class="tsd-kind-icon">resource<wbr>Exists</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="storage_monitoringstore.monitoringstore.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a>
 							</li>
@@ -1028,6 +1068,7 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 		</div>
 	</div>

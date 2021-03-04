@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ResourceLocker | Community Solid Server - v0.7.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.7.0">
+	<title>ResourceLocker | Community Solid Server - v0.8.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.8.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.7.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.8.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.7.0</a>
+					<a href="../modules.html">Community Solid Server - v0.8.0</a>
 				</li>
 				<li>
 					<a href="../modules/util_locking_resourcelocker.html">util/locking/ResourceLocker</a>
@@ -71,7 +71,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Allows the locking of resources which is needed for non-atomic <a href="storage_resourcestore.resourcestore.html">ResourceStore</a>s.</p>
+						<p>An interface for classes that only have 1 way to lock interfaces.
+							In general this should only be used by components implementing the <a href="util_locking_readwritelocker.readwritelocker.html">ReadWriteLocker</a> interface.
+						Other components that require locking of resources should use that interface.</p>
 					</div>
 				</div>
 			</section>
@@ -80,14 +82,6 @@
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">ResourceLocker</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="util_locking_expiringresourcelocker.expiringresourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringResourceLocker</a>
-							</li>
-							<li>
-								<a href="index.expiringresourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringResourceLocker</a>
-							</li>
-						</ul>
 					</li>
 				</ul>
 			</section>
@@ -105,8 +99,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="util_locking_resourcelocker.resourcelocker.html#withreadlock" class="tsd-kind-icon">with<wbr>Read<wbr>Lock</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="util_locking_resourcelocker.resourcelocker.html#withwritelock" class="tsd-kind-icon">with<wbr>Write<wbr>Lock</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="util_locking_resourcelocker.resourcelocker.html#acquire" class="tsd-kind-icon">acquire</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="util_locking_resourcelocker.resourcelocker.html#release" class="tsd-kind-icon">release</a></li>
 							</ul>
 						</section>
 					</div>
@@ -115,29 +109,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="withreadlock" class="tsd-anchor"></a>
-					<h3>with<wbr>Read<wbr>Lock</h3>
-					<div class="tsd-signature tsd-kind-icon">with<wbr>Read<wbr>Lock<span class="tsd-signature-symbol">:</span> &lt;T&gt;<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, whileLocked<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="acquire" class="tsd-anchor"></a>
+					<h3>acquire</h3>
+					<div class="tsd-signature tsd-kind-icon">acquire<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/locking/ResourceLocker.ts#L17">src/util/locking/ResourceLocker.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/util/locking/ResourceLocker.ts#L14">src/util/locking/ResourceLocker.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Run the given function while the resource is locked.
-								The lock will be released when the (async) input function resolves.
-							This function should be used for operations that only require reading the resource.</p>
+							<p>Acquires a lock on the requested identifier.
+							The promise will resolve when the lock has been acquired.</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>param</dt>
-							<dd><p>Identifier of the resource that needs to be locked.</p>
-							</dd>
-							<dt>param</dt>
-							<dd><p>A function to execute while the resource is locked.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>A promise resolving when the lock is released.</p>
+							<dd><p>Resource to acquire a lock on.</p>
 							</dd>
 						</dl>
 					</div>
@@ -145,39 +132,18 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface tsd-has-type-parameter">
-									<li class="tsd-signature tsd-kind-icon">&lt;T&gt;<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, whileLocked<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
-										<h4 class="tsd-type-parameters-title">Type parameters</h4>
-										<ul class="tsd-type-parameters">
-											<li>
-												<h4>T</h4>
-											</li>
-										</ul>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 											</li>
-											<li>
-												<h5>whileLocked: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter-signature">
-														<ul class="tsd-signatures tsd-kind-type-literal">
-															<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-														</ul>
-														<ul class="tsd-descriptions">
-															<li class="tsd-description">
-																<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-															</li>
-														</ul>
-													</li>
-												</ul>
-											</li>
 										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -185,29 +151,23 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="withwritelock" class="tsd-anchor"></a>
-					<h3>with<wbr>Write<wbr>Lock</h3>
-					<div class="tsd-signature tsd-kind-icon">with<wbr>Write<wbr>Lock<span class="tsd-signature-symbol">:</span> &lt;T&gt;<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, whileLocked<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="release" class="tsd-anchor"></a>
+					<h3>release</h3>
+					<div class="tsd-signature tsd-kind-icon">release<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/59a7c51/src/util/locking/ResourceLocker.ts#L29">src/util/locking/ResourceLocker.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/util/locking/ResourceLocker.ts#L22">src/util/locking/ResourceLocker.ts:22</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Run the given function while the resource is locked.
-								The lock will be released when the (async) input function resolves.
-							This function should be used for operations that could modify the resource.</p>
+							<p>Releases a lock on the requested identifier.
+								The promise will resolve when the lock has been released.
+							In case there is no lock on the resource an error should be thrown.</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>param</dt>
-							<dd><p>Identifier of the resource that needs to be locked.</p>
-							</dd>
-							<dt>param</dt>
-							<dd><p>A function to execute while the resource is locked.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>A promise resolving when the lock is released.</p>
+							<dd><p>Resource to release the lock on.</p>
 							</dd>
 						</dl>
 					</div>
@@ -215,39 +175,18 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface tsd-has-type-parameter">
-									<li class="tsd-signature tsd-kind-icon">&lt;T&gt;<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, whileLocked<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
-										<h4 class="tsd-type-parameters-title">Type parameters</h4>
-										<ul class="tsd-type-parameters">
-											<li>
-												<h4>T</h4>
-											</li>
-										</ul>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 											</li>
-											<li>
-												<h5>whileLocked: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter-signature">
-														<ul class="tsd-signatures tsd-kind-type-literal">
-															<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-														</ul>
-														<ul class="tsd-descriptions">
-															<li class="tsd-description">
-																<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-															</li>
-														</ul>
-													</li>
-												</ul>
-											</li>
 										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 									</li>
 								</ul>
 							</li>
@@ -275,10 +214,10 @@
 						<a href="util_locking_resourcelocker.resourcelocker.html" class="tsd-kind-icon">Resource<wbr>Locker</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="util_locking_resourcelocker.resourcelocker.html#withreadlock" class="tsd-kind-icon">with<wbr>Read<wbr>Lock</a>
+								<a href="util_locking_resourcelocker.resourcelocker.html#acquire" class="tsd-kind-icon">acquire</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="util_locking_resourcelocker.resourcelocker.html#withwritelock" class="tsd-kind-icon">with<wbr>Write<wbr>Lock</a>
+								<a href="util_locking_resourcelocker.resourcelocker.html#release" class="tsd-kind-icon">release</a>
 							</li>
 						</ul>
 					</li>
