@@ -39,6 +39,6 @@ describe('An RdfValidator', (): void => {
     const representation = new BasicRepresentation('data', 'content-type');
     await expect(validator.handle(representation)).rejects.toThrow('bad data!');
     // Make sure the data on the readable has not been reset
-    expect(representation.data.readableEnded).toBe(true);
+    expect(representation.data.destroyed).toBe(true);
   });
 });
