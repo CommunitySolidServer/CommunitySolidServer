@@ -1,6 +1,51 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.8.0"></a>
+## [v0.8.0](https://github.com/solid/community-server/compare/v0.7.0...v0.8.0) - 2021-03-04
+
+### Added
+* [feat: Static favicon asset](https://github.com/solid/community-server/commit/03e631ff178c48aeaafefe63e0027638f6e3b524)
+* [feat: Introduce internal storing mechanism](https://github.com/solid/community-server/commit/59deb989eccbb4368a97088d4b6fcb612a988341)
+* [feat: Create GreedyReadWriteLocker using read/write locking algorithm](https://github.com/solid/community-server/commit/a3f41c1d431c3e1582cd87971434282a46408d09)
+* [feat: Introduce generic auxiliary resource support](https://github.com/solid/community-server/commit/d6cdd7dbdfe09d3ae90279d4eca2cb0b9c7d74f9)
+* [feat: Support auxiliary behaviour in DataAccessorBasedStore](https://github.com/solid/community-server/commit/0c047234e32f6c459f2dad2011014cd8195b43fd)
+* [feat: Add WAC-Allow header when required](https://github.com/solid/community-server/commit/139342470ee013a66466a79a868b8dbf52e9c969)
+* [feat: Emit container pub event on PUT.](https://github.com/solid/community-server/commit/c3cff553e3775842e3a2c9554111cdbbf4467e98)
+* [feat: Create SubdomainExtensionBasedMapper](https://github.com/solid/community-server/commit/bdb3621ee33e513bf6b6086e502940433c118946)
+* [feat: Added resourceExists method to ResourceStore](https://github.com/solid/community-server/commit/b3f292d71880bf2654aed3da17a5b55173f159ce)
+* [feat: Solid community server Docker image](https://github.com/solid/community-server/commit/52551ac773cf0012387b664880756870df4d81bd)
+* [feat: Create pod manager for generating dynamic pods](https://github.com/solid/community-server/commit/88d008e36fb573bc7edb29dc565d022be19551e8)
+* [feat: Create KeyValueStorage with a JSON file backend](https://github.com/solid/community-server/commit/6288003915bda84401a82de3ad62265485e6503d)
+* [fix: Error when unknown parameters are passed to the main executable](https://github.com/solid/community-server/commit/1589def0664fd33a4aeac629d207e97a2b093bd3)
+
+### Changed
+* [feat: Replace express with native http module](https://github.com/solid/community-server/commit/ce1f4300ff5444626bbbb1bc7bee8e40d3bb65f7)
+* [feat: Make stores return modified resources.](https://github.com/solid/community-server/commit/6edc255707d93cb3b9b7d62323802c6a3ff1a8cb)
+* [change: Query string does not influence identifier.](https://github.com/solid/community-server/commit/a57105be8e08f8b39bd827a56fc6cf14d4425419)
+
+### Fixed
+* [fix: Do not re-encode static assets. (#566)](https://github.com/solid/community-server/commit/c899e6c4b1ab714347f49006b96615ad54fdb387)
+* [fix: Preserve query string in transformations.](https://github.com/solid/community-server/commit/6e50443a3930adb14a483899b87589ccf42e7596)
+* [fix: Test error classes correctly](https://github.com/solid/community-server/commit/c29928c32c0d2ce5c97889edb3bd73904ab6077e)
+* [fix: Close unpiped streams](https://github.com/solid/community-server/commit/386d78277dc7dda340c284bfff1ef8c40605e7ed)
+* [fix: Prevent race condition in OPTIONS call](https://github.com/solid/community-server/commit/73acb9cd52d056526bc4c3812eaaebd54bd11840)
+* [fix: Fix problem with piping streams for PATCH requests](https://github.com/solid/community-server/commit/6c4378a2de290d4925f14f642697523ff38aa6e3)
+* [fix: Fixed bug with empty Accept headers and internal/quads bodies](https://github.com/solid/community-server/commit/59600b07f88027d0bd4ac641919e990ca8016642)
+* [fix: Simply GuardedStream check](https://github.com/solid/community-server/commit/c05933f652857aec6975c7c38418805d0171cb88)
+* [fix: Prevent setRepresentation crash if there is no root container](https://github.com/solid/community-server/commit/6424b07fc6212b1069b519732a82553870f28fb0)
+* [fix: Remove default root container from InMemoryDataAccessor](https://github.com/solid/community-server/commit/bb6563044190b521d7d06ad3af0e5e3c482907af)
+* [test: Remove root folder creation from integration tests](https://github.com/solid/community-server/commit/49a04c4d0a4cf0ff108b201ff0f587e996a45081)
+* [fix: Make mkdir recursive in FileDataAccessor](https://github.com/solid/community-server/commit/30cebec32a1b15b0dd57d6072dda78e35026083a)
+* [fix: do not output filesystem container size](https://github.com/solid/community-server/commit/1486f01aaf714aba945df5f31f17cb5e96002d1a)
+* [Fix #621: acl:AuthenticatedAgent instead of foaf:AuthenticatedAgent](https://github.com/solid/community-server/commit/91791a0a140a9b1c80c2d7d9dde910c90b2062d8)
+* [fix: Allow non-variable BGP boedies in SPARQL updates](https://github.com/solid/community-server/commit/894d4589d96533e9432c63911adc355c0785f0e0)
+* [Correctly handle slugs in POST requests](https://github.com/solid/community-server/commit/28c0eb7e887f907fc4ca3a5045d9eb71cf0b0491)
+* [fix: Update faulty token verifier](https://github.com/solid/community-server/commit/5c6822d4686585a03631b371427c7e2151ab65c7)
+* [fix: SPARQL PATCH Content Type](https://github.com/solid/community-server/commit/2a34a430fa7435df01743e7f8ac7de014d259405)
+* [fix: SPARQL body parser test content type metadata](https://github.com/solid/community-server/commit/23473f59e69c1e028c7796996d98cf571277ad14)
+
+
 <a name="v0.7.0"></a>
 ## [v0.7.0](https://github.com/solid/community-server/compare/v0.6.0...v0.7.0) - 2021-01-28
 
