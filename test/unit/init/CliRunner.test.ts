@@ -195,10 +195,10 @@ describe('CliRunner', (): void => {
     });
 
     expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).not.toHaveBeenCalledWith(0);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
-  it('exists when no value is passed to the main executable for an argument.', async(): Promise<void> => {
+  it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
     new CliRunner().run({
       argv: [
         'node', 'script', '-s',
@@ -211,7 +211,7 @@ describe('CliRunner', (): void => {
     });
 
     expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).not.toHaveBeenCalledWith(0);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 
   it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
@@ -227,6 +227,6 @@ describe('CliRunner', (): void => {
     });
 
     expect(exit).toHaveBeenCalledTimes(1);
-    expect(exit).not.toHaveBeenCalledWith(0);
+    expect(exit).toHaveBeenCalledWith(1);
   });
 });

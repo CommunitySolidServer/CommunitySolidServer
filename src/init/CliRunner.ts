@@ -34,7 +34,7 @@ export class CliRunner {
           throw new Error(`Unsupported arguments: ${args._.join('", "')}`);
         }
         for (const key in args) {
-          // _ and $0 are always present with yargs
+          // Skip filename arguments (_) and the script name ($0)
           if (key !== '_' && key !== '$0') {
             // Check if the argument occurs in the provided options list
             if (!options[key]) {
