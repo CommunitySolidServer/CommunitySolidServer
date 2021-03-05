@@ -203,7 +203,7 @@ describe('CliRunner', (): void => {
     expect(exit).toHaveBeenCalledWith(1);
   });
 
-  it('exits when invalid parameters are passed to the main executable.', async(): Promise<void> => {
+  it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
     await new CliRunner().run({
       argv: [
         'node', 'script', '-ll',
