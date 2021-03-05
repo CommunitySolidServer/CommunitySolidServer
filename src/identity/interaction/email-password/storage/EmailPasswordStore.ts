@@ -24,7 +24,7 @@ export abstract class EmailPasswordStore {
    */
   abstract changePassword(email: string, password: string): Promise<void>;
   /**
-   * Deltet the account
+   * Delete the account
    * @param email - the user's email
    */
   abstract deleteAccount(email: string): Promise<void>;

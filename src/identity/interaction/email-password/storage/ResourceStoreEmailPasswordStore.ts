@@ -32,7 +32,7 @@ export interface EmailPasswordForgotPasswordPayload {
 }
 
 /**
- * A EmailPasswordStorageAdapter that uses a ResoucreStore
+ * A EmailPasswordStorageAdapter that uses a ResourceStore
  * to persist its information.
  */
 export class ResourceStoreEmailPasswordStore extends EmailPasswordStore {

@@ -49,7 +49,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
     id: string,
     payload: AdapterPayload,
     expiresIn: number,
-  ): Promise<undefined | void> {
+  ): Promise<void> {
     const expirationOptions = expiresIn ?
       { expires: new Date(Date.now() + (expiresIn * 1000)) } :
       undefined;
@@ -86,7 +86,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
     await Promise.all(storagePromises);
   }
 
-  public async find(id: string): Promise<AdapterPayload | undefined | void> {
+  public async find(id: string): Promise<AdapterPayload | void> {
     return (await this.store.get(this.keyFor(id))) as
       | undefined
       | AdapterPayload;
@@ -94,23 +94,23 @@ export class ResourceStoreStorageAdapter implements Adapter {
 
   public async findByUserCode(
     userCode: string,
-  ): Promise<AdapterPayload | undefined | void> {
+  ): Promise<AdapterPayload | void> {
     const id = (await this.store.get(this.userCodeKeyFor(userCode))) as string;
     return this.find(id);
   }
 
   public async findByUid(
     uid: string,
-  ): Promise<AdapterPayload | undefined | void> {
+  ): Promise<AdapterPayload | void> {
     const id = (await this.store.get(this.uidKeyFor(uid))) as string;
     return this.find(id);
   }
 
-  public async destroy(id: string): Promise<undefined | void> {
+  public async destroy(id: string): Promise<void> {
     await this.store.remove(this.keyFor(id));
   }
 
-  public async revokeByGrantId(grantId: string): Promise<undefined | void> {
+  public async revokeByGrantId(grantId: string): Promise<void> {
     const grantKey = this.grantKeyFor(grantId);
     const grants = (await this.store.get(grantKey) ||
       []) as ResourceIdentifier[];
@@ -122,7 +122,7 @@ export class ResourceStoreStorageAdapter implements Adapter {
     await Promise.all(deletePromises);
   }
 
-  public async consume(id: string): Promise<undefined | void> {
+  public async consume(id: string): Promise<void> {
     const payload = await this.find(id);
     if (!payload) {
       return;

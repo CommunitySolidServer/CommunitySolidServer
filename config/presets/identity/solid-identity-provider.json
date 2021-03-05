@@ -2,7 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:IdPStorageAdapterFactory",
+      "@id": "urn:solid-server:default:IdpStorageAdapterFactory",
       "@type": "ClientWebIdFetchingStorageAdapterFactory",
       "ClientWebIdFetchingStorageAdapterFactory:_wrappedAdapterFactory": {
         "@type": "ResourceStoreStorageAdapterFactory",
@@ -19,10 +19,10 @@
       }
     },
     {
-      "@id": "urn:solid-server:default:IdPConfigurationGenerator",
+      "@id": "urn:solid-server:default:IdpConfigurationGenerator",
       "@type": "KeyGeneratingIdpConfigurationGenerator",
       "KeyGeneratingIdpConfigurationGenerator:_storageAdapterFactory": {
-        "@id": "urn:solid-server:default:IdPStorageAdapterFactory"
+        "@id": "urn:solid-server:default:IdpStorageAdapterFactory"
       },
       "KeyGeneratingIdpConfigurationGenerator:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
@@ -41,7 +41,7 @@
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
       "IdentityProviderFactory:_configurationFactory": {
-        "@id": "urn:solid-server:default:IdPConfigurationGenerator"
+        "@id": "urn:solid-server:default:IdpConfigurationGenerator"
       }
     },
     {
@@ -57,8 +57,8 @@
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "RouterHandler",
-      "RouterHandler:_allowedMethods": [ "GET", "POST", "PUT", "DELTE", "OPTIONS" ],
-      "RouterHandler:_allowedPathnames": [ "^\/idp\/.*", "^\/\\.well-known\/openid-configuration" ],
+      "RouterHandler:_allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "RouterHandler:_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
       "RouterHandler:_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
 
     }

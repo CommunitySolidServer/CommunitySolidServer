@@ -11,8 +11,7 @@ import type { IdpInteractionPolicyHttpHandler } from './interaction/IdpInteracti
  */
 export class IdentityProviderHttpHandler extends HttpHandler {
   private readonly providerFactory: IdentityProviderFactory;
-  private provider: Provider | undefined;
-  private providerCreationPromise: Promise<Provider> | undefined;
+  private provider?: Provider;
   private readonly interactionPolicyHttpHandler: IdpInteractionPolicyHttpHandler;
   private readonly logger = getLoggerFor(this);
 
@@ -30,11 +29,8 @@ export class IdentityProviderHttpHandler extends HttpHandler {
    */
   private async getGuaranteedProvider(): Promise<Provider> {
     if (!this.provider) {
-      if (!this.providerCreationPromise) {
-        this.providerCreationPromise = this.providerFactory.createProvider(this.interactionPolicyHttpHandler);
-      }
       try {
-        this.provider = await this.providerCreationPromise;
+        this.provider = await this.providerFactory.createProvider(this.interactionPolicyHttpHandler);
       } catch (err: unknown) {
         this.logger.error(err as string);
         throw err;
@@ -44,29 +40,20 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   }
 
   /**
-   * No canhandle method is provided because this should always accept.
-   * A routerhandler should be placed above this class to restrict the routes it can use.
+   * No canHandle method is provided because this should always accept.
+   * A RouterHandler should be placed above this class to restrict the routes it can use.
    */
 
-  /**
-   * Handles the given input. This should only be done if the {@link canHandle} function returned `true`.
-   * @param input - Input data that needs to be handled.
-   *
-   * @returns A promise resolving when the handling is finished. Return value depends on the given type.
-   */
   public async handle(input: HttpHandlerInput): Promise<void> {
     const provider = await this.getGuaranteedProvider();
 
     try {
       await this.interactionPolicyHttpHandler.canHandle({ ...input, provider });
     } catch {
-      // This casting might seem strange, but "callback" is a Koa callback which does
-      // actually return a Promise, despite what the typings say.
-      // https://github.com/koajs/koa/blob/b4398f5d68f9546167419f394a686afdcb5e10e2/lib/application.js#L168
       return provider.callback(
         input.request,
         input.response,
-      ) as unknown as Promise<void>;
+      );
     }
     return this.interactionPolicyHttpHandler.handle({ ...input, provider });
   }
