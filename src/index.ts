@@ -101,7 +101,7 @@ export * from './ldp/UnsecureWebSocketsProtocol';
 
 // SolidIdentityProvider
 export * from './identity/interaction/IdpInteractionHttpHandler';
-export * from './identity/interaction/IdpInteractionPolicyHttpHandler';
+export * from './identity/interaction/IdpInteractionPolicy';
 export * from './identity/configuration/IdpConfigurationGenerator';
 export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
@@ -130,7 +130,7 @@ export * from './identity/interaction/util/IdpInteractionError';
 export * from './identity/interaction/util/IdpRouteController';
 
 // SolidIdentityProvider/InteractionPolicies/EmailPassword
-export * from './identity/interaction/email-password/EmailPasswordInteractionPolicyHttpHandler';
+export * from './identity/interaction/email-password/EmailPasswordInteractionPolicy';
 
 // SolidIdentityProvider/InteractionPolicies/Handler
 export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';

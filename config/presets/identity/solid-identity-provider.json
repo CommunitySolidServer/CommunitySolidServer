@@ -50,8 +50,11 @@
       "IdentityProviderHttpHandler:_providerFactory": {
         "@id": "urn:solid-server:default:IdentityProviderFactory"
       },
-      "IdentityProviderHttpHandler:_interactionPolicyHttpHandler": {
+      "IdentityProviderHttpHandler:_interactionPolicy": {
         "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
+      },
+      "IdentityProviderHttpHandler:_interactionHttpHandler": {
+        "@id": "urn:solid-server:email-password-interaction:InteractionHttpHandler"
       }
     },
     {

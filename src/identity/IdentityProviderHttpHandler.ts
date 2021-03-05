@@ -3,7 +3,8 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
-import type { IdpInteractionPolicyHttpHandler } from './interaction/IdpInteractionPolicyHttpHandler';
+import type { IdpInteractionHttpHandler } from './interaction/IdpInteractionHttpHandler';
+import type { IdpInteractionPolicy } from './interaction/IdpInteractionPolicy';
 
 /**
  * Handles requests incoming the IdP and instantiates the IdP to
@@ -12,16 +13,19 @@ import type { IdpInteractionPolicyHttpHandler } from './interaction/IdpInteracti
 export class IdentityProviderHttpHandler extends HttpHandler {
   private readonly providerFactory: IdentityProviderFactory;
   private provider?: Provider;
-  private readonly interactionPolicyHttpHandler: IdpInteractionPolicyHttpHandler;
+  private readonly interactionPolicy: IdpInteractionPolicy;
+  private readonly interactionHttpHandler: IdpInteractionHttpHandler;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     providerFactory: IdentityProviderFactory,
-    interactionPolicyHttpHandler: IdpInteractionPolicyHttpHandler,
+    interactionPolicy: IdpInteractionPolicy,
+    interactionHttpHandler: IdpInteractionHttpHandler,
   ) {
     super();
-    this.interactionPolicyHttpHandler = interactionPolicyHttpHandler;
+    this.interactionPolicy = interactionPolicy;
     this.providerFactory = providerFactory;
+    this.interactionHttpHandler = interactionHttpHandler;
   }
 
   /**
@@ -30,7 +34,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   private async getGuaranteedProvider(): Promise<Provider> {
     if (!this.provider) {
       try {
-        this.provider = await this.providerFactory.createProvider(this.interactionPolicyHttpHandler);
+        this.provider = await this.providerFactory.createProvider(this.interactionPolicy);
       } catch (err: unknown) {
         this.logger.error(err as string);
         throw err;
@@ -48,13 +52,13 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     const provider = await this.getGuaranteedProvider();
 
     try {
-      await this.interactionPolicyHttpHandler.canHandle({ ...input, provider });
+      await this.interactionHttpHandler.canHandle({ ...input, provider });
     } catch {
       return provider.callback(
         input.request,
         input.response,
       );
     }
-    return this.interactionPolicyHttpHandler.handle({ ...input, provider });
+    return this.interactionHttpHandler.handle({ ...input, provider });
   }
 }
