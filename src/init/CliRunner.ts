@@ -13,10 +13,11 @@ export class CliRunner {
 
   /**
    * Generic run function for starting the server from a given config
+   * Made run to be non-async to lower the chance of unhandled promise rejection errors in the future.
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public async run({
+  public run({
     argv = process.argv,
     stderr = process.stderr,
   }: {
@@ -24,7 +25,7 @@ export class CliRunner {
     stdin?: ReadStream;
     stdout?: WriteStream;
     stderr?: WriteStream;
-  } = {}): Promise<void> {
+  } = {}): void {
     // Parse the command-line arguments
     const { argv: params } = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
@@ -75,7 +76,7 @@ export class CliRunner {
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    await this.createInitializer(loaderProperties, configFile, variables)
+    this.createInitializer(loaderProperties, configFile, variables)
       .then(
         async(initializer): Promise<void> => initializer.handleSafe(),
         (error: Error): void => {
