@@ -1,7 +1,9 @@
 import type { Provider } from 'oidc-provider';
+import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
+import { isNativeError } from '../util/errors/ErrorUtil';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
 import type { IdpInteractionHttpHandler } from './interaction/IdpInteractionHttpHandler';
 import type { IdpInteractionPolicy } from './interaction/IdpInteractionPolicy';
@@ -15,17 +17,20 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   private provider?: Provider;
   private readonly interactionPolicy: IdpInteractionPolicy;
   private readonly interactionHttpHandler: IdpInteractionHttpHandler;
+  private readonly errorResponseWriter: ResponseWriter;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     providerFactory: IdentityProviderFactory,
     interactionPolicy: IdpInteractionPolicy,
     interactionHttpHandler: IdpInteractionHttpHandler,
+    errorResponseWriter: ResponseWriter,
   ) {
     super();
     this.interactionPolicy = interactionPolicy;
     this.providerFactory = providerFactory;
     this.interactionHttpHandler = interactionHttpHandler;
+    this.errorResponseWriter = errorResponseWriter;
   }
 
   /**
@@ -59,6 +64,14 @@ export class IdentityProviderHttpHandler extends HttpHandler {
         input.response,
       );
     }
-    return this.interactionHttpHandler.handle({ ...input, provider });
+
+    try {
+      await this.interactionHttpHandler.handle({ ...input, provider });
+    } catch (error: unknown) {
+      if (!isNativeError(error)) {
+        throw error;
+      }
+      await this.errorResponseWriter.handleSafe({ response: input.response, result: error });
+    }
   }
 }

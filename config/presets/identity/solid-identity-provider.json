@@ -55,6 +55,9 @@
       },
       "IdentityProviderHttpHandler:_interactionHttpHandler": {
         "@id": "urn:solid-server:email-password-interaction:InteractionHttpHandler"
+      },
+      "IdentityProviderHttpHandler:_errorResponseWriter": {
+        "@type": "ErrorResponseWriter"
       }
     },
     {
@@ -63,7 +66,6 @@
       "RouterHandler:_allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
       "RouterHandler:_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
       "RouterHandler:_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
-
     }
   ]
 }

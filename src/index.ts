@@ -189,7 +189,6 @@ export * from './pods/PodManagerHttpHandler';
 // Server
 export * from './server/BaseHttpServerFactory';
 export * from './server/HttpHandler';
-export * from './server/OnErrorHttpHandler';
 export * from './server/HttpRequest';
 export * from './server/HttpResponse';
 export * from './server/WebSocketServerFactory';
@@ -205,7 +204,6 @@ export * from './server/middleware/WebSocketAdvertiser';
 export * from './server/util/RenderEjsHandler';
 export * from './server/util/RenderHandler';
 export * from './server/util/RouterHandler';
-export * from './server/util/BasicOnErrorHttpHandler';
 
 // Storage/Accessors
 export * from './storage/accessors/DataAccessor';
@@ -279,8 +277,6 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
 export * from './util/handlers/AsyncHandler';
-export * from './util/handlers/ErrorHandlingWaterfallHandler';
-export * from './util/handlers/OnErrorHandler';
 export * from './util/handlers/ParallelHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/UnsupportedAsyncHandler';
