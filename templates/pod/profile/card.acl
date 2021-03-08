@@ -16,6 +16,6 @@
 <#owner>
     a acl:Authorization;
     acl:agent <{{webId}}>;
-    acl:accessTo <./card>;
+    acl:accessTo <./>;
     acl:default <./>;
     acl:mode acl:Read, acl:Write, acl:Control.
