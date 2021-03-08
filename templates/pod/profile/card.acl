@@ -1,4 +1,4 @@
-# ACL resource for the WebId profile document
+# ACL resource for the WebID profile document
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
