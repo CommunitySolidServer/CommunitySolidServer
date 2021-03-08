@@ -184,20 +184,28 @@ export class WebAclAuthorizer extends Authorizer {
    *
    * @returns A store containing the relevant acl triples.
    */
-  private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
+  private async getAclRecursive(id: ResourceIdentifier, maybeTarget?: ResourceIdentifier): Promise<Store> {
+    const target = maybeTarget ?? id;
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
       const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
+      const [ direct, recursive ] = await Promise.all([
+        this.filterData(data, ACL.accessTo, target.path),
+        this.filterData(data, ACL.default, id.path),
+      ]);
 
-      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+      return new Store([
+        ...direct.getQuads(null, null, null, null),
+        ...recursive.getQuads(null, null, null, null),
+      ]);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
       } else {
-        this.logger.error(`Error reading ACL for ${id.path}: ${(error as Error).message}`, { error });
+        this.logger.error(`Error reading ACL for ${target.path}: ${(error as Error).message}`, { error });
         throw error;
       }
     }
@@ -210,7 +218,7 @@ export class WebAclAuthorizer extends Authorizer {
       throw new ForbiddenHttpError('No ACL document found for root container');
     }
     const parent = this.identifierStrategy.getParentContainer(id);
-    return this.getAclRecursive(parent, true);
+    return this.getAclRecursive(parent, target);
   }
 
   /**
