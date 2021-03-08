@@ -1,0 +1,17 @@
+# ACL resource for the WebId profile document
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+# The profile is readable by the public.
+<#public>
+    a acl:Authorization;
+    acl:agentClass foaf:Agent;
+    acl:accessTo <./card>;
+    acl:mode acl:Read.
+
+# The owner has full access to the profile.
+<#owner>
+    a acl:Authorization;
+    acl:agent <{{webId}}>;
+    acl:accessTo <./card>;
+    acl:mode acl:Read, acl:Write, acl:Control.
