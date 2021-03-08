@@ -2,7 +2,9 @@
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-# The profile is readable by the public.
+# The WebID profile is readable by the public.
+# This is required for discovery and verification,
+# e.g. when checking identity providers.
 <#public>
     a acl:Authorization;
     acl:agentClass foaf:Agent;
