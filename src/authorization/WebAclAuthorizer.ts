@@ -184,8 +184,8 @@ export class WebAclAuthorizer extends Authorizer {
    *
    * @returns A store containing the relevant acl triples.
    */
-  private async getAclRecursive(id: ResourceIdentifier, maybeTarget?: ResourceIdentifier): Promise<Store> {
-    const target = maybeTarget ?? id;
+  private async getAclRecursive(id: ResourceIdentifier, originalId?: ResourceIdentifier): Promise<Store> {
+    const target = originalId ?? id;
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
       const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
