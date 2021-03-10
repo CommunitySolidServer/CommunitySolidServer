@@ -1,5 +1,5 @@
-import path from 'path';
 import { createResponse } from 'node-mocks-http';
+import { joinFilePath } from '../../../../src';
 import type { HttpResponse } from '../../../../src';
 import { RenderEjsHandler } from '../../../../src/server/util/RenderEjsHandler';
 
@@ -10,7 +10,7 @@ describe('RenderEjsHandler', (): void => {
 
   beforeEach((): void => {
     response = createResponse();
-    templatePath = path.join(__dirname, '../../../assets/views');
+    templatePath = joinFilePath(__dirname, '../../../assets/views');
     templateFile = 'testHtml.ejs';
   });
 

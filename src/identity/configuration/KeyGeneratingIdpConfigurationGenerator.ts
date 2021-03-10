@@ -1,5 +1,3 @@
-/* eslint-disable id-length */
-/* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { randomBytes } from 'crypto';
 import { JWK } from 'node-jose';
@@ -73,11 +71,10 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
     // Aliasing the "this" variable is an anti-pattern that is better served by using
     // arrow functions. Unfortunately, the adapter function MUST be a named function
     // See https://github.com/panva/node-oidc-provider/issues/799
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const { storageAdapterFactory } = this;
+    const factory = this.storageAdapterFactory;
     return {
       adapter: function loadAdapter(name: string): Adapter {
-        return storageAdapterFactory.createStorageAdapter(name);
+        return factory.createStorageAdapter(name);
       },
       cookies: {
         long: { signed: true, maxAge: 1 * 24 * 60 * 60 * 1000 },

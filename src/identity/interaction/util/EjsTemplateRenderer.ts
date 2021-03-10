@@ -1,5 +1,5 @@
-import path from 'path';
 import { renderFile } from 'ejs';
+import { joinFilePath } from '../../../util/PathUtil';
 import { TemplateRenderer } from './TemplateRenderer';
 
 /**
@@ -19,7 +19,7 @@ export class EjsTemplateRenderer<T> extends TemplateRenderer<T> {
 
   public async render(options: T): Promise<string> {
     return renderFile(
-      path.join(
+      joinFilePath(
         this.templatePath,
         this.templateFile,
       ),

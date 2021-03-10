@@ -1,10 +1,11 @@
-import { literal, namedNode, quad } from '@rdfjs/dataset';
 import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
+import { DataFactory } from 'n3';
 import type { DatasetCore } from 'rdf-js';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { SOLID } from '../../../util/Vocabularies';
 import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
+const { literal, namedNode, quad } = DataFactory;
 
 /**
  * Validates whether a WebId is okay to register based on if it

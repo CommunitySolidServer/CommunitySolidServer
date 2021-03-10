@@ -13,17 +13,17 @@ import { HttpHandler } from '../HttpHandler';
 export class RouterHandler extends HttpHandler {
   protected readonly handler: HttpHandler;
   protected readonly allowedMethods: string[];
-  protected readonly allowedPathnamesRegEx: RegExp[];
+  protected readonly allowedPathNamesRegEx: RegExp[];
 
   public constructor(
     handler: HttpHandler,
     allowedMethods: string[],
-    allowedPathnames: string[],
+    allowedPathNames: string[],
   ) {
     super();
     this.handler = handler;
     this.allowedMethods = allowedMethods;
-    this.allowedPathnamesRegEx = allowedPathnames.map((pn): RegExp => new RegExp(pn, 'u'));
+    this.allowedPathNamesRegEx = allowedPathNames.map((pn): RegExp => new RegExp(pn, 'u'));
   }
 
   public async canHandle(input: HttpHandlerInput): Promise<void> {
@@ -44,7 +44,7 @@ export class RouterHandler extends HttpHandler {
     if (!pathname) {
       throw new Error('Cannot handle request without pathname');
     }
-    if (!this.allowedPathnamesRegEx.some((regex): boolean => regex.test(pathname))) {
+    if (!this.allowedPathNamesRegEx.some((regex): boolean => regex.test(pathname))) {
       throw new NotFoundHttpError(`Cannot handle route ${pathname}`);
     }
     await this.handler.canHandle(input);

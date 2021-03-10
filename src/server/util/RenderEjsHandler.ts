@@ -1,5 +1,5 @@
-import path from 'path';
 import { renderFile } from 'ejs';
+import { joinFilePath } from '../../util/PathUtil';
 import type { HttpResponse } from '../HttpResponse';
 import { RenderHandler } from './RenderHandler';
 
@@ -23,7 +23,7 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
   }): Promise<void> {
     const { props, response } = input;
     const renderedHtml = await renderFile(
-      path.join(
+      joinFilePath(
         this.templatePath,
         this.templateFile,
       ),
