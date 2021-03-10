@@ -245,6 +245,7 @@ export * from './util/locking/GreedyReadWriteLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
+export * from './util/locking/RedisResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 
 // Util
