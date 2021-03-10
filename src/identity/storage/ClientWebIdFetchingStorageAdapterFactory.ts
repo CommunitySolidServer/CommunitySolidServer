@@ -1,10 +1,11 @@
-import { namedNode } from '@rdfjs/dataset';
 import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
+import { DataFactory } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { Dataset } from 'rdf-js';
 import { SOLID } from '../../util/Vocabularies';
 import { StorageAdapterFactory } from './StorageAdapterFactory';
+import namedNode = DataFactory.namedNode;
 
 export class ClientWebIdFetchingStorageAdapter implements Adapter {
   private readonly adapter: Adapter;
@@ -22,11 +23,11 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
     id: string,
     payload: AdapterPayload,
     expiresIn: number,
-  ): Promise<undefined | void> {
+  ): Promise<void> {
     return this.adapter.upsert(id, payload, expiresIn);
   }
 
-  public async find(id: string): Promise<AdapterPayload | undefined | void> {
+  public async find(id: string): Promise<AdapterPayload | void> {
     const payload = await this.adapter.find(id);
 
     // If we're looking up a Client and the Client is undefined, check to
@@ -91,25 +92,25 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
 
   public async findByUserCode(
     userCode: string,
-  ): Promise<AdapterPayload | undefined | void> {
+  ): Promise<AdapterPayload | void> {
     return this.adapter.findByUserCode(userCode);
   }
 
   public async findByUid(
     uid: string,
-  ): Promise<AdapterPayload | undefined | void> {
+  ): Promise<AdapterPayload | void> {
     return this.adapter.findByUid(uid);
   }
 
-  public async destroy(id: string): Promise<undefined | void> {
+  public async destroy(id: string): Promise<void> {
     return this.adapter.destroy(id);
   }
 
-  public async revokeByGrantId(grantId: string): Promise<undefined | void> {
+  public async revokeByGrantId(grantId: string): Promise<void> {
     return this.adapter.revokeByGrantId(grantId);
   }
 
-  public async consume(id: string): Promise<undefined | void> {
+  public async consume(id: string): Promise<void> {
     return this.adapter.consume(id);
   }
 }
