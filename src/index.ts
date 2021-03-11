@@ -142,7 +142,7 @@ export * from './identity/interaction/email-password/handler/EmailPasswordResetP
 
 // SolidIdentityProvider/InteractionPolicies/Storage
 export * from './identity/interaction/email-password/storage/EmailPasswordStore';
-export * from './identity/interaction/email-password/storage/ResourceStoreEmailPasswordStore';
+export * from './identity/interaction/email-password/storage/KeyValueEmailPasswordStore';
 
 // Logging
 export * from './logging/LazyLogger';
