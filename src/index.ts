@@ -223,12 +223,14 @@ export * from './storage/conversion/RdfToQuadConverter';
 export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
-// Storage/KeyValueStorage
+// Storage/KeyValue
+export * from './storage/keyvalue/ExpiringStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
 export * from './storage/keyvalue/ResourceIdentifierStorage';
+export * from './storage/keyvalue/WrappedExpiringStorage';
 
 // Storage/Mapping
 export * from './storage/mapping/BaseFileIdentifierMapper';
