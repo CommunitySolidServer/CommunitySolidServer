@@ -15,6 +15,52 @@ export * from './authorization/AuxiliaryAuthorizer';
 export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
+// Identity/Configuration
+export * from './identity/configuration/IdpConfigurationGenerator';
+export * from './identity/configuration/KeyGeneratingIdpConfigurationGenerator';
+
+// Identity/Interaction/Email-Password/Handler
+export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordGetResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordRegistrationHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';
+
+// Identity/Interaction/Email-Password/Storage
+export * from './identity/interaction/email-password/storage/EmailPasswordStore';
+export * from './identity/interaction/email-password/storage/KeyValueEmailPasswordStore';
+
+// Identity/Interaction/Email-Password
+export * from './identity/interaction/email-password/EmailPasswordInteractionPolicy';
+export * from './identity/interaction/email-password/EmailPasswordUtil';
+
+// Identity/Interaction/Util
+export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';
+export * from './identity/interaction/util/ChooseInitialInteractionHandler';
+export * from './identity/interaction/util/EjsTemplateRenderer';
+export * from './identity/interaction/util/EmailSender';
+export * from './identity/interaction/util/FormDataUtil';
+export * from './identity/interaction/util/IdpInteractionError';
+export * from './identity/interaction/util/IdpRenderHandler';
+export * from './identity/interaction/util/IdpRouteController';
+export * from './identity/interaction/util/OidcInteractionCompleter';
+export * from './identity/interaction/util/TemplateRenderer';
+export * from './identity/interaction/util/WebIdOwnershipValidator';
+
+// Identity/Interaction
+export * from './identity/interaction/IdpInteractionHttpHandler';
+export * from './identity/interaction/IdpInteractionPolicy';
+
+// Identity/Storage
+export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';
+export * from './identity/storage/ExpiringStorageAdapterFactory';
+export * from './identity/storage/StorageAdapterFactory';
+
+// Identity
+export * from './identity/IdentityProviderFactory';
+export * from './identity/IdentityProviderHttpHandler';
+
 // Init
 export * from './init/AclInitializer';
 export * from './init/CliRunner';
@@ -98,49 +144,6 @@ export * from './ldp/representation/ResourceIdentifier';
 // LDP
 export * from './ldp/AuthenticatedLdpHandler';
 export * from './ldp/UnsecureWebSocketsProtocol';
-
-// SolidIdentityProvider
-export * from './identity/interaction/IdpInteractionHttpHandler';
-export * from './identity/interaction/IdpInteractionPolicy';
-export * from './identity/configuration/IdpConfigurationGenerator';
-export * from './identity/IdentityProviderFactory';
-export * from './identity/IdentityProviderHttpHandler';
-
-// SolidIdentityProvider/Configurations
-export * from './identity/configuration/KeyGeneratingIdpConfigurationGenerator';
-
-// SolidIdentityProvider/Storage
-export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';
-export * from './identity/storage/ExpiringStorageAdapterFactory';
-export * from './identity/storage/StorageAdapterFactory';
-
-// SolidIdentityProvider/InteractionPolicies/Util
-export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';
-export * from './identity/interaction/util/ChooseInitialInteractionHandler';
-export * from './identity/interaction/util/IdpRenderHandler';
-export * from './identity/interaction/util/OidcInteractionCompleter';
-export * from './identity/interaction/util/WebIdOwnershipValidator';
-export * from './identity/interaction/util/FormDataUtil';
-export * from './identity/interaction/util/EjsTemplateRenderer';
-export * from './identity/interaction/util/EmailSender';
-export * from './identity/interaction/util/TemplateRenderer';
-export * from './identity/interaction/util/IdpInteractionError';
-export * from './identity/interaction/util/IdpRouteController';
-
-// SolidIdentityProvider/InteractionPolicies/EmailPassword
-export * from './identity/interaction/email-password/EmailPasswordInteractionPolicy';
-
-// SolidIdentityProvider/InteractionPolicies/Handler
-export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordRegistrationHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordGetResetPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';
-
-// SolidIdentityProvider/InteractionPolicies/Storage
-export * from './identity/interaction/email-password/storage/EmailPasswordStore';
-export * from './identity/interaction/email-password/storage/KeyValueEmailPasswordStore';
 
 // Logging
 export * from './logging/LazyLogger';
