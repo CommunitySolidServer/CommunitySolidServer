@@ -44,12 +44,11 @@ Community Solid Server uses [ComponentJS](https://componentsjs.readthedocs.io/en
 | Parameter | Default | Description |
 | --------- | ------- | ----------- |
 | `--port, -p` | `3000` | |
-| `--baseUrl. -b` | `"http:localhost:$PORT"` | |
+| `--baseUrl. -b` | `"http://localhost:$PORT/"` | |
 | `--config, -c` | `"config/config-default.json"` | `config-default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config-file.json` |
-| `--mainModulePath, -m` | | Configures ComponentJS |
-| `--globalModules, -g` | | Configures ComponentJS |
+| `--mainModulePath, -m` | | Absolute path to the package root from which ComponentJS module resolution should start. |
 | `--loggingLevel, -l` | `"info"`| |
-| `--podTemplateFolder, -t` | `"templates"` | |
+| `--podTemplateFolder, -t` | `"templates/pod"` | |
 | `--rootFilePath, -f` | `"./"` | |
 | `--sparqlEndpoint, -s` | | |
 
