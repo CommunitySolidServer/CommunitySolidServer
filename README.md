@@ -41,12 +41,12 @@ the [📐 architectural
 diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
 can help you find your way. The organization and structure of the classes and
 components in the [src folder](/src) is designed to align with this
-architectural diagram to the extent possible (i.e. the [ldp folder](/src/ldp)
+architectural diagram to the extent possible (i.e. the [ldp folder](src/ldp)
 should contain all the components from the `ldp` section of the diagram.
 
 If you are interested in helping out with the development of this server, be
 sure to have a look at the [📓 developer
-notes](https://github.com/solid/community-server/wiki/Notes-for-developers) and
+notes](documentation/Notes-for-developers.md) and
 [🛠️ good first
 issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
