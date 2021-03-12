@@ -4,7 +4,7 @@ import { JWK } from 'node-jose';
 import type { Adapter, Configuration } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import type { KeyValueStore } from '../storage/KeyValueStore';
+import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
 import { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 
@@ -15,18 +15,18 @@ import { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGenerator {
   private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
-  private readonly store: KeyValueStore;
+  private readonly storage: KeyValueStorage<ResourceIdentifier, any>;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     storageAdapterFactory: StorageAdapterFactory,
     baseUrl: string,
-    store: KeyValueStore,
+    storage: KeyValueStorage<ResourceIdentifier, any>,
   ) {
     super();
     this.storageAdapterFactory = storageAdapterFactory;
     this.baseUrl = baseUrl;
-    this.store = store;
+    this.storage = storage;
   }
 
   private getJwksKey(): ResourceIdentifier {
@@ -36,7 +36,7 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
   // There is a typing difficulty with JSONWebKeySet, thus the "any"
   private async generateJwks(): Promise<any> {
     // Check to see if the keys are already saved
-    const jwks = await this.store.get(this.getJwksKey());
+    const jwks = await this.storage.get(this.getJwksKey());
     if (jwks) {
       return jwks;
     }
@@ -44,7 +44,7 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
     const keystore = JWK.createKeyStore();
     await keystore.generate('RSA');
     const newJwks = keystore.toJSON(true);
-    await this.store.set(this.getJwksKey(), newJwks);
+    await this.storage.set(this.getJwksKey(), newJwks);
     return newJwks;
   }
 
@@ -54,13 +54,13 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
 
   private async generateCookieKeys(): Promise<string[]> {
     // Check to see if the keys are already saved
-    const cookieSecret = await this.store.get(this.getCookieSecretKey());
+    const cookieSecret = await this.storage.get(this.getCookieSecretKey());
     if (Array.isArray(cookieSecret)) {
       return cookieSecret;
     }
     // If they are not, generate and save them
     const newCookieSecret = [ randomBytes(64).toString('hex') ];
-    await this.store.set(this.getCookieSecretKey(), newCookieSecret);
+    await this.storage.set(this.getCookieSecretKey(), newCookieSecret);
     return newCookieSecret;
   }
 
