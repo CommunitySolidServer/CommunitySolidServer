@@ -18,28 +18,46 @@ trying out new ideas on the server side
 and thereby shape the future of Solid.
 
 ## Current status
-This server is in beta stage,
-which means you can start using it for developing and testing apps.
-Your feedback is most welcome
-as [issues on this repository](https://github.com/solid/community-server/issues/new).
+This server is in beta stage, which means you can start using it for developing
+and testing apps, with some limitations:
+- User account / pod creation is not yet supported fully, and you must rely on
+  an external identity provider to log you in and authenticate your WebID.
+  [solid/node-solid-server](https"//github.com/solid/node-solid-server) or any
+  other pod provider can serve this purpose, and all you need to do is pass in
+  an external WebID when creating pods. More information on creating pods can be
+  found under [Interacting with the server](#interacting-with-the-server).
+- The spec is still under active development, and as such some features (like
+  `trustedApps`) are not yet implemented because they are likely to change. If
+  your users rely on this functionality, migrating is not yet recommended.
 
-However, you can already boot up the server,
-play around with it,
-and check how it is made.
-<br>
-The [📗 API documentation](https://solid.github.io/community-server/docs/)
-and the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
-can help you find your way.
+Your feedback is most welcome as [issues on this
+repository](https://github.com/solid/community-server/issues/new).
 
-If you are interested in helping out with the development of this server,
-be sure to have a look at the [📓 developer notes](https://github.com/solid/community-server/wiki/Notes-for-developers)
-and [🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+However, you can already boot up the server, play around with it, and check how
+it is made.
+
+The [📗 API documentation](https://solid.github.io/community-server/docs/) and
+the [📐 architectural
+diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
+can help you find your way. The organization and structure of the classes and
+components in the [src folder](/src) is designed to align with this
+architectural diagram to the extent possible (i.e. the [ldp folder](/src/ldp)
+should contain all the components from the `ldp` section of the diagram.
+
+If you are interested in helping out with the development of this server, be
+sure to have a look at the [📓 developer
+notes](https://github.com/solid/community-server/wiki/Notes-for-developers) and
+[🛠️ good first
+issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 ## Running the server
 
 ### Configuring the server
 
-Community Solid Server uses [ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all configuration for the server. There are a variety of configuration files for common use cases in the `config` folder.
+Community Solid Server uses
+[ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all
+configuration for the server. There are a variety of configuration files for
+common use cases in the `config` folder.
 
 | Parameter | Default | Description |
 | --------- | ------- | ----------- |
@@ -60,11 +78,24 @@ $ npm start [-- ARGS]
 ```
 
 ## Interacting with the server
+CSS is still under active development, and as such the easiest and fastest way
+to understand what functionality is supported is to read the integration tests.
+This section is only inteded as a high level summary of what's supported.
 
-The server supports low-level interaction via HTTP methods,
-such as `GET`, `PUT`, `HEAD`, ...
+The server supports low-level interaction via HTTP methods, such as `GET`,
+`PUT`, `HEAD`, ...
 
-Below, we provide several examples on how to interact with the server using `curl`.
+Below, we provide several examples on how to interact with the server using
+`curl`.
+
+### `POST`: Creating a new pod
+
+Create a pod using an external WebID for authentication:
+```shell
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"login": "timbl", "webId": "http://timbl.inrupt.net/profile/card#me"}' \
+  http://localhost:3000/pods
+```
 
 ### `PUT`: Creating resources for a given URL
 
