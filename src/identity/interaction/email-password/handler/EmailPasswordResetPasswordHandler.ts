@@ -3,7 +3,9 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { RenderHandler } from '../../../../server/util/RenderHandler';
+import { isNativeError } from '../../../../util/errors/ErrorUtil';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
+import { assertPassword } from '../EmailPasswordUtil';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordResetPasswordRenderHandler';
 
@@ -44,14 +46,7 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
         'Invalid request. Open the link from your email again',
       );
       prefilledRecordId = recordId;
-      assert(
-        password &&
-          typeof password === 'string' &&
-          confirmPassword &&
-          typeof confirmPassword === 'string',
-        'Password and password confirmation must be provided',
-      );
-      assert(password === confirmPassword, 'Passwords do not match');
+      assertPassword(password, confirmPassword);
 
       // Reset password
       const email = await this.emailPasswordStorageAdapter.getForgotPasswordRecord(
@@ -71,8 +66,7 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
         },
       });
     } catch (err: unknown) {
-      const errorMessage: string =
-        err instanceof Error ? err.message : 'An unknown error occurred';
+      const errorMessage: string = isNativeError(err) ? err.message : 'An unknown error occurred';
       await this.renderHandler.handle({
         response: input.response,
         props: {

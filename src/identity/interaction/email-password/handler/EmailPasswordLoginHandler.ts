@@ -1,10 +1,9 @@
 import assert from 'assert';
-import { HttpError } from '../../../../util/errors/HttpError';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import { IdpInteractionError } from '../../util/IdpInteractionError';
 import type { OidcInteractionCompleter } from '../../util/OidcInteractionCompleter';
+import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordLoginHandlerArgs {
@@ -56,16 +55,7 @@ export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
         shouldRemember,
       });
     } catch (err: unknown) {
-      const prefilled = {
-        email: prefilledEmail,
-      };
-      if (err instanceof HttpError) {
-        throw new IdpInteractionError(err.statusCode, err.message, prefilled);
-      } else if (err instanceof Error) {
-        throw new IdpInteractionError(500, err.message, prefilled);
-      } else {
-        throw new IdpInteractionError(500, 'Unknown Error', prefilled);
-      }
+      throwIdpInteractionError(err, { email: prefilledEmail });
     }
   }
 }
