@@ -39,7 +39,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
     };
 
     // Need to make sure the temp folder exists so the podConfigJson can be written to it
-    mkdirSync(rootFilePath);
+    mkdirSync(rootFilePath, { recursive: true });
 
     // Create and initialize the HTTP handler and related components
     const instances = await instantiateFromConfig(
