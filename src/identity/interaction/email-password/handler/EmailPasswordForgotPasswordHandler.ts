@@ -1,15 +1,14 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
-import { HttpError } from '../../../../util/errors/HttpError';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import { IdpInteractionError } from '../../util/IdpInteractionError';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import type { TemplateRenderer } from '../../util/TemplateRenderer';
+import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { EmailPasswordStore } from '../storage/EmailPasswordStore';
 
 export interface EmailPasswordForgotPasswordHandlerArgs {
@@ -96,14 +95,7 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
 
       await this.sendResponse(input, interactionDetails, email);
     } catch (err: unknown) {
-      const prefilled = {};
-      if (err instanceof HttpError) {
-        throw new IdpInteractionError(err.statusCode, err.message, prefilled);
-      } else if (err instanceof Error) {
-        throw new IdpInteractionError(500, err.message, prefilled);
-      } else {
-        throw new IdpInteractionError(500, 'Unknown Error', prefilled);
-      }
+      throwIdpInteractionError(err, {});
     }
   }
 }
