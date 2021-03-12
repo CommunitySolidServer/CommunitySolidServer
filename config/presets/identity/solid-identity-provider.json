@@ -2,18 +2,25 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
+      "@id": "urn:solid-server:default:IdpStorage",
+      "@type": "JsonResourceStorage",
+      "JsonResourceStorage:_source": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      }
+    },
+    {
       "@id": "urn:solid-server:default:IdpStorageAdapterFactory",
       "@type": "ClientWebIdFetchingStorageAdapterFactory",
       "ClientWebIdFetchingStorageAdapterFactory:_wrappedAdapterFactory": {
-        "@type": "ResourceStoreStorageAdapterFactory",
-        "ResourceStoreStorageAdapterFactory:_args_baseUrl": {
+        "@type": "ExpiringStorageAdapterFactory",
+        "ExpiringStorageAdapterFactory:_args_baseUrl": {
           "@id": "urn:solid-server:default:variable:baseUrl"
         },
-        "ResourceStoreStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
-        "ResourceStoreStorageAdapterFactory:_args_store": {
-          "@type": "PassthroughKeyValueStore",
-          "PassthroughKeyValueStore:_store": {
-            "@id": "urn:solid-server:default:ResourceStore"
+        "ExpiringStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
+        "ExpiringStorageAdapterFactory:_args_storage": {
+          "@type": "WrappedExpiringStorage",
+          "WrappedExpiringStorage:_source": {
+            "@id": "urn:solid-server:default:IdpStorage"
           }
         }
       }
@@ -27,11 +34,8 @@
       "KeyGeneratingIdpConfigurationGenerator:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "KeyGeneratingIdpConfigurationGenerator:_store": {
-        "@type": "PassthroughKeyValueStore",
-        "PassthroughKeyValueStore:_store": {
-          "@id": "urn:solid-server:default:ResourceStore"
-        }
+      "KeyGeneratingIdpConfigurationGenerator:_storage": {
+        "@id": "urn:solid-server:default:IdpStorage"
       }
     },
     {
