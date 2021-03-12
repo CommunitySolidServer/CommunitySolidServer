@@ -112,8 +112,6 @@ export * from './identity/configuration/KeyGeneratingIdpConfigurationGenerator';
 // SolidIdentityProvider/Storage
 export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';
 export * from './identity/storage/ExpiringStorageAdapterFactory';
-export * from './identity/storage/KeyValueStore';
-export * from './identity/storage/PassthroughKeyValueStore';
 export * from './identity/storage/StorageAdapterFactory';
 
 // SolidIdentityProvider/InteractionPolicies/Util
