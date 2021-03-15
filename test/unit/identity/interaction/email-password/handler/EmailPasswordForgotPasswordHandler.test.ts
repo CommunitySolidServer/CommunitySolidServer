@@ -1,4 +1,3 @@
-import { stringify } from 'querystring';
 import type { Provider } from 'oidc-provider';
 import {
   EmailPasswordForgotPasswordHandler,
@@ -11,13 +10,7 @@ import type { IdpRenderHandler } from '../../../../../../src/identity/interactio
 import type { TemplateRenderer } from '../../../../../../src/identity/interaction/util/TemplateRenderer';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import { guardedStreamFrom } from '../../../../../../src/util/StreamUtil';
-
-function createRequest(data: NodeJS.Dict<any>): HttpRequest {
-  const request = guardedStreamFrom(stringify(data)) as HttpRequest;
-  request.headers = { 'content-type': 'application/x-www-form-urlencoded' };
-  return request;
-}
+import { createRequest } from './Util';
 
 describe('EmailPasswordForgotPasswordHandler', (): void => {
   let request: HttpRequest;
