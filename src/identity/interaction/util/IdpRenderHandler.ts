@@ -1,6 +1,6 @@
 import { RenderHandler } from '../../../server/util/RenderHandler';
 
-export interface IdpRenderhandlerProps {
+export interface IdpRenderHandlerProps {
   details: {
     uid: string;
   };
@@ -11,4 +11,4 @@ export interface IdpRenderhandlerProps {
 /**
  * A special Render Handler that renders an Idp form
  */
-export abstract class IdpRenderHandler extends RenderHandler<IdpRenderhandlerProps> {}
+export abstract class IdpRenderHandler extends RenderHandler<IdpRenderHandlerProps> {}
