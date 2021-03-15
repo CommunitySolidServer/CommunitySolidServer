@@ -1,4 +1,5 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
 
 <>
     a foaf:PersonalProfileDocument;
@@ -7,4 +8,6 @@
 
 <{{webId}}>
     a foaf:Person;
-    foaf:name "{{name}}".
+    foaf:name "{{name}}";
+    solid:oidcIssuer <{{oidcIssuer}}> ;
+    solid:oidcIssuerRegistrationToken "{{oidcIssuerRegistrationToken}}" .
