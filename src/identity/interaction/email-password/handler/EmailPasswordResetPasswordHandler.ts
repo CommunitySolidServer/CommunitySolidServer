@@ -11,7 +11,7 @@ import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordRes
 
 export interface EmailPasswordResetPasswordHandlerArgs {
   emailPasswordStorageAdapter: EmailPasswordStore;
-  renderHandler: RenderHandler<{ errorMessage: string }>;
+  renderHandler: EmailPasswordResetPasswordRenderHandler;
   messageRenderHandler: RenderHandler<{ message: string }>;
 }
 
@@ -49,17 +49,13 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
       assertPassword(password, confirmPassword);
 
       // Reset password
-      const email = await this.emailPasswordStorageAdapter.getForgotPasswordRecord(
-        recordId,
-      );
+      const email = await this.emailPasswordStorageAdapter.getForgotPasswordRecord(recordId);
       assert(email, 'This reset password link is no longer valid.');
-      await this.emailPasswordStorageAdapter.deleteForgotPasswordRecord(
-        recordId,
-      );
+      await this.emailPasswordStorageAdapter.deleteForgotPasswordRecord(recordId);
 
       await this.emailPasswordStorageAdapter.changePassword(email, password);
 
-      await this.messageRenderHandler.handle({
+      await this.messageRenderHandler.handleSafe({
         response: input.response,
         props: {
           message: 'Your password was successfully reset.',
@@ -67,7 +63,7 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
       });
     } catch (err: unknown) {
       const errorMessage: string = isNativeError(err) ? err.message : 'An unknown error occurred';
-      await this.renderHandler.handle({
+      await this.renderHandler.handleSafe({
         response: input.response,
         props: {
           errorMessage,
