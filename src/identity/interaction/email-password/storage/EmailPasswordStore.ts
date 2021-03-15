@@ -30,7 +30,7 @@ export abstract class EmailPasswordStore {
   abstract deleteAccount(email: string): Promise<void>;
   /**
    * Creates a Forgot Password Confirmation Record. This will be to remember that
-   * a user has made a request to reset a password. Throws and error if the email doesn't
+   * a user has made a request to reset a password. Throws an error if the email doesn't
    * exist
    * @param email - the user's email
    * @returns the record id. This should be included in the reset password link
