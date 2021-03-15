@@ -28,12 +28,10 @@ export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
   public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     let prefilledEmail = '';
     try {
-      const { email, password, remember } = await getFormDataRequestBody(
-        input.request,
-      );
+      const { email, password, remember } = await getFormDataRequestBody(input.request);
 
       // Qualify email
-      assert(email && typeof email === 'string', 'EmailRequired');
+      assert(email && typeof email === 'string', 'Email required');
       prefilledEmail = email;
 
       // Qualify password
@@ -43,17 +41,10 @@ export class EmailPasswordLoginHandler extends IdpInteractionHttpHandler {
       const shouldRemember = Boolean(remember);
 
       // Perform registration
-      const webId = await this.emailPasswordStorageAdapter.authenticate(
-        email,
-        password,
-      );
+      const webId = await this.emailPasswordStorageAdapter.authenticate(email, password);
 
       // Complete the interaction interaction
-      await this.oidcInteractionCompleter.handle({
-        ...input,
-        webId,
-        shouldRemember,
-      });
+      await this.oidcInteractionCompleter.handleSafe({ ...input, webId, shouldRemember });
     } catch (err: unknown) {
       throwIdpInteractionError(err, { email: prefilledEmail });
     }
