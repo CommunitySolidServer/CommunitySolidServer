@@ -64,7 +64,7 @@ export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler 
       await this.emailPasswordStorageAdapter.create(email, webId, password);
 
       // Complete the interaction interaction
-      await this.oidcInteractionCompleter.handle({
+      await this.oidcInteractionCompleter.handleSafe({
         ...input,
         webId,
         shouldRemember,

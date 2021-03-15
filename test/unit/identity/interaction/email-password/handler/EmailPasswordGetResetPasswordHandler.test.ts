@@ -7,7 +7,7 @@ import type {
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 
-describe('EmailPasswordGetResetPasswordHandler', (): void => {
+describe('An EmailPasswordGetResetPasswordHandler', (): void => {
   let request: HttpRequest;
   const response: HttpResponse = 'response!' as any;
   let renderHandler: EmailPasswordResetPasswordRenderHandler;

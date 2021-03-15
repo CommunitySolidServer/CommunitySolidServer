@@ -60,10 +60,7 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
   }
 
   public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(
-      input.request,
-      input.response,
-    );
+    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     try {
       // Validate incoming data
       const { email } = await getFormDataRequestBody(input.request);

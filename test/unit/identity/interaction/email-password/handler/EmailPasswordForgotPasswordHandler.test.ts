@@ -12,7 +12,7 @@ import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 import { createRequest } from './Util';
 
-describe('EmailPasswordForgotPasswordHandler', (): void => {
+describe('An EmailPasswordForgotPasswordHandler', (): void => {
   let request: HttpRequest;
   const response: HttpResponse = 'response!' as any;
   const renderParams = { response, props: { details: 'details!', errorMessage: '', prefilled: { email: 'email!' }}};

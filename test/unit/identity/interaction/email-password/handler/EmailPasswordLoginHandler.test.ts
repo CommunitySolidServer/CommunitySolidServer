@@ -12,7 +12,7 @@ import type {
 } from '../../../../../../src/identity/interaction/util/OidcInteractionCompleter';
 import { createRequest } from './Util';
 
-describe('EmailPasswordLoginHandler', (): void => {
+describe('An EmailPasswordLoginHandler', (): void => {
   let input: IdpInteractionHttpHandlerInput;
   let emailPasswordStorageAdapter: EmailPasswordStore;
   let oidcInteractionCompleter: OidcInteractionCompleter;
