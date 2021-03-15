@@ -1,9 +1,7 @@
 import assert from 'assert';
 import { parse } from 'url';
-import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
-import type { RenderHandler } from '../../../../server/util/RenderHandler';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordResetPasswordRenderHandler';
 
@@ -12,30 +10,23 @@ import type { EmailPasswordResetPasswordRenderHandler } from './EmailPasswordRes
  * the user clicks on it from the link provided in the email.
  */
 export class EmailPasswordGetResetPasswordHandler extends HttpHandler {
-  private readonly renderHandler: RenderHandler<{
-    errorMessage: string;
-    recordId: string;
-  }>;
+  private readonly renderHandler: EmailPasswordResetPasswordRenderHandler;
 
-  private readonly logger = getLoggerFor(this);
-
-  public constructor(
-    renderHandler: EmailPasswordResetPasswordRenderHandler,
-  ) {
+  public constructor(renderHandler: EmailPasswordResetPasswordRenderHandler) {
     super();
     this.renderHandler = renderHandler;
   }
 
-  public async handle(input: HttpHandlerInput): Promise<void> {
+  public async handle({ request, response }: HttpHandlerInput): Promise<void> {
     try {
-      assert(input.request.url, 'The request must have a url');
-      const recordId = parse(input.request.url, true).query.rid;
+      assert(request.url, 'The request must have a url');
+      const recordId = parse(request.url, true).query.rid;
       assert(
         recordId && typeof recordId === 'string',
         'A forgot password record id must be provided. Use the link from your email.',
       );
-      await this.renderHandler.handle({
-        response: input.response,
+      await this.renderHandler.handleSafe({
+        response,
         props: { errorMessage: '', recordId },
       });
     } catch (error: unknown) {
