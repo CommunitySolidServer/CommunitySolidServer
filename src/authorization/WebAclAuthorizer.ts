@@ -192,15 +192,12 @@ export class WebAclAuthorizer extends Authorizer {
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
-      const [ direct, recursive ] = await Promise.all([
-        this.filterData(data, ACL.accessTo, target.path),
-        this.filterData(data, ACL.default, id.path),
-      ]);
+      const paths: [ predicate: string, object: string ][] = [
+        [ ACL.accessTo, target.path ],
+        [ ACL.default, id.path ],
+      ];
 
-      return new Store([
-        ...direct.getQuads(null, null, null, null),
-        ...recursive.getQuads(null, null, null, null),
-      ]);
+      return this.filterData(data, paths);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
@@ -234,17 +231,24 @@ export class WebAclAuthorizer extends Authorizer {
    *
    * @returns A store containing the relevant triples.
    */
-  private async filterData(data: Representation, predicate: string, object: string): Promise<Store> {
+  private async filterData(
+    data: Representation,
+    predicateObjectList: [
+      predicate: string,
+      object: string,
+    ][],
+  ): Promise<Store> {
     const store = new Store();
     const importEmitter = store.import(data.data);
     await new Promise((resolve, reject): void => {
       importEmitter.on('end', resolve);
       importEmitter.on('error', reject);
     });
+    const access = predicateObjectList
+      .flatMap(([ predicate, object ]): Quad[] => store.getQuads(null, predicate, object, null))
+      .map((quad: Quad): Term => quad.subject)
+      .flatMap((subject: Term): Quad[] => store.getQuads(subject, null, null, null));
 
-    const auths = store.getQuads(null, predicate, object, null).map((quad: Quad): Term => quad.subject);
-    const newStore = new Store();
-    auths.forEach((subject): any => newStore.addQuads(store.getQuads(subject, null, null, null)));
-    return newStore;
+    return new Store<Quad, Quad>(access);
   }
 }
