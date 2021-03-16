@@ -192,21 +192,15 @@ export class WebAclAuthorizer extends Authorizer {
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
-      const paths: [ predicate: string, object: string ][] = [
-        [ ACL.accessTo, target.path ],
-        [ ACL.default, id.path ],
-      ];
-
-      return this.filterData(data, paths);
+      return this.getAclTriples(data, id, target);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
       } else {
-        this.logger.error(`Error reading ACL for ${target.path}: ${(error as Error).message}`, { error });
+        this.logger.error(`Error reading ACL for ${id.path}: ${(error as Error).message}`, { error });
         throw error;
       }
     }
-
     this.logger.debug(`Traversing to the parent of ${id.path}`);
     if (this.identifierStrategy.isRootContainer(id)) {
       this.logger.error(`No ACL document found for root container ${id.path}`);
@@ -219,7 +213,7 @@ export class WebAclAuthorizer extends Authorizer {
   }
 
   /**
-   * Finds all triples in the data stream of the given representation that use the given predicate and object.
+   * Finds all ACL triples for a given recursion step in the data stream of the given representation.
    * Then extracts the unique subjects from those triples,
    * and returns a Store containing all triples from the data stream that have such a subject.
    *
@@ -231,24 +225,33 @@ export class WebAclAuthorizer extends Authorizer {
    *
    * @returns A store containing the relevant triples.
    */
-  private async filterData(
+  private async getAclTriples(
     data: Representation,
-    predicateObjectList: [
-      predicate: string,
-      object: string,
-    ][],
+    id: ResourceIdentifier,
+    originalId: ResourceIdentifier,
   ): Promise<Store> {
+    const store = await this.importRepresentationStore(data);
+    const access = store.getQuads(null, ACL.accessTo, originalId.path, null)
+      .concat(id !== originalId ? store.getQuads(null, ACL.default, id.path, null) : [])
+      .map((quad: Quad): Term => quad.subject)
+      .flatMap((subject: Term): Quad[] => store.getQuads(subject, null, null, null));
+    return new Store<Quad, Quad>(access);
+  }
+
+  /**
+   * Imports all triples of a data stream in a store.
+   *
+   * @param data - Representation with data stream of internal/quads.
+   *
+   * @returns A store containing the relevant triples.
+   */
+  private async importRepresentationStore(data: Representation): Promise<Store> {
     const store = new Store();
     const importEmitter = store.import(data.data);
     await new Promise((resolve, reject): void => {
       importEmitter.on('end', resolve);
       importEmitter.on('error', reject);
     });
-    const access = predicateObjectList
-      .flatMap(([ predicate, object ]): Quad[] => store.getQuads(null, predicate, object, null))
-      .map((quad: Quad): Term => quad.subject)
-      .flatMap((subject: Term): Quad[] => store.getQuads(subject, null, null, null));
-
-    return new Store<Quad, Quad>(access);
+    return store;
   }
 }

@@ -81,6 +81,18 @@ describe('A WebAclAuthorizer', (): void => {
     await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
+  it('errors on access to a directory on which only default access is set.', async(): Promise<void> => {
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      quad(nn('auth'), nn(`${acl}default`), nn(identifier.path)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
+    ]) } as Representation);
+    Object.assign(authorization.everyone, { read: true, write: true, append: true });
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(UnauthorizedHttpError);
+  });
+
   it('allows access if there is a parent acl file allowing all agents default access.', async(): Promise<void> => {
     store.getRepresentation = async(id: ResourceIdentifier): Promise<Representation> => {
       if (id.path.endsWith('foo.acl')) {
