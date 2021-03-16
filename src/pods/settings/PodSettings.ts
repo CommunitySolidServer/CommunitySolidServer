@@ -25,4 +25,12 @@ export interface PodSettings extends NodeJS.Dict<string> {
    * E-mail of the owner. Used in provisioning templates.
    */
   email?: string;
+  /**
+   * The OIDC issuer of the owner's WebId.
+   */
+  oidcIssuer?: string;
+  /**
+   * A registration token for linking the owner's WebId to an IdP.
+   */
+  oidcIssuerRegistrationToken?: string;
 }

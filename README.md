@@ -35,6 +35,8 @@ If you are interested in helping out with the development of this server,
 be sure to have a look at the [📓 developer notes](https://github.com/solid/community-server/wiki/Notes-for-developers)
 and [🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
+Additional recipes for configuring and deploying the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
+
 ## Running locally
 
 ```shell
