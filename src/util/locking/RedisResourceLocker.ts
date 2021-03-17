@@ -153,6 +153,6 @@ export class RedisResourceLocker implements ResourceLocker {
           this.logger.debug(`Failed to extend this (Redis)lock for resource: ${lock.resource}, ${error}`);
         }
       }
-    }, 900);
+    }, ttl / 2);
   }
 }
