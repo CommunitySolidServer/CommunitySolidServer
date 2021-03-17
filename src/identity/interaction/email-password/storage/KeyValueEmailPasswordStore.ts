@@ -28,7 +28,7 @@ export type EmailPasswordData = EmailPasswordAccountPayload | EmailPasswordForgo
 
 export interface ResourceStoreEmailPasswordStoreArgs {
   baseUrl: string;
-  storagePathname: string;
+  storagePathName: string;
   storage: KeyValueStorage<ResourceIdentifier, EmailPasswordData>;
   saltRounds: number;
 }
@@ -44,19 +44,26 @@ export class KeyValueEmailPasswordStore extends EmailPasswordStore {
 
   public constructor(args: ResourceStoreEmailPasswordStoreArgs) {
     super();
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${
-      args.storagePathname
-    }`;
+    if (!args.storagePathName.startsWith('/')) {
+      throw new Error('storagePathName should start with a slash.');
+    }
+    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathName}`;
     this.storage = args.storage;
     this.saltRounds = args.saltRounds;
   }
 
-  private getAccountResourceIdentifier(key: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/account/${encodeURIComponent(key)}` };
+  /**
+   * Generates a ResourceIdentifier to store data for the given email.
+   */
+  private getAccountResourceIdentifier(email: string): ResourceIdentifier {
+    return { path: `${this.baseUrl}/account/${encodeURIComponent(email)}` };
   }
 
-  private getForgotPasswordRecordResourceIdentifier(key: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/forgot-password-resource-identifier/${encodeURIComponent(key)}` };
+  /**
+   * Generates a ResourceIdentifier to store data for the given recordId.
+   */
+  private getForgotPasswordRecordResourceIdentifier(recordId: string): ResourceIdentifier {
+    return { path: `${this.baseUrl}/forgot-password-resource-identifier/${encodeURIComponent(recordId)}` };
   }
 
   /**
