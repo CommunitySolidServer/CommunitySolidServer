@@ -204,3 +204,26 @@ Common usage:
   ```shell
   docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
   ```
+
+## Using the identity provider
+
+1. First launch the Community Solid Server (see [Running locally](#running-locally)).
+2. To use the identity provider, you need a compatible client application.
+
+    You can use for example `@inrupt/solid-client-authn-js`:
+
+    ```bash
+    git clone https://github.com/inrupt/solid-client-authn-js
+    cd solid-client-authn-js
+    npm ci
+    cd packages/node/example/demoClientApp/
+    npm run start
+    ```
+
+    Go to `http://localhost:3001`.
+3. Use the base URL of your running CSS instance to as Identity provider, for
+   example `http://localhost:3000`, to fill the form. Click the `login` button.
+4. Follow the instructions to register/login/...
+5. Once logged in, you get redirected to your client app, running for example on
+   `http://localhost:3001/`.
+6. You're now authenticated and can fetch public and private resources.
