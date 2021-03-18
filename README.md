@@ -245,7 +245,7 @@ Common usage:
 
     When registering, follow the on screen instructions and add the OIDC issuer
     registration token to your WebID, which you can do for example by PATCHing
-    `./profile/card$.ttl` with:
+    `http://localhost:3000/profile/card` with:
     ```turtle
     PREFIX : <#>
     PREFIX solid: <http://www.w3.org/ns/solid/terms#>
