@@ -217,6 +217,7 @@ Common usage:
     cd solid-client-authn-js
     npm ci
     cd packages/node/example/demoClientApp/
+    npm ci
     npm run start
     ```
 
@@ -224,6 +225,17 @@ Common usage:
 3. Use the base URL of your running CSS instance to as Identity provider, for
    example `http://localhost:3000`, to fill the form. Click the `login` button.
 4. Follow the instructions to register/login/...
+
+    A default WebID hosted in your pod running locally at
+    `http://localhost:3000/profile/card#me` could look like:
+    ```turtle
+    prefix : <#>
+    prefix solid: <http://www.w3.org/ns/solid/terms#>
+
+    :me
+      solid:oidcIssuer <http://localhost:3000/> ;
+      solid:oidcIssuerRegistrationToken "REGISTRATION_TOKEN_INDICATED_BY_THE_PROVIDER_REGISTRATION" .
+    ```
 5. Once logged in, you get redirected to your client app, running for example on
    `http://localhost:3001/`.
 6. You're now authenticated and can fetch public and private resources.
