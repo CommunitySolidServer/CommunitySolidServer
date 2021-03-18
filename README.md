@@ -243,7 +243,7 @@ Common usage:
     :me solid:oidcIssuer <http://localhost:3000/> .
     ```
 
-    If registering, follow the on scree instructions and add the OIDC issuer
+    When registering, follow the on screen instructions and add the OIDC issuer
     registration token to your WebID, which you can do for example by PATCHing
     `./profile/card$.ttl` with:
     ```turtle
