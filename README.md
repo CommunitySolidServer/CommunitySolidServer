@@ -207,13 +207,12 @@ Common usage:
 
 ## Using the identity provider
 
-1. Launch the Community Solid Server, for example in file server mode:
+1. Launch the Community Solid Server:
     ```bash
     git clone git@github.com:solid/community-server.git
     cd community-server
-    mkdir data
     npm ci
-    npm run start -- -c config/config-file.json -f ./data
+    npm start
     ```
 2. To use the identity provider, you need a compatible client application.
 
@@ -225,7 +224,7 @@ Common usage:
     npm ci
     cd packages/node/example/demoClientApp/
     npm ci
-    npm run start
+    npm start
     ```
 
     Go to `http://localhost:3001`.
@@ -235,19 +234,25 @@ Common usage:
 
     A WebID hosted in your pod will be required to complete registration.
     
-    In your community server running with a file backend as described in step 1,
-    you could create `./data/profile/card$.ttl` with the following content:
+    In your running community server, you could create `./profile/card$.ttl`
+    with the following content:
     ```turtle
     prefix : <#>
     prefix solid: <http://www.w3.org/ns/solid/terms#>
 
-    :me
-      solid:oidcIssuer <http://localhost:3000/> ;
-      solid:oidcIssuerRegistrationToken "TOKEN_GIVEN_DURING_REGISTRATION_PROCESS" .
+    :me solid:oidcIssuer <http://localhost:3000/> .
     ```
 
-    Follow the registration instruction replacing TOKEN_GIVEN_DURING_REGISTRATION_PROCESS
-    with the actual token provided on screen during registration.
+    If registering, follow the on scree instructions and add the OIDC issuer
+    registration token to your WebID, which you can do for example by PATCHing
+    `./profile/card$.ttl` with:
+    ```turtle
+    PREFIX : <#>
+    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+    INSERT DATA {
+      :me solid:oidcIssuerRegistrationToken "IDP_TOKEN" .
+    }
+    ```
 5. Once logged in, you get redirected to your client app, running for example on
    `http://localhost:3001/`.
 6. You're now authenticated and can fetch public and private resources.
