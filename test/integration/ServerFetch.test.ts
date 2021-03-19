@@ -20,6 +20,7 @@ describe('A Solid server', (): void => {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
+        'urn:solid-server:default:variable:webViewsFolder': '',
       },
     ) as Record<string, any>;
     ({ factory, initializer } = instances);
