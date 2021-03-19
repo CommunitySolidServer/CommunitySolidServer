@@ -1,6 +1,6 @@
 import type { TLSSocket } from 'tls';
 import type { HttpRequest } from '../../server/HttpRequest';
-import { parseForwarded } from '../../util/HeaderUtil';
+import { parseForwarded, parseXForwarded } from '../../util/HeaderUtil';
 import { toCanonicalUriPath } from '../../util/PathUtil';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
@@ -22,7 +22,7 @@ export class OriginalUrlExtractor extends TargetExtractor {
     }
 
     // Extract host and protocol (possibly overridden by the Forwarded header)
-    let { host } = headers;
+    let { host }: { host?: string } = headers;
     let protocol = (connection as TLSSocket)?.encrypted ? 'https' : 'http';
     if (headers.forwarded) {
       const forwarded = parseForwarded(headers.forwarded);
@@ -31,6 +31,15 @@ export class OriginalUrlExtractor extends TargetExtractor {
       }
       if (forwarded.proto) {
         ({ proto: protocol } = forwarded);
+      }
+    } else if (headers['x-forwarded-host'] ?? headers['x-forwarded-proto']) {
+      const xHost = headers['x-forwarded-host'] as string;
+      const xProto = headers['x-forwarded-proto'] as string;
+      if (xHost) {
+        host = parseXForwarded(xHost)[0];
+      }
+      if (xProto) {
+        protocol = parseXForwarded(xProto)[0];
       }
     }
 

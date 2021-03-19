@@ -7,6 +7,7 @@ import {
   parseAcceptEncoding,
   parseAcceptLanguage,
   parseForwarded,
+  parseXForwarded,
 } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
@@ -215,6 +216,20 @@ describe('HeaderUtil', (): void => {
       expect(parseForwarded('host=pod.example, for=192.0.2.43, host=other')).toEqual({
         host: 'pod.example',
       });
+    });
+  });
+
+  describe('#parseXForwardedPart', (): void => {
+    it('should parse an undefined value.', (): void => {
+      expect(parseXForwarded()).toEqual([ '' ]);
+    });
+
+    it('should properly handle a comma separated list of values with varying spaces.', (): void => {
+      expect(parseXForwarded('pod.example,192.0.2.60, 192.0.2.43 ')).toEqual([
+        'pod.example',
+        '192.0.2.60',
+        '192.0.2.43',
+      ]);
     });
   });
 });

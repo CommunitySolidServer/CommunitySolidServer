@@ -447,3 +447,14 @@ export function parseForwarded(value = ''): Forwarded {
   }
   return forwarded;
 }
+
+/**
+ * Parses an X-Forwarded-* header value into an array.
+ *
+ * @param value - The X-Forwarded-* header value.
+ *
+ * @returns An array of trimmed values from the header.
+ */
+export function parseXForwarded(value = ''): string[] {
+  return value.split(',').map((val): string => val.trim());
+}
