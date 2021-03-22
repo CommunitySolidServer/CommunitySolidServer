@@ -441,7 +441,7 @@ export interface Forwarded {
 }
 
 /**
- * Parses a Forwarded header value and will fallback to X-Forwarded-* headers.
+ * Parses a Forwarded header value and will fall back to X-Forwarded-* headers.
  *
  * @param headers - The incomming http headers.
  *
