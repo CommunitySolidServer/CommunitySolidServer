@@ -22,7 +22,7 @@ export class OriginalUrlExtractor extends TargetExtractor {
     }
 
     // Extract host and protocol (possibly overridden by the Forwarded/X-Forwarded-* header)
-    let { host }: { host?: string } = headers;
+    let { host } = headers;
     let protocol = (connection as TLSSocket)?.encrypted ? 'https' : 'http';
 
     // Check Forwarded/X-Forwarded-* headers

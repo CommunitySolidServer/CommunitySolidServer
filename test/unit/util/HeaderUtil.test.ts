@@ -242,7 +242,10 @@ describe('HeaderUtil', (): void => {
     });
 
     it('should proplery handle multiple values with varying spaces for X-Forwarded-*.', (): void => {
-      const headers = { 'x-forwarded-host': 'pod.example,192.0.2.60, 192.0.2.43', 'x-forwarded-proto': 'https,http' };
+      const headers = {
+        'x-forwarded-host': ' pod.example ,192.0.2.60, 192.0.2.43',
+        'x-forwarded-proto': ' https ,http',
+      };
       expect(parseForwarded(headers)).toEqual({
         host: 'pod.example',
         proto: 'https',

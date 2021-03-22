@@ -416,17 +416,6 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 }
 
 /**
- * Parses out the first value of an X-Forwarded-* header.
- *
- * @param value - The value of the X-Fowarded-* header.
- *
- * @returns The first value of the X-Fowraded-* header.
- */
-function parseXForwarded(value = ''): string {
-  return value.split(',').map((val): string => val.trim())[0];
-}
-
-/**
  * The Forwarded header from RFC7239
  */
 export interface Forwarded {
@@ -443,7 +432,7 @@ export interface Forwarded {
 /**
  * Parses a Forwarded header value and will fall back to X-Forwarded-* headers.
  *
- * @param headers - The incomming http headers.
+ * @param headers - The incoming http headers.
  *
  * @returns The parsed Forwarded header.
  */
@@ -456,14 +445,14 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
         forwarded[components[1]] = components[2];
       }
     }
-  } else if (headers['x-forwarded-host'] ?? headers['x-forwarded-proto']) {
-    const xHost = parseXForwarded(headers['x-forwarded-host'] as string);
-    const xProto = parseXForwarded(headers['x-forwarded-proto'] as string);
-    if (xHost) {
-      forwarded.host = xHost;
-    }
-    if (xProto) {
-      forwarded.proto = xProto;
+  } else {
+    const suffixes = [ 'host', 'proto' ];
+    for (const suffix of suffixes) {
+      let value = (headers[`x-forwarded-${suffix}`]) as string;
+      value = (value ?? '').trim().replace(/\s*,.*/u, '');
+      if (value) {
+        forwarded[suffix] = value;
+      }
     }
   }
   return forwarded;
