@@ -448,10 +448,9 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
   } else {
     const suffixes = [ 'host', 'proto' ];
     for (const suffix of suffixes) {
-      let value = (headers[`x-forwarded-${suffix}`]) as string;
-      value = (value ?? '').trim().replace(/\s*,.*/u, '');
+      const value = headers[`x-forwarded-${suffix}`] as string;
       if (value) {
-        forwarded[suffix] = value;
+        forwarded[suffix] = value.trim().replace(/\s*,.*/u, '');
       }
     }
   }
