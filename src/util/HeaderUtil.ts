@@ -1,3 +1,4 @@
+import type { IncomingHttpHeaders } from 'http';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
@@ -415,6 +416,17 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 }
 
 /**
+ * Parses out the first value of an X-Forwarded-* header.
+ *
+ * @param value - The value of the X-Fowarded-* header.
+ *
+ * @returns The first value of the X-Fowraded-* header.
+ */
+function parseXForwarded(value = ''): string {
+  return value.split(',').map((val): string => val.trim())[0];
+}
+
+/**
  * The Forwarded header from RFC7239
  */
 export interface Forwarded {
@@ -429,32 +441,30 @@ export interface Forwarded {
 }
 
 /**
- * Parses a Forwarded header value.
+ * Parses a Forwarded header value and will fallback to X-Forwarded-* headers.
  *
- * @param value - The Forwarded header value.
+ * @param headers - The incomming http headers.
  *
  * @returns The parsed Forwarded header.
  */
-export function parseForwarded(value = ''): Forwarded {
+export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
   const forwarded: Record<string, string> = {};
-  if (value) {
-    for (const pair of value.replace(/\s*,.*$/u, '').split(';')) {
+  if (headers.forwarded) {
+    for (const pair of headers.forwarded.replace(/\s*,.*$/u, '').split(';')) {
       const components = /^(by|for|host|proto)=(.+)$/u.exec(pair);
       if (components) {
         forwarded[components[1]] = components[2];
       }
     }
+  } else if (headers['x-forwarded-host'] ?? headers['x-forwarded-proto']) {
+    const xHost = parseXForwarded(headers['x-forwarded-host'] as string);
+    const xProto = parseXForwarded(headers['x-forwarded-proto'] as string);
+    if (xHost) {
+      forwarded.host = xHost;
+    }
+    if (xProto) {
+      forwarded.proto = xProto;
+    }
   }
   return forwarded;
-}
-
-/**
- * Parses an X-Forwarded-* header value into an array.
- *
- * @param value - The X-Forwarded-* header value.
- *
- * @returns An array of trimmed values from the header.
- */
-export function parseXForwarded(value = ''): string[] {
-  return value.split(',').map((val): string => val.trim());
 }
