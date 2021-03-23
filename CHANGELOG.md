@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.8.1"></a>
+## [v0.8.1](https://github.com/solid/community-server/compare/v0.8.0...v0.8.1) - 2021-03-23
+
+### Added
+* [feat: Fallback to X-Forwarded-* headers](https://github.com/solid/community-server/commit/de51a231e3b924de1c857b26eb85fb3b5bdef52b)
+* [feat: Added oidc validation triples to template](https://github.com/solid/community-server/commit/e2284c4c42e22cd933f77ef0b6d6a4120c902778)
+
+### Fixed
+* [fix: Make new pod profile card public](https://github.com/solid/community-server/commit/613dd5698a530bf4bd718850d8945f7300f19e58)
+* [fix: Fix issue when there are multiple values for the same CLI parameter](https://github.com/solid/community-server/commit/dd5b496f1d6b7727b034890dff6c8a43bbcd0ddc)
+
+
 <a name="v0.8.0"></a>
 ## [v0.8.0](https://github.com/solid/community-server/compare/v0.7.0...v0.8.0) - 2021-03-04
 
