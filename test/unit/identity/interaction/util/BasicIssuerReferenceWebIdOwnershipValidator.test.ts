@@ -47,18 +47,6 @@ describe('A BasicIssuerReferenceWebIdOwnershipValidator', (): void => {
     validator = new BasicIssuerReferenceWebIdOwnershipValidator(issuer);
   });
 
-  it('errors if there was an issue fetching.', async(): Promise<void> => {
-    fetchMock.mockRejectedValueOnce('Invalid webId!');
-    await expect(validator.assertWebIdOwnership(webId, interactionId)).rejects.toThrow('Cannot fetch WebId');
-    expect(fetchMock).toHaveBeenCalledWith(webId);
-  });
-
-  it('errors if there was an issue parsing the returned RDF.', async(): Promise<void> => {
-    fetchMock.mockResolvedValueOnce('Invalid RDF!');
-    await expect(validator.assertWebIdOwnership(webId, interactionId))
-      .rejects.toThrow(`Could not parse rdf in ${webId}`);
-  });
-
   it('errors if the expected triples are missing.', async(): Promise<void> => {
     const prom = validator.assertWebIdOwnership(webId, interactionId);
     await expect(prom).rejects.toThrow(quadToString(issuerTriple));

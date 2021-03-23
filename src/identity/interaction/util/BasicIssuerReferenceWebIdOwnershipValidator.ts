@@ -1,9 +1,7 @@
-import fetch from '@rdfjs/fetch';
-import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import { DataFactory } from 'n3';
-import type { DatasetCore } from 'rdf-js';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { SOLID } from '../../../util/Vocabularies';
+import { fetchDataset } from '../../util/FetchUtil';
 import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -21,20 +19,7 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
   }
 
   public async assertWebIdOwnership(webId: string, interactionId: string): Promise<void> {
-    let rawResponse: DatasetResponse<DatasetCore>;
-    try {
-      rawResponse = (await fetch(webId)) as DatasetResponse<DatasetCore>;
-    } catch (err: unknown) {
-      this.logger.error(err as string);
-      throw new Error('Cannot fetch WebId');
-    }
-    let dataset: DatasetCore;
-    try {
-      dataset = await rawResponse.dataset();
-    } catch (err: unknown) {
-      this.logger.error(err as string);
-      throw new Error(`Could not parse rdf in ${webId}`);
-    }
+    const dataset = await fetchDataset(webId);
     const hasIssuer = dataset.has(
       quad(namedNode(webId), SOLID.terms.oidcIssuer, namedNode(this.issuer)),
     );
