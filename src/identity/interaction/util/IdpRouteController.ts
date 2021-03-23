@@ -10,36 +10,34 @@ import type { IdpRenderHandler } from './IdpRenderHandler';
 export class IdpRouteController extends RouterHandler {
   private readonly renderHandler: IdpRenderHandler;
 
-  public constructor(pathname: string, renderHandler: IdpRenderHandler, postHandler: HttpHandler) {
-    super(postHandler, [ 'GET', 'POST' ], [ pathname ]);
+  public constructor(pathName: string, renderHandler: IdpRenderHandler, postHandler: HttpHandler) {
+    super(postHandler, [ 'GET', 'POST' ], [ pathName ]);
     this.renderHandler = renderHandler;
+  }
+
+  /**
+   * Calls the renderHandler to render using the given response and props.
+   * `details` typed as any since the `interactionDetails` output typings are not exposed.
+   */
+  private async render(input: IdpInteractionHttpHandlerInput, details: any, errorMessage = '', prefilled = {}):
+  Promise<void> {
+    return this.renderHandler.handleSafe({
+      response: input.response,
+      props: { details, errorMessage, prefilled },
+    });
   }
 
   public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     if (input.request.method === 'GET') {
-      await this.renderHandler.handle({
-        response: input.response,
-        props: {
-          details: interactionDetails,
-          errorMessage: '',
-          prefilled: {},
-        },
-      });
+      await this.render(input, interactionDetails);
     } else if (input.request.method === 'POST') {
       try {
-        await this.handler.handle(input);
+        await this.handler.handleSafe(input);
       } catch (err: unknown) {
         const errorMessage: string = (err as Error).message || 'An unknown error occurred';
         const prefilled = (err as { prefilled: Record<string, string> }).prefilled || {};
-        await this.renderHandler.handle({
-          response: input.response,
-          props: {
-            details: interactionDetails,
-            errorMessage,
-            prefilled,
-          },
-        });
+        await this.render(input, interactionDetails, errorMessage, prefilled);
       }
     }
   }
