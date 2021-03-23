@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PodSettings | Community Solid Server - v0.8.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.0">
+	<title>PodSettings | Community Solid Server - v0.8.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.0</a>
+					<a href="../modules.html">Community Solid Server - v0.8.1</a>
 				</li>
 				<li>
 					<a href="../modules/index.html">index</a>
@@ -100,6 +100,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#email" class="tsd-kind-icon">email</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#login" class="tsd-kind-icon">login</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#oidcissuer" class="tsd-kind-icon">oidc<wbr>Issuer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#oidcissuerregistrationtoken" class="tsd-kind-icon">oidc<wbr>Issuer<wbr>Registration<wbr>Token</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#template" class="tsd-kind-icon">template</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="index.podsettings.html#webid" class="tsd-kind-icon">web<wbr>Id</a></li>
 							</ul>
@@ -115,7 +117,7 @@
 					<div class="tsd-signature tsd-kind-icon">email<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/pods/settings/PodSettings.ts#L27">src/pods/settings/PodSettings.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L27">src/pods/settings/PodSettings.ts:27</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -130,7 +132,7 @@
 					<div class="tsd-signature tsd-kind-icon">login<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/pods/settings/PodSettings.ts#L10">src/pods/settings/PodSettings.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L10">src/pods/settings/PodSettings.ts:10</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -145,7 +147,7 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/pods/settings/PodSettings.ts#L23">src/pods/settings/PodSettings.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L23">src/pods/settings/PodSettings.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -155,12 +157,42 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="oidcissuer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> oidc<wbr>Issuer</h3>
+					<div class="tsd-signature tsd-kind-icon">oidc<wbr>Issuer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L31">src/pods/settings/PodSettings.ts:31</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The OIDC issuer of the owner&#39;s WebId.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="oidcissuerregistrationtoken" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> oidc<wbr>Issuer<wbr>Registration<wbr>Token</h3>
+					<div class="tsd-signature tsd-kind-icon">oidc<wbr>Issuer<wbr>Registration<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L35">src/pods/settings/PodSettings.ts:35</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A registration token for linking the owner&#39;s WebId to an IdP.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="template" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> template</h3>
 					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/pods/settings/PodSettings.ts#L19">src/pods/settings/PodSettings.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L19">src/pods/settings/PodSettings.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -176,7 +208,7 @@
 					<div class="tsd-signature tsd-kind-icon">web<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/12ace1b/src/pods/settings/PodSettings.ts#L14">src/pods/settings/PodSettings.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/pods/settings/PodSettings.ts#L14">src/pods/settings/PodSettings.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -213,6 +245,12 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="index.podsettings.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="index.podsettings.html#oidcissuer" class="tsd-kind-icon">oidc<wbr>Issuer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="index.podsettings.html#oidcissuerregistrationtoken" class="tsd-kind-icon">oidc<wbr>Issuer<wbr>Registration<wbr>Token</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="index.podsettings.html#template" class="tsd-kind-icon">template</a>
