@@ -9,9 +9,9 @@ export interface RenderHandlerMap {
 }
 
 /**
- * An interaction that will choose the form the render given
+ * An interaction that will choose the form of the render given
  * a certain interaction name. Interaction names can be passed
- * in via the "renderhandlerMap" which maps the interaction name
+ * in via the "renderHandlerMap" which maps the interaction name
  * to the render handler. The key "default" will be used if the
  * interaction name doesn't match anything in the RenderHandlerMap
  */
@@ -24,11 +24,11 @@ export class ChooseInitialInteractionHandler extends IdpInteractionHttpHandler {
     this.renderHandlerMap = renderHandlerMap;
   }
 
-  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
+  public async handle({ request, response, provider }: IdpInteractionHttpHandlerInput): Promise<void> {
+    const interactionDetails = await provider.interactionDetails(request, response);
     const renderHandler = this.renderHandlerMap[interactionDetails.prompt.name] || this.renderHandlerMap.default;
-    await renderHandler.handle({
-      response: input.response,
+    await renderHandler.handleSafe({
+      response,
       props: {
         details: interactionDetails,
         errorMessage: '',
