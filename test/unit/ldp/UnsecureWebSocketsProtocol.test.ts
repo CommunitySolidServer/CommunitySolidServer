@@ -182,4 +182,20 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
     expect(webSocket.messages).toHaveLength(2);
     expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
   });
+
+  it('respects the X-Forwarded-* headers if Forwarded header is not present.', async(): Promise<void> => {
+    const webSocket = new DummySocket();
+    const upgradeRequest = {
+      headers: {
+        'x-forwarded-host': 'other.example',
+        'x-forwarded-proto': 'https',
+        'sec-websocket-protocol': 'solid-0.1',
+      },
+      socket: {},
+    } as any as HttpRequest;
+    await protocol.handle({ webSocket, upgradeRequest } as any);
+    webSocket.emit('message', 'sub https://other.example/protocol/foo');
+    expect(webSocket.messages).toHaveLength(2);
+    expect(webSocket.messages.pop()).toBe('ack https://other.example/protocol/foo');
+  });
 });
