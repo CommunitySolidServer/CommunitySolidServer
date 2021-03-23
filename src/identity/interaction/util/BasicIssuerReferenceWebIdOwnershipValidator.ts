@@ -20,10 +20,7 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
     this.issuer = issuer;
   }
 
-  public async assertWebIdOwnership(
-    webId: string,
-    interactionId: string,
-  ): Promise<void> {
+  public async assertWebIdOwnership(webId: string, interactionId: string): Promise<void> {
     let rawResponse: DatasetResponse<DatasetCore>;
     try {
       rawResponse = (await fetch(webId)) as DatasetResponse<DatasetCore>;
