@@ -1,6 +1,6 @@
 import { DataFactory } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
-import type { Quad } from 'rdf-js';
+import type { Dataset, Quad } from 'rdf-js';
 import { SOLID } from '../../util/Vocabularies';
 import { fetchDataset } from '../util/FetchUtil';
 import { StorageAdapterFactory } from './StorageAdapterFactory';
@@ -28,26 +28,29 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
     // If we're looking up a Client and the Client is undefined, check to
     // see if it's a valid Client WebId
     if (!payload && this.name === 'Client') {
+      let dataset: Dataset;
       try {
         // Fetch and parse the Client WebId document
-        const dataset = await fetchDataset(id);
-
-        // Get the OIDC Registration JSON
-        const rawRegistrationJsonQuads = dataset.match(namedNode(id), SOLID.terms.oidcRegistration);
-
-        // Check all the registrations to see if any are valid.
-        for (const rawRegistrationJsonQuad of rawRegistrationJsonQuads) {
-          try {
-            return this.validateRegistrationQuad(rawRegistrationJsonQuad, id);
-          } catch {
-            // Keep looking for a valid quad
-          }
-        }
+        dataset = await fetchDataset(id);
       } catch {
-        // If an error is thrown or no valid registration is found, return the original payload
+        // If an error is thrown, return the original payload
         return payload;
       }
+
+      // Get the OIDC Registration JSON
+      const rawRegistrationJsonQuads = dataset.match(namedNode(id), SOLID.terms.oidcRegistration);
+
+      // Check all the registrations to see if any are valid.
+      for (const rawRegistrationJsonQuad of rawRegistrationJsonQuads) {
+        try {
+          return this.validateRegistrationQuad(rawRegistrationJsonQuad, id);
+        } catch {
+          // Keep looking for a valid quad
+        }
+      }
     }
+
+    // Will also be returned if no valid registration data was found
     return payload;
   }
 
