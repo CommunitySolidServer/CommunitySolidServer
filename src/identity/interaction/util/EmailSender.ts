@@ -14,6 +14,12 @@ export interface EmailSenderArgs {
   senderName?: string;
 }
 
+export interface EmailArgs {
+  subject: string;
+  text: string;
+  html: string;
+}
+
 /**
  * Sends an email
  */
@@ -26,11 +32,7 @@ export class EmailSender {
     this.senderName = args.senderName ?? 'Solid';
   }
 
-  public async sendEmail(emailAddress: string, content: {
-    subject: string;
-    text: string;
-    html: string;
-  }): Promise<void> {
+  public async sendEmail(emailAddress: string, content: EmailArgs): Promise<void> {
     await this.mailTransporter.sendMail({
       from: this.senderName,
       to: emailAddress,
