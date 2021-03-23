@@ -1,29 +1,24 @@
-import fetch from '@rdfjs/fetch';
-import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import { DataFactory } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
-import type { Dataset } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import { SOLID } from '../../util/Vocabularies';
+import { fetchDataset } from '../util/FetchUtil';
 import { StorageAdapterFactory } from './StorageAdapterFactory';
 import namedNode = DataFactory.namedNode;
 
+/**
+ * An Adapter that wraps around another Adapter and fetches data from the webId in case no client payload was found.
+ */
 export class ClientWebIdFetchingStorageAdapter implements Adapter {
   private readonly adapter: Adapter;
   private readonly name: string;
 
-  public constructor(
-    name: string,
-    wrappedAdapterFactory: StorageAdapterFactory,
-  ) {
-    this.adapter = wrappedAdapterFactory.createStorageAdapter(name);
+  public constructor(name: string, adapter: Adapter) {
+    this.adapter = adapter;
     this.name = name;
   }
 
-  public async upsert(
-    id: string,
-    payload: AdapterPayload,
-    expiresIn: number,
-  ): Promise<void> {
+  public async upsert(id: string, payload: AdapterPayload, expiresIn: number): Promise<void> {
     return this.adapter.upsert(id, payload, expiresIn);
   }
 
@@ -35,70 +30,32 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
     if (!payload && this.name === 'Client') {
       try {
         // Fetch and parse the Client WebId document
-        let rawResponse: DatasetResponse<Dataset>;
-        try {
-          rawResponse = (await fetch(id)) as DatasetResponse<Dataset>;
-        } catch {
-          throw new Error('Cannot fetch Client Id');
-        }
-        let dataset: Dataset;
-        try {
-          dataset = await rawResponse.dataset();
-        } catch {
-          throw new Error('Could not parse Client Id rdf');
-        }
+        const dataset = await fetchDataset(id);
 
         // Get the OIDC Registration JSON
-        const rawRegistrationJsonQuads = dataset
-          .match(namedNode(id), SOLID.terms.oidcRegistration);
-        if (rawRegistrationJsonQuads.size === 0) {
-          throw new Error('No solid:oidcRegistration field');
-        }
+        const rawRegistrationJsonQuads = dataset.match(namedNode(id), SOLID.terms.oidcRegistration);
 
         // Check all the registrations to see if any are valid.
-        let thrownError: unknown;
         for (const rawRegistrationJsonQuad of rawRegistrationJsonQuads) {
           try {
-            const rawRegistrationJson = rawRegistrationJsonQuad.object.value;
-            let registrationJson;
-            try {
-              registrationJson = JSON.parse(rawRegistrationJson);
-            } catch {
-              throw new Error('Could not parse registration JSON');
-            }
-
-            // Ensure the registration JSON matches the client WebId
-            if (id !== registrationJson.client_id) {
-              throw new Error('The client registration `client_id` field must match the Client WebId');
-            }
-            return {
-              ...registrationJson,
-              // Snake case is required for tokens
-              // eslint-disable-next-line @typescript-eslint/naming-convention
-              token_endpoint_auth_method: 'none',
-            };
-          } catch (err: unknown) {
-            thrownError = err;
+            return this.validateRegistrationQuad(rawRegistrationJsonQuad, id);
+          } catch {
+            // Keep looking for a valid quad
           }
         }
-        throw thrownError;
       } catch {
-        // If an error is thrown, return the original payload
+        // If an error is thrown or no valid registration is found, return the original payload
         return payload;
       }
     }
     return payload;
   }
 
-  public async findByUserCode(
-    userCode: string,
-  ): Promise<AdapterPayload | void> {
+  public async findByUserCode(userCode: string): Promise<AdapterPayload | void> {
     return this.adapter.findByUserCode(userCode);
   }
 
-  public async findByUid(
-    uid: string,
-  ): Promise<AdapterPayload | void> {
+  public async findByUid(uid: string): Promise<AdapterPayload | void> {
     return this.adapter.findByUid(uid);
   }
 
@@ -113,6 +70,31 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
   public async consume(id: string): Promise<void> {
     return this.adapter.consume(id);
   }
+
+  /**
+   * Validates if the quad object contains valid JSON with the required client_id.
+   * In case of success, the AdapterPayload will be returned, otherwise an error will be thrown.
+   */
+  private validateRegistrationQuad(quad: Quad, id: string): AdapterPayload {
+    const rawRegistrationJson = quad.object.value;
+    let registrationJson;
+    try {
+      registrationJson = JSON.parse(rawRegistrationJson);
+    } catch {
+      throw new Error('Could not parse registration JSON');
+    }
+
+    // Ensure the registration JSON matches the client WebId
+    if (id !== registrationJson.client_id) {
+      throw new Error('The client registration `client_id` field must match the Client WebId');
+    }
+    return {
+      ...registrationJson,
+      // Snake case is required for tokens
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      token_endpoint_auth_method: 'none',
+    };
+  }
 }
 
 export class ClientWebIdFetchingStorageAdapterFactory extends StorageAdapterFactory {
@@ -124,6 +106,6 @@ export class ClientWebIdFetchingStorageAdapterFactory extends StorageAdapterFact
   }
 
   public createStorageAdapter(name: string): Adapter {
-    return new ClientWebIdFetchingStorageAdapter(name, this.adapterFactory);
+    return new ClientWebIdFetchingStorageAdapter(name, this.adapterFactory.createStorageAdapter(name));
   }
 }
