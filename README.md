@@ -54,7 +54,7 @@ issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+
 
 ### Configuring the server
 
-Community Solid Server uses
+Community Solid Server (CSS) uses
 [ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all
 configuration for the server. There are a variety of configuration files for
 common use cases in the `config` folder.
