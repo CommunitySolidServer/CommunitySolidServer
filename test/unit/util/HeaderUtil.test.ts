@@ -188,7 +188,7 @@ describe('HeaderUtil', (): void => {
   });
 
   describe('#parseForwarded', (): void => {
-    it('handles undefined values.', (): void => {
+    it('handles an empty set of headers.', (): void => {
       expect(parseForwarded({})).toEqual({});
     });
 
@@ -221,7 +221,7 @@ describe('HeaderUtil', (): void => {
       });
     });
 
-    it('should fallback to X-Forwarded-Host and X-Forwarded-Proto without Forward header.', (): void => {
+    it('should fall back to X-Forwarded-Host and X-Forwarded-Proto without Forward header.', (): void => {
       const headers = { 'x-forwarded-host': 'pod.example', 'x-forwarded-proto': 'https' };
       expect(parseForwarded(headers)).toEqual({
         host: 'pod.example',
@@ -241,7 +241,7 @@ describe('HeaderUtil', (): void => {
       });
     });
 
-    it('should proplery handle multiple values with varying spaces for X-Forwarded-*.', (): void => {
+    it('should properly handle multiple values with varying spaces for X-Forwarded-*.', (): void => {
       const headers = {
         'x-forwarded-host': ' pod.example ,192.0.2.60, 192.0.2.43',
         'x-forwarded-proto': ' https ,http',

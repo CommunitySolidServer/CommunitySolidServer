@@ -432,14 +432,14 @@ export interface Forwarded {
 /**
  * Parses a Forwarded header value and will fall back to X-Forwarded-* headers.
  *
- * @param headers - The incoming http headers.
+ * @param headers - The incoming HTTP headers.
  *
  * @returns The parsed Forwarded header.
  */
 export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
   const forwarded: Record<string, string> = {};
   if (headers.forwarded) {
-    for (const pair of headers.forwarded.replace(/\s*,.*$/u, '').split(';')) {
+    for (const pair of headers.forwarded.replace(/\s*,.*/u, '').split(';')) {
       const components = /^(by|for|host|proto)=(.+)$/u.exec(pair);
       if (components) {
         forwarded[components[1]] = components[2];
