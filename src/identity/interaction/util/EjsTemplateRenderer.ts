@@ -19,10 +19,7 @@ export class EjsTemplateRenderer<T> extends TemplateRenderer<T> {
 
   public async render(options: T): Promise<string> {
     return renderFile(
-      joinFilePath(
-        this.templatePath,
-        this.templateFile,
-      ),
+      joinFilePath(this.templatePath, this.templateFile),
       options,
     );
   }
