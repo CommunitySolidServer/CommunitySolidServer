@@ -187,7 +187,7 @@ Common usage:
 
     A WebID hosted in your pod will be required to complete registration.
     
-    In your running community server, you could create `./profile/card$.ttl`
+    In your running community server, you could create `http://localhost:3000/profile/card`
     with the following content:
     ```turtle
     prefix : <#>
