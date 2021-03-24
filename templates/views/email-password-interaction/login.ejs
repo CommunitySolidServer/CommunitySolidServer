@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>Sign-in</title>
@@ -25,24 +25,24 @@
                 <% } %>
 
                 <div class="input-wrap">
-                  <label>Email:</label>
-                  <input type="email" name="email" autofocus="on" <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
+                  <label for="email">Email:</label>
+                  <input id="email" type="email" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
                 </div>
 
                 <div class="input-wrap">
-                  <label>Password:</label>
-                  <input type="password" name="password">
+                  <label for="password">Password:</label>
+                  <input id="password" type="password" name="password">
                 </div>
 
                 <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked="yes">Stay signed in</label>
+                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
                 </div>
 
                 <button type="submit" name="submit" class="ids-link-filled">Sign In</button>
 
                 <hr />
                 <div class="space-between">
-                  
+
                   <a href="/idp/interaction/<%= details.uid %>/register" class="link">Register</a>
                   <a href="/idp/interaction/<%= details.uid %>/forgotpassword" class="link">Forgot Password</a>
                 </div>

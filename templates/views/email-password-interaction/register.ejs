@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>Register</title>
@@ -25,27 +25,27 @@
                 <% } %>
 
                 <div class="input-wrap">
-                  <label>Email:</label>
-                  <input type="text" name="email" autofocus="on" <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %> />
+                  <label for="email">Email:</label>
+                  <input id="email" type="text" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %> />
                 </div>
 
                 <div class="input-wrap">
-                  <label>WebId:</label>
-                  <input type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
+                  <label for="webId">WebId:</label>
+                  <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
                 </div>
 
                 <div class="input-wrap">
-                  <label>Password:</label>
-                  <input type="password" name="password" />
+                  <label for="password">Password:</label>
+                  <input id="password" type="password" name="password" />
                 </div>
 
                 <div class="input-wrap">
-                  <label>Confirm Password:</label>
-                  <input type="password" name="confirmPassword" />
+                  <label for="confirmPassword">Confirm Password:</label>
+                  <input id="confirmPassword" type="password" name="confirmPassword" />
                 </div>
 
                 <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked="yes">Stay signed in</label>
+                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
                 </div>
 
                 <button type="submit" name="submit" class="ids-link-filled">Create Identity</button>
