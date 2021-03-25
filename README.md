@@ -62,13 +62,14 @@ common use cases in the `config` folder.
 | Parameter | Default | Description |
 | --------- | ------- | ----------- |
 | `--port, -p` | `3000` | |
-| `--baseUrl. -b` | `"http://localhost:$PORT/"` | |
+| `--baseUrl. -b` | `"http://localhost:$PORT/"` | Needs to be set to the base URL of the server for authnetication and authorization to function. |
 | `--config, -c` | `"config/config-default.json"` | `config-default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config-file.json` |
 | `--mainModulePath, -m` | | Absolute path to the package root from which ComponentJS module resolution should start. |
 | `--loggingLevel, -l` | `"info"`| |
-| `--podTemplateFolder, -t` | `"templates/pod"` | |
-| `--rootFilePath, -f` | `"./"` | |
-| `--sparqlEndpoint, -s` | | |
+| `--podTemplateFolder, -t` | `"templates/pod"` | Folder containing the templates used for pod provisioning. |
+| `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
+| `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
+| `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |
 
 ### Installing and running locally
 
@@ -80,7 +81,7 @@ $ npm start [-- ARGS]
 ## Interacting with the server
 CSS is still under active development, and as such the easiest and fastest way
 to understand what functionality is supported is to read the integration tests.
-This section is only inteded as a high level summary of what's supported.
+This section is only intended as a high level summary of what's supported.
 
 The server supports low-level interaction via HTTP methods, such as `GET`,
 `PUT`, `HEAD`, ...
