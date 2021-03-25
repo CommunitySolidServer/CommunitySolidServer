@@ -8,8 +8,8 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
 import type { ResourceLocker } from './ResourceLocker';
 
-// The ttl set on a lock
-const ttl = 1000;
+// The ttl set on a lock, not really important cause redlock wil not handle expiration
+const ttl = 10000;
 // The default redlock config
 const defaultRedlockConfig = {
   // The expected clock drift; for more details
@@ -18,7 +18,7 @@ const defaultRedlockConfig = {
   driftFactor: 0.01,
   // The max number of times Redlock will attempt
   // to lock a resource before erroring
-  retryCount: 10,
+  retryCount: 1000000,
   // The time in ms between attempts
   retryDelay: 200,
   // The max time in ms randomly added to retries
@@ -29,19 +29,26 @@ const defaultRedlockConfig = {
 /**
  * A locking system that uses a Redis server or any number of
  * Redis nodes / clusters
+ * This solution has issues though:
+ *  - Redlock wants to handle expiration itself, this is against the design of a ResourceLocker.
+ *    The workaround for this is to extend an active lock indefinitely.
+ *  - This solution is not multithreaded!
+ *  - Redlock does not provide the ability to see which locks have expired
  */
 export class RedisResourceLocker implements ResourceLocker {
   protected readonly logger = getLoggerFor(this);
 
   public redlock: Redlock;
   private readonly lockList: Map<string, Lock>;
+  private readonly intervals: Map<string, NodeJS.Timeout>;
 
   public constructor(redisClients: string[], redlockOptions?: Record<string, number>) {
     this.lockList = new Map();
+    this.intervals = new Map();
     const clients = this.createRedisClients(redisClients);
     this.redlock = this.createRedlock(clients, redlockOptions);
     this.redlock.on('clientError', (err): void => {
-      throw new InternalServerError(`Redis/Redlock error: ${err.message}`);
+      throw new InternalServerError(`Redis/Redlock error: ${err}`);
     });
   }
 
@@ -50,7 +57,7 @@ export class RedisResourceLocker implements ResourceLocker {
    * @param redisClientsStrings - a list of strings that contain either a host address and a
    * port number like '127.0.0.1:6379' or just a port number like '6379'
    */
-  public createRedisClients(redisClientsStrings: string[]): RedisClient[] {
+  private createRedisClients(redisClientsStrings: string[]): RedisClient[] {
     const result: RedisClient[] = [];
     if (redisClientsStrings && redisClientsStrings.length > 0) {
       for (const client of redisClientsStrings) {
@@ -64,14 +71,7 @@ export class RedisResourceLocker implements ResourceLocker {
         }
         const port = Number(match[2]);
         const host = match[1];
-        let redisclient: RedisClient;
-        if (port && !host) {
-          // Only a port number was provided
-          redisclient = createClient(port);
-        } else {
-          // Port-number and host were provided
-          redisclient = createClient(port, host);
-        }
+        const redisclient = createClient(port, host);
         result.push(redisclient);
       }
     }
@@ -83,12 +83,11 @@ export class RedisResourceLocker implements ResourceLocker {
    * @param clients - a list of RedisClients you want to use for the redlock instance
    * @param redlockOptions - extra redlock options to overwrite the default config
    */
-  private createRedlock(clients: RedisClient[], redlockOptions: Record<string, number> | undefined): Redlock {
+  private createRedlock(clients: RedisClient[], redlockOptions: Record<string, number> = {}): Redlock {
     try {
       return new Redlock(
         clients,
-        // If options were provided in the constructor, overwrite the default config
-        redlockOptions ? { ...defaultRedlockConfig, ...redlockOptions } : defaultRedlockConfig,
+        { ...defaultRedlockConfig, ...redlockOptions },
       );
     } catch (error: unknown) {
       throw new InternalServerError(`Error initializing Redlock for clients: ${clients}, ${error}`);
@@ -104,8 +103,9 @@ export class RedisResourceLocker implements ResourceLocker {
       // Lock acquired
       this.logger.debug(`Acquired lock for resource: ${resource}!`);
       this.lockList.set(resource, lock);
-      this.extendLockIndefinitely(lock);
+      this.extendLockIndefinitely(resource);
     } catch (error: unknown) {
+      this.logger.debug(`Unable to acquire lock for ${resource}`);
       throw new InternalServerError(`Unable to acquire lock for ${resource} (${error})`);
     }
   }
@@ -122,6 +122,11 @@ export class RedisResourceLocker implements ResourceLocker {
       await this.redlock.unlock(lock);
       // Successfully released lock
       this.lockList.delete(resource);
+      const interval = this.intervals.get(resource);
+      if (interval) {
+        clearInterval(interval);
+        this.intervals.delete(resource);
+      }
       this.logger.debug(`Released lock for ${resource}, ${this.getLockCount()} active locks remaining!`);
     } catch (error: unknown) {
       this.logger.error(`Error releasing lock for ${resource} (${error})`);
@@ -140,19 +145,25 @@ export class RedisResourceLocker implements ResourceLocker {
    * This function is internally used to keep an acquired lock active, a wrapper class will handle expiration
    * @param lock - the lock to be extended
    */
-  private extendLockIndefinitely(lock: Lock): void {
-    setTimeout(async(): Promise<void> => {
-      if (this.lockList.get(lock.resource)) {
-        try {
-          const newLock = await this.redlock.extend(lock, 1000);
-          this.lockList.set(newLock.resource, newLock);
-          this.extendLockIndefinitely(newLock);
-          this.logger.debug(`Extended (Redis)lock for resource: ${newLock.resource}`);
-        } catch (error: unknown) {
-          // No error should be thrown cause this means the lock has simply been released
-          this.logger.debug(`Failed to extend this (Redis)lock for resource: ${lock.resource}, ${error}`);
+  private extendLockIndefinitely(identifier: string): void {
+    const interval = setInterval(async(): Promise<void> => {
+      try {
+        const lock = this.lockList.get(identifier);
+        if (lock) {
+          const newLock = await this.redlock.extend(lock, ttl);
+          this.lockList.set(identifier, newLock);
+          this.logger.debug(`Extended (Redis)lock for resource: ${identifier}`);
+        } else {
+          throw new Error('No Lock was found to extend');
         }
+      } catch (error: unknown) {
+        // No error should be thrown cause this means the lock has simply been released
+        // Or redlock.extends errors
+        this.logger.debug(`Failed to extend this (Redis)lock for resource: ${identifier}, ${error}`);
+        clearInterval(interval);
+        this.intervals.delete(identifier);
       }
     }, ttl / 2);
+    this.intervals.set(identifier, interval);
   }
 }
