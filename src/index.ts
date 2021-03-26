@@ -51,6 +51,7 @@ export * from './identity/interaction/util/WebIdOwnershipValidator';
 // Identity/Interaction
 export * from './identity/interaction/IdpInteractionHttpHandler';
 export * from './identity/interaction/IdpInteractionPolicy';
+export * from './identity/interaction/IdpSessionHttpHandler';
 
 // Identity/Storage
 export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';

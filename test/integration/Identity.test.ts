@@ -177,7 +177,12 @@ describe('A Solid server with IdP', (): void => {
       const form = await state.extractFormUrl(url);
       expect(form.url.endsWith('/confirm')).toBe(true);
 
-      // TODO: the next step can't happen until we have a handler
+      const res = await state.fetchIdp(form.url, 'POST');
+      const nextUrl = res.headers.get('location');
+      expect(typeof nextUrl).toBe('string');
+
+      await state.handleLoginRedirect(nextUrl!);
+      expect(state.session.info?.webId).toBe(webId);
     });
   });
 
