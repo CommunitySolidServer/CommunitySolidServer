@@ -86,10 +86,10 @@ describe('A Solid server with IdP', (): void => {
     });
 
     it('initializes the session and finds the registration URL.', async(): Promise<void> => {
-      const { register } = await state.startSession();
+      const url = await state.startSession();
+      const { register } = await state.parseLoginPage(url);
       expect(typeof register).toBe('string');
-      const { url } = await state.extractFormUrl(register);
-      nextUrl = url;
+      nextUrl = (await state.extractFormUrl(register)).url;
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
@@ -149,7 +149,8 @@ describe('A Solid server with IdP', (): void => {
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
-      const { login } = await state.startSession();
+      const url = await state.startSession();
+      const { login } = await state.parseLoginPage(url);
       expect(typeof login).toBe('string');
       await state.login(login, email, password);
       expect(state.session.info?.webId).toBe(webId);
@@ -168,6 +169,16 @@ describe('A Solid server with IdP', (): void => {
       const res = await state.session.fetch(container);
       expect(res.status).toBe(401);
     });
+
+    it('can log in again.', async(): Promise<void> => {
+      const url = await state.startSession();
+
+      // For the following part it is debatable if this is correct but this might be a consequence of the authn client
+      const form = await state.extractFormUrl(url);
+      expect(form.url.endsWith('/confirm')).toBe(true);
+
+      // TODO: the next step can't happen until we have a handler
+    });
   });
 
   describe('resetting password', (): void => {
@@ -179,10 +190,10 @@ describe('A Solid server with IdP', (): void => {
     });
 
     it('initializes the session and finds the forgot password URL.', async(): Promise<void> => {
-      const { forgotPassword } = await state.startSession();
+      const url = await state.startSession();
+      const { forgotPassword } = await state.parseLoginPage(url);
       expect(typeof forgotPassword).toBe('string');
-      const { url } = await state.extractFormUrl(forgotPassword);
-      nextUrl = url;
+      nextUrl = (await state.extractFormUrl(forgotPassword)).url;
     });
 
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
@@ -221,7 +232,8 @@ describe('A Solid server with IdP', (): void => {
     });
 
     it('initializes the session.', async(): Promise<void> => {
-      const { login } = await state.startSession();
+      const url = await state.startSession();
+      const { login } = await state.parseLoginPage(url);
       expect(typeof login).toBe('string');
       nextUrl = login;
     });
