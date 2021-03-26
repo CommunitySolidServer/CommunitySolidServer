@@ -20,7 +20,7 @@ export class ExpiringStorageAdapter implements Adapter {
   private readonly storage: ExpiringStorage<ResourceIdentifier, unknown>;
 
   public constructor(name: string, args: ExpiringStorageAdapterArgs) {
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathname}`;
+    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}/${args.storagePathname}`;
     this.name = name;
     this.storage = args.storage;
   }
@@ -43,7 +43,8 @@ export class ExpiringStorageAdapter implements Adapter {
     return { path: `${this.baseUrl}/${this.name}/${encodeURIComponent(id)}` };
   }
 
-  public async upsert(id: string, payload: AdapterPayload, expiresIn: number): Promise<void> {
+  public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
+    // Despite what the typings say, `expiresIn` can be undefined
     const expires = expiresIn ? new Date(Date.now() + (expiresIn * 1000)) : undefined;
     const key = this.keyFor(id);
 
@@ -89,7 +90,10 @@ export class ExpiringStorageAdapter implements Adapter {
 
   public async revokeByGrantId(grantId: string): Promise<void> {
     const grantKey = this.grantKeyFor(grantId);
-    const grants = (await this.storage.get(grantKey) || []) as ResourceIdentifier[];
+    const grants = await this.storage.get(grantKey) as ResourceIdentifier[] | undefined;
+    if (!grants) {
+      return;
+    }
     const deletePromises: Promise<unknown>[] = [];
     grants.forEach((grant): void => {
       deletePromises.push(this.storage.delete(grant));
@@ -119,7 +123,7 @@ export class ExpiringStorageAdapterFactory extends StorageAdapterFactory {
     this.args = args;
   }
 
-  public createStorageAdapter(name: string): Adapter {
+  public createStorageAdapter(name: string): ExpiringStorageAdapter {
     return new ExpiringStorageAdapter(name, this.args);
   }
 }
