@@ -4,6 +4,7 @@ import { Session } from '@inrupt/solid-client-authn-node';
 import { load } from 'cheerio';
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
+import type { Cookie } from 'set-cookie-parser';
 import { parse, splitCookiesString } from 'set-cookie-parser';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 
@@ -18,13 +19,15 @@ export class IdentityTestState {
   private readonly oidcIssuer: string;
 
   public readonly session: Session;
-  public cookie?: string;
+  private readonly cookies: Map<string, Cookie>;
+  private cookie?: string;
 
   public constructor(baseUrl: string, redirectUrl: string, oidcIssuer: string) {
     this.baseUrl = baseUrl;
     this.redirectUrl = redirectUrl;
     this.oidcIssuer = oidcIssuer;
     this.session = new Session();
+    this.cookies = new Map();
   }
 
   /**
@@ -40,7 +43,19 @@ export class IdentityTestState {
     if (contentType) {
       options.headers['content-type'] = contentType;
     }
-    return fetch(url, options);
+    const res = await fetch(url, options);
+
+    // Parse the cookies that need to be set and convert them to the corresponding header value
+    // Make sure we don't overwrite cookies that were already present
+    if (res.headers.get('set-cookie')) {
+      const newCookies = parse(splitCookiesString(res.headers.get('set-cookie')!));
+      for (const cookie of newCookies) {
+        this.cookies.set(cookie.name, cookie);
+      }
+      // eslint-disable-next-line unicorn/prefer-spread
+      this.cookie = Array.from(this.cookies, ([ , nom ]): string => `${nom.name}=${nom.value}`).join('; ');
+    }
+    return res;
   }
 
   /**
@@ -60,7 +75,7 @@ export class IdentityTestState {
    * Initializes an authentication session and stores the relevant cookies for later re-use.
    * All te relevant links from the login page get extracted.
    */
-  public async startSession(): Promise<{ register: string; login: string; forgotPassword: string }> {
+  public async startSession(): Promise<string> {
     let nextUrl = '';
     await this.session.login({
       redirectUrl: this.redirectUrl,
@@ -73,16 +88,15 @@ export class IdentityTestState {
     expect(nextUrl.startsWith(this.oidcIssuer)).toBeTruthy();
 
     // Need to catch the redirect so we can copy the cookies
-    let res = await this.fetchIdp(nextUrl);
+    const res = await this.fetchIdp(nextUrl);
     expect(res.status).toBe(302);
     nextUrl = res.headers.get('location')!;
 
-    // Parse the cookies that need to be set and convert them to the corresponding header value
-    const cookies = parse(splitCookiesString(res.headers.get('set-cookie') ?? ''));
-    this.cookie = cookies.map((nom): string => `${nom.name}=${nom.value}`).join('; ');
+    return nextUrl;
+  }
 
-    // Find all the actions on the login page
-    res = await this.fetchIdp(nextUrl);
+  public async parseLoginPage(url: string): Promise<{ register: string; login: string; forgotPassword: string }> {
+    const res = await this.fetchIdp(url);
     expect(res.status).toBe(200);
     const text = await res.text();
     const register = this.extractUrl(text, 'a:contains("Register")', 'href');
