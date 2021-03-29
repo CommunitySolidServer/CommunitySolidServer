@@ -1,6 +1,6 @@
+import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
+
 /**
  * Renders given options
  */
-export interface TemplateRenderer<T> {
-  render: (options: T) => Promise<string>;
-}
+export abstract class TemplateRenderer<T> extends AsyncHandler<T, string> {}
