@@ -1,6 +1,6 @@
 /**
  * Renders given options
  */
-export abstract class TemplateRenderer<T> {
-  abstract render(options: T): Promise<string>;
+export interface TemplateRenderer<T> {
+  render: (options: T) => Promise<string>;
 }

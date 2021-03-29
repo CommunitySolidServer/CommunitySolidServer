@@ -2,7 +2,7 @@ import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { trimTrailingSlashes } from '../../util/PathUtil';
-import { StorageAdapterFactory } from './StorageAdapterFactory';
+import type { StorageAdapterFactory } from './StorageAdapterFactory';
 
 export interface ExpiringStorageAdapterArgs {
   baseUrl: string;
@@ -115,11 +115,10 @@ export class ExpiringStorageAdapter implements Adapter {
 /**
  * The factory for a ExpiringStorageAdapter
  */
-export class ExpiringStorageAdapterFactory extends StorageAdapterFactory {
+export class ExpiringStorageAdapterFactory implements StorageAdapterFactory {
   private readonly args: ExpiringStorageAdapterArgs;
 
   public constructor(args: ExpiringStorageAdapterArgs) {
-    super();
     this.args = args;
   }
 

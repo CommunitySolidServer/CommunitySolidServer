@@ -2,19 +2,18 @@ import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { SOLID } from '../../../util/Vocabularies';
 import { fetchDataset } from '../../util/FetchUtil';
-import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
+import type { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 
 /**
  * Validates whether a WebId is okay to register based on if it
  * references this as an issuer.
  */
-export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipValidator {
+export class BasicIssuerReferenceWebIdOwnershipValidator implements WebIdOwnershipValidator {
   private readonly issuer: string;
   private readonly logger = getLoggerFor(this);
 
   public constructor(issuer: string) {
-    super();
     this.issuer = issuer;
   }
 

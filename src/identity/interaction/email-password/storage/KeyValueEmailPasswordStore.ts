@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
-import { EmailPasswordStore } from './EmailPasswordStore';
+import type { EmailPasswordStore } from './EmailPasswordStore';
 
 /**
  * A payload to persist a user account
@@ -37,13 +37,12 @@ export interface ResourceStoreEmailPasswordStoreArgs {
  * A EmailPasswordStore that uses a KeyValueStorage
  * to persist its information.
  */
-export class KeyValueEmailPasswordStore extends EmailPasswordStore {
+export class KeyValueEmailPasswordStore implements EmailPasswordStore {
   private readonly baseUrl: string;
   private readonly storage: KeyValueStorage<ResourceIdentifier, EmailPasswordData>;
   private readonly saltRounds: number;
 
   public constructor(args: ResourceStoreEmailPasswordStoreArgs) {
-    super();
     if (!args.storagePathName.startsWith('/')) {
       throw new Error('storagePathName should start with a slash.');
     }

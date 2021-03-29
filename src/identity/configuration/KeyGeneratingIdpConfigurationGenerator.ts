@@ -9,24 +9,23 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
-import { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
+import type { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 
 /**
  * An IdP Configuration Factory that generates and saves keys
  * to the provided key value store.
  */
-export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGenerator {
+export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationGenerator {
   private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
-  private readonly storage: KeyValueStorage<ResourceIdentifier, any>;
+  private readonly storage: KeyValueStorage<ResourceIdentifier, unknown>;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     storageAdapterFactory: StorageAdapterFactory,
     baseUrl: string,
-    storage: KeyValueStorage<ResourceIdentifier, any>,
+    storage: KeyValueStorage<ResourceIdentifier, unknown>,
   ) {
-    super();
     this.storageAdapterFactory = storageAdapterFactory;
     this.baseUrl = baseUrl;
     this.storage = storage;
