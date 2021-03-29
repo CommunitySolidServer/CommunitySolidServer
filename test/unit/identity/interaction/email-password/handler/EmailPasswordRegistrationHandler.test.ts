@@ -28,8 +28,8 @@ describe('An EmailPasswordRegistrationHandler', (): void => {
     } as any;
 
     webIdOwnershipValidator = {
-      assertWebIdOwnership: jest.fn(),
-    };
+      handleSafe: jest.fn(),
+    } as any;
 
     emailPasswordStorageAdapter = {
       create: jest.fn(),

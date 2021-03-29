@@ -48,25 +48,25 @@ describe('A BasicIssuerReferenceWebIdOwnershipValidator', (): void => {
   });
 
   it('errors if the expected triples are missing.', async(): Promise<void> => {
-    const prom = validator.assertWebIdOwnership(webId, interactionId);
+    const prom = validator.handle({ webId, interactionId });
     await expect(prom).rejects.toThrow(quadToString(issuerTriple));
     await expect(prom).rejects.toThrow(quadToString(tokenTriple));
   });
 
   it('only requests the needed triples.', async(): Promise<void> => {
     triples = [ issuerTriple ];
-    let prom = validator.assertWebIdOwnership(webId, interactionId);
+    let prom = validator.handle({ webId, interactionId });
     await expect(prom).rejects.not.toThrow(quadToString(issuerTriple));
     await expect(prom).rejects.toThrow(quadToString(tokenTriple));
 
     triples = [ tokenTriple ];
-    prom = validator.assertWebIdOwnership(webId, interactionId);
+    prom = validator.handle({ webId, interactionId });
     await expect(prom).rejects.toThrow(quadToString(issuerTriple));
     await expect(prom).rejects.not.toThrow(quadToString(tokenTriple));
   });
 
   it('resolves if all required triples are present.', async(): Promise<void> => {
     triples = [ issuerTriple, tokenTriple ];
-    await expect(validator.assertWebIdOwnership(webId, interactionId)).resolves.toBeUndefined();
+    await expect(validator.handle({ webId, interactionId })).resolves.toBeUndefined();
   });
 });
