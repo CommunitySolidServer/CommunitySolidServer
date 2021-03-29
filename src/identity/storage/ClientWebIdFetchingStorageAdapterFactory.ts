@@ -3,7 +3,7 @@ import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { Dataset, Quad } from 'rdf-js';
 import { SOLID } from '../../util/Vocabularies';
 import { fetchDataset } from '../util/FetchUtil';
-import { StorageAdapterFactory } from './StorageAdapterFactory';
+import type { StorageAdapterFactory } from './StorageAdapterFactory';
 import namedNode = DataFactory.namedNode;
 
 /**
@@ -100,11 +100,10 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
   }
 }
 
-export class ClientWebIdFetchingStorageAdapterFactory extends StorageAdapterFactory {
+export class ClientWebIdFetchingStorageAdapterFactory implements StorageAdapterFactory {
   private readonly adapterFactory: StorageAdapterFactory;
 
   public constructor(wrappedAdapterFactory: StorageAdapterFactory) {
-    super();
     this.adapterFactory = wrappedAdapterFactory;
   }
 

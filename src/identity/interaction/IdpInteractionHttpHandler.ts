@@ -6,5 +6,4 @@ export type IdpInteractionHttpHandlerInput = HttpHandlerInput & {
   provider: Provider;
 };
 
-export abstract class IdpInteractionHttpHandler
-  extends AsyncHandler<IdpInteractionHttpHandlerInput> {}
+export abstract class IdpInteractionHttpHandler extends AsyncHandler<IdpInteractionHttpHandlerInput> {}
