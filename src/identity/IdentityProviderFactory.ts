@@ -15,10 +15,7 @@ export class IdentityProviderFactory {
   private readonly issuer: string;
   private readonly configurationFactory: IdpConfigurationGenerator;
 
-  public constructor(
-    issuer: string,
-    configurationFactory: IdpConfigurationGenerator,
-  ) {
+  public constructor(issuer: string, configurationFactory: IdpConfigurationGenerator) {
     this.issuer = issuer;
     this.configurationFactory = configurationFactory;
   }
@@ -64,10 +61,7 @@ export class IdentityProviderFactory {
       audiences(): string {
         return 'solid';
       },
-      extraAccessTokenClaims(
-        ctx,
-        token,
-      ): CanBePromise<AnyObject | void | undefined> {
+      extraAccessTokenClaims(ctx, token): CanBePromise<AnyObject | void | undefined> {
         if ((token as any).accountId) {
           return {
             webid: (token as any).accountId,
