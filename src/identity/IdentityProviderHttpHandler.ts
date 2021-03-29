@@ -14,10 +14,11 @@ import type { IdpInteractionPolicy } from './interaction/IdpInteractionPolicy';
  */
 export class IdentityProviderHttpHandler extends HttpHandler {
   private readonly providerFactory: IdentityProviderFactory;
-  private provider?: Provider;
   private readonly interactionPolicy: IdpInteractionPolicy;
   private readonly interactionHttpHandler: IdpInteractionHttpHandler;
   private readonly errorResponseWriter: ResponseWriter;
+
+  private provider?: Provider;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
@@ -27,8 +28,8 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     errorResponseWriter: ResponseWriter,
   ) {
     super();
-    this.interactionPolicy = interactionPolicy;
     this.providerFactory = providerFactory;
+    this.interactionPolicy = interactionPolicy;
     this.interactionHttpHandler = interactionHttpHandler;
     this.errorResponseWriter = errorResponseWriter;
   }
@@ -59,10 +60,8 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     try {
       await this.interactionHttpHandler.canHandle({ ...input, provider });
     } catch {
-      return provider.callback(
-        input.request,
-        input.response,
-      );
+      // Let the Provider handle the request in case our server has no matching handlers
+      return provider.callback(input.request, input.response);
     }
 
     try {
