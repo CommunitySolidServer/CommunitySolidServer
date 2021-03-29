@@ -1,5 +1,5 @@
 import fetch from '@rdfjs/fetch';
-import { fetchDataset } from '../../../src/identity/util/FetchUtil';
+import { fetchDataset } from '../../../../src/identity/util/FetchUtil';
 
 jest.mock('@rdfjs/fetch');
 
