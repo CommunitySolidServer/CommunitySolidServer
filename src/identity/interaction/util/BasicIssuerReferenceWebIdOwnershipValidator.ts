@@ -2,22 +2,23 @@ import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import { SOLID } from '../../../util/Vocabularies';
 import { fetchDataset } from '../../util/FetchUtil';
-import type { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
+import { WebIdOwnershipValidator } from './WebIdOwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 
 /**
  * Validates whether a WebId is okay to register based on if it
  * references this as an issuer.
  */
-export class BasicIssuerReferenceWebIdOwnershipValidator implements WebIdOwnershipValidator {
+export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipValidator {
   private readonly issuer: string;
   private readonly logger = getLoggerFor(this);
 
   public constructor(issuer: string) {
+    super();
     this.issuer = issuer;
   }
 
-  public async assertWebIdOwnership(webId: string, interactionId: string): Promise<void> {
+  public async handle({ webId, interactionId }: { webId: string; interactionId: string }): Promise<void> {
     const dataset = await fetchDataset(webId);
     const hasIssuer = dataset.has(
       quad(namedNode(webId), SOLID.terms.oidcIssuer, namedNode(this.issuer)),
