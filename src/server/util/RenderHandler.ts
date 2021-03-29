@@ -7,7 +7,4 @@ export interface RenderHandlerInput {}
  * Renders a response given data and sends that
  * response as text/html
  */
-export abstract class RenderHandler<T> extends AsyncHandler<{
-  response: HttpResponse;
-  props: T;
-}> {}
+export abstract class RenderHandler<T> extends AsyncHandler<{ response: HttpResponse; props: T }> {}
