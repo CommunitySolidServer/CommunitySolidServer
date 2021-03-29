@@ -1,6 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention, import/no-unresolved */
+// import/no-unresolved can't handle jose imports
 import { randomBytes } from 'crypto';
-import { JWK } from 'node-jose';
+import type { JWK } from 'jose/jwk/from_key_like';
+import { fromKeyLike } from 'jose/jwk/from_key_like';
+import { generateKeyPair } from 'jose/util/generate_key_pair';
 import type { Adapter, Configuration } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -34,16 +37,16 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
   }
 
   // There is a typing difficulty with JSONWebKeySet, thus the "any"
-  private async generateJwks(): Promise<any> {
+  private async generateJwks(): Promise<{ keys: JWK[] }> {
     // Check to see if the keys are already saved
     const jwks = await this.storage.get(this.getJwksKey());
     if (jwks) {
       return jwks;
     }
     // If they are not, generate and save them
-    const keystore = JWK.createKeyStore();
-    await keystore.generate('RSA');
-    const newJwks = keystore.toJSON(true);
+    const { privateKey } = await generateKeyPair('RS256');
+    const jwk = await fromKeyLike(privateKey);
+    const newJwks = { keys: [ jwk ]};
     await this.storage.set(this.getJwksKey(), newJwks);
     return newJwks;
   }
@@ -65,7 +68,8 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
   }
 
   public async createConfiguration(): Promise<Configuration> {
-    const jwks = await this.generateJwks();
+    // Cast necessary due to typing conflict between jose 2.x and 3.x
+    const jwks = await this.generateJwks() as any;
     const cookieKeys = await this.generateCookieKeys();
 
     // Aliasing the "this" variable is an anti-pattern that is better served by using
