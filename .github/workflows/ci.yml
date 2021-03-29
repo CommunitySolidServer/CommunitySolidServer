@@ -41,6 +41,10 @@ jobs:
           SPARQL_UPDATE: true
         ports:
           - 4000:8890
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
