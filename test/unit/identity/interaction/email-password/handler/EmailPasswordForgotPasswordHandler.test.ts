@@ -40,8 +40,8 @@ describe('An EmailPasswordForgotPasswordHandler', (): void => {
     } as any;
 
     emailTemplateRenderer = {
-      render: jest.fn().mockResolvedValue('html!'),
-    };
+      handleSafe: jest.fn().mockResolvedValue('html!'),
+    } as any;
 
     emailSender = {
       sendEmail: jest.fn(),
