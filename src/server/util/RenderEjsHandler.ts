@@ -17,18 +17,9 @@ export class RenderEjsHandler<T> extends RenderHandler<T> {
     this.templateFile = templateFile;
   }
 
-  public async handle(input: {
-    response: HttpResponse;
-    props: T;
-  }): Promise<void> {
+  public async handle(input: { response: HttpResponse; props: T }): Promise<void> {
     const { props, response } = input;
-    const renderedHtml = await renderFile(
-      joinFilePath(
-        this.templatePath,
-        this.templateFile,
-      ),
-      props || {},
-    );
+    const renderedHtml = await renderFile(joinFilePath(this.templatePath, this.templateFile), props || {});
     // Content-Type must not be camel case
     // eslint-disable-next-line @typescript-eslint/naming-convention
     response.writeHead(200, { 'Content-Type': 'text/html' });

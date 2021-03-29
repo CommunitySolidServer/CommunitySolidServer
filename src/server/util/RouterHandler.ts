@@ -15,11 +15,7 @@ export class RouterHandler extends HttpHandler {
   protected readonly allowedMethods: string[];
   protected readonly allowedPathNamesRegEx: RegExp[];
 
-  public constructor(
-    handler: HttpHandler,
-    allowedMethods: string[],
-    allowedPathNames: string[],
-  ) {
+  public constructor(handler: HttpHandler, allowedMethods: string[], allowedPathNames: string[]) {
     super();
     this.handler = handler;
     this.allowedMethods = allowedMethods;
@@ -33,12 +29,8 @@ export class RouterHandler extends HttpHandler {
     if (!input.request.method) {
       throw new Error('Cannot handle request without a method');
     }
-    if (
-      !this.allowedMethods.includes(input.request.method)
-    ) {
-      throw new MethodNotAllowedHttpError(
-        `${input.request.method} is not allowed.`,
-      );
+    if (!this.allowedMethods.includes(input.request.method)) {
+      throw new MethodNotAllowedHttpError(`${input.request.method} is not allowed.`);
     }
     const { pathname } = parse(input.request.url);
     if (!pathname) {
