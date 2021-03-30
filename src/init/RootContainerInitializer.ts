@@ -4,7 +4,6 @@ import { RepresentationMetadata } from '../ldp/representation/RepresentationMeta
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
-import { containsResource } from '../storage/StoreUtil';
 import { TEXT_TURTLE } from '../util/ContentTypes';
 import { ensureTrailingSlash } from '../util/PathUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
@@ -32,7 +31,7 @@ export class RootContainerInitializer extends Initializer {
 
   public async handle(): Promise<void> {
     this.logger.debug(`Checking for root container at ${this.baseId.path}`);
-    if (!await containsResource(this.store, this.baseId)) {
+    if (!await this.store.resourceExists(this.baseId)) {
       await this.createRootContainer();
     } else {
       this.logger.debug(`Existing root container found at ${this.baseId.path}`);

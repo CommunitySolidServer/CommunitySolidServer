@@ -22,7 +22,7 @@ This server is in beta stage, which means you can start using it for developing
 and testing apps, with some limitations:
 - User account / pod creation is not yet supported fully, and you must rely on
   an external identity provider to log you in and authenticate your WebID.
-  [solid/node-solid-server](https"//github.com/solid/node-solid-server) or any
+  [solid/node-solid-server](https://github.com/solid/node-solid-server) or any
   other pod provider can serve this purpose, and all you need to do is pass in
   an external WebID when creating pods. More information on creating pods can be
   found under [Interacting with the server](#interacting-with-the-server).
@@ -53,11 +53,12 @@ issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+
 ## Running the server
 
 ### Configuring the server
-
 Community Solid Server (CSS) uses
 [ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all
 configuration for the server. There are a variety of configuration files for
 common use cases in the `config` folder.
+
+Additional recipes for configuring and deploying the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
 
 | Parameter | Default | Description |
 | --------- | ------- | ----------- |
@@ -181,3 +182,25 @@ curl -I -H "Accept: text/plain" \
 ```shell
 curl -X OPTIONS -i http://localhost:3000/myfile.txt
 ```
+
+## Run using Docker
+
+A Docker image is available to run the containerised Solid Community Server against your filesystem.
+
+Common usage:
+- Build the Docker image
+  ```shell
+  docker build --rm -f Dockerfile -t css:latest .
+  ```
+- Run the image against your `~/Solid` directory on `http://localhost:3000`
+  ```shell
+  docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
+  ```
+- Use alternative versions of the built in config. The filestorage is just the default configuration, you can override with any of the configurations included with the server
+  ```shell
+  docker run --rm -p 3000:3000 -it css:latest -c config/config-default.json
+  ```
+  Or override it with your own config mapped to the right directory
+  ```shell
+  docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
+  ```

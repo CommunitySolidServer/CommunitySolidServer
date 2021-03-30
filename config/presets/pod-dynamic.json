@@ -1,0 +1,145 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Sets up all the classes that are specifically necessary for dynamic pod generation."
+    },
+
+    {
+      "@id": "urn:solid-server:default:PodConfigurationStorage",
+      "@type": "JsonFileStorage",
+      "JsonFileStorage:_filePath": {
+        "@id": "urn:solid-server:default:variable:podConfigJson"
+      },
+      "JsonFileStorage:_locker": {
+        "@id": "urn:solid-server:default:ResourceLocker"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:PodRoutingStorage",
+      "@type": "ResourceIdentifierStorage",
+      "ResourceIdentifierStorage:_source": {
+        "@type": "MemoryMapStorage"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:StoreFactory",
+      "@type": "BaseComponentsJsFactory"
+    },
+
+    {
+      "@id": "urn:solid-server:default:PodGenerator",
+      "@type": "TemplatedPodGenerator",
+      "TemplatedPodGenerator:_storeFactory": {
+        "@id": "urn:solid-server:default:StoreFactory"
+      },
+      "TemplatedPodGenerator:_variableHandler": {
+        "@type": "ParallelHandler",
+        "ParallelHandler:_handlers": [
+          {
+            "@type": "BaseUrlHandler"
+          },
+          {
+            "@type": "RootFilePathHandler",
+            "RootFilePathHandler:_fileMapper": {
+              "@type": "ExtensionBasedMapper",
+              "ExtensionBasedMapper:_base": {
+                "@id": "urn:solid-server:default:variable:baseUrl"
+              },
+              "ExtensionBasedMapper:_rootFilepath": {
+                "@id": "urn:solid-server:default:variable:rootFilePath"
+              },
+              "ExtensionBasedMapper:_overrideTypes_acl": "text/turtle",
+              "ExtensionBasedMapper:_overrideTypes_meta": "text/turtle"
+            }
+          }
+        ]
+      },
+      "TemplatedPodGenerator:_configStorage": {
+        "@id": "urn:solid-server:default:PodConfigurationStorage"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:PodManager",
+      "@type": "ConfigPodManager",
+      "ConfigPodManager:_idGenerator": {
+        "@type": "SuffixIdentifierGenerator",
+        "SuffixIdentifierGenerator:_base": {
+          "@id": "urn:solid-server:default:variable:baseUrl"
+        }
+      },
+      "ConfigPodManager:_podGenerator": {
+        "@id": "urn:solid-server:default:PodGenerator"
+      },
+      "ConfigPodManager:_routingStorage": {
+        "@id": "urn:solid-server:default:PodRoutingStorage"
+      },
+      "ConfigPodManager:_resourcesGenerator": {
+        "@id": "urn:solid-server:default:ResourcesGenerator",
+        "@type": "TemplatedResourcesGenerator",
+        "TemplatedResourcesGenerator:_templateFolder": {
+          "@id": "urn:solid-server:default:variable:podTemplateFolder"
+        },
+        "TemplatedResourcesGenerator:_factory": {
+          "@type": "ExtensionBasedMapperFactory"
+        },
+        "TemplatedResourcesGenerator:_engine": {
+          "@type": "HandlebarsTemplateEngine"
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:PodManagerHandler",
+      "@type": "PodManagerHttpHandler",
+      "PodManagerHttpHandler:_args_requestPath": "/pods",
+      "PodManagerHttpHandler:_args_requestParser": {
+        "@id": "urn:solid-server:default:RequestParser"
+      },
+      "PodManagerHttpHandler:_args_podSettingsParser": {
+        "@type": "PodSettingsJsonParser"
+      },
+      "PodManagerHttpHandler:_args_manager": {
+        "@id": "urn:solid-server:default:PodManager"
+      },
+      "PodManagerHttpHandler:_args_responseWriter": {
+        "@id": "urn:solid-server:default:ResponseWriter"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:Initializer",
+      "comment": "Add entry to initializer list",
+      "SequenceHandler:_handlers": {
+        "@type": "ConfigPodInitializer",
+        "ConfigPodInitializer:_storeFactory": {
+          "@id": "urn:solid-server:default:StoreFactory"
+        },
+        "ConfigPodInitializer:_configStorage": {
+          "@id": "urn:solid-server:default:PodConfigurationStorage"
+        },
+        "ConfigPodInitializer:_routingStorage": {
+          "@id": "urn:solid-server:default:PodRoutingStorage"
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:BaseUrlRouterRule",
+      "@type": "BaseUrlRouterRule",
+      "BaseUrlRouterRule:_stores": {
+        "@id": "urn:solid-server:default:PodRoutingStorage"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "RoutingResourceStore",
+      "RoutingResourceStore:_rule": {
+        "@id": "urn:solid-server:default:BaseUrlRouterRule"
+      }
+    }
+  ]
+}

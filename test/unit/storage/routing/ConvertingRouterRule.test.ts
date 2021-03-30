@@ -1,11 +1,9 @@
-import type { Readable } from 'stream';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { ConvertingRouterRule } from '../../../../src/storage/routing/ConvertingRouterRule';
 import type { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSupport';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
-import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('A ConvertingRouterRule', (): void => {
   let store1: ResourceStore;
@@ -41,23 +39,18 @@ describe('A ConvertingRouterRule', (): void => {
   });
 
   it('checks if the stores contain the identifier if there is no data.', async(): Promise<void> => {
-    const data: Readable = { destroy: jest.fn() } as any;
-    store1.getRepresentation = async(): Promise<Representation> => ({ data } as any);
+    store1.resourceExists = jest.fn().mockImplementationOnce((): any => true);
     await expect(rule.handle({ identifier: { path: 'identifier' }})).resolves.toBe(store1);
-    expect(data.destroy).toHaveBeenCalledTimes(1);
+    expect(store1.resourceExists).toHaveBeenCalledTimes(1);
   });
 
   it('returns the defaultStore if no other store has the resource.', async(): Promise<void> => {
-    store1.getRepresentation = (): any => {
-      throw new NotFoundHttpError();
-    };
+    store1.resourceExists = jest.fn().mockImplementationOnce((): any => false);
     await expect(rule.handle({ identifier: { path: 'identifier' }})).resolves.toBe(defaultStore);
   });
 
   it('throws the error if a store had a non-404 error.', async(): Promise<void> => {
-    store1.getRepresentation = (): any => {
-      throw new InternalServerError();
-    };
+    store1.resourceExists = jest.fn().mockRejectedValueOnce(new InternalServerError());
     await expect(rule.handle({ identifier: { path: 'identifier' }})).rejects.toThrow(InternalServerError);
   });
 });

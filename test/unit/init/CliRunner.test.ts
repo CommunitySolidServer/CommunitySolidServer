@@ -60,6 +60,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:sparqlEndpoint': undefined,
           'urn:solid-server:default:variable:loggingLevel': 'info',
           'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../../../templates/pod'),
+          'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
         },
       },
     );
@@ -79,6 +80,7 @@ describe('CliRunner', (): void => {
         '-p', '4000',
         '-s', 'http://localhost:5000/sparql',
         '-t', 'templates',
+        '--podConfigJson', '/different-path.json',
       ],
     });
 
@@ -106,6 +108,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
         },
       },
     );
@@ -123,6 +126,7 @@ describe('CliRunner', (): void => {
         '--port', '4000',
         '--rootFilePath', 'root',
         '--sparqlEndpoint', 'http://localhost:5000/sparql',
+        '--podConfigJson', '/different-path.json',
       ],
     });
 
@@ -150,6 +154,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:port': 4000,
           'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
         },
       },
     );
@@ -160,7 +165,11 @@ describe('CliRunner', (): void => {
     new CliRunner().run({
       argv: [ 'node', 'script' ],
     });
-    await new Promise((resolve): any => setImmediate(resolve));
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
 
     expect(write).toHaveBeenCalledTimes(2);
     expect(write).toHaveBeenNthCalledWith(1,
@@ -175,9 +184,76 @@ describe('CliRunner', (): void => {
   it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
     initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
     new CliRunner().run();
-    await new Promise((resolve): any => setImmediate(resolve));
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
 
     expect(write).toHaveBeenCalledTimes(0);
+
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', '--foo',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', '-s',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(exit).toHaveBeenCalledTimes(1);
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
+    new CliRunner().run({
+      argv: [
+        'node', 'script', '-ll',
+      ],
+    });
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
 
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);

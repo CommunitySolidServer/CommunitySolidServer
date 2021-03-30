@@ -30,4 +30,10 @@ export class ResourceIdentifierStorage<T> implements KeyValueStorage<ResourceIde
   public async delete(key: ResourceIdentifier): Promise<boolean> {
     return this.source.delete(key.path);
   }
+
+  public async* entries(): AsyncIterableIterator<[ResourceIdentifier, T]> {
+    for await (const [ path, value ] of this.source.entries()) {
+      yield [{ path }, value ];
+    }
+  }
 }

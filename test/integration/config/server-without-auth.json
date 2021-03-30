@@ -1,7 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/presets/acl.json",
     "files-scs:config/presets/http.json",
+    "files-scs:config/presets/identifiers/suffix-identifiers.json",
     "files-scs:config/presets/ldp/credentials-extractor.json",
     "files-scs:config/presets/ldp/metadata-handler.json",
     "files-scs:config/presets/ldp/operation-handler.json",
@@ -46,11 +48,6 @@
       "PassthroughStore:_source": {
         "@id": "urn:solid-server:default:MemoryResourceStore"
       }
-    },
-    {
-      "@id": "urn:solid-server:default:AclManager",
-      "@type": "UrlBasedAclManager",
-      "comment": "Needed for AclLinkMetadataWriter"
     }
   ]
 }

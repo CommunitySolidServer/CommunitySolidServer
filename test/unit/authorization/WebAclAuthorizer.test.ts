@@ -1,16 +1,18 @@
 import { namedNode, quad } from '@rdfjs/data-model';
-import streamifyArray from 'streamify-array';
 import type { Credentials } from '../../../src/authentication/Credentials';
-import type { AclManager } from '../../../src/authorization/AclManager';
+import { WebAclAuthorization } from '../../../src/authorization/WebAclAuthorization';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
+import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 
 const nn = namedNode;
 
@@ -18,47 +20,65 @@ const acl = 'http://www.w3.org/ns/auth/acl#';
 
 describe('A WebAclAuthorizer', (): void => {
   let authorizer: WebAclAuthorizer;
-  const aclManager: AclManager = {
-    getAclDocument: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
-      id.path.endsWith('.acl') ? id : { path: `${id.path}.acl` },
-    isAclDocument: async(id: ResourceIdentifier): Promise<boolean> => id.path.endsWith('.acl'),
-    getAclConstrainedResource: async(id: ResourceIdentifier): Promise<ResourceIdentifier> =>
-      !id.path.endsWith('.acl') ? id : { path: id.path.slice(0, -4) },
-  };
+  const aclStrategy: AuxiliaryIdentifierStrategy = {
+    getAuxiliaryIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: `${id.path}.acl` }),
+    isAuxiliaryIdentifier: (id: ResourceIdentifier): boolean => id.path.endsWith('.acl'),
+    getAssociatedIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: id.path.slice(0, -4) }),
+  } as any;
   let store: ResourceStore;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
   let permissions: PermissionSet;
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
+  let authorization: WebAclAuthorization;
 
   beforeEach(async(): Promise<void> => {
     permissions = {
       read: true,
       append: false,
       write: true,
+      control: false,
     };
     credentials = {};
     identifier = { path: 'http://test.com/foo' };
+    authorization = new WebAclAuthorization(
+      {
+        read: false,
+        append: false,
+        write: false,
+        control: false,
+      },
+      {
+        read: false,
+        append: false,
+        write: false,
+        control: false,
+      },
+    );
 
     store = {
       getRepresentation: jest.fn(),
     } as any;
-    authorizer = new WebAclAuthorizer(aclManager, store, identifierStrategy);
+    authorizer = new WebAclAuthorizer(aclStrategy, store, identifierStrategy);
   });
 
-  it('handles all inputs.', async(): Promise<void> => {
-    authorizer = new WebAclAuthorizer(aclManager, null as any, identifierStrategy);
-    await expect(authorizer.canHandle({} as any)).resolves.toBeUndefined();
+  it('handles all non-acl inputs.', async(): Promise<void> => {
+    authorizer = new WebAclAuthorizer(aclStrategy, null as any, identifierStrategy);
+    await expect(authorizer.canHandle({ identifier } as any)).resolves.toBeUndefined();
+    await expect(authorizer.canHandle({ identifier: aclStrategy.getAuxiliaryIdentifier(identifier) } as any))
+      .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('allows access if the acl file allows all agents.', async(): Promise<void> => {
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.everyone, { read: true, write: true, append: true });
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access if there is a parent acl file allowing all agents.', async(): Promise<void> => {
@@ -67,7 +87,7 @@ describe('A WebAclAuthorizer', (): void => {
         throw new NotFoundHttpError();
       }
       return {
-        data: streamifyArray([
+        data: guardedStreamFrom([
           quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
           quad(nn('auth'), nn(`${acl}default`), nn(identifierStrategy.getParentContainer(identifier).path)),
           quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -75,23 +95,26 @@ describe('A WebAclAuthorizer', (): void => {
         ]),
       } as Representation;
     };
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.everyone, { read: true, write: true, append: true });
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access to authorized agents if the acl files allows all authorized users.', async(): Promise<void> => {
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     credentials.webId = 'http://test.com/user';
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('errors if authorization is required but the agent is not authorized.', async(): Promise<void> => {
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
-      quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/AuthenticatedAgent')),
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
@@ -101,48 +124,24 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('allows access to specific agents if the acl files identifies them.', async(): Promise<void> => {
     credentials.webId = 'http://test.com/user';
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { read: true, write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 
   it('errors if a specific agents wants to access files not assigned to them.', async(): Promise<void> => {
     credentials.webId = 'http://test.com/user';
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${acl}agent`), nn('http://test.com/differentUser')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
-  });
-
-  it('allows access to the acl file if control is allowed.', async(): Promise<void> => {
-    credentials.webId = 'http://test.com/user';
-    identifier.path = 'http://test.com/foo';
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
-      quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
-    ]) } as Representation);
-    const aclIdentifier = await aclManager.getAclDocument(identifier);
-    await expect(authorizer.handle({ identifier: aclIdentifier, permissions, credentials })).resolves.toBeUndefined();
-  });
-
-  it('errors if an agent tries to edit the acl file without control permissions.', async(): Promise<void> => {
-    credentials.webId = 'http://test.com/user';
-    identifier.path = 'http://test.com/foo';
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
-      quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
-      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
-      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
-    ]) } as Representation);
-    identifier = await aclManager.getAclDocument(identifier);
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
@@ -169,12 +168,14 @@ describe('A WebAclAuthorizer', (): void => {
       read: false,
       write: false,
       append: true,
+      control: false,
     };
-    store.getRepresentation = async(): Promise<Representation> => ({ data: streamifyArray([
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toBeUndefined();
+    Object.assign(authorization.user, { write: true, append: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
   });
 });

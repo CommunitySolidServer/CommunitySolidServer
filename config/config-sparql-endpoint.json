@@ -3,6 +3,7 @@
   "import": [
     "files-scs:config/presets/acl.json",
     "files-scs:config/presets/http.json",
+    "files-scs:config/presets/identifiers/suffix-identifiers.json",
     "files-scs:config/presets/init.json",
     "files-scs:config/presets/ldp.json",
     "files-scs:config/presets/ldp/credentials-extractor.json",

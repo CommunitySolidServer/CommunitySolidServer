@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/templates/storage-defaults.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Sets up a memory data accessor."
+    },
+
+    {
+      "@id": "urn:solid-server:template:DataAccessor",
+      "@type": "InMemoryDataAccessor",
+      "InMemoryDataAccessor:_strategy": {
+        "@id": "urn:solid-server:template:IdentifierStrategy"
+      }
+    }
+  ]
+}

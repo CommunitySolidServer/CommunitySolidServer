@@ -3,7 +3,7 @@ import { ensureTrailingSlash } from '../../util/PathUtil';
 import type { IdentifierGenerator } from './IdentifierGenerator';
 
 /**
- * Generates identifiers by appending the slug to a stored base identifier.
+ * Generates identifiers by appending the name to a stored base identifier.
  * Non-alphanumeric characters will be replaced with `-`.
  */
 export class SuffixIdentifierGenerator implements IdentifierGenerator {
@@ -13,8 +13,8 @@ export class SuffixIdentifierGenerator implements IdentifierGenerator {
     this.base = base;
   }
 
-  public generate(slug: string): ResourceIdentifier {
-    const cleanSlug = slug.replace(/\W/gu, '-');
-    return { path: ensureTrailingSlash(new URL(cleanSlug, this.base).href) };
+  public generate(name: string): ResourceIdentifier {
+    const cleanName = name.replace(/\W/gu, '-');
+    return { path: ensureTrailingSlash(new URL(cleanName, this.base).href) };
   }
 }

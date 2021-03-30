@@ -11,12 +11,7 @@ import type { ResourceStore } from './ResourceStore';
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class BaseResourceStore implements ResourceStore {
-  public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
-    throw new NotImplementedHttpError();
-  }
-
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
+  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
     throw new NotImplementedHttpError();
   }
 
@@ -25,12 +20,23 @@ export class BaseResourceStore implements ResourceStore {
     throw new NotImplementedHttpError();
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions): Promise<void> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError();
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+  public async addResource(container: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier> {
+    throw new NotImplementedHttpError();
+  }
+
+  public async deleteResource(identifier: ResourceIdentifier,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    throw new NotImplementedHttpError();
+  }
+
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError();
   }
 }

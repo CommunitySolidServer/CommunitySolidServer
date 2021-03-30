@@ -1,3 +1,4 @@
+import type { IncomingHttpHeaders } from 'http';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
@@ -429,19 +430,27 @@ export interface Forwarded {
 }
 
 /**
- * Parses a Forwarded header value.
+ * Parses a Forwarded header value and will fall back to X-Forwarded-* headers.
  *
- * @param value - The Forwarded header value.
+ * @param headers - The incoming HTTP headers.
  *
  * @returns The parsed Forwarded header.
  */
-export function parseForwarded(value = ''): Forwarded {
+export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
   const forwarded: Record<string, string> = {};
-  if (value) {
-    for (const pair of value.replace(/\s*,.*$/u, '').split(';')) {
+  if (headers.forwarded) {
+    for (const pair of headers.forwarded.replace(/\s*,.*/u, '').split(';')) {
       const components = /^(by|for|host|proto)=(.+)$/u.exec(pair);
       if (components) {
         forwarded[components[1]] = components[2];
+      }
+    }
+  } else {
+    const suffixes = [ 'host', 'proto' ];
+    for (const suffix of suffixes) {
+      const value = headers[`x-forwarded-${suffix}`] as string;
+      if (value) {
+        forwarded[suffix] = value.trim().replace(/\s*,.*/u, '');
       }
     }
   }

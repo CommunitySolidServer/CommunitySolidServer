@@ -37,14 +37,15 @@
             {
               "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
               "LinkRelMetadataWriter:_linkRelMap_value": "type"
+            },
+            {
+              "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/ns/auth/acl#accessControl",
+              "LinkRelMetadataWriter:_linkRelMap_value": "acl"
             }
           ]
         },
         {
-          "@type": "AclLinkMetadataWriter",
-          "AclLinkMetadataWriter:_aclManager": {
-            "@id": "urn:solid-server:default:AclManager"
-          }
+          "@type": "WacAllowMetadataWriter"
         }
       ]
     },

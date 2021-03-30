@@ -1,13 +1,12 @@
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
 import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
-import { ensureTrailingSlash, isContainerIdentifier } from '../../util/PathUtil';
-import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
+import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
+import { generateContainmentQuads } from '../../util/ResourceUtil';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { DataAccessor } from './DataAccessor';
 
@@ -22,15 +21,13 @@ interface ContainerEntry {
 type CacheEntry = DataEntry | ContainerEntry;
 
 export class InMemoryDataAccessor implements DataAccessor {
-  private readonly base: string;
-  // A dummy container with one entry which corresponds to the base
-  private readonly store: { entries: { ''?: ContainerEntry } };
+  private readonly strategy: IdentifierStrategy;
+  // A dummy container where every entry corresponds to a root container
+  private readonly store: { entries: Record<string, ContainerEntry> };
 
-  public constructor(base: string) {
-    this.base = ensureTrailingSlash(base);
+  public constructor(strategy: IdentifierStrategy) {
+    this.strategy = strategy;
 
-    const metadata = new RepresentationMetadata({ path: this.base });
-    metadata.addQuads(generateResourceQuads(DataFactory.namedNode(this.base), true));
     this.store = { entries: { }};
   }
 
@@ -48,16 +45,13 @@ export class InMemoryDataAccessor implements DataAccessor {
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const entry = this.getEntry(identifier);
-    if (this.isDataEntry(entry) === isContainerIdentifier(identifier)) {
-      throw new NotFoundHttpError();
-    }
-    return this.generateMetadata(identifier, entry);
+    return this.generateMetadata(entry);
   }
 
   public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {
-    const { parent, name } = this.getParentEntry(identifier);
-    parent.entries[name] = {
+    const parent = this.getParentEntry(identifier);
+    parent.entries[identifier.path] = {
       // Drain original stream and create copy
       data: await arrayifyStream(data),
       metadata,
@@ -72,8 +66,8 @@ export class InMemoryDataAccessor implements DataAccessor {
     } catch (error: unknown) {
       // Create new entry if it didn't exist yet
       if (NotFoundHttpError.isInstance(error)) {
-        const { parent, name } = this.getParentEntry(identifier);
-        parent.entries[name] = {
+        const parent = this.getParentEntry(identifier);
+        parent.entries[identifier.path] = {
           entries: {},
           metadata,
         };
@@ -84,65 +78,73 @@ export class InMemoryDataAccessor implements DataAccessor {
   }
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    const { parent, name } = this.getParentEntry(identifier);
-    if (!parent.entries[name]) {
+    const parent = this.getParentEntry(identifier);
+    if (!parent.entries[identifier.path]) {
       throw new NotFoundHttpError();
     }
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete parent.entries[name];
+    delete parent.entries[identifier.path];
   }
 
   private isDataEntry(entry: CacheEntry): entry is DataEntry {
     return Boolean((entry as DataEntry).data);
   }
 
-  private getParentEntry(identifier: ResourceIdentifier): { parent: ContainerEntry; name: string } {
-    if (identifier.path === this.base) {
-      // Casting is fine here as the parent should never be used as a real container
-      return { parent: this.store as any, name: '' };
+  /**
+   * Generates an array of identifiers corresponding to the nested containers until the given identifier is reached.
+   * This does not verify if these identifiers actually exist.
+   */
+  private getHierarchy(identifier: ResourceIdentifier): ResourceIdentifier[] {
+    if (this.strategy.isRootContainer(identifier)) {
+      return [ identifier ];
     }
-    if (!this.store.entries['']) {
-      throw new NotFoundHttpError();
-    }
-
-    const parts = identifier.path.slice(this.base.length).split('/').filter((part): boolean => part.length > 0);
-
-    // Name of the resource will be the last entry in the path
-    const name = parts[parts.length - 1];
-
-    // All names preceding the last should be nested containers
-    const containers = parts.slice(0, -1);
-
-    // Step through the parts of the path up to the end
-    // First entry is guaranteed to be a ContainerEntry
-    let parent = this.store.entries[''];
-    for (const container of containers) {
-      const child = parent.entries[container];
-      if (!child) {
-        throw new NotFoundHttpError();
-      } else if (this.isDataEntry(child)) {
-        throw new Error('Invalid path.');
-      }
-      parent = child;
-    }
-
-    return { parent, name };
+    const hierarchy = this.getHierarchy(this.strategy.getParentContainer(identifier));
+    hierarchy.push(identifier);
+    return hierarchy;
   }
 
+  /**
+   * Returns the ContainerEntry corresponding to the parent container of the given identifier.
+   * Will throw 404 if the parent does not exist.
+   */
+  private getParentEntry(identifier: ResourceIdentifier): ContainerEntry {
+    // Casting is fine here as the parent should never be used as a real container
+    let parent: CacheEntry = this.store as ContainerEntry;
+    if (this.strategy.isRootContainer(identifier)) {
+      return parent;
+    }
+
+    const hierarchy = this.getHierarchy(this.strategy.getParentContainer(identifier));
+    for (const entry of hierarchy) {
+      parent = parent.entries[entry.path];
+      if (!parent) {
+        throw new NotFoundHttpError();
+      }
+      if (this.isDataEntry(parent)) {
+        throw new Error('Invalid path.');
+      }
+    }
+
+    return parent;
+  }
+
+  /**
+   * Returns the CacheEntry corresponding the given identifier.
+   * Will throw 404 if the resource does not exist.
+   */
   private getEntry(identifier: ResourceIdentifier): CacheEntry {
-    const { parent, name } = this.getParentEntry(identifier);
-    const entry = parent.entries[name];
+    const parent = this.getParentEntry(identifier);
+    const entry = parent.entries[identifier.path];
     if (!entry) {
       throw new NotFoundHttpError();
     }
     return entry;
   }
 
-  private generateMetadata(identifier: ResourceIdentifier, entry: CacheEntry): RepresentationMetadata {
+  private generateMetadata(entry: CacheEntry): RepresentationMetadata {
     const metadata = new RepresentationMetadata(entry.metadata);
     if (!this.isDataEntry(entry)) {
-      const childNames = Object.keys(entry.entries).map((name): string =>
-        `${identifier.path}${name}${this.isDataEntry(entry.entries[name]) ? '' : '/'}`);
+      const childNames = Object.keys(entry.entries);
       const quads = generateContainmentQuads(metadata.identifier as NamedNode, childNames);
       metadata.addQuads(quads);
     }

@@ -14,7 +14,7 @@
         "@id": "urn:solid-server:default:PermissionsExtractor"
       },
       "AuthenticatedLdpHandler:_args_authorizer": {
-        "@id": "urn:solid-server:default:AclAuthorizer"
+        "@id": "urn:solid-server:default:AclBasedAuthorizer"
       },
       "AuthenticatedLdpHandler:_args_operationHandler": {
         "@id": "urn:solid-server:default:OperationHandler"

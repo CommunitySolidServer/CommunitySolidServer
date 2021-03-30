@@ -81,4 +81,53 @@ describe('A OriginalUrlExtractor', (): void => {
     await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
       .resolves.toEqual({ path: 'https://pod.example/foo/bar' });
   });
+
+  it('should fallback to x-fowarded-* headers.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      'x-forwarded-host': 'pod.example',
+      'x-forwarded-proto': 'https',
+    };
+    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+      .resolves.toEqual({ path: 'https://pod.example/foo/bar' });
+  });
+
+  it('should just take x-forwarded-host if provided.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      'x-forwarded-host': 'pod.example',
+    };
+    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+      .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
+  });
+
+  it('should just take x-forwarded-protocol if provided.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      'x-forwarded-proto': 'https',
+    };
+    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+      .resolves.toEqual({ path: 'https://test.com/foo/bar' });
+  });
+
+  it('should prefer forwarded header to x-forwarded-* headers.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      forwarded: 'proto=http;host=pod.example',
+      'x-forwarded-proto': 'https',
+      'x-forwarded-host': 'anotherpod.example',
+    };
+    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+      .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
+  });
+
+  it('should just take the first x-forwarded-* value.', async(): Promise<void> => {
+    const headers = {
+      host: 'test.com',
+      'x-forwarded-host': 'pod.example, another.domain',
+      'x-forwarded-proto': 'http,https',
+    };
+    await expect(extractor.handle({ request: { url: '/foo/bar', headers } as any }))
+      .resolves.toEqual({ path: 'http://pod.example/foo/bar' });
+  });
 });

@@ -28,8 +28,8 @@
           "AclInitializer:_settings_store": {
             "@id": "urn:solid-server:default:ResourceStore"
           },
-          "AclInitializer:_settings_aclManager": {
-            "@id": "urn:solid-server:default:AclManager"
+          "AclInitializer:_settings_aclStrategy": {
+            "@id": "urn:solid-server:default:AclIdentifierStrategy"
           },
           "AclInitializer:_settings_baseUrl": {
             "@id": "urn:solid-server:default:variable:baseUrl"

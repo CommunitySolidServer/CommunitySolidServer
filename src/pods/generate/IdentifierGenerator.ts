@@ -5,8 +5,8 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
  */
 export interface IdentifierGenerator {
   /**
-   * Generates container identifiers based on an input slug.
+   * Generates container identifiers based on an input name.
    * This is simply string generation, no resource-related checks are run.
    */
-  generate: (slug: string) => ResourceIdentifier;
+  generate: (name: string) => ResourceIdentifier;
 }

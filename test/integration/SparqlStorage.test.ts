@@ -35,9 +35,8 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
 
   it('can add a Turtle file to the store.', async():
   Promise<void> => {
-    // POST
+    // PUT
     const response = await resourceHelper.createResource('../assets/person.ttl', 'person', 'text/turtle');
-    const id = response._getHeaders().location;
-    expect(id).toBeTruthy();
+    expect(response).toBeTruthy();
   });
 });

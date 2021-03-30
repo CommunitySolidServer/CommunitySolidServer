@@ -1,0 +1,35 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/presets/acl.json",
+    "files-scs:config/presets/http.json",
+    "files-scs:config/presets/identifiers/subdomain-identifiers.json",
+    "files-scs:config/presets/init.json",
+    "files-scs:config/presets/ldp.json",
+    "files-scs:config/presets/ldp/credentials-extractor.json",
+    "files-scs:config/presets/ldp/metadata-handler.json",
+    "files-scs:config/presets/ldp/operation-handler.json",
+    "files-scs:config/presets/ldp/permissions-extractor.json",
+    "files-scs:config/presets/ldp/response-writer.json",
+    "files-scs:config/presets/ldp/request-parser.json",
+    "files-scs:config/presets/ldp/websockets.json",
+    "files-scs:config/presets/logging.json",
+    "files-scs:config/presets/middleware.json",
+    "files-scs:config/presets/pod-management.json",
+    "files-scs:config/presets/representation-conversion.json",
+    "files-scs:config/presets/static.json",
+    "files-scs:config/presets/storage/backend/storage-filesystem-subdomains.json",
+    "files-scs:config/presets/storage-wrapper.json",
+    "files-scs:config/presets/cli-params.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Use a file based store as backend with no additional routing.",
+      "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "PassthroughStore",
+      "PassthroughStore:_source": {
+        "@id": "urn:solid-server:default:FileResourceStore"
+      }
+    }
+  ]
+}

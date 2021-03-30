@@ -8,16 +8,16 @@ import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { isNativeError } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { AgentParser } from './agent/AgentParser';
 import type { PodManager } from './PodManager';
+import type { PodSettingsParser } from './settings/PodSettingsParser';
 
 export interface PodHttpHandlerArgs {
   /** The path on which this handler should intercept requests. Should start with a slash. */
   requestPath: string;
   /** Parses the incoming request. */
   requestParser: RequestParser;
-  /** Parses the data stream to an Agent. */
-  agentParser: AgentParser;
+  /** Parses the data stream to PodSettings. */
+  podSettingsParser: PodSettingsParser;
   /** Handles the pod management. */
   manager: PodManager;
   /** Writes the outgoing response. */
@@ -31,7 +31,7 @@ export interface PodHttpHandlerArgs {
 export class PodManagerHttpHandler extends HttpHandler {
   private readonly requestPath!: string;
   private readonly requestParser!: RequestParser;
-  private readonly agentParser!: AgentParser;
+  private readonly podSettingsParser!: PodSettingsParser;
   private readonly manager!: PodManager;
   private readonly responseWriter!: ResponseWriter;
 
@@ -55,8 +55,8 @@ export class PodManagerHttpHandler extends HttpHandler {
       if (!op.body) {
         throw new BadRequestHttpError('A body is required to create a pod');
       }
-      const agent = await this.agentParser.handleSafe(op.body);
-      const id = await this.manager.createPod(agent);
+      const settings = await this.podSettingsParser.handleSafe(op.body);
+      const id = await this.manager.createPod(settings);
 
       await this.responseWriter.handleSafe({ response, result: new CreatedResponseDescription(id) });
     } catch (error: unknown) {

@@ -21,10 +21,7 @@
         "@id": "urn:solid-server:default:ResourceStore"
       },
       "GeneratedPodManager:_idGenerator": {
-        "@type": "SuffixIdentifierGenerator",
-        "SuffixIdentifierGenerator:_base": {
-          "@id": "urn:solid-server:default:variable:baseUrl"
-        }
+        "@id": "urn:solid-server:default:IdentifierGenerator"
       },
       "GeneratedPodManager:_resourcesGenerator": {
         "@id": "urn:solid-server:default:ResourcesGenerator"
@@ -37,8 +34,8 @@
       "PodManagerHttpHandler:_args_requestParser": {
         "@id": "urn:solid-server:default:RequestParser"
       },
-      "PodManagerHttpHandler:_args_agentParser": {
-        "@type": "AgentJsonParser"
+      "PodManagerHttpHandler:_args_podSettingsParser": {
+        "@type": "PodSettingsJsonParser"
       },
       "PodManagerHttpHandler:_args_manager": {
         "@id": "urn:solid-server:default:PodManager"

@@ -82,11 +82,11 @@
       "@type": "WaterfallHandler",
       "WaterfallHandler:_handlers": [
         {
-          "@id": "urn:solid-server:default:IndexConverter",
+          "@id": "urn:solid-server:default:IndexConverter"
         },
         {
           "@type": "IfNeededConverter",
-          "comment": "Only continue converting if the requester cannot accept the available content type",
+          "comment": "Only continue converting if the requester cannot accept the available content type"
         },
         {
           "@id": "urn:solid-server:default:ContentTypeReplacer"
@@ -101,6 +101,14 @@
           "@id": "urn:solid-server:default:RdfRepresentationConverter"
         }
       ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:RdfValidator",
+      "@type": "RdfValidator",
+      "RdfValidator:_converter": {
+        "@id": "urn:solid-server:default:RepresentationConverter"
+      }
     }
   ]
 }

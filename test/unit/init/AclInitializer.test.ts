@@ -1,9 +1,8 @@
 import fs from 'fs';
-import type { AclManager } from '../../../src/authorization/AclManager';
 import { AclInitializer } from '../../../src/init/AclInitializer';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
-import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { joinFilePath } from '../../../src/util/PathUtil';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
@@ -15,12 +14,12 @@ const RepresentationMock: jest.Mock<BasicRepresentation> = BasicRepresentation a
 
 describe('AclInitializer', (): void => {
   const store: jest.Mocked<ResourceStore> = {
-    getRepresentation: jest.fn().mockRejectedValue(new NotFoundHttpError()),
     setRepresentation: jest.fn(),
+    resourceExists: jest.fn().mockImplementation((): any => false),
   } as any;
   const aclIdentifier = { path: 'http://test.com/.acl' };
-  const aclManager: jest.Mocked<AclManager> = {
-    getAclDocument: jest.fn().mockResolvedValue(aclIdentifier),
+  const aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy> = {
+    getAuxiliaryIdentifier: jest.fn().mockReturnValue(aclIdentifier),
   } as any;
   const baseUrl = 'http://localhost:3000/';
 
@@ -29,12 +28,12 @@ describe('AclInitializer', (): void => {
   });
 
   it('sets the default ACL when none exists already.', async(): Promise<void> => {
-    const initializer = new AclInitializer({ baseUrl, store, aclManager });
+    const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
     await initializer.handle();
 
-    expect(aclManager.getAclDocument).toHaveBeenCalledWith({ path: baseUrl });
-    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.getRepresentation).toHaveBeenCalledWith(aclIdentifier, {});
+    expect(aclStrategy.getAuxiliaryIdentifier).toHaveBeenCalledWith({ path: baseUrl });
+    expect(store.resourceExists).toHaveBeenCalledTimes(1);
+    expect(store.resourceExists).toHaveBeenCalledWith(aclIdentifier);
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenCalledWith(
       { path: 'http://test.com/.acl' }, RepresentationMock.mock.instances[0],
@@ -45,12 +44,12 @@ describe('AclInitializer', (): void => {
   });
 
   it('sets the specific ACL when one was specified.', async(): Promise<void> => {
-    const initializer = new AclInitializer({ baseUrl, store, aclManager, aclPath: '/path/doc.acl' });
+    const initializer = new AclInitializer({ baseUrl, store, aclStrategy, aclPath: '/path/doc.acl' });
     await initializer.handle();
 
-    expect(aclManager.getAclDocument).toHaveBeenCalledWith({ path: baseUrl });
-    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.getRepresentation).toHaveBeenCalledWith(aclIdentifier, {});
+    expect(aclStrategy.getAuxiliaryIdentifier).toHaveBeenCalledWith({ path: baseUrl });
+    expect(store.resourceExists).toHaveBeenCalledTimes(1);
+    expect(store.resourceExists).toHaveBeenCalledWith(aclIdentifier);
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenCalledWith(
       { path: 'http://test.com/.acl' }, RepresentationMock.mock.instances[0],
@@ -61,23 +60,21 @@ describe('AclInitializer', (): void => {
   });
 
   it('does not invoke ACL initialization when a root ACL already exists.', async(): Promise<void> => {
-    store.getRepresentation.mockReturnValueOnce(Promise.resolve({
-      data: { destroy: jest.fn() },
-    } as any));
+    store.resourceExists.mockResolvedValueOnce(true);
 
-    const initializer = new AclInitializer({ baseUrl, store, aclManager });
+    const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
     await initializer.handle();
 
-    expect(aclManager.getAclDocument).toHaveBeenCalledWith({ path: baseUrl });
-    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.getRepresentation).toHaveBeenCalledWith(aclIdentifier, {});
+    expect(aclStrategy.getAuxiliaryIdentifier).toHaveBeenCalledWith({ path: baseUrl });
+    expect(store.resourceExists).toHaveBeenCalledTimes(1);
+    expect(store.resourceExists).toHaveBeenCalledWith(aclIdentifier);
     expect(store.setRepresentation).toHaveBeenCalledTimes(0);
   });
 
   it('errors when the root ACL check errors.', async(): Promise<void> => {
-    store.getRepresentation.mockRejectedValueOnce(new Error('Fatal'));
+    store.resourceExists.mockRejectedValueOnce(new Error('Fatal'));
 
-    const initializer = new AclInitializer({ baseUrl, store, aclManager });
+    const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
     await expect(initializer.handle()).rejects.toThrow('Fatal');
   });
 });

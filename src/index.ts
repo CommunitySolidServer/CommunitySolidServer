@@ -9,21 +9,34 @@ export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization
 export * from './authorization/AllowEverythingAuthorizer';
-export * from './authorization/AclManager';
+export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
-export * from './authorization/UrlBasedAclManager';
+export * from './authorization/AuxiliaryAuthorizer';
+export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
 // Init
 export * from './init/AclInitializer';
 export * from './init/CliRunner';
+export * from './init/ConfigPodInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/RootContainerInitializer';
 export * from './init/ServerInitializer';
 
+// LDP/Authorization
+export * from './ldp/auxiliary/AuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/AuxiliaryStrategy';
+export * from './ldp/auxiliary/ComposedAuxiliaryStrategy';
+export * from './ldp/auxiliary/LinkMetadataGenerator';
+export * from './ldp/auxiliary/MetadataGenerator';
+export * from './ldp/auxiliary/RdfValidator';
+export * from './ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/RoutingAuxiliaryStrategy';
+export * from './ldp/auxiliary/SuffixAuxiliaryIdentifierStrategy';
+export * from './ldp/auxiliary/Validator';
+
 // LDP/HTTP/Metadata
-export * from './ldp/http/metadata/AclLinkMetadataWriter';
 export * from './ldp/http/metadata/BasicMetadataExtractor';
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
@@ -34,6 +47,7 @@ export * from './ldp/http/metadata/MetadataExtractor';
 export * from './ldp/http/metadata/MetadataParser';
 export * from './ldp/http/metadata/MetadataWriter';
 export * from './ldp/http/metadata/SlugParser';
+export * from './ldp/http/metadata/WacAllowMetadataWriter';
 
 // LDP/HTTP/Response
 export * from './ldp/http/response/CreatedResponseDescription';
@@ -68,6 +82,7 @@ export * from './ldp/operations/PostOperationHandler';
 export * from './ldp/operations/PutOperationHandler';
 
 // LDP/Permissions
+export * from './ldp/permissions/AclPermissionsExtractor';
 export * from './ldp/permissions/PermissionSet';
 export * from './ldp/permissions/PermissionsExtractor';
 export * from './ldp/permissions/MethodPermissionsExtractor';
@@ -94,20 +109,34 @@ export * from './logging/LogUtil';
 export * from './logging/VoidLoggerFactory';
 export * from './logging/WinstonLoggerFactory';
 
-// Pods/Agent
-export * from './pods/agent/Agent';
-export * from './pods/agent/AgentJsonParser';
-export * from './pods/agent/AgentParser';
+// Pods/Generate/Variables
+export * from './pods/generate/variables/BaseUrlHandler';
+export * from './pods/generate/variables/RootFilePathHandler';
+export * from './pods/generate/variables/VariableHandler';
+export * from './pods/generate/variables/Variables';
+export * from './pods/generate/variables/VariableSetter';
 
 // Pods/Generate
+export * from './pods/generate/BaseComponentsJsFactory';
+export * from './pods/generate/ComponentsJsFactory';
+export * from './pods/generate/GenerateUtil';
 export * from './pods/generate/HandlebarsTemplateEngine';
 export * from './pods/generate/IdentifierGenerator';
+export * from './pods/generate/PodGenerator';
 export * from './pods/generate/ResourcesGenerator';
+export * from './pods/generate/SubdomainIdentifierGenerator';
 export * from './pods/generate/SuffixIdentifierGenerator';
+export * from './pods/generate/TemplatedPodGenerator';
 export * from './pods/generate/TemplateEngine';
 export * from './pods/generate/TemplatedResourcesGenerator';
 
+// Pods/Settings
+export * from './pods/settings/PodSettings';
+export * from './pods/settings/PodSettingsJsonParser';
+export * from './pods/settings/PodSettingsParser';
+
 // Pods
+export * from './pods/ConfigPodManager';
 export * from './pods/GeneratedPodManager';
 export * from './pods/PodManager';
 export * from './pods/PodManagerHttpHandler';
@@ -145,6 +174,7 @@ export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
 // Storage/KeyValueStorage
+export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
@@ -155,12 +185,14 @@ export * from './storage/mapping/BaseFileIdentifierMapper';
 export * from './storage/mapping/ExtensionBasedMapper';
 export * from './storage/mapping/FileIdentifierMapper';
 export * from './storage/mapping/FixedContentTypeMapper';
+export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
 export * from './storage/patch/PatchHandler';
 export * from './storage/patch/SparqlUpdatePatchHandler';
 
 // Storage/Routing
+export * from './storage/routing/BaseUrlRouterRule';
 export * from './storage/routing/ConvertingRouterRule';
 export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
@@ -201,8 +233,10 @@ export * from './util/handlers/UnsupportedAsyncHandler';
 export * from './util/handlers/WaterfallHandler';
 
 // Util/Identifiers
+export * from './util/identifiers/BaseIdentifierStrategy';
 export * from './util/identifiers/IdentifierStrategy';
 export * from './util/identifiers/SingleRootIdentifierStrategy';
+export * from './util/identifiers/SubdomainIdentifierStrategy';
 
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';

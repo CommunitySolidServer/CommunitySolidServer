@@ -20,6 +20,11 @@ export class RoutingResourceStore implements ResourceStore {
     this.rule = rule;
   }
 
+  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions):
+  Promise<boolean> {
+    return (await this.getStore(identifier)).resourceExists(identifier, conditions);
+  }
+
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,
     conditions?: Conditions): Promise<Representation> {
     return (await this.getStore(identifier)).getRepresentation(identifier, preferences, conditions);
@@ -31,16 +36,17 @@ export class RoutingResourceStore implements ResourceStore {
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<void> {
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return (await this.getStore(identifier, representation)).setRepresentation(identifier, representation, conditions);
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return (await this.getStore(identifier)).deleteResource(identifier, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions):
-  Promise<void> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     return (await this.getStore(identifier)).modifyResource(identifier, patch, conditions);
   }
 

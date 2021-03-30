@@ -1,11 +1,13 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { Quad, Term } from 'rdf-js';
+import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
+import type { AuxiliaryStrategy } from '../ldp/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
@@ -20,6 +22,7 @@ import {
   isContainerIdentifier,
   isContainerPath,
   trimTrailingSlashes,
+  toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { generateResourceQuads } from '../util/ResourceUtil';
@@ -51,12 +54,30 @@ import type { ResourceStore } from './ResourceStore';
  * but the main disadvantage is that sometimes multiple calls are required where a specific store might only need one.
  */
 export class DataAccessorBasedStore implements ResourceStore {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly accessor: DataAccessor;
   private readonly identifierStrategy: IdentifierStrategy;
+  private readonly auxiliaryStrategy: AuxiliaryStrategy;
 
-  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy) {
+  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
+    auxiliaryStrategy: AuxiliaryStrategy) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
+    this.auxiliaryStrategy = auxiliaryStrategy;
+  }
+
+  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+    try {
+      this.validateIdentifier(identifier);
+      await this.accessor.getMetadata(identifier);
+      return true;
+    } catch (error: unknown) {
+      if (NotFoundHttpError.isInstance(error)) {
+        return false;
+      }
+      throw error;
+    }
   }
 
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
@@ -66,7 +87,17 @@ export class DataAccessorBasedStore implements ResourceStore {
     const metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
 
+    // Potentially add auxiliary related metadata
+    // Solid, §4.3: "Clients can discover auxiliary resources associated with a subject resource by making an HTTP HEAD
+    // or GET request on the target URL, and checking the HTTP Link header with the rel parameter"
+    // https://solid.github.io/specification/protocol#auxiliary-resources
+    await this.auxiliaryStrategy.addMetadata(metadata);
+
     if (isContainerPath(metadata.identifier.value)) {
+      // Remove containment references of auxiliary resources
+      const auxContains = this.getContainedAuxiliaryResources(metadata);
+      metadata.remove(LDP.terms.contains, auxContains);
+
       // Generate a container representation from the metadata
       const data = metadata.quads();
       metadata.addQuad(DC.terms.namespace, VANN.terms.preferredNamespacePrefix, 'dc');
@@ -116,7 +147,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     return newID;
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation):
+  Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
 
     // Ensure the representation is supported by the accessor
@@ -143,14 +175,14 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Potentially have to create containers if it didn't exist yet
-    await this.writeData(identifier, representation, isContainer, !oldMetadata);
+    return this.writeData(identifier, representation, isContainer, !oldMetadata);
   }
 
-  public async modifyResource(): Promise<void> {
+  public async modifyResource(): Promise<ResourceIdentifier[]> {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -159,14 +191,35 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.isRootStorage(metadata)) {
       throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
     }
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) && this.auxiliaryStrategy.isRootRequired(identifier)) {
+      const associatedIdentifier = this.auxiliaryStrategy.getAssociatedIdentifier(identifier);
+      const parentMetadata = await this.accessor.getMetadata(associatedIdentifier);
+      if (this.isRootStorage(parentMetadata)) {
+        throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
+      }
+    }
+
     // Solid, §5.4: "When a DELETE request is made to a container, the server MUST delete the container
     // if it contains no resources. If the container contains resources,
     // the server MUST respond with the 409 status code and response body describing the error."
     // https://solid.github.io/specification/protocol#deleting-resources
-    if (metadata.getAll(LDP.contains).length > 0) {
-      throw new ConflictHttpError('Can only delete empty containers.');
+    if (isContainerIdentifier(identifier)) {
+      // Auxiliary resources are not counted when deleting a container since they will also be deleted
+      const auxContains = this.getContainedAuxiliaryResources(metadata);
+      if (metadata.getAll(LDP.contains).length > auxContains.length) {
+        throw new ConflictHttpError('Can only delete empty containers.');
+      }
     }
-    return this.accessor.deleteResource(identifier);
+    // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
+    // resources"
+    // https://solid.github.io/specification/protocol#deleting-resources
+    const deleted = [ identifier ];
+    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
+      const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
+      deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
+    }
+    await this.accessor.deleteResource(identifier);
+    return deleted;
   }
 
   /**
@@ -228,30 +281,47 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param representation - Corresponding Representation.
    * @param isContainer - Is the incoming resource a container?
    * @param createContainers - Should parent containers (potentially) be created?
+   *
+   * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers?: boolean): Promise<void> {
+    createContainers?: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     const { metadata } = representation;
     metadata.identifier = DataFactory.namedNode(identifier.path);
     metadata.addQuads(generateResourceQuads(metadata.identifier, isContainer));
 
+    // Validate container data
     if (isContainer) {
       await this.handleContainerData(representation);
+    }
+
+    // Validate auxiliary data
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
+      await this.auxiliaryStrategy.validate(representation);
     }
 
     // Root container should not have a parent container
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    if (createContainers && !this.identifierStrategy.isRootContainer(identifier)) {
-      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(identifier));
+    const modified = [];
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const container = this.identifierStrategy.getParentContainer(identifier);
+      if (!createContainers) {
+        modified.push(container);
+      } else {
+        const created = await this.createRecursiveContainers(container);
+        modified.push(...created.length === 0 ? [ container ] : created);
+      }
     }
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
+
+    return [ ...modified, identifier ];
   }
 
   /**
@@ -305,8 +375,22 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
-    return { path:
-        `${ensureTrailingSlash(container.path)}${slug ? trimTrailingSlashes(slug) : uuid()}${isContainer ? '/' : ''}` };
+    const base = ensureTrailingSlash(container.path);
+    const name = (slug && this.cleanSlug(slug)) ?? uuid();
+    const suffix = isContainer ? '/' : '';
+    return { path: `${base}${name}${suffix}` };
+  }
+
+  /**
+   * Clean http Slug to be compatible with the server. Makes sure there are no unwanted characters
+   * e.g.: cleanslug('&%26') returns '%26%26'
+   * @param slug - the slug to clean
+   */
+  protected cleanSlug(slug: string): string {
+    if (/\/[^/]/u.test(slug)) {
+      throw new BadRequestHttpError('Slugs should not contain slashes');
+    }
+    return toCanonicalUriPath(trimTrailingSlashes(slug));
   }
 
   /**
@@ -325,6 +409,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.removeAll(HTTP.slug);
 
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);
+
+    // Solid, §5.3: "When a POST method request with the Slug header targets an auxiliary resource,
+    // the server MUST respond with the 403 status code and response body describing the error."
+    // https://solid.github.io/specification/protocol#writing-resources
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier(newID)) {
+      throw new ForbiddenHttpError('Slug bodies that would result in an auxiliary resource are forbidden');
+    }
 
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
     const withSlash = ensureTrailingSlash(newID.path);
@@ -367,11 +458,40 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
+   * Extracts the identifiers of all auxiliary resources contained within the given metadata.
+   */
+  protected getContainedAuxiliaryResources(metadata: RepresentationMetadata): NamedNode[] {
+    return metadata.getAll(LDP.terms.contains).filter((object): boolean =>
+      this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: object.value })) as NamedNode[];
+  }
+
+  /**
+   * Deletes the given array of auxiliary identifiers.
+   * Does not throw an error if something goes wrong.
+   */
+  protected async safelyDeleteAuxiliaryResources(identifiers: ResourceIdentifier[]): Promise<ResourceIdentifier[]> {
+    const deleted: ResourceIdentifier[] = [];
+    await Promise.all(identifiers.map(async(identifier): Promise<void> => {
+      try {
+        await this.accessor.deleteResource(identifier);
+        deleted.push(identifier);
+      } catch (error: unknown) {
+        if (!NotFoundHttpError.isInstance(error)) {
+          const errorMsg = isNativeError(error) ? error.message : error;
+          this.logger.error(`Problem deleting auxiliary resource ${identifier.path}: ${errorMsg}`);
+        }
+      }
+    }));
+    return deleted;
+  }
+
+  /**
    * Create containers starting from the root until the given identifier corresponds to an existing container.
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<void> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+    // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
       // See #480
@@ -382,16 +502,18 @@ export class DataAccessorBasedStore implements ResourceStore {
       if (!isContainerPath(metadata.identifier.value)) {
         throw new ForbiddenHttpError(`Creating container ${container.path} conflicts with an existing resource.`);
       }
+      return [];
     } catch (error: unknown) {
-      if (NotFoundHttpError.isInstance(error)) {
-        // Make sure the parent exists first
-        if (!this.identifierStrategy.isRootContainer(container)) {
-          await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-        }
-        await this.writeData(container, new BasicRepresentation([], container), true);
-      } else {
+      if (!NotFoundHttpError.isInstance(error)) {
         throw error;
       }
     }
+
+    // Create the container, starting with its parent
+    const ancestors = this.identifierStrategy.isRootContainer(container) ?
+      [] :
+      await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
+    await this.writeData(container, new BasicRepresentation([], container), true);
+    return [ ...ancestors, container ];
   }
 }

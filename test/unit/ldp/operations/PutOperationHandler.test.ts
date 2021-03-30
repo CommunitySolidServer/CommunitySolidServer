@@ -10,7 +10,7 @@ describe('A PutOperationHandler', (): void => {
   const handler = new PutOperationHandler(store);
   beforeEach(async(): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    store.setRepresentation = jest.fn(async(): Promise<void> => {});
+    store.setRepresentation = jest.fn(async(): Promise<any> => {});
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {

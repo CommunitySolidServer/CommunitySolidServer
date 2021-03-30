@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:IdentifierStrategy",
+      "@type": "SingleRootIdentifierStrategy",
+      "SingleRootIdentifierStrategy:_baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentifierGenerator",
+      "@type": "SuffixIdentifierGenerator",
+      "SuffixIdentifierGenerator:_base": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      }
+    }
+  ]
+}

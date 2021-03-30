@@ -6,18 +6,17 @@
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
         "@id": "urn:solid-server:default:ResourceStore_Locking"
-      },
-      "MonitoringStore:_identifierStrategy": {
-        "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     },
 
     {
-      "@id": "urn:solid-server:default:IdentifierStrategy",
-      "@type": "SingleRootIdentifierStrategy",
-      "SingleRootIdentifierStrategy:_baseUrl": {
-        "@id": "urn:solid-server:default:variable:baseUrl"
-      }
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "@type": "RoutingAuxiliaryStrategy",
+      "RoutingAuxiliaryStrategy:_sources": [
+        {
+          "@id": "urn:solid-server:default:AclStrategy"
+        }
+      ]
     },
 
     {
@@ -28,8 +27,10 @@
       },
       "LockingResourceStore:_locks": {
         "@id": "urn:solid-server:default:ResourceLocker"
+      },
+      "LockingResourceStore:_strategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
-
     },
 
     {
