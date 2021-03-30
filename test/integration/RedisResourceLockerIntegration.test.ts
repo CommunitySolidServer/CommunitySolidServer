@@ -20,7 +20,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
     };
     internalStore = await instantiateFromConfig(
       'urn:solid-server:default:MemoryResourceStore',
-      'ldp-with-auth-with-redis.json',
+      'run-with-redlock.json',
       variables,
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
@@ -29,7 +29,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
     let initializer: Initializer;
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'ldp-with-auth-with-redis.json',
+      'run-with-redlock.json',
       variables,
     );
     ({ handler, initializer } = instances);
@@ -45,7 +45,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       let initializer2: Initializer;
       const instances2 = await instantiateFromConfig(
         'urn:solid-server:test:Instances',
-        'ldp-with-auth-with-redis.json',
+        'run-with-redlock.json',
         { ...variables, 'urn:solid-server:default:variable:port': 3001 },
       );
       ({ handler: handler2, initializer: initializer2 } = instances2);
