@@ -36,7 +36,6 @@ export class KeyGeneratingIdpConfigurationGenerator extends IdpConfigurationGene
     return { path: `${this.baseUrl}/idp/jwks` };
   }
 
-  // There is a typing difficulty with JSONWebKeySet, thus the "any"
   private async generateJwks(): Promise<{ keys: JWK[] }> {
     // Check to see if the keys are already saved
     const jwks = await this.storage.get(this.getJwksKey());
