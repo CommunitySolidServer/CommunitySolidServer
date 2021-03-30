@@ -46,6 +46,9 @@
       },
       "IdentityProviderFactory:_configurationFactory": {
         "@id": "urn:solid-server:default:IdpConfigurationGenerator"
+      },
+      "IdentityProviderFactory:_errorResponseWriter": {
+        "@type": "ErrorResponseWriter"
       }
     },
     {

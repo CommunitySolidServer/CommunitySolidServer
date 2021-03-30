@@ -1,6 +1,7 @@
 import type { Configuration } from 'oidc-provider';
 import type { IdpConfigurationGenerator } from '../../../src/identity/configuration/IdpConfigurationGenerator';
 import { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
+import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 
 jest.mock('oidc-provider', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -10,6 +11,7 @@ jest.mock('oidc-provider', (): any => ({
 describe('An IdentityProviderFactory', (): void => {
   const issuer = 'issuer!';
   let configuration: any;
+  let errorResponseWriter: ResponseWriter;
   let factory: IdentityProviderFactory;
 
   beforeEach(async(): Promise<void> => {
@@ -18,7 +20,11 @@ describe('An IdentityProviderFactory', (): void => {
       createConfiguration: async(): Promise<any> => configuration,
     };
 
-    factory = new IdentityProviderFactory(issuer, configurationFactory);
+    errorResponseWriter = {
+      handleSafe: jest.fn(),
+    } as any;
+
+    factory = new IdentityProviderFactory(issuer, configurationFactory, errorResponseWriter);
   });
 
   it('has fixed default values.', async(): Promise<void> => {
@@ -52,6 +58,10 @@ describe('An IdentityProviderFactory', (): void => {
       client_webid: 'http://localhost:3001/',
       aud: 'solid',
     });
+
+    await expect(result.config.renderError({ res: 'response!' }, null, 'error!')).resolves.toBeUndefined();
+    expect(errorResponseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorResponseWriter.handleSafe).toHaveBeenLastCalledWith({ response: 'response!', result: 'error!' });
   });
 
   it('overwrites fields from the factory config.', async(): Promise<void> => {

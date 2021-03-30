@@ -3,8 +3,10 @@ import type { AnyObject,
   interactionPolicy as InteractionPolicy,
   KoaContextWithOIDC,
   Configuration,
-  Account } from 'oidc-provider';
+  Account,
+  ErrorOut } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
+import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 
 import type { IdpConfigurationGenerator } from './configuration/IdpConfigurationGenerator';
 
@@ -14,10 +16,13 @@ import type { IdpConfigurationGenerator } from './configuration/IdpConfiguration
 export class IdentityProviderFactory {
   private readonly issuer: string;
   private readonly configurationFactory: IdpConfigurationGenerator;
+  private readonly errorResponseWriter: ResponseWriter;
 
-  public constructor(issuer: string, configurationFactory: IdpConfigurationGenerator) {
+  public constructor(issuer: string, configurationFactory: IdpConfigurationGenerator,
+    errorResponseWriter: ResponseWriter) {
     this.issuer = issuer;
     this.configurationFactory = configurationFactory;
+    this.errorResponseWriter = errorResponseWriter;
   }
 
   public async createProvider(interactionPolicyOptions: {
@@ -72,6 +77,10 @@ export class IdentityProviderFactory {
         }
         return {};
       },
+      renderError:
+        async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
+          await this.errorResponseWriter.handleSafe({ response: ctx.res, result: error });
+        },
     };
     return new Provider(this.issuer, augmentedConfig);
   }
