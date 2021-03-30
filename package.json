@@ -132,7 +132,7 @@
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-tsdoc": "^0.2.7",
     "eslint-plugin-unused-imports": "^1.0.0",
-    "husky": "^4.2.5",
+    "husky": "^6.0.0",
     "jest": "^26.0.1",
     "jest-rdf": "^1.5.0",
     "manual-git-changelog": "^1.0.1",
