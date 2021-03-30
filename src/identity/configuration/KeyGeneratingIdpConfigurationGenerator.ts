@@ -37,7 +37,7 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
 
   private async generateJwks(): Promise<{ keys: JWK[] }> {
     // Check to see if the keys are already saved
-    const jwks = await this.storage.get(this.getJwksKey());
+    const jwks = await this.storage.get(this.getJwksKey()) as { keys: JWK[] } | undefined;
     if (jwks) {
       return jwks;
     }
