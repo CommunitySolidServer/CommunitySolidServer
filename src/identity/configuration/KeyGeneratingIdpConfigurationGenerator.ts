@@ -44,7 +44,10 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
     // If they are not, generate and save them
     const { privateKey } = await generateKeyPair('RS256');
     const jwk = await fromKeyLike(privateKey);
-    const newJwks = { keys: [ jwk ]};
+    // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
+    // which is why we convert it into a plain object here.
+    // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
+    const newJwks = { keys: [{ ...jwk }]};
     await this.storage.set(this.getJwksKey(), newJwks);
     return newJwks;
   }
