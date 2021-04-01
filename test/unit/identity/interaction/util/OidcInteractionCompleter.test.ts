@@ -13,6 +13,8 @@ describe('OidcInteractionCompleter', (): void => {
   const completer = new OidcInteractionCompleter();
 
   beforeEach(async(): Promise<void> => {
+    const now = Date.now();
+    Date.now = jest.fn().mockReturnValue(now);
     provider = {
       interactionFinished: jest.fn(),
     } as any;
