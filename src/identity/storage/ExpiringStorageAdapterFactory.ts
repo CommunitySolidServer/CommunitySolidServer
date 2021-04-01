@@ -26,21 +26,19 @@ export class ExpiringStorageAdapter implements Adapter {
   }
 
   private grantKeyFor(id: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/grant/${encodeURIComponent(id)}` };
+    return { path: new URL(`grant/${encodeURIComponent(id)}`, this.baseUrl).href };
   }
 
   private userCodeKeyFor(userCode: string): ResourceIdentifier {
-    return {
-      path: `${this.baseUrl}/user_code/${encodeURIComponent(userCode)}`,
-    };
+    return { path: new URL(`user_code/${encodeURIComponent(userCode)}`, this.baseUrl).href };
   }
 
   private uidKeyFor(uid: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/uid/${encodeURIComponent(uid)}` };
+    return { path: new URL(`uid/${encodeURIComponent(uid)}`, this.baseUrl).href };
   }
 
   private keyFor(id: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/${this.name}/${encodeURIComponent(id)}` };
+    return { path: new URL(`${this.name}/${encodeURIComponent(id)}`, this.baseUrl).href };
   }
 
   public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {

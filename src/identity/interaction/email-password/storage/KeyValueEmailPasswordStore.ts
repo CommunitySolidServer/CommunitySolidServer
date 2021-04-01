@@ -55,14 +55,14 @@ export class KeyValueEmailPasswordStore implements EmailPasswordStore {
    * Generates a ResourceIdentifier to store data for the given email.
    */
   private getAccountResourceIdentifier(email: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/account/${encodeURIComponent(email)}` };
+    return { path: new URL(`account/${encodeURIComponent(email)}`, this.baseUrl).href };
   }
 
   /**
    * Generates a ResourceIdentifier to store data for the given recordId.
    */
   private getForgotPasswordRecordResourceIdentifier(recordId: string): ResourceIdentifier {
-    return { path: `${this.baseUrl}/forgot-password-resource-identifier/${encodeURIComponent(recordId)}` };
+    return { path: new URL(`forgot-password-resource-identifier/${encodeURIComponent(recordId)}`, this.baseUrl).href };
   }
 
   /**

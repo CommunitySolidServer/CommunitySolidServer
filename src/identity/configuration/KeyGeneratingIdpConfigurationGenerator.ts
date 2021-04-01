@@ -32,7 +32,7 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
   }
 
   private getJwksKey(): ResourceIdentifier {
-    return { path: `${this.baseUrl}/idp/jwks` };
+    return { path: new URL('idp/jwks', this.baseUrl).href };
   }
 
   private async generateJwks(): Promise<{ keys: JWK[] }> {
@@ -53,7 +53,7 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
   }
 
   private getCookieSecretKey(): ResourceIdentifier {
-    return { path: `${this.baseUrl}/idp/cookie-secret` };
+    return { path: new URL('idp/cookie-secret', this.baseUrl).href };
   }
 
   private async generateCookieKeys(): Promise<string[]> {

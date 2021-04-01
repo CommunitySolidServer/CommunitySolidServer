@@ -89,7 +89,7 @@ describe('A KeyGeneratingIdpConfigurationGenerator', (): void => {
     expect(result.jwks).toEqual(result2.jwks);
     expect(storage.get).toHaveBeenCalledTimes(4);
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}/idp/jwks` }, result.jwks);
-    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}/idp/cookie-secret` }, result.cookies?.keys);
+    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}idp/jwks` }, result.jwks);
+    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}idp/cookie-secret` }, result.cookies?.keys);
   });
 });

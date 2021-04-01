@@ -32,7 +32,7 @@ describe('A Solid server with IdP', (): void => {
   let factory: HttpServerFactory;
   const redirectUrl = 'http://mockedredirect/';
   const oidcIssuer = baseUrl;
-  const card = new URL('/profile/card', baseUrl).href;
+  const card = new URL('profile/card', baseUrl).href;
   const webId = `${card}#me`;
   const email = 'test@test.com';
   const password = 'password!';
@@ -127,7 +127,7 @@ describe('A Solid server with IdP', (): void => {
 
   describe('authenticating', (): void => {
     let state: IdentityTestState;
-    const container = new URL('/secret/', baseUrl).href;
+    const container = new URL('secret/', baseUrl).href;
 
     beforeAll(async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
