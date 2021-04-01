@@ -8,6 +8,7 @@ import type { Adapter, Configuration } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
+import { ensureTrailingSlash, trimTrailingSlashes } from '../../util/PathUtil';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
 import type { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 
@@ -18,21 +19,24 @@ import type { IdpConfigurationGenerator } from './IdpConfigurationGenerator';
 export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationGenerator {
   private readonly storageAdapterFactory: StorageAdapterFactory;
   private readonly baseUrl: string;
+  private readonly idpPathName: string;
   private readonly storage: KeyValueStorage<ResourceIdentifier, unknown>;
   private readonly logger = getLoggerFor(this);
 
   public constructor(
     storageAdapterFactory: StorageAdapterFactory,
     baseUrl: string,
+    idpPathName: string,
     storage: KeyValueStorage<ResourceIdentifier, unknown>,
   ) {
     this.storageAdapterFactory = storageAdapterFactory;
-    this.baseUrl = baseUrl;
+    this.baseUrl = ensureTrailingSlash(baseUrl);
+    this.idpPathName = trimTrailingSlashes(idpPathName);
     this.storage = storage;
   }
 
   private getJwksKey(): ResourceIdentifier {
-    return { path: new URL('idp/jwks', this.baseUrl).href };
+    return { path: new URL(`${this.idpPathName}/jwks`, this.baseUrl).href };
   }
 
   private async generateJwks(): Promise<{ keys: JWK[] }> {
@@ -53,7 +57,7 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
   }
 
   private getCookieSecretKey(): ResourceIdentifier {
-    return { path: new URL('idp/cookie-secret', this.baseUrl).href };
+    return { path: new URL(`${this.idpPathName}/cookie-secret`, this.baseUrl).href };
   }
 
   private async generateCookieKeys(): Promise<string[]> {
@@ -66,6 +70,16 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
     const newCookieSecret = [ randomBytes(64).toString('hex') ];
     await this.storage.set(this.getCookieSecretKey(), newCookieSecret);
     return newCookieSecret;
+  }
+
+  /**
+   * Creates the route string as required by the `oidc-provider` library.
+   * In case base URL is `http://test.com/foo/`, `idpPathName` is `idp` and `relative` is `device/auth`,
+   * this would result in `/foo/idp/device/auth`.
+   */
+  private createRoute(relative: string): string {
+    const url = new URL(`${this.idpPathName}/${relative}`, this.baseUrl);
+    return url.pathname;
   }
 
   public async createConfiguration(): Promise<Configuration> {
@@ -105,18 +119,18 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
       },
       subjectTypes: [ 'public', 'pairwise' ],
       routes: {
-        authorization: '/idp/auth',
-        check_session: '/idp/session/check',
-        code_verification: '/idp/device',
-        device_authorization: '/idp/device/auth',
-        end_session: '/idp/session/end',
-        introspection: '/idp/token/introspection',
-        jwks: '/idp/jwks',
-        pushed_authorization_request: '/idp/request',
-        registration: '/idp/reg',
-        revocation: '/idp/token/revocation',
-        token: '/idp/token',
-        userinfo: '/idp/me',
+        authorization: this.createRoute('auth'),
+        check_session: this.createRoute('session/check'),
+        code_verification: this.createRoute('device'),
+        device_authorization: this.createRoute('device/auth'),
+        end_session: this.createRoute('session/end'),
+        introspection: this.createRoute('token/introspection'),
+        jwks: this.createRoute('jwks'),
+        pushed_authorization_request: this.createRoute('request'),
+        registration: this.createRoute('reg'),
+        revocation: this.createRoute('token/revocation'),
+        token: this.createRoute('token'),
+        userinfo: this.createRoute('me'),
       },
     };
   }

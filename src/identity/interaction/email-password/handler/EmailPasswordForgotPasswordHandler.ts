@@ -1,7 +1,6 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpResponse } from '../../../../server/HttpResponse';
-import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
@@ -15,6 +14,7 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
   messageRenderHandler: IdpRenderHandler;
   emailPasswordStorageAdapter: EmailPasswordStore;
   baseUrl: string;
+  idpPathName: string;
   emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   emailSender: EmailSender;
 }
@@ -26,6 +26,7 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
   private readonly messageRenderHandler: IdpRenderHandler;
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly baseUrl: string;
+  private readonly idpPathName: string;
   private readonly logger = getLoggerFor(this);
   private readonly emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   private readonly emailSender: EmailSender;
@@ -35,6 +36,7 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
     this.messageRenderHandler = args.messageRenderHandler;
     this.emailPasswordStorageAdapter = args.emailPasswordStorageAdapter;
     this.baseUrl = args.baseUrl;
+    this.idpPathName = args.idpPathName;
     this.emailTemplateRenderer = args.emailTemplateRenderer;
     this.emailSender = args.emailSender;
   }
@@ -78,7 +80,7 @@ export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandle
         await this.sendResponse(input.response, interactionDetails, email);
         return;
       }
-      const resetLink = `${trimTrailingSlashes(this.baseUrl)}/idp/resetpassword?rid=${recordId}`;
+      const resetLink = new URL(`${this.idpPathName}/resetpassword?rid=${recordId}`, this.baseUrl).href;
 
       // Send email
       this.logger.info(`Sending password reset to ${email}`);

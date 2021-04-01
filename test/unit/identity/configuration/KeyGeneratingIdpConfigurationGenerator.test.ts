@@ -33,18 +33,18 @@ function getExpected(adapter: any, cookieKeys: any, jwks: any): any {
     },
     subjectTypes: [ 'public', 'pairwise' ],
     routes: {
-      authorization: '/idp/auth',
-      check_session: '/idp/session/check',
-      code_verification: '/idp/device',
-      device_authorization: '/idp/device/auth',
-      end_session: '/idp/session/end',
-      introspection: '/idp/token/introspection',
-      jwks: '/idp/jwks',
-      pushed_authorization_request: '/idp/request',
-      registration: '/idp/reg',
-      revocation: '/idp/token/revocation',
-      token: '/idp/token',
-      userinfo: '/idp/me',
+      authorization: '/foo/idp/auth',
+      check_session: '/foo/idp/session/check',
+      code_verification: '/foo/idp/device',
+      device_authorization: '/foo/idp/device/auth',
+      end_session: '/foo/idp/session/end',
+      introspection: '/foo/idp/token/introspection',
+      jwks: '/foo/idp/jwks',
+      pushed_authorization_request: '/foo/idp/request',
+      registration: '/foo/idp/reg',
+      revocation: '/foo/idp/token/revocation',
+      token: '/foo/idp/token',
+      userinfo: '/foo/idp/me',
     },
   };
 }
@@ -52,6 +52,7 @@ function getExpected(adapter: any, cookieKeys: any, jwks: any): any {
 describe('A KeyGeneratingIdpConfigurationGenerator', (): void => {
   let storageAdapterFactory: StorageAdapterFactory;
   const baseUrl = 'http://test.com/foo/';
+  const idpPathName = 'idp';
   let storage: KeyValueStorage<ResourceIdentifier, any>;
   let generator: KeyGeneratingIdpConfigurationGenerator;
 
@@ -66,7 +67,7 @@ describe('A KeyGeneratingIdpConfigurationGenerator', (): void => {
       set: jest.fn((id: ResourceIdentifier, value: any): any => map.set(id.path, value)),
     } as any;
 
-    generator = new KeyGeneratingIdpConfigurationGenerator(storageAdapterFactory, baseUrl, storage);
+    generator = new KeyGeneratingIdpConfigurationGenerator(storageAdapterFactory, baseUrl, idpPathName, storage);
   });
 
   it('creates a correct configuration.', async(): Promise<void> => {
