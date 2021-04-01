@@ -34,6 +34,7 @@
       "KeyGeneratingIdpConfigurationGenerator:_baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
+      "KeyGeneratingIdpConfigurationGenerator:_idpPathName": "idp",
       "KeyGeneratingIdpConfigurationGenerator:_storage": {
         "@id": "urn:solid-server:default:IdpStorage"
       }

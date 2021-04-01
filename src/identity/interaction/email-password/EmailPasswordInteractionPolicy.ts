@@ -13,10 +13,12 @@ import type {
  * is /idp/interaction/:uid
  */
 export class EmailPasswordInteractionPolicy implements IdpInteractionPolicy {
-  public readonly policy: interactionPolicy.Prompt[];
   private readonly logger = getLoggerFor(this);
 
-  public constructor() {
+  public readonly policy: interactionPolicy.Prompt[];
+  public readonly url: (ctx: KoaContextWithOIDC) => string;
+
+  public constructor(idpPathName: string) {
     const interactions = interactionPolicy.base();
     const selectAccount = new interactionPolicy.Prompt({
       name: 'select_account',
@@ -24,9 +26,14 @@ export class EmailPasswordInteractionPolicy implements IdpInteractionPolicy {
     });
     interactions.add(selectAccount, 0);
     this.policy = interactions;
+    this.url = this.createUrlFunction(idpPathName);
   }
 
-  public async url(ctx: KoaContextWithOIDC): Promise<string> {
-    return `/idp/interaction/${ctx.oidc.uid}`;
+  /**
+   * Helper function to create the function that will be put in `url`.
+   * Needs to be done like this since the `this` reference is lost when passing this value along.
+   */
+  private createUrlFunction(idpPathName: string): (ctx: KoaContextWithOIDC) => string {
+    return (ctx: KoaContextWithOIDC): string => `/${idpPathName}/interaction/${ctx.oidc.uid}`;
   }
 }

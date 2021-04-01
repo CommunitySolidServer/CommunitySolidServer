@@ -20,6 +20,7 @@ describe('An EmailPasswordForgotPasswordHandler', (): void => {
   let messageRenderHandler: IdpRenderHandler;
   let emailPasswordStorageAdapter: EmailPasswordStore;
   const baseUrl = 'http://test.com/base/';
+  const idpPathName = 'idp';
   let emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   let emailSender: EmailSender;
   let handler: EmailPasswordForgotPasswordHandler;
@@ -51,6 +52,7 @@ describe('An EmailPasswordForgotPasswordHandler', (): void => {
       messageRenderHandler,
       emailPasswordStorageAdapter,
       baseUrl,
+      idpPathName,
       emailTemplateRenderer,
       emailSender,
     });
