@@ -22,6 +22,7 @@ jest.mock('componentsjs', (): any => ({
 }));
 
 jest.spyOn(process, 'cwd').mockReturnValue('/var/cwd');
+const error = jest.spyOn(console, 'error').mockImplementation(jest.fn());
 const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
 
@@ -96,8 +97,7 @@ describe('CliRunner', (): void => {
       mainModulePath: '/var/cwd/module/path',
     });
     expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
-    expect(manager.configRegistry.register)
-      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
+    expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
     expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
       {
@@ -142,8 +142,7 @@ describe('CliRunner', (): void => {
       mainModulePath: '/var/cwd/module/path',
     });
     expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
-    expect(manager.configRegistry.register)
-      .toHaveBeenCalledWith('/var/cwd/myconfig.json');
+    expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
     expect(manager.instantiate).toHaveBeenCalledWith(
       'urn:solid-server:default:Initializer',
       {
@@ -158,6 +157,54 @@ describe('CliRunner', (): void => {
         },
       },
     );
+  });
+
+  it('uses the default process.argv in case none are provided.', async(): Promise<void> => {
+    const { argv } = process;
+    process.argv = [
+      'node', 'script',
+      '-b', 'http://pod.example/',
+      '-c', 'myconfig.json',
+      '-f', '/root',
+      '-l', 'debug',
+      '-m', 'module/path',
+      '-p', '4000',
+      '-s', 'http://localhost:5000/sparql',
+      '-t', 'templates',
+      '--podConfigJson', '/different-path.json',
+    ];
+
+    new CliRunner().run();
+
+    // Wait until initializer has been called, because we can't await CliRunner.run.
+    await new Promise((resolve): void => {
+      setImmediate(resolve);
+    });
+
+    expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+    expect(ComponentsManager.build).toHaveBeenCalledWith({
+      dumpErrorState: true,
+      logLevel: 'debug',
+      mainModulePath: '/var/cwd/module/path',
+    });
+    expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+    expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
+    expect(manager.instantiate).toHaveBeenCalledWith(
+      'urn:solid-server:default:Initializer',
+      {
+        variables: {
+          'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
+          'urn:solid-server:default:variable:loggingLevel': 'debug',
+          'urn:solid-server:default:variable:podTemplateFolder': '/var/cwd/templates',
+          'urn:solid-server:default:variable:port': 4000,
+          'urn:solid-server:default:variable:rootFilePath': '/root',
+          'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+          'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
+        },
+      },
+    );
+
+    process.argv = argv;
   });
 
   it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
@@ -183,7 +230,9 @@ describe('CliRunner', (): void => {
 
   it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
     initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run();
+    new CliRunner().run({
+      argv: [ 'node', 'script' ],
+    });
 
     // Wait until initializer has been called, because we can't await CliRunner.run.
     await new Promise((resolve): void => {
@@ -207,6 +256,7 @@ describe('CliRunner', (): void => {
       setImmediate(resolve);
     });
 
+    expect(error).toHaveBeenCalledWith('Unknown option: "foo"');
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
@@ -223,6 +273,7 @@ describe('CliRunner', (): void => {
       setImmediate(resolve);
     });
 
+    expect(error).toHaveBeenCalledWith('Missing value for argument "s"');
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
@@ -239,6 +290,8 @@ describe('CliRunner', (): void => {
       setImmediate(resolve);
     });
 
+    // There seems to be an issue with yargs where the first and last `"` are missing.
+    expect(error).toHaveBeenCalledWith('Unsupported arguments: foo", "bar", "foo.txt", "bar.txt');
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
@@ -255,6 +308,7 @@ describe('CliRunner', (): void => {
       setImmediate(resolve);
     });
 
+    expect(error).toHaveBeenCalledWith('Multiple values were provided for: "l", [info,info]');
     expect(exit).toHaveBeenCalledTimes(1);
     expect(exit).toHaveBeenCalledWith(1);
   });
