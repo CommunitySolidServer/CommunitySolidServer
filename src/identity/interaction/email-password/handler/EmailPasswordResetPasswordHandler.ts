@@ -20,10 +20,11 @@ export interface EmailPasswordResetPasswordHandlerArgs {
  * that is linked in the reset password email.
  */
 export class EmailPasswordResetPasswordHandler extends HttpHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly renderHandler: EmailPasswordResetPasswordRenderHandler;
   private readonly messageRenderHandler: RenderHandler<{ message: string }>;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(args: EmailPasswordResetPasswordHandlerArgs) {
     super();
@@ -61,6 +62,8 @@ export class EmailPasswordResetPasswordHandler extends HttpHandler {
           message: 'Your password was successfully reset.',
         },
       });
+
+      this.logger.debug(`Resetting password for user ${email}`);
     } catch (err: unknown) {
       const errorMessage: string = isNativeError(err) ? err.message : 'An unknown error occurred';
       await this.renderHandler.handleSafe({

@@ -6,7 +6,6 @@ import { fromKeyLike } from 'jose/jwk/from_key_like';
 import { generateKeyPair } from 'jose/util/generate_key_pair';
 import type { Adapter, Configuration } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../util/PathUtil';
 import type { StorageAdapterFactory } from '../storage/StorageAdapterFactory';
@@ -21,7 +20,6 @@ export class KeyGeneratingIdpConfigurationGenerator implements IdpConfigurationG
   private readonly baseUrl: string;
   private readonly idpPathName: string;
   private readonly storage: KeyValueStorage<ResourceIdentifier, unknown>;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(
     storageAdapterFactory: StorageAdapterFactory,

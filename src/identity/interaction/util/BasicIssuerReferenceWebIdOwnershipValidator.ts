@@ -10,8 +10,9 @@ const { literal, namedNode, quad } = DataFactory;
  * references this as an issuer.
  */
 export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipValidator {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly issuer: string;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(issuer: string) {
     super();
@@ -31,6 +32,7 @@ export class BasicIssuerReferenceWebIdOwnershipValidator extends WebIdOwnershipV
       ),
     );
     if (!hasIssuer || !hasRegistrationToken) {
+      this.logger.debug(`Missing issuer and/or registration token at ${webId}`);
       let errorMessage = !hasIssuer ?
         `<${webId}> <${SOLID.terms.oidcIssuer.value}> <${this.issuer}> .\n` :
         '';

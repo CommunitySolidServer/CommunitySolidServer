@@ -16,8 +16,9 @@ export interface RenderHandlerMap {
  * interaction name doesn't match anything in the RenderHandlerMap
  */
 export class ChooseInitialInteractionHandler extends IdpInteractionHttpHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly renderHandlerMap: RenderHandlerMap;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(renderHandlerMap: RenderHandlerMap) {
     super();
@@ -26,8 +27,11 @@ export class ChooseInitialInteractionHandler extends IdpInteractionHttpHandler {
 
   public async handle({ request, response, provider }: IdpInteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await provider.interactionDetails(request, response);
-    const renderHandler = this.renderHandlerMap[interactionDetails.prompt.name] || this.renderHandlerMap.default;
-    await renderHandler.handleSafe({
+    const name = interactionDetails.prompt.name in this.renderHandlerMap ? interactionDetails.prompt.name : 'default';
+
+    this.logger.debug(`Calling ${name} render handler.`);
+
+    await this.renderHandlerMap[name].handleSafe({
       response,
       props: {
         details: interactionDetails,

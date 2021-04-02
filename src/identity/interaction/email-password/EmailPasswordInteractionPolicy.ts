@@ -1,6 +1,5 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import type {
   IdpInteractionPolicy,
 } from '../IdpInteractionPolicy';
@@ -13,8 +12,6 @@ import type {
  * is /idp/interaction/:uid
  */
 export class EmailPasswordInteractionPolicy implements IdpInteractionPolicy {
-  private readonly logger = getLoggerFor(this);
-
   public readonly policy: interactionPolicy.Prompt[];
   public readonly url: (ctx: KoaContextWithOIDC) => string;
 
