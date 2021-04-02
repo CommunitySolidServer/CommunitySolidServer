@@ -1,6 +1,7 @@
 import { DataFactory } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { Dataset, Quad } from 'rdf-js';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { SOLID } from '../../util/Vocabularies';
 import { fetchDataset } from '../util/FetchUtil';
 import type { StorageAdapterFactory } from './StorageAdapterFactory';
@@ -10,6 +11,8 @@ import namedNode = DataFactory.namedNode;
  * An Adapter that wraps around another Adapter and fetches data from the webId in case no client payload was found.
  */
 export class ClientWebIdFetchingStorageAdapter implements Adapter {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly adapter: Adapter;
   private readonly name: string;
 
@@ -28,11 +31,13 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
     // If we're looking up a Client and the Client is undefined, check to
     // see if it's a valid Client WebId
     if (!payload && this.name === 'Client') {
+      this.logger.debug(`Looking for payload data at ${id}`);
       let dataset: Dataset;
       try {
         // Fetch and parse the Client WebId document
         dataset = await fetchDataset(id);
       } catch {
+        this.logger.debug(`Looking for payload data failed at ${id}`);
         // If an error is thrown, return the original payload
         return payload;
       }
@@ -48,6 +53,7 @@ export class ClientWebIdFetchingStorageAdapter implements Adapter {
           // Keep looking for a valid quad
         }
       }
+      this.logger.debug(`No payload data was found at ${id}`);
     }
 
     // Will also be returned if no valid registration data was found

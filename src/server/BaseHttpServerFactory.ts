@@ -29,7 +29,7 @@ export class BaseHttpServerFactory implements HttpServerFactory {
     const server = createServer(
       async(request: IncomingMessage, response: ServerResponse): Promise<void> => {
         try {
-          this.logger.info(`Received request for ${request.url}`);
+          this.logger.info(`Received ${request.method} request for ${request.url}`);
           await this.handler.handleSafe({ request: guardStream(request), response });
         } catch (error: unknown) {
           const errMsg = isNativeError(error) ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';

@@ -23,11 +23,12 @@ export interface EmailPasswordForgotPasswordHandlerArgs {
  * Handles the submission of the ForgotPassword form
  */
 export class EmailPasswordForgotPasswordHandler extends IdpInteractionHttpHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly messageRenderHandler: IdpRenderHandler;
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly baseUrl: string;
   private readonly idpPathName: string;
-  private readonly logger = getLoggerFor(this);
   private readonly emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   private readonly emailSender: EmailSender;
 

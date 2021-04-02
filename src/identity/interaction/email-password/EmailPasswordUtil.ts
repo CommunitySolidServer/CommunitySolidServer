@@ -3,15 +3,6 @@ import { isNativeError } from '../../../util/errors/ErrorUtil';
 import { HttpError } from '../../../util/errors/HttpError';
 import { IdpInteractionError } from '../util/IdpInteractionError';
 
-export type EmailPasswordInput = {
-  email?: string;
-  webId?: string;
-  password?: string;
-  confirmPassword?: string;
-  remember?: boolean;
-  recordId?: string;
-};
-
 /**
  * Throws an IdpInteractionError with contents depending on the type of input error.
  * Default status code is 500 and default error message is 'Unknown Error'.

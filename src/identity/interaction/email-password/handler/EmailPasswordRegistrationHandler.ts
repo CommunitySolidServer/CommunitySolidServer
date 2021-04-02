@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdpInteractionHttpHandlerInput } from '../../IdpInteractionHttpHandler';
 import { IdpInteractionHttpHandler } from '../../IdpInteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
@@ -20,6 +21,8 @@ interface EmailPasswordRegisterHandlerArgs {
  * user and logs them in if successful.
  */
 export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly webIdOwnershipValidator: WebIdOwnershipValidator;
   private readonly emailPasswordStorageAdapter: EmailPasswordStore;
   private readonly oidcInteractionCompleter: OidcInteractionCompleter;
@@ -69,6 +72,8 @@ export class EmailPasswordRegistrationHandler extends IdpInteractionHttpHandler 
         webId,
         shouldRemember,
       });
+
+      this.logger.debug(`Registering user ${email} with webId ${webId}`);
     } catch (err: unknown) {
       throwIdpInteractionError(err, { email: prefilledEmail, webId: prefilledWebId });
     }

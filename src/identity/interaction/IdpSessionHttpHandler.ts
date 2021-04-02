@@ -19,6 +19,6 @@ export class IdpSessionHttpHandler extends IdpInteractionHttpHandler {
     if (!details.session || !details.session.accountId) {
       throw new NotImplementedHttpError('Only confirm actions with a session and accountId are supported');
     }
-    await this.oidcInteractionCompleter.handleSafe({ ...input, webId: details.session.accountId as string });
+    await this.oidcInteractionCompleter.handleSafe({ ...input, webId: details.session.accountId });
   }
 }

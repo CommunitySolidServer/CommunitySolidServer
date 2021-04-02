@@ -1,5 +1,4 @@
 import type { InteractionResults } from 'oidc-provider';
-import { getLoggerFor } from '../../../logging/LogUtil';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 import type { IdpInteractionHttpHandlerInput } from '../IdpInteractionHttpHandler';
 
@@ -12,8 +11,6 @@ export interface OidcInteractionCompleterInput extends IdpInteractionHttpHandler
  * Completes an IdP interaction, logging the user in.
  */
 export class OidcInteractionCompleter extends AsyncHandler<OidcInteractionCompleterInput> {
-  private readonly logger = getLoggerFor(this);
-
   public async handle(input: OidcInteractionCompleterInput): Promise<void> {
     const result: InteractionResults = {
       login: {

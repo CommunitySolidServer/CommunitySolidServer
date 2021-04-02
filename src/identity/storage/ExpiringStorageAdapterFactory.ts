@@ -1,5 +1,6 @@
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { trimTrailingSlashes } from '../../util/PathUtil';
 import type { StorageAdapterFactory } from './StorageAdapterFactory';
@@ -15,6 +16,8 @@ export interface ExpiringStorageAdapterArgs {
  * to persist data.
  */
 export class ExpiringStorageAdapter implements Adapter {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly baseUrl: string;
   private readonly name: string;
   private readonly storage: ExpiringStorage<ResourceIdentifier, unknown>;
@@ -48,6 +51,8 @@ export class ExpiringStorageAdapter implements Adapter {
     // Despite what the typings say, `expiresIn` can be undefined
     const expires = expiresIn ? new Date(Date.now() + (expiresIn * 1000)) : undefined;
     const key = this.keyFor(id);
+
+    this.logger.debug(`Storing payload data for ${id}`);
 
     const storagePromises: Promise<unknown>[] = [
       this.storage.set(key, payload, expires),
@@ -90,6 +95,7 @@ export class ExpiringStorageAdapter implements Adapter {
   }
 
   public async revokeByGrantId(grantId: string): Promise<void> {
+    this.logger.debug(`Revoking grantId ${grantId}`);
     const grantKey = this.grantKeyFor(grantId);
     const grants = await this.storage.get(grantKey) as ResourceIdentifier[] | undefined;
     if (!grants) {

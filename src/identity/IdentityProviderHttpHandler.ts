@@ -13,13 +13,13 @@ import type { IdpInteractionPolicy } from './interaction/IdpInteractionPolicy';
  * be passed to all child IdpInteractionHttpHandlers
  */
 export class IdentityProviderHttpHandler extends HttpHandler {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly providerFactory: IdentityProviderFactory;
   private readonly interactionPolicy: IdpInteractionPolicy;
   private readonly interactionHttpHandler: IdpInteractionHttpHandler;
   private readonly errorResponseWriter: ResponseWriter;
-
   private provider?: Provider;
-  private readonly logger = getLoggerFor(this);
 
   public constructor(
     providerFactory: IdentityProviderFactory,
@@ -60,6 +60,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     try {
       await this.interactionHttpHandler.canHandle({ ...input, provider });
     } catch {
+      this.logger.debug(`Sending request to oidc-provider: ${input.request.url}`);
       // Let the Provider handle the request in case our server has no matching handlers
       return provider.callback(input.request, input.response);
     }
