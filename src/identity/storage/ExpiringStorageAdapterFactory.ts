@@ -6,7 +6,7 @@ import type { StorageAdapterFactory } from './StorageAdapterFactory';
 
 export interface ExpiringStorageAdapterArgs {
   baseUrl: string;
-  storagePathname: string;
+  storagePathName: string;
   storage: ExpiringStorage<ResourceIdentifier, unknown>;
 }
 
@@ -20,7 +20,10 @@ export class ExpiringStorageAdapter implements Adapter {
   private readonly storage: ExpiringStorage<ResourceIdentifier, unknown>;
 
   public constructor(name: string, args: ExpiringStorageAdapterArgs) {
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}/${args.storagePathname}`;
+    if (!args.storagePathName.startsWith('/')) {
+      throw new Error('storagePathName should start with a slash.');
+    }
+    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathName}`;
     this.name = name;
     this.storage = args.storage;
   }

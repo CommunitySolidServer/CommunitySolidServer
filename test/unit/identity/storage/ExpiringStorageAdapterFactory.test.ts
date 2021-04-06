@@ -8,7 +8,7 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 
 describe('An ExpiringStorageAdapterFactory', (): void => {
   const baseUrl = 'http://test.com/foo/';
-  const storagePathname = 'storage';
+  const storagePathName = '/storage';
   const name = 'nnaammee';
   const id = 'id!';
   const grantId = 'grantId!';
@@ -33,8 +33,13 @@ describe('An ExpiringStorageAdapterFactory', (): void => {
       delete: jest.fn().mockImplementation((rid: ResourceIdentifier): any => map.delete(rid.path)),
     } as any;
 
-    factory = new ExpiringStorageAdapterFactory({ baseUrl, storagePathname, storage });
+    factory = new ExpiringStorageAdapterFactory({ baseUrl, storagePathName, storage });
     adapter = factory.createStorageAdapter(name);
+  });
+
+  it('errors if the storagePathName does not start with a slash.', async(): Promise<void> => {
+    factory = new ExpiringStorageAdapterFactory({ baseUrl, storagePathName: 'noSlash', storage });
+    expect((): any => factory.createStorageAdapter(name)).toThrow('storagePathName should start with a slash.');
   });
 
   it('can find payload by id.', async(): Promise<void> => {

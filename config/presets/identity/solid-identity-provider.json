@@ -16,7 +16,7 @@
         "ExpiringStorageAdapterFactory:_args_baseUrl": {
           "@id": "urn:solid-server:default:variable:baseUrl"
         },
-        "ExpiringStorageAdapterFactory:_args_storagePathname": "/idp/oidc",
+        "ExpiringStorageAdapterFactory:_args_storagePathName": "/idp/oidc",
         "ExpiringStorageAdapterFactory:_args_storage": {
           "@type": "WrappedExpiringStorage",
           "WrappedExpiringStorage:_source": {
