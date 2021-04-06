@@ -176,6 +176,7 @@ describe('CliRunner', (): void => {
       '-p', '4000',
       '-s', 'http://localhost:5000/sparql',
       '-t', 'templates',
+      '-v', 'templates/views',
       '--podConfigJson', '/different-path.json',
     ];
 
@@ -205,6 +206,7 @@ describe('CliRunner', (): void => {
           'urn:solid-server:default:variable:rootFilePath': '/root',
           'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
           'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
+          'urn:solid-server:default:variable:webViewsFolder': '/var/cwd/templates/views',
         },
       },
     );
