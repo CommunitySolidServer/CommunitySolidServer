@@ -42,7 +42,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       try {
         this.provider = await this.providerFactory.createProvider(this.interactionPolicy);
       } catch (err: unknown) {
-        this.logger.error(err as string);
+        this.logger.error(`Failed to create Provider: ${isNativeError(err) ? err.message : 'Unknown error'}`);
         throw err;
       }
     }

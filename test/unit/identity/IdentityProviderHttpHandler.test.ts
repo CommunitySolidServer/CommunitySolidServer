@@ -89,5 +89,8 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const error = new Error('error!');
     (providerFactory.createProvider as jest.Mock).mockRejectedValueOnce(error);
     await expect(handler.handle({ request, response })).rejects.toThrow(error);
+
+    (providerFactory.createProvider as jest.Mock).mockRejectedValueOnce('apple');
+    await expect(handler.handle({ request, response })).rejects.toBe('apple');
   });
 });

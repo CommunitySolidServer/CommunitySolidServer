@@ -1,6 +1,8 @@
 import type { HttpHandler } from '../../../server/HttpHandler';
 import { RouterHandler } from '../../../server/util/RouterHandler';
+import { isNativeError } from '../../../util/errors/ErrorUtil';
 import type { IdpInteractionHttpHandlerInput } from '../IdpInteractionHttpHandler';
+import { IdpInteractionError } from './IdpInteractionError';
 import type { IdpRenderHandler } from './IdpRenderHandler';
 
 /**
@@ -35,8 +37,8 @@ export class IdpRouteController extends RouterHandler {
       try {
         await this.handler.handleSafe(input);
       } catch (err: unknown) {
-        const errorMessage: string = (err as Error).message || 'An unknown error occurred';
-        const prefilled = (err as { prefilled: Record<string, string> }).prefilled || {};
+        const errorMessage = isNativeError(err) ? err.message : 'An unknown error occurred';
+        const prefilled = IdpInteractionError.isInstance(err) ? err.prefilled : {};
         await this.render(input, interactionDetails, errorMessage, prefilled);
       }
     }

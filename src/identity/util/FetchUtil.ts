@@ -2,6 +2,7 @@ import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import type { Dataset } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { isNativeError } from '../../util/errors/ErrorUtil';
 
 const logger = getLoggerFor('FetchUtil');
 
@@ -13,15 +14,17 @@ export async function fetchDataset(url: string): Promise<Dataset> {
   try {
     rawResponse = (await fetch(url)) as DatasetResponse<Dataset>;
   } catch (err: unknown) {
-    logger.error(err as string);
-    throw new Error(`Cannot fetch ${url}`);
+    const errorMessage = `Cannot fetch ${url}: ${isNativeError(err) ? err.message : 'Unknown error'}`;
+    logger.error(errorMessage);
+    throw new Error(errorMessage);
   }
   let dataset: Dataset;
   try {
     dataset = await rawResponse.dataset();
   } catch (err: unknown) {
-    logger.error(err as string);
-    throw new Error(`Could not parse RDF in ${url}`);
+    const errorMessage = `Could not parse RDF in ${url}: ${isNativeError(err) ? err.message : 'Unknown error'}`;
+    logger.error(errorMessage);
+    throw new Error(errorMessage);
   }
   return dataset;
 }
