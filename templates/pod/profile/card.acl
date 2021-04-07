@@ -11,11 +11,9 @@
     acl:accessTo <./card>;
     acl:mode acl:Read.
 
-# The owner has full access to the entire
-# profile directory.
+# The owner has full access to the profile
 <#owner>
     a acl:Authorization;
     acl:agent <{{webId}}>;
-    acl:accessTo <./>;
-    acl:default <./>;
+    acl:accessTo <./card>;
     acl:mode acl:Read, acl:Write, acl:Control.
