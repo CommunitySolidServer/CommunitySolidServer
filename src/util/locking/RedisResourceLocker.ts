@@ -32,13 +32,15 @@ const defaultRedlockConfig = {
  * This solution has issues though:
  *  - Redlock wants to handle expiration itself, this is against the design of a ResourceLocker.
  *    The workaround for this is to extend an active lock indefinitely.
- *  - This solution is not multithreaded!
+ *  - This solution is not multithreaded! If threadA locks a resource, only threadA can unlock this resource.
+ *    If threadB wont be able to lock a resource if threadA already acquired that lock,
+ *    in that sense it is kind of multithreaded.
  *  - Redlock does not provide the ability to see which locks have expired
  */
 export class RedisResourceLocker implements ResourceLocker {
   protected readonly logger = getLoggerFor(this);
 
-  public redlock: Redlock;
+  private readonly redlock: Redlock;
   private readonly lockList: Map<string, Lock>;
   private readonly intervals: Map<string, NodeJS.Timeout>;
 
@@ -92,6 +94,21 @@ export class RedisResourceLocker implements ResourceLocker {
     } catch (error: unknown) {
       throw new InternalServerError(`Error initializing Redlock for clients: ${clients}, ${error}`);
     }
+  }
+
+  public async quit(): Promise<void> {
+    // This for loop is an extra failsafe,
+    // this extra code wont slow down anything, this function will only be called to shut down in peace
+    for (const entry of this.lockList) {
+      const key = entry[0];
+      const lock = this.lockList.get(key);
+      if (lock) {
+        await this.release({ path: lock.resource });
+      } else {
+        this.lockList.delete(key);
+      }
+    }
+    await this.redlock.quit();
   }
 
   public async acquire(identifier: ResourceIdentifier): Promise<void> {
@@ -157,9 +174,8 @@ export class RedisResourceLocker implements ResourceLocker {
           throw new Error('No Lock was found to extend');
         }
       } catch (error: unknown) {
-        // No error should be thrown cause this means the lock has simply been released
-        // Or redlock.extends errors
-        this.logger.debug(`Failed to extend this (Redis)lock for resource: ${identifier}, ${error}`);
+        // No error should be re-thrown cause this means the lock has simply been released
+        this.logger.error(`Failed to extend this (Redis)lock for resource: ${identifier}, ${error}`);
         clearInterval(interval);
         this.intervals.delete(identifier);
       }

@@ -55,7 +55,7 @@
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
-    "test:integration": "jest --coverageReporters --forceExit text-summary -- test/integration",
+    "test:integration": "jest --coverageReporters text-summary -- test/integration",
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/config-default.json -f > /dev/null",
