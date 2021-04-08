@@ -1,5 +1,7 @@
 import type { TLSSocket } from 'tls';
 import type { HttpRequest } from '../../server/HttpRequest';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { parseForwarded } from '../../util/HeaderUtil';
 import { toCanonicalUriPath } from '../../util/PathUtil';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -18,7 +20,7 @@ export class OriginalUrlExtractor extends TargetExtractor {
 
   public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
     if (!url) {
-      throw new Error('Missing URL');
+      throw new InternalServerError('Missing URL');
     }
 
     // Extract host and protocol (possibly overridden by the Forwarded/X-Forwarded-* header)
@@ -36,10 +38,10 @@ export class OriginalUrlExtractor extends TargetExtractor {
 
     // Perform a sanity check on the host
     if (!host) {
-      throw new Error('Missing Host header');
+      throw new BadRequestHttpError('Missing Host header');
     }
     if (/[/\\*]/u.test(host)) {
-      throw new Error(`The request has an invalid Host header: ${host}`);
+      throw new BadRequestHttpError(`The request has an invalid Host header: ${host}`);
     }
 
     // URL object applies punycode encoding to domain
