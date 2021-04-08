@@ -68,6 +68,18 @@ describe('A Solid server', (): void => {
     expect(res.status).toBe(205);
   });
 
+  it('can handle PUT errors.', async(): Promise<void> => {
+    // There was a specific case where the following request caused the connection to close instead of error
+    const res = await fetch(baseUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/plain',
+      },
+      body: '"test"',
+    });
+    expect(res.status).toBe(400);
+  });
+
   it('can POST to create a container.', async(): Promise<void> => {
     const res = await fetch(baseUrl, {
       method: 'POST',
