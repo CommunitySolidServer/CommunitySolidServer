@@ -3,6 +3,7 @@ import { Readable, Transform } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import pump from 'pump';
 import { getLoggerFor } from '../logging/LogUtil';
+import { isHttpRequest } from '../server/HttpRequest';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
 
@@ -30,14 +31,30 @@ export async function readableToString(stream: Readable): Promise<string> {
  */
 export function pipeSafely<T extends Writable>(readable: NodeJS.ReadableStream, destination: T,
   mapError?: (error: Error) => Error): Guarded<T> {
-  // In case the input readable is guarded, it will no longer log errors since `pump` attaches a new error listener
-  pump(readable, destination, (error): void => {
-    if (error) {
-      logger.warn(`Piped stream errored with ${error.message}`);
-      // Make sure the final error can be handled in a normal streaming fashion
-      destination.emit('error', mapError ? mapError(error) : error);
-    }
-  });
+  // We never want to closes the incoming HttpRequest if there is an error
+  // since that also closes the outgoing HttpResponse.
+  // Since `pump` sends stream errors both up and down the pipe chain,
+  // in this case we need to make sure the error only goes down the chain.
+  if (isHttpRequest(readable)) {
+    readable.pipe(destination);
+    readable.on('error', (error): void => {
+      logger.warn(`HttpRequest errored with ${error.message}`);
+      // From https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options :
+      // One important caveat is that if the Readable stream emits an error during processing,
+      // the Writable destination is not closed automatically. If an error occurs,
+      // it will be necessary to manually close each stream in order to prevent memory leaks.
+      destination.destroy(mapError ? mapError(error) : error);
+    });
+  } else {
+    // In case the input readable is guarded, it will no longer log errors since `pump` attaches a new error listener
+    pump(readable, destination, (error): void => {
+      if (error) {
+        logger.warn(`Piped stream errored with ${error.message}`);
+        // Make sure the final error can be handled in a normal streaming fashion
+        destination.emit('error', mapError ? mapError(error) : error);
+      }
+    });
+  }
   // Guarding the stream now means the internal error listeners of pump will be ignored
   // when checking if there is a valid error listener.
   return guardStream(destination);

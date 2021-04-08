@@ -1,7 +1,12 @@
 import { PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
+import { isHttpRequest } from '../../../src/server/HttpRequest';
 import { guardedStreamFrom, pipeSafely, transformSafely, readableToString } from '../../../src/util/StreamUtil';
+
+jest.mock('../../../src/server/HttpRequest', (): any => ({
+  isHttpRequest: jest.fn(),
+}));
 
 describe('StreamUtil', (): void => {
   describe('#readableToString', (): void => {
@@ -12,6 +17,10 @@ describe('StreamUtil', (): void => {
   });
 
   describe('#pipeSafely', (): void => {
+    beforeEach(async(): Promise<void> => {
+      (isHttpRequest as unknown as jest.Mock).mockClear();
+    });
+
     it('pipes data from one stream to the other.', async(): Promise<void> => {
       const input = streamifyArray([ 'data' ]);
       const output = new PassThrough();
@@ -55,6 +64,47 @@ describe('StreamUtil', (): void => {
       // Allow events to propagate
       await new Promise(setImmediate);
       expect(input.destroyed).toBe(true);
+    });
+
+    it('does not destroy the source stream if it is an HttpRequest.', async(): Promise<void> => {
+      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      const input = new PassThrough();
+      const output = new PassThrough();
+      const piped = pipeSafely(input, output);
+
+      // Catch errors to prevent problems in test output
+      output.on('error', (): void => {
+        // Empty
+      });
+
+      piped.destroy(new Error('error!'));
+      // Allow events to propagate
+      await new Promise(setImmediate);
+      expect(input.destroyed).toBe(false);
+    });
+
+    it('still sends errors downstream if the input is an HttpRequest.', async(): Promise<void> => {
+      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      const input = new PassThrough();
+      input.read = (): any => {
+        input.emit('error', new Error('error'));
+        return null;
+      };
+      const output = new PassThrough();
+      const piped = pipeSafely(input, output);
+      await expect(readableToString(piped)).rejects.toThrow('error');
+    });
+
+    it('can map errors if the input is an HttpRequest.', async(): Promise<void> => {
+      (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
+      const input = streamifyArray([ 'data' ]);
+      input.read = (): any => {
+        input.emit('error', new Error('error'));
+        return null;
+      };
+      const output = new PassThrough();
+      const piped = pipeSafely(input, output, (): any => new Error('other error'));
+      await expect(readableToString(piped)).rejects.toThrow('other error');
     });
   });
 
@@ -158,8 +208,8 @@ describe('StreamUtil', (): void => {
 
   describe('#guardedStreamFrom', (): void => {
     it('converts data to a guarded stream.', async(): Promise<void> => {
-      const data = [ 'a', 'b' ];
-      await expect(readableToString(guardedStreamFrom(data))).resolves.toBe('ab');
+      await expect(readableToString(guardedStreamFrom([ 'a', 'b' ]))).resolves.toBe('ab');
+      await expect(readableToString(guardedStreamFrom('ab'))).resolves.toBe('ab');
     });
   });
 });
