@@ -3,6 +3,7 @@ import arrayifyStream from 'arrayify-stream';
 import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
@@ -121,7 +122,7 @@ export class InMemoryDataAccessor implements DataAccessor {
         throw new NotFoundHttpError();
       }
       if (this.isDataEntry(parent)) {
-        throw new Error('Invalid path.');
+        throw new InternalServerError('Invalid path.');
       }
     }
 

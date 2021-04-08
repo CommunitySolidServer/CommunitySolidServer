@@ -1,4 +1,5 @@
 import type { HttpRequest } from '../../server/HttpRequest';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { Operation } from '../operations/Operation';
 import type { BodyParser } from './BodyParser';
 import type { MetadataExtractor } from './metadata/MetadataExtractor';
@@ -34,7 +35,7 @@ export class BasicRequestParser extends RequestParser {
   public async handle(request: HttpRequest): Promise<Operation> {
     const { method } = request;
     if (!method) {
-      throw new Error('No method specified on the HTTP request');
+      throw new InternalServerError('No method specified on the HTTP request');
     }
     const target = await this.targetExtractor.handleSafe({ request });
     const preferences = await this.preferenceParser.handleSafe({ request });

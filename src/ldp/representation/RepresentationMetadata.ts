@@ -1,6 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { toSubjectTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
 import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
@@ -265,7 +266,9 @@ export class RepresentationMetadata {
     }
     if (terms.length > 1) {
       this.logger.error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
-      throw new Error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
+      throw new InternalServerError(
+        `Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`,
+      );
     }
     return terms[0];
   }

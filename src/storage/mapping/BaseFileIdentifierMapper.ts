@@ -2,6 +2,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
   decodeUriPathComponents,
@@ -98,7 +99,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   public async mapFilePathToUrl(filePath: string, isContainer: boolean): Promise<ResourceLink> {
     if (!filePath.startsWith(this.rootFilepath)) {
       this.logger.error(`Trying to access file ${filePath} outside of ${this.rootFilepath}`);
-      throw new Error(`File ${filePath} is not part of the file storage at ${this.rootFilepath}`);
+      throw new InternalServerError(`File ${filePath} is not part of the file storage at ${this.rootFilepath}`);
     }
     const relative = filePath.slice(this.rootFilepath.length);
     let url: string;
