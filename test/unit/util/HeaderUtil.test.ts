@@ -188,16 +188,18 @@ describe('HeaderUtil', (): void => {
   });
 
   describe('#parseForwarded', (): void => {
-    it('parses an undefined value.', (): void => {
-      expect(parseForwarded()).toEqual({});
+    it('handles an empty set of headers.', (): void => {
+      expect(parseForwarded({})).toEqual({});
     });
 
-    it('parses an empty string.', (): void => {
-      expect(parseForwarded('')).toEqual({});
+    it('handles empty string values.', (): void => {
+      const headers = { forwarded: '', 'x-forwarded-host': '', 'x-forwarded-proto': '' };
+      expect(parseForwarded(headers)).toEqual({});
     });
 
     it('parses a Forwarded header value.', (): void => {
-      expect(parseForwarded('for=192.0.2.60;proto=http;by=203.0.113.43;host=example.org')).toEqual({
+      const headers = { forwarded: 'for=192.0.2.60;proto=http;by=203.0.113.43;host=example.org' };
+      expect(parseForwarded(headers)).toEqual({
         by: '203.0.113.43',
         for: '192.0.2.60',
         host: 'example.org',
@@ -206,14 +208,47 @@ describe('HeaderUtil', (): void => {
     });
 
     it('skips empty fields.', (): void => {
-      expect(parseForwarded('for=192.0.2.60;proto=;by=;host=')).toEqual({
+      const headers = { forwarded: 'for=192.0.2.60;proto=;by=;host=' };
+      expect(parseForwarded(headers)).toEqual({
         for: '192.0.2.60',
       });
     });
 
     it('takes only the first value into account.', (): void => {
-      expect(parseForwarded('host=pod.example, for=192.0.2.43, host=other')).toEqual({
+      const headers = { forwarded: 'host=pod.example, for=192.0.2.43, host=other' };
+      expect(parseForwarded(headers)).toEqual({
         host: 'pod.example',
+      });
+    });
+
+    it('should fall back to X-Forwarded-Host and X-Forwarded-Proto without Forward header.', (): void => {
+      const headers = { 'x-forwarded-host': 'pod.example', 'x-forwarded-proto': 'https' };
+      expect(parseForwarded(headers)).toEqual({
+        host: 'pod.example',
+        proto: 'https',
+      });
+    });
+
+    it('should prefer Forwarded to X-Forwarded-Host and X-Forwarded-Proto with Forward header.', (): void => {
+      const headers = {
+        forwarded: 'proto=http;host=pod.example',
+        'x-forwarded-host': 'anotherpod.example',
+        'x-forwarded-proto': 'https',
+      };
+      expect(parseForwarded(headers)).toEqual({
+        host: 'pod.example',
+        proto: 'http',
+      });
+    });
+
+    it('should properly handle multiple values with varying spaces for X-Forwarded-*.', (): void => {
+      const headers = {
+        'x-forwarded-host': ' pod.example ,192.0.2.60, 192.0.2.43',
+        'x-forwarded-proto': ' https ,http',
+      };
+      expect(parseForwarded(headers)).toEqual({
+        host: 'pod.example',
+        proto: 'https',
       });
     });
   });

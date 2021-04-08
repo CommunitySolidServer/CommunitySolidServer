@@ -44,7 +44,7 @@ class WebSocketListener extends EventEmitter {
     }
 
     // Store the HTTP host and protocol
-    const forwarded = parseForwarded(headers.forwarded);
+    const forwarded = parseForwarded(headers);
     this.host = forwarded.host ?? headers.host ?? 'localhost';
     this.protocol = forwarded.proto === 'https' || (socket as any).secure ? 'https:' : 'http:';
   }
