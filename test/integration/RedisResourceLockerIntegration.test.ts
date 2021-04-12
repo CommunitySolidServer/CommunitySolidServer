@@ -1,10 +1,11 @@
 /* eslint-disable jest/valid-expect-in-promise */
-// Line above needed to not get errors while working with Promise.al()
-import { promises as fs } from 'fs';
+// Line above needed to not get errors while working with Promise.all()
 import type { Server } from 'http';
 import fetch from 'cross-fetch';
+// eslint-disable-next-line import/default
+import redis from 'redis';
 import type { RedisResourceLocker } from '../../src';
-import { joinFilePath, readableToString } from '../../src';
+import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { describeIf } from '../util/TestHelpers';
 import { instantiateFromConfig } from './Config';
@@ -41,9 +42,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
   it('can add a file to the store, read it and delete it.', async(): Promise<void> => {
     // Create file
     const fileUrl = `${baseUrl}testfile2.txt`;
-    const fileData = await fs.readFile(
-      joinFilePath(__dirname, '../assets/testfile2.txt'),
-    );
+    const fileData = 'TESTFILE2';
 
     let response = await fetch(fileUrl, {
       method: 'PUT',
@@ -57,13 +56,11 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
     // Get file
     response = await fetch(fileUrl);
     expect(response.status).toBe(200);
-    const body = await readableToString(response.body as any);
+    const body = await response.text();
     expect(body).toContain('TESTFILE2');
 
     // DELETE file
-    response = await fetch(fileUrl, {
-      method: 'DELETE',
-    });
+    response = await fetch(fileUrl, { method: 'DELETE' });
     expect(response.status).toBe(205);
     response = await fetch(fileUrl);
     expect(response.status).toBe(404);
@@ -86,76 +83,36 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
     expect(response.status).toBe(200);
 
     // DELETE
-    response = await fetch(containerUrl, {
-      method: 'DELETE',
-    });
+    response = await fetch(containerUrl, { method: 'DELETE' });
     expect(response.status).toBe(205);
     response = await fetch(containerUrl);
     expect(response.status).toBe(404);
   });
 
-  it('can upload and delete an image.', async(): Promise<void> => {
-    const fileUrl = `${baseUrl}image.png`;
-    const fileData = await fs.readFile(
-      joinFilePath(__dirname, '../assets/testimage.png'),
-    );
-
-    let response = await fetch(fileUrl, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'image/png',
-      },
-      body: fileData,
-    });
-    expect(response.status).toBe(205);
-
-    // GET
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/png');
-
-    // DELETE
-    response = await fetch(fileUrl, {
-      method: 'DELETE',
-    });
-    expect(response.status).toBe(205);
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(404);
-  });
-
   it('can get a resource multiple times.', async(): Promise<void> => {
     const fileUrl = `${baseUrl}image.png`;
-    const fileData = await fs.readFile(
-      joinFilePath(__dirname, '../assets/testimage.png'),
-    );
+    const fileData = 'testtesttest';
 
     let response = await fetch(fileUrl, {
       method: 'PUT',
       headers: {
-        'content-type': 'image/png',
+        'content-type': 'text/plain',
       },
       body: fileData,
     });
     expect(response.status).toBe(205);
 
-    // GET
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/png');
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/png');
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/png');
-    response = await fetch(fileUrl);
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/png');
+    // GET 4 times
+    for (let i = 0; i < 4; i++) {
+      const res = await fetch(fileUrl);
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toBe('text/plain');
+      const body = await res.text();
+      expect(body).toContain('testtesttest');
+    }
 
     // DELETE
-    response = await fetch(fileUrl, {
-      method: 'DELETE',
-    });
+    response = await fetch(fileUrl, { method: 'DELETE' });
     expect(response.status).toBe(205);
     response = await fetch(fileUrl);
     expect(response.status).toBe(404);
@@ -194,15 +151,17 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       const lock2 = locker.acquire(identifier);
       const lock3 = locker.acquire(identifier);
 
-      const l1 = lock1.then(async(): Promise<void> => {
-        res += 'l1';
-        await locker.release(identifier);
-        res += 'r1';
-      });
+      await new Promise((resolve): any => setImmediate(resolve));
+
       const l2 = lock2.then(async(): Promise<void> => {
         res += 'l2';
         await locker.release(identifier);
         res += 'r2';
+      });
+      const l1 = lock1.then(async(): Promise<void> => {
+        res += 'l1';
+        await locker.release(identifier);
+        res += 'r1';
       });
       const l3 = lock3.then(async(): Promise<void> => {
         res += 'l3';
@@ -213,6 +172,10 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       expect(res).toContain('l1r1');
       expect(res).toContain('l2r2');
       expect(res).toContain('l3r3');
+    });
+
+    it('redis.createClient should not be mocked.', async(): Promise<void> => {
+      expect((redis.createClient as jest.Mock).mockImplementation).toBeUndefined();
     });
   });
 });
