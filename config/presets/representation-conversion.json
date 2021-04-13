@@ -92,12 +92,6 @@
           "@id": "urn:solid-server:default:ContentTypeReplacer"
         },
         {
-          "@id": "urn:solid-server:default:RdfToQuadConverter"
-        },
-        {
-          "@id": "urn:solid-server:default:QuadToRdfConverter"
-        },
-        {
           "@id": "urn:solid-server:default:RdfRepresentationConverter"
         }
       ]
