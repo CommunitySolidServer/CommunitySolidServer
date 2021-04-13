@@ -41,16 +41,17 @@ export class RedisResourceLocker implements ResourceLocker {
   protected readonly logger = getLoggerFor(this);
 
   private readonly redlock: Redlock;
-  private readonly lockList: Map<string, Lock>;
-  private readonly intervals: Map<string, NodeJS.Timeout>;
+  private readonly lockMap: Map<string, { lock: Lock; interval: NodeJS.Timeout }>;
 
   public constructor(redisClients: string[], redlockOptions?: Record<string, number>) {
-    this.lockList = new Map();
-    this.intervals = new Map();
+    this.lockMap = new Map();
     const clients = this.createRedisClients(redisClients);
+    if (clients.length === 0) {
+      throw new Error('At least 1 client should be provided');
+    }
     this.redlock = this.createRedlock(clients, redlockOptions);
     this.redlock.on('clientError', (err): void => {
-      throw new InternalServerError(`Redis/Redlock error: ${err}`);
+      this.logger.error(`Redis/Redlock error: ${err}`);
     });
   }
 
@@ -92,21 +93,15 @@ export class RedisResourceLocker implements ResourceLocker {
         { ...defaultRedlockConfig, ...redlockOptions },
       );
     } catch (error: unknown) {
-      throw new InternalServerError(`Error initializing Redlock for clients: ${clients}, ${error}`);
+      throw new InternalServerError(`Error initializing Redlock: ${error}`);
     }
   }
 
   public async quit(): Promise<void> {
     // This for loop is an extra failsafe,
-    // this extra code wont slow down anything, this function will only be called to shut down in peace
-    for (const entry of this.lockList) {
-      const key = entry[0];
-      const lock = this.lockList.get(key);
-      if (lock) {
-        await this.release({ path: lock.resource });
-      } else {
-        this.lockList.delete(key);
-      }
+    // this extra code won't slow down anything, this function will only be called to shut down in peace
+    for (const [ , { lock }] of this.lockMap.entries()) {
+      await this.release({ path: lock.resource });
     }
     await this.redlock.quit();
   }
@@ -117,33 +112,32 @@ export class RedisResourceLocker implements ResourceLocker {
     try {
       lock = await this.redlock.lock(resource, ttl);
       assert(lock);
-      // Lock acquired
-      this.logger.debug(`Acquired lock for resource: ${resource}!`);
-      this.lockList.set(resource, lock);
-      this.extendLockIndefinitely(resource);
     } catch (error: unknown) {
       this.logger.debug(`Unable to acquire lock for ${resource}`);
       throw new InternalServerError(`Unable to acquire lock for ${resource} (${error})`);
     }
+    if (this.lockMap.get(resource)) {
+      throw new InternalServerError(`Acquired duplicate lock on ${resource}`);
+    }
+    // Lock acquired
+    this.logger.debug(`Acquired lock for resource: ${resource}!`);
+    const interval = this.extendLockIndefinitely(resource);
+    this.lockMap.set(resource, { lock, interval });
   }
 
   public async release(identifier: ResourceIdentifier): Promise<void> {
     const resource = identifier.path;
-    const lock: Lock | undefined = this.lockList.get(resource);
-    if (!lock) {
+    const entry = this.lockMap.get(resource);
+    if (!entry) {
       // Lock is invalid
       this.logger.warn(`Unexpected release request for non-existent lock on ${resource}`);
       throw new InternalServerError(`Trying to unlock resource that is not locked: ${resource}`);
     }
     try {
-      await this.redlock.unlock(lock);
+      await this.redlock.unlock(entry.lock);
+      clearInterval(entry.interval);
+      this.lockMap.delete(resource);
       // Successfully released lock
-      this.lockList.delete(resource);
-      const interval = this.intervals.get(resource);
-      if (interval) {
-        clearInterval(interval);
-        this.intervals.delete(resource);
-      }
       this.logger.debug(`Released lock for ${resource}, ${this.getLockCount()} active locks remaining!`);
     } catch (error: unknown) {
       this.logger.error(`Error releasing lock for ${resource} (${error})`);
@@ -155,31 +149,26 @@ export class RedisResourceLocker implements ResourceLocker {
    * Counts the number of active locks.
    */
   private getLockCount(): number {
-    return this.lockList.size;
+    return this.lockMap.size;
   }
 
   /**
    * This function is internally used to keep an acquired lock active, a wrapper class will handle expiration
-   * @param lock - the lock to be extended
+   * @param identifier - Identifier of the lock to be extended
    */
-  private extendLockIndefinitely(identifier: string): void {
-    const interval = setInterval(async(): Promise<void> => {
+  private extendLockIndefinitely(identifier: string): NodeJS.Timeout {
+    return setInterval(async(): Promise<void> => {
+      const entry = this.lockMap.get(identifier)!;
       try {
-        const lock = this.lockList.get(identifier);
-        if (lock) {
-          const newLock = await this.redlock.extend(lock, ttl);
-          this.lockList.set(identifier, newLock);
-          this.logger.debug(`Extended (Redis)lock for resource: ${identifier}`);
-        } else {
-          throw new Error('No Lock was found to extend');
-        }
+        const newLock = await this.redlock.extend(entry.lock, ttl);
+        this.lockMap.set(identifier, { lock: newLock, interval: entry.interval });
+        this.logger.debug(`Extended (Redis)lock for resource: ${identifier}`);
       } catch (error: unknown) {
-        // No error should be re-thrown cause this means the lock has simply been released
+        // No error should be re-thrown because this means the lock has simply been released
         this.logger.error(`Failed to extend this (Redis)lock for resource: ${identifier}, ${error}`);
-        clearInterval(interval);
-        this.intervals.delete(identifier);
+        clearInterval(entry.interval);
+        this.lockMap.delete(identifier);
       }
     }, ttl / 2);
-    this.intervals.set(identifier, interval);
   }
 }

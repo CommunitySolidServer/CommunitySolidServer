@@ -1,9 +1,5 @@
-/* eslint-disable jest/valid-expect-in-promise */
-// Line above needed to not get errors while working with Promise.all()
 import type { Server } from 'http';
 import fetch from 'cross-fetch';
-// eslint-disable-next-line import/default
-import redis from 'redis';
 import type { RedisResourceLocker } from '../../src';
 import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
@@ -172,10 +168,6 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       expect(res).toContain('l1r1');
       expect(res).toContain('l2r2');
       expect(res).toContain('l3r3');
-    });
-
-    it('redis.createClient should not be mocked.', async(): Promise<void> => {
-      expect((redis.createClient as jest.Mock).mockImplementation).toBeUndefined();
     });
   });
 });
