@@ -4,7 +4,10 @@ import {
   readableToString,
   ChainedConverter,
   guardedStreamFrom,
-  RdfToQuadConverter, BasicRepresentation, getLoggerFor,
+  RdfToQuadConverter,
+  BasicRepresentation,
+  getLoggerFor,
+  INTERNAL_QUADS,
 } from '../../src';
 import type { Representation,
   RepresentationConverterArgs,
@@ -22,16 +25,16 @@ class DummyConverter extends TypedRepresentationConverter {
   }
 
   public async getInputTypes(): Promise<Record<string, number>> {
-    return { '*/*': 1 };
+    return { [INTERNAL_QUADS]: 1 };
   }
 
   public async getOutputTypes(): Promise<Record<string, number>> {
-    return { 'custom/type': 1 };
+    return { 'x/x': 1 };
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
     const data = guardedStreamFrom([ 'dummy' ]);
-    const metadata = new RepresentationMetadata(representation.metadata, 'custom/type');
+    const metadata = new RepresentationMetadata(representation.metadata, 'x/x');
 
     return { binary: true, data, metadata };
   }
@@ -47,7 +50,7 @@ describe('A chained converter where data gets ignored', (): void => {
 
   it('does not throw on async crash.', async(): Promise<void> => {
     jest.useFakeTimers();
-    const result = await converter.handleSafe({ identifier, representation: rep, preferences: {}});
+    const result = await converter.handleSafe({ identifier, representation: rep, preferences: { type: { 'x/x': 1 }}});
 
     expect(await readableToString(result.data)).toBe('dummy');
 
