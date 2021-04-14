@@ -1,11 +1,11 @@
 import {
-  absoluteFilePath,
+  absoluteFilePath, createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
-  ensureTrailingSlash,
+  ensureTrailingSlash, extractScheme, getExtension, isContainerIdentifier, isContainerPath,
   joinFilePath,
   normalizeFilePath,
-  toCanonicalUriPath,
+  toCanonicalUriPath, trimTrailingSlashes,
 } from '../../../src/util/PathUtil';
 
 describe('PathUtil', (): void => {
@@ -52,6 +52,22 @@ describe('PathUtil', (): void => {
     });
   });
 
+  describe('#trimTrailingSlashes', (): void => {
+    it('removes all trailing slashes.', async(): Promise<void> => {
+      expect(trimTrailingSlashes('http://test.com')).toEqual('http://test.com');
+      expect(trimTrailingSlashes('http://test.com/')).toEqual('http://test.com');
+      expect(trimTrailingSlashes('http://test.com//')).toEqual('http://test.com');
+      expect(trimTrailingSlashes('http://test.com///')).toEqual('http://test.com');
+    });
+  });
+
+  describe('#getExtension', (): void => {
+    it('returns the extension of a path.', async(): Promise<void> => {
+      expect(getExtension('/a/b.txt')).toEqual('txt');
+      expect(getExtension('/a/btxt')).toEqual('');
+    });
+  });
+
   describe('#toCanonicalUriPath', (): void => {
     it('encodes only the necessary parts.', async(): Promise<void> => {
       expect(toCanonicalUriPath('/a%20path&/name')).toEqual('/a%20path%26/name');
@@ -79,6 +95,38 @@ describe('PathUtil', (): void => {
 
     it('leaves the query string untouched.', async(): Promise<void> => {
       expect(encodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toEqual('/a%2520path%26/name?abc=def&xyz');
+    });
+  });
+
+  describe('#isContainerPath', (): void => {
+    it('returns true if the path ends with a slash.', async(): Promise<void> => {
+      expect(isContainerPath('/a/b')).toEqual(false);
+      expect(isContainerPath('/a/b/')).toEqual(true);
+    });
+  });
+
+  describe('#isContainerIdentifier', (): void => {
+    it('works af isContainerPath but for identifiers.', async(): Promise<void> => {
+      expect(isContainerIdentifier({ path: '/a/b' })).toEqual(false);
+      expect(isContainerIdentifier({ path: '/a/b/' })).toEqual(true);
+    });
+  });
+
+  describe('#extractScheme', (): void => {
+    it('splits a URL.', async(): Promise<void> => {
+      expect(extractScheme('http://test.com/foo')).toEqual({ scheme: 'http://', rest: 'test.com/foo' });
+    });
+  });
+
+  describe('#createSubdomainRegexp', (): void => {
+    it('creates a regex to match the URL and extract a subdomain.', async(): Promise<void> => {
+      const regex = createSubdomainRegexp('http://test.com/foo/');
+      expect(regex.exec('http://test.com/foo/')![1]).toBeUndefined();
+      expect(regex.exec('http://test.com/foo/bar')![1]).toBeUndefined();
+      expect(regex.exec('http://alice.test.com/foo/')![1]).toEqual('alice');
+      expect(regex.exec('http://alice.bob.test.com/foo/')![1]).toEqual('alice.bob');
+      expect(regex.exec('http://test.com/')).toBeNull();
+      expect(regex.exec('http://alicetest.com/foo/')).toBeNull();
     });
   });
 });
