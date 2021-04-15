@@ -6,15 +6,18 @@ import streamifyArray from 'streamify-array';
 import { StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
+import { getModuleRoot, joinFilePath } from '../../../../src/util/PathUtil';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream')
   .mockImplementation((): any => streamifyArray([ 'file contents' ]));
 
-describe('a StaticAssetHandler', (): void => {
+describe('A StaticAssetHandler', (): void => {
   const handler = new StaticAssetHandler({
     '/foo/bar/style': '/assets/styles/bar.css',
     '/foo/bar/main': '/assets/scripts/bar.js',
     '/foo/bar/unknown': '/assets/bar.unknown',
+    '/foo/bar/cwd': 'paths/cwd.txt',
+    '/foo/bar/module': '$PACKAGE_ROOT/paths/module.txt',
     '/foo/bar/folder1/': '/assets/folders/1/',
     '/foo/bar/folder2/': '/assets/folders/2',
     '/foo/bar/folder2/subfolder/': '/assets/folders/3',
@@ -90,6 +93,30 @@ describe('a StaticAssetHandler', (): void => {
 
     expect(createReadStream).toHaveBeenCalledTimes(1);
     expect(createReadStream).toHaveBeenCalledWith('/assets/bar.unknown');
+  });
+
+  it('handles a request to a known URL with a relative file path.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/cwd' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/plain');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith(joinFilePath(process.cwd(), '/paths/cwd.txt'));
+  });
+
+  it('handles a request to a known URL with a relative to module file path.', async(): Promise<void> => {
+    const request = { method: 'GET', url: '/foo/bar/module' };
+    const response = createResponse({ eventEmitter: EventEmitter });
+    await handler.handleSafe({ request, response } as any);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('content-type', 'text/plain');
+
+    expect(createReadStream).toHaveBeenCalledTimes(1);
+    expect(createReadStream).toHaveBeenCalledWith(joinFilePath(getModuleRoot(), '/paths/module.txt'));
   });
 
   it('throws a 404 when the asset does not exist.', async(): Promise<void> => {
