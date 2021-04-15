@@ -1,10 +1,11 @@
+import { existsSync } from 'fs';
 import {
   absoluteFilePath, createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
-  ensureTrailingSlash, extractScheme, getExtension, isContainerIdentifier, isContainerPath,
+  ensureTrailingSlash, extractScheme, getExtension, getModuleRoot, isContainerIdentifier, isContainerPath,
   joinFilePath,
-  normalizeFilePath,
+  normalizeFilePath, resolveAssetPath,
   toCanonicalUriPath, trimTrailingSlashes,
 } from '../../../src/util/PathUtil';
 
@@ -127,6 +128,37 @@ describe('PathUtil', (): void => {
       expect(regex.exec('http://alice.bob.test.com/foo/')![1]).toEqual('alice.bob');
       expect(regex.exec('http://test.com/')).toBeNull();
       expect(regex.exec('http://alicetest.com/foo/')).toBeNull();
+    });
+  });
+
+  describe('#getModuleRoot', (): void => {
+    it('returns the root folder of the module.', async(): Promise<void> => {
+      // Note that this test only makes sense as long as the dist folder is on the same level as the src folder
+      const root = getModuleRoot();
+      const packageJson = joinFilePath(root, 'package.json');
+      expect(existsSync(packageJson)).toBe(true);
+    });
+  });
+
+  describe('#resolvePathInput', (): void => {
+    it('interprets paths relative to the module root when starting with $PACKAGE_ROOT/.', async(): Promise<void> => {
+      expect(resolveAssetPath('$PACKAGE_ROOT/foo/bar')).toBe(joinFilePath(getModuleRoot(), '/foo/bar'));
+    });
+
+    it('handles ../ paths with $PACKAGE_ROOT/.', async(): Promise<void> => {
+      expect(resolveAssetPath('$PACKAGE_ROOT/foo/bar/../baz')).toBe(joinFilePath(getModuleRoot(), '/foo/baz'));
+    });
+
+    it('leaves absolute paths as they are.', async(): Promise<void> => {
+      expect(resolveAssetPath('/foo/bar/')).toBe('/foo/bar/');
+    });
+
+    it('handles other paths relative to the cwd.', async(): Promise<void> => {
+      expect(resolveAssetPath('foo/bar/')).toBe(joinFilePath(process.cwd(), 'foo/bar/'));
+    });
+
+    it('handles other paths with ../.', async(): Promise<void> => {
+      expect(resolveAssetPath('foo/bar/../baz')).toBe(joinFilePath(process.cwd(), 'foo/baz'));
     });
   });
 });

@@ -165,3 +165,23 @@ export function createSubdomainRegexp(baseUrl: string): RegExp {
   const { scheme, rest } = extractScheme(baseUrl);
   return new RegExp(`^${scheme}(?:([^/]+)\\.)?${rest}`, 'u');
 }
+
+/**
+ * Returns the folder corresponding to the root of the Community Solid Server module
+ */
+export function getModuleRoot(): string {
+  return joinFilePath(__dirname, '../../');
+}
+
+/**
+ * Converts file path inputs into absolute paths.
+ * Works similar to `absoluteFilePath` but paths that start with '$PACKAGE_ROOT/'
+ * will be relative to the module directory instead of the cwd.
+ */
+export function resolveAssetPath(path: string): string {
+  const modulePath = '$PACKAGE_ROOT/';
+  if (path.startsWith(modulePath)) {
+    return joinFilePath(getModuleRoot(), path.slice(modulePath.length));
+  }
+  return absoluteFilePath(path);
+}
