@@ -4,9 +4,7 @@
     {
       "@id": "urn:solid-server:default:ResourcesGenerator",
       "@type": "TemplatedResourcesGenerator",
-      "TemplatedResourcesGenerator:_templateFolder": {
-        "@id": "urn:solid-server:default:variable:podTemplateFolder"
-      },
+      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/templates/pod",
       "TemplatedResourcesGenerator:_factory": {
         "@type": "ExtensionBasedMapperFactory"
       },

@@ -2,7 +2,6 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import { joinFilePath } from '../../src/util/PathUtil';
 import { instantiateFromConfig } from './Config';
 
 const port = 6004;
@@ -19,7 +18,6 @@ describe('A Solid server', (): void => {
       'urn:solid-server:test:Instances', 'server-memory.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       },
     ) as Record<string, any>;
     ({ factory, initializer } = instances);
