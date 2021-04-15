@@ -3,7 +3,6 @@ import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
-import { joinFilePath } from '../../src/util/PathUtil';
 import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
 const port = 6005;
@@ -35,7 +34,6 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
-      'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
     };
     const internalStore = await instantiateFromConfig(
       storeUrn,

@@ -80,6 +80,10 @@
       }
     },
     {
+      "@id": "urn:solid-server:default:ResourcesGenerator",
+      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/test/assets/templates"
+    },
+    {
       "@id": "urn:solid-server:default:variable:store",
       "@type": "Variable"
     }

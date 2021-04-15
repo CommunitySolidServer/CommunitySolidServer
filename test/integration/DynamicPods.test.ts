@@ -34,12 +34,11 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
-      'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       'urn:solid-server:default:variable:podConfigJson': podConfigJson,
     };
 
     // Need to make sure the temp folder exists so the podConfigJson can be written to it
-    mkdirSync(rootFilePath);
+    mkdirSync(rootFilePath, { recursive: true });
 
     // Create and initialize the HTTP handler and related components
     const instances = await instantiateFromConfig(
