@@ -2,9 +2,10 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
-const port = 6004;
+const port = getPort('ServerFetch');
 const baseUrl = `http://localhost:${port}/`;
 
 // Some tests with real Requests/Responses until the mocking library has been removed from the tests

@@ -3,9 +3,10 @@ import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
+import { getPort } from '../util/Util';
 import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
-const port = 6005;
+const port = getPort('Subdomains');
 const baseUrl = `http://localhost:${port}/`;
 
 const rootFilePath = getTestFolder('subdomains');
