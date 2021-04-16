@@ -4,12 +4,14 @@ import type { RedisResourceLocker } from '../../src';
 import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { describeIf } from '../util/TestHelpers';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
+
 /**
  * Test the general functionality of the server using a RedisResourceLocker
  */
 describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', (): void => {
-  const port = 6008;
+  const port = getPort('RedisResourceLocker');
   const baseUrl = `http://localhost:${port}/`;
   let server: Server;
   let locker: RedisResourceLocker;

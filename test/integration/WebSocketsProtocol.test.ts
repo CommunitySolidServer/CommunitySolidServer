@@ -2,9 +2,10 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import WebSocket from 'ws';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
-const port = 6001;
+const port = getPort('WebSocketsProtocol');
 const serverUrl = `http://localhost:${port}/`;
 const headers = { forwarded: 'host=example.pod;proto=https' };
 

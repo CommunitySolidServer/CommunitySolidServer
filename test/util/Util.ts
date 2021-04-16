@@ -9,6 +9,26 @@ import type { HttpHandler } from '../../src/server/HttpHandler';
 import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
+/* eslint-disable @typescript-eslint/naming-convention */
+const portNames = [
+  'DynamicPods',
+  'Middleware',
+  'PodCreation',
+  'RedisResourceLocker',
+  'ServerFetch',
+  'Subdomains',
+  'WebSocketsProtocol',
+] as const;
+
+export function getPort(name: typeof portNames[number]): number {
+  const idx = portNames.indexOf(name);
+  // Just in case something doesn't listen to the typings
+  if (idx < 0) {
+    throw new Error(`Unknown port name ${name}`);
+  }
+  return 6000 + idx;
+}
+
 export async function performRequest(
   handler: HttpHandler,
   requestUrl: URL,

@@ -4,9 +4,10 @@ import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { joinFilePath } from '../../src/util/PathUtil';
+import { getPort } from '../util/Util';
 import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
-const port = 6006;
+const port = getPort('DynamicPods');
 const baseUrl = `http://localhost:${port}/`;
 const rootFilePath = getTestFolder('dynamicPods');
 const podConfigJson = joinFilePath(rootFilePath, 'config-pod.json');
