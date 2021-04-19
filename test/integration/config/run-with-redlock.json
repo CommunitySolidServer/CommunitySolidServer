@@ -1,0 +1,168 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/presets/acl.json",
+    "files-scs:config/presets/http.json",
+    "files-scs:config/presets/identifiers/suffix-identifiers.json",
+    "files-scs:config/presets/ldp/credentials-extractor.json",
+    "files-scs:config/presets/ldp/metadata-handler.json",
+    "files-scs:config/presets/ldp/operation-handler.json",
+    "files-scs:config/presets/ldp/permissions-extractor.json",
+    "files-scs:config/presets/ldp/response-writer.json",
+    "files-scs:config/presets/ldp/request-parser.json",
+    "files-scs:config/presets/ldp/websockets.json",
+    "files-scs:config/presets/middleware.json",
+    "files-scs:config/presets/pod-management.json",
+    "files-scs:config/presets/representation-conversion.json",
+    "files-scs:config/presets/static.json",
+    "files-scs:config/presets/storage/backend/storage-memory.json",
+    "files-scs:config/presets/cli-params.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:test:Instances",
+      "@type": "RecordObject",
+      "RecordObject:_record": [
+        {
+          "RecordObject:_record_key": "factory",
+          "RecordObject:_record_value": {
+            "@id": "urn:solid-server:default:ServerFactory"
+          }
+        },
+        {
+          "RecordObject:_record_key": "locker",
+          "RecordObject:_record_value": {
+            "@id": "urn:solid-server:default:RedisResourceLocker"
+          }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:LdpHandler",
+      "@type": "AuthenticatedLdpHandler",
+      "AuthenticatedLdpHandler:_args_requestParser": {
+        "@id": "urn:solid-server:default:RequestParser"
+      },
+      "AuthenticatedLdpHandler:_args_credentialsExtractor": {
+        "@id": "urn:solid-server:default:CredentialsExtractor"
+      },
+      "AuthenticatedLdpHandler:_args_permissionsExtractor": {
+        "@id": "urn:solid-server:default:PermissionsExtractor"
+      },
+      "AuthenticatedLdpHandler:_args_authorizer": {
+        "@type": "AllowEverythingAuthorizer"
+      },
+      "AuthenticatedLdpHandler:_args_operationHandler": {
+        "@id": "urn:solid-server:default:OperationHandler"
+      },
+      "AuthenticatedLdpHandler:_args_responseWriter": {
+        "@id": "urn:solid-server:default:ResponseWriter"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:RoutingResourceStore",
+      "@type": "PassthroughStore",
+      "PassthroughStore:_source": {
+        "@id": "urn:solid-server:default:MemoryResourceStore"
+      }
+    },
+
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "MonitoringStore",
+      "MonitoringStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Locking"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "@type": "RoutingAuxiliaryStrategy",
+      "RoutingAuxiliaryStrategy:_sources": [
+        {
+          "@id": "urn:solid-server:default:AclStrategy"
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Locking",
+      "@type": "LockingResourceStore",
+      "LockingResourceStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching"
+      },
+      "LockingResourceStore:_locks": {
+        "@id": "urn:solid-server:default:ResourceLocker"
+      },
+      "LockingResourceStore:_strategy": {
+        "@id": "urn:solid-server:default:AuxiliaryStrategy"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Patching",
+      "@type": "PatchingStore",
+      "PatchingStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Converting"
+      },
+      "PatchingStore:_patcher": {
+        "@id": "urn:solid-server:default:PatchHandler",
+        "@type": "SparqlUpdatePatchHandler",
+        "SparqlUpdatePatchHandler:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_ToTurtle"
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "WrappedExpiringReadWriteLocker",
+      "WrappedExpiringReadWriteLocker:_locker": {
+        "@type": "GreedyReadWriteLocker",
+        "GreedyReadWriteLocker:_locker": {
+          "@id": "urn:solid-server:default:RedisResourceLocker",
+          "@type": "RedisResourceLocker",
+          "RedisResourceLocker:_redisClients": [ "6379" ]
+        },
+        "GreedyReadWriteLocker:_storage": {
+          "@type": "ResourceIdentifierStorage",
+          "ResourceIdentifierStorage:_source": {
+            "@type": "MemoryMapStorage"
+          }
+        },
+        "GreedyReadWriteLocker:_suffixes_count": "count",
+        "GreedyReadWriteLocker:_suffixes_read": "read",
+        "GreedyReadWriteLocker:_suffixes_write": "write"
+      },
+      "WrappedExpiringReadWriteLocker:_expiration": 3000
+    },
+
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_ToTurtle",
+      "@type": "RepresentationConvertingStore",
+      "RepresentationConvertingStore:_source": {
+        "@id": "urn:solid-server:default:RoutingResourceStore"
+      },
+      "RepresentationConvertingStore:_options_outConverter": {
+        "@id": "urn:solid-server:default:RepresentationConverter"
+      },
+      "RepresentationConvertingStore:_options_inConverter": {
+        "@id": "urn:solid-server:default:RepresentationConverter"
+      },
+      "RepresentationConvertingStore:_options_inType": "text/turtle"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ResourceStore_Converting",
+      "@type": "RepresentationConvertingStore",
+      "RepresentationConvertingStore:_source": {
+        "@id": "urn:solid-server:default:RoutingResourceStore"
+      },
+      "RepresentationConvertingStore:_options_outConverter": {
+        "@id": "urn:solid-server:default:RepresentationConverter"
+      }
+    }
+  ]
+}
