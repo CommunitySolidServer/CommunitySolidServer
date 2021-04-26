@@ -13,10 +13,10 @@ export abstract class BaseIdentifierStrategy implements IdentifierStrategy {
 
   public getParentContainer(identifier: ResourceIdentifier): ResourceIdentifier {
     if (!this.supportsIdentifier(identifier)) {
-      throw new InternalServerError(`${identifier.path} is not supported`);
+      throw new InternalServerError(`The identifier ${identifier.path} is outside the configured identifier space.`);
     }
     if (this.isRootContainer(identifier)) {
-      throw new InternalServerError(`${identifier.path} is a root container and has no parent`);
+      throw new InternalServerError(`Cannot obtain the parent of ${identifier.path} because it is a root container.`);
     }
 
     // Trailing slash is necessary for URL library
