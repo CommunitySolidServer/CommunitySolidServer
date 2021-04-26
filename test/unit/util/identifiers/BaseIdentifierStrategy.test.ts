@@ -21,11 +21,11 @@ describe('A BaseIdentifierStrategy', (): void => {
 
   it('errors when attempting to get the parent of an unsupported identifier.', async(): Promise<void> => {
     expect((): any => strategy.getParentContainer({ path: '/unsupported' }))
-      .toThrow('/unsupported is not supported');
+      .toThrow('The identifier /unsupported is outside the configured identifier space.');
   });
 
   it('errors when attempting to get the parent of a root container.', async(): Promise<void> => {
     expect((): any => strategy.getParentContainer({ path: 'http://test.com/root' }))
-      .toThrow('http://test.com/root is a root container and has no parent');
+      .toThrow('Cannot obtain the parent of http://test.com/root because it is a root container.');
   });
 });
