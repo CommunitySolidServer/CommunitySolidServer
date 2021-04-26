@@ -1,96 +1,133 @@
 import type { ValuePreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
 import {
-  hasMatchingMediaTypes,
+  cleanPreferences,
+  getBestPreference,
+  getConversionTarget,
+  getTypeWeight,
+  getWeightedPreferences,
+  matchesMediaPreferences,
   matchesMediaType,
-  matchingMediaTypes,
-  supportsMediaTypeConversion,
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
 describe('ConversionUtil', (): void => {
-  describe('#supportsMediaTypeConversion', (): void => {
-    it('requires preferences.', async(): Promise<void> => {
-      expect((): any => supportsMediaTypeConversion()).toThrow();
-    });
-
-    it('requires an input type.', async(): Promise<void> => {
-      expect((): any => supportsMediaTypeConversion(undefined, { 'b/x': 1 }, { 'a/x': 1 }, { 'a/x': 1 }))
-        .toThrow('Cannot convert from unknown to b/x, only from a/x to a/x.');
-    });
-
-    it('requires a matching input type.', async(): Promise<void> => {
-      expect((): any => supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'c/x': 1 }, { 'a/x': 1 }))
-        .toThrow('Cannot convert from a/x to b/x, only from c/x to a/x.');
-    });
-
-    it('requires a matching output type.', async(): Promise<void> => {
-      expect((): any => supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'a/x': 1 }, { 'c/x': 1 }))
-        .toThrow('Cannot convert from a/x to b/x, only from a/x to c/x.');
-    });
-
-    it('succeeds with a valid input and output type.', async(): Promise<void> => {
-      expect(supportsMediaTypeConversion('a/x', { 'b/x': 1 }, { 'a/x': 1 }, { 'b/x': 1 }))
-        .toBeUndefined();
-    });
-  });
-
-  describe('#matchingMediaTypes', (): void => {
-    it('returns the empty array if no preferences specified.', async(): Promise<void> => {
-      expect(matchingMediaTypes())
-        .toEqual([]);
-    });
-
-    it('returns matching types if weight > 0.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(matchingMediaTypes(preferences, { 'b/x': 1, 'c/x': 1 }))
-        .toEqual([ 'b/x' ]);
-    });
-
-    it('sorts by descending weight.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0.8 };
-      expect(matchingMediaTypes(preferences, { 'a/x': 1, 'b/x': 1, 'c/x': 1 }))
-        .toEqual([ 'a/x', 'c/x', 'b/x' ]);
-    });
-
-    it('incorporates representation qualities when calculating weight.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0.8 };
-      expect(matchingMediaTypes(preferences, { 'a/x': 0.1, 'b/x': 1, 'c/x': 0.6 }))
-        .toEqual([ 'b/x', 'c/x', 'a/x' ]);
-    });
-
-    it('errors if there invalid types.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { 'b/x': 1 };
-      expect((): any => matchingMediaTypes(preferences, { noType: 1 })).toThrow(InternalServerError);
-      expect((): any => matchingMediaTypes(preferences, { noType: 1 })).toThrow('Unexpected type preference: noType');
+  describe('#cleanPreferences', (): void => {
+    it('supports all types for empty preferences.', async(): Promise<void> => {
+      expect(cleanPreferences()).toEqual({ '*/*': 1, 'internal/*': 0 });
+      expect(cleanPreferences({})).toEqual(expect.objectContaining({ '*/*': 1, 'internal/*': 0 }));
     });
 
     it('filters out internal types.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { '*/*': 1 };
-      expect(matchingMediaTypes(preferences, { 'a/x': 1, 'internal/quads': 1 }))
-        .toEqual([ 'a/x' ]);
+      const preferences: ValuePreferences = { 'a/a': 1 };
+      expect(cleanPreferences(preferences)).toEqual({ 'a/a': 1, 'internal/*': 0 });
     });
 
     it('keeps internal types that are specifically requested.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { '*/*': 1, 'internal/*': 0.5 };
-      expect(matchingMediaTypes(preferences, { 'a/x': 1, 'internal/quads': 1 }))
-        .toEqual([ 'a/x', 'internal/quads' ]);
-    });
-
-    it('takes the most relevant weight for a type.', async(): Promise<void> => {
-      const preferences: ValuePreferences = { '*/*': 1, 'internal/quads': 0.5 };
-      expect(matchingMediaTypes(preferences, { 'a/x': 1, 'internal/quads': 1 }))
-        .toEqual([ 'a/x', 'internal/quads' ]);
+      const preferences: ValuePreferences = { 'a/a': 1, 'internal/*': 0.5 };
+      expect(cleanPreferences(preferences)).toEqual({ 'a/a': 1, 'internal/*': 0.5 });
     });
   });
 
-  describe('#hasMatchingMediatypes', (): void => {
+  describe('#getTypeWeight', (): void => {
+    it('returns the matching weight from the preferences.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/a': 0.8 };
+      expect(getTypeWeight('a/a', preferences)).toBe(0.8);
+    });
+
+    it('returns the most specific weight.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/*': 0.5, '*/*': 0.8 };
+      expect(getTypeWeight('a/a', preferences)).toBe(0.5);
+    });
+
+    it('returns 0 if no match is possible.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'b/*': 0.5, 'c/c': 0.8 };
+      expect(getTypeWeight('a/a', preferences)).toBe(0);
+    });
+
+    it('errors on invalid types.', async(): Promise<void> => {
+      expect((): any => getTypeWeight('unknown', {})).toThrow(InternalServerError);
+      expect((): any => getTypeWeight('unknown', {})).toThrow('Unexpected media type: unknown.');
+    });
+  });
+
+  describe('#getWeightedPreferences', (): void => {
+    it('returns all weights in a sorted list.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'a/*': 1, 'c/c': 0.8 };
+      expect(getWeightedPreferences(types, preferences)).toEqual([
+        { value: 'c/c', weight: 0.8 * 0.8 },
+        { value: 'a/a', weight: 0.5 },
+        { value: 'b/b', weight: 0 },
+      ]);
+    });
+  });
+
+  describe('#getBestPreference', (): void => {
+    it('returns the best match.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'a/*': 1, 'c/c': 0.8 };
+      expect(getBestPreference(types, preferences)).toEqual({ value: 'c/c', weight: 0.8 * 0.8 });
+    });
+
+    it('returns undefined if there is no match.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'd/*': 1, 'e/e': 0.8 };
+      expect(getBestPreference(types, preferences)).toBeUndefined();
+    });
+  });
+
+  describe('#getConversionTarget', (): void => {
+    it('returns the best match.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'a/*': 1, 'c/c': 0.8 };
+      expect(getConversionTarget(types, preferences)).toBe('c/c');
+    });
+
+    it('matches anything if there are no preferences.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      expect(getConversionTarget(types)).toBe('b/b');
+    });
+
+    it('returns undefined if there is no match.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'b/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'd/*': 1, 'e/e': 0.8 };
+      expect(getConversionTarget(types, preferences)).toBeUndefined();
+    });
+
+    it('does not match internal types if not in the preferences.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'internal/b': 1, 'c/c': 0.8 };
+      expect(getConversionTarget(types)).toBe('c/c');
+    });
+
+    it('matches internal types if they are specifically requested.', async(): Promise<void> => {
+      const types: ValuePreferences = { 'a/a': 0.5, 'internal/b': 1, 'c/c': 0.8 };
+      const preferences: ValuePreferences = { 'a/*': 1, 'internal/b': 1, 'c/c': 0.8 };
+      expect(getConversionTarget(types, preferences)).toBe('internal/b');
+    });
+  });
+
+  describe('#matchesMediaPreferences', (): void => {
     it('returns false if there are no matches.', async(): Promise<void> => {
-      expect(hasMatchingMediaTypes()).toEqual(false);
+      const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
+      expect(matchesMediaPreferences('c/x', preferences)).toEqual(false);
     });
 
     it('returns true if there are matches.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(hasMatchingMediaTypes(preferences, { 'b/x': 1, 'c/x': 1 })).toEqual(true);
+      expect(matchesMediaPreferences('b/x', preferences)).toEqual(true);
+    });
+
+    it('matches anything if there are no preferences.', async(): Promise<void> => {
+      expect(matchesMediaPreferences('a/a')).toEqual(true);
+    });
+
+    it('does not match internal types if not in the preferences.', async(): Promise<void> => {
+      expect(matchesMediaPreferences('internal/b')).toBe(false);
+    });
+
+    it('matches internal types if they are specifically requested.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/*': 1, 'internal/b': 1, 'c/c': 0.8 };
+      expect(matchesMediaPreferences('internal/b', preferences)).toBe(true);
     });
   });
 

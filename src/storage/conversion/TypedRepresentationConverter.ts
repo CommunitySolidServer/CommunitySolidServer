@@ -1,5 +1,6 @@
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
-import { supportsMediaTypeConversion } from './ConversionUtil';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { getConversionTarget, getTypeWeight } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -48,12 +49,28 @@ export abstract class TypedRepresentationConverter extends RepresentationConvert
   }
 
   /**
-   * Verifies whether this converter supports the input.
+   * Determines whether the given conversion request is supported,
+   * given the available content type conversions:
+   *  - Checks if there is a content type for the input.
+   *  - Checks if the input type is supported by the parser.
+   *  - Checks if the parser can produce one of the preferred output types.
+   * Throws an error with details if conversion is not possible.
    */
   public async canHandle(args: RepresentationConverterArgs): Promise<void> {
     const types = [ this.getInputTypes(), this.getOutputTypes() ];
     const { contentType } = args.representation.metadata;
+
+    if (!contentType) {
+      throw new NotImplementedHttpError('Can not convert data without a Content-Type.');
+    }
+
     const [ inputTypes, outputTypes ] = await Promise.all(types);
-    supportsMediaTypeConversion(contentType, args.preferences.type, inputTypes, outputTypes);
+    const outputPreferences = args.preferences.type ?? {};
+    if (getTypeWeight(contentType, inputTypes) === 0 || !getConversionTarget(outputTypes, outputPreferences)) {
+      throw new NotImplementedHttpError(
+        `Cannot convert from ${contentType} to ${Object.keys(outputPreferences)
+        }, only from ${Object.keys(inputTypes)} to ${Object.keys(outputTypes)}.`,
+      );
+    }
   }
 }

@@ -10,6 +10,12 @@
 export type ValuePreferences = Record<string, number>;
 
 /**
+ * A single entry of a {@link ValuePreferences} object.
+ * Useful when doing operations on such an object.
+ */
+export type ValuePreference = { value: string; weight: number };
+
+/**
  * Contains preferences along multiple content negotiation dimensions.
  *
  * All dimensions are optional for ease of constructing; either `undefined`

@@ -17,6 +17,10 @@ jest.mock('../../src/logging/LogUtil', (): any => {
 const logger: jest.Mocked<Logger> = getLoggerFor('GuardedStream') as any;
 
 class DummyConverter extends TypedRepresentationConverter {
+  public constructor() {
+    super('*/*', 'custom/type');
+  }
+
   public async getInputTypes(): Promise<Record<string, number>> {
     return { '*/*': 1 };
   }
