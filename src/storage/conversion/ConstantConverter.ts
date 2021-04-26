@@ -2,7 +2,7 @@ import { createReadStream } from 'fs';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { hasMatchingMediaTypes, matchesMediaType } from './ConversionUtil';
+import { matchesMediaType, matchesMediaPreferences } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 
@@ -37,7 +37,7 @@ export class ConstantConverter extends RepresentationConverter {
     if (!preferences.type) {
       throw new NotImplementedHttpError('No content type preferences specified');
     }
-    if (!hasMatchingMediaTypes({ ...preferences.type, '*/*': 0 }, { [this.contentType]: 1 })) {
+    if (!matchesMediaPreferences(this.contentType, { ...preferences.type, '*/*': 0 })) {
       throw new NotImplementedHttpError(`No preference for ${this.contentType}`);
     }
 

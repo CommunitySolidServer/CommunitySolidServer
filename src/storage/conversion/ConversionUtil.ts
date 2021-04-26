@@ -1,76 +1,133 @@
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { ValuePreference, ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 
 /**
- * Filters media types based on the given preferences.
- * Based on RFC 7231 - Content negotiation.
- * Will add a default `internal/*;q=0` to the preferences to prevent accidental use of internal types.
- * Since more specific media ranges override less specific ones,
- * this will be ignored if there is a specific internal type preference.
+ * Cleans incoming preferences to prevent unwanted behaviour.
+ * Makes sure internal types have weight 0, unless specifically requested in the preferences,
+ * and interprets empty preferences as accepting everything.
  *
- * This should be called even if there are no preferredTypes since this also filters out internal types.
+ * @param preferences - Preferences that need to be updated.
  *
- * @param preferredTypes - Preferences for output type.
- * @param availableTypes - Media types to compare to the preferences.
- *
- * @throws BadRequestHttpError
- * If the type preferences are undefined or if there are duplicate preferences.
- *
- * @returns The weighted and filtered list of matching types.
+ * @returns A copy of the the preferences with the necessary updates.
  */
-export function matchingMediaTypes(preferredTypes: ValuePreferences = {}, availableTypes: ValuePreferences = {}):
-string[] {
+export function cleanPreferences(preferences: ValuePreferences = {}): ValuePreferences {
   // No preference means anything is acceptable
-  const preferred = { ...preferredTypes };
-  if (Object.keys(preferredTypes).length === 0) {
+  const preferred = { ...preferences };
+  if (Object.keys(preferences).length === 0) {
     preferred['*/*'] = 1;
   }
   // Prevent accidental use of internal types
   if (!(INTERNAL_ALL in preferred)) {
     preferred[INTERNAL_ALL] = 0;
   }
+  return preferred;
+}
 
+/**
+ * Tries to match the given type to the given preferences.
+ * In case there are multiple matches the most specific one will be chosen as per RFC 7231.
+ *
+ * @param type - Type for which the matching weight is needed.
+ * @param preferred - Preferences to match the type to.
+ *
+ * @returns The corresponding weight from the preferences or 0 if there is no match.
+ */
+export function getTypeWeight(type: string, preferred: ValuePreferences): number {
+  const match = /^([^/]+)\/([^\s;]+)/u.exec(type);
+  if (!match) {
+    throw new InternalServerError(`Unexpected media type: ${type}.`);
+  }
+  const [ , main, sub ] = match;
   // RFC 7231
   //    Media ranges can be overridden by more specific media ranges or
   //    specific media types.  If more than one media range applies to a
   //    given type, the most specific reference has precedence.
-  const weightedSupported = Object.entries(availableTypes).map(([ type, quality ]): [string, number] => {
-    const match = /^([^/]+)\/([^\s;]+)/u.exec(type);
-    if (!match) {
-      throw new InternalServerError(`Unexpected type preference: ${type}`);
-    }
-    const [ , main, sub ] = match;
-    const weight =
-      preferred[type] ??
-      preferred[`${main}/${sub}`] ??
-      preferred[`${main}/*`] ??
-      preferred['*/*'] ??
-      0;
-    return [ type, weight * quality ];
-  });
-
-  // Return all non-zero preferences in descending order of weight
-  return weightedSupported
-    .filter(([ , weight ]): boolean => weight !== 0)
-    .sort(([ , weightA ], [ , weightB ]): number => weightB - weightA)
-    .map(([ type ]): string => type);
+  return preferred[type] ??
+         preferred[`${main}/${sub}`] ??
+         preferred[`${main}/*`] ??
+         preferred['*/*'] ??
+         0;
 }
 
 /**
- * Determines whether any available type satisfies the preferences.
+ * Measures the weights for all the given types when matched against the given preferences.
+ * Results will be sorted by weight.
+ * Weights of 0 indicate that no match is possible.
  *
- * @param preferredTypes - Preferences for output type.
- * @param availableTypes - Media types to compare to the preferences.
+ * @param types - Types for which we want to calculate the weights.
+ * @param preferred - Preferences to match the types against.
  *
- * @throws BadRequestHttpError
- * If the type preferences are undefined or if there are duplicate preferences.
- *
- * @returns Whether there is at least one preference match.
+ * @returns An array with a {@link ValuePreference} object for every input type, sorted by calculated weight.
  */
-export function hasMatchingMediaTypes(preferredTypes?: ValuePreferences, availableTypes?: ValuePreferences): boolean {
-  return matchingMediaTypes(preferredTypes, availableTypes).length !== 0;
+export function getWeightedPreferences(types: ValuePreferences, preferred: ValuePreferences): ValuePreference[] {
+  const weightedSupported = Object.entries(types)
+    .map(([ value, quality ]): ValuePreference => ({ value, weight: quality * getTypeWeight(value, preferred) }));
+  return weightedSupported
+    .sort(({ weight: weightA }, { weight: weightB }): number => weightB - weightA);
+}
+
+/**
+ * Finds the best result from the `available` values when matching against the `preferred` preferences.
+ * `undefined` if there is no match.
+ */
+/**
+ * Finds the type from the given types that has the best match with the given preferences,
+ * based on the calculated weight.
+ *
+ * @param types - Types for which we want to find the best match.
+ * @param preferred - Preferences to match the types against.
+ *
+ * @returns A {@link ValuePreference} containing the best match and the corresponding weight.
+ * Undefined if there is no match.
+ */
+export function getBestPreference(types: ValuePreferences, preferred: ValuePreferences): ValuePreference | undefined {
+  // Could also return the first entry of the above function but this is more efficient
+  const result = Object.entries(types).reduce((best, [ value, quality ]): ValuePreference => {
+    if (best.weight >= quality) {
+      return best;
+    }
+    const weight = quality * getTypeWeight(value, preferred);
+    if (weight > best.weight) {
+      return { value, weight };
+    }
+    return best;
+  }, { value: '', weight: 0 });
+
+  if (result.weight > 0) {
+    return result;
+  }
+}
+
+/**
+ * For a media type converter that can generate the given types,
+ * this function tries to find the type that best matches the given preferences.
+ *
+ * This function combines several other conversion utility functions
+ * to determine what output a converter should generate:
+ * it cleans the preferences with {@link cleanPreferences} to support empty preferences
+ * and to prevent the accidental generation of internal types,
+ * after which the best match gets found based on the weights.
+ *
+ * @param types - Media types that can be converted to.
+ * @param preferred - Preferences for output type.
+ *
+ * @returns The best match. Undefined if there is no match.
+ */
+export function getConversionTarget(types: ValuePreferences, preferred: ValuePreferences = {}): string | undefined {
+  const cleaned = cleanPreferences(preferred);
+
+  return getBestPreference(types, cleaned)?.value;
+}
+
+/**
+ * Checks if the given type matches the given preferences.
+ *
+ * @param type - Type to match.
+ * @param preferred - Preferences to match against.
+ */
+export function matchesMediaPreferences(type: string, preferred?: ValuePreferences): boolean {
+  return getTypeWeight(type, cleanPreferences(preferred)) > 0;
 }
 
 /**
@@ -98,29 +155,4 @@ export function matchesMediaType(mediaA: string, mediaB: string): boolean {
     return true;
   }
   return subTypeA === subTypeB;
-}
-
-/**
- * Determines whether the given conversion request is supported,
- * given the available content type conversions:
- *  - Checks if there is a content type for the input.
- *  - Checks if the input type is supported by the parser.
- *  - Checks if the parser can produce one of the preferred output types.
- * Throws an error with details if conversion is not possible.
- * @param inputType - Actual input type.
- * @param outputTypes - Acceptable output types.
- * @param convertorIn - Media types that can be parsed by the converter.
- * @param convertorOut - Media types that can be produced by the converter.
- */
-export function supportsMediaTypeConversion(
-  inputType = 'unknown', outputTypes: ValuePreferences = {},
-  convertorIn: ValuePreferences = {}, convertorOut: ValuePreferences = {},
-): void {
-  if (!Object.keys(convertorIn).some((type): boolean => matchesMediaType(inputType, type)) ||
-     matchingMediaTypes(outputTypes, convertorOut).length === 0) {
-    throw new NotImplementedHttpError(
-      `Cannot convert from ${inputType} to ${Object.keys(outputTypes)
-      }, only from ${Object.keys(convertorIn)} to ${Object.keys(convertorOut)}.`,
-    );
-  }
 }
