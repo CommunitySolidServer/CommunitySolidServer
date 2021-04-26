@@ -75,7 +75,7 @@
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",
-    "@solid/identity-token-verifier": "^0.6.2",
+    "@solid/identity-token-verifier": "^0.7.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
     "@types/cors": "^2.8.9",
@@ -146,7 +146,7 @@
     "stream-to-string": "^1.1.0",
     "supertest": "^6.0.0",
     "ts-jest": "^26.3.0",
-    "typedoc": "^0.20.0",
+    "typedoc": "^0.20.36",
     "typescript": "^4.0.2"
   }
 }
