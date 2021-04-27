@@ -58,7 +58,6 @@ export class CliRunner {
         config: { type: 'string', alias: 'c' },
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
         mainModulePath: { type: 'string', alias: 'm' },
-        podTemplateFolder: { type: 'string', alias: 't' },
         webViewsFolder: { type: 'string', alias: 'v' },
         port: { type: 'number', alias: 'p', default: 3000 },
         rootFilePath: { type: 'string', alias: 'f', default: './' },
@@ -114,8 +113,6 @@ export class CliRunner {
       'urn:solid-server:default:variable:rootFilePath':
         this.resolveFilePath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
-      'urn:solid-server:default:variable:podTemplateFolder':
-         this.resolveFilePath(params.podTemplateFolder, 'templates/pod'),
       'urn:solid-server:default:variable:podConfigJson':
         this.resolveFilePath(params.podConfigJson),
       'urn:solid-server:default:variable:webViewsFolder':

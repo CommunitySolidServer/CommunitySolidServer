@@ -53,6 +53,10 @@
       "PassthroughStore:_source": {
         "@id": "urn:solid-server:default:MemoryResourceStore"
       }
+    },
+    {
+      "@id": "urn:solid-server:default:ResourcesGenerator",
+      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/test/assets/templates"
     }
   ]
 }

@@ -67,7 +67,6 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | `--config, -c` | `"config/config-default.json"` | `config-default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config-file.json` |
 | `--mainModulePath, -m` | | Absolute path to the package root from which ComponentJS module resolution should start. |
 | `--loggingLevel, -l` | `"info"`| |
-| `--podTemplateFolder, -t` | `"templates/pod"` | Folder containing the templates used for pod provisioning. |
 | `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
 | `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
 | `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |

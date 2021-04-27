@@ -1,5 +1,6 @@
 import type { Representation } from '../../ldp/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { matchesMediaType } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -79,7 +80,7 @@ export class ChainedConverter extends TypedRepresentationConverter {
 
     if (bestMatch.weight === 0) {
       this.logger.warn(`No match found between ${leftKeys} and ${rightKeys}`);
-      throw new Error(`No match found between ${leftKeys} and ${rightKeys}`);
+      throw new InternalServerError(`No match found between ${leftKeys} and ${rightKeys}`);
     }
 
     this.logger.debug(`${bestMatch.type} is the best match between ${leftKeys} and ${rightKeys}`);

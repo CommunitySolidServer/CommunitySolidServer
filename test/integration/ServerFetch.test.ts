@@ -2,7 +2,6 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import { joinFilePath } from '../../src/util/PathUtil';
 import { instantiateFromConfig } from './Config';
 
 const port = 6004;
@@ -19,7 +18,6 @@ describe('A Solid server', (): void => {
       'urn:solid-server:test:Instances', 'server-memory.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
         'urn:solid-server:default:variable:webViewsFolder': '',
       },
     ) as Record<string, any>;
@@ -67,6 +65,18 @@ describe('A Solid server', (): void => {
       body: '<a:b> <a:b> <a:b>.',
     });
     expect(res.status).toBe(205);
+  });
+
+  it('can handle PUT errors.', async(): Promise<void> => {
+    // There was a specific case where the following request caused the connection to close instead of error
+    const res = await fetch(baseUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/plain',
+      },
+      body: '"test"',
+    });
+    expect(res.status).toBe(400);
   });
 
   it('can POST to create a container.', async(): Promise<void> => {

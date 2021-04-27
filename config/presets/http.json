@@ -54,7 +54,7 @@
       "StaticAssetHandler:_assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
-          "StaticAssetHandler:_assets_value": "./templates/root/favicon.ico"
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"
         }
       ]
     }

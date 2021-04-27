@@ -76,7 +76,7 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.2.0",
     "@rdfjs/fetch": "^2.1.0",
-    "@solid/identity-token-verifier": "^0.6.2",
+    "@solid/identity-token-verifier": "^0.7.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
     "@types/bcrypt": "^3.0.0",
@@ -91,6 +91,8 @@
     "@types/rdf-js": "^4.0.0",
     "@types/rdfjs__fetch": "^2.0.2",
     "@types/rdfjs__fetch-lite": "^2.0.2",
+    "@types/redis": "^2.8.28",
+    "@types/redlock": "^4.0.1",
     "@types/sparqljs": "^3.1.0",
     "@types/streamify-array": "^1.0.0",
     "@types/uuid": "^8.3.0",
@@ -116,6 +118,8 @@
     "rdf-parse": "^1.7.0",
     "rdf-serialize": "^1.1.0",
     "rdf-terms": "^1.5.1",
+    "redis": "^3.0.2",
+    "redlock": "^4.2.0",
     "sparqlalgebrajs": "^2.5.1",
     "sparqljs": "^3.1.2",
     "streamify-array": "^1.0.1",
@@ -127,7 +131,7 @@
   },
   "devDependencies": {
     "@inrupt/solid-client-authn-node": "^1.7.2",
-    "@microsoft/tsdoc-config": "^0.14.0",
+    "@microsoft/tsdoc-config": "^0.15.0",
     "@tsconfig/node12": "^1.0.7",
     "@types/cheerio": "^0.22.27",
     "@types/ejs": "^3.0.5",
@@ -158,7 +162,7 @@
     "stream-to-string": "^1.1.0",
     "supertest": "^6.0.0",
     "ts-jest": "^26.3.0",
-    "typedoc": "^0.20.0",
+    "typedoc": "^0.20.36",
     "typescript": "^4.0.2"
   }
 }

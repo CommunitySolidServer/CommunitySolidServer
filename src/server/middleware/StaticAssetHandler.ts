@@ -5,7 +5,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { joinFilePath } from '../../util/PathUtil';
+import { joinFilePath, resolveAssetPath } from '../../util/PathUtil';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
@@ -13,6 +13,9 @@ import type { HttpRequest } from '../HttpRequest';
 
 /**
  * Handler that serves static resources on specific paths.
+ * Relative file paths are assumed to be relative to cwd.
+ * Relative file paths can be preceded by $PACKAGE_ROOT/, e.g. $PACKAGE_ROOT/foo/bar,
+ * in case they need to be relative to the module root.
  */
 export class StaticAssetHandler extends HttpHandler {
   private readonly mappings: Record<string, string>;
@@ -26,7 +29,10 @@ export class StaticAssetHandler extends HttpHandler {
    */
   public constructor(assets: Record<string, string>) {
     super();
-    this.mappings = { ...assets };
+    this.mappings = {};
+    for (const [ url, path ] of Object.entries(assets)) {
+      this.mappings[url] = resolveAssetPath(path);
+    }
     this.pathMatcher = this.createPathMatcher(assets);
   }
 

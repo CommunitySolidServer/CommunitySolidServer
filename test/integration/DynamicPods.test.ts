@@ -34,7 +34,6 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
-      'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       'urn:solid-server:default:variable:podConfigJson': podConfigJson,
     };
 

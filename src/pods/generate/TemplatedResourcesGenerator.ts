@@ -8,7 +8,7 @@ import type {
   FileIdentifierMapperFactory,
   ResourceLink,
 } from '../../storage/mapping/FileIdentifierMapper';
-import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
+import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
 import type { TemplateEngine } from './TemplateEngine';
 import Dict = NodeJS.Dict;
@@ -18,6 +18,9 @@ import Dict = NodeJS.Dict;
  * The template folder structure will be kept.
  * Folders will be interpreted as containers and files as documents.
  * A FileIdentifierMapper will be used to generate identifiers that correspond to the relative structure.
+ *
+ * A relative `templateFolder` is resolved relative to cwd,
+ * unless it's preceded by $PACKAGE_ROOT/, e.g. $PACKAGE_ROOT/foo/bar.
  */
 export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateFolder: string;
@@ -33,7 +36,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
    * @param engine - Template engine for generating the resources.
    */
   public constructor(templateFolder: string, factory: FileIdentifierMapperFactory, engine: TemplateEngine) {
-    this.templateFolder = templateFolder;
+    this.templateFolder = resolveAssetPath(templateFolder);
     this.factory = factory;
     this.engine = engine;
   }

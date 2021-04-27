@@ -80,6 +80,10 @@
       }
     },
     {
+      "@id": "urn:solid-server:default:ResourcesGenerator",
+      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/test/assets/templates"
+    },
+    {
       "comment": "We need a value for this handler",
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "UnsupportedAsyncHandler"
