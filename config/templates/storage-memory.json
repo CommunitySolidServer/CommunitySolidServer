@@ -11,7 +11,7 @@
     {
       "@id": "urn:solid-server:template:DataAccessor",
       "@type": "InMemoryDataAccessor",
-      "InMemoryDataAccessor:_strategy": {
+      "strategy": {
         "@id": "urn:solid-server:template:IdentifierStrategy"
       }
     }

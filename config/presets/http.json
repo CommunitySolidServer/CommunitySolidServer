@@ -4,30 +4,30 @@
     {
       "@id": "urn:solid-server:default:ServerFactory",
       "@type": "WebSocketServerFactory",
-      "WebSocketServerFactory:_baseServerFactory": {
+      "baseServerFactory": {
         "@id": "urn:solid-server:default:HttpServerFactory"
       },
-      "WebSocketServerFactory:_webSocketHandler": {
+      "webSocketHandler": {
         "@id": "urn:solid-server:default:WebSocketHandler"
       }
     },
     {
       "@id": "urn:solid-server:default:HttpServerFactory",
       "@type": "BaseHttpServerFactory",
-      "BaseHttpServerFactory:_handler": {
+      "handler": {
         "@id": "urn:solid-server:default:HttpHandler"
       }
     },
     {
       "@id": "urn:solid-server:default:HttpHandler",
       "@type": "SequenceHandler",
-      "SequenceHandler:_handlers": [
+      "handlers": [
         {
           "@id": "urn:solid-server:default:Middleware"
         },
         {
           "@type": "WaterfallHandler",
-          "WaterfallHandler:_handlers": [
+          "handlers": [
             {
               "@id": "urn:solid-server:default:FaviconHandler"
             },
@@ -48,7 +48,7 @@
       "@id": "urn:solid-server:default:FaviconHandler",
       "@type": "StaticAssetHandler",
       "comment": "Serves the favicon",
-      "StaticAssetHandler:_assets": [
+      "assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
           "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"

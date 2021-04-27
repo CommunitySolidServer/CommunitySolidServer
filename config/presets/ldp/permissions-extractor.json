@@ -4,10 +4,10 @@
     {
       "@id": "urn:solid-server:default:PermissionsExtractor",
       "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
+      "handlers": [
         {
           "@type": "AclPermissionsExtractor",
-          "AclPermissionsExtractor:_aclStrategy": {
+          "aclStrategy": {
             "@id": "urn:solid-server:default:AclIdentifierStrategy"
           }
         },

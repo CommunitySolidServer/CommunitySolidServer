@@ -4,14 +4,14 @@
     {
       "@id": "urn:solid-server:default:IdentifierStrategy",
       "@type": "SubdomainIdentifierStrategy",
-      "SubdomainIdentifierStrategy:_baseUrl": {
+      "baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
     {
       "@id": "urn:solid-server:default:IdentifierGenerator",
       "@type": "SubdomainIdentifierGenerator",
-      "SubdomainIdentifierGenerator:_baseUrl": {
+      "baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       }
     }

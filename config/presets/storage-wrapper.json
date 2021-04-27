@@ -4,7 +4,7 @@
     {
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
-      "MonitoringStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:ResourceStore_Locking"
       }
     },
@@ -12,7 +12,7 @@
     {
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
-      "RoutingAuxiliaryStrategy:_sources": [
+      "sources": [
         {
           "@id": "urn:solid-server:default:AclStrategy"
         }
@@ -22,13 +22,13 @@
     {
       "@id": "urn:solid-server:default:ResourceStore_Locking",
       "@type": "LockingResourceStore",
-      "LockingResourceStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:ResourceStore_Patching"
       },
-      "LockingResourceStore:_locks": {
+      "locks": {
         "@id": "urn:solid-server:default:ResourceLocker"
       },
-      "LockingResourceStore:_strategy": {
+      "strategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
     },
@@ -36,13 +36,13 @@
     {
       "@id": "urn:solid-server:default:ResourceStore_Patching",
       "@type": "PatchingStore",
-      "PatchingStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:ResourceStore_Converting"
       },
-      "PatchingStore:_patcher": {
+      "patcher": {
         "@id": "urn:solid-server:default:PatchHandler",
         "@type": "SparqlUpdatePatchHandler",
-        "SparqlUpdatePatchHandler:_source": {
+        "source": {
           "@id": "urn:solid-server:default:ResourceStore_ToTurtle"
         }
       }
@@ -51,47 +51,47 @@
     {
       "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "WrappedExpiringReadWriteLocker",
-      "WrappedExpiringReadWriteLocker:_locker": {
+      "locker": {
         "@type": "GreedyReadWriteLocker",
-        "GreedyReadWriteLocker:_locker": {
+        "locker": {
           "@type": "SingleThreadedResourceLocker"
         },
-        "GreedyReadWriteLocker:_storage": {
+        "storage": {
           "@type": "ResourceIdentifierStorage",
-          "ResourceIdentifierStorage:_source": {
+          "source": {
             "@type": "MemoryMapStorage"
           }
         },
-        "GreedyReadWriteLocker:_suffixes_count": "count",
-        "GreedyReadWriteLocker:_suffixes_read": "read",
-        "GreedyReadWriteLocker:_suffixes_write": "write"
+        "suffixes_count": "count",
+        "suffixes_read": "read",
+        "suffixes_write": "write"
       },
-      "WrappedExpiringReadWriteLocker:_expiration": 3000
+      "expiration": 3000
     },
 
 
     {
       "@id": "urn:solid-server:default:ResourceStore_ToTurtle",
       "@type": "RepresentationConvertingStore",
-      "RepresentationConvertingStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:RoutingResourceStore"
       },
-      "RepresentationConvertingStore:_options_outConverter": {
+      "options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_options_inConverter": {
+      "options_inConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_options_inType": "text/turtle"
+      "options_inType": "text/turtle"
     },
 
     {
       "@id": "urn:solid-server:default:ResourceStore_Converting",
       "@type": "RepresentationConvertingStore",
-      "RepresentationConvertingStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:RoutingResourceStore"
       },
-      "RepresentationConvertingStore:_options_outConverter": {
+      "options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
     }
