@@ -138,7 +138,6 @@
       "WrappedExpiringReadWriteLocker:_expiration": 3000
     },
 
-
     {
       "@id": "urn:solid-server:default:ResourceStore_ToTurtle",
       "@type": "RepresentationConvertingStore",
@@ -163,6 +162,12 @@
       "RepresentationConvertingStore:_options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
+    },
+
+    {
+      "comment": "We need a value for this handler",
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "UnsupportedAsyncHandler"
     }
   ]
 }
