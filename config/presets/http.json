@@ -29,7 +29,7 @@
           "@type": "WaterfallHandler",
           "WaterfallHandler:_handlers": [
             {
-              "@id": "urn:solid-server:default:FaviconHandler"
+              "@id": "urn:solid-server:default:CommonAssetHandler"
             },
             {
               "@id": "urn:solid-server:default:StaticAssetHandler"
@@ -48,13 +48,17 @@
       ]
     },
     {
-      "@id": "urn:solid-server:default:FaviconHandler",
+      "@id": "urn:solid-server:default:CommonAssetHandler",
       "@type": "StaticAssetHandler",
-      "comment": "Serves the favicon",
+      "comment": "Serves the favicon and the idp css",
       "StaticAssetHandler:_assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
           "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"
+        },
+        {
+          "StaticAssetHandler:_assets_key": "/idp/style.css",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/views/email-password-interaction/main.css"
         }
       ]
     }
