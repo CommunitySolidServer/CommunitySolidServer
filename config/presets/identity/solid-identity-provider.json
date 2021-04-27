@@ -13,6 +13,13 @@
       "container": "/idp/data/"
     },
     {
+      "@id": "urn:solid-server:default:ExpiringIdpStorage",
+      "@type": "WrappedExpiringStorage",
+      "source": {
+        "@id": "urn:solid-server:default:IdpStorage"
+      }
+    },
+    {
       "@id": "urn:solid-server:default:IdpAdapterFactory",
       "@type": "WrappedFetchAdapterFactory",
       "source": {
@@ -22,10 +29,7 @@
         },
         "args_storagePathName": "/idp/oidc",
         "args_storage": {
-          "@type": "WrappedExpiringStorage",
-          "source": {
-            "@id": "urn:solid-server:default:IdpStorage"
-          }
+          "@id": "urn:solid-server:default:ExpiringIdpStorage"
         }
       }
     },

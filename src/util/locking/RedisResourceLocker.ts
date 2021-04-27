@@ -97,7 +97,7 @@ export class RedisResourceLocker implements ResourceLocker {
     }
   }
 
-  public async quit(): Promise<void> {
+  public async finalize(): Promise<void> {
     // This for loop is an extra failsafe,
     // this extra code won't slow down anything, this function will only be called to shut down in peace
     for (const [ , { lock }] of this.lockMap.entries()) {

@@ -8,20 +8,27 @@ export type Expires<T> = { expires?: string; payload: T };
 /**
  * A storage that wraps around another storage and expires resources based on the given (optional) expiry date.
  * Will delete expired entries when trying to get their value.
+ * Has a timer that will delete all expired data every hour (default value).
  */
 export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKey, TValue> {
   private readonly source: KeyValueStorage<TKey, Expires<TValue>>;
+  private readonly timer: NodeJS.Timeout;
 
-  public constructor(source: KeyValueStorage<TKey, Expires<TValue>>) {
+  /**
+   * @param source - KeyValueStorage to actually store the data.
+   * @param timeout - How often the expired data needs to be checked in minutes.
+   */
+  public constructor(source: KeyValueStorage<TKey, Expires<TValue>>, timeout = 60) {
     this.source = source;
+    this.timer = setInterval(this.removeExpiredEntries.bind(this), timeout * 60 * 1000);
   }
 
   public async get(key: TKey): Promise<TValue | undefined> {
-    return this.getClean(key);
+    return this.getUnexpired(key);
   }
 
   public async has(key: TKey): Promise<boolean> {
-    return Boolean(await this.getClean(key));
+    return Boolean(await this.getUnexpired(key));
   }
 
   public async set(key: TKey, value: TValue, expires?: Date): Promise<this> {
@@ -47,11 +54,25 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
   }
 
   /**
+   * Deletes all entries that have expired.
+   */
+  private async removeExpiredEntries(): Promise<void> {
+    const expired: TKey[] = [];
+    for await (const [ key, value ] of this.source.entries()) {
+      const { expires } = this.toData(value);
+      if (this.isExpired(expires)) {
+        expired.push(key);
+      }
+    }
+    await Promise.all(expired.map(async(key): Promise<boolean> => this.source.delete(key)));
+  }
+
+  /**
    * Tries to get the data for the given key.
    * In case the data exists but has expired,
    * it will be deleted and `undefined` will be returned instead.
    */
-  private async getClean(key: TKey): Promise<TValue | undefined> {
+  private async getUnexpired(key: TKey): Promise<TValue | undefined> {
     const data = await this.source.get(key);
     if (!data) {
       return;
@@ -87,5 +108,12 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
       result.expires = new Date(expireData.expires);
     }
     return result;
+  }
+
+  /**
+   * Stops the continuous cleanup timer.
+   */
+  public finalize(): void {
+    clearInterval(this.timer);
   }
 }

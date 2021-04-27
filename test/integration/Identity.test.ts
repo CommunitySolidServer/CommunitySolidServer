@@ -5,6 +5,7 @@ import { load } from 'cheerio';
 import { fetch } from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinFilePath } from '../../src/util/PathUtil';
 import { instantiateFromConfig } from './Config';
@@ -29,6 +30,7 @@ jest.spyOn(process, 'emitWarning').mockImplementation();
 describe('A Solid server with IdP', (): void => {
   let server: Server;
   let initializer: Initializer;
+  let expiringStorage: WrappedExpiringStorage<any, any>;
   let factory: HttpServerFactory;
   const redirectUrl = 'http://mockedredirect/';
   const oidcIssuer = baseUrl;
@@ -53,7 +55,7 @@ describe('A Solid server with IdP', (): void => {
         'urn:solid-server:default:variable:webViewsFolder': joinFilePath(__dirname, '../../templates/views'),
       },
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ factory, initializer, expiringStorage } = instances);
     await initializer.handleSafe();
     server = factory.startServer(port);
 
@@ -67,6 +69,7 @@ describe('A Solid server with IdP', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
+    expiringStorage.finalize();
     await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });

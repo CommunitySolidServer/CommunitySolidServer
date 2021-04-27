@@ -2,12 +2,15 @@ import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueS
 import type { Expires } from '../../../../src/storage/keyvalue/WrappedExpiringStorage';
 import { WrappedExpiringStorage } from '../../../../src/storage/keyvalue/WrappedExpiringStorage';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
+import clearAllTimers = jest.clearAllTimers;
 
 type Internal = Expires<string>;
 
 function createExpires(payload: string, expires?: Date): Internal {
   return { payload, expires: expires?.toISOString() };
 }
+
+jest.useFakeTimers();
 
 describe('A WrappedExpiringStorage', (): void => {
   const tomorrow = new Date();
@@ -26,6 +29,10 @@ describe('A WrappedExpiringStorage', (): void => {
       entries: jest.fn(),
     };
     storage = new WrappedExpiringStorage(source);
+  });
+
+  afterEach(async(): Promise<void> => {
+    clearAllTimers();
   });
 
   it('does not return data if there is no result.', async(): Promise<void> => {
@@ -102,5 +109,47 @@ describe('A WrappedExpiringStorage', (): void => {
     await expect(it.next()).resolves.toEqual(
       expect.objectContaining({ value: [ 'key3', 'data3' ]}),
     );
+  });
+
+  it('removes expired entries after a given time.', async(): Promise<void> => {
+    // Timeout of 1 minute
+    storage = new WrappedExpiringStorage(source, 1);
+    const data = [
+      [ 'key1', createExpires('data1', tomorrow) ],
+      [ 'key2', createExpires('data2', yesterday) ],
+      [ 'key3', createExpires('data3') ],
+    ];
+    (source.entries as jest.Mock).mockImplementationOnce(function* (): any {
+      yield* data;
+    });
+
+    jest.advanceTimersByTime(60 * 1000);
+
+    // Allow timer promise callback to resolve
+    await new Promise(setImmediate);
+
+    expect(source.delete).toHaveBeenCalledTimes(1);
+    expect(source.delete).toHaveBeenLastCalledWith('key2');
+  });
+
+  it('can stop the timer.', async(): Promise<void> => {
+    // Timeout of 1 minute
+    storage = new WrappedExpiringStorage(source, 1);
+    const data = [
+      [ 'key1', createExpires('data1', tomorrow) ],
+      [ 'key2', createExpires('data2', yesterday) ],
+      [ 'key3', createExpires('data3') ],
+    ];
+    (source.entries as jest.Mock).mockImplementationOnce(function* (): any {
+      yield* data;
+    });
+
+    expect(storage.finalize()).toBeUndefined();
+    jest.advanceTimersByTime(60 * 1000);
+
+    // Allow timer promise callback to resolve
+    await new Promise(setImmediate);
+
+    expect(source.delete).toHaveBeenCalledTimes(0);
   });
 });
