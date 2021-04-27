@@ -94,7 +94,7 @@ export class CliRunner {
    * Resolves a path relative to the current working directory,
    * falling back to a path relative to this module.
    */
-  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
+  public resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
     return typeof cwdPath === 'string' ?
       absoluteFilePath(cwdPath) :
       joinFilePath(__dirname, '../../', modulePath);
@@ -103,7 +103,7 @@ export class CliRunner {
   /**
    * Translates command-line parameters into configuration variables
    */
-  protected createVariables(params: Record<string, any>): Record<string, any> {
+  public createVariables(params: Record<string, any>): Record<string, any> {
     return {
       'urn:solid-server:default:variable:baseUrl':
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
@@ -120,7 +120,7 @@ export class CliRunner {
   /**
    * Creates the server initializer
    */
-  protected async createInitializer(
+  public async createInitializer(
     componentsProperties: IComponentsManagerBuilderOptions<Initializer>,
     configFile: string,
     variables: Record<string, any>,
