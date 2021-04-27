@@ -47,6 +47,7 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+    timeout-minutes: 10
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -84,6 +85,7 @@ jobs:
           - '14.x'
           - '15.x'
           - '16.x'
+    timeout-minutes: 10
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
