@@ -4,10 +4,10 @@
     {
       "@id": "urn:solid-server:default:Middleware",
       "@type": "SequenceHandler",
-      "SequenceHandler:_handlers": [
+      "handlers": [
         {
           "@type": "HeaderHandler",
-          "HeaderHandler:_headers": [
+          "headers": [
             {
               "HeaderHandler:_headers_key": "Vary",
               "HeaderHandler:_headers_value": "Accept,Authorization,Origin"
@@ -20,13 +20,13 @@
         },
         {
           "@type": "WebSocketAdvertiser",
-          "WebSocketAdvertiser:_baseUrl": {
+          "baseUrl": {
             "@id": "urn:solid-server:default:variable:baseUrl"
           }
         },
         {
           "@type": "CorsHandler",
-          "CorsHandler:_options_methods": [
+          "options_methods": [
             "GET",
             "HEAD",
             "OPTIONS",
@@ -35,8 +35,8 @@
             "PATCH",
             "DELETE"
           ],
-          "CorsHandler:_options_credentials": true,
-          "CorsHandler:_options_exposedHeaders": [
+          "options_credentials": true,
+          "options_exposedHeaders": [
             "Accept-Patch",
             "Location",
             "MS-Author-Via",

@@ -4,32 +4,32 @@
     {
       "@id": "urn:solid-server:default:FileIdentifierMapper",
       "@type": "ExtensionBasedMapper",
-      "ExtensionBasedMapper:_base": {
+      "base": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "ExtensionBasedMapper:_rootFilepath": {
+      "rootFilepath": {
         "@id": "urn:solid-server:default:variable:rootFilePath"
       },
-      "ExtensionBasedMapper:_overrideTypes_acl": "text/turtle",
-      "ExtensionBasedMapper:_overrideTypes_meta": "text/turtle"
+      "overrideTypes_acl": "text/turtle",
+      "overrideTypes_meta": "text/turtle"
     },
     {
       "@id": "urn:solid-server:default:FileDataAccessor",
       "@type": "FileDataAccessor",
-      "FileDataAccessor:_resourceMapper": {
+      "resourceMapper": {
         "@id": "urn:solid-server:default:FileIdentifierMapper"
       }
     },
     {
       "@id": "urn:solid-server:default:FileResourceStore",
       "@type": "DataAccessorBasedStore",
-      "DataAccessorBasedStore:_accessor": {
+      "accessor": {
         "@id": "urn:solid-server:default:FileDataAccessor"
       },
-      "DataAccessorBasedStore:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       },
-      "DataAccessorBasedStore:_auxiliaryStrategy": {
+      "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
     }

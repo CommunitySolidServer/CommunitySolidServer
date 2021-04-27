@@ -4,10 +4,10 @@
     {
       "@id": "urn:solid-server:default:MetadataSerializer",
       "@type": "ParallelHandler",
-      "ParallelHandler:_handlers": [
+      "handlers": [
         {
           "@type": "ConstantMetadataWriter",
-          "ConstantMetadataWriter:_headers": [
+          "headers": [
             {
               "ConstantMetadataWriter:_headers_key": "Accept-Patch",
               "ConstantMetadataWriter:_headers_value": "application/sparql-update"
@@ -20,7 +20,7 @@
         },
         {
           "@type": "MappedMetadataWriter",
-          "MappedMetadataWriter:_headerMap": [
+          "headerMap": [
             {
               "MappedMetadataWriter:_headerMap_key": "http://www.w3.org/ns/ma-ont#format",
               "MappedMetadataWriter:_headerMap_value": "Content-Type"
@@ -33,7 +33,7 @@
         },
         {
           "@type": "LinkRelMetadataWriter",
-          "LinkRelMetadataWriter:_linkRelMap": [
+          "linkRelMap": [
             {
               "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
               "LinkRelMetadataWriter:_linkRelMap_value": "type"
@@ -52,13 +52,13 @@
     {
       "@id": "urn:solid-server:default:ResponseWriter",
       "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
+      "handlers": [
         {
           "@type": "ErrorResponseWriter"
         },
         {
           "@type": "BasicResponseWriter",
-          "BasicResponseWriter:_metadataWriter": {
+          "metadataWriter": {
             "@id": "urn:solid-server:default:MetadataSerializer"
           }
         }

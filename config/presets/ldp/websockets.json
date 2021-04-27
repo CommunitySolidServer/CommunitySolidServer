@@ -4,7 +4,7 @@
     {
       "@id": "urn:solid-server:default:WebSocketHandler",
       "@type": "UnsecureWebSocketsProtocol",
-      "UnsecureWebSocketsProtocol:_source": {
+      "source": {
         "@id": "urn:solid-server:default:ResourceStore"
       }
     }

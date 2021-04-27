@@ -4,38 +4,38 @@
     {
       "@id": "urn:solid-server:default:AclIdentifierStrategy",
       "@type": "SuffixAuxiliaryIdentifierStrategy",
-      "SuffixAuxiliaryIdentifierStrategy:_suffix": ".acl"
+      "suffix": ".acl"
     },
     {
       "@id": "urn:solid-server:default:AclStrategy",
       "@type": "ComposedAuxiliaryStrategy",
-      "ComposedAuxiliaryStrategy:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:AclIdentifierStrategy"
       },
-      "ComposedAuxiliaryStrategy:_metadataGenerator": {
+      "metadataGenerator": {
         "@type": "LinkMetadataGenerator",
-        "LinkMetadataGenerator:_link": "http://www.w3.org/ns/auth/acl#accessControl",
-        "LinkMetadataGenerator:_identifierStrategy": {
+        "link": "http://www.w3.org/ns/auth/acl#accessControl",
+        "identifierStrategy": {
           "@id": "urn:solid-server:default:AclIdentifierStrategy"
         }
       },
-      "ComposedAuxiliaryStrategy:_validator": {
+      "validator": {
         "@id": "urn:solid-server:default:RdfValidator"
       },
-      "ComposedAuxiliaryStrategy:_isRootRequired": true
+      "isRootRequired": true
     },
 
     {
       "@id": "urn:solid-server:default:AclBasedAuthorizer",
       "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
+      "handlers": [
         {
           "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
           "@type": "AuxiliaryAuthorizer",
-          "AuxiliaryAuthorizer:_resourceAuthorizer": {
+          "resourceAuthorizer": {
             "@id": "urn:solid-server:default:WebAclAuthorizer"
           },
-          "AuxiliaryAuthorizer:_auxStrategy": {
+          "auxStrategy": {
             "@id": "urn:solid-server:default:AuxiliaryStrategy"
           }
         },
@@ -48,13 +48,13 @@
     {
       "@id": "urn:solid-server:default:WebAclAuthorizer",
       "@type": "WebAclAuthorizer",
-      "WebAclAuthorizer:_aclStrategy": {
+      "aclStrategy": {
         "@id": "urn:solid-server:default:AclIdentifierStrategy"
       },
-      "WebAclAuthorizer:_resourceStore": {
+      "resourceStore": {
         "@id": "urn:solid-server:default:ResourceStore"
       },
-      "WebAclAuthorizer:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     }

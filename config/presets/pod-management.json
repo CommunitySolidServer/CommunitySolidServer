@@ -4,41 +4,41 @@
     {
       "@id": "urn:solid-server:default:ResourcesGenerator",
       "@type": "TemplatedResourcesGenerator",
-      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/templates/pod",
-      "TemplatedResourcesGenerator:_factory": {
+      "templateFolder": "$PACKAGE_ROOT/templates/pod",
+      "factory": {
         "@type": "ExtensionBasedMapperFactory"
       },
-      "TemplatedResourcesGenerator:_engine": {
+      "engine": {
         "@type": "HandlebarsTemplateEngine"
       }
     },
     {
       "@id": "urn:solid-server:default:PodManager",
       "@type": "GeneratedPodManager",
-      "GeneratedPodManager:_store": {
+      "store": {
         "@id": "urn:solid-server:default:ResourceStore"
       },
-      "GeneratedPodManager:_idGenerator": {
+      "idGenerator": {
         "@id": "urn:solid-server:default:IdentifierGenerator"
       },
-      "GeneratedPodManager:_resourcesGenerator": {
+      "resourcesGenerator": {
         "@id": "urn:solid-server:default:ResourcesGenerator"
       }
     },
     {
       "@id": "urn:solid-server:default:PodManagerHandler",
       "@type": "PodManagerHttpHandler",
-      "PodManagerHttpHandler:_args_requestPath": "/pods",
-      "PodManagerHttpHandler:_args_requestParser": {
+      "args_requestPath": "/pods",
+      "args_requestParser": {
         "@id": "urn:solid-server:default:RequestParser"
       },
-      "PodManagerHttpHandler:_args_podSettingsParser": {
+      "args_podSettingsParser": {
         "@type": "PodSettingsJsonParser"
       },
-      "PodManagerHttpHandler:_args_manager": {
+      "args_manager": {
         "@id": "urn:solid-server:default:PodManager"
       },
-      "PodManagerHttpHandler:_args_responseWriter": {
+      "args_responseWriter": {
         "@id": "urn:solid-server:default:ResponseWriter"
       }
     }

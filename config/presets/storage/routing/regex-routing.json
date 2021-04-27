@@ -4,14 +4,14 @@
     {
       "@id": "urn:solid-server:default:RegexRouterRule",
       "@type": "RegexRouterRule",
-      "RegexRouterRule:_base": {
+      "base": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
     {
       "@id": "urn:solid-server:default:RoutingResourceStore",
       "@type": "RoutingResourceStore",
-      "RoutingResourceStore:_rule": {
+      "rule": {
         "@id": "urn:solid-server:default:RegexRouterRule"
       }
     }
