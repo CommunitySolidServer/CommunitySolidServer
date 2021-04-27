@@ -4,14 +4,14 @@
     {
       "@id": "urn:solid-server:default:IdentifierStrategy",
       "@type": "SingleRootIdentifierStrategy",
-      "SingleRootIdentifierStrategy:_baseUrl": {
+      "baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       }
     },
     {
       "@id": "urn:solid-server:default:IdentifierGenerator",
       "@type": "SuffixIdentifierGenerator",
-      "SuffixIdentifierGenerator:_base": {
+      "base": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       }
     }

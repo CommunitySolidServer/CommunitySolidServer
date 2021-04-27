@@ -4,18 +4,18 @@
     {
       "@id": "urn:solid-server:default:RequestParser",
       "@type": "BasicRequestParser",
-      "BasicRequestParser:_args_targetExtractor": {
+      "args_targetExtractor": {
         "@id": "urn:solid-server:default:TargetExtractor"
       },
-      "BasicRequestParser:_args_preferenceParser": {
+      "args_preferenceParser": {
         "@type": "AcceptPreferenceParser"
       },
-      "BasicRequestParser:_args_metadataExtractor": {
+      "args_metadataExtractor": {
         "@id": "urn:solid-server:default:MetadataExtractor"
       },
-      "BasicRequestParser:_args_bodyParser": {
+      "args_bodyParser": {
         "@type": "WaterfallHandler",
-        "WaterfallHandler:_handlers": [
+        "handlers": [
           {
             "@type": "SparqlUpdateBodyParser"
           },
@@ -28,7 +28,7 @@
     {
       "@id": "urn:solid-server:default:TargetExtractor",
       "@type": "OriginalUrlExtractor",
-      "OriginalUrlExtractor:_options_includeQueryString": false
+      "options_includeQueryString": false
     }
   ]
 }

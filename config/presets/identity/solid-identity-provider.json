@@ -4,22 +4,22 @@
     {
       "@id": "urn:solid-server:default:IdpStorage",
       "@type": "JsonResourceStorage",
-      "JsonResourceStorage:_source": {
+      "source": {
         "@id": "urn:solid-server:default:ResourceStore"
       }
     },
     {
       "@id": "urn:solid-server:default:IdpStorageAdapterFactory",
       "@type": "ClientWebIdFetchingStorageAdapterFactory",
-      "ClientWebIdFetchingStorageAdapterFactory:_wrappedAdapterFactory": {
+      "wrappedAdapterFactory": {
         "@type": "ExpiringStorageAdapterFactory",
-        "ExpiringStorageAdapterFactory:_args_baseUrl": {
+        "args_baseUrl": {
           "@id": "urn:solid-server:default:variable:baseUrl"
         },
-        "ExpiringStorageAdapterFactory:_args_storagePathName": "/idp/oidc",
-        "ExpiringStorageAdapterFactory:_args_storage": {
+        "args_storagePathName": "/idp/oidc",
+        "args_storage": {
           "@type": "WrappedExpiringStorage",
-          "WrappedExpiringStorage:_source": {
+          "source": {
             "@id": "urn:solid-server:default:IdpStorage"
           }
         }
@@ -28,52 +28,52 @@
     {
       "@id": "urn:solid-server:default:IdpConfigurationGenerator",
       "@type": "KeyGeneratingIdpConfigurationGenerator",
-      "KeyGeneratingIdpConfigurationGenerator:_storageAdapterFactory": {
+      "storageAdapterFactory": {
         "@id": "urn:solid-server:default:IdpStorageAdapterFactory"
       },
-      "KeyGeneratingIdpConfigurationGenerator:_baseUrl": {
+      "baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "KeyGeneratingIdpConfigurationGenerator:_idpPathName": "idp",
-      "KeyGeneratingIdpConfigurationGenerator:_storage": {
+      "idpPathName": "idp",
+      "storage": {
         "@id": "urn:solid-server:default:IdpStorage"
       }
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
-      "IdentityProviderFactory:_issuer": {
+      "issuer": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "IdentityProviderFactory:_configurationFactory": {
+      "configurationFactory": {
         "@id": "urn:solid-server:default:IdpConfigurationGenerator"
       },
-      "IdentityProviderFactory:_errorResponseWriter": {
+      "errorResponseWriter": {
         "@type": "ErrorResponseWriter"
       }
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
       "@type": "IdentityProviderHttpHandler",
-      "IdentityProviderHttpHandler:_providerFactory": {
+      "providerFactory": {
         "@id": "urn:solid-server:default:IdentityProviderFactory"
       },
-      "IdentityProviderHttpHandler:_interactionPolicy": {
+      "interactionPolicy": {
         "@id": "urn:solid-server:email-password-interaction:EmailPasswordInteractionPolicy"
       },
-      "IdentityProviderHttpHandler:_interactionHttpHandler": {
+      "interactionHttpHandler": {
         "@id": "urn:solid-server:email-password-interaction:InteractionHttpHandler"
       },
-      "IdentityProviderHttpHandler:_errorResponseWriter": {
+      "errorResponseWriter": {
         "@type": "ErrorResponseWriter"
       }
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "RouterHandler",
-      "RouterHandler:_allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
-      "RouterHandler:_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
-      "RouterHandler:_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+      "allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
+      "handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
     }
   ]
 }

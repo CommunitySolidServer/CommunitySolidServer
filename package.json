@@ -39,7 +39,7 @@
   "homepage": "https://github.com/solid/community-server#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:components": "componentsjs-generator -s src -c dist/components -i .componentsignore",
+    "build:components": "componentsjs-generator -s src -c dist/components -i .componentsignore --typeScopedContexts",
     "build:ts": "tsc",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
@@ -101,7 +101,7 @@
     "arrayify-stream": "^1.0.0",
     "async-lock": "^1.2.4",
     "bcrypt": "^5.0.0",
-    "componentsjs": "^4.0.1",
+    "componentsjs": "^4.1.0",
     "cors": "^2.8.5",
     "ejs": "^3.1.5",
     "end-of-stream": "^1.4.4",

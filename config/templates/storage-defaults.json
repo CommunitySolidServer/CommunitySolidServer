@@ -14,7 +14,7 @@
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "comment": "Copied from storage-wrapper.json since a variable is required in there",
       "@type": "RoutingAuxiliaryStrategy",
-      "RoutingAuxiliaryStrategy:_sources": [
+      "sources": [
         {
           "@id": "urn:solid-server:default:AclStrategy"
         }
@@ -24,7 +24,7 @@
     {
       "@id": "urn:solid-server:template:IdentifierStrategy",
       "@type": "SingleRootIdentifierStrategy",
-      "SingleRootIdentifierStrategy:_baseUrl": {
+      "baseUrl": {
         "@id": "urn:solid-server:template:variable:baseUrl"
       }
     },
@@ -32,13 +32,13 @@
     {
       "@id": "urn:solid-server:template:ResourceStore",
       "@type": "DataAccessorBasedStore",
-      "DataAccessorBasedStore:_accessor": {
+      "accessor": {
         "@id": "urn:solid-server:template:DataAccessor"
       },
-      "DataAccessorBasedStore:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:template:IdentifierStrategy"
       },
-      "DataAccessorBasedStore:_auxiliaryStrategy": {
+      "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
     },

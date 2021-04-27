@@ -4,7 +4,7 @@
     {
       "@id": "urn:solid-server:default:MetadataExtractor",
       "@type": "BasicMetadataExtractor",
-      "BasicMetadataExtractor:_parsers": [
+      "parsers": [
         {
           "@type": "ContentTypeParser"
         },

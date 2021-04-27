@@ -4,40 +4,40 @@
     {
       "@id": "urn:solid-server:default:OperationHandler",
       "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
+      "handlers": [
         {
           "@type": "DeleteOperationHandler",
-          "DeleteOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "GetOperationHandler",
-          "GetOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "HeadOperationHandler",
-          "HeadOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PatchOperationHandler",
-          "PatchOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PostOperationHandler",
-          "PostOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         },
         {
           "@type": "PutOperationHandler",
-          "PutOperationHandler:_store": {
+          "store": {
             "@id": "urn:solid-server:default:ResourceStore"
           }
         }

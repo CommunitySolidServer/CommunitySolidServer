@@ -4,10 +4,10 @@
     {
       "@id": "urn:solid-server:default:SparqlDataAccessor",
       "@type": "SparqlDataAccessor",
-      "SparqlDataAccessor:_endpoint": {
+      "endpoint": {
         "@id": "urn:solid-server:default:variable:sparqlEndpoint"
       },
-      "SparqlDataAccessor:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     },
@@ -15,13 +15,13 @@
     {
       "@id": "urn:solid-server:default:DataAccessorBasedStore",
       "@type": "DataAccessorBasedStore",
-      "DataAccessorBasedStore:_accessor": {
+      "accessor": {
         "@id": "urn:solid-server:default:SparqlDataAccessor"
       },
-      "DataAccessorBasedStore:_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       },
-      "DataAccessorBasedStore:_auxiliaryStrategy": {
+      "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       }
     },
@@ -29,13 +29,13 @@
     {
       "@id": "urn:solid-server:default:SparqlResourceStore",
       "@type": "RepresentationConvertingStore",
-      "RepresentationConvertingStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:DataAccessorBasedStore"
       },
-      "RepresentationConvertingStore:_options_inConverter": {
+      "options_inConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       },
-      "RepresentationConvertingStore:_options_inType": "internal/quads"
+      "options_inType": "internal/quads"
     }
   ]
 }

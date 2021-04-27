@@ -9,7 +9,7 @@
     {
       "@id": "urn:solid-server:default:QuadToRdfConverter",
       "@type": "QuadToRdfConverter",
-      "QuadToRdfConverter:_options_outputPreferences": [
+      "options_outputPreferences": [
         {
           "QuadToRdfConverter:_options_outputPreferences_key": "text/turtle",
           "QuadToRdfConverter:_options_outputPreferences_value": 1
@@ -40,7 +40,7 @@
     {
       "@id": "urn:solid-server:default:ContentTypeReplacer",
       "@type": "ContentTypeReplacer",
-      "ContentTypeReplacer:_replacements": [
+      "replacements": [
         {
           "ContentTypeReplacer:_replacements_key": "application/n-triples",
           "ContentTypeReplacer:_replacements_value": "text/turtle"
@@ -67,7 +67,7 @@
     {
       "@id": "urn:solid-server:default:RdfRepresentationConverter",
       "@type": "ChainedConverter",
-      "ChainedConverter:_converters": [
+      "converters": [
         {
           "@id": "urn:solid-server:default:RdfToQuadConverter"
         },
@@ -80,7 +80,7 @@
     {
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
-      "WaterfallHandler:_handlers": [
+      "handlers": [
         {
           "@id": "urn:solid-server:default:IndexConverter"
         },
@@ -92,12 +92,6 @@
           "@id": "urn:solid-server:default:ContentTypeReplacer"
         },
         {
-          "@id": "urn:solid-server:default:RdfToQuadConverter"
-        },
-        {
-          "@id": "urn:solid-server:default:QuadToRdfConverter"
-        },
-        {
           "@id": "urn:solid-server:default:RdfRepresentationConverter"
         }
       ]
@@ -106,7 +100,7 @@
     {
       "@id": "urn:solid-server:default:RdfValidator",
       "@type": "RdfValidator",
-      "RdfValidator:_converter": {
+      "converter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
     }

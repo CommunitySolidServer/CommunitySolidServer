@@ -4,7 +4,7 @@
     {
       "@id": "urn:solid-server:default:LoggerFactory",
       "@type": "WinstonLoggerFactory",
-      "WinstonLoggerFactory:_level": {
+      "level": {
         "@id": "urn:solid-server:default:variable:loggingLevel"
       }
     }

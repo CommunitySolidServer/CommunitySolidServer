@@ -2,7 +2,7 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { matchesMediaType, matchingMediaTypes } from './ConversionUtil';
+import { matchesMediaType, getConversionTarget } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { RepresentationConverter } from './RepresentationConverter';
 
@@ -65,10 +65,10 @@ export class ContentTypeReplacer extends RepresentationConverter {
     const supported = Object.keys(this.contentTypeMap)
       .filter((type): boolean => matchesMediaType(contentType, type))
       .map((type): ValuePreferences => this.contentTypeMap[type]);
-    const matching = matchingMediaTypes(preferred, Object.assign({} as ValuePreferences, ...supported));
-    if (matching.length === 0) {
+    const match = getConversionTarget(Object.assign({} as ValuePreferences, ...supported), preferred);
+    if (!match) {
       throw new NotImplementedHttpError(`Cannot convert from ${contentType} to ${Object.keys(preferred)}`);
     }
-    return matching[0];
+    return match;
   }
 }

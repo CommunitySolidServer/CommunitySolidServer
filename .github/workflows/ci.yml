@@ -32,6 +32,8 @@ jobs:
           - '14.2'
           - '14.x'
           - '15.x'
+          - '16.0'
+          - '16.x'
     env:
       TEST_DOCKER: true
     services:
@@ -45,6 +47,7 @@ jobs:
         image: redis
         ports:
           - 6379:6379
+    timeout-minutes: 10
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -79,6 +82,8 @@ jobs:
           - '12.x'
           - '14.x'
           - '15.x'
+          - '16.x'
+    timeout-minutes: 10
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2

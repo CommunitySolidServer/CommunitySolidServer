@@ -29,7 +29,7 @@
       "comment": "Use a memory based store as backend with no additional routing.",
       "@id": "urn:solid-server:default:RoutingResourceStore",
       "@type": "PassthroughStore",
-      "PassthroughStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:MemoryResourceStore"
       }
     }
