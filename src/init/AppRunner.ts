@@ -8,16 +8,16 @@ import { getLoggerFor } from '../logging/LogUtil';
 import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
-export class CliRunner {
+export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
   /**
-   * Generic run function for starting the server from a given config
+   * Generic run function for starting the server on the CLI from a given config
    * Made run to be non-async to lower the chance of unhandled promise rejection errors in the future.
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public run({
+  public runCli({
     argv = process.argv,
     stderr = process.stderr,
   }: {

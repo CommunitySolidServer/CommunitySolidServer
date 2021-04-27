@@ -1,5 +1,5 @@
 import { ComponentsManager } from 'componentsjs';
-import { CliRunner } from '../../../src/init/CliRunner';
+import { AppRunner } from '../../../src/init/AppRunner';
 import type { Initializer } from '../../../src/init/Initializer';
 import { joinFilePath } from '../../../src/util/PathUtil';
 
@@ -26,17 +26,17 @@ const error = jest.spyOn(console, 'error').mockImplementation(jest.fn());
 const write = jest.spyOn(process.stderr, 'write').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
 
-describe('CliRunner', (): void => {
+describe('AppRunner', (): void => {
   afterEach((): void => {
     jest.clearAllMocks();
   });
 
   it('starts the server with default settings.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [ 'node', 'script' ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -69,7 +69,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts abbreviated flags.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script',
         '-b', 'http://pod.example/',
@@ -83,7 +83,7 @@ describe('CliRunner', (): void => {
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -112,7 +112,7 @@ describe('CliRunner', (): void => {
   });
 
   it('accepts full flags.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script',
         '--baseUrl', 'http://pod.example/',
@@ -126,7 +126,7 @@ describe('CliRunner', (): void => {
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -168,9 +168,9 @@ describe('CliRunner', (): void => {
       '--podConfigJson', '/different-path.json',
     ];
 
-    new CliRunner().run();
+    new AppRunner().runCli();
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -202,11 +202,11 @@ describe('CliRunner', (): void => {
 
   it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
     manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [ 'node', 'script' ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -223,11 +223,11 @@ describe('CliRunner', (): void => {
 
   it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
     initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [ 'node', 'script' ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -238,13 +238,13 @@ describe('CliRunner', (): void => {
   });
 
   it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script', '--foo',
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -255,13 +255,13 @@ describe('CliRunner', (): void => {
   });
 
   it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script', '-s',
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -272,13 +272,13 @@ describe('CliRunner', (): void => {
   });
 
   it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt',
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
@@ -290,13 +290,13 @@ describe('CliRunner', (): void => {
   });
 
   it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
-    new CliRunner().run({
+    new AppRunner().runCli({
       argv: [
         'node', 'script', '-ll',
       ],
     });
 
-    // Wait until initializer has been called, because we can't await CliRunner.run.
+    // Wait until initializer has been called, because we can't await AppRunner.run.
     await new Promise((resolve): void => {
       setImmediate(resolve);
     });
