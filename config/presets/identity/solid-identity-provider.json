@@ -6,7 +6,11 @@
       "@type": "JsonResourceStorage",
       "source": {
         "@id": "urn:solid-server:default:ResourceStore"
-      }
+      },
+      "baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "container": "/idp/data/"
     },
     {
       "@id": "urn:solid-server:default:IdpAdapterFactory",
