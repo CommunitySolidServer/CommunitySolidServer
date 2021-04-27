@@ -41,6 +41,11 @@
         {
           "RecordObject:_record_key": "factory",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
+        },
+        {
+          "comment": "Timer needs to be stopped when tests are finished.",
+          "RecordObject:_record_key": "expiringStorage",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
         }
       ]
     },

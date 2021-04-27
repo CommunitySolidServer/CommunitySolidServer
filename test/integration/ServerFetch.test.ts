@@ -2,6 +2,7 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { instantiateFromConfig } from './Config';
 
 const port = 6004;
@@ -11,6 +12,7 @@ const baseUrl = `http://localhost:${port}/`;
 describe('A Solid server', (): void => {
   let server: Server;
   let initializer: Initializer;
+  let expiringStorage: WrappedExpiringStorage<any, any>;
   let factory: HttpServerFactory;
 
   beforeAll(async(): Promise<void> => {
@@ -21,12 +23,13 @@ describe('A Solid server', (): void => {
         'urn:solid-server:default:variable:webViewsFolder': '',
       },
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ factory, initializer, expiringStorage } = instances);
     await initializer.handleSafe();
     server = factory.startServer(port);
   });
 
   afterAll(async(): Promise<void> => {
+    expiringStorage.finalize();
     await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
