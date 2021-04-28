@@ -38,7 +38,7 @@ class MemoryLocker implements ResourceLocker {
 
 describe('A GreedyReadWriteLocker', (): void => {
   let sourceLocker: ResourceLocker;
-  let storage: KeyValueStorage<ResourceIdentifier, number>;
+  let storage: KeyValueStorage<string, number>;
   const resourceId = { path: 'http://test.com/resource' };
   const resource2Id = { path: 'http://test.com/resource2' };
   let locker: GreedyReadWriteLocker;
@@ -46,13 +46,7 @@ describe('A GreedyReadWriteLocker', (): void => {
   beforeEach(async(): Promise<void> => {
     sourceLocker = new MemoryLocker();
 
-    const map = new Map<string, number>();
-    storage = {
-      get: async(identifier: ResourceIdentifier): Promise<number | undefined> => map.get(identifier.path),
-      has: async(identifier: ResourceIdentifier): Promise<boolean> => map.has(identifier.path),
-      set: async(identifier: ResourceIdentifier, value: number): Promise<any> => map.set(identifier.path, value),
-      delete: async(identifier: ResourceIdentifier): Promise<boolean> => map.delete(identifier.path),
-    } as any;
+    storage = new Map<string, number>() as any;
 
     locker = new GreedyReadWriteLocker(sourceLocker, storage);
   });

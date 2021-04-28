@@ -1,7 +1,6 @@
 import assert from 'assert';
 import { hash, compare } from 'bcrypt';
 import { v4 } from 'uuid';
-import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
 import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { AccountStore } from './AccountStore';
@@ -27,9 +26,8 @@ export interface ForgotPasswordPayload {
 export type EmailPasswordData = AccountPayload | ForgotPasswordPayload;
 
 export interface BaseAccountStoreArgs {
-  baseUrl: string;
-  storagePathName: string;
-  storage: KeyValueStorage<ResourceIdentifier, EmailPasswordData>;
+  storageName: string;
+  storage: KeyValueStorage<string, EmailPasswordData>;
   saltRounds: number;
 }
 
@@ -38,15 +36,12 @@ export interface BaseAccountStoreArgs {
  * to persist its information.
  */
 export class BaseAccountStore implements AccountStore {
-  private readonly baseUrl: string;
-  private readonly storage: KeyValueStorage<ResourceIdentifier, EmailPasswordData>;
+  private readonly storageName: string;
+  private readonly storage: KeyValueStorage<string, EmailPasswordData>;
   private readonly saltRounds: number;
 
   public constructor(args: BaseAccountStoreArgs) {
-    if (!args.storagePathName.startsWith('/')) {
-      throw new Error('storagePathName should start with a slash.');
-    }
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathName}`;
+    this.storageName = trimTrailingSlashes(args.storageName);
     this.storage = args.storage;
     this.saltRounds = args.saltRounds;
   }
@@ -54,26 +49,25 @@ export class BaseAccountStore implements AccountStore {
   /**
    * Generates a ResourceIdentifier to store data for the given email.
    */
-  private getAccountResourceIdentifier(email: string): ResourceIdentifier {
-    return { path: new URL(`account/${encodeURIComponent(email)}`, this.baseUrl).href };
+  private getAccountResourceIdentifier(email: string): string {
+    return `${this.storageName}/account/${encodeURIComponent(email)}`;
   }
 
   /**
    * Generates a ResourceIdentifier to store data for the given recordId.
    */
-  private getForgotPasswordRecordResourceIdentifier(recordId: string): ResourceIdentifier {
-    return { path: new URL(`forgot-password-resource-identifier/${encodeURIComponent(recordId)}`, this.baseUrl).href };
+  private getForgotPasswordRecordResourceIdentifier(recordId: string): string {
+    return `${this.storageName}/forgot-password-resource-identifier/${encodeURIComponent(recordId)}`;
   }
 
   /**
    * Helper function that converts the given e-mail to an account identifier
    * and retrieves the account data from the internal storage.
    */
-  private async getAccountPayload(email: string):
-  Promise<{ identifier: ResourceIdentifier; account?: AccountPayload }> {
-    const identifier = this.getAccountResourceIdentifier(email);
-    const account = await this.storage.get(identifier) as AccountPayload | undefined;
-    return { identifier, account };
+  private async getAccountPayload(email: string): Promise<{ key: string; account?: AccountPayload }> {
+    const key = this.getAccountResourceIdentifier(email);
+    const account = await this.storage.get(key) as AccountPayload | undefined;
+    return { key, account };
   }
 
   public async authenticate(email: string, password: string): Promise<string> {
@@ -84,21 +78,21 @@ export class BaseAccountStore implements AccountStore {
   }
 
   public async create(email: string, webId: string, password: string): Promise<void> {
-    const { identifier, account } = await this.getAccountPayload(email);
+    const { key, account } = await this.getAccountPayload(email);
     assert(!account, 'Account already exists');
     const payload: AccountPayload = {
       email,
       webId,
       password: await hash(password, this.saltRounds),
     };
-    await this.storage.set(identifier, payload);
+    await this.storage.set(key, payload);
   }
 
   public async changePassword(email: string, password: string): Promise<void> {
-    const { identifier, account } = await this.getAccountPayload(email);
+    const { key, account } = await this.getAccountPayload(email);
     assert(account, 'Account does not exist');
     account.password = await hash(password, this.saltRounds);
-    await this.storage.set(identifier, account);
+    await this.storage.set(key, account);
   }
 
   public async deleteAccount(email: string): Promise<void> {

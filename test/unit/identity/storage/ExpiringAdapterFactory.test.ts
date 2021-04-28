@@ -1,17 +1,15 @@
 import type { AdapterPayload } from 'oidc-provider';
 import type { ExpiringAdapter } from '../../../../src/identity/storage/ExpiringAdapterFactory';
 import { ExpiringAdapterFactory } from '../../../../src/identity/storage/ExpiringAdapterFactory';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 
 describe('An ExpiringAdapterFactory', (): void => {
-  const baseUrl = 'http://test.com/foo/';
-  const storagePathName = '/storage';
+  const storageName = '/storage';
   const name = 'nnaammee';
   const id = 'id!';
   const grantId = 'grantId!';
   let payload: AdapterPayload;
-  let storage: ExpiringStorage<ResourceIdentifier, unknown>;
+  let storage: ExpiringStorage<string, unknown>;
   let adapter: ExpiringAdapter;
   let factory: ExpiringAdapterFactory;
   // Make sure this stays consistent in tests
@@ -26,18 +24,13 @@ describe('An ExpiringAdapterFactory', (): void => {
 
     const map = new Map<string, any>();
     storage = {
-      get: jest.fn().mockImplementation((rid: ResourceIdentifier): any => map.get(rid.path)),
-      set: jest.fn().mockImplementation((rid: ResourceIdentifier, value: any): any => map.set(rid.path, value)),
-      delete: jest.fn().mockImplementation((rid: ResourceIdentifier): any => map.delete(rid.path)),
+      get: jest.fn().mockImplementation((key: string): any => map.get(key)),
+      set: jest.fn().mockImplementation((key: string, value: any): any => map.set(key, value)),
+      delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
     } as any;
 
-    factory = new ExpiringAdapterFactory({ baseUrl, storagePathName, storage });
+    factory = new ExpiringAdapterFactory({ storageName, storage });
     adapter = factory.createStorageAdapter(name);
-  });
-
-  it('errors if the storagePathName does not start with a slash.', async(): Promise<void> => {
-    factory = new ExpiringAdapterFactory({ baseUrl, storagePathName: 'noSlash', storage });
-    expect((): any => factory.createStorageAdapter(name)).toThrow('storagePathName should start with a slash.');
   });
 
   it('can find payload by id.', async(): Promise<void> => {

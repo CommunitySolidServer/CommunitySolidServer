@@ -1,13 +1,12 @@
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { MemoryMapStorage } from '../../../../src/storage/keyvalue/MemoryMapStorage';
 
 describe('A MemoryMapStorage', (): void => {
-  const identifier1: ResourceIdentifier = { path: 'http://test.com/foo' };
-  const identifier2: ResourceIdentifier = { path: 'http://test.com/bar' };
-  let storage: MemoryMapStorage<ResourceIdentifier, string>;
+  const identifier1 = 'http://test.com/foo';
+  const identifier2 = 'http://test.com/bar';
+  let storage: MemoryMapStorage<string>;
 
   beforeEach(async(): Promise<void> => {
-    storage = new MemoryMapStorage<ResourceIdentifier, string>();
+    storage = new MemoryMapStorage<string>();
   });
 
   it('returns undefined if there is no matching data.', async(): Promise<void> => {

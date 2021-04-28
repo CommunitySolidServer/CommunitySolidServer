@@ -1,7 +1,5 @@
 /**
  * A simple storage solution that can be used for internal values that need to be stored.
- * In general storages taking objects as keys are expected to work with different instances
- * of an object with the same values. Exceptions to this expectation should be clearly documented.
  */
 export interface KeyValueStorage<TKey, TValue> {
   /**

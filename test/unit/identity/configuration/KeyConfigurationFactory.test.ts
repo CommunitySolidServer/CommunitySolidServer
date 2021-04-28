@@ -1,6 +1,5 @@
 import { KeyConfigurationFactory } from '../../../../src/identity/configuration/KeyConfigurationFactory';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -51,7 +50,7 @@ describe('A KeyConfigurationFactory', (): void => {
   let storageAdapterFactory: AdapterFactory;
   const baseUrl = 'http://test.com/foo/';
   const idpPathName = 'idp';
-  let storage: KeyValueStorage<ResourceIdentifier, any>;
+  let storage: KeyValueStorage<string, any>;
   let generator: KeyConfigurationFactory;
 
   beforeEach(async(): Promise<void> => {
@@ -61,8 +60,8 @@ describe('A KeyConfigurationFactory', (): void => {
 
     const map = new Map();
     storage = {
-      get: jest.fn((id: ResourceIdentifier): any => map.get(id.path)),
-      set: jest.fn((id: ResourceIdentifier, value: any): any => map.set(id.path, value)),
+      get: jest.fn((id: string): any => map.get(id)),
+      set: jest.fn((id: string, value: any): any => map.set(id, value)),
     } as any;
 
     generator = new KeyConfigurationFactory(storageAdapterFactory, baseUrl, idpPathName, storage);
@@ -88,7 +87,7 @@ describe('A KeyConfigurationFactory', (): void => {
     expect(result.jwks).toEqual(result2.jwks);
     expect(storage.get).toHaveBeenCalledTimes(4);
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}idp/jwks` }, result.jwks);
-    expect(storage.set).toHaveBeenCalledWith({ path: `${baseUrl}idp/cookie-secret` }, result.cookies?.keys);
+    expect(storage.set).toHaveBeenCalledWith('idp/jwks', result.jwks);
+    expect(storage.set).toHaveBeenCalledWith('idp/cookie-secret', result.cookies?.keys);
   });
 });

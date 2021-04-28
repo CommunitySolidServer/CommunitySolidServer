@@ -2,13 +2,11 @@ import type {
   EmailPasswordData,
 } from '../../../../../../src/identity/interaction/email-password/storage/BaseAccountStore';
 import { BaseAccountStore } from '../../../../../../src/identity/interaction/email-password/storage/BaseAccountStore';
-import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
 
 describe('A BaseAccountStore', (): void => {
-  const baseUrl = 'http://test.com/foo/';
-  const storagePathName = '/mail/storage';
-  let storage: KeyValueStorage<ResourceIdentifier, EmailPasswordData>;
+  const storageName = '/mail/storage';
+  let storage: KeyValueStorage<string, EmailPasswordData>;
   const saltRounds = 11;
   let store: BaseAccountStore;
   const email = 'test@test.com';
@@ -18,17 +16,12 @@ describe('A BaseAccountStore', (): void => {
   beforeEach(async(): Promise<void> => {
     const map = new Map();
     storage = {
-      get: jest.fn((id: ResourceIdentifier): any => map.get(id.path)),
-      set: jest.fn((id: ResourceIdentifier, value: any): any => map.set(id.path, value)),
-      delete: jest.fn((id: ResourceIdentifier): any => map.delete(id.path)),
+      get: jest.fn((id: string): any => map.get(id)),
+      set: jest.fn((id: string, value: any): any => map.set(id, value)),
+      delete: jest.fn((id: string): any => map.delete(id)),
     } as any;
 
-    store = new BaseAccountStore({ baseUrl, storagePathName, storage, saltRounds });
-  });
-
-  it('errors if the storagePathName does not start with a slash.', async(): Promise<void> => {
-    expect((): any => new BaseAccountStore({ baseUrl, storagePathName: 'noSlash', storage, saltRounds }))
-      .toThrow('storagePathName should start with a slash.');
+    store = new BaseAccountStore({ storageName, storage, saltRounds });
   });
 
   it('can create accounts.', async(): Promise<void> => {

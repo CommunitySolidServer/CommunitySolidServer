@@ -24,10 +24,7 @@
       "@type": "WrappedFetchAdapterFactory",
       "source": {
         "@type": "ExpiringAdapterFactory",
-        "args_baseUrl": {
-          "@id": "urn:solid-server:default:variable:baseUrl"
-        },
-        "args_storagePathName": "/idp/oidc",
+        "args_storageName": "/idp/oidc",
         "args_storage": {
           "@id": "urn:solid-server:default:ExpiringIdpStorage"
         }

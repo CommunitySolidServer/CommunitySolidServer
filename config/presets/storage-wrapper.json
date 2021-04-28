@@ -57,10 +57,7 @@
           "@type": "SingleThreadedResourceLocker"
         },
         "storage": {
-          "@type": "ResourceIdentifierStorage",
-          "source": {
-            "@type": "MemoryMapStorage"
-          }
+          "@type": "MemoryMapStorage"
         },
         "suffixes_count": "count",
         "suffixes_read": "read",
