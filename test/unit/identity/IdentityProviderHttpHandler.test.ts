@@ -1,8 +1,8 @@
 import type { Provider } from 'oidc-provider';
 import type { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
 import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
-import type { IdpInteractionHttpHandler } from '../../../src/identity/interaction/IdpInteractionHttpHandler';
-import type { IdpInteractionPolicy } from '../../../src/identity/interaction/IdpInteractionPolicy';
+import type { InteractionHttpHandler } from '../../../src/identity/interaction/InteractionHttpHandler';
+import type { InteractionPolicy } from '../../../src/identity/interaction/InteractionPolicy';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
@@ -11,8 +11,8 @@ describe('An IdentityProviderHttpHandler', (): void => {
   const request: HttpRequest = 'request!' as any;
   const response: HttpResponse = 'response!' as any;
   let providerFactory: IdentityProviderFactory;
-  const interactionPolicy: IdpInteractionPolicy = 'interactionPolicy!' as any;
-  let interactionHttpHandler: IdpInteractionHttpHandler;
+  const interactionPolicy: InteractionPolicy = 'interactionPolicy!' as any;
+  let interactionHttpHandler: InteractionHttpHandler;
   let errorResponseWriter: ResponseWriter;
   let provider: Provider;
   let handler: IdentityProviderHttpHandler;

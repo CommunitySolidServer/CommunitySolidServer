@@ -1,5 +1,5 @@
 import type { Configuration } from 'oidc-provider';
-import type { IdpConfigurationGenerator } from '../../../src/identity/configuration/IdpConfigurationGenerator';
+import type { ConfigurationFactory } from '../../../src/identity/configuration/ConfigurationFactory';
 import { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 
@@ -16,7 +16,7 @@ describe('An IdentityProviderFactory', (): void => {
 
   beforeEach(async(): Promise<void> => {
     configuration = {};
-    const configurationFactory: IdpConfigurationGenerator = {
+    const configurationFactory: ConfigurationFactory = {
       createConfiguration: async(): Promise<any> => configuration,
     };
 

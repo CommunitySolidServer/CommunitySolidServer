@@ -1,0 +1,95 @@
+import {
+  ResetPasswordHandler,
+} from '../../../../../../src/identity/interaction/email-password/handler/ResetPasswordHandler';
+import type {
+  ResetPasswordRenderHandler,
+} from '../../../../../../src/identity/interaction/email-password/handler/ResetPasswordRenderHandler';
+import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
+import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
+import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
+import type { RenderHandler } from '../../../../../../src/server/util/RenderHandler';
+import { createRequest } from './Util';
+
+describe('A ResetPasswordHandler', (): void => {
+  let request: HttpRequest;
+  const response: HttpResponse = 'response!' as any;
+  const recordId = 'recordId!';
+  let accountStore: AccountStore;
+  let renderHandler: ResetPasswordRenderHandler;
+  let messageRenderHandler: RenderHandler<{ message: string }>;
+  let handler: ResetPasswordHandler;
+
+  beforeEach(async(): Promise<void> => {
+    accountStore = {
+      getForgotPasswordRecord: jest.fn().mockResolvedValue('email!'),
+      deleteForgotPasswordRecord: jest.fn(),
+      changePassword: jest.fn(),
+    } as any;
+
+    renderHandler = {
+      handleSafe: jest.fn(),
+    } as any;
+
+    messageRenderHandler = {
+      handleSafe: jest.fn(),
+    } as any;
+
+    handler = new ResetPasswordHandler({
+      accountStore,
+      renderHandler,
+      messageRenderHandler,
+    });
+  });
+
+  it('renders errors for non-string recordIds.', async(): Promise<void> => {
+    const errorMessage = 'Invalid request. Open the link from your email again';
+    request = createRequest({});
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId: '' }});
+    request = createRequest({ recordId: [ 'a', 'b' ]});
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(renderHandler.handleSafe).toHaveBeenCalledTimes(2);
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId: '' }});
+  });
+
+  it('renders errors for invalid passwords.', async(): Promise<void> => {
+    const errorMessage = 'Password and confirm password do not match';
+    request = createRequest({ recordId, password: 'password!', confirmPassword: 'otherPassword!' });
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+  });
+
+  it('renders errors for invalid emails.', async(): Promise<void> => {
+    const errorMessage = 'This reset password link is no longer valid.';
+    request = createRequest({ recordId, password: 'password!', confirmPassword: 'password!' });
+    (accountStore.getForgotPasswordRecord as jest.Mock).mockResolvedValueOnce(undefined);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+  });
+
+  it('renders a message on success.', async(): Promise<void> => {
+    request = createRequest({ recordId, password: 'password!', confirmPassword: 'password!' });
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(accountStore.getForgotPasswordRecord).toHaveBeenCalledTimes(1);
+    expect(accountStore.getForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
+    expect(accountStore.deleteForgotPasswordRecord).toHaveBeenCalledTimes(1);
+    expect(accountStore.deleteForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
+    expect(accountStore.changePassword).toHaveBeenCalledTimes(1);
+    expect(accountStore.changePassword).toHaveBeenLastCalledWith('email!', 'password!');
+    expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(messageRenderHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ response, props: { message: 'Your password was successfully reset.' }});
+  });
+
+  it('has a default error for non-native errors.', async(): Promise<void> => {
+    const errorMessage = 'An unknown error occurred';
+    request = createRequest({ recordId, password: 'password!', confirmPassword: 'password!' });
+    (accountStore.getForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('not native');
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+  });
+});

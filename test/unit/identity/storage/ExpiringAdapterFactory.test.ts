@@ -1,0 +1,126 @@
+import type { AdapterPayload } from 'oidc-provider';
+import type { ExpiringAdapter } from '../../../../src/identity/storage/ExpiringAdapterFactory';
+import { ExpiringAdapterFactory } from '../../../../src/identity/storage/ExpiringAdapterFactory';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
+
+describe('An ExpiringAdapterFactory', (): void => {
+  const baseUrl = 'http://test.com/foo/';
+  const storagePathName = '/storage';
+  const name = 'nnaammee';
+  const id = 'id!';
+  const grantId = 'grantId!';
+  let payload: AdapterPayload;
+  let storage: ExpiringStorage<ResourceIdentifier, unknown>;
+  let adapter: ExpiringAdapter;
+  let factory: ExpiringAdapterFactory;
+  // Make sure this stays consistent in tests
+  const now = Date.now();
+  const expiresIn = 333;
+  const expireDate = new Date(now + (expiresIn * 1000));
+
+  beforeEach(async(): Promise<void> => {
+    Date.now = jest.fn().mockReturnValue(now);
+
+    payload = { data: 'data!' };
+
+    const map = new Map<string, any>();
+    storage = {
+      get: jest.fn().mockImplementation((rid: ResourceIdentifier): any => map.get(rid.path)),
+      set: jest.fn().mockImplementation((rid: ResourceIdentifier, value: any): any => map.set(rid.path, value)),
+      delete: jest.fn().mockImplementation((rid: ResourceIdentifier): any => map.delete(rid.path)),
+    } as any;
+
+    factory = new ExpiringAdapterFactory({ baseUrl, storagePathName, storage });
+    adapter = factory.createStorageAdapter(name);
+  });
+
+  it('errors if the storagePathName does not start with a slash.', async(): Promise<void> => {
+    factory = new ExpiringAdapterFactory({ baseUrl, storagePathName: 'noSlash', storage });
+    expect((): any => factory.createStorageAdapter(name)).toThrow('storagePathName should start with a slash.');
+  });
+
+  it('can find payload by id.', async(): Promise<void> => {
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledTimes(1);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
+    await expect(adapter.find(id)).resolves.toBe(payload);
+  });
+
+  it('can store payloads without expiration time.', async(): Promise<void> => {
+    await expect(adapter.upsert(id, payload)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledTimes(1);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, undefined);
+  });
+
+  it('can find payload by userCode.', async(): Promise<void> => {
+    const userCode = 'userCode!';
+    payload.userCode = userCode;
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledTimes(2);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expireDate);
+    await expect(adapter.findByUserCode(userCode)).resolves.toBe(payload);
+  });
+
+  it('can find payload by uid.', async(): Promise<void> => {
+    const uid = 'uid!';
+    payload.uid = uid;
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledTimes(2);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expireDate);
+    await expect(adapter.findByUid(uid)).resolves.toBe(payload);
+  });
+
+  it('can revoke by grantId.', async(): Promise<void> => {
+    payload.grantId = grantId;
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    expect(storage.set).toHaveBeenCalledTimes(2);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), [ expect.anything() ], expireDate);
+    await expect(adapter.find(id)).resolves.toBe(payload);
+    await expect(adapter.revokeByGrantId(grantId)).resolves.toBeUndefined();
+    expect(storage.delete).toHaveBeenCalledTimes(2);
+    await expect(adapter.find(id)).resolves.toBeUndefined();
+  });
+
+  it('does not do anything if revokeByGrantId finds no matching grant.', async(): Promise<void> => {
+    await expect(adapter.revokeByGrantId(grantId)).resolves.toBeUndefined();
+    expect(storage.delete).toHaveBeenCalledTimes(0);
+  });
+
+  it('can store multiple ids for a single grant.', async(): Promise<void> => {
+    payload.grantId = grantId;
+    const id2 = 'id2!';
+    const payload2 = { data: 'data2!', grantId };
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    await expect(adapter.upsert(id2, payload2, 333)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBe(payload);
+    await expect(adapter.find(id2)).resolves.toBe(payload2);
+    await expect(adapter.revokeByGrantId(grantId)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
+    await expect(adapter.find(id2)).resolves.toBeUndefined();
+  });
+
+  it('can destroy the payload.', async(): Promise<void> => {
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBe(payload);
+    await expect(adapter.destroy(id)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
+  });
+
+  it('can consume the payload.', async(): Promise<void> => {
+    // Caching since the object gets modified
+    const cachedPayload = { ...payload };
+    await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toEqual(cachedPayload);
+    await expect(adapter.consume(id)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toEqual({ ...cachedPayload, consumed: Math.floor(Date.now() / 1000) });
+  });
+
+  it('does not do anything if consume finds no payload.', async(): Promise<void> => {
+    await expect(adapter.consume(id)).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
+  });
+});

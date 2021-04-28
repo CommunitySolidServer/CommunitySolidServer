@@ -16,47 +16,47 @@ export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
 // Identity/Configuration
-export * from './identity/configuration/IdpConfigurationGenerator';
-export * from './identity/configuration/KeyGeneratingIdpConfigurationGenerator';
+export * from './identity/configuration/ConfigurationFactory';
+export * from './identity/configuration/KeyConfigurationFactory';
 
 // Identity/Interaction/Email-Password/Handler
-export * from './identity/interaction/email-password/handler/EmailPasswordForgotPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordGetResetPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordLoginHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordRegistrationHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordHandler';
-export * from './identity/interaction/email-password/handler/EmailPasswordResetPasswordRenderHandler';
+export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/LoginHandler';
+export * from './identity/interaction/email-password/handler/RegistrationHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordRenderHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordViewHandler';
 
 // Identity/Interaction/Email-Password/Storage
-export * from './identity/interaction/email-password/storage/EmailPasswordStore';
-export * from './identity/interaction/email-password/storage/KeyValueEmailPasswordStore';
+export * from './identity/interaction/email-password/storage/AccountStore';
+export * from './identity/interaction/email-password/storage/BaseAccountStore';
 
 // Identity/Interaction/Email-Password
-export * from './identity/interaction/email-password/EmailPasswordInteractionPolicy';
+export * from './identity/interaction/email-password/AccountInteractionPolicy';
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
 // Identity/Interaction/Util
-export * from './identity/interaction/util/BasicIssuerReferenceWebIdOwnershipValidator';
-export * from './identity/interaction/util/ChooseInitialInteractionHandler';
 export * from './identity/interaction/util/EjsTemplateRenderer';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/FormDataUtil';
 export * from './identity/interaction/util/IdpInteractionError';
 export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/IdpRouteController';
-export * from './identity/interaction/util/OidcInteractionCompleter';
+export * from './identity/interaction/util/InitialInteractionHandler';
+export * from './identity/interaction/util/InteractionCompleter';
+export * from './identity/interaction/util/IssuerOwnershipValidator';
+export * from './identity/interaction/util/OwnershipValidator';
 export * from './identity/interaction/util/TemplateRenderer';
-export * from './identity/interaction/util/WebIdOwnershipValidator';
 
 // Identity/Interaction
-export * from './identity/interaction/IdpInteractionHttpHandler';
-export * from './identity/interaction/IdpInteractionPolicy';
-export * from './identity/interaction/IdpSessionHttpHandler';
+export * from './identity/interaction/InteractionHttpHandler';
+export * from './identity/interaction/InteractionPolicy';
+export * from './identity/interaction/SessionHttpHandler';
 
 // Identity/Storage
-export * from './identity/storage/ClientWebIdFetchingStorageAdapterFactory';
-export * from './identity/storage/ExpiringStorageAdapterFactory';
-export * from './identity/storage/StorageAdapterFactory';
+export * from './identity/storage/AdapterFactory';
+export * from './identity/storage/ExpiringAdapterFactory';
+export * from './identity/storage/WrappedFetchAdapterFactory';
 
 // Identity
 export * from './identity/IdentityProviderFactory';
