@@ -6,6 +6,7 @@ import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/Re
 import type { PodSettings } from '../../../src/pods/settings/PodSettings';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+
 describe('A ConfigPodManager', (): void => {
   let settings: PodSettings;
   const base = 'http://test.com/';
@@ -14,7 +15,7 @@ describe('A ConfigPodManager', (): void => {
   };
   let store: ResourceStore;
   let podGenerator: PodGenerator;
-  let routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  let routingStorage: KeyValueStorage<string, ResourceStore>;
   let generatorData: Resource[];
   let resourcesGenerator: ResourcesGenerator;
   let manager: ConfigPodManager;
@@ -45,8 +46,8 @@ describe('A ConfigPodManager', (): void => {
 
     const map = new Map();
     routingStorage = {
-      get: async(identifier: ResourceIdentifier): Promise<ResourceStore | undefined> => map.get(identifier.path),
-      set: async(identifier: ResourceIdentifier, value: ResourceStore): Promise<any> => map.set(identifier.path, value),
+      get: async(key: ResourceIdentifier): Promise<ResourceStore | undefined> => map.get(key),
+      set: async(key: ResourceIdentifier, value: ResourceStore): Promise<any> => map.set(key, value),
     } as any;
 
     manager = new ConfigPodManager(idGenerator, podGenerator, resourcesGenerator, routingStorage);
@@ -62,6 +63,6 @@ describe('A ConfigPodManager', (): void => {
     expect(store.setRepresentation).toHaveBeenCalledTimes(2);
     expect(store.setRepresentation).toHaveBeenCalledWith({ path: '/path/' }, '/');
     expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: '/path/foo' }, '/foo');
-    await expect(routingStorage.get(identifier)).resolves.toBe(store);
+    await expect(routingStorage.get(identifier.path)).resolves.toBe(store);
   });
 });

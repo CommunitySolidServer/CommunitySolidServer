@@ -5,7 +5,6 @@ import type { JWK } from 'jose/jwk/from_key_like';
 import { fromKeyLike } from 'jose/jwk/from_key_like';
 import { generateKeyPair } from 'jose/util/generate_key_pair';
 import type { Adapter, Configuration } from 'oidc-provider';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../util/PathUtil';
 import type { AdapterFactory } from '../storage/AdapterFactory';
@@ -19,13 +18,13 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
   private readonly adapterFactory: AdapterFactory;
   private readonly baseUrl: string;
   private readonly idpPathName: string;
-  private readonly storage: KeyValueStorage<ResourceIdentifier, unknown>;
+  private readonly storage: KeyValueStorage<string, unknown>;
 
   public constructor(
     adapterFactory: AdapterFactory,
     baseUrl: string,
     idpPathName: string,
-    storage: KeyValueStorage<ResourceIdentifier, unknown>,
+    storage: KeyValueStorage<string, unknown>,
   ) {
     this.adapterFactory = adapterFactory;
     this.baseUrl = ensureTrailingSlash(baseUrl);
@@ -33,8 +32,8 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
     this.storage = storage;
   }
 
-  private getJwksKey(): ResourceIdentifier {
-    return { path: new URL(`${this.idpPathName}/jwks`, this.baseUrl).href };
+  private getJwksKey(): string {
+    return `${this.idpPathName}/jwks`;
   }
 
   private async generateJwks(): Promise<{ keys: JWK[] }> {
@@ -54,8 +53,8 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
     return newJwks;
   }
 
-  private getCookieSecretKey(): ResourceIdentifier {
-    return { path: new URL(`${this.idpPathName}/cookie-secret`, this.baseUrl).href };
+  private getCookieSecretKey(): string {
+    return `${this.idpPathName}/cookie-secret`;
   }
 
   private async generateCookieKeys(): Promise<string[]> {

@@ -11,8 +11,8 @@ import { LDP } from '../../../../src/util/Vocabularies';
 describe('A JsonResourceStorage', (): void => {
   const baseUrl = 'http://test.com/';
   const container = '/data/';
-  const identifier1: ResourceIdentifier = { path: 'http://test.com/foo' };
-  const identifier2: ResourceIdentifier = { path: 'http://test.com/bar' };
+  const identifier1 = 'http://test.com/foo';
+  const identifier2 = 'http://test.com/bar';
   let store: ResourceStore;
   let storage: JsonResourceStorage;
 

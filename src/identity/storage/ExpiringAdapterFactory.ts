@@ -1,14 +1,12 @@
 import type { Adapter, AdapterPayload } from 'oidc-provider';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { trimTrailingSlashes } from '../../util/PathUtil';
 import type { AdapterFactory } from './AdapterFactory';
 
 export interface ExpiringAdapterArgs {
-  baseUrl: string;
-  storagePathName: string;
-  storage: ExpiringStorage<ResourceIdentifier, unknown>;
+  storageName: string;
+  storage: ExpiringStorage<string, unknown>;
 }
 
 /**
@@ -18,33 +16,30 @@ export interface ExpiringAdapterArgs {
 export class ExpiringAdapter implements Adapter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly baseUrl: string;
+  private readonly storageName: string;
   private readonly name: string;
-  private readonly storage: ExpiringStorage<ResourceIdentifier, unknown>;
+  private readonly storage: ExpiringStorage<string, unknown>;
 
   public constructor(name: string, args: ExpiringAdapterArgs) {
-    if (!args.storagePathName.startsWith('/')) {
-      throw new Error('storagePathName should start with a slash.');
-    }
-    this.baseUrl = `${trimTrailingSlashes(args.baseUrl)}${args.storagePathName}`;
     this.name = name;
+    this.storageName = trimTrailingSlashes(args.storageName);
     this.storage = args.storage;
   }
 
-  private grantKeyFor(id: string): ResourceIdentifier {
-    return { path: new URL(`grant/${encodeURIComponent(id)}`, this.baseUrl).href };
+  private grantKeyFor(id: string): string {
+    return `${this.storageName}/grant/${encodeURIComponent(id)}`;
   }
 
-  private userCodeKeyFor(userCode: string): ResourceIdentifier {
-    return { path: new URL(`user_code/${encodeURIComponent(userCode)}`, this.baseUrl).href };
+  private userCodeKeyFor(userCode: string): string {
+    return `${this.storageName}/user_code/${encodeURIComponent(userCode)}`;
   }
 
-  private uidKeyFor(uid: string): ResourceIdentifier {
-    return { path: new URL(`uid/${encodeURIComponent(uid)}`, this.baseUrl).href };
+  private uidKeyFor(uid: string): string {
+    return `${this.storageName}/uid/${encodeURIComponent(uid)}`;
   }
 
-  private keyFor(id: string): ResourceIdentifier {
-    return { path: new URL(`${this.name}/${encodeURIComponent(id)}`, this.baseUrl).href };
+  private keyFor(id: string): string {
+    return `${this.storageName}/${this.name}/${encodeURIComponent(id)}`;
   }
 
   public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
@@ -61,7 +56,7 @@ export class ExpiringAdapter implements Adapter {
       storagePromises.push(
         (async(): Promise<void> => {
           const grantKey = this.grantKeyFor(payload.grantId as string);
-          const grants = (await this.storage.get(grantKey) || []) as ResourceIdentifier[];
+          const grants = (await this.storage.get(grantKey) || []) as string[];
           grants.push(key);
           await this.storage.set(grantKey, grants, expires);
         })(),
@@ -97,7 +92,7 @@ export class ExpiringAdapter implements Adapter {
   public async revokeByGrantId(grantId: string): Promise<void> {
     this.logger.debug(`Revoking grantId ${grantId}`);
     const grantKey = this.grantKeyFor(grantId);
-    const grants = await this.storage.get(grantKey) as ResourceIdentifier[] | undefined;
+    const grants = await this.storage.get(grantKey) as string[] | undefined;
     if (!grants) {
       return;
     }

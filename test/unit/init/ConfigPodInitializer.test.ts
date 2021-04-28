@@ -1,5 +1,4 @@
 import { ConfigPodInitializer } from '../../../src/init/ConfigPodInitializer';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ComponentsJsFactory } from '../../../src/pods/generate/ComponentsJsFactory';
 import { TEMPLATE, TEMPLATE_VARIABLE } from '../../../src/pods/generate/variables/Variables';
 import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
@@ -8,7 +7,7 @@ import type { ResourceStore } from '../../../src/storage/ResourceStore';
 describe('A ConfigPodInitializer', (): void => {
   let storeFactory: ComponentsJsFactory;
   let configStorage: KeyValueStorage<string, unknown>;
-  let routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  let routingStorage: KeyValueStorage<string, ResourceStore>;
   let initializer: ConfigPodInitializer;
   const identifierA = { path: 'http://test.com/A' };
   const identifierB = { path: 'http://test.com/B' };
@@ -26,8 +25,8 @@ describe('A ConfigPodInitializer', (): void => {
 
     const map = new Map();
     routingStorage = {
-      get: async(identifier: ResourceIdentifier): Promise<ResourceStore | undefined> => map.get(identifier.path),
-      set: async(identifier: ResourceIdentifier, value: ResourceStore): Promise<any> => map.set(identifier.path, value),
+      get: async(key: string): Promise<ResourceStore | undefined> => map.get(key),
+      set: async(key: string, value: ResourceStore): Promise<any> => map.set(key, value),
     } as any;
 
     initializer = new ConfigPodInitializer(storeFactory, configStorage, routingStorage);
@@ -38,7 +37,7 @@ describe('A ConfigPodInitializer', (): void => {
     expect(storeFactory.generate).toHaveBeenCalledTimes(2);
     expect(storeFactory.generate).toHaveBeenCalledWith('templateA', TEMPLATE.ResourceStore, configA);
     expect(storeFactory.generate).toHaveBeenCalledWith('templateB', TEMPLATE.ResourceStore, configB);
-    await expect(routingStorage.get(identifierA)).resolves.toBe('store');
-    await expect(routingStorage.get(identifierB)).resolves.toBe('store');
+    await expect(routingStorage.get(identifierA.path)).resolves.toBe('store');
+    await expect(routingStorage.get(identifierB.path)).resolves.toBe('store');
   });
 });

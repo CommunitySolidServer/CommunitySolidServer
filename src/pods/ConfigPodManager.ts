@@ -24,7 +24,7 @@ export class ConfigPodManager implements PodManager {
   protected readonly logger = getLoggerFor(this);
   private readonly idGenerator: IdentifierGenerator;
   private readonly podGenerator: PodGenerator;
-  private readonly routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  private readonly routingStorage: KeyValueStorage<string, ResourceStore>;
   private readonly resourcesGenerator: ResourcesGenerator;
 
   /**
@@ -34,7 +34,7 @@ export class ConfigPodManager implements PodManager {
    * @param routingStorage - Where to store the generated pods so they can be routed to.
    */
   public constructor(idGenerator: IdentifierGenerator, podGenerator: PodGenerator,
-    resourcesGenerator: ResourcesGenerator, routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>) {
+    resourcesGenerator: ResourcesGenerator, routingStorage: KeyValueStorage<string, ResourceStore>) {
     this.idGenerator = idGenerator;
     this.podGenerator = podGenerator;
     this.routingStorage = routingStorage;
@@ -51,7 +51,7 @@ export class ConfigPodManager implements PodManager {
     const count = await addGeneratedResources(identifier, settings, this.resourcesGenerator, store);
     this.logger.info(`Added ${count} resources to ${identifier.path}`);
 
-    await this.routingStorage.set(identifier, store);
+    await this.routingStorage.set(identifier.path, store);
 
     return identifier;
   }

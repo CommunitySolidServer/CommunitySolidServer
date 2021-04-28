@@ -1,4 +1,3 @@
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ComponentsJsFactory } from '../pods/generate/ComponentsJsFactory';
 import { TEMPLATE, TEMPLATE_VARIABLE } from '../pods/generate/variables/Variables';
@@ -21,11 +20,11 @@ export class ConfigPodInitializer extends Initializer {
   protected readonly logger = getLoggerFor(this);
   private readonly storeFactory: ComponentsJsFactory;
   private readonly configStorage: KeyValueStorage<string, unknown>;
-  private readonly routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  private readonly routingStorage: KeyValueStorage<string, ResourceStore>;
 
   public constructor(storeFactory: ComponentsJsFactory,
     configStorage: KeyValueStorage<string, unknown>,
-    routingStorage: KeyValueStorage<ResourceIdentifier, ResourceStore>) {
+    routingStorage: KeyValueStorage<string, ResourceStore>) {
     super();
     this.storeFactory = storeFactory;
     this.configStorage = configStorage;
@@ -38,7 +37,7 @@ export class ConfigPodInitializer extends Initializer {
       const config = value as NodeJS.Dict<string>;
       const store: ResourceStore =
         await this.storeFactory.generate(config[TEMPLATE_VARIABLE.templateConfig]!, TEMPLATE.ResourceStore, config);
-      await this.routingStorage.set({ path }, store);
+      await this.routingStorage.set(path, store);
       this.logger.debug(`Initialized pod at ${path}`);
       count += 1;
     }

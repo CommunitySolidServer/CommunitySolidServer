@@ -126,10 +126,7 @@
           "RedisResourceLocker:_redisClients": [ "6379" ]
         },
         "GreedyReadWriteLocker:_storage": {
-          "@type": "ResourceIdentifierStorage",
-          "ResourceIdentifierStorage:_source": {
-            "@type": "MemoryMapStorage"
-          }
+          "@type": "MemoryMapStorage"
         },
         "GreedyReadWriteLocker:_suffixes_count": "count",
         "GreedyReadWriteLocker:_suffixes_read": "read",

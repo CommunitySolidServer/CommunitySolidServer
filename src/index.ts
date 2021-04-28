@@ -232,7 +232,6 @@ export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
-export * from './storage/keyvalue/ResourceIdentifierStorage';
 export * from './storage/keyvalue/WrappedExpiringStorage';
 
 // Storage/Mapping
