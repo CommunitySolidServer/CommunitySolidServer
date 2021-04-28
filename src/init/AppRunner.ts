@@ -110,7 +110,7 @@ export class AppRunner {
    * Resolves a path relative to the current working directory,
    * falling back to a path relative to this module.
    */
-  public resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
+  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
     return typeof cwdPath === 'string' ?
       absoluteFilePath(cwdPath) :
       joinFilePath(__dirname, '../../', modulePath);
@@ -119,7 +119,7 @@ export class AppRunner {
   /**
    * Translates command-line parameters into configuration variables
    */
-  public createVariables(params: ConfigVariables): Record<string, any> {
+  protected createVariables(params: ConfigVariables): Record<string, any> {
     return {
       'urn:solid-server:default:variable:baseUrl':
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
@@ -136,7 +136,7 @@ export class AppRunner {
   /**
    * Creates the server initializer
    */
-  public async createInitializer(
+  protected async createInitializer(
     componentsProperties: IComponentsManagerBuilderOptions<Initializer>,
     configFile: string,
     variables: Record<string, any>,
