@@ -8,17 +8,17 @@ import type { AnyObject,
 import { Provider } from 'oidc-provider';
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 
-import type { IdpConfigurationGenerator } from './configuration/IdpConfigurationGenerator';
+import type { ConfigurationFactory } from './configuration/ConfigurationFactory';
 
 /**
  * Creates an identity provider
  */
 export class IdentityProviderFactory {
   private readonly issuer: string;
-  private readonly configurationFactory: IdpConfigurationGenerator;
+  private readonly configurationFactory: ConfigurationFactory;
   private readonly errorResponseWriter: ResponseWriter;
 
-  public constructor(issuer: string, configurationFactory: IdpConfigurationGenerator,
+  public constructor(issuer: string, configurationFactory: ConfigurationFactory,
     errorResponseWriter: ResponseWriter) {
     this.issuer = issuer;
     this.configurationFactory = configurationFactory;

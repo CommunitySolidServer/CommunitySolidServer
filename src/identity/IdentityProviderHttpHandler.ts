@@ -5,8 +5,8 @@ import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import { isNativeError } from '../util/errors/ErrorUtil';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
-import type { IdpInteractionHttpHandler } from './interaction/IdpInteractionHttpHandler';
-import type { IdpInteractionPolicy } from './interaction/IdpInteractionPolicy';
+import type { InteractionHttpHandler } from './interaction/InteractionHttpHandler';
+import type { InteractionPolicy } from './interaction/InteractionPolicy';
 
 /**
  * Handles requests incoming the IdP and instantiates the IdP to
@@ -16,15 +16,15 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly providerFactory: IdentityProviderFactory;
-  private readonly interactionPolicy: IdpInteractionPolicy;
-  private readonly interactionHttpHandler: IdpInteractionHttpHandler;
+  private readonly interactionPolicy: InteractionPolicy;
+  private readonly interactionHttpHandler: InteractionHttpHandler;
   private readonly errorResponseWriter: ResponseWriter;
   private provider?: Provider;
 
   public constructor(
     providerFactory: IdentityProviderFactory,
-    interactionPolicy: IdpInteractionPolicy,
-    interactionHttpHandler: IdpInteractionHttpHandler,
+    interactionPolicy: InteractionPolicy,
+    interactionHttpHandler: InteractionHttpHandler,
     errorResponseWriter: ResponseWriter,
   ) {
     super();

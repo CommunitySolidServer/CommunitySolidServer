@@ -1,7 +1,7 @@
 import type { HttpHandler } from '../../../server/HttpHandler';
 import { RouterHandler } from '../../../server/util/RouterHandler';
 import { isNativeError } from '../../../util/errors/ErrorUtil';
-import type { IdpInteractionHttpHandlerInput } from '../IdpInteractionHttpHandler';
+import type { InteractionHttpHandlerInput } from '../InteractionHttpHandler';
 import { IdpInteractionError } from './IdpInteractionError';
 import type { IdpRenderHandler } from './IdpRenderHandler';
 
@@ -21,7 +21,7 @@ export class IdpRouteController extends RouterHandler {
    * Calls the renderHandler to render using the given response and props.
    * `details` typed as any since the `interactionDetails` output typings are not exposed.
    */
-  private async render(input: IdpInteractionHttpHandlerInput, details: any, errorMessage = '', prefilled = {}):
+  private async render(input: InteractionHttpHandlerInput, details: any, errorMessage = '', prefilled = {}):
   Promise<void> {
     return this.renderHandler.handleSafe({
       response: input.response,
@@ -29,7 +29,7 @@ export class IdpRouteController extends RouterHandler {
     });
   }
 
-  public async handle(input: IdpInteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: InteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     if (input.request.method === 'GET') {
       await this.render(input, interactionDetails);
