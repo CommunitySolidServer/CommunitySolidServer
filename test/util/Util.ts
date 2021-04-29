@@ -12,6 +12,7 @@ import type { SystemError } from '../../src/util/errors/SystemError';
 /* eslint-disable @typescript-eslint/naming-convention */
 const portNames = [
   'DynamicPods',
+  'LpdHandlerWithoutAuth',
   'Middleware',
   'PodCreation',
   'RedisResourceLocker',
