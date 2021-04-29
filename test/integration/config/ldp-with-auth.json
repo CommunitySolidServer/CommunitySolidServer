@@ -21,6 +21,7 @@
   ],
   "@graph": [
     {
+      "comment": "Sets up an HTTP server with only the LDP handler as HttpHandler.",
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
       "RecordObject:_record": [
@@ -41,8 +42,20 @@
         {
           "RecordObject:_record_key": "store",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:ResourceStore" }
+        },
+        {
+          "RecordObject:_record_key": "factory",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
         }
       ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "BaseHttpServerFactory",
+      "handler": {
+        "@id": "urn:solid-server:default:LdpHandler"
+      }
     },
     {
       "@id": "urn:solid-server:default:RoutingResourceStore",
