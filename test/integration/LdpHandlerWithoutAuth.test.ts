@@ -253,4 +253,22 @@ describe.each(stores)('An LDP handler allowing all request %s', (name, { storeUr
     // DELETE
     expect(await deleteResource(containerUrl)).toBeUndefined();
   });
+
+  // https://github.com/solid/community-server/issues/498
+  it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
+    // PUT
+    const documentUrl = `${baseUrl}foo/bar`;
+    const response = await fetch(documentUrl, {
+      method: 'PUT',
+      headers: { 'content-length': '0', 'content-type': 'text/turtle' },
+      body: '',
+    });
+    expect(response.status).toBe(205);
+
+    // GET
+    await getResource(documentUrl);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
 });
