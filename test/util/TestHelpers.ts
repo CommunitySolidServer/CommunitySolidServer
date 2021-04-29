@@ -5,23 +5,34 @@ import { Readable } from 'stream';
 import type { MockResponse } from 'node-mocks-http';
 import { createResponse } from 'node-mocks-http';
 import type { ResourceStore, PermissionSet, HttpHandler, HttpRequest } from '../../src/';
-import { BasicRepresentation, joinFilePath, ensureTrailingSlash } from '../../src/';
+import { BasicRepresentation, joinFilePath } from '../../src/';
 import { performRequest } from './Util';
 
 /* eslint-disable jest/no-standalone-expect */
 export class AclHelper {
   public readonly store: ResourceStore;
-  public id: string;
 
-  public constructor(store: ResourceStore, id: string) {
+  public constructor(store: ResourceStore) {
     this.store = store;
-    this.id = ensureTrailingSlash(id);
   }
 
   public async setSimpleAcl(
-    permissions: PermissionSet,
-    agentClass: 'agent' | 'authenticated',
+    resource: string,
+    options: {
+      permissions: Partial<PermissionSet>;
+      agentClass?: 'agent' | 'authenticated';
+      agent?: string;
+      accessTo?: boolean;
+      default?: boolean;
+    },
   ): Promise<void> {
+    if (!options.agentClass && !options.agent) {
+      throw new Error('At least one of agentClass or agent have to be provided for this to make sense.');
+    }
+    if (!options.accessTo && !options.default) {
+      throw new Error('At least one of accessTo or default have to be true for this to make sense.');
+    }
+
     const acl: string[] = [
       '@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.\n',
       '@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.\n',
@@ -29,21 +40,30 @@ export class AclHelper {
     ];
 
     for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
-      if (permissions[perm.toLowerCase() as keyof PermissionSet]) {
+      if (options.permissions[perm.toLowerCase() as keyof PermissionSet]) {
         acl.push(`;\n acl:mode acl:${perm}`);
       }
     }
-    acl.push(`;\n acl:accessTo <${this.id}>`);
-    acl.push(`;\n acl:default <${this.id}>`);
-    acl.push(
-      `;\n acl:agentClass ${
-        agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'
-      }`,
-    );
+    if (options.accessTo) {
+      acl.push(`;\n acl:accessTo <${resource}>`);
+    }
+    if (options.default) {
+      acl.push(`;\n acl:default <${resource}>`);
+    }
+    if (options.agentClass) {
+      acl.push(
+        `;\n acl:agentClass ${
+          options.agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'
+        }`,
+      );
+    }
+    if (options.agent) {
+      acl.push(`;\n acl:agent ${options.agent}`);
+    }
 
     acl.push('.');
 
-    await this.store.setRepresentation({ path: `${this.id}.acl` }, new BasicRepresentation(acl, 'text/turtle'));
+    await this.store.setRepresentation({ path: `${resource}.acl` }, new BasicRepresentation(acl, 'text/turtle'));
   }
 }
 

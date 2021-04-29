@@ -1,8 +1,15 @@
-import { createReadStream } from 'fs';
-import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
-import { LDP, BasicRepresentation, joinFilePath } from '../../src/';
-import { AclHelper, ResourceHelper } from '../util/TestHelpers';
-import { BASE, getTestFolder, removeFolder, instantiateFromConfig } from './Config';
+import type { Server } from 'http';
+import fetch from 'cross-fetch';
+import type { Initializer, ResourceStore } from '../../src/';
+import { BasicRepresentation } from '../../src/';
+import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
+import { AclHelper } from '../util/TestHelpers';
+import { getPort } from '../util/Util';
+import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+
+const port = getPort('LpdHandlerWithAuth');
+const baseUrl = `http://localhost:${port}/`;
 
 const rootFilePath = getTestFolder('full-config-acl');
 const stores: [string, any][] = [
@@ -17,13 +24,17 @@ const stores: [string, any][] = [
 ];
 
 describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, teardown }): void => {
-  let handler: HttpHandler;
+  let server: Server;
+  let initializer: Initializer;
+  let factory: HttpServerFactory;
+  let store: ResourceStore;
   let aclHelper: AclHelper;
-  let resourceHelper: ResourceHelper;
+  const permanent = `${baseUrl}document.txt`;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': BASE,
+      'urn:solid-server:default:variable:port': port,
+      'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
     const internalStore = await instantiateFromConfig(
@@ -33,128 +44,145 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
 
-    // Create and initialize the HTTP handler and related components
-    let initializer: Initializer;
-    let store: ResourceStore;
+    // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       'ldp-with-auth.json',
       variables,
     ) as Record<string, any>;
-    ({ handler, store, initializer } = instances);
-    // Set up the internal store
+    ({ factory, initializer, store } = instances);
+
     await initializer.handleSafe();
+    server = factory.startServer(port);
 
-    // Create test helpers for manipulating the components
-    aclHelper = new AclHelper(store, BASE);
-    resourceHelper = new ResourceHelper(handler, BASE);
+    // Create test helper for manipulating acl
+    aclHelper = new AclHelper(store);
+  });
 
-    // Write test resource
-    await store.setRepresentation({ path: `${BASE}/permanent.txt` },
-      new BasicRepresentation(createReadStream(joinFilePath(__dirname, '../assets/permanent.txt')), 'text/plain'));
+  beforeEach(async(): Promise<void> => {
+    // Set the root acl file to allow everything and create a single document
+    await store.setRepresentation({ path: permanent }, new BasicRepresentation('PERMANENT', 'text/plain'));
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { read: true, write: true, append: true, control: true },
+      agentClass: 'agent',
+      accessTo: true,
+      default: true,
+    });
   });
 
   afterAll(async(): Promise<void> => {
     await teardown();
+    await new Promise((resolve, reject): void => {
+      server.close((error): void => error ? reject(error) : resolve());
+    });
   });
 
-  it('can add a file to the store, read it and delete it if allowed.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');
+  it('can add a document, read it and delete it if allowed.', async(): Promise<void> => {
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { read: true, write: true, append: true },
+      agentClass: 'agent',
+      accessTo: true,
+      default: true,
+    });
 
-    // Create file
-    const filePath = 'testfile2.txt';
-    const fileUrl = `${BASE}/${filePath}`;
-    let response = await resourceHelper.createResource(
-      '../assets/testfile2.txt', filePath, 'text/plain',
-    );
+    // PUT
+    const document = `${baseUrl}test.txt`;
+    await putResource(document, { contentType: 'text/plain', body: 'TESTDATA' });
 
-    // Get file
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain('TESTFILE2');
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
-    expect(response.getHeaders()['wac-allow']).toBe('user="read write append",public="read write append"');
+    // GET
+    const response = await getResource(document);
+    await expect(response.text()).resolves.toBe('TESTDATA');
+    expect(response.headers.get('wac-allow')).toBe('user="read write append",public="read write append"');
 
-    // DELETE file
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
+    // DELETE
+    await deleteResource(document);
   });
 
   it('can not add a file to the store if not allowed.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'authenticated');
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { read: true, write: true, append: true },
+      agentClass: 'authenticated',
+      accessTo: true,
+      default: true,
+    });
 
-    // Try to create file
-    const filePath = 'testfile2.txt';
-    const response = await resourceHelper.createResource(
-      '../assets/testfile2.txt', filePath, 'text/plain', true,
-    );
-    expect(response.statusCode).toBe(401);
+    // PUT fail
+    const documentUrl = `${baseUrl}test.txt`;
+    const response = await fetch(documentUrl, { method: 'PUT' });
+    expect(response.status).toBe(401);
   });
 
-  it('can not add/delete, but only read files if allowed.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: false, append: false, control: false }, 'agent');
+  it('can not add/delete if only read is allowed.', async(): Promise<void> => {
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { read: true },
+      agentClass: 'agent',
+      accessTo: true,
+      default: true,
+    });
 
-    // Try to create file
-    const filePath = 'testfile2.txt';
-    let response = await resourceHelper.createResource(
-      '../assets/testfile2.txt', filePath, 'text/plain', true,
-    );
-    expect(response.statusCode).toBe(401);
+    // PUT fail
+    const document = `${baseUrl}test.txt`;
+    let response = await fetch(document, { method: 'PUT' });
+    expect(response.status).toBe(401);
 
     // GET permanent file
-    response = await resourceHelper.getResource('http://test.com/permanent.txt');
-    expect(response._getBuffer().toString()).toContain('TEST');
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<http://test.com/permanent.txt.acl>; rel="acl"`);
-    expect(response.getHeaders()['wac-allow']).toBe('user="read",public="read"');
+    response = await getResource(permanent);
+    await expect(response.text()).resolves.toBe('PERMANENT');
+    expect(response.headers.get('wac-allow')).toBe('user="read",public="read"');
 
-    // Try to delete permanent file
-    response = await resourceHelper.deleteResource('http://test.com/permanent.txt', true);
-    expect(response.statusCode).toBe(401);
+    // DELETE fail
+    response = await fetch(permanent, { method: 'DELETE' });
+    expect(response.status).toBe(401);
   });
 
   it('can add files but not write to them if append is allowed.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: false, append: true, control: false }, 'agent');
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { append: true },
+      agentClass: 'agent',
+      accessTo: true,
+      default: true,
+    });
 
-    // Add a file
-    const filePath = 'testfile2.txt';
-    let response = await resourceHelper.performRequestWithBody(
-      new URL(`${BASE}/`),
-      'POST',
-      {
-        'content-type': 'text/plain',
-        'transfer-encoding': 'chunked',
-        slug: filePath,
-      },
-      Buffer.from('data'),
-    );
-    expect(response.statusCode).toBe(201);
+    // POST
+    const slug = 'slug';
+    let response = await postResource(baseUrl, { contentType: 'text/plain', slug, body: 'SLUGDATA' });
+    const document = response.headers.get('location')!;
 
-    response = await resourceHelper.createResource(
-      '../assets/testfile2.txt', filePath, 'text/plain', true,
-    );
-    expect(response.statusCode).toBe(401);
+    // PUT fail
+    response = await fetch(document, { method: 'PUT' });
+    expect(response.status).toBe(401);
+
+    // DELETE fail
+    response = await fetch(document, { method: 'DELETE' });
+    expect(response.status).toBe(401);
+
+    // Clean up resource
+    await store.deleteResource({ path: document });
   });
 
   it('can not access an acl file if no control rights are provided.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: true, write: true, append: true, control: false }, 'agent');
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { read: true, write: true, append: true },
+      agentClass: 'agent',
+      accessTo: true,
+    });
 
-    const response = await resourceHelper.performRequest(new URL('http://test.com/.acl'), 'GET', { accept: '*/*' });
-    expect(response.statusCode).toBe(401);
+    const response = await fetch(`${baseUrl}.acl`);
+    expect(response.status).toBe(401);
   });
 
   it('can only access an acl file if control rights are provided.', async(): Promise<void> => {
-    // Set acl
-    await aclHelper.setSimpleAcl({ read: false, write: false, append: false, control: true }, 'agent');
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: { control: true },
+      agentClass: 'agent',
+      accessTo: true,
+    });
 
-    const response = await resourceHelper.performRequest(new URL('http://test.com/.acl'), 'GET', { accept: '*/*' });
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders()['wac-allow']).toBe('user="control",public="control"');
+    const response = await fetch(`${baseUrl}.acl`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('wac-allow')).toBe('user="control",public="control"');
+
+    // Close response
+    await response.text();
   });
 });
