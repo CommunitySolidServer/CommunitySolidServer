@@ -36,6 +36,7 @@ export * from './identity/interaction/email-password/AccountInteractionPolicy';
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
 // Identity/Interaction/Util
+export * from './identity/interaction/util/BaseEmailSender';
 export * from './identity/interaction/util/EjsTemplateRenderer';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/FormDataUtil';

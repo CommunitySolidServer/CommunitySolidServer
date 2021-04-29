@@ -86,7 +86,8 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
       // Send email
       this.logger.info(`Sending password reset to ${email}`);
       const renderedEmail = await this.emailTemplateRenderer.handleSafe({ resetLink });
-      await this.emailSender.sendEmail(email, {
+      await this.emailSender.handleSafe({
+        recipient: email,
         subject: 'Reset your password',
         text: `To reset your password, go to this link: ${resetLink}`,
         html: renderedEmail,

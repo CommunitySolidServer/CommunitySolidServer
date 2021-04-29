@@ -1,44 +1,13 @@
-import { createTransport } from 'nodemailer';
-import type Mail from 'nodemailer/lib/mailer';
-
-export interface EmailSenderArgs {
-  emailConfig: {
-    name: string;
-    host: string;
-    port: number;
-    auth: {
-      user: string;
-      pass: string;
-    };
-  };
-  senderName?: string;
-}
+import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 
 export interface EmailArgs {
+  recipient: string;
   subject: string;
   text: string;
   html: string;
 }
 
 /**
- * Sends an email
+ * A class that can send an e-mail.
  */
-export class EmailSender {
-  private readonly mailTransporter: Mail;
-  private readonly senderName: string;
-
-  public constructor(args: EmailSenderArgs) {
-    this.mailTransporter = createTransport(args.emailConfig);
-    this.senderName = args.senderName ?? 'Solid';
-  }
-
-  public async sendEmail(emailAddress: string, content: EmailArgs): Promise<void> {
-    await this.mailTransporter.sendMail({
-      from: this.senderName,
-      to: emailAddress,
-      subject: content.subject,
-      text: content.text,
-      html: content.html,
-    });
-  }
-}
+export abstract class EmailSender extends AsyncHandler<EmailArgs> {}

@@ -43,7 +43,7 @@ describe('A ForgotPasswordHandler', (): void => {
     } as any;
 
     emailSender = {
-      sendEmail: jest.fn(),
+      handleSafe: jest.fn(),
     } as any;
 
     handler = new ForgotPasswordHandler({
@@ -66,15 +66,16 @@ describe('A ForgotPasswordHandler', (): void => {
   it('does not send a mail if a ForgotPassword record could not be generated.', async(): Promise<void> => {
     (accountStore.generateForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('error');
     await expect(handler.handle({ request, response, provider })).resolves.toBeUndefined();
-    expect(emailSender.sendEmail).toHaveBeenCalledTimes(0);
+    expect(emailSender.handleSafe).toHaveBeenCalledTimes(0);
     expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(messageRenderHandler.handleSafe).toHaveBeenLastCalledWith(renderParams);
   });
 
   it('sends a mail if a ForgotPassword record could be generated.', async(): Promise<void> => {
     await expect(handler.handle({ request, response, provider })).resolves.toBeUndefined();
-    expect(emailSender.sendEmail).toHaveBeenCalledTimes(1);
-    expect(emailSender.sendEmail).toHaveBeenLastCalledWith('email!', {
+    expect(emailSender.handleSafe).toHaveBeenCalledTimes(1);
+    expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
+      recipient: 'email!',
       subject: 'Reset your password',
       text: 'To reset your password, go to this link: http://test.com/base/idp/resetpassword?rid=record!',
       html: 'html!',
