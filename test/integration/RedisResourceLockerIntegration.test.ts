@@ -3,8 +3,7 @@ import fetch from 'cross-fetch';
 import type { RedisResourceLocker } from '../../src';
 import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import { describeIf } from '../util/TestHelpers';
-import { getPort } from '../util/Util';
+import { describeIf, getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
 /**
