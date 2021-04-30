@@ -1,12 +1,6 @@
-import { EventEmitter } from 'events';
 import type { Stats } from 'fs';
-import type { IncomingHttpHeaders } from 'http';
 import { PassThrough } from 'stream';
-import type { MockResponse } from 'node-mocks-http';
-import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
-import type { HttpHandler } from '../../src/server/HttpHandler';
-import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -18,6 +12,7 @@ const portNames = [
   'PodCreation',
   'RedisResourceLocker',
   'ServerFetch',
+  'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
 ] as const;
@@ -31,33 +26,11 @@ export function getPort(name: typeof portNames[number]): number {
   return 6000 + idx;
 }
 
-export async function performRequest(
-  handler: HttpHandler,
-  requestUrl: URL,
-  method: string,
-  headers: IncomingHttpHeaders,
-  data: string[],
-): Promise<MockResponse<any>> {
-  const request = streamifyArray(data) as HttpRequest;
-  request.url = `${requestUrl.pathname}${requestUrl.search}`;
-  request.method = method;
-  request.headers = headers;
-  request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({
-    eventEmitter: EventEmitter,
-  });
-
-  const endPromise = new Promise((resolve): void => {
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      resolve();
-    });
-  });
-
-  await handler.handleSafe({ request, response });
-  await endPromise;
-
-  return response;
+export function describeIf(envFlag: string, name: string, fn: () => void): void {
+  const flag = `TEST_${envFlag.toUpperCase()}`;
+  const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
+  // eslint-disable-next-line jest/valid-describe, jest/valid-title, jest/no-disabled-tests
+  return enabled ? describe(name, fn) : describe.skip(name, fn);
 }
 
 /**

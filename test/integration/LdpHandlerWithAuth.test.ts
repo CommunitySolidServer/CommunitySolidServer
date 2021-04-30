@@ -3,8 +3,8 @@ import fetch from 'cross-fetch';
 import type { Initializer, ResourceStore } from '../../src/';
 import { BasicRepresentation } from '../../src/';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
-import { AclHelper } from '../util/TestHelpers';
 import { getPort } from '../util/Util';
 import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
