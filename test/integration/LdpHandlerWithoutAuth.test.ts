@@ -6,7 +6,7 @@ import { joinFilePath, PIM, RDF } from '../../src/';
 import type { Initializer, ResourceStore } from '../../src/';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { LDP } from '../../src/util/Vocabularies';
-import { deleteResource, expectQuads, getResource, postResource, putResource } from '../util/FetchUtil';
+import { deleteResource, expectQuads, getResource, patchResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
 import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 const { literal, namedNode, quad } = DataFactory;
@@ -26,7 +26,7 @@ const stores: [string, any][] = [
   }],
 ];
 
-describe.each(stores)('An LDP handler allowing all request %s', (name, { storeUrn, teardown }): void => {
+describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeUrn, teardown }): void => {
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
@@ -267,6 +267,55 @@ describe.each(stores)('An LDP handler allowing all request %s', (name, { storeUr
 
     // GET
     await getResource(documentUrl);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can handle simple SPARQL updates.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+      'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query);
+
+    // PATCH using a content-type header with charset
+    const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
+      'INSERT {<#s4> <#p4> <#o4>}',
+      'WHERE {}',
+    ].join('\n');
+    response = await fetch(documentUrl, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update ; charset=UTF-8',
+      },
+      body: query2,
+    });
+    await expect(response.text()).resolves.toHaveLength(0);
+    expect(response.status).toBe(205);
+
+    // GET
+    response = await getResource(documentUrl);
+    const expected = [
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode(`${documentUrl}#s4`),
+        namedNode(`${documentUrl}#p4`),
+        namedNode(`${documentUrl}#o4`),
+      ),
+    ];
+    await expectQuads(response, expected, true);
 
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();
