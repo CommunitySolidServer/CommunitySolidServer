@@ -21,7 +21,7 @@
       "@id": "urn:solid-server:auth:password:LoginRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/login.ejs"
     },
@@ -30,7 +30,7 @@
       "@id": "urn:solid-server:auth:password:RegisterRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/register.ejs"
     },
@@ -39,7 +39,7 @@
       "@id": "urn:solid-server:auth:password:ForgotPasswordRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/forgotPassword.ejs"
     },
@@ -48,7 +48,7 @@
       "@id": "urn:solid-server:auth:password:ResetPasswordRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/resetPassword.ejs"
     },
@@ -57,7 +57,7 @@
       "@id": "urn:solid-server:auth:password:EmailSentRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/emailSent.ejs"
     },
@@ -66,7 +66,7 @@
       "@id": "urn:solid-server:auth:password:MessageRenderHandler",
       "@type": "RenderEjsHandler",
       "templatePath": {
-        "@id": "urn:solid-server:default:variable:webViewsFolder"
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
       },
       "templateFile": "./email-password-interaction/message.ejs"
     },
@@ -88,7 +88,7 @@
                 "InitialInteractionHandler:_renderHandlerMap_value": {
                   "@type": "RenderEjsHandler",
                   "templatePath": {
-                    "@id": "urn:solid-server:default:variable:webViewsFolder"
+                    "@id": "urn:solid-server:default:variable:idpTemplateFolder"
                   },
                   "templateFile": "./email-password-interaction/confirm.ejs"
                 }
@@ -166,11 +166,11 @@
             "args_baseUrl": {
               "@id": "urn:solid-server:default:variable:baseUrl"
             },
-            "args_idpPathName": "idp",
+            "args_idpPath": "/idp",
             "args_emailTemplateRenderer": {
               "@type": "EjsTemplateRenderer",
               "templatePath": {
-                "@id": "urn:solid-server:default:variable:webViewsFolder"
+                "@id": "urn:solid-server:default:variable:idpTemplateFolder"
               },
               "templateFile": "./email-password-interaction/resetPasswordEmail.ejs"
             },
@@ -218,7 +218,7 @@
       "comment": "Sets up the email password interaction policy",
       "@id": "urn:solid-server:auth:password:AccountInteractionPolicy",
       "@type": "AccountInteractionPolicy",
-      "idpPathName": "idp"
+      "idpPath": "/idp"
     }
   ]
 }

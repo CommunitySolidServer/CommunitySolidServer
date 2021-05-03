@@ -7,11 +7,13 @@ import type { InteractionCompleter } from '../../../../../../src/identity/intera
 import type { OwnershipValidator } from '../../../../../../src/identity/interaction/util/OwnershipValidator';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import { createRequest } from './Util';
+import { createPostFormRequest } from './Util';
 
 describe('A RegistrationHandler', (): void => {
+  const webId = 'http://alice.test.com/card#me';
+  const email = 'alice@test.email';
   let request: HttpRequest;
-  const response: HttpResponse = 'response!' as any;
+  const response: HttpResponse = {} as any;
   let provider: Provider;
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
@@ -20,7 +22,7 @@ describe('A RegistrationHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     provider = {
-      interactionDetails: jest.fn().mockResolvedValue({ uid: 'uid!' }),
+      interactionDetails: jest.fn().mockResolvedValue({ uid: '123456' }),
     } as any;
 
     ownershipValidator = {
@@ -43,48 +45,52 @@ describe('A RegistrationHandler', (): void => {
   });
 
   it('errors on non-string emails.', async(): Promise<void> => {
-    request = createRequest({});
+    request = createPostFormRequest({});
     await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
-    request = createRequest({ email: [ 'email', 'email2' ]});
+    request = createPostFormRequest({ email: [ 'email', 'email2' ]});
     await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
   });
 
   it('errors on invalid emails.', async(): Promise<void> => {
-    request = createRequest({ email: 'invalidEmail' });
+    request = createPostFormRequest({ email: 'invalidEmail' });
     const prom = handler.handle({ request, response, provider });
     await expect(prom).rejects.toThrow('Invalid email');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email: '', webId: '' }}));
+    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { }}));
   });
 
   it('errors on non-string webIds.', async(): Promise<void> => {
-    request = createRequest({ email: 'test@test.com' });
+    request = createPostFormRequest({ email });
     let prom = handler.handle({ request, response, provider });
     await expect(prom).rejects.toThrow('WebId required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email: 'test@test.com', webId: '' }}));
-    request = createRequest({ email: 'test@test.com', webId: [ 'a', 'b' ]});
+    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
+    request = createPostFormRequest({ email, webId: [ 'a', 'b' ]});
     prom = handler.handle({ request, response, provider });
     await expect(prom).rejects.toThrow('WebId required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email: 'test@test.com', webId: '' }}));
+    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
   });
 
   it('errors on invalid passwords.', async(): Promise<void> => {
-    request = createRequest({ email: 'test@test.com', webId: 'webId!', password: 'password!', confirmPassword: 'bad' });
+    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'bad' });
     const prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('Password and confirm password do not match');
-    await expect(prom).rejects.toThrow(expect.objectContaining({
-      prefilled: { email: 'test@test.com', webId: 'webId!' },
-    }));
+    await expect(prom).rejects.toThrow('Password and confirmation do not match');
+    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email, webId }}));
+  });
+
+  it('throws an IdpInteractionError if there is a problem.', async(): Promise<void> => {
+    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'password!' });
+    (accountStore.create as jest.Mock).mockRejectedValueOnce(new Error('create failed!'));
+    const prom = handler.handle({ request, response, provider });
+    await expect(prom).rejects.toThrow('create failed!');
+    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email, webId }}));
   });
 
   it('calls the OidcInteractionCompleter when done.', async(): Promise<void> => {
-    request = createRequest(
-      { email: 'test@test.com', webId: 'webId!', password: 'password!', confirmPassword: 'password!' },
-    );
+    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'password!' });
     await expect(handler.handle({ request, response, provider })).resolves.toBeUndefined();
     expect(accountStore.create).toHaveBeenCalledTimes(1);
-    expect(accountStore.create).toHaveBeenLastCalledWith('test@test.com', 'webId!', 'password!');
+    expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, 'password!');
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
     expect(interactionCompleter.handleSafe)
-      .toHaveBeenLastCalledWith({ request, response, provider, webId: 'webId!', shouldRemember: false });
+      .toHaveBeenLastCalledWith({ request, response, provider, webId, shouldRemember: false });
   });
 });

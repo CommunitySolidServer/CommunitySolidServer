@@ -2,7 +2,6 @@ import assert from 'assert';
 import { hash, compare } from 'bcrypt';
 import { v4 } from 'uuid';
 import type { KeyValueStorage } from '../../../../storage/keyvalue/KeyValueStorage';
-import { trimTrailingSlashes } from '../../../../util/PathUtil';
 import type { AccountStore } from './AccountStore';
 
 /**
@@ -41,7 +40,7 @@ export class BaseAccountStore implements AccountStore {
   private readonly saltRounds: number;
 
   public constructor(args: BaseAccountStoreArgs) {
-    this.storageName = trimTrailingSlashes(args.storageName);
+    this.storageName = args.storageName;
     this.storage = args.storage;
     this.saltRounds = args.saltRounds;
   }

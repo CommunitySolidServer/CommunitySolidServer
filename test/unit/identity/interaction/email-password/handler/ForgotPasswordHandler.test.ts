@@ -8,26 +8,31 @@ import type { IdpRenderHandler } from '../../../../../../src/identity/interactio
 import type { TemplateRenderer } from '../../../../../../src/identity/interaction/util/TemplateRenderer';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import { createRequest } from './Util';
+import { createPostFormRequest } from './Util';
 
 describe('A ForgotPasswordHandler', (): void => {
   let request: HttpRequest;
-  const response: HttpResponse = 'response!' as any;
-  const renderParams = { response, props: { details: 'details!', errorMessage: '', prefilled: { email: 'email!' }}};
+  const response: HttpResponse = {} as any;
+  const email = 'test@test.email';
+  const recordId = '123456';
+  const html = `<a href="/base/idp/resetpassword?rid=${recordId}">Reset Password</a>`;
+  // `Interaction` type is not exposed
+  const details = {} as any;
+  const renderParams = { response, props: { details, errorMessage: '', prefilled: { email }}};
   let provider: Provider;
   let messageRenderHandler: IdpRenderHandler;
   let accountStore: AccountStore;
   const baseUrl = 'http://test.com/base/';
-  const idpPathName = 'idp';
+  const idpPath = '/idp';
   let emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
   let emailSender: EmailSender;
   let handler: ForgotPasswordHandler;
 
   beforeEach(async(): Promise<void> => {
-    request = createRequest({ email: 'email!' });
+    request = createPostFormRequest({ email });
 
     provider = {
-      interactionDetails: jest.fn().mockResolvedValue('details!'),
+      interactionDetails: jest.fn().mockResolvedValue(details),
     } as any;
 
     messageRenderHandler = {
@@ -35,11 +40,11 @@ describe('A ForgotPasswordHandler', (): void => {
     } as any;
 
     accountStore = {
-      generateForgotPasswordRecord: jest.fn().mockResolvedValue('record!'),
+      generateForgotPasswordRecord: jest.fn().mockResolvedValue(recordId),
     } as any;
 
     emailTemplateRenderer = {
-      handleSafe: jest.fn().mockResolvedValue('html!'),
+      handleSafe: jest.fn().mockResolvedValue(html),
     } as any;
 
     emailSender = {
@@ -50,16 +55,16 @@ describe('A ForgotPasswordHandler', (): void => {
       messageRenderHandler,
       accountStore,
       baseUrl,
-      idpPathName,
+      idpPath,
       emailTemplateRenderer,
       emailSender,
     });
   });
 
   it('errors on non-string emails.', async(): Promise<void> => {
-    request = createRequest({});
+    request = createPostFormRequest({});
     await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
-    request = createRequest({ email: [ 'email', 'email2' ]});
+    request = createPostFormRequest({ email: [ 'email', 'email2' ]});
     await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
   });
 
@@ -75,10 +80,10 @@ describe('A ForgotPasswordHandler', (): void => {
     await expect(handler.handle({ request, response, provider })).resolves.toBeUndefined();
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(1);
     expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
-      recipient: 'email!',
+      recipient: email,
       subject: 'Reset your password',
-      text: 'To reset your password, go to this link: http://test.com/base/idp/resetpassword?rid=record!',
-      html: 'html!',
+      text: `To reset your password, go to this link: http://test.com/base/idp/resetpassword?rid=${recordId}`,
+      html,
     });
     expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(messageRenderHandler.handleSafe).toHaveBeenLastCalledWith(renderParams);

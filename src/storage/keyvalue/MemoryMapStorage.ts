@@ -2,8 +2,6 @@ import type { KeyValueStorage } from './KeyValueStorage';
 
 /**
  * A {@link KeyValueStorage} which uses a JavaScript Map for internal storage.
- * Warning: Uses a Map object, which internally uses `Object.is` for key equality,
- * so object keys have to be the same objects.
  */
 export class MemoryMapStorage<TValue> implements KeyValueStorage<string, TValue> {
   private readonly data: Map<string, TValue>;

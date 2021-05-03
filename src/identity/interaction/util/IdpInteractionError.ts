@@ -1,7 +1,7 @@
 import { HttpError } from '../../../util/errors/HttpError';
 
 /**
- * An error made for Idp Interactions. It allows a function to set the prefilled
+ * An error made for IDP Interactions. It allows a function to set the prefilled
  * information that would be included in a response UI render.
  */
 export class IdpInteractionError extends HttpError {

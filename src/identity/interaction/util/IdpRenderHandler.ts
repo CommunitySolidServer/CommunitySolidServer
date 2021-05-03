@@ -9,6 +9,6 @@ export interface IdpRenderHandlerProps {
 }
 
 /**
- * A special Render Handler that renders an Idp form
+ * A special Render Handler that renders an IDP form
  */
 export abstract class IdpRenderHandler extends RenderHandler<IdpRenderHandlerProps> {}

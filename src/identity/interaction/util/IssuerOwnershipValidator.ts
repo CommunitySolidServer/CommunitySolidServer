@@ -6,8 +6,7 @@ import { OwnershipValidator } from './OwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 
 /**
- * Validates whether a WebId is okay to register based on if it
- * references this as an issuer.
+ * Validates if a WebID can be registered based on whether it references this as an issuer.
  */
 export class IssuerOwnershipValidator extends OwnershipValidator {
   protected readonly logger = getLoggerFor(this);

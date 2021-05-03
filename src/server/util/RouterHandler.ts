@@ -7,8 +7,6 @@ import { HttpHandler } from '../HttpHandler';
 /**
  * An HttpHandler that checks if a given method and path are satisfied
  * and allows its handler to be executed if so.
- * This performs the same function as `app.get('/sampleRoute', () => {})`
- * in express.
  */
 export class RouterHandler extends HttpHandler {
   protected readonly handler: HttpHandler;

@@ -6,8 +6,8 @@ import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A SessionHttpHandler', (): void => {
-  const request: HttpRequest = 'request!' as any;
-  const response: HttpResponse = 'response!' as any;
+  const request: HttpRequest = {} as any;
+  const response: HttpResponse = {} as any;
   const webId = 'http://test.com/id#me';
   let details: any = {};
   let provider: Provider;

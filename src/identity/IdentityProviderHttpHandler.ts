@@ -9,8 +9,16 @@ import type { InteractionHttpHandler } from './interaction/InteractionHttpHandle
 import type { InteractionPolicy } from './interaction/InteractionPolicy';
 
 /**
- * Handles requests incoming the IdP and instantiates the IdP to
- * be passed to all child IdpInteractionHttpHandlers
+ * Handles all requests relevant for the entire IDP interaction,
+ * by sending them to either the stored {@link InteractionHttpHandler},
+ * or the generated {@link Provider} if the first does not support the request.
+ *
+ * The InteractionHttpHandler would handle all requests where we need custom behaviour,
+ * such as everything related to generating and validating an account.
+ * The Provider handles all the default request such as the initial handshake.
+ *
+ * This handler handles all requests since it assumes all those requests are relevant for the IDP interaction.
+ * A {@link RouterHandler} should be used to filter out other requests.
  */
 export class IdentityProviderHttpHandler extends HttpHandler {
   protected readonly logger = getLoggerFor(this);
@@ -35,9 +43,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   }
 
   /**
-   * Create the provider or retrieve it if it has already been created
+   * Create the provider or retrieve it if it has already been created.
    */
-  private async getGuaranteedProvider(): Promise<Provider> {
+  private async getProvider(): Promise<Provider> {
     if (!this.provider) {
       try {
         this.provider = await this.providerFactory.createProvider(this.interactionPolicy);
@@ -49,25 +57,20 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     return this.provider;
   }
 
-  /**
-   * No canHandle method is provided because this should always accept.
-   * A RouterHandler should be placed above this class to restrict the routes it can use.
-   */
-
   public async handle(input: HttpHandlerInput): Promise<void> {
-    const provider = await this.getGuaranteedProvider();
+    const provider = await this.getProvider();
 
     try {
       await this.interactionHttpHandler.canHandle({ ...input, provider });
     } catch {
       this.logger.debug(`Sending request to oidc-provider: ${input.request.url}`);
-      // Let the Provider handle the request in case our server has no matching handlers
       return provider.callback(input.request, input.response);
     }
 
     try {
       await this.interactionHttpHandler.handle({ ...input, provider });
     } catch (error: unknown) {
+      // ResponseWriter can only handle native errors
       if (!isNativeError(error)) {
         throw error;
       }

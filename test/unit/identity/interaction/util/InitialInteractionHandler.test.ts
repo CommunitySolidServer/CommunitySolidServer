@@ -5,9 +5,10 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
 describe('An InitialInteractionHandler', (): void => {
-  const request: HttpRequest = 'request!' as any;
-  const response: HttpResponse = 'response!' as any;
+  const request: HttpRequest = {} as any;
+  const response: HttpResponse = {} as any;
   let provider: Provider;
+  // `Interaction` type is not exposed
   let details: any;
   let map: RenderHandlerMap;
   let handler: InitialInteractionHandler;

@@ -27,7 +27,7 @@ jest.spyOn(process, 'emitWarning').mockImplementation();
 // They will be simulated by storing the values and passing them along.
 // This is why the redirects are handled manually.
 // We also need to parse the HTML in several steps since there is no API.
-describe('A Solid server with IdP', (): void => {
+describe('A Solid server with IDP', (): void => {
   let server: Server;
   let initializer: Initializer;
   let expiringStorage: WrappedExpiringStorage<any, any>;
@@ -52,7 +52,7 @@ describe('A Solid server with IdP', (): void => {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
-        'urn:solid-server:default:variable:webViewsFolder': joinFilePath(__dirname, '../../templates/views'),
+        'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
       },
     ) as Record<string, any>;
     ({ factory, initializer, expiringStorage } = instances);
@@ -208,7 +208,7 @@ describe('A Solid server with IdP', (): void => {
       const res = await state.fetchIdp(nextUrl, 'POST', stringify({ email }), APPLICATION_X_WWW_FORM_URLENCODED);
       expect(res.status).toBe(200);
       expect(load(await res.text())('form div p').first().text().trim())
-        .toBe('If your account exists, an email has been sent to your account with a link to reset your password.');
+        .toBe('If your account exists, an email has been sent with a link to reset your password.');
 
       const mail = sendMail.mock.calls[0][0];
       expect(mail.to).toBe(email);

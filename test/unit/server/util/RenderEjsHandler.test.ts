@@ -10,7 +10,7 @@ describe('RenderEjsHandler', (): void => {
 
   beforeEach((): void => {
     response = createResponse();
-    templatePath = joinFilePath(__dirname, '../../../assets/views');
+    templatePath = joinFilePath(__dirname, '../../../assets/idp');
     templateFile = 'testHtml.ejs';
   });
 
@@ -47,7 +47,22 @@ describe('RenderEjsHandler', (): void => {
     expect(testResponse._getStatusCode()).toBe(200);
   });
 
-  it('succssfully renders when no props are needed.', async(): Promise<void> => {
+  it('successfully escapes html input.', async(): Promise<void> => {
+    const handler = new RenderEjsHandler<{ message: string }>(templatePath, templateFile);
+    await handler.handle({
+      response,
+      props: {
+        message: '<script>alert(1)</script>',
+      },
+    });
+    // Cast to any because mock-response depends on express, which this project doesn't have
+    const testResponse = response as any;
+    expect(testResponse._isEndCalled()).toBe(true);
+    expect(testResponse._getData()).toBe('<html><body><p>&lt;script&gt;alert(1)&lt;/script&gt;</p></body></html>');
+    expect(testResponse._getStatusCode()).toBe(200);
+  });
+
+  it('successfully renders when no props are needed.', async(): Promise<void> => {
     const handler = new RenderEjsHandler<undefined>(templatePath, 'noPropsTestHtml.ejs');
     await handler.handle({
       response,

@@ -1,4 +1,4 @@
-import type { Provider } from 'oidc-provider';
+import type { interactionPolicy, KoaContextWithOIDC, Provider } from 'oidc-provider';
 import type { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
 import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
 import type { InteractionHttpHandler } from '../../../src/identity/interaction/InteractionHttpHandler';
@@ -8,10 +8,13 @@ import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 
 describe('An IdentityProviderHttpHandler', (): void => {
-  const request: HttpRequest = 'request!' as any;
-  const response: HttpResponse = 'response!' as any;
+  const request: HttpRequest = {} as any;
+  const response: HttpResponse = {} as any;
   let providerFactory: IdentityProviderFactory;
-  const interactionPolicy: InteractionPolicy = 'interactionPolicy!' as any;
+  const idpPolicy: InteractionPolicy = {
+    policy: [ 'prompt' as unknown as interactionPolicy.Prompt ],
+    url: (ctx: KoaContextWithOIDC): string => `/idp/interaction/${ctx.oidc.uid}`,
+  };
   let interactionHttpHandler: InteractionHttpHandler;
   let errorResponseWriter: ResponseWriter;
   let provider: Provider;
@@ -37,7 +40,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     handler = new IdentityProviderHttpHandler(
       providerFactory,
-      interactionPolicy,
+      idpPolicy,
       interactionHttpHandler,
       errorResponseWriter,
     );
@@ -80,7 +83,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(providerFactory.createProvider).toHaveBeenCalledTimes(0);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(providerFactory.createProvider).toHaveBeenCalledTimes(1);
-    expect(providerFactory.createProvider).toHaveBeenLastCalledWith(interactionPolicy);
+    expect(providerFactory.createProvider).toHaveBeenLastCalledWith(idpPolicy);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(providerFactory.createProvider).toHaveBeenCalledTimes(1);
   });

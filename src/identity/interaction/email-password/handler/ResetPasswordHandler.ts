@@ -16,8 +16,8 @@ export interface ResetPasswordHandlerArgs {
 }
 
 /**
- * Handles the submission of the ResetPassword form, the form
- * that is linked in the reset password email.
+ * Handles the submission of the ResetPassword form:
+ * this is the form that is linked in the reset password email.
  */
 export class ResetPasswordHandler extends HttpHandler {
   protected readonly logger = getLoggerFor(this);
@@ -36,34 +36,22 @@ export class ResetPasswordHandler extends HttpHandler {
   public async handle(input: HttpHandlerInput): Promise<void> {
     let prefilledRecordId = '';
     try {
-      // Parse params
-      const {
-        password,
-        confirmPassword,
-        recordId,
-      } = await getFormDataRequestBody(input.request);
+      // Validate input data
+      const { password, confirmPassword, recordId } = await getFormDataRequestBody(input.request);
       assert(
-        recordId && typeof recordId === 'string',
+        typeof recordId === 'string' && recordId.length > 0,
         'Invalid request. Open the link from your email again',
       );
       prefilledRecordId = recordId;
       assertPassword(password, confirmPassword);
 
-      // Reset password
-      const email = await this.accountStore.getForgotPasswordRecord(recordId);
-      assert(email, 'This reset password link is no longer valid.');
-      await this.accountStore.deleteForgotPasswordRecord(recordId);
-
-      await this.accountStore.changePassword(email, password);
-
+      await this.resetPassword(recordId, password);
       await this.messageRenderHandler.handleSafe({
         response: input.response,
         props: {
           message: 'Your password was successfully reset.',
         },
       });
-
-      this.logger.debug(`Resetting password for user ${email}`);
     } catch (err: unknown) {
       const errorMessage: string = isNativeError(err) ? err.message : 'An unknown error occurred';
       await this.renderHandler.handleSafe({
@@ -74,5 +62,16 @@ export class ResetPasswordHandler extends HttpHandler {
         },
       });
     }
+  }
+
+  /**
+   * Resets the password for the account associated with the given recordId.
+   */
+  private async resetPassword(recordId: string, newPassword: string): Promise<void> {
+    const email = await this.accountStore.getForgotPasswordRecord(recordId);
+    assert(email, 'This reset password link is no longer valid.');
+    await this.accountStore.deleteForgotPasswordRecord(recordId);
+    await this.accountStore.changePassword(email, newPassword);
+    this.logger.debug(`Resetting password for user ${email}`);
   }
 }

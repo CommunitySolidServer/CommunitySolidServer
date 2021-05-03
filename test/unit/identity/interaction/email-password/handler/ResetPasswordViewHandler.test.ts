@@ -9,7 +9,7 @@ import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 
 describe('A ResetPasswordViewHandler', (): void => {
   let request: HttpRequest;
-  const response: HttpResponse = 'response!' as any;
+  const response: HttpResponse = {} as any;
   let renderHandler: ResetPasswordRenderHandler;
   let handler: ResetPasswordViewHandler;
 
@@ -24,16 +24,16 @@ describe('A ResetPasswordViewHandler', (): void => {
   });
 
   it('requires a URL.', async(): Promise<void> => {
-    await expect(handler.handle({ request, response })).rejects.toThrow('The request must have a url');
+    await expect(handler.handle({ request, response })).rejects.toThrow('The request must have a URL');
   });
 
   it('requires a record ID.', async(): Promise<void> => {
     request.url = '/foo';
     await expect(handler.handle({ request, response })).rejects
-      .toThrow('A forgot password record id must be provided. Use the link from your email.');
+      .toThrow('A forgot password record ID must be provided. Use the link you have received by email.');
     request.url = '/foo?wrong=recordId';
     await expect(handler.handle({ request, response })).rejects
-      .toThrow('A forgot password record id must be provided. Use the link from your email.');
+      .toThrow('A forgot password record ID must be provided. Use the link you have received by email.');
   });
 
   it('renders the response.', async(): Promise<void> => {

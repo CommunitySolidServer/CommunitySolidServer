@@ -12,7 +12,7 @@ jest.mock('@rdfjs/fetch');
 describe('A WrappedFetchAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   let triples: Quad[];
-  const id = namedNode('id');
+  const id = 'http://alice.test.com/card#me';
   let source: Adapter;
   let sourceFactory: AdapterFactory;
   let adapter: Adapter;
@@ -88,54 +88,54 @@ describe('A WrappedFetchAdapterFactory', (): void => {
 
   it('returns the source find payload if there is one.', async(): Promise<void> => {
     (source.find as jest.Mock).mockResolvedValueOnce('payload!');
-    await expect(adapter.find('id')).resolves.toBe('payload!');
+    await expect(adapter.find(id)).resolves.toBe('payload!');
   });
 
   it('returns undefined if this is not a Client Adapter and there is no source payload.', async(): Promise<void> => {
     adapter = factory.createStorageAdapter('NotClient');
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
   });
 
   it('returns undefined if there was a problem accessing the id.', async(): Promise<void> => {
     fetchMock.mockRejectedValueOnce(new Error('bad data!'));
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
   });
 
   it('returns undefined if there are no solid:oidcRegistration triples.', async(): Promise<void> => {
     triples = [
-      quad(id, namedNode('irrelevant'), literal('value')),
+      quad(namedNode(id), namedNode('irrelevant'), literal('value')),
     ];
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
   });
 
   it('returns undefined if there are no valid solid:oidcRegistration triples.', async(): Promise<void> => {
     triples = [
-      quad(id, namedNode('irrelevant'), literal('value')),
-      quad(id, SOLID.terms.oidcRegistration, literal('}{')),
+      quad(namedNode(id), namedNode('irrelevant'), literal('value')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal('}{')),
     ];
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
   });
 
   it('returns undefined if there are no matching solid:oidcRegistration triples.', async(): Promise<void> => {
     triples = [
-      quad(id, namedNode('irrelevant'), literal('value')),
-      quad(id, SOLID.terms.oidcRegistration, literal('}{')),
-      quad(id, SOLID.terms.oidcRegistration, literal('{ "client_id": "invalid_id" }')),
+      quad(namedNode(id), namedNode('irrelevant'), literal('value')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal('}{')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal('{ "client_id": "invalid_id" }')),
     ];
-    await expect(adapter.find('id')).resolves.toBeUndefined();
+    await expect(adapter.find(id)).resolves.toBeUndefined();
   });
 
   it('returns a new payload if there is a registration match.', async(): Promise<void> => {
     triples = [
-      quad(id, namedNode('irrelevant'), literal('value')),
-      quad(id, SOLID.terms.oidcRegistration, literal('}{')),
-      quad(id, SOLID.terms.oidcRegistration, literal('{ "client_id": "invalid_id" }')),
-      quad(id, SOLID.terms.oidcRegistration, literal('{ "client_id": "id" }')),
+      quad(namedNode(id), namedNode('irrelevant'), literal('value')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal('}{')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal('{ "client_id": "invalid_id" }')),
+      quad(namedNode(id), SOLID.terms.oidcRegistration, literal(`{ "client_id": "${id}" }`)),
     ];
 
     /* eslint-disable @typescript-eslint/naming-convention */
-    await expect(adapter.find('id')).resolves.toEqual({
-      client_id: 'id',
+    await expect(adapter.find(id)).resolves.toEqual({
+      client_id: id,
       token_endpoint_auth_method: 'none',
     });
   });

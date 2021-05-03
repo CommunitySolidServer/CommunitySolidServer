@@ -8,7 +8,7 @@ export interface InteractionCompleterInput extends InteractionHttpHandlerInput {
 }
 
 /**
- * Completes an IdP interaction, logging the user in.
+ * Completes an IDP interaction, logging the user in.
  */
 export class InteractionCompleter extends AsyncHandler<InteractionCompleterInput> {
   public async handle(input: InteractionCompleterInput): Promise<void> {

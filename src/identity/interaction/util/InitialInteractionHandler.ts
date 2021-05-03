@@ -9,11 +9,16 @@ export interface RenderHandlerMap {
 }
 
 /**
- * An interaction that will choose the form of the render given
- * a certain interaction name. Interaction names can be passed
- * in via the "renderHandlerMap" which maps the interaction name
- * to the render handler. The key "default" will be used if the
- * interaction name doesn't match anything in the RenderHandlerMap
+ * An {@link InteractionHttpHandler} that redirects requests
+ * to a specific {@link IdpRenderHandler} based on their prompt.
+ * A list of possible prompts can be found at https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+ * In case there is no prompt or there is no match in the input map,
+ * the `default` render handler will be used.
+ *
+ * Specifically, the prompt determines how the server should handle re-authentication and consent.
+ *
+ * Since this class specifically redirects to render handlers,
+ * it is advised to wrap it in a {@link RouterHandler} that only allows GET requests.
  */
 export class InitialInteractionHandler extends InteractionHttpHandler {
   protected readonly logger = getLoggerFor(this);

@@ -10,7 +10,7 @@ import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 
 /* eslint-disable jest/no-standalone-expect */
 /**
- * Helper class to track the state while going through an Idp procedure
+ * Helper class to track the state while going through an IDP procedure
  * and generalizes several common calls and checks.
  */
 export class IdentityTestState {

@@ -5,40 +5,41 @@ import type { JWK } from 'jose/jwk/from_key_like';
 import { fromKeyLike } from 'jose/jwk/from_key_like';
 import { generateKeyPair } from 'jose/util/generate_key_pair';
 import type { Adapter, Configuration } from 'oidc-provider';
+import urljoin from 'url-join';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../util/PathUtil';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { ConfigurationFactory } from './ConfigurationFactory';
 
 /**
- * An IdP Configuration Factory that generates and saves keys
+ * An IDP Configuration Factory that generates and saves keys
  * to the provided key value store.
  */
 export class KeyConfigurationFactory implements ConfigurationFactory {
   private readonly adapterFactory: AdapterFactory;
   private readonly baseUrl: string;
-  private readonly idpPathName: string;
+  private readonly idpPath: string;
   private readonly storage: KeyValueStorage<string, unknown>;
 
   public constructor(
     adapterFactory: AdapterFactory,
     baseUrl: string,
-    idpPathName: string,
+    idpPath: string,
     storage: KeyValueStorage<string, unknown>,
   ) {
     this.adapterFactory = adapterFactory;
     this.baseUrl = ensureTrailingSlash(baseUrl);
-    this.idpPathName = trimTrailingSlashes(idpPathName);
+    this.idpPath = trimTrailingSlashes(idpPath);
     this.storage = storage;
   }
 
-  private getJwksKey(): string {
-    return `${this.idpPathName}/jwks`;
+  private get jwksKey(): string {
+    return `${this.idpPath}/jwks`;
   }
 
   private async generateJwks(): Promise<{ keys: JWK[] }> {
     // Check to see if the keys are already saved
-    const jwks = await this.storage.get(this.getJwksKey()) as { keys: JWK[] } | undefined;
+    const jwks = await this.storage.get(this.jwksKey) as { keys: JWK[] } | undefined;
     if (jwks) {
       return jwks;
     }
@@ -49,34 +50,33 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
     // which is why we convert it into a plain object here.
     // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
     const newJwks = { keys: [{ ...jwk }]};
-    await this.storage.set(this.getJwksKey(), newJwks);
+    await this.storage.set(this.jwksKey, newJwks);
     return newJwks;
   }
 
-  private getCookieSecretKey(): string {
-    return `${this.idpPathName}/cookie-secret`;
+  private get cookieSecretKey(): string {
+    return `${this.idpPath}/cookie-secret`;
   }
 
   private async generateCookieKeys(): Promise<string[]> {
     // Check to see if the keys are already saved
-    const cookieSecret = await this.storage.get(this.getCookieSecretKey());
+    const cookieSecret = await this.storage.get(this.cookieSecretKey);
     if (Array.isArray(cookieSecret)) {
       return cookieSecret;
     }
     // If they are not, generate and save them
     const newCookieSecret = [ randomBytes(64).toString('hex') ];
-    await this.storage.set(this.getCookieSecretKey(), newCookieSecret);
+    await this.storage.set(this.cookieSecretKey, newCookieSecret);
     return newCookieSecret;
   }
 
   /**
    * Creates the route string as required by the `oidc-provider` library.
-   * In case base URL is `http://test.com/foo/`, `idpPathName` is `idp` and `relative` is `device/auth`,
+   * In case base URL is `http://test.com/foo/`, `idpPath` is `/idp` and `relative` is `device/auth`,
    * this would result in `/foo/idp/device/auth`.
    */
   private createRoute(relative: string): string {
-    const url = new URL(`${this.idpPathName}/${relative}`, this.baseUrl);
-    return url.pathname;
+    return new URL(urljoin(this.baseUrl, this.idpPath, relative)).pathname;
   }
 
   public async createConfiguration(): Promise<Configuration> {
@@ -84,8 +84,7 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
     const jwks = await this.generateJwks() as any;
     const cookieKeys = await this.generateCookieKeys();
 
-    // Aliasing the "this" variable is an anti-pattern that is better served by using
-    // arrow functions. Unfortunately, the adapter function MUST be a named function
+    // The adapter function MUST be a named function.
     // See https://github.com/panva/node-oidc-provider/issues/799
     const factory = this.adapterFactory;
     return {

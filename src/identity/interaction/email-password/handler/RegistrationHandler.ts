@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
+import type { HttpRequest } from '../../../../server/HttpRequest';
 import type { InteractionHttpHandlerInput } from '../../InteractionHttpHandler';
 import { InteractionHttpHandler } from '../../InteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
@@ -16,9 +17,17 @@ interface RegistrationHandlerArgs {
   interactionCompleter: InteractionCompleter;
 }
 
+// Results when parsing the input form data
+type ParseResult = {
+  email: string;
+  password: string;
+  webId: string;
+  remember: boolean;
+};
+
 /**
- * Handles the submission of the registration form. Creates the
- * user and logs them in if successful.
+ * Handles the submission of the registration form.
+ * Creates the user and logs them in if successful.
  */
 export class RegistrationHandler extends InteractionHttpHandler {
   protected readonly logger = getLoggerFor(this);
@@ -36,46 +45,40 @@ export class RegistrationHandler extends InteractionHttpHandler {
 
   public async handle(input: InteractionHttpHandlerInput): Promise<void> {
     const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
-    let prefilledEmail = '';
-    let prefilledWebId = '';
+    const { email, webId, password, remember } = await this.parseInput(input.request);
     try {
-      const {
-        email,
-        webId,
-        password,
-        confirmPassword,
-        remember,
-      } = await getFormDataRequestBody(input.request);
-
-      // Qualify email
-      assert(email && typeof email === 'string', 'Email required');
-      assert(emailRegex.test(email), 'Invalid email');
-      prefilledEmail = email;
-
-      // Qualify WebId
-      assert(webId && typeof webId === 'string', 'WebId required');
-      prefilledWebId = webId;
+      // Check if WebId contains required triples and register new account if successful
       await this.ownershipValidator.handleSafe({ webId, interactionId: interactionDetails.uid });
-
-      // Qualify password
-      assertPassword(password, confirmPassword);
-
-      // Qualify shouldRemember
-      const shouldRemember = Boolean(remember);
-
-      // Perform registration
       await this.accountStore.create(email, webId, password);
-
-      // Complete the interaction interaction
       await this.interactionCompleter.handleSafe({
         ...input,
         webId,
-        shouldRemember,
+        shouldRemember: Boolean(remember),
       });
-
-      this.logger.debug(`Registering user ${email} with webId ${webId}`);
+      this.logger.debug(`Registering agent ${email} with WebId ${webId}`);
     } catch (err: unknown) {
-      throwIdpInteractionError(err, { email: prefilledEmail, webId: prefilledWebId });
+      throwIdpInteractionError(err, { email, webId });
+    }
+  }
+
+  /**
+   * Parses and validates the input form data.
+   * Will throw an {@link IdpInteractionError} in case something is wrong.
+   * All relevant data that was correct up to that point will be prefilled.
+   */
+  private async parseInput(request: HttpRequest): Promise<ParseResult> {
+    const prefilled: Record<string, string> = {};
+    try {
+      const { email, webId, password, confirmPassword, remember } = await getFormDataRequestBody(request);
+      assert(typeof email === 'string' && email.length > 0, 'Email required');
+      assert(emailRegex.test(email), 'Invalid email');
+      prefilled.email = email;
+      assert(typeof webId === 'string' && webId.length > 0, 'WebId required');
+      prefilled.webId = webId;
+      assertPassword(password, confirmPassword);
+      return { email, password, webId, remember: Boolean(remember) };
+    } catch (err: unknown) {
+      throwIdpInteractionError(err, prefilled);
     }
   }
 }

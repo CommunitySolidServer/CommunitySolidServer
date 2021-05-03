@@ -20,8 +20,8 @@
     "files-scs:config/presets/storage/backend/storage-memory.json",
     "files-scs:config/presets/storage-wrapper.json",
     "files-scs:config/presets/cli-params.json",
-    "files-scs:config/presets/identity/solid-identity-provider.json",
-    "files-scs:config/presets/identity/email-password-interaction-policy.json"
+    "files-scs:config/presets/identity/identity-provider.json",
+    "files-scs:config/presets/identity/interaction-policy.json"
   ],
   "@graph": [
     {
@@ -50,7 +50,6 @@
       ]
     },
     {
-      "comment": "Use an actual e-mail sender to mock in the integration test.",
       "@id": "urn:solid-server:default:EmailSender",
       "@type": "BaseEmailSender",
       "args_senderName": "Solid Server",

@@ -8,7 +8,11 @@ import type { AdapterFactory } from './AdapterFactory';
 import namedNode = DataFactory.namedNode;
 
 /**
- * An Adapter that wraps around another Adapter and fetches data from the webId in case no client payload was found.
+ * This {@link Adapter} redirects the `find` call to its source adapter.
+ * In case no client data was found in the source for the given WebId,
+ * this class will do an HTTP GET request to that WebId.
+ * If a valid `solid:oidcRegistration` triple is found there,
+ * that data will be returned instead.
  */
 export class WrappedFetchAdapter implements Adapter {
   protected readonly logger = getLoggerFor(this);
@@ -28,17 +32,15 @@ export class WrappedFetchAdapter implements Adapter {
   public async find(id: string): Promise<AdapterPayload | void> {
     const payload = await this.source.find(id);
 
-    // If we're looking up a Client and the Client is undefined, check to
-    // see if it's a valid Client WebId
+    // No payload is stored for the given WebId.
+    // Try to see if a solid:oidcRegistration triple is stored at the WebId that can be used instead.
     if (!payload && this.name === 'Client') {
       this.logger.debug(`Looking for payload data at ${id}`);
       let dataset: Dataset;
       try {
-        // Fetch and parse the Client WebId document
         dataset = await fetchDataset(id);
       } catch {
         this.logger.debug(`Looking for payload data failed at ${id}`);
-        // If an error is thrown, return the original payload
         return payload;
       }
 
@@ -56,7 +58,7 @@ export class WrappedFetchAdapter implements Adapter {
       this.logger.debug(`No payload data was found at ${id}`);
     }
 
-    // Will also be returned if no valid registration data was found
+    // Will also be returned if no valid registration data was found above
     return payload;
   }
 

@@ -7,7 +7,7 @@ import { guardedStreamFrom } from '../../../../../../src/util/StreamUtil';
  * and a matching content-type header.
  * @param data - Object to encode.
  */
-export function createRequest(data: NodeJS.Dict<any>): HttpRequest {
+export function createPostFormRequest(data: NodeJS.Dict<any>): HttpRequest {
   const request = guardedStreamFrom(stringify(data)) as HttpRequest;
   request.headers = { 'content-type': 'application/x-www-form-urlencoded' };
   return request;

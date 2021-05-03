@@ -70,6 +70,7 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
 | `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
 | `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |
+| `--idpTemplateFolder` | `"templates/idp"` | Folder containing the templates used for IDP interactions. |
 
 ### Installing and running locally
 
@@ -236,8 +237,8 @@ Common usage:
     In your running community server, you could create `http://localhost:3000/profile/card`
     with the following content:
     ```turtle
-    prefix : <#>
-    prefix solid: <http://www.w3.org/ns/solid/terms#>
+    PREFIX : <#>
+    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
 
     :me solid:oidcIssuer <http://localhost:3000/> .
     ```
@@ -252,6 +253,6 @@ Common usage:
       :me solid:oidcIssuerRegistrationToken "IDP_TOKEN" .
     }
     ```
-5. Once logged in, you get redirected to your client app, running for example on
+5. Once logged in, you are redirected to your client app, running for example on
    `http://localhost:3001/`.
 6. You're now authenticated and can fetch public and private resources.

@@ -1,7 +1,6 @@
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
-import { trimTrailingSlashes } from '../../util/PathUtil';
 import type { AdapterFactory } from './AdapterFactory';
 
 export interface ExpiringAdapterArgs {
@@ -10,7 +9,7 @@ export interface ExpiringAdapterArgs {
 }
 
 /**
- * An IdP storage adapter that uses an ExpiringStorage
+ * An IDP storage adapter that uses an ExpiringStorage
  * to persist data.
  */
 export class ExpiringAdapter implements Adapter {
@@ -22,7 +21,7 @@ export class ExpiringAdapter implements Adapter {
 
   public constructor(name: string, args: ExpiringAdapterArgs) {
     this.name = name;
-    this.storageName = trimTrailingSlashes(args.storageName);
+    this.storageName = args.storageName;
     this.storage = args.storage;
   }
 

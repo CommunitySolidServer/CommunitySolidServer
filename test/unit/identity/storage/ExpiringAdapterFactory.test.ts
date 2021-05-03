@@ -6,8 +6,8 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 describe('An ExpiringAdapterFactory', (): void => {
   const storageName = '/storage';
   const name = 'nnaammee';
-  const id = 'id!';
-  const grantId = 'grantId!';
+  const id = 'http://alice.test.com/card#me';
+  const grantId = 'grant123456';
   let payload: AdapterPayload;
   let storage: ExpiringStorage<string, unknown>;
   let adapter: ExpiringAdapter;

@@ -72,7 +72,6 @@
       }
     },
     {
-      "comment": "We need a value for this handler",
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "UnsupportedAsyncHandler"
     },

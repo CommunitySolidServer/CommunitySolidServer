@@ -39,7 +39,7 @@
       "baseUrl": {
         "@id": "urn:solid-server:default:variable:baseUrl"
       },
-      "idpPathName": "idp",
+      "idpPath": "/idp",
       "storage": {
         "@id": "urn:solid-server:default:IdpStorage"
       }

@@ -3,9 +3,8 @@ import { joinFilePath } from '../../../util/PathUtil';
 import { TemplateRenderer } from './TemplateRenderer';
 
 /**
- * Renders options using a given EJS template location and
- * returns the result as a string. This is good for rendering
- * emails.
+ * Renders options using a given EJS template location and returns the result as a string.
+ * This is useful for rendering emails.
  */
 export class EjsTemplateRenderer<T> extends TemplateRenderer<T> {
   private readonly templatePath: string;

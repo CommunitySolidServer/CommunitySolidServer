@@ -27,7 +27,7 @@
       "@type": "Variable"
     },
     {
-      "@id": "urn:solid-server:default:variable:webViewsFolder",
+      "@id": "urn:solid-server:default:variable:idpTemplateFolder",
       "@type": "Variable"
     }
   ]

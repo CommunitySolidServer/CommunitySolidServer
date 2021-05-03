@@ -8,8 +8,8 @@ jest.mock('ejs');
 describe('An EjsTemplateRenderer', (): void => {
   const templatePath = '/var/templates/';
   const templateFile = 'template.ejs';
-  const options = 'options!';
-  const renderer = new EjsTemplateRenderer<string>(templatePath, templateFile);
+  const options: Record<string, string> = { email: 'alice@test.email', webId: 'http://alice.test.com/card#me' };
+  const renderer = new EjsTemplateRenderer<Record<string, string>>(templatePath, templateFile);
 
   it('renders the given file with the given options.', async(): Promise<void> => {
     await expect(renderer.handle(options)).resolves.toBeUndefined();

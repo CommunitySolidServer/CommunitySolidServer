@@ -9,8 +9,14 @@ import { IdpInteractionError } from '../util/IdpInteractionError';
  * @param error - Error to create an IdPInteractionError from.
  * @param prefilled - Prefilled data for IdpInteractionError.
  */
-export function throwIdpInteractionError(error: unknown, prefilled: any): never {
-  if (HttpError.isInstance(error)) {
+export function throwIdpInteractionError(error: unknown, prefilled?: any): never {
+  if (IdpInteractionError.isInstance(error)) {
+    if (prefilled) {
+      throw new IdpInteractionError(error.statusCode, error.message, { ...error.prefilled, ...prefilled });
+    } else {
+      throw error;
+    }
+  } else if (HttpError.isInstance(error)) {
     throw new IdpInteractionError(error.statusCode, error.message, prefilled);
   } else if (isNativeError(error)) {
     throw new IdpInteractionError(500, error.message, prefilled);
@@ -26,13 +32,13 @@ export function throwIdpInteractionError(error: unknown, prefilled: any): never 
  * @param confirmPassword - Confirmation of password to match.
  */
 export function assertPassword(password: any, confirmPassword: any): asserts password is string {
-  assert(password && typeof password === 'string', 'Password required');
+  assert(typeof password === 'string' && password.length > 0, 'Password required');
   assert(
-    confirmPassword && typeof confirmPassword === 'string',
-    'Confirm Password required',
+    typeof confirmPassword === 'string' && confirmPassword.length > 0,
+    'Password confirmation required',
   );
   assert(
     password === confirmPassword,
-    'Password and confirm password do not match',
+    'Password and confirmation do not match',
   );
 }

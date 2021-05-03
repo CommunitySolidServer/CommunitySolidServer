@@ -6,7 +6,7 @@ import { IdpInteractionError } from './IdpInteractionError';
 import type { IdpRenderHandler } from './IdpRenderHandler';
 
 /**
- * Handles an Idp interaction route. All routes need to extract interaction details to render
+ * Handles an IDP interaction route. All routes need to extract interaction details to render
  * the UI and accept a POST request to do some action.
  */
 export class IdpRouteController extends RouterHandler {

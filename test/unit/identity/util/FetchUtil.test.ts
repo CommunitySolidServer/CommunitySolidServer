@@ -10,7 +10,7 @@ describe('FetchUtil', (): void => {
     const fetchMock: jest.Mock = fetch as any;
     const url = 'http://test.com/foo';
     let datasetResponse: DatasetResponse<Dataset>;
-    const dataset: Dataset = 'dataset!' as any;
+    const dataset: Dataset = {} as any;
 
     beforeEach(async(): Promise<void> => {
       datasetResponse = {

@@ -4,8 +4,8 @@ import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
 describe('An InteractionCompleter', (): void => {
-  const request: HttpRequest = 'request!' as any;
-  const response: HttpResponse = 'response!' as any;
+  const request: HttpRequest = {} as any;
+  const response: HttpResponse = {} as any;
   const webId = 'http://alice.test.com/#me';
   let provider: Provider;
   const completer = new InteractionCompleter();

@@ -1,6 +1,7 @@
-import type { Configuration } from 'oidc-provider';
+import type { interactionPolicy, Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ConfigurationFactory } from '../../../src/identity/configuration/ConfigurationFactory';
 import { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
+import type { InteractionPolicy } from '../../../src/identity/interaction/InteractionPolicy';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 
 jest.mock('oidc-provider', (): any => ({
@@ -9,7 +10,12 @@ jest.mock('oidc-provider', (): any => ({
 }));
 
 describe('An IdentityProviderFactory', (): void => {
-  const issuer = 'issuer!';
+  const issuer = 'http://test.com/';
+  const idpPolicy: InteractionPolicy = {
+    policy: [ 'prompt' as unknown as interactionPolicy.Prompt ],
+    url: (ctx: KoaContextWithOIDC): string => `/idp/interaction/${ctx.oidc.uid}`,
+  };
+  const webId = 'http://alice.test.com/card#me';
   let configuration: any;
   let errorResponseWriter: ResponseWriter;
   let factory: IdentityProviderFactory;
@@ -28,13 +34,13 @@ describe('An IdentityProviderFactory', (): void => {
   });
 
   it('has fixed default values.', async(): Promise<void> => {
-    const result = await factory.createProvider({ policy: 'policy!', url: 'url!' } as any) as any;
+    const result = await factory.createProvider(idpPolicy) as any;
     expect(result.issuer).toBe(issuer);
-    expect(result.config.interactions).toEqual({ policy: 'policy!', url: 'url!' });
+    expect(result.config.interactions).toEqual(idpPolicy);
 
-    const findResult = await result.config.findAccount({}, 'sub!');
-    expect(findResult.accountId).toBe('sub!');
-    await expect(findResult.claims()).resolves.toEqual({ sub: 'sub!', webid: 'sub!' });
+    const findResult = await result.config.findAccount({}, webId);
+    expect(findResult.accountId).toBe(webId);
+    await expect(findResult.claims()).resolves.toEqual({ sub: webId, webid: webId });
 
     expect(result.config.claims).toEqual({ webid: [ 'webid', 'client_webid' ]});
     expect(result.config.conformIdTokenClaims).toBe(false);
@@ -51,9 +57,9 @@ describe('An IdentityProviderFactory', (): void => {
     expect(result.config.audiences()).toBe('solid');
 
     expect(result.config.extraAccessTokenClaims({}, {})).toEqual({});
-    expect(result.config.extraAccessTokenClaims({}, { accountId: 'accountId!' })).toEqual({
-      webid: 'accountId!',
-      // This will need to change once the client_id issue is fixed
+    expect(result.config.extraAccessTokenClaims({}, { accountId: webId })).toEqual({
+      webid: webId,
+      // This will need to change once #718 is fixed
       // eslint-disable-next-line @typescript-eslint/naming-convention
       client_webid: 'http://localhost:3001/',
       aud: 'solid',
@@ -67,7 +73,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('overwrites fields from the factory config.', async(): Promise<void> => {
     configuration.dummy = 'value!';
     configuration.conformIdTokenClaims = true;
-    const result = await factory.createProvider({ policy: 'policy!', url: 'url!' } as any) as any;
+    const result = await factory.createProvider(idpPolicy) as any;
     expect(result.config.dummy).toBe('value!');
     expect(result.config.conformIdTokenClaims).toBe(false);
   });

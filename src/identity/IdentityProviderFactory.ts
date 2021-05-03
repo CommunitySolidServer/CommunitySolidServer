@@ -11,7 +11,9 @@ import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import type { ConfigurationFactory } from './configuration/ConfigurationFactory';
 
 /**
- * Creates an identity provider
+ * Creates a Provider from the oidc-provider library.
+ * This can be used for handling many of the oidc interactions during the IDP process.
+ * Full documentation can be found at https://github.com/panva/node-oidc-provider/blob/v6.x/docs/README.md
  */
 export class IdentityProviderFactory {
   private readonly issuer: string;

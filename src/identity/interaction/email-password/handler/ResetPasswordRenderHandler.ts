@@ -6,8 +6,7 @@ export interface ResetPasswordRenderHandlerProps {
 }
 
 /**
- * A special render handler for the Reset Password form that
- * includes the required props for rendering the reset password
- * form.
+ * A special {@link RenderHandler} for the Reset Password form
+ * that includes the required props for rendering the reset password form.
  */
 export abstract class ResetPasswordRenderHandler extends RenderHandler<ResetPasswordRenderHandlerProps> {}

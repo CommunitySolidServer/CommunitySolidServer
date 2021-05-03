@@ -10,8 +10,9 @@ import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
 describe('An IdpRouteController', (): void => {
   let request: HttpRequest;
-  const response: HttpResponse = 'response!' as any;
-  const details: any = 'details!';
+  const response: HttpResponse = {} as any;
+  // `Interaction` type is not exposed
+  const details = {} as any;
   let provider: Provider;
   let renderHandler: IdpRenderHandler;
   let postHandler: HttpHandler;
