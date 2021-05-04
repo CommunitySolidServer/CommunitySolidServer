@@ -8,6 +8,10 @@
   ],
   "@graph": [
     {
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "UnsupportedAsyncHandler"
+    },
+    {
       "@id": "urn:solid-server:default:PodManagerHandler",
       "@type": "Variable"
     },

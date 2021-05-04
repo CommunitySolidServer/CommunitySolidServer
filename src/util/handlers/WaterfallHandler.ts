@@ -99,7 +99,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
     const message = `No handler supports the given input: [${joined}]`;
 
     // Check if all errors have the same status code
-    if (errors.every((error): boolean => error.statusCode === errors[0].statusCode)) {
+    if (errors.length > 0 && errors.every((error): boolean => error.statusCode === errors[0].statusCode)) {
       throw new HttpError(errors[0].statusCode, errors[0].name, message);
     }
 

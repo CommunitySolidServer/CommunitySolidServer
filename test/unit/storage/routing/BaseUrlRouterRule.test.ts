@@ -1,25 +1,17 @@
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BaseUrlRouterRule } from '../../../../src/storage/routing/BaseUrlRouterRule';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('A BaseUrlRouterRule', (): void => {
-  let stores: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  let stores: KeyValueStorage<string, ResourceStore>;
   const baseStore = 'baseStore!' as any;
   const aliceIdentifier = { path: 'http://alice.test.com/' };
   const aliceStore = 'aliceStore!' as any;
   let rule: BaseUrlRouterRule;
 
   beforeEach(async(): Promise<void> => {
-    const map = new Map([[ aliceIdentifier.path, aliceStore ]]);
-    stores = {
-      * entries(): any {
-        for (const [ path, val ] of map.entries()) {
-          yield [{ path }, val ];
-        }
-      },
-    } as any;
+    stores = new Map([[ aliceIdentifier.path, aliceStore ]]) as any;
 
     rule = new BaseUrlRouterRule(stores, baseStore);
   });

@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The default configuration does not contain credentials for an email client. In production systems, you likely want to set up your own.",
+      "@id": "urn:solid-server:default:EmailSender",
+      "@type": "UnsupportedAsyncHandler"
+    }
+  ]
+}

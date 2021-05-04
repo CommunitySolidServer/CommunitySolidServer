@@ -15,6 +15,54 @@ export * from './authorization/AuxiliaryAuthorizer';
 export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
+// Identity/Configuration
+export * from './identity/configuration/ConfigurationFactory';
+export * from './identity/configuration/KeyConfigurationFactory';
+
+// Identity/Interaction/Email-Password/Handler
+export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/LoginHandler';
+export * from './identity/interaction/email-password/handler/RegistrationHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordRenderHandler';
+export * from './identity/interaction/email-password/handler/ResetPasswordViewHandler';
+
+// Identity/Interaction/Email-Password/Storage
+export * from './identity/interaction/email-password/storage/AccountStore';
+export * from './identity/interaction/email-password/storage/BaseAccountStore';
+
+// Identity/Interaction/Email-Password
+export * from './identity/interaction/email-password/AccountInteractionPolicy';
+export * from './identity/interaction/email-password/EmailPasswordUtil';
+
+// Identity/Interaction/Util
+export * from './identity/interaction/util/BaseEmailSender';
+export * from './identity/interaction/util/EjsTemplateRenderer';
+export * from './identity/interaction/util/EmailSender';
+export * from './identity/interaction/util/FormDataUtil';
+export * from './identity/interaction/util/IdpInteractionError';
+export * from './identity/interaction/util/IdpRenderHandler';
+export * from './identity/interaction/util/IdpRouteController';
+export * from './identity/interaction/util/InitialInteractionHandler';
+export * from './identity/interaction/util/InteractionCompleter';
+export * from './identity/interaction/util/IssuerOwnershipValidator';
+export * from './identity/interaction/util/OwnershipValidator';
+export * from './identity/interaction/util/TemplateRenderer';
+
+// Identity/Interaction
+export * from './identity/interaction/InteractionHttpHandler';
+export * from './identity/interaction/InteractionPolicy';
+export * from './identity/interaction/SessionHttpHandler';
+
+// Identity/Storage
+export * from './identity/storage/AdapterFactory';
+export * from './identity/storage/ExpiringAdapterFactory';
+export * from './identity/storage/WrappedFetchAdapterFactory';
+
+// Identity
+export * from './identity/IdentityProviderFactory';
+export * from './identity/IdentityProviderHttpHandler';
+
 // Init
 export * from './init/AclInitializer';
 export * from './init/AppRunner';
@@ -155,6 +203,11 @@ export * from './server/middleware/HeaderHandler';
 export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
+// Server/Util
+export * from './server/util/RenderEjsHandler';
+export * from './server/util/RenderHandler';
+export * from './server/util/RouterHandler';
+
 // Storage/Accessors
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
@@ -173,12 +226,13 @@ export * from './storage/conversion/RdfToQuadConverter';
 export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
-// Storage/KeyValueStorage
+// Storage/KeyValue
+export * from './storage/keyvalue/ExpiringStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
 export * from './storage/keyvalue/KeyValueStorage';
 export * from './storage/keyvalue/MemoryMapStorage';
-export * from './storage/keyvalue/ResourceIdentifierStorage';
+export * from './storage/keyvalue/WrappedExpiringStorage';
 
 // Storage/Mapping
 export * from './storage/mapping/BaseFileIdentifierMapper';

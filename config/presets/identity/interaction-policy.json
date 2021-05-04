@@ -1,0 +1,224 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The storage adapter that persists usernames, passwords, etc.",
+      "@id": "urn:solid-server:auth:password:AccountStore",
+      "@type": "BaseAccountStore",
+      "args_storageName": "/idp/email-password-db",
+      "args_saltRounds": 10,
+      "args_storage": {
+        "@id": "urn:solid-server:default:IdpStorage"
+      }
+    },
+    {
+      "comment": "Responsible for completing an OIDC interaction after login or registration",
+      "@id": "urn:solid-server:auth:password:InteractionCompleter",
+      "@type": "InteractionCompleter"
+    },
+    {
+      "comment": "Renders the login page",
+      "@id": "urn:solid-server:auth:password:LoginRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/login.ejs"
+    },
+    {
+      "comment": "Renders the register page",
+      "@id": "urn:solid-server:auth:password:RegisterRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/register.ejs"
+    },
+    {
+      "comment": "Renders the forgot password page",
+      "@id": "urn:solid-server:auth:password:ForgotPasswordRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/forgotPassword.ejs"
+    },
+    {
+      "comment": "Renders the reset password page",
+      "@id": "urn:solid-server:auth:password:ResetPasswordRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/resetPassword.ejs"
+    },
+    {
+      "comment": "Renders the Email Sent message page",
+      "@id": "urn:solid-server:auth:password:EmailSentRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/emailSent.ejs"
+    },
+    {
+      "comment": "Renders a generic page that says a message",
+      "@id": "urn:solid-server:auth:password:MessageRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": {
+        "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+      },
+      "templateFile": "./email-password-interaction/message.ejs"
+    },
+    {
+      "comment": "Http handler to take care of all routing on for the email password interaction",
+      "@id": "urn:solid-server:auth:password:InteractionHttpHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "comment": "Handles the initial route when the user is directed from their app to the IdP",
+          "@type": "RouterHandler",
+          "allowedMethods": [ "GET" ],
+          "allowedPathNames": [ "^/idp/interaction/[-_A-Za-z0-9]+/?$" ],
+          "handler": {
+            "@type": "InitialInteractionHandler",
+            "renderHandlerMap": [
+              {
+                "InitialInteractionHandler:_renderHandlerMap_key": "consent",
+                "InitialInteractionHandler:_renderHandlerMap_value": {
+                  "@type": "RenderEjsHandler",
+                  "templatePath": {
+                    "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+                  },
+                  "templateFile": "./email-password-interaction/confirm.ejs"
+                }
+              }
+            ],
+            "renderHandlerMap_default": {
+              "@id": "urn:solid-server:auth:password:LoginRenderHandler"
+            }
+          }
+        },
+        {
+          "comment": "Handles all functionality on the register page",
+          "@type": "IdpRouteController",
+          "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/register/?$",
+          "postHandler": {
+            "@type": "RegistrationHandler",
+            "args_ownershipValidator": {
+              "@type": "IssuerOwnershipValidator",
+              "issuer": {
+                "@id": "urn:solid-server:default:variable:baseUrl"
+              }
+            },
+            "args_accountStore": {
+              "@id": "urn:solid-server:auth:password:AccountStore"
+            },
+            "args_interactionCompleter": {
+              "@id": "urn:solid-server:auth:password:InteractionCompleter"
+            }
+          },
+          "renderHandler": {
+            "@id": "urn:solid-server:auth:password:RegisterRenderHandler"
+          }
+        },
+        {
+          "comment": "Handles all functionality on the Login Page",
+          "@type": "IdpRouteController",
+          "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/login/?$",
+          "postHandler": {
+            "@type": "LoginHandler",
+            "args_accountStore": {
+              "@id": "urn:solid-server:auth:password:AccountStore"
+            },
+            "args_interactionCompleter": {
+              "@id": "urn:solid-server:auth:password:InteractionCompleter"
+            }
+          },
+          "renderHandler": {
+            "@id": "urn:solid-server:auth:password:LoginRenderHandler"
+          }
+        },
+        {
+          "comment": "Handles confirm requests",
+          "@type": "RouterHandler",
+          "allowedMethods": [ "POST" ],
+          "allowedPathNames": [ "^/idp/interaction/[-_A-Za-z0-9]+/confirm/?$" ],
+          "handler": {
+            "@type": "SessionHttpHandler",
+            "interactionCompleter": {
+              "@id": "urn:solid-server:auth:password:InteractionCompleter"
+            }
+          }
+        },
+        {
+          "comment": "Handles all functionality on the forgot password page",
+          "@type": "IdpRouteController",
+          "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/forgotpassword/?$",
+          "postHandler": {
+            "@type": "ForgotPasswordHandler",
+            "args_messageRenderHandler": {
+              "@id": "urn:solid-server:auth:password:EmailSentRenderHandler"
+            },
+            "args_accountStore": {
+              "@id": "urn:solid-server:auth:password:AccountStore"
+            },
+            "args_baseUrl": {
+              "@id": "urn:solid-server:default:variable:baseUrl"
+            },
+            "args_idpPath": "/idp",
+            "args_emailTemplateRenderer": {
+              "@type": "EjsTemplateRenderer",
+              "templatePath": {
+                "@id": "urn:solid-server:default:variable:idpTemplateFolder"
+              },
+              "templateFile": "./email-password-interaction/resetPasswordEmail.ejs"
+            },
+            "args_emailSender": {
+              "@id": "urn:solid-server:default:EmailSender"
+            }
+          },
+          "renderHandler": {
+            "@id": "urn:solid-server:auth:password:ForgotPasswordRenderHandler"
+          }
+        },
+        {
+          "comment": "Renders the reset password page",
+          "@type": "RouterHandler",
+          "allowedMethods": [ "GET" ],
+          "allowedPathNames": [ "^/idp/resetpassword/?$" ],
+          "handler": {
+            "@type": "ResetPasswordViewHandler",
+            "renderHandler": {
+              "@id": "urn:solid-server:auth:password:ResetPasswordRenderHandler"
+            }
+          }
+        },
+        {
+          "comment": "Handles the reset password page submission",
+          "@type": "RouterHandler",
+          "allowedMethods": [ "POST" ],
+          "allowedPathNames": [ "^/idp/resetpassword/?$" ],
+          "handler": {
+            "@type": "ResetPasswordHandler",
+            "args_accountStore": {
+              "@id": "urn:solid-server:auth:password:AccountStore"
+            },
+            "args_renderHandler": {
+              "@id": "urn:solid-server:auth:password:ResetPasswordRenderHandler"
+            },
+            "args_messageRenderHandler": {
+              "@id": "urn:solid-server:auth:password:MessageRenderHandler"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "comment": "Sets up the email password interaction policy",
+      "@id": "urn:solid-server:auth:password:AccountInteractionPolicy",
+      "@type": "AccountInteractionPolicy",
+      "idpPath": "/idp"
+    }
+  ]
+}

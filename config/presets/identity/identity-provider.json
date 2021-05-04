@@ -1,0 +1,84 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:IdpStorage",
+      "@type": "JsonResourceStorage",
+      "source": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      },
+      "baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "container": "/idp/data/"
+    },
+    {
+      "@id": "urn:solid-server:default:ExpiringIdpStorage",
+      "@type": "WrappedExpiringStorage",
+      "source": {
+        "@id": "urn:solid-server:default:IdpStorage"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdpAdapterFactory",
+      "@type": "WrappedFetchAdapterFactory",
+      "source": {
+        "@type": "ExpiringAdapterFactory",
+        "args_storageName": "/idp/oidc",
+        "args_storage": {
+          "@id": "urn:solid-server:default:ExpiringIdpStorage"
+        }
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdpConfigurationFactory",
+      "@type": "KeyConfigurationFactory",
+      "adapterFactory": {
+        "@id": "urn:solid-server:default:IdpAdapterFactory"
+      },
+      "baseUrl": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "idpPath": "/idp",
+      "storage": {
+        "@id": "urn:solid-server:default:IdpStorage"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentityProviderFactory",
+      "@type": "IdentityProviderFactory",
+      "issuer": {
+        "@id": "urn:solid-server:default:variable:baseUrl"
+      },
+      "configurationFactory": {
+        "@id": "urn:solid-server:default:IdpConfigurationFactory"
+      },
+      "errorResponseWriter": {
+        "@type": "ErrorResponseWriter"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+      "@type": "IdentityProviderHttpHandler",
+      "providerFactory": {
+        "@id": "urn:solid-server:default:IdentityProviderFactory"
+      },
+      "interactionPolicy": {
+        "@id": "urn:solid-server:auth:password:AccountInteractionPolicy"
+      },
+      "interactionHttpHandler": {
+        "@id": "urn:solid-server:auth:password:InteractionHttpHandler"
+      },
+      "errorResponseWriter": {
+        "@type": "ErrorResponseWriter"
+      }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "RouterHandler",
+      "allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
+      "handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+    }
+  ]
+}

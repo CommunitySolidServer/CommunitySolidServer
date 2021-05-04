@@ -70,6 +70,7 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
 | `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
 | `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |
+| `--idpTemplateFolder` | `"templates/idp"` | Folder containing the templates used for IDP interactions. |
 
 ### Installing and running locally
 
@@ -203,3 +204,55 @@ Common usage:
   ```shell
   docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
   ```
+
+## Using the identity provider
+
+1. Launch the Community Solid Server:
+    ```bash
+    git clone git@github.com:solid/community-server.git
+    cd community-server
+    npm ci
+    npm start
+    ```
+2. To use the identity provider, you need a compatible client application.
+
+    You can use for example `@inrupt/solid-client-authn-js`:
+
+    ```bash
+    git clone https://github.com/inrupt/solid-client-authn-js
+    cd solid-client-authn-js
+    npm ci
+    cd packages/node/example/demoClientApp/
+    npm ci
+    npm start
+    ```
+
+    Go to `http://localhost:3001`.
+3. Use the base URL of your running CSS instance to as Identity provider, for
+   example `http://localhost:3000`, to fill the form. Click the `login` button.
+4. Follow the instructions to register/login/...
+
+    A WebID hosted in your pod will be required to complete registration.
+    
+    In your running community server, you could create `http://localhost:3000/profile/card`
+    with the following content:
+    ```turtle
+    PREFIX : <#>
+    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+
+    :me solid:oidcIssuer <http://localhost:3000/> .
+    ```
+
+    When registering, follow the on screen instructions and add the OIDC issuer
+    registration token to your WebID, which you can do for example by PATCHing
+    `http://localhost:3000/profile/card` with:
+    ```turtle
+    PREFIX : <#>
+    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+    INSERT DATA {
+      :me solid:oidcIssuerRegistrationToken "IDP_TOKEN" .
+    }
+    ```
+5. Once logged in, you are redirected to your client app, running for example on
+   `http://localhost:3001/`.
+6. You're now authenticated and can fetch public and private resources.

@@ -126,10 +126,7 @@
           "RedisResourceLocker:_redisClients": [ "6379" ]
         },
         "GreedyReadWriteLocker:_storage": {
-          "@type": "ResourceIdentifierStorage",
-          "ResourceIdentifierStorage:_source": {
-            "@type": "MemoryMapStorage"
-          }
+          "@type": "MemoryMapStorage"
         },
         "GreedyReadWriteLocker:_suffixes_count": "count",
         "GreedyReadWriteLocker:_suffixes_read": "read",
@@ -137,7 +134,6 @@
       },
       "WrappedExpiringReadWriteLocker:_expiration": 3000
     },
-
 
     {
       "@id": "urn:solid-server:default:ResourceStore_ToTurtle",
@@ -163,6 +159,11 @@
       "RepresentationConvertingStore:_options_outConverter": {
         "@id": "urn:solid-server:default:RepresentationConverter"
       }
+    },
+
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "UnsupportedAsyncHandler"
     }
   ]
 }

@@ -30,7 +30,7 @@ export interface PodSettings extends NodeJS.Dict<string> {
    */
   oidcIssuer?: string;
   /**
-   * A registration token for linking the owner's WebId to an IdP.
+   * A registration token for linking the owner's WebId to an IDP.
    */
   oidcIssuerRegistrationToken?: string;
 }

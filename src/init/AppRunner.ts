@@ -74,6 +74,7 @@ export class AppRunner {
         config: { type: 'string', alias: 'c' },
         loggingLevel: { type: 'string', alias: 'l', default: 'info' },
         mainModulePath: { type: 'string', alias: 'm' },
+        idpTemplateFolder: { type: 'string' },
         port: { type: 'number', alias: 'p', default: 3000 },
         rootFilePath: { type: 'string', alias: 'f', default: './' },
         sparqlEndpoint: { type: 'string', alias: 's' },
@@ -130,6 +131,8 @@ export class AppRunner {
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:podConfigJson':
         this.resolveFilePath(params.podConfigJson),
+      'urn:solid-server:default:variable:idpTemplateFolder':
+         this.resolveFilePath(params.idpTemplateFolder, 'templates/idp'),
     };
   }
 
@@ -156,4 +159,5 @@ export interface ConfigVariables {
   rootFilePath?: string;
   sparqlEndpoint?: string;
   podConfigJson?: string;
+  idpTemplateFolder?: string;
 }

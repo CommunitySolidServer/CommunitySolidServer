@@ -2,6 +2,7 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
@@ -12,6 +13,7 @@ const baseUrl = `http://localhost:${port}/`;
 describe('A Solid server', (): void => {
   let server: Server;
   let initializer: Initializer;
+  let expiringStorage: WrappedExpiringStorage<any, any>;
   let factory: HttpServerFactory;
 
   beforeAll(async(): Promise<void> => {
@@ -19,15 +21,17 @@ describe('A Solid server', (): void => {
       'urn:solid-server:test:Instances', 'server-memory.json', {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
+        'urn:solid-server:default:variable:idpTemplateFolder': '',
       },
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ factory, initializer, expiringStorage } = instances);
     await initializer.handleSafe();
     server = factory.startServer(port);
   });
 
   afterAll(async(): Promise<void> => {
-    await new Promise((resolve, reject): void => {
+    expiringStorage.finalize();
+    await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
   });

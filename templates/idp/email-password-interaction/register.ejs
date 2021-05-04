@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="/idp/style.css">
+  </head>
+  <body>
+    <div class="main-content">
+      <section class="main-content-section">
+        <div class="wrapper">
+          <h1 class="title--white">Register</h1>
+          <div class="login-panel">
+            <div class="panel-body">
+              <form autocomplete="off" action="<%= details.pathPrefix %>/idp/interaction/<%= details.uid %>/register" method="post">
+
+                <%if (errorMessage) { %>
+                  <div class="input-wrap">
+                    <label style="color: #D0021B">
+                      <%= errorMessage %>
+                    </label>
+                  </div>
+                <% } %>
+
+                <div class="input-wrap">
+                  <label for="email">Email:</label>
+                  <input id="email" type="text" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %> />
+                </div>
+
+                <div class="input-wrap">
+                  <label for="webId">WebId:</label>
+                  <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
+                </div>
+
+                <div class="input-wrap">
+                  <label for="password">Password:</label>
+                  <input id="password" type="password" name="password" />
+                </div>
+
+                <div class="input-wrap">
+                  <label for="confirmPassword">Confirm Password:</label>
+                  <input id="confirmPassword" type="password" name="confirmPassword" />
+                </div>
+
+                <div class="input-wrap">
+                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
+                </div>
+
+                <button type="submit" name="submit" class="ids-link-filled">Create Identity</button>
+
+                <hr />
+                <div class="space-between">
+                  <a href="<%= details.pathPrefix %>/idp/interaction/<%= details.uid %>/login" class="link">Sign In</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

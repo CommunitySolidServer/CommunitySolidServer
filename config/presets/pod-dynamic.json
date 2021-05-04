@@ -17,10 +17,7 @@
     },
     {
       "@id": "urn:solid-server:default:PodRoutingStorage",
-      "@type": "ResourceIdentifierStorage",
-      "source": {
-        "@type": "MemoryMapStorage"
-      }
+      "@type": "MemoryMapStorage"
     },
 
     {

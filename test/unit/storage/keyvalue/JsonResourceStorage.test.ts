@@ -1,27 +1,37 @@
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { readableToString } from '../../../../src/util/StreamUtil';
+import { LDP } from '../../../../src/util/Vocabularies';
 
 describe('A JsonResourceStorage', (): void => {
-  const identifier1: ResourceIdentifier = { path: 'http://test.com/foo' };
-  const identifier2: ResourceIdentifier = { path: 'http://test.com/bar' };
+  const baseUrl = 'http://test.com/';
+  const container = '/data/';
+  const identifier1 = 'http://test.com/foo';
+  const identifier2 = 'http://test.com/bar';
   let store: ResourceStore;
   let storage: JsonResourceStorage;
 
   beforeEach(async(): Promise<void> => {
     const data: Record<string, string> = { };
     store = {
+      async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+        return Boolean(data[identifier.path]);
+      },
       async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
+        // Simulate container metadata
+        if (identifier.path === 'http://test.com/data/') {
+          const metadata = new RepresentationMetadata({ [LDP.contains]: Object.keys(data) });
+          return new BasicRepresentation('', metadata);
+        }
         if (!data[identifier.path]) {
           throw new NotFoundHttpError();
-        } else {
-          return new BasicRepresentation(data[identifier.path], identifier);
         }
+        return new BasicRepresentation(data[identifier.path], identifier);
       },
       async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
         data[identifier.path] = await readableToString(representation.data);
@@ -35,7 +45,7 @@ describe('A JsonResourceStorage', (): void => {
       },
     } as any;
 
-    storage = new JsonResourceStorage(store);
+    storage = new JsonResourceStorage(store, baseUrl, container);
   });
 
   it('returns undefined if there is no matching data.', async(): Promise<void> => {
@@ -45,7 +55,7 @@ describe('A JsonResourceStorage', (): void => {
   it('returns data if it was set beforehand.', async(): Promise<void> => {
     await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
     await expect(storage.get(identifier1)).resolves.toBe('apple');
-    expect(storage.entries).toThrow(NotImplementedHttpError);
+    await expect(storage.entries().next()).resolves.toEqual({ done: false, value: [ identifier1, 'apple' ]});
   });
 
   it('can check if data is present.', async(): Promise<void> => {
@@ -73,11 +83,10 @@ describe('A JsonResourceStorage', (): void => {
   });
 
   it('re-throws errors thrown by the store.', async(): Promise<void> => {
-    store.getRepresentation = jest.fn().mockRejectedValue(new Error('bad GET'));
+    store.getRepresentation = jest.fn().mockRejectedValueOnce(new Error('bad GET'));
     await expect(storage.get(identifier1)).rejects.toThrow('bad GET');
-    await expect(storage.has(identifier1)).rejects.toThrow('bad GET');
 
-    store.deleteResource = jest.fn().mockRejectedValue(new Error('bad DELETE'));
+    store.deleteResource = jest.fn().mockRejectedValueOnce(new Error('bad DELETE'));
     await expect(storage.delete(identifier1)).rejects.toThrow('bad DELETE');
   });
 });

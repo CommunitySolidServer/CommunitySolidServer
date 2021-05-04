@@ -68,6 +68,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:sparqlEndpoint': undefined,
             'urn:solid-server:default:variable:loggingLevel': 'info',
             'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+            'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../../templates/idp'),
           },
         },
       );
@@ -107,6 +108,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:sparqlEndpoint': undefined,
             'urn:solid-server:default:variable:loggingLevel': 'info',
             'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+            'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../../templates/idp'),
           },
         },
       );
@@ -126,6 +128,7 @@ describe('AppRunner', (): void => {
           '-p', '4000',
           '-s', 'http://localhost:5000/sparql',
           '--podConfigJson', '/different-path.json',
+          '--idpTemplateFolder', 'templates/idp',
         ],
       });
 
@@ -152,6 +155,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:rootFilePath': '/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
+            'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
         },
       );
@@ -169,6 +173,7 @@ describe('AppRunner', (): void => {
           '--rootFilePath', 'root',
           '--sparqlEndpoint', 'http://localhost:5000/sparql',
           '--podConfigJson', '/different-path.json',
+          '--idpTemplateFolder', 'templates/idp',
         ],
       });
 
@@ -195,6 +200,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
+            'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
         },
       );
@@ -212,6 +218,7 @@ describe('AppRunner', (): void => {
         '-p', '4000',
         '-s', 'http://localhost:5000/sparql',
         '--podConfigJson', '/different-path.json',
+        '--idpTemplateFolder', 'templates/idp',
       ];
 
       new AppRunner().runCli();
@@ -239,6 +246,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:rootFilePath': '/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
+            'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
         },
       );

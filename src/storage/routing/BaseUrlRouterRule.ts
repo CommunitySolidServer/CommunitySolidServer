@@ -15,9 +15,9 @@ import { RouterRule } from './RouterRule';
  */
 export class BaseUrlRouterRule extends RouterRule {
   private readonly baseStore?: ResourceStore;
-  private readonly stores: KeyValueStorage<ResourceIdentifier, ResourceStore>;
+  private readonly stores: KeyValueStorage<string, ResourceStore>;
 
-  public constructor(stores: KeyValueStorage<ResourceIdentifier, ResourceStore>, baseStore?: ResourceStore) {
+  public constructor(stores: KeyValueStorage<string, ResourceStore>, baseStore?: ResourceStore) {
     super();
     this.baseStore = baseStore;
     this.stores = stores;
@@ -39,7 +39,7 @@ export class BaseUrlRouterRule extends RouterRule {
    */
   private async findStore(identifier: ResourceIdentifier): Promise<ResourceStore> {
     for await (const [ key, store ] of this.stores.entries()) {
-      if (identifier.path.startsWith(key.path)) {
+      if (identifier.path.startsWith(key)) {
         return store;
       }
     }

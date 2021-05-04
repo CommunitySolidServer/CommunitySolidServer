@@ -26,7 +26,7 @@ export interface GreedyReadWriteSuffixes {
  */
 export class GreedyReadWriteLocker implements ReadWriteLocker {
   private readonly locker: ResourceLocker;
-  private readonly storage: KeyValueStorage<ResourceIdentifier, number>;
+  private readonly storage: KeyValueStorage<string, number>;
   private readonly suffixes: GreedyReadWriteSuffixes;
 
   /**
@@ -36,7 +36,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
    *                   `count` is used for the identifier used to store the counter.
    *                   `read` and `write` are used for the 2 types of locks that are needed.
    */
-  public constructor(locker: ResourceLocker, storage: KeyValueStorage<ResourceIdentifier, number>,
+  public constructor(locker: ResourceLocker, storage: KeyValueStorage<string, number>,
     suffixes: GreedyReadWriteSuffixes = { count: 'count', read: 'read', write: 'write' }) {
     this.locker = locker;
     this.storage = storage;
@@ -56,7 +56,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
     if (identifier.path.endsWith(`.${this.suffixes.count}`)) {
       throw new ForbiddenHttpError('This resource is used for internal purposes.');
     }
-    const write = this.getWriteLockIdentifier(identifier);
+    const write = this.getWriteLockKey(identifier);
     await this.locker.acquire(write);
     try {
       return await whileLocked();
@@ -66,23 +66,23 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
   }
 
   /**
-   * This identifier is used for storing the count of active read operations.
+   * This key is used for storing the count of active read operations.
    */
-  private getCountIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
-    return { path: `${identifier.path}.${this.suffixes.count}` };
+  private getCountKey(identifier: ResourceIdentifier): string {
+    return `${identifier.path}.${this.suffixes.count}`;
   }
 
   /**
    * This is the identifier for the read lock: the lock that is used to safely update and read the count.
    */
-  private getReadLockIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  private getReadLockKey(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: `${identifier.path}.${this.suffixes.read}` };
   }
 
   /**
    * This is the identifier for the write lock, making sure there is at most 1 write operation active.
    */
-  private getWriteLockIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  private getWriteLockKey(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: `${identifier.path}.${this.suffixes.write}` };
   }
 
@@ -94,7 +94,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
       const count = await this.incrementCount(identifier, +1);
       if (count === 1) {
         // There is at least 1 read operation so write operations are blocked
-        const write = this.getWriteLockIdentifier(identifier);
+        const write = this.getWriteLockKey(identifier);
         await this.locker.acquire(write);
       }
     });
@@ -108,7 +108,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
       const count = await this.incrementCount(identifier, -1);
       if (count === 0) {
         // All read locks have been released so a write operation is possible again
-        const write = this.getWriteLockIdentifier(identifier);
+        const write = this.getWriteLockKey(identifier);
         await this.locker.release(write);
       }
     });
@@ -119,7 +119,7 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
    */
   private async withInternalReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)):
   Promise<T> {
-    const read = this.getReadLockIdentifier(identifier);
+    const read = this.getReadLockKey(identifier);
     await this.locker.acquire(read);
     try {
       return await whileLocked();
@@ -134,14 +134,14 @@ export class GreedyReadWriteLocker implements ReadWriteLocker {
    * Deletes the data when the count reaches zero.
    */
   private async incrementCount(identifier: ResourceIdentifier, mod: number): Promise<number> {
-    const countIdentifier = this.getCountIdentifier(identifier);
-    let number = await this.storage.get(countIdentifier) ?? 0;
+    const countKey = this.getCountKey(identifier);
+    let number = await this.storage.get(countKey) ?? 0;
     number += mod;
     if (number === 0) {
       // Make sure there is no remaining data once all locks are released
-      await this.storage.delete(countIdentifier);
+      await this.storage.delete(countKey);
     } else if (number > 0) {
-      await this.storage.set(countIdentifier, number);
+      await this.storage.set(countKey, number);
     } else {
       // Failsafe in case something goes wrong with the count storage
       throw new InternalServerError('Read counter would become negative. Something is wrong with the count storage.');

@@ -195,10 +195,10 @@ describe('A RedisResourceLocker', (): void => {
     });
   });
 
-  describe('quit()', (): void => {
-    it('should clear all locks and intervals when quit() is called.', async(): Promise<void> => {
+  describe('finalize()', (): void => {
+    it('should clear all locks and intervals when finalize() is called.', async(): Promise<void> => {
       await locker.acquire(identifier);
-      await locker.quit();
+      await locker.finalize();
       expect(redlock.quit).toHaveBeenCalledTimes(1);
 
       // This works since the Redlock is simply a mock and quit should have cleared the lockMap

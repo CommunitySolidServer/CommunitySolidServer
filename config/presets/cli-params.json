@@ -25,6 +25,10 @@
       "comment": "Path to the JSON file used to store configuration for dynamic pods.",
       "@id": "urn:solid-server:default:variable:podConfigJson",
       "@type": "Variable"
+    },
+    {
+      "@id": "urn:solid-server:default:variable:idpTemplateFolder",
+      "@type": "Variable"
     }
   ]
 }

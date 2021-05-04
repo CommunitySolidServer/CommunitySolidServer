@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sign-in</title>
+    <link rel="stylesheet" href="/idp/style.css">
+  </head>
+  <body>
+    <div class="main-content">
+      <section class="main-content-section">
+        <div class="wrapper">
+          <h1 class="title--white">Email Sent</h1>
+          <div class="login-panel">
+            <div class="panel-body">
+              <form autocomplete="off" action="/idp/interaction/<%= details.uid %>/forgotpassword" method="post">
+
+                <div class="input-wrap">
+                  <p>If your account exists, an email has been sent with a link to reset your password.</p>
+                </div>
+
+                <div class="input-wrap">
+                  <p>If you do not receive your email in a couple of minutes, check your spam folder or click the link below to send another email.</p>
+                </div>
+
+                <input type="hidden" name="email" value="<%= prefilled.email %>" />
+
+                <a href="/idp/interaction/<%= details.uid %>/login" class="ids-link-filled">Back to Log In</a>
+
+                <hr />
+                <div class="space-between">
+                  <button type="submit" name="submit" class="link">Send Another Email</button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

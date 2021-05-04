@@ -30,7 +30,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
   });
 
   afterAll(async(): Promise<void> => {
-    await locker.quit();
+    await locker.finalize();
     await new Promise<void>((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
