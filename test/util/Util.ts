@@ -1,41 +1,37 @@
-import { EventEmitter } from 'events';
 import type { Stats } from 'fs';
-import type { IncomingHttpHeaders } from 'http';
 import { PassThrough } from 'stream';
-import type { MockResponse } from 'node-mocks-http';
-import { createResponse } from 'node-mocks-http';
 import streamifyArray from 'streamify-array';
-import type { HttpHandler } from '../../src/server/HttpHandler';
-import type { HttpRequest } from '../../src/server/HttpRequest';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
-export async function performRequest(
-  handler: HttpHandler,
-  requestUrl: URL,
-  method: string,
-  headers: IncomingHttpHeaders,
-  data: string[],
-): Promise<MockResponse<any>> {
-  const request = streamifyArray(data) as HttpRequest;
-  request.url = `${requestUrl.pathname}${requestUrl.search}`;
-  request.method = method;
-  request.headers = headers;
-  request.headers.host = requestUrl.host;
-  const response: MockResponse<any> = createResponse({
-    eventEmitter: EventEmitter,
-  });
+/* eslint-disable @typescript-eslint/naming-convention */
+const portNames = [
+  'DynamicPods',
+  'Identity',
+  'LpdHandlerWithAuth',
+  'LpdHandlerWithoutAuth',
+  'Middleware',
+  'PodCreation',
+  'RedisResourceLocker',
+  'ServerFetch',
+  'SparqlStorage',
+  'Subdomains',
+  'WebSocketsProtocol',
+] as const;
 
-  const endPromise = new Promise<void>((resolve): void => {
-    response.on('end', (): void => {
-      expect(response._isEndCalled()).toBeTruthy();
-      resolve();
-    });
-  });
+export function getPort(name: typeof portNames[number]): number {
+  const idx = portNames.indexOf(name);
+  // Just in case something doesn't listen to the typings
+  if (idx < 0) {
+    throw new Error(`Unknown port name ${name}`);
+  }
+  return 6000 + idx;
+}
 
-  await handler.handleSafe({ request, response });
-  await endPromise;
-
-  return response;
+export function describeIf(envFlag: string, name: string, fn: () => void): void {
+  const flag = `TEST_${envFlag.toUpperCase()}`;
+  const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
+  // eslint-disable-next-line jest/valid-describe, jest/valid-title, jest/no-disabled-tests
+  return enabled ? describe(name, fn) : describe.skip(name, fn);
 }
 
 /**

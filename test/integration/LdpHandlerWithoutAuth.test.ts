@@ -1,11 +1,18 @@
+import { createReadStream } from 'fs';
+import type { Server } from 'http';
+import fetch from 'cross-fetch';
 import { DataFactory, Parser } from 'n3';
-import type { MockResponse } from 'node-mocks-http';
-import { ensureTrailingSlash, PIM, RDF } from '../../src/';
-import type { HttpHandler, Initializer, ResourceStore } from '../../src/';
+import { joinFilePath, PIM, RDF } from '../../src/';
+import type { Initializer, ResourceStore } from '../../src/';
+import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { LDP } from '../../src/util/Vocabularies';
-import { ResourceHelper } from '../util/TestHelpers';
-import { BASE, getTestFolder, removeFolder, instantiateFromConfig } from './Config';
+import { deleteResource, expectQuads, getResource, patchResource, postResource, putResource } from '../util/FetchUtil';
+import { getPort } from '../util/Util';
+import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 const { literal, namedNode, quad } = DataFactory;
+
+const port = getPort('LpdHandlerWithoutAuth');
+const baseUrl = `http://localhost:${port}/`;
 
 const rootFilePath = getTestFolder('full-config-no-auth');
 const stores: [string, any][] = [
@@ -19,13 +26,15 @@ const stores: [string, any][] = [
   }],
 ];
 
-describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn, teardown }): void => {
-  let handler: HttpHandler;
-  let resourceHelper: ResourceHelper;
+describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeUrn, teardown }): void => {
+  let server: Server;
+  let initializer: Initializer;
+  let factory: HttpServerFactory;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': BASE,
+      'urn:solid-server:default:variable:port': port,
+      'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
     const internalStore = await instantiateFromConfig(
@@ -35,287 +44,280 @@ describe.each(stores)('An LDP handler without auth using %s', (name, { storeUrn,
     ) as ResourceStore;
     variables['urn:solid-server:default:variable:store'] = internalStore;
 
-    // Create and initialize the HTTP handler and related components
-    let initializer: Initializer;
+    // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       'ldp-with-auth.json',
       variables,
     ) as Record<string, any>;
-    ({ handler, initializer } = instances);
+    ({ factory, initializer } = instances);
 
-    // Set up the internal store
     await initializer.handleSafe();
-
-    // Create test helpers for manipulating the components
-    resourceHelper = new ResourceHelper(handler, BASE);
+    server = factory.startServer(port);
   });
 
   afterAll(async(): Promise<void> => {
     await teardown();
+    await new Promise((resolve, reject): void => {
+      server.close((error): void => error ? reject(error) : resolve());
+    });
   });
 
-  it('can read a folder listing.', async():
-  Promise<void> => {
-    const response = await resourceHelper.getResource(`${BASE}/`);
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
+  it('can read a container listing.', async(): Promise<void> => {
+    const response = await getResource(baseUrl);
 
-    const parser = new Parser({ baseIRI: `${BASE}/` });
-    const quads = parser.parse(response._getData().toString());
-    expect(quads.some((entry): boolean => entry.equals(
-      quad(namedNode(`${BASE}/`), RDF.terms.type, LDP.terms.Container),
-    ))).toBeTruthy();
-    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
+    await expectQuads(response, [
+      quad(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container),
+    ]);
+
     // This is only here because we're accessing the root container
-    expect(response.getHeaders().link).toContain(`<${PIM.Storage}>; rel="type"`);
+    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
-  it('can read a folder listing with a query string.', async():
-  Promise<void> => {
-    const response = await resourceHelper.getResource(`${BASE}/?abc=def&xyz`);
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders()).toHaveProperty('content-type', 'text/turtle');
+  it('can read a container listing with a query string.', async(): Promise<void> => {
+    // Helper functions would fail due to query params
+    const response = await fetch(`${baseUrl}?abc=def&xyz`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('text/turtle');
+    expect(response.headers.get('link')).toContain(`<${LDP.Container}>; rel="type"`);
+    expect(response.headers.get('link')).toContain(`<${baseUrl}.acl>; rel="acl"`);
+    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
 
-    const parser = new Parser({ baseIRI: `${BASE}/` });
-    const quads = parser.parse(response._getData().toString());
+    const parser = new Parser({ baseIRI: baseUrl });
+    const quads = parser.parse(await response.text());
     expect(quads.some((entry): boolean => entry.equals(
-      quad(namedNode(`${BASE}/`), RDF.terms.type, LDP.terms.Container),
-    ))).toBeTruthy();
-    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${BASE}/.acl>; rel="acl"`);
-    expect(response.getHeaders().link).toContain(`<${PIM.Storage}>; rel="type"`);
+      quad(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container),
+    ))).toBe(true);
   });
 
-  it('can add a file to the store, read it and delete it.', async():
-  Promise<void> => {
-    const filePath = 'testfile0.txt';
-    const fileUrl = `${BASE}/${filePath}`;
+  it('can add a document to the store, read it and delete it.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}document.txt`;
     // PUT
-    let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', filePath, 'text/plain',
-    );
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
     // GET
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain('TESTFILE0');
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
-    expect(response.getHeaders()['accept-patch']).toBe('application/sparql-update');
-    expect(response.getHeaders()['ms-author-via']).toBe('SPARQL');
+    const response = await getResource(documentUrl, { contentType: 'text/plain' });
+    await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 
-  it('can add and overwrite a file.', async(): Promise<void> => {
-    const filePath = 'file.txt';
-    const fileUrl = `${BASE}/${filePath}`;
+  it('can add and overwrite a document.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}document.txt`;
     // PUT
-    let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', filePath, 'text/plain',
-    );
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
     // GET
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain('TESTFILE0');
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
+    let response = await getResource(documentUrl, { contentType: 'text/plain' });
+    await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // PUT
-    response = await resourceHelper.replaceResource(
-      '../assets/testfile1.txt', fileUrl, 'text/plain',
-    );
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1' });
 
     // GET
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getBuffer().toString()).toContain('TESTFILE1');
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
+    response = await getResource(documentUrl, { contentType: 'text/plain' });
+    await expect(response.text()).resolves.toBe('TESTFILE1');
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 
-  it('can create a folder and delete it.', async(): Promise<void> => {
-    const containerPath = 'secondfolder/';
-    const containerUrl = `${BASE}/${containerPath}`;
+  it('can create a container and delete it.', async(): Promise<void> => {
+    const containerUrl = `${baseUrl}secondContainer/`;
     // PUT
-    let response = await resourceHelper.createContainer(containerPath);
+    await putResource(containerUrl, { contentType: 'text/turtle' });
 
     // GET
-    response = await resourceHelper.getContainer(containerUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${containerUrl}.acl>; rel="acl"`);
+    await getResource(containerUrl);
 
     // DELETE
-    await resourceHelper.deleteResource(containerUrl);
-    await resourceHelper.shouldNotExist(containerUrl);
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
-  it('can make a folder and put a file in it.', async(): Promise<void> => {
-    // Create folder
-    const containerPath = 'testfolder0/';
-    const containerUrl = `${BASE}/${containerPath}`;
-    await resourceHelper.createContainer(containerPath);
+  it('can create a container and put a document in it.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer0/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
 
-    // Create file
-    const filePath = 'testfolder0/testfile0.txt';
-    const fileUrl = `${BASE}/${filePath}`;
-    let response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', filePath, 'text/plain',
-    );
+    // Create document
+    const documentUrl = `${containerUrl}testdocument0.txt`;
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
-    // GET File
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${fileUrl}.acl>; rel="acl"`);
+    // GET document
+    const response = await getResource(documentUrl, { contentType: 'text/plain' });
+    await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
-    await resourceHelper.deleteResource(containerUrl);
-    await resourceHelper.shouldNotExist(containerUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
-  it('cannot remove a folder when the folder contains a file.', async(): Promise<void> => {
-    // Create folder
-    const containerPath = 'testfolder1/';
-    const containerUrl = `${BASE}/${containerPath}`;
-    let response = await resourceHelper.createContainer(containerPath);
+  it('cannot remove a container when the container contains a document.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testfolder1/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
 
-    // Create file
-    const filePath = 'testfolder1/testfile0.txt';
-    const fileUrl = `${BASE}/${filePath}`;
-    await resourceHelper.createResource(
-      '../assets/testfile0.txt', filePath, 'text/plain',
-    );
+    // Create document
+    const documentUrl = `${containerUrl}testdocument0.txt`;
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
-    // Try DELETE folder
-    response = await resourceHelper.performRequest(new URL(containerUrl), 'DELETE', {});
-    expect(response.statusCode).toBe(409);
-    expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
+    // Try to DELETE container
+    const response = await fetch(containerUrl, { method: 'DELETE' });
+    expect(response.status).toBe(409);
+    await expect(response.text()).resolves.toContain('ConflictHttpError: Can only delete empty containers.');
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
-    await resourceHelper.deleteResource(containerUrl);
-    await resourceHelper.shouldNotExist(containerUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
-  it('cannot remove a folder when the folder contains a subfolder.', async(): Promise<void> => {
-    // Create folder
-    const containerPath = 'testfolder2/';
-    const containerUrl = `${BASE}/${containerPath}`;
-    let response = await resourceHelper.createContainer(containerPath);
+  it('cannot remove a container when the container contains a subfolder.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer2/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
+
+    // Create subcontainer
+    const subContainerUrl = `${containerUrl}subcontainer0/`;
+    await putResource(subContainerUrl, { contentType: 'text/turtle' });
+
+    // Try to DELETE container
+    const response = await fetch(containerUrl, { method: 'DELETE' });
+    expect(response.status).toBe(409);
+    await expect(response.text()).resolves.toContain('ConflictHttpError: Can only delete empty containers.');
+
+    // DELETE
+    expect(await deleteResource(subContainerUrl)).toBeUndefined();
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+  });
+
+  it('can read the contents of a container.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer3/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
 
     // Create subfolder
-    const subContainerPath = `${containerPath}subfolder0/`;
-    const subContainerUrl = `${BASE}/${subContainerPath}`;
-    response = await resourceHelper.createContainer(subContainerPath);
+    const subContainerUrl = `${containerUrl}subcontainer0`;
+    await putResource(subContainerUrl, { contentType: 'text/turtle' });
 
-    // Try DELETE folder
-    response = await resourceHelper.performRequest(new URL(containerUrl), 'DELETE', {});
-    expect(response.statusCode).toBe(409);
-    expect(response._getData()).toContain('ConflictHttpError: Can only delete empty containers.');
+    // Create document
+    const documentUrl = `${containerUrl}testfile0.txt`;
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
-    // DELETE
-    await resourceHelper.deleteResource(subContainerUrl);
-    await resourceHelper.shouldNotExist(subContainerUrl);
-    await resourceHelper.deleteResource(containerUrl);
-    await resourceHelper.shouldNotExist(containerUrl);
-  });
-
-  it('can read the contents of a folder.', async(): Promise<void> => {
-    // Create folder
-    const containerPath = 'testfolder3/';
-    const containerUrl = `${BASE}/${containerPath}`;
-    let response = await resourceHelper.createContainer(containerPath);
-
-    // Create subfolder
-    const subContainerPath = `${containerPath}subfolder0/`;
-    const subContainerUrl = `${BASE}/${subContainerPath}`;
-    response = await resourceHelper.createContainer('testfolder3/subfolder0/');
-
-    // Create file
-    const filePath = `${containerPath}testfile0.txt`;
-    const fileUrl = `${BASE}/${filePath}`;
-    response = await resourceHelper.createResource(
-      '../assets/testfile0.txt', filePath, 'text/plain',
-    );
-
-    response = await resourceHelper.getContainer(containerUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getData()).toContain(`<http://www.w3.org/ns/ldp#contains> <${subContainerUrl}> .`);
-    expect(response._getData()).toContain(`<http://www.w3.org/ns/ldp#contains> <${fileUrl}> .`);
-    expect(response.getHeaders().link).toContain(`<${LDP.Container}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${LDP.BasicContainer}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${LDP.Resource}>; rel="type"`);
-    expect(response.getHeaders().link).toContain(`<${containerUrl}.acl>; rel="acl"`);
+    const response = await getResource(containerUrl);
+    await expectQuads(response, [
+      quad(namedNode(containerUrl), LDP.terms.contains, namedNode(subContainerUrl)),
+      quad(namedNode(containerUrl), LDP.terms.contains, namedNode(documentUrl)),
+    ]);
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
-    await resourceHelper.deleteResource(subContainerUrl);
-    await resourceHelper.shouldNotExist(subContainerUrl);
-    await resourceHelper.deleteResource(containerUrl);
-    await resourceHelper.shouldNotExist(containerUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+    expect(await deleteResource(subContainerUrl)).toBeUndefined();
+    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
-  it('can upload and delete a image.', async(): Promise<void> => {
-    const filePath = 'image.png';
-    const fileUrl = `${BASE}/${filePath}`;
-    let response = await resourceHelper.createResource(
-      '../assets/testimage.png', filePath, 'image/png',
-    );
+  it('can upload and delete an image.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}image.png`;
+    const response = await fetch(documentUrl, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'image/png',
+      },
+      body: createReadStream(joinFilePath(__dirname, '../assets/testimage.png')) as any,
+    });
+    expect(response.status).toBe(205);
+    await expect(response.text()).resolves.toHaveLength(0);
 
     // GET
-    response = await resourceHelper.getResource(fileUrl);
-    expect(response.statusCode).toBe(200);
-    expect(response._getHeaders()['content-type']).toBe('image/png');
+    await getResource(documentUrl, { contentType: 'image/png' });
 
     // DELETE
-    await resourceHelper.deleteResource(fileUrl);
-    await resourceHelper.shouldNotExist(fileUrl);
+    expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 
   it('can create a container with a diamond identifier in the data.', async(): Promise<void> => {
     const slug = 'my-container';
 
-    let response: MockResponse<any> = await resourceHelper.performRequestWithBody(
-      new URL(ensureTrailingSlash(BASE)),
-      'POST',
-      {
-        'content-type': 'text/turtle',
-        'transfer-encoding': 'chunked',
-        link: '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
-        slug,
+    const body = '<> <http://www.w3.org/2000/01/rdf-schema#label> "My Container" .';
+    let response = await postResource(baseUrl, { isContainer: true, contentType: 'text/turtle', slug, body });
+    expect(response.headers.get('location')).toBe(`${baseUrl}${slug}/`);
+
+    // GET
+    const containerUrl = `${baseUrl}${slug}/`;
+    response = await getResource(containerUrl);
+
+    await expectQuads(response, [
+      quad(namedNode(containerUrl), namedNode('http://www.w3.org/2000/01/rdf-schema#label'), literal('My Container')),
+    ]);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+  });
+
+  // https://github.com/solid/community-server/issues/498
+  it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
+    // PUT
+    const documentUrl = `${baseUrl}foo/bar`;
+    const response = await fetch(documentUrl, {
+      method: 'PUT',
+      headers: { 'content-length': '0', 'content-type': 'text/turtle' },
+      body: '',
+    });
+    expect(response.status).toBe(205);
+
+    // GET
+    await getResource(documentUrl);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can handle simple SPARQL updates.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+      'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query);
+
+    // PATCH using a content-type header with charset
+    const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
+      'INSERT {<#s4> <#p4> <#o4>}',
+      'WHERE {}',
+    ].join('\n');
+    response = await fetch(documentUrl, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update ; charset=UTF-8',
       },
-      Buffer.from('<> <http://www.w3.org/2000/01/rdf-schema#label> "My Container" .', 'utf-8'),
-    );
+      body: query2,
+    });
+    await expect(response.text()).resolves.toHaveLength(0);
+    expect(response.status).toBe(205);
 
-    expect(response.statusCode).toBe(201);
-    expect(response._getHeaders().location).toBe(`${BASE}/${slug}/`);
+    // GET
+    response = await getResource(documentUrl);
+    const expected = [
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode(`${documentUrl}#s4`),
+        namedNode(`${documentUrl}#p4`),
+        namedNode(`${documentUrl}#o4`),
+      ),
+    ];
+    await expectQuads(response, expected, true);
 
-    response = await resourceHelper.performRequest(new URL(`${BASE}/${slug}/`), 'GET', { accept: 'text/turtle' });
-    expect(response.statusCode).toBe(200);
-
-    const parser = new Parser({ baseIRI: `${BASE}/${slug}/` });
-    const quads = parser.parse(response._getData());
-    expect(quads.some((entry): boolean => entry.equals(quad(
-      namedNode(`${BASE}/${slug}/`),
-      namedNode('http://www.w3.org/2000/01/rdf-schema#label'),
-      literal('My Container'),
-    )))).toBeTruthy();
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 });

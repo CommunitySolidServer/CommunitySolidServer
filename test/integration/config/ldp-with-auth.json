@@ -4,7 +4,6 @@
     "files-scs:config/presets/acl.json",
     "files-scs:config/presets/identifiers/suffix-identifiers.json",
     "files-scs:config/presets/init.json",
-    "files-scs:config/presets/ldp.json",
     "files-scs:config/presets/ldp/credentials-extractor.json",
     "files-scs:config/presets/ldp/metadata-handler.json",
     "files-scs:config/presets/ldp/operation-handler.json",
@@ -21,9 +20,10 @@
   ],
   "@graph": [
     {
+      "comment": "Sets up an HTTP server with only the LDP handler as HttpHandler.",
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
-      "RecordObject:_record": [
+      "record": [
         {
           "RecordObject:_record_key": "initializer",
           "RecordObject:_record_value": {
@@ -35,19 +35,59 @@
           }
         },
         {
-          "RecordObject:_record_key": "handler",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:LdpHandler" }
-        },
-        {
           "RecordObject:_record_key": "store",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:ResourceStore" }
+        },
+        {
+          "RecordObject:_record_key": "factory",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
         }
       ]
+    },
+
+    {
+      "comment": "The default LDP handler, but with an unsecure webId extractor.",
+      "@id": "urn:solid-server:default:LdpHandler",
+      "@type": "AuthenticatedLdpHandler",
+      "args_requestParser": {
+        "@id": "urn:solid-server:default:RequestParser"
+      },
+      "args_credentialsExtractor": {
+        "@type": "WaterfallHandler",
+        "WaterfallHandler:_handlers": [
+          {
+            "@type": "UnsecureWebIdExtractor"
+          },
+          {
+            "@type": "EmptyCredentialsExtractor"
+          }
+        ]
+      },
+      "args_permissionsExtractor": {
+        "@id": "urn:solid-server:default:PermissionsExtractor"
+      },
+      "args_authorizer": {
+        "@id": "urn:solid-server:default:AclBasedAuthorizer"
+      },
+      "args_operationHandler": {
+        "@id": "urn:solid-server:default:OperationHandler"
+      },
+      "args_responseWriter": {
+        "@id": "urn:solid-server:default:ResponseWriter"
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "BaseHttpServerFactory",
+      "handler": {
+        "@id": "urn:solid-server:default:LdpHandler"
+      }
     },
     {
       "@id": "urn:solid-server:default:RoutingResourceStore",
       "@type": "PassthroughStore",
-      "PassthroughStore:_source": {
+      "source": {
         "@id": "urn:solid-server:default:variable:store"
       }
     },

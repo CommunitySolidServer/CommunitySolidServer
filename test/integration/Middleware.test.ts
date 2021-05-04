@@ -4,9 +4,10 @@ import type { BaseHttpServerFactory } from '../../src/server/BaseHttpServerFacto
 import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
 import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
-const port = 6002;
+const port = getPort('Middleware');
 
 class SimpleHttpHandler extends HttpHandler {
   public async handle(input: HttpHandlerInput): Promise<void> {

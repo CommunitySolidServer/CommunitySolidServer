@@ -8,16 +8,32 @@ import { getLoggerFor } from '../logging/LogUtil';
 import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { Initializer } from './Initializer';
 
-export class CliRunner {
+export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
   /**
-   * Generic run function for starting the server from a given config
+   * Generic run function for starting the server from JavaScript for a given config.
+   * @param loaderProperties - Components.js loader properties.
+   * @param configFile - Path to the server config file.
+   * @param variableParams - Variables to pass into the config file.
+   */
+  public async run(
+    loaderProperties: IComponentsManagerBuilderOptions<Initializer>,
+    configFile: string,
+    variableParams: ConfigVariables,
+  ): Promise<void> {
+    const variables = this.createVariables(variableParams);
+    const initializer = await this.createInitializer(loaderProperties, configFile, variables);
+    await initializer.handleSafe();
+  }
+
+  /**
+   * Generic run function for starting the server on the CLI from a given config
    * Made run to be non-async to lower the chance of unhandled promise rejection errors in the future.
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public run({
+  public runCli({
     argv = process.argv,
     stderr = process.stderr,
   }: {
@@ -104,7 +120,7 @@ export class CliRunner {
   /**
    * Translates command-line parameters into configuration variables
    */
-  protected createVariables(params: Record<string, any>): Record<string, any> {
+  protected createVariables(params: ConfigVariables): Record<string, any> {
     return {
       'urn:solid-server:default:variable:baseUrl':
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
@@ -134,4 +150,14 @@ export class CliRunner {
     await componentsManager.configRegistry.register(configFile);
     return await componentsManager.instantiate(initializer, { variables });
   }
+}
+
+export interface ConfigVariables {
+  loggingLevel: string;
+  port: number;
+  baseUrl?: string;
+  rootFilePath?: string;
+  sparqlEndpoint?: string;
+  podConfigJson?: string;
+  idpTemplateFolder?: string;
 }

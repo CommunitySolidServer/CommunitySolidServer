@@ -8,10 +8,11 @@ import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinFilePath } from '../../src/util/PathUtil';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 import { IdentityTestState } from './IdentityTestState';
 
-const port = 6007;
+const port = getPort('Identity');
 const baseUrl = `http://localhost:${port}/`;
 
 // Undo the global identity token verifier mock

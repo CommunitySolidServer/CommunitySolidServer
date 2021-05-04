@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
@@ -6,10 +7,9 @@ module.exports = {
     project: [ './tsconfig.json', './test/tsconfig.json' ],
   },
   globals: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     AsyncIterable: 'readonly',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     NodeJS: 'readonly',
+    RequestInit: 'readonly',
   },
   plugins: [
     'tsdoc',

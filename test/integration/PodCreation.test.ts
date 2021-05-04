@@ -2,9 +2,10 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { readableToString } from '../../src/util/StreamUtil';
+import { getPort } from '../util/Util';
 import { instantiateFromConfig } from './Config';
 
-const port = 6003;
+const port = getPort('PodCreation');
 const baseUrl = `http://localhost:${port}/`;
 
 describe('A server with a pod handler', (): void => {
