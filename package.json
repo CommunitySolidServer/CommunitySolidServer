@@ -106,7 +106,7 @@
     "cors": "^2.8.5",
     "ejs": "^3.1.5",
     "end-of-stream": "^1.4.4",
-    "escape-string-regexp": "^4.0.0",
+    "escape-string-regexp": "^5.0.0",
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
     "jose": "^3.11.1",
