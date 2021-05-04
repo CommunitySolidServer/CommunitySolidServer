@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JsonResourceStorage | Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>JsonResourceStorage | Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.1</a>
+					<a href="../modules.html">Community Solid Server - v0.9.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_keyvalue_jsonresourcestorage.html">storage/keyvalue/JsonResourceStorage</a>
@@ -71,10 +71,12 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html">KeyValueStorage</a> for strings using a <a href="../interfaces/storage_resourcestore.resourcestore.html">ResourceStore</a> as backend.</p>
+						<p>A <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html">KeyValueStorage</a> for JSON-like objects using a <a href="../interfaces/storage_resourcestore.resourcestore.html">ResourceStore</a> as backend.</p>
 					</div>
-					<p>Values will be sent as data streams to the given identifiers,
-					so how these are stored depend on the underlying store.</p>
+					<p>The keys will be transformed so they can be safely used
+						as a resource name in the given container.
+						Values will be sent as data streams,
+					so how these are stored depends on the underlying store.</p>
 					<p>All non-404 errors will be re-thrown.</p>
 				</div>
 			</section>
@@ -89,7 +91,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li><a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -105,16 +107,19 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#container" class="tsd-kind-icon">container</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#source" class="tsd-kind-icon">source</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#createidentifier" class="tsd-kind-icon">create<wbr>Identifier</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#delete" class="tsd-kind-icon">delete</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#entries" class="tsd-kind-icon">entries</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#get" class="tsd-kind-icon">get</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#has" class="tsd-kind-icon">has</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#parsemember" class="tsd-kind-icon">parse<wbr>Member</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#set" class="tsd-kind-icon">set</a></li>
 							</ul>
 						</section>
@@ -127,19 +132,25 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Json<wbr>Resource<wbr>Storage<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html" class="tsd-signature-type" data-tsd-kind="Class">JsonResourceStorage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Json<wbr>Resource<wbr>Storage<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a>, baseUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, container<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html" class="tsd-signature-type" data-tsd-kind="Class">JsonResourceStorage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L18">src/storage/keyvalue/JsonResourceStorage.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L23">src/storage/keyvalue/JsonResourceStorage.ts:23</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>source: <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></h5>
+								</li>
+								<li>
+									<h5>baseUrl: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>container: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html" class="tsd-signature-type" data-tsd-kind="Class">JsonResourceStorage</a></h4>
@@ -150,35 +161,79 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="container" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> container</h3>
+					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L23">src/storage/keyvalue/JsonResourceStorage.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="source" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> source</h3>
 					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L18">src/storage/keyvalue/JsonResourceStorage.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L22">src/storage/keyvalue/JsonResourceStorage.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="delete" class="tsd-anchor"></a>
-					<h3>delete</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="createidentifier" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> create<wbr>Identifier</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Identifier<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L54">src/storage/keyvalue/JsonResourceStorage.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L82">src/storage/keyvalue/JsonResourceStorage.ts:82</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts a key into an identifier for internal storage.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="delete" class="tsd-anchor"></a>
+					<h3>delete</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of KeyValueStorage.delete</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L54">src/storage/keyvalue/JsonResourceStorage.ts:54</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Deletes the value stored for the given key.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -189,16 +244,22 @@
 					<a name="entries" class="tsd-anchor"></a>
 					<h3>entries</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">entries<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">never</span></li>
+						<li class="tsd-signature tsd-kind-icon">entries<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of KeyValueStorage.entries</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L66">src/storage/keyvalue/JsonResourceStorage.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L67">src/storage/keyvalue/JsonResourceStorage.ts:67</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">never</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>An iterable of entries in the storage.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -206,19 +267,26 @@
 					<a name="get" class="tsd-anchor"></a>
 					<h3>get</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of KeyValueStorage.get</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L24">src/storage/keyvalue/JsonResourceStorage.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L30">src/storage/keyvalue/JsonResourceStorage.ts:30</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the value stored for the given identifier.
+									<code>undefined</code> if no value is stored.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -229,22 +297,56 @@
 					<a name="has" class="tsd-anchor"></a>
 					<h3>has</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">has<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">has<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of KeyValueStorage.has</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L42">src/storage/keyvalue/JsonResourceStorage.ts:42</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if there is a value stored for the given key.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="parsemember" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> parse<wbr>Member</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">parse<wbr>Member<span class="tsd-signature-symbol">(</span>member<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L35">src/storage/keyvalue/JsonResourceStorage.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L90">src/storage/keyvalue/JsonResourceStorage.ts:90</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Converts an internal storage identifier string into the original identifier key.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+									<h5>member: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -252,19 +354,25 @@
 					<a name="set" class="tsd-anchor"></a>
 					<h3>set</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html" class="tsd-signature-type" data-tsd-kind="Class">JsonResourceStorage</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html" class="tsd-signature-type" data-tsd-kind="Class">JsonResourceStorage</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of KeyValueStorage.set</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/keyvalue/JsonResourceStorage.ts#L48">src/storage/keyvalue/JsonResourceStorage.ts:48</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/keyvalue/JsonResourceStorage.ts#L47">src/storage/keyvalue/JsonResourceStorage.ts:47</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the value for the given key.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5>value: <span class="tsd-signature-type">unknown</span></h5>
@@ -298,7 +406,13 @@
 								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#container" class="tsd-kind-icon">container</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#source" class="tsd-kind-icon">source</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#createidentifier" class="tsd-kind-icon">create<wbr>Identifier</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#delete" class="tsd-kind-icon">delete</a>
@@ -311,6 +425,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#has" class="tsd-kind-icon">has</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#parsemember" class="tsd-kind-icon">parse<wbr>Member</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_keyvalue_jsonresourcestorage.jsonresourcestorage.html#set" class="tsd-kind-icon">set</a>
@@ -347,6 +464,7 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 		</div>
 	</div>

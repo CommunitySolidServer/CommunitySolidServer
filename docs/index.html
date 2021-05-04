@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>Community Solid Server - v0.8.1</h1>
+			<h1>Community Solid Server - v0.9.0</h1>
 		</div>
 	</div>
 </header>
@@ -82,35 +82,124 @@
 				<a href="#current-status" id="current-status" style="color: inherit; text-decoration: none;">
 					<h2>Current status</h2>
 				</a>
-				<p>This server is in beta stage,
-					which means you can start using it for developing and testing apps.
-					Your feedback is most welcome
-				as <a href="https://github.com/solid/community-server/issues/new">issues on this repository</a>.</p>
-				<p>However, you can already boot up the server,
-					play around with it,
-					and check how it is made.
-					<br>
-					The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a>
-					and the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural diagram</a>
-				can help you find your way.</p>
-				<p>If you are interested in helping out with the development of this server,
-					be sure to have a look at the <a href="https://github.com/solid/community-server/wiki/Notes-for-developers">📓 developer notes</a>
-				and <a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first issues</a>.</p>
-				<p>Additional recipes for configuring and deploying the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
-				<a href="#running-locally" id="running-locally" style="color: inherit; text-decoration: none;">
-					<h2>Running locally</h2>
+				<p>This server is in beta stage, which means you can start using it for developing
+				and testing apps, with some limitations:</p>
+				<ul>
+					<li>User account / pod creation is not yet supported fully, and you must rely on
+						an external identity provider to log you in and authenticate your WebID.
+						<a href="https://github.com/solid/node-solid-server">solid/node-solid-server</a> or any
+						other pod provider can serve this purpose, and all you need to do is pass in
+						an external WebID when creating pods. More information on creating pods can be
+					found under <a href="#interacting-with-the-server">Interacting with the server</a>.</li>
+					<li>The spec is still under active development, and as such some features (like
+						<code>trustedApps</code>) are not yet implemented because they are likely to change. If
+					your users rely on this functionality, migrating is not yet recommended.</li>
+				</ul>
+				<p>Your feedback is most welcome as <a href="https://github.com/solid/community-server/issues/new">issues on this
+				repository</a>.</p>
+				<p>However, you can already boot up the server, play around with it, and check how
+				it is made.</p>
+				<p>The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a> and
+					the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural
+					diagram</a>
+					can help you find your way. The organization and structure of the classes and
+					components in the <a href="/src">src folder</a> is designed to align with this
+					architectural diagram to the extent possible (i.e. the <a href="src/ldp">ldp folder</a>
+				should contain all the components from the <code>ldp</code> section of the diagram.</p>
+				<p>If you are interested in helping out with the development of this server, be
+					sure to have a look at the <a href="documentation/Notes-for-developers.md">📓 developer
+					notes</a> and
+					<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first
+				issues</a>.</p>
+				<a href="#running-the-server" id="running-the-server" style="color: inherit; text-decoration: none;">
+					<h2>Running the server</h2>
 				</a>
-				<pre><code class="language-shell"><span style="color: #000000">npm ci</span>
-<span style="color: #000000">npm start</span>
+				<a href="#configuring-the-server" id="configuring-the-server" style="color: inherit; text-decoration: none;">
+					<h3>Configuring the server</h3>
+				</a>
+				<p>Community Solid Server (CSS) uses
+					<a href="https://componentsjs.readthedocs.io/en/latest/">ComponentJS</a> to manage all
+					configuration for the server. There are a variety of configuration files for
+				common use cases in the <code>config</code> folder.</p>
+				<p>Additional recipes for configuring and deploying the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Parameter</th>
+							<th>Default</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><code>--port, -p</code></td>
+							<td><code>3000</code></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><code>--baseUrl. -b</code></td>
+							<td><code>&quot;http://localhost:$PORT/&quot;</code></td>
+							<td>Needs to be set to the base URL of the server for authnetication and authorization to function.</td>
+						</tr>
+						<tr>
+							<td><code>--config, -c</code></td>
+							<td><code>&quot;config/config-default.json&quot;</code></td>
+							<td><code>config-default.json</code> stores all data in memory. If you would like to persist data to your filesystem, try <code>config-file.json</code></td>
+						</tr>
+						<tr>
+							<td><code>--mainModulePath, -m</code></td>
+							<td></td>
+							<td>Absolute path to the package root from which ComponentJS module resolution should start.</td>
+						</tr>
+						<tr>
+							<td><code>--loggingLevel, -l</code></td>
+							<td><code>&quot;info&quot;</code></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><code>--rootFilePath, -f</code></td>
+							<td><code>&quot;./&quot;</code></td>
+							<td>Folder to start the server in when using a file-based config.</td>
+						</tr>
+						<tr>
+							<td><code>--sparqlEndpoint, -s</code></td>
+							<td></td>
+							<td>Endpoint to call when using a SPARQL-based config.</td>
+						</tr>
+						<tr>
+							<td><code>--podConfigJson</code></td>
+							<td><code>&quot;./pod-config.json&quot;</code></td>
+							<td>JSON file to store pod configuration when using a dynamic config.</td>
+						</tr>
+						<tr>
+							<td><code>--idpTemplateFolder</code></td>
+							<td><code>&quot;templates/idp&quot;</code></td>
+							<td>Folder containing the templates used for IDP interactions.</td>
+						</tr>
+				</tbody></table>
+				<a href="#installing-and-running-locally" id="installing-and-running-locally" style="color: inherit; text-decoration: none;">
+					<h3>Installing and running locally</h3>
+				</a>
+				<pre><code class="language-shell"><span style="color: #000000">$ npm ci</span>
+<span style="color: #000000">$ npm start [-- ARGS]</span>
 </code></pre>
-				<p>This will start up a server running on port 3000 with a backend storing all data in memory.
-				More configurations with different backends can be found in the <code>config</code> folder.</p>
 				<a href="#interacting-with-the-server" id="interacting-with-the-server" style="color: inherit; text-decoration: none;">
 					<h2>Interacting with the server</h2>
 				</a>
-				<p>The server supports low-level interaction via HTTP methods,
-				such as <code>GET</code>, <code>PUT</code>, <code>HEAD</code>, ...</p>
-				<p>Below, we provide several examples on how to interact with the server using <code>curl</code>.</p>
+				<p>CSS is still under active development, and as such the easiest and fastest way
+					to understand what functionality is supported is to read the integration tests.
+				This section is only intended as a high level summary of what&#39;s supported.</p>
+				<p>The server supports low-level interaction via HTTP methods, such as <code>GET</code>,
+				<code>PUT</code>, <code>HEAD</code>, ...</p>
+				<p>Below, we provide several examples on how to interact with the server using
+				<code>curl</code>.</p>
+				<a href="#post-creating-a-new-pod" id="post-creating-a-new-pod" style="color: inherit; text-decoration: none;">
+					<h3><code>POST</code>: Creating a new pod</h3>
+				</a>
+				<p>Create a pod using an external WebID for authentication:</p>
+				<pre><code class="language-shell"><span style="color: #000000">curl -X POST -H </span><span style="color: #A31515">&quot;Content-Type: application/json&quot;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  -d </span><span style="color: #A31515">&#039;{&quot;login&quot;: &quot;timbl&quot;, &quot;webId&quot;: &quot;http://timbl.inrupt.net/profile/card#me&quot;}&#039;</span><span style="color: #000000"> \</span>
+<span style="color: #000000">  http://localhost:3000/pods</span>
+</code></pre>
 				<a href="#put-creating-resources-for-a-given-url" id="put-creating-resources-for-a-given-url" style="color: inherit; text-decoration: none;">
 					<h3><code>PUT</code>: Creating resources for a given URL</h3>
 				</a>
@@ -196,6 +285,56 @@
 </code></pre>
 					</li>
 				</ul>
+				<a href="#using-the-identity-provider" id="using-the-identity-provider" style="color: inherit; text-decoration: none;">
+					<h2>Using the identity provider</h2>
+				</a>
+				<ol>
+					<li><p>Launch the Community Solid Server:</p>
+						<pre><code class="language-bash"><span style="color: #000000">git clone git@github.com:solid/community-server.git</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> community-server</span>
+<span style="color: #000000">npm ci</span>
+<span style="color: #000000">npm start</span>
+</code></pre>
+					</li>
+					<li><p>To use the identity provider, you need a compatible client application.</p>
+						<p> You can use for example <code>@inrupt/solid-client-authn-js</code>:</p>
+						<pre><code class="language-bash"><span style="color: #000000">git clone https://github.com/inrupt/solid-client-authn-js</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> solid-client-authn-js</span>
+<span style="color: #000000">npm ci</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> packages/node/example/demoClientApp/</span>
+<span style="color: #000000">npm ci</span>
+<span style="color: #000000">npm start</span>
+</code></pre>
+						<p> Go to <code>http://localhost:3001</code>.</p>
+					</li>
+					<li><p>Use the base URL of your running CSS instance to as Identity provider, for
+						example <code>http://localhost:3000</code>, to fill the form. Click the <code>login</code> button.</p>
+					</li>
+					<li><p>Follow the instructions to register/login/...</p>
+						<p> A WebID hosted in your pod will be required to complete registration.</p>
+						<p> In your running community server, you could create <code>http://localhost:3000/profile/card</code>
+						with the following content:</p>
+						<pre><code class="language-turtle">PREFIX : &lt;#&gt;
+PREFIX solid: &lt;http://www.w3.org/ns/solid/terms#&gt;
+
+:me solid:oidcIssuer &lt;http://localhost:3000/&gt; .
+</code></pre>
+						<p> When registering, follow the on screen instructions and add the OIDC issuer
+							registration token to your WebID, which you can do for example by PATCHing
+						<code>http://localhost:3000/profile/card</code> with:</p>
+						<pre><code class="language-turtle">PREFIX : &lt;#&gt;
+PREFIX solid: &lt;http://www.w3.org/ns/solid/terms#&gt;
+INSERT DATA {
+  :me solid:oidcIssuerRegistrationToken &quot;IDP_TOKEN&quot; .
+}
+</code></pre>
+					</li>
+					<li><p>Once logged in, you are redirected to your client app, running for example on
+						<code>http://localhost:3001/</code>.</p>
+					</li>
+					<li><p>You&#39;re now authenticated and can fetch public and private resources.</p>
+					</li>
+				</ol>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -244,13 +383,112 @@
 						<a href="modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/identity_identityproviderfactory.html">identity/<wbr>Identity<wbr>Provider<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_identityproviderhttphandler.html">identity/<wbr>Identity<wbr>Provider<wbr>Http<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_configuration_configurationfactory.html">identity/configuration/<wbr>Configuration<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_configuration_keyconfigurationfactory.html">identity/configuration/<wbr>Key<wbr>Configuration<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_interactionhttphandler.html">identity/interaction/<wbr>Interaction<wbr>Http<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_interactionpolicy.html">identity/interaction/<wbr>Interaction<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_sessionhttphandler.html">identity/interaction/<wbr>Session<wbr>Http<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_accountinteractionpolicy.html">identity/interaction/email-<wbr>password/<wbr>Account<wbr>Interaction<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_emailpasswordutil.html">identity/interaction/email-<wbr>password/<wbr>Email<wbr>Password<wbr>Util</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_forgotpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Forgot<wbr>Password<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_loginhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Login<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_registrationhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Registration<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_resetpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_resetpasswordrenderhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>Render<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_resetpasswordviewhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>View<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_storage_accountstore.html">identity/interaction/email-<wbr>password/storage/<wbr>Account<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_storage_baseaccountstore.html">identity/interaction/email-<wbr>password/storage/<wbr>Base<wbr>Account<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_baseemailsender.html">identity/interaction/util/<wbr>Base<wbr>Email<wbr>Sender</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_ejstemplaterenderer.html">identity/interaction/util/<wbr>Ejs<wbr>Template<wbr>Renderer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_emailsender.html">identity/interaction/util/<wbr>Email<wbr>Sender</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_formdatautil.html">identity/interaction/util/<wbr>Form<wbr>Data<wbr>Util</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_idpinteractionerror.html">identity/interaction/util/<wbr>Idp<wbr>Interaction<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_idprenderhandler.html">identity/interaction/util/<wbr>Idp<wbr>Render<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_idproutecontroller.html">identity/interaction/util/<wbr>Idp<wbr>Route<wbr>Controller</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_initialinteractionhandler.html">identity/interaction/util/<wbr>Initial<wbr>Interaction<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_interactioncompleter.html">identity/interaction/util/<wbr>Interaction<wbr>Completer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_issuerownershipvalidator.html">identity/interaction/util/<wbr>Issuer<wbr>Ownership<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_ownershipvalidator.html">identity/interaction/util/<wbr>Ownership<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_util_templaterenderer.html">identity/interaction/util/<wbr>Template<wbr>Renderer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_storage_adapterfactory.html">identity/storage/<wbr>Adapter<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_storage_expiringadapterfactory.html">identity/storage/<wbr>Expiring<wbr>Adapter<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_storage_wrappedfetchadapterfactory.html">identity/storage/<wbr>Wrapped<wbr>Fetch<wbr>Adapter<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_util_fetchutil.html">identity/util/<wbr>Fetch<wbr>Util</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/index.html">index</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_aclinitializer.html">init/<wbr>Acl<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/init_clirunner.html">init/<wbr>Cli<wbr>Runner</a>
+						<a href="modules/init_apprunner.html">init/<wbr>App<wbr>Runner</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_configpodinitializer.html">init/<wbr>Config<wbr>Pod<wbr>Initializer</a>
@@ -580,6 +818,15 @@
 						<a href="modules/server_middleware_websocketadvertiser.html">server/middleware/<wbr>Web<wbr>Socket<wbr>Advertiser</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/server_util_renderejshandler.html">server/util/<wbr>Render<wbr>Ejs<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/server_util_renderhandler.html">server/util/<wbr>Render<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/server_util_routerhandler.html">server/util/<wbr>Router<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/storage_atomicresourcestore.html">storage/<wbr>Atomic<wbr>Resource<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -658,6 +905,9 @@
 						<a href="modules/storage_conversion_typedrepresentationconverter.html">storage/conversion/<wbr>Typed<wbr>Representation<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/storage_keyvalue_expiringstorage.html">storage/keyvalue/<wbr>Expiring<wbr>Storage</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/storage_keyvalue_jsonfilestorage.html">storage/keyvalue/<wbr>Json<wbr>File<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -670,7 +920,7 @@
 						<a href="modules/storage_keyvalue_memorymapstorage.html">storage/keyvalue/<wbr>Memory<wbr>Map<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_resourceidentifierstorage.html">storage/keyvalue/<wbr>Resource<wbr>Identifier<wbr>Storage</a>
+						<a href="modules/storage_keyvalue_wrappedexpiringstorage.html">storage/keyvalue/<wbr>Wrapped<wbr>Expiring<wbr>Storage</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_mapping_basefileidentifiermapper.html">storage/mapping/<wbr>Base<wbr>File<wbr>Identifier<wbr>Mapper</a>
@@ -740,6 +990,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_errors_badrequesthttperror.html">util/errors/<wbr>Bad<wbr>Request<wbr>Http<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_errors_configurationerror.html">util/errors/<wbr>Configuration<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_errors_conflicthttperror.html">util/errors/<wbr>Conflict<wbr>Http<wbr>Error</a>
@@ -812,6 +1065,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_locking_readwritelocker.html">util/locking/<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_locking_redisresourcelocker.html">util/locking/<wbr>Redis<wbr>Resource<wbr>Locker</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_locking_resourcelocker.html">util/locking/<wbr>Resource<wbr>Locker</a>

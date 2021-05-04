@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>GreedyReadWriteLocker | Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>GreedyReadWriteLocker | Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.1</a>
+					<a href="../modules.html">Community Solid Server - v0.9.0</a>
 				</li>
 				<li>
 					<a href="../modules/util_locking_greedyreadwritelocker.html">util/locking/GreedyReadWriteLocker</a>
@@ -119,9 +119,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getcountidentifier" class="tsd-kind-icon">get<wbr>Count<wbr>Identifier</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getreadlockidentifier" class="tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Identifier</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getwritelockidentifier" class="tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Identifier</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getcountkey" class="tsd-kind-icon">get<wbr>Count<wbr>Key</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getreadlockkey" class="tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Key</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getwritelockkey" class="tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Key</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#incrementcount" class="tsd-kind-icon">increment<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#postreadcleanup" class="tsd-kind-icon">post<wbr>Read<wbr>Cleanup</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#prereadsetup" class="tsd-kind-icon">pre<wbr>Read<wbr>Setup</a></li>
@@ -139,13 +139,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Greedy<wbr>Read<wbr>Write<wbr>Locker<span class="tsd-signature-symbol">(</span>locker<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_locking_resourcelocker.resourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceLocker</a>, storage<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, suffixes<span class="tsd-signature-symbol">?: </span><a href="../interfaces/util_locking_greedyreadwritelocker.greedyreadwritesuffixes.html" class="tsd-signature-type" data-tsd-kind="Interface">GreedyReadWriteSuffixes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html" class="tsd-signature-type" data-tsd-kind="Class">GreedyReadWriteLocker</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Greedy<wbr>Read<wbr>Write<wbr>Locker<span class="tsd-signature-symbol">(</span>locker<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_locking_resourcelocker.resourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceLocker</a>, storage<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, suffixes<span class="tsd-signature-symbol">?: </span><a href="../interfaces/util_locking_greedyreadwritelocker.greedyreadwritesuffixes.html" class="tsd-signature-type" data-tsd-kind="Interface">GreedyReadWriteSuffixes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html" class="tsd-signature-type" data-tsd-kind="Class">GreedyReadWriteLocker</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L30">src/util/locking/GreedyReadWriteLocker.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L30">src/util/locking/GreedyReadWriteLocker.ts:30</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -157,7 +157,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>storage: <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>storage: <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Used for storing the amount of active read operations on a resource.</p>
 									</div>
@@ -184,17 +184,17 @@
 					<div class="tsd-signature tsd-kind-icon">locker<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_locking_resourcelocker.resourcelocker.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceLocker</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L28">src/util/locking/GreedyReadWriteLocker.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L28">src/util/locking/GreedyReadWriteLocker.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="storage" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> storage</h3>
-					<div class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_keyvalue_keyvaluestorage.keyvaluestorage.html" class="tsd-signature-type" data-tsd-kind="Interface">KeyValueStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L29">src/util/locking/GreedyReadWriteLocker.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L29">src/util/locking/GreedyReadWriteLocker.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +204,7 @@
 					<div class="tsd-signature tsd-kind-icon">suffixes<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_locking_greedyreadwritelocker.greedyreadwritesuffixes.html" class="tsd-signature-type" data-tsd-kind="Interface">GreedyReadWriteSuffixes</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L30">src/util/locking/GreedyReadWriteLocker.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L30">src/util/locking/GreedyReadWriteLocker.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -212,21 +212,21 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="getcountidentifier" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Count<wbr>Identifier</h3>
+					<a name="getcountkey" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Count<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Count<wbr>Identifier<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Count<wbr>Key<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L71">src/util/locking/GreedyReadWriteLocker.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L71">src/util/locking/GreedyReadWriteLocker.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>This identifier is used for storing the count of active read operations.</p>
+									<p>This key is used for storing the count of active read operations.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -235,21 +235,21 @@
 									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="getreadlockidentifier" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Read<wbr>Lock<wbr>Identifier</h3>
+					<a name="getreadlockkey" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Read<wbr>Lock<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Identifier<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Key<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L78">src/util/locking/GreedyReadWriteLocker.ts:78</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L78">src/util/locking/GreedyReadWriteLocker.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -268,16 +268,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="getwritelockidentifier" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Write<wbr>Lock<wbr>Identifier</h3>
+					<a name="getwritelockkey" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Write<wbr>Lock<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Identifier<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Key<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L85">src/util/locking/GreedyReadWriteLocker.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L85">src/util/locking/GreedyReadWriteLocker.ts:85</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -305,7 +305,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L136">src/util/locking/GreedyReadWriteLocker.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L136">src/util/locking/GreedyReadWriteLocker.ts:136</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -338,7 +338,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L106">src/util/locking/GreedyReadWriteLocker.ts:106</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L106">src/util/locking/GreedyReadWriteLocker.ts:106</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -366,7 +366,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L92">src/util/locking/GreedyReadWriteLocker.ts:92</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L92">src/util/locking/GreedyReadWriteLocker.ts:92</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -394,7 +394,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L120">src/util/locking/GreedyReadWriteLocker.ts:120</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L120">src/util/locking/GreedyReadWriteLocker.ts:120</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -442,10 +442,18 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of ReadWriteLocker.withReadLock</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L46">src/util/locking/GreedyReadWriteLocker.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L46">src/util/locking/GreedyReadWriteLocker.ts:46</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Run the given function while the resource is locked.
+										The lock will be released when the (async) input function resolves.
+									This function should be used for operations that only require reading the resource.</p>
+								</div>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
@@ -486,10 +494,18 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of ReadWriteLocker.withWriteLock</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/locking/GreedyReadWriteLocker.ts#L55">src/util/locking/GreedyReadWriteLocker.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/locking/GreedyReadWriteLocker.ts#L55">src/util/locking/GreedyReadWriteLocker.ts:55</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Run the given function while the resource is locked.
+										The lock will be released when the (async) input function resolves.
+									This function should be used for operations that could modify the resource.</p>
+								</div>
+							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
@@ -554,13 +570,13 @@
 								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#suffixes" class="tsd-kind-icon">suffixes</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getcountidentifier" class="tsd-kind-icon">get<wbr>Count<wbr>Identifier</a>
+								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getcountkey" class="tsd-kind-icon">get<wbr>Count<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getreadlockidentifier" class="tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Identifier</a>
+								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getreadlockkey" class="tsd-kind-icon">get<wbr>Read<wbr>Lock<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getwritelockidentifier" class="tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Identifier</a>
+								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#getwritelockkey" class="tsd-kind-icon">get<wbr>Write<wbr>Lock<wbr>Key</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="util_locking_greedyreadwritelocker.greedyreadwritelocker.html#incrementcount" class="tsd-kind-icon">increment<wbr>Count</a>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>storage/conversion/ConversionUtil | Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>storage/conversion/ConversionUtil | Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.1</a>
+					<a href="../modules.html">Community Solid Server - v0.9.0</a>
 				</li>
 				<li>
 					<a href="storage_conversion_conversionutil.html">storage/conversion/ConversionUtil</a>
@@ -72,10 +72,13 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#hasmatchingmediatypes" class="tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#cleanpreferences" class="tsd-kind-icon">clean<wbr>Preferences</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#getbestpreference" class="tsd-kind-icon">get<wbr>Best<wbr>Preference</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#getconversiontarget" class="tsd-kind-icon">get<wbr>Conversion<wbr>Target</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#gettypeweight" class="tsd-kind-icon">get<wbr>Type<wbr>Weight</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#getweightedpreferences" class="tsd-kind-icon">get<wbr>Weighted<wbr>Preferences</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchesmediapreferences" class="tsd-kind-icon">matches<wbr>Media<wbr>Preferences</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="storage_conversion_conversionutil.html#supportsmediatypeconversion" class="tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion</a></li>
 							</ul>
 						</section>
 					</div>
@@ -84,46 +87,236 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="hasmatchingmediatypes" class="tsd-anchor"></a>
-					<h3>has<wbr>Matching<wbr>Media<wbr>Types</h3>
+					<a name="cleanpreferences" class="tsd-anchor"></a>
+					<h3>clean<wbr>Preferences</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferredTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, availableTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">clean<wbr>Preferences<span class="tsd-signature-symbol">(</span>preferences<span class="tsd-signature-symbol">?: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ConversionUtil.ts#L72">src/storage/conversion/ConversionUtil.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L14">src/storage/conversion/ConversionUtil.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Determines whether any available type satisfies the preferences.</p>
+									<p>Cleans incoming preferences to prevent unwanted behaviour.
+										Makes sure internal types have weight 0, unless specifically requested in the preferences,
+									and interprets empty preferences as accepting everything.</p>
 								</div>
-								<dl class="tsd-comment-tags">
-									<dt>throws</dt>
-									<dd><p>BadRequestHttpError
-										If the type preferences are undefined or if there are duplicate preferences.</p>
-									</dd>
-								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> preferredTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>preferences: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences that need to be updated.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h4>
+							<p>A copy of the the preferences with the necessary updates.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="getbestpreference" class="tsd-anchor"></a>
+					<h3>get<wbr>Best<wbr>Preference</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Best<wbr>Preference<span class="tsd-signature-symbol">(</span>types<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a>, preferred<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L84">src/storage/conversion/ConversionUtil.ts:84</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Finds the type from the given types that has the best match with the given preferences,
+									based on the calculated weight.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>types: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Types for which we want to find the best match.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preferred: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences to match the types against.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<p>A <a href="ldp_representation_representationpreferences.html#valuepreference">ValuePreference</a> containing the best match and the corresponding weight.
+							Undefined if there is no match.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="getconversiontarget" class="tsd-anchor"></a>
+					<h3>get<wbr>Conversion<wbr>Target</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Conversion<wbr>Target<span class="tsd-signature-symbol">(</span>types<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a>, preferred<span class="tsd-signature-symbol">?: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L117">src/storage/conversion/ConversionUtil.ts:117</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>For a media type converter that can generate the given types,
+									this function tries to find the type that best matches the given preferences.</p>
+								</div>
+								<p>This function combines several other conversion utility functions
+									to determine what output a converter should generate:
+									it cleans the preferences with <a href="storage_conversion_conversionutil.html#cleanpreferences">cleanPreferences</a> to support empty preferences
+									and to prevent the accidental generation of internal types,
+								after which the best match gets found based on the weights.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>types: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Media types that can be converted to.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preferred: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol"> = {}</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Preferences for output type.</p>
 									</div>
 								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<p>The best match. Undefined if there is no match.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="gettypeweight" class="tsd-anchor"></a>
+					<h3>get<wbr>Type<wbr>Weight</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Type<wbr>Weight<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, preferred<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L36">src/storage/conversion/ConversionUtil.ts:36</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tries to match the given type to the given preferences.
+									In case there are multiple matches the most specific one will be chosen as per RFC 7231.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> availableTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Media types to compare to the preferences.</p>
+										<p>Type for which the matching weight is needed.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preferred: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences to match the type to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<p>The corresponding weight from the preferences or 0 if there is no match.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="getweightedpreferences" class="tsd-anchor"></a>
+					<h3>get<wbr>Weighted<wbr>Preferences</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Weighted<wbr>Preferences<span class="tsd-signature-symbol">(</span>types<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a>, preferred<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L63">src/storage/conversion/ConversionUtil.ts:63</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Measures the weights for all the given types when matched against the given preferences.
+										Results will be sorted by weight.
+									Weights of 0 indicate that no match is possible.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>types: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Types for which we want to calculate the weights.</p>
+									</div>
+								</li>
+								<li>
+									<h5>preferred: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences to match the types against.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol">[]</span></h4>
+							<p>An array with a <a href="ldp_representation_representationpreferences.html#valuepreference">ValuePreference</a> object for every input type, sorted by calculated weight.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="matchesmediapreferences" class="tsd-anchor"></a>
+					<h3>matches<wbr>Media<wbr>Preferences</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">matches<wbr>Media<wbr>Preferences<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, preferred<span class="tsd-signature-symbol">?: </span><a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L129">src/storage/conversion/ConversionUtil.ts:129</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the given type matches the given preferences.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Type to match.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> preferred: <a href="ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Preferences to match against.</p>
 									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>Whether there is at least one preference match.</p>
 						</li>
 					</ul>
 				</section>
@@ -137,7 +330,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ConversionUtil.ts#L84">src/storage/conversion/ConversionUtil.ts:84</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConversionUtil.ts#L141">src/storage/conversion/ConversionUtil.ts:141</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -166,111 +359,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="matchingmediatypes" class="tsd-anchor"></a>
-					<h3>matching<wbr>Media<wbr>Types</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">matching<wbr>Media<wbr>Types<span class="tsd-signature-symbol">(</span>preferredTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, availableTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ConversionUtil.ts#L23">src/storage/conversion/ConversionUtil.ts:23</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Filters media types based on the given preferences.
-										Based on RFC 7231 - Content negotiation.
-										Will add a default <code>internal/*;q=0</code> to the preferences to prevent accidental use of internal types.
-										Since more specific media ranges override less specific ones,
-									this will be ignored if there is a specific internal type preference.</p>
-								</div>
-								<p>This should be called even if there are no preferredTypes since this also filters out internal types.</p>
-								<dl class="tsd-comment-tags">
-									<dt>throws</dt>
-									<dd><p>BadRequestHttpError
-										If the type preferences are undefined or if there are duplicate preferences.</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>preferredTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Preferences for output type.</p>
-									</div>
-								</li>
-								<li>
-									<h5>availableTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Media types to compare to the preferences.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
-							<p>The weighted and filtered list of matching types.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="supportsmediatypeconversion" class="tsd-anchor"></a>
-					<h3>supports<wbr>Media<wbr>Type<wbr>Conversion</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion<span class="tsd-signature-symbol">(</span>inputType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, outputTypes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, convertorIn<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, convertorOut<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ConversionUtil.ts#L115">src/storage/conversion/ConversionUtil.ts:115</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Determines whether the given conversion request is supported,
-									given the available content type conversions:</p>
-									<ul>
-										<li>Checks if there is a content type for the input.</li>
-										<li>Checks if the input type is supported by the parser.</li>
-										<li>Checks if the parser can produce one of the preferred output types.
-										Throws an error with details if conversion is not possible.</li>
-									</ul>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>inputType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;unknown&#x27;</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Actual input type.</p>
-									</div>
-								</li>
-								<li>
-									<h5>outputTypes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Acceptable output types.</p>
-									</div>
-								</li>
-								<li>
-									<h5>convertorIn: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Media types that can be parsed by the converter.</p>
-									</div>
-								</li>
-								<li>
-									<h5>convertorOut: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Media types that can be produced by the converter.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -287,16 +375,25 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="storage_conversion_conversionutil.html#hasmatchingmediatypes" class="tsd-kind-icon">has<wbr>Matching<wbr>Media<wbr>Types</a>
+						<a href="storage_conversion_conversionutil.html#cleanpreferences" class="tsd-kind-icon">clean<wbr>Preferences</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#getbestpreference" class="tsd-kind-icon">get<wbr>Best<wbr>Preference</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#getconversiontarget" class="tsd-kind-icon">get<wbr>Conversion<wbr>Target</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#gettypeweight" class="tsd-kind-icon">get<wbr>Type<wbr>Weight</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#getweightedpreferences" class="tsd-kind-icon">get<wbr>Weighted<wbr>Preferences</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="storage_conversion_conversionutil.html#matchesmediapreferences" class="tsd-kind-icon">matches<wbr>Media<wbr>Preferences</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="storage_conversion_conversionutil.html#matchesmediatype" class="tsd-kind-icon">matches<wbr>Media<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="storage_conversion_conversionutil.html#matchingmediatypes" class="tsd-kind-icon">matching<wbr>Media<wbr>Types</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="storage_conversion_conversionutil.html#supportsmediatypeconversion" class="tsd-kind-icon">supports<wbr>Media<wbr>Type<wbr>Conversion</a>
 					</li>
 				</ul>
 			</nav>

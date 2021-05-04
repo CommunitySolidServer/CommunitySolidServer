@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RoutingAuxiliaryStrategy | Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>RoutingAuxiliaryStrategy | Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.1</a>
+					<a href="../modules.html">Community Solid Server - v0.9.0</a>
 				</li>
 				<li>
 					<a href="../modules/ldp_auxiliary_routingauxiliarystrategy.html">ldp/auxiliary/RoutingAuxiliaryStrategy</a>
@@ -104,7 +104,7 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-private-protected">
@@ -131,18 +131,18 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Routing<wbr>Auxiliary<wbr>Strategy<span class="tsd-signature-symbol">(</span>sources<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_auxiliary_auxiliarystrategy.auxiliarystrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">AuxiliaryStrategy</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html" class="tsd-signature-type" data-tsd-kind="Class">RoutingAuxiliaryStrategy</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#constructor">constructor</a></p>
+								<p>Overrides <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L15">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L15">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -165,7 +165,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#sources">sources</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L15">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L15">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -181,10 +181,24 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.addMetadata</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L26">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L26">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:26</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds metadata related to this auxiliary resource,
+										in case this is required for this type of auxiliary resource.
+										The metadata that is added depends on the given identifier being an auxiliary or associated resource:
+									the metadata will be used to link to the other one, and potentially add extra typing info.</p>
+								</div>
+								<p>Used for:
+									Solid, §4.3.1: &quot;For any defined auxiliary resource available for a given Solid resource, all representations of
+									that resource MUST include an HTTP Link header pointing to the location of each auxiliary resource.&quot;
+								<a href="https://solid.github.io/specification/protocol#auxiliary-resources-server">https://solid.github.io/specification/protocol#auxiliary-resources-server</a></p>
+								<p>The above is an example of how that metadata would only be added in case the input is the associated identifier.</p>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -204,11 +218,18 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.getAssociatedIdentifier</p>
 								<p>Inherited from <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#getassociatedidentifier">getAssociatedIdentifier</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L31">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L31">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:31</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the identifier of the resource which this auxiliary resource is referring to.
+									This does not guarantee that this resource exists.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -228,11 +249,19 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.getAuxiliaryIdentifier</p>
 								<p>Inherited from <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#getauxiliaryidentifier">getAuxiliaryIdentifier</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L17">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L17">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:17</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the identifier of the auxiliary resource corresponding to the given resource.
+									This does not guarantee that this auxiliary resource exists.</p>
+								</div>
+								<p>Should error if there are multiple results: see <a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html#getauxiliaryidentifiers">getAuxiliaryIdentifiers</a>.</p>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">never</span></h4>
 						</li>
 					</ul>
@@ -246,11 +275,19 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.getAuxiliaryIdentifiers</p>
 								<p>Inherited from <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#getauxiliaryidentifiers">getAuxiliaryIdentifiers</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L23">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L23">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:23</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns all the identifiers of corresponding auxiliary resources.
+										This can be used when there are potentially multiple results.
+									In the case of a single result this should be an array containing the result of <a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html#getauxiliaryidentifier">getAuxiliaryIdentifier</a>.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -272,7 +309,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#getmatchingsource">getMatchingSource</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L46">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L46">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:46</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -294,11 +331,19 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.isAuxiliaryIdentifier</p>
 								<p>Inherited from <a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html">RoutingAuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_routingauxiliaryidentifierstrategy.routingauxiliaryidentifierstrategy.html#isauxiliaryidentifier">isAuxiliaryIdentifier</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L27">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts#L27">src/ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy.ts:27</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input identifier corresponds to an auxiliary resource.
+										This does not check if that auxiliary resource exists,
+									only if the identifier indicates that there could be an auxiliary resource there.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -318,10 +363,17 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.isRootRequired</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L21">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L21">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:21</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether this auxiliary resource in a root storage container.
+									If yes, this means they can&#39;t be deleted individually from such a container.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -341,10 +393,17 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of AuxiliaryStrategy.validate</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L39">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts#L39">src/ldp/auxiliary/RoutingAuxiliaryStrategy.ts:39</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Validates if the representation contains valid data for an auxiliary resource.
+									Should throw an error in case the data is invalid.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -375,7 +434,7 @@
 					<li class="current tsd-kind-class tsd-parent-kind-module">
 						<a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html" class="tsd-kind-icon">Routing<wbr>Auxiliary<wbr>Strategy</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="ldp_auxiliary_routingauxiliarystrategy.routingauxiliarystrategy.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-protected">
@@ -428,6 +487,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
@@ -435,12 +495,11 @@
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 			</ul>
 		</div>
 	</div>

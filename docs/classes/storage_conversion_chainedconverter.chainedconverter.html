@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ChainedConverter | Community Solid Server - v0.8.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.8.1">
+	<title>ChainedConverter | Community Solid Server - v0.9.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.8.1</a>
+					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.8.1</a>
+					<a href="../modules.html">Community Solid Server - v0.9.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_conversion_chainedconverter.html">storage/conversion/ChainedConverter</a>
@@ -72,15 +72,32 @@
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>A meta converter that takes an array of other converters as input.
-						It chains these converters by finding intermediate types that are supported by converters on either side.</p>
+							It chains these converters by finding a path of converters
+							that can go from the given content-type to the given type preferences.
+							In case there are multiple paths, the shortest one with the highest weight gets found.
+						Will error in case no path can be found.</p>
 					</div>
+					<p>Generated paths get stored in an internal cache for later re-use on similar requests.
+						Note that due to this caching <code>RepresentationConverter</code>s
+						that change supported input/output types at runtime are not supported,
+					unless cache size is set to 0.</p>
+					<p>This is not a TypedRepresentationConverter since the supported output types
+					might depend on what is the input content-type.</p>
+					<p>Some suggestions on how this class can be even more optimized should this ever be needed in the future.
+					Most of these decrease computation time at the cost of more memory.</p>
+					<ul>
+						<li>Subpaths that are generated could also be cached.</li>
+						<li>When looking for the next step, cached paths could also be considered.</li>
+						<li>The algorithm could start on both ends of a possible path and work towards the middle.</li>
+						<li>When creating a path, store the list of unused converters instead of checking every step.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a>
+						<a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">ChainedConverter</span>
@@ -96,34 +113,30 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_chainedconverter.chainedconverter.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="storage_conversion_chainedconverter.chainedconverter.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#cache" class="tsd-kind-icon">cache</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#converters" class="tsd-kind-icon">converters</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_conversion_chainedconverter.chainedconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="storage_conversion_chainedconverter.chainedconverter.html#logger" class="tsd-kind-icon">logger</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_conversion_chainedconverter.chainedconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Accessors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="storage_conversion_chainedconverter.chainedconverter.html#first" class="tsd-kind-icon">first</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="storage_conversion_chainedconverter.chainedconverter.html#last" class="tsd-kind-icon">last</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_chainedconverter.chainedconverter.html#getinputtypes" class="tsd-kind-icon">get<wbr>Input<wbr>Types</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="storage_conversion_chainedconverter.chainedconverter.html#getmatchingtype" class="tsd-kind-icon">get<wbr>Matching<wbr>Type</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_chainedconverter.chainedconverter.html#getoutputtypes" class="tsd-kind-icon">get<wbr>Output<wbr>Types</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#findbest" class="tsd-kind-icon">find<wbr>Best</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#findpath" class="tsd-kind-icon">find<wbr>Path</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#generatepath" class="tsd-kind-icon">generate<wbr>Path</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_conversion_chainedconverter.chainedconverter.html#handle" class="tsd-kind-icon">handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="storage_conversion_chainedconverter.chainedconverter.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="storage_conversion_chainedconverter.chainedconverter.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#ismatchedpath" class="tsd-kind-icon">is<wbr>Matched<wbr>Path</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#modifytypeweights" class="tsd-kind-icon">modify<wbr>Type<wbr>Weights</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#supportedconverters" class="tsd-kind-icon">supported<wbr>Converters</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_chainedconverter.chainedconverter.html#takestep" class="tsd-kind-icon">take<wbr>Step</a></li>
 							</ul>
 						</section>
 					</div>
@@ -131,33 +144,27 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Chained<wbr>Converter<span class="tsd-signature-symbol">(</span>converters<span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_chainedconverter.chainedconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ChainedConverter</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Chained<wbr>Converter<span class="tsd-signature-symbol">(</span>converters<span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span>, maxCacheSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_chainedconverter.chainedconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ChainedConverter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#constructor">constructor</a></p>
+								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L14">src/storage/conversion/ChainedConverter.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Creates the chain of converters based on the input.
-									The list of <code>converters</code> needs to be at least 2 long.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>converters: <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The chain of converters.</p>
-									</div>
+								</li>
+								<li>
+									<h5>maxCacheSize: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 50</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_conversion_chainedconverter.chainedconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ChainedConverter</a></h4>
@@ -168,23 +175,22 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="cache" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> cache</h3>
+					<div class="tsd-signature tsd-kind-icon">cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LruPathCache</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="converters" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> converters</h3>
 					<div class="tsd-signature tsd-kind-icon">converters<span class="tsd-signature-symbol">:</span> <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L14">src/storage/conversion/ChainedConverter.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a name="inputtypes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> input<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">input<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#inputtypes">inputTypes</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/TypedRepresentationConverter.ts#L27">src/storage/conversion/TypedRepresentationConverter.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L120">src/storage/conversion/ChainedConverter.ts:120</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,164 +200,132 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L12">src/storage/conversion/ChainedConverter.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L118">src/storage/conversion/ChainedConverter.ts:118</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a name="outputtypes" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> output<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">output<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#outputtypes">outputTypes</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/TypedRepresentationConverter.ts#L28">src/storage/conversion/TypedRepresentationConverter.ts:28</a></li>
-						</ul>
-					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Accessors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="first" class="tsd-anchor"></a>
-					<h3>first</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> first<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L31">src/storage/conversion/ChainedConverter.ts:31</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="last" class="tsd-anchor"></a>
-					<h3>last</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> last<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L35">src/storage/conversion/ChainedConverter.ts:35</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="canhandle" class="tsd-anchor"></a>
 					<h3>can<wbr>Handle</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#canhandle">canHandle</a></p>
+								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/TypedRepresentationConverter.ts#L53">src/storage/conversion/TypedRepresentationConverter.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L132">src/storage/conversion/ChainedConverter.ts:132</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Verifies whether this converter supports the input.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>args: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<a name="getinputtypes" class="tsd-anchor"></a>
-					<h3>get<wbr>Input<wbr>Types</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Input<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#getinputtypes">getInputTypes</a></p>
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/TypedRepresentationConverter.ts#L39">src/storage/conversion/TypedRepresentationConverter.ts:39</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Gets the supported input content types for this converter, mapped to a numerical priority.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<a name="getmatchingtype" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Matching<wbr>Type</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Matching<wbr>Type<span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a>, right<span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="findbest" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> find<wbr>Best</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Best<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, preferences<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, paths<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ConversionPath</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MatchedPath</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L53">src/storage/conversion/ChainedConverter.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L245">src/storage/conversion/ChainedConverter.ts:245</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Finds the best media type that can be used to chain 2 converters.</p>
+									<p>Finds the path from the given list that can convert the given type to the given preferences.
+										If there are multiple matches the one with the highest result weight gets chosen.
+									Will return undefined if there are no matches.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>left: <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></h5>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>right: <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a></h5>
+									<h5>preferences: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>paths: <span class="tsd-signature-type">ConversionPath</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MatchedPath</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<a name="getoutputtypes" class="tsd-anchor"></a>
-					<h3>get<wbr>Output<wbr>Types</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="findpath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> find<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">find<wbr>Path<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MatchedPath</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#getoutputtypes">getOutputTypes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/TypedRepresentationConverter.ts#L46">src/storage/conversion/TypedRepresentationConverter.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L172">src/storage/conversion/ChainedConverter.ts:172</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets the supported output content types for this converter, mapped to a numerical quality.</p>
+									<p>Finds a conversion path that can handle the given input,
+									either in the cache or by generating a new one.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreference" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreference</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MatchedPath</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="generatepath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> generate<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">generate<wbr>Path<span class="tsd-signature-symbol">(</span>inType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, outPreferences<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MatchedPath</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L206">src/storage/conversion/ChainedConverter.ts:206</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Tries to generate the optimal and shortest <code>ConversionPath</code> that supports the given parameters,
+									which will then be used to instantiate a specific <code>MatchedPath</code> for those parameters.</p>
+								</div>
+								<p>Errors if such a path does not exist.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>inType: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>outPreferences: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">MatchedPath</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -364,9 +338,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#handle">handle</a></p>
+								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/storage/conversion/ChainedConverter.ts#L39">src/storage/conversion/ChainedConverter.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L137">src/storage/conversion/ChainedConverter.ts:137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -379,39 +353,142 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#handlesafe">handleSafe</a></p>
+								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/54ff231/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L159">src/storage/conversion/ChainedConverter.ts:159</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="ismatchedpath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Matched<wbr>Path</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Matched<wbr>Path<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">path</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">MatchedPath</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L164">src/storage/conversion/ChainedConverter.ts:164</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">unknown</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">path</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-type">MatchedPath</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="modifytypeweights" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> modify<wbr>Type<wbr>Weights</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">modify<wbr>Type<wbr>Weights<span class="tsd-signature-symbol">(</span>weight<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L279">src/storage/conversion/ChainedConverter.ts:279</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Helper function that first runs the canHandle function followed by the handle function.
-										Throws the error of the <a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
-									or returns the result of the <a href="storage_conversion_chainedconverter.chainedconverter.html#handle">handle</a> function otherwise.</p>
+									<p>Creates a new ValuePreferences object, which is equal to the input object
+									with all values multiplied by the given weight.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <a href="../interfaces/storage_conversion_representationconverter.representationconverterargs.html" class="tsd-signature-type" data-tsd-kind="Interface">RepresentationConverterArgs</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Input data that will be handled if it can be handled.</p>
-									</div>
+									<h5>weight: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>types: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A promise resolving if the input can be handled, rejecting with an Error if not.
-							Return value depends on the given type.</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="supportedconverters" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> supported<wbr>Converters</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">supported<wbr>Converters<span class="tsd-signature-symbol">(</span>types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span>, converters<span class="tsd-signature-symbol">: </span><a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConverterPreference</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L286">src/storage/conversion/ChainedConverter.ts:286</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Finds all converters in the given list that support taking any of the given types as input.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>types: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>converters: <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConverterPreference</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="takestep" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> take<wbr>Step</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">take<wbr>Step<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ConversionPath</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConversionPath</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L262">src/storage/conversion/ChainedConverter.ts:262</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Finds all converters that could take the output of the given path as input.
+									For each of these converters a new path gets created which is the input path appended by the converter.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>path: <span class="tsd-signature-type">ConversionPath</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ConversionPath</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -435,44 +512,47 @@
 					<li class="current tsd-kind-class tsd-parent-kind-module">
 						<a href="storage_conversion_chainedconverter.chainedconverter.html" class="tsd-kind-icon">Chained<wbr>Converter</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#cache" class="tsd-kind-icon">cache</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#converters" class="tsd-kind-icon">converters</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#first" class="tsd-kind-icon">first</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#last" class="tsd-kind-icon">last</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#getinputtypes" class="tsd-kind-icon">get<wbr>Input<wbr>Types</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#findbest" class="tsd-kind-icon">find<wbr>Best</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#getmatchingtype" class="tsd-kind-icon">get<wbr>Matching<wbr>Type</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#findpath" class="tsd-kind-icon">find<wbr>Path</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="storage_conversion_chainedconverter.chainedconverter.html#getoutputtypes" class="tsd-kind-icon">get<wbr>Output<wbr>Types</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#generatepath" class="tsd-kind-icon">generate<wbr>Path</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_chainedconverter.chainedconverter.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#ismatchedpath" class="tsd-kind-icon">is<wbr>Matched<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#modifytypeweights" class="tsd-kind-icon">modify<wbr>Type<wbr>Weights</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#supportedconverters" class="tsd-kind-icon">supported<wbr>Converters</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_chainedconverter.chainedconverter.html#takestep" class="tsd-kind-icon">take<wbr>Step</a>
 							</li>
 						</ul>
 					</li>
@@ -497,6 +577,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
@@ -504,15 +585,11 @@
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 			</ul>
 		</div>
 	</div>
