@@ -109,7 +109,7 @@
     "escape-string-regexp": "^4.0.0",
     "fetch-sparql-endpoint": "^1.8.0",
     "handlebars": "^4.7.6",
-    "jose": "^3.11.1",
+    "jose": "^3.11.6",
     "mime-types": "^2.1.27",
     "n3": "^1.8.0",
     "nodemailer": "^6.4.17",
@@ -132,7 +132,7 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
-    "@inrupt/solid-client-authn-node": "^1.7.2",
+    "@inrupt/solid-client-authn-node": "^1.8.1",
     "@microsoft/tsdoc-config": "^0.15.0",
     "@tsconfig/node12": "^1.0.7",
     "@types/cheerio": "^0.22.27",
@@ -154,7 +154,7 @@
     "eslint-plugin-tsdoc": "^0.2.7",
     "eslint-plugin-unused-imports": "^1.0.0",
     "husky": "^4.2.5",
-    "jest": "^26.0.1",
+    "jest": "^26.6.3",
     "jest-rdf": "^1.5.0",
     "manual-git-changelog": "^1.0.1",
     "node-mocks-http": "^1.8.1",
