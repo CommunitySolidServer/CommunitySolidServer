@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v0.9.0"></a>
+## [v0.9.0](https://github.com/solid/community-server/compare/v0.8.1...v0.9.0) - 2021-05-04
+
+### Added
+* [feat: Add identity provider (#455)](https://github.com/solid/community-server/commit/1d65143e89d4d64663805467a1587850690eeb59)
+* [feat: Add redis based locking mechanism](https://github.com/solid/community-server/commit/99d0173213be4b05bc78b80ac108cbb5f0906ad6)
+* [feat: enable more compact config props using type-scoped contexts](https://github.com/solid/community-server/commit/2861b902c476c456b9e5c208ab5048fc6e318421)
+* [feat: Update ChainedConverter to create dynamic paths](https://github.com/solid/community-server/commit/44d82eac045fc3a5e8ae4b5407fc1989889f9e27)
+* [feat: Expose AppRunner.run for easily serving from JS apps](https://github.com/solid/community-server/commit/d1eadd75e73e79fe3c50034f151c6a4e93844c14)
+
+### Fixed
+* [fix: Prevent CliRunner tests from outputting errors](https://github.com/solid/community-server/commit/a00de24ec0ffb213dacd1bc5de09c1e7d0094eeb)
+* [fix: Use HttpErrors instead of Errors](https://github.com/solid/community-server/commit/218c8f4662b41f8f4d534d8b54f912664c365769)
+* [fix: Prevent HttpRequest from being closed](https://github.com/solid/community-server/commit/953458231b4b7149056cf6fe6887a1eef7a87737)
+* [fix: Allow owners to edit their own profile](https://github.com/solid/community-server/commit/7aebab1173c8a66b6f3630c8c8805021dc869367)
+
+
 <a name="v0.8.1"></a>
 ## [v0.8.1](https://github.com/solid/community-server/compare/v0.8.0...v0.8.1) - 2021-03-23
 
