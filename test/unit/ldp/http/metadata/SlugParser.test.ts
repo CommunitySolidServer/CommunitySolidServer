@@ -15,20 +15,20 @@ describe('A SlugParser', (): void => {
   });
 
   it('does nothing if there is no slug header.', async(): Promise<void> => {
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(0);
   });
 
   it('errors if there are multiple slug headers.', async(): Promise<void> => {
     request.headers.slug = [ 'slugA', 'slugB' ];
-    const result = parser.parse(request, metadata);
+    const result = parser.handle({ request, metadata });
     await expect(result).rejects.toThrow(BadRequestHttpError);
     await expect(result).rejects.toThrow('Request has multiple Slug headers');
   });
 
   it('stores the slug metadata.', async(): Promise<void> => {
     request.headers.slug = 'slugA';
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.get(HTTP.slug)?.value).toBe('slugA');
   });

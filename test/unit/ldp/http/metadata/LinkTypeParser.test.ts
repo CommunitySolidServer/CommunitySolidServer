@@ -14,20 +14,20 @@ describe('A LinkTypeParser', (): void => {
   });
 
   it('does nothing if there are no type headers.', async(): Promise<void> => {
-    await parser.parse(request, metadata);
+    await parser.handle({ request, metadata });
     expect(metadata.quads()).toHaveLength(0);
   });
 
   it('stores link headers with rel = type as metadata.', async(): Promise<void> => {
     request.headers.link = '<http://test.com/type>;rel="type"';
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.get(RDF.type)?.value).toBe('http://test.com/type');
   });
 
   it('supports multiple link headers.', async(): Promise<void> => {
     request.headers.link = [ '<http://test.com/typeA>;rel="type"', '<http://test.com/typeB>;rel=type' ];
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(2);
     expect(metadata.getAll(RDF.type).map((term): any => term.value))
       .toEqual([ 'http://test.com/typeA', 'http://test.com/typeB' ]);
@@ -35,7 +35,7 @@ describe('A LinkTypeParser', (): void => {
 
   it('supports multiple link header values in the same entry.', async(): Promise<void> => {
     request.headers.link = '<http://test.com/typeA>;rel="type" , <http://test.com/typeB>;rel=type';
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(2);
     expect(metadata.getAll(RDF.type).map((term): any => term.value))
       .toEqual([ 'http://test.com/typeA', 'http://test.com/typeB' ]);
@@ -43,13 +43,13 @@ describe('A LinkTypeParser', (): void => {
 
   it('ignores invalid link headers.', async(): Promise<void> => {
     request.headers.link = 'http://test.com/type;rel="type"';
-    await parser.parse(request, metadata);
+    await parser.handle({ request, metadata });
     expect(metadata.quads()).toHaveLength(0);
   });
 
   it('ignores non-type link headers.', async(): Promise<void> => {
     request.headers.link = '<http://test.com/typeA>;rel="notype" , <http://test.com/typeB>';
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(0);
   });
 });

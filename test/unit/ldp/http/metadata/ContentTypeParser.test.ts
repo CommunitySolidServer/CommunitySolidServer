@@ -13,13 +13,13 @@ describe('A ContentTypeParser', (): void => {
   });
 
   it('does nothing if there is no content-type header.', async(): Promise<void> => {
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(0);
   });
 
   it('sets the given content-type as metadata.', async(): Promise<void> => {
     request.headers['content-type'] = 'text/plain;charset=UTF-8';
-    await expect(parser.parse(request, metadata)).resolves.toBeUndefined();
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.contentType).toBe('text/plain');
   });
