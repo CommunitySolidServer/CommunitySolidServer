@@ -4,19 +4,19 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseParameters, splitAndClean, transformQuotedStrings } from '../../../util/HeaderUtil';
 import { RDF } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
-import type { MetadataParser } from './MetadataParser';
+import { MetadataParser } from './MetadataParser';
 
 /**
  * Parses Link headers with "rel=type" parameters and adds them as RDF.type metadata.
  */
-export class LinkTypeParser implements MetadataParser {
+export class LinkTypeParser extends MetadataParser {
   protected readonly logger = getLoggerFor(this);
 
-  public async parse(request: HttpRequest, metadata: RepresentationMetadata): Promise<void> {
-    const link = request.headers.link ?? [];
+  public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
+    const link = input.request.headers.link ?? [];
     const entries: string[] = Array.isArray(link) ? link : [ link ];
     for (const entry of entries) {
-      this.parseLink(entry, metadata);
+      this.parseLink(entry, input.metadata);
     }
   }
 

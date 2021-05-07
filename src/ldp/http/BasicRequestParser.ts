@@ -1,8 +1,9 @@
 import type { HttpRequest } from '../../server/HttpRequest';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { Operation } from '../operations/Operation';
+import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { BodyParser } from './BodyParser';
-import type { MetadataExtractor } from './metadata/MetadataExtractor';
+import type { MetadataParser } from './metadata/MetadataParser';
 import type { PreferenceParser } from './PreferenceParser';
 import { RequestParser } from './RequestParser';
 import type { TargetExtractor } from './TargetExtractor';
@@ -13,18 +14,18 @@ import type { TargetExtractor } from './TargetExtractor';
 export interface BasicRequestParserArgs {
   targetExtractor: TargetExtractor;
   preferenceParser: PreferenceParser;
-  metadataExtractor: MetadataExtractor;
+  metadataParser: MetadataParser;
   bodyParser: BodyParser;
 }
 
 /**
  * Creates an {@link Operation} from an incoming {@link HttpRequest} by aggregating the results
- * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataExtractor}, and {@link BodyParser}.
+ * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataParser}, and {@link BodyParser}.
  */
 export class BasicRequestParser extends RequestParser {
   private readonly targetExtractor!: TargetExtractor;
   private readonly preferenceParser!: PreferenceParser;
-  private readonly metadataExtractor!: MetadataExtractor;
+  private readonly metadataParser!: MetadataParser;
   private readonly bodyParser!: BodyParser;
 
   public constructor(args: BasicRequestParserArgs) {
@@ -39,7 +40,8 @@ export class BasicRequestParser extends RequestParser {
     }
     const target = await this.targetExtractor.handleSafe({ request });
     const preferences = await this.preferenceParser.handleSafe({ request });
-    const metadata = await this.metadataExtractor.handleSafe({ request, target });
+    const metadata = new RepresentationMetadata(target);
+    await this.metadataParser.handleSafe({ request, metadata });
     const body = await this.bodyParser.handleSafe({ request, metadata });
 
     return { method, target, preferences, body };

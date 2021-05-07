@@ -2,9 +2,9 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "@graph": [
     {
-      "@id": "urn:solid-server:default:MetadataExtractor",
-      "@type": "BasicMetadataExtractor",
-      "parsers": [
+      "@id": "urn:solid-server:default:MetadataParser",
+      "@type": "ParallelHandler",
+      "handlers": [
         {
           "@type": "ContentTypeParser"
         },

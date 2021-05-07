@@ -10,8 +10,8 @@
       "args_preferenceParser": {
         "@type": "AcceptPreferenceParser"
       },
-      "args_metadataExtractor": {
-        "@id": "urn:solid-server:default:MetadataExtractor"
+      "args_metadataParser": {
+        "@id": "urn:solid-server:default:MetadataParser"
       },
       "args_bodyParser": {
         "@type": "WaterfallHandler",
