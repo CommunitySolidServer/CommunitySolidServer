@@ -35,6 +35,6 @@ describe('A PatchingStore', (): void => {
     expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, {}, undefined);
     await expect((source.modifyResource as jest.Mock).mock.results[0].value).rejects.toThrow('dummy');
     expect(handleSafeFn).toHaveBeenCalledTimes(1);
-    expect(handleSafeFn).toHaveBeenLastCalledWith({ identifier: { path: 'modifyPath' }, patch: {}});
+    expect(handleSafeFn).toHaveBeenLastCalledWith({ source, identifier: { path: 'modifyPath' }, patch: {}});
   });
 });

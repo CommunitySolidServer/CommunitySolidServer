@@ -4,44 +4,56 @@ import { Store } from 'n3';
 import type { BaseQuad } from 'rdf-js';
 import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
+import type { Patch } from '../../ldp/http/Patch';
 import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
+import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { RepresentationConverter } from '../conversion/RepresentationConverter';
 import type { ResourceStore } from '../ResourceStore';
+import type { PatchHandlerArgs } from './PatchHandler';
 import { PatchHandler } from './PatchHandler';
 
 /**
  * PatchHandler that supports specific types of SPARQL updates.
  * Currently all DELETE/INSERT types are supported that have empty where bodies and no variables.
+ *
+ * Will try to keep the content-type and metadata of the original resource intact.
+ * In case this PATCH would create a new resource, it will have content-type `defaultType`.
  */
 export class SparqlUpdatePatchHandler extends PatchHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly source: ResourceStore;
+  private readonly converter: RepresentationConverter;
+  private readonly defaultType: string;
 
-  public constructor(source: ResourceStore) {
+  public constructor(converter: RepresentationConverter, defaultType = 'text/turtle') {
     super();
-    this.source = source;
+    this.converter = converter;
+    this.defaultType = defaultType;
   }
 
-  public async canHandle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}): Promise<void> {
-    if (typeof input.patch.algebra !== 'object') {
-      throw new NotImplementedHttpError('Only SPARQL update patch requests are supported');
+  public async canHandle({ patch }: PatchHandlerArgs): Promise<void> {
+    if (!this.isSparqlUpdate(patch)) {
+      throw new NotImplementedHttpError('Only SPARQL update patches are supported');
     }
   }
 
-  public async handle(input: {identifier: ResourceIdentifier; patch: SparqlUpdatePatch}):
-  Promise<ResourceIdentifier[]> {
+  public async handle(input: PatchHandlerArgs): Promise<ResourceIdentifier[]> {
     // Verify the patch
-    const { identifier, patch } = input;
-    const op = patch.algebra;
+    const { source, identifier, patch } = input;
+    const op = (patch as SparqlUpdatePatch).algebra;
     this.validateUpdate(op);
 
-    return this.applyPatch(identifier, op);
+    return this.applyPatch(source, identifier, op);
+  }
+
+  private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {
+    return typeof (patch as SparqlUpdatePatch).algebra === 'object';
   }
 
   private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
@@ -108,33 +120,51 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  private async applyPatch(identifier: ResourceIdentifier, op: Algebra.Operation): Promise<ResourceIdentifier[]> {
-    const store = new Store<BaseQuad>();
+  private async applyPatch(source: ResourceStore, identifier: ResourceIdentifier, op: Algebra.Operation):
+  Promise<ResourceIdentifier[]> {
+    // These are used to make sure we keep the original content-type and metadata
+    let contentType: string;
+    let metadata: RepresentationMetadata;
+
+    const result = new Store<BaseQuad>();
     try {
       // Read the quads of the current representation
-      const quads = await this.source.getRepresentation(identifier,
-        { type: { [INTERNAL_QUADS]: 1 }});
-      const importEmitter = store.import(quads.data);
+      const representation = await source.getRepresentation(identifier, {});
+      contentType = representation.metadata.contentType ?? this.defaultType;
+      const preferences = { type: { [INTERNAL_QUADS]: 1 }};
+      const quads = await this.converter.handleSafe({ representation, identifier, preferences });
+      // eslint-disable-next-line prefer-destructuring
+      metadata = quads.metadata;
+
+      const importEmitter = result.import(quads.data);
       await new Promise((resolve, reject): void => {
         importEmitter.on('end', resolve);
         importEmitter.on('error', reject);
       });
-      this.logger.debug(`${store.size} quads in ${identifier.path}.`);
+      this.logger.debug(`${result.size} quads in ${identifier.path}.`);
     } catch (error: unknown) {
-      // Solid, §5.1: "Clients who want to assign a URI to a resource, MUST use PUT and PATCH requests."
+      // Solid, §5.1: "When a successful PUT or PATCH request creates a resource,
+      // the server MUST use the effective request URI to assign the URI to that resource."
       // https://solid.github.io/specification/protocol#resource-type-heuristics
       if (!NotFoundHttpError.isInstance(error)) {
         throw error;
       }
+      contentType = this.defaultType;
+      metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
       this.logger.debug(`Patching new resource ${identifier.path}.`);
     }
 
-    this.applyOperation(store, op);
-    this.logger.debug(`${store.size} quads will be stored to ${identifier.path}.`);
+    this.applyOperation(result, op);
+    this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    // Write the result
-    const patched = new BasicRepresentation(store.match() as Readable, INTERNAL_QUADS);
-    return this.source.setRepresentation(identifier, patched);
+    // Convert back to the original type and write the result
+    const patched = new BasicRepresentation(result.match() as Readable, metadata);
+    const converted = await this.converter.handleSafe({
+      representation: patched,
+      identifier,
+      preferences: { type: { [contentType]: 1 }},
+    });
+    return source.setRepresentation(identifier, converted);
   }
 
   /**

@@ -23,7 +23,7 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch {
-      return this.patcher.handleSafe({ identifier, patch });
+      return this.patcher.handleSafe({ source: this.source, identifier, patch });
     }
   }
 }

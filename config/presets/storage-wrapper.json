@@ -42,8 +42,8 @@
       "patcher": {
         "@id": "urn:solid-server:default:PatchHandler",
         "@type": "SparqlUpdatePatchHandler",
-        "source": {
-          "@id": "urn:solid-server:default:ResourceStore_ToTurtle"
+        "converter": {
+          "@id": "urn:solid-server:default:RepresentationConverter"
         }
       }
     },
