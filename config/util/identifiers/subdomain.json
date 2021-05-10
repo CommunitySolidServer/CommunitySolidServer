@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "comment": "Supports multiple roots such as both http://test.com/ and http://alice.test.com/.",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:IdentifierStrategy",
+      "@type": "SubdomainIdentifierStrategy",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    },
+    {
+      "comment": "Only required when pod creation is enabled.",
+      "@id": "urn:solid-server:default:IdentifierGenerator",
+      "@type": "SubdomainIdentifierGenerator",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    },
+    {
+      "comment": "Only required when using a file-based backend.",
+      "@id": "urn:solid-server:default:FileIdentifierMapper",
+      "@type": "SubdomainExtensionBasedMapper",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "rootFilepath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
+      "baseSubdomain": "www",
+      "overrideTypes_acl": "text/turtle",
+      "overrideTypes_meta": "text/turtle"
+    }
+  ]
+}

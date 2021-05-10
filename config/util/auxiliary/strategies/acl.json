@@ -1,0 +1,26 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Contains all features of acl auxiliary resources (suffix, link header, etc.).",
+      "@id": "urn:solid-server:default:AclStrategy",
+      "@type": "ComposedAuxiliaryStrategy",
+      "identifierStrategy": { "@id": "urn:solid-server:default:AclIdentifierStrategy" },
+      "metadataGenerator": {
+        "@type": "LinkMetadataGenerator",
+        "link": "http://www.w3.org/ns/auth/acl#accessControl",
+        "identifierStrategy": { "@id": "urn:solid-server:default:AclIdentifierStrategy" }
+      },
+      "validator": {
+        "@type": "RdfValidator",
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      },
+      "isRootRequired": true
+    },
+    {
+      "@id": "urn:solid-server:default:AclIdentifierStrategy",
+      "@type": "SuffixAuxiliaryIdentifierStrategy",
+      "suffix": ".acl"
+    }
+  ]
+}

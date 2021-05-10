@@ -73,7 +73,7 @@ describe('A TemplatedPodGenerator', (): void => {
 
   it('uses a default template folder if none is provided.', async(): Promise<void> => {
     generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage);
-    const defaultPath = joinFilePath(__dirname, '../../../../config/templates/', template);
+    const defaultPath = joinFilePath(__dirname, '../../../../templates/config/', template);
 
     await expect(generator.generate(identifier, settings)).resolves.toBe('store');
     expect(storeFactory.generate)

@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/identity/handler/adapter-factory/wrapped-fetch.json",
+    "files-scs:config/identity/handler/interaction/handler.json",
+    "files-scs:config/identity/handler/key-value/resource-store.json",
+    "files-scs:config/identity/handler/provider-factory/identity.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Routes all IDP related requests to the relevant handlers.",
+      "@id": "urn:solid-server:default:IdentityProviderHandler",
+      "@type": "RouterHandler",
+      "allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
+      "handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+    },
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+      "@type": "IdentityProviderHttpHandler",
+      "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
+      "interactionPolicy": { "@id": "urn:solid-server:auth:password:AccountInteractionPolicy" },
+      "interactionHttpHandler": { "@id": "urn:solid-server:auth:password:InteractionHttpHandler" },
+      "errorResponseWriter": { "@type": "ErrorResponseWriter" }
+    }
+  ]
+}

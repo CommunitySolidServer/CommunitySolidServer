@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Emits events on changes to resources.",
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "MonitoringStore"
+    }
+  ]
+}

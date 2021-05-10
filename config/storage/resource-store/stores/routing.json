@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Routes data to different stores based on the chosen rule.",
+      "@id": "urn:solid-server:default:ResourceStore_Routing",
+      "@type": "RoutingResourceStore",
+      "rule": { "@id": "urn:solid-server:default:RouterRule" }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/http/middleware/handlers/constant-headers.json",
+    "files-scs:config/http/middleware/handlers/cors.json",
+    "files-scs:config/http/middleware/handlers/updates-via.json"
+  ],
+  "@graph": [
+    {
+      "comment": "All of these will always be executed on any incoming request. These are mostly used for adding response headers.",
+      "@id": "urn:solid-server:default:Middleware",
+      "@type": "SequenceHandler",
+      "handlers": [
+        {
+          "comment": "These handlers can be executed in any order.",
+          "@id": "urn:solid-server:default:ParallelMiddleware",
+          "@type": "ParallelHandler",
+          "handlers": [
+            { "@id": "urn:solid-server:default:Middleware_Header" },
+            { "@id": "urn:solid-server:default:Middleware_WebSocket" }
+          ]
+        },
+        {
+          "comment": "CORS has to be last since it can close the connection.",
+          "@id": "urn:solid-server:default:Middleware_Cors"
+        }
+      ]
+    }
+  ]
+}

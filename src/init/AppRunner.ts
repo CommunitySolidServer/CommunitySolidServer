@@ -88,7 +88,7 @@ export class AppRunner {
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
-    const configFile = this.resolveFilePath(params.config, 'config/config-default.json');
+    const configFile = this.resolveFilePath(params.config, 'config/default.json');
     const variables = this.createVariables(params);
 
     // Create and execute the server initializer

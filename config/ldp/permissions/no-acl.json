@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Extracts the required permissions based on the HTTP method.",
+      "@id": "urn:solid-server:default:PermissionsExtractor",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@type": "MethodPermissionsExtractor" },
+        { "@type": "SparqlPatchPermissionsExtractor" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure the root container exists and marks it as pim:Storage.",
+      "@id": "urn:solid-server:default:RootContainerInitializer",
+      "@type": "RootContainerInitializer",
+      "settings_store": { "@id": "urn:solid-server:default:ResourceStore" },
+      "settings_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}

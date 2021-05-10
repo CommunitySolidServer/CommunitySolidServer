@@ -1,24 +1,33 @@
 import type { Server } from 'http';
 import fetch from 'cross-fetch';
+import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import { joinFilePath } from '../../src/util/PathUtil';
 import { readableToString } from '../../src/util/StreamUtil';
 import { getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('PodCreation');
 const baseUrl = `http://localhost:${port}/`;
 
 describe('A server with a pod handler', (): void => {
+  let initializer: Initializer;
+  let factory: HttpServerFactory;
   let server: Server;
   const settings = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
 
   beforeAll(async(): Promise<void> => {
-    const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
+    const instances = await instantiateFromConfig(
+      'urn:solid-server:test:Instances',
+      getTestConfigPath('server-without-auth.json'),
+      {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
+        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       },
-    ) as HttpServerFactory;
+    ) as Record<string, any>;
+    ({ factory, initializer } = instances);
+    await initializer.handleSafe();
     server = factory.startServer(port);
   });
 

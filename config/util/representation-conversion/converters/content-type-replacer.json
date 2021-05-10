@@ -1,0 +1,32 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Changes content-type without changing content. E.g., if application/json is requested, application/ld+json is also valid.",
+      "@id": "urn:solid-server:default:ContentTypeReplacer",
+      "@type": "ContentTypeReplacer",
+      "replacements": [
+        {
+          "ContentTypeReplacer:_replacements_key": "application/n-triples",
+          "ContentTypeReplacer:_replacements_value": "text/turtle"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "text/turtle",
+          "ContentTypeReplacer:_replacements_value": "application/trig"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "application/ld+json",
+          "ContentTypeReplacer:_replacements_value": "application/json"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "application/*",
+          "ContentTypeReplacer:_replacements_value": "application/octet-stream"
+        },
+        {
+          "ContentTypeReplacer:_replacements_key": "text/*",
+          "ContentTypeReplacer:_replacements_value": "application/octet-stream"
+        }
+      ]
+    }
+  ]
+}

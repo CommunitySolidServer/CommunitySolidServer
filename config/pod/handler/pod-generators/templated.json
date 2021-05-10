@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Generates ResourceStores that correspond to new pods.",
+      "@id": "urn:solid-server:default:PodGenerator",
+      "@type": "TemplatedPodGenerator",
+      "storeFactory": { "@type": "BaseComponentsJsFactory" },
+      "variableHandler": {
+        "@type": "ParallelHandler",
+        "handlers": [
+          { "@type": "BaseUrlHandler" },
+          {
+            "@type": "RootFilePathHandler",
+            "fileMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
+          }
+        ]
+      },
+      "configStorage": { "@id": "urn:solid-server:default:PodConfigurationStorage" }
+    }
+  ]
+}

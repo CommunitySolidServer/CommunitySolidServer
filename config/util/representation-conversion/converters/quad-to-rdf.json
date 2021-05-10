@@ -1,0 +1,36 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts Quad objects to many RDF serialization.",
+      "@id": "urn:solid-server:default:QuadToRdfConverter",
+      "@type": "QuadToRdfConverter",
+      "options_outputPreferences": [
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "text/turtle",
+          "QuadToRdfConverter:_options_outputPreferences_value": 1
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/n-triples",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/trig",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/n-quads",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "text/n3",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.95
+        },
+        {
+          "QuadToRdfConverter:_options_outputPreferences_key": "application/ld+json",
+          "QuadToRdfConverter:_options_outputPreferences_value": 0.8
+        }
+      ]
+    }
+  ]
+}

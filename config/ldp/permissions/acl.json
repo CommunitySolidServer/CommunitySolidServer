@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure acl files require control permissions.",
+      "@id": "urn:solid-server:default:PermissionsExtractor",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "@type": "AclPermissionsExtractor",
+          "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
+        },
+        { "@type": "MethodPermissionsExtractor" },
+        { "@type": "SparqlPatchPermissionsExtractor" }
+      ]
+    }
+  ]
+}

@@ -2,9 +2,8 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import type { ResourceStore } from '../../src/storage/ResourceStore';
 import { getPort } from '../util/Util';
-import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import { getPresetConfigPath, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
 const port = getPort('Subdomains');
 const baseUrl = `http://localhost:${port}/`;
@@ -12,17 +11,17 @@ const baseUrl = `http://localhost:${port}/`;
 const rootFilePath = getTestFolder('subdomains');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
-    storeUrn: 'urn:solid-server:default:MemoryResourceStore',
+    storeConfig: 'storage/resource-store/memory.json',
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    storeUrn: 'urn:solid-server:default:FileResourceStore',
+    storeConfig: 'storage/resource-store/file.json',
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
 // Simulating subdomains using the forwarded header so no DNS changes are required
-describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown }): void => {
+describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardown }): void => {
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
@@ -32,28 +31,23 @@ describe.each(stores)('A subdomain server with %s', (name, { storeUrn, teardown 
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:port': port,
+      'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
-    const internalStore = await instantiateFromConfig(
-      storeUrn,
-      'server-subdomains-unsafe.json',
-      variables,
-    ) as ResourceStore;
-    variables['urn:solid-server:default:variable:store'] = internalStore;
 
-    // Create and initialize the HTTP handler and related components
+    // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'server-subdomains-unsafe.json',
+      [
+        getPresetConfigPath(storeConfig),
+        getTestConfigPath('server-subdomains-unsafe.json'),
+      ],
       variables,
     ) as Record<string, any>;
     ({ factory, initializer } = instances);
 
-    // Set up the internal store
     await initializer.handleSafe();
-
     server = factory.startServer(port);
   });
 

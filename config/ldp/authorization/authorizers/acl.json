@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:WebAclAuthorizer",
+      "@type": "WebAclAuthorizer",
+      "aclStrategy": {
+        "@id": "urn:solid-server:default:AclStrategy"
+      },
+      "resourceStore": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      },
+      "identifierStrategy": {
+        "@id": "urn:solid-server:default:IdentifierStrategy"
+      }
+    }
+  ]
+}

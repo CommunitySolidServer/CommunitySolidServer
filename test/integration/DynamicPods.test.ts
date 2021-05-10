@@ -5,7 +5,7 @@ import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
-import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import { getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
 const port = getPort('DynamicPods');
 const baseUrl = `http://localhost:${port}/`;
@@ -44,7 +44,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
     // Create and initialize the HTTP handler and related components
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'server-dynamic-unsafe.json',
+      getTestConfigPath('server-dynamic-unsafe.json'),
       variables,
     ) as Record<string, any>;
     ({ factory, initializer } = instances);

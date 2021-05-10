@@ -4,7 +4,7 @@ import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('ServerFetch');
 const baseUrl = `http://localhost:${port}/`;
@@ -18,7 +18,9 @@ describe('A Solid server', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const instances = await instantiateFromConfig(
-      'urn:solid-server:test:Instances', 'server-memory.json', {
+      'urn:solid-server:test:Instances',
+      getTestConfigPath('server-memory.json'),
+      {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:idpTemplateFolder': '',

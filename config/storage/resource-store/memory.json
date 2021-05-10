@@ -1,0 +1,33 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/resource-store/data-accessors/memory.json",
+    "files-scs:config/storage/resource-store/stores/converting.json",
+    "files-scs:config/storage/resource-store/stores/data-accessor.json",
+    "files-scs:config/storage/resource-store/stores/locking.json",
+    "files-scs:config/storage/resource-store/stores/patching.json"
+  ],
+  "@graph": [
+    {
+      "comment": "A default store setup with a memory backend.",
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "MonitoringStore",
+      "MonitoringStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Locking",
+        "LockingResourceStore:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Patching",
+          "PatchingStore:_source": {
+            "@id": "urn:solid-server:default:ResourceStore_Converting",
+            "RepresentationConvertingStore:_source": {
+              "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
+              "DataAccessorBasedStore:_accessor": {
+                "@id": "urn:solid-server:default:MemoryDataAccessor"
+              }
+            }
+          }
+        }
+      }
+    }
+
+  ]
+}

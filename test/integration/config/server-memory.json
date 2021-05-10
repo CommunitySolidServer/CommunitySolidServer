@@ -1,27 +1,28 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/presets/acl.json",
-    "files-scs:config/presets/http.json",
-    "files-scs:config/presets/identifiers/suffix-identifiers.json",
-    "files-scs:config/presets/init.json",
-    "files-scs:config/presets/ldp.json",
-    "files-scs:config/presets/ldp/credentials-extractor.json",
-    "files-scs:config/presets/ldp/metadata-handler.json",
-    "files-scs:config/presets/ldp/operation-handler.json",
-    "files-scs:config/presets/ldp/permissions-extractor.json",
-    "files-scs:config/presets/ldp/response-writer.json",
-    "files-scs:config/presets/ldp/request-parser.json",
-    "files-scs:config/presets/ldp/websockets.json",
-    "files-scs:config/presets/middleware.json",
-    "files-scs:config/presets/pod-management.json",
-    "files-scs:config/presets/representation-conversion.json",
-    "files-scs:config/presets/static.json",
-    "files-scs:config/presets/storage/backend/storage-memory.json",
-    "files-scs:config/presets/storage-wrapper.json",
-    "files-scs:config/presets/cli-params.json",
-    "files-scs:config/presets/identity/identity-provider.json",
-    "files-scs:config/presets/identity/interaction-policy.json"
+    "files-scs:config/http/handler/default.json",
+    "files-scs:config/http/middleware/websockets.json",
+    "files-scs:config/http/server-factory/websockets.json",
+    "files-scs:config/http/static/default.json",
+    "files-scs:config/identity/handler/default.json",
+    "files-scs:config/init/handler/default.json",
+    "files-scs:config/ldp/authentication/dpop-bearer.json",
+    "files-scs:config/ldp/authorization/webacl.json",
+    "files-scs:config/ldp/handler/default.json",
+    "files-scs:config/ldp/metadata-parser/default.json",
+    "files-scs:config/ldp/metadata-writer/default.json",
+    "files-scs:config/ldp/permissions/acl.json",
+    "files-scs:config/pod/handler/static.json",
+    "files-scs:config/storage/key-value/memory.json",
+    "files-scs:config/storage/resource-store/memory.json",
+    "files-scs:config/util/auxiliary/acl.json",
+    "files-scs:config/util/identifiers/suffix.json",
+    "files-scs:config/util/index/default.json",
+    "files-scs:config/util/logging/winston.json",
+    "files-scs:config/util/representation-conversion/default.json",
+    "files-scs:config/util/resource-locker/memory.json",
+    "files-scs:config/util/variables/default.json"
   ],
   "@graph": [
     {
@@ -29,14 +30,9 @@
       "@type": "RecordObject",
       "RecordObject:_record": [
         {
+          "comment": "Only use the parallel initializer. Starting the server is done in the test code..",
           "RecordObject:_record_key": "initializer",
-          "RecordObject:_record_value": {
-            "@type": "SequenceHandler",
-            "SequenceHandler:_handlers": [
-              { "@id": "urn:solid-server:default:RootContainerInitializer" },
-              { "@id": "urn:solid-server:default:AclInitializer" }
-            ]
-          }
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ParallelInitializer" }
         },
         {
           "RecordObject:_record_key": "factory",
@@ -59,11 +55,8 @@
       "args_emailConfig_auth_pass": "NYEaCsqV7aVStRCbmC"
     },
     {
-      "@id": "urn:solid-server:default:RoutingResourceStore",
-      "@type": "PassthroughStore",
-      "PassthroughStore:_source": {
-        "@id": "urn:solid-server:default:MemoryResourceStore"
-      }
+      "@id": "urn:solid-server:default:ResourcesGenerator",
+      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/test/assets/templates"
     }
   ]
 }

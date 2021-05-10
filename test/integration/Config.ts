@@ -9,17 +9,30 @@ let cachedModuleState: IModuleState;
 /**
  * Returns a component instantiated from a Components.js configuration.
  */
-export async function instantiateFromConfig(componentUrl: string, configFile: string,
+export async function instantiateFromConfig(componentUrl: string, configPaths: string | string[],
   variables?: Record<string, any>): Promise<any> {
   // Initialize the Components.js loader
   const mainModulePath = joinFilePath(__dirname, '../../');
   const manager = await ComponentsManager.build({ mainModulePath, logLevel: 'error', moduleState: cachedModuleState });
   cachedModuleState = manager.moduleState;
 
-  // Instantiate the component from the config
-  const configPath = joinFilePath(__dirname, 'config', configFile);
-  await manager.configRegistry.register(configPath);
+  if (!Array.isArray(configPaths)) {
+    configPaths = [ configPaths ];
+  }
+
+  // Instantiate the component from the config(s)
+  for (const configPath of configPaths) {
+    await manager.configRegistry.register(configPath);
+  }
   return await manager.instantiate(componentUrl, { variables });
+}
+
+export function getTestConfigPath(configFile: string): string {
+  return joinFilePath(__dirname, 'config', configFile);
+}
+
+export function getPresetConfigPath(configFile: string): string {
+  return joinFilePath(__dirname, '../../config', configFile);
 }
 
 export function getTestFolder(name: string): string {

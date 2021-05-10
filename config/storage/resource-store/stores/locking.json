@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Locks resources when they are accessed until the operation is finished.",
+      "@id": "urn:solid-server:default:ResourceStore_Locking",
+      "@type": "LockingResourceStore",
+      "locks": { "@id": "urn:solid-server:default:ResourceLocker" },
+      "strategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
+    }
+  ]
+}

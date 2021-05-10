@@ -1,0 +1,23 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles everything related to parsing a Request.",
+      "@id": "urn:solid-server:default:RequestParser",
+      "@type": "BasicRequestParser",
+      "args_targetExtractor": {
+        "@type": "OriginalUrlExtractor",
+        "options_includeQueryString": false
+      },
+      "args_preferenceParser": { "@type": "AcceptPreferenceParser" },
+      "args_metadataParser": { "@id": "urn:solid-server:default:MetadataParser" },
+      "args_bodyParser": {
+        "@type": "WaterfallHandler",
+        "handlers": [
+          { "@type": "SparqlUpdateBodyParser" },
+          { "@type": "RawBodyParser" }
+        ]
+      }
+    }
+  ]
+}

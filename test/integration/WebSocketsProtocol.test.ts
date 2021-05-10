@@ -3,7 +3,7 @@ import fetch from 'cross-fetch';
 import WebSocket from 'ws';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('WebSocketsProtocol');
 const serverUrl = `http://localhost:${port}/`;
@@ -14,7 +14,9 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ServerFactory', 'server-without-auth.json', {
+      'urn:solid-server:default:ServerFactory',
+      getTestConfigPath('server-without-auth.json'),
+      {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },

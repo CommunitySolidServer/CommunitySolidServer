@@ -3,9 +3,8 @@ import request from 'supertest';
 import type { BaseHttpServerFactory } from '../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../src/server/HttpHandler';
 import { HttpHandler } from '../../src/server/HttpHandler';
-import { StaticAsyncHandler } from '../util/StaticAsyncHandler';
 import { getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('Middleware');
 
@@ -21,8 +20,9 @@ describe('An http server with middleware', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const factory = await instantiateFromConfig(
-      'urn:solid-server:default:HttpServerFactory', 'server-middleware.json', {
-        'urn:solid-server:default:PodManagerHandler': new StaticAsyncHandler(false, null),
+      'urn:solid-server:default:HttpServerFactory',
+      getTestConfigPath('server-middleware.json'),
+      {
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',

@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Stores data on a SPARQL endpoint. Only supports quad object streams.",
+      "@id": "urn:solid-server:default:SparqlDataAccessor",
+      "@type": "SparqlDataAccessor",
+      "endpoint": { "@id": "urn:solid-server:default:variable:sparqlEndpoint" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+    }
+  ]
+}
