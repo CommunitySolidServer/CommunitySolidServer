@@ -79,7 +79,7 @@
     "@solid/identity-token-verifier": "^0.7.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
-    "@types/bcrypt": "^3.0.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.9",
     "@types/end-of-stream": "^1.4.0",
     "@types/mime-types": "^2.1.0",
