@@ -1,0 +1,81 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/resource-store/data-accessors/file.json",
+    "files-scs:config/storage/resource-store/data-accessors/memory.json",
+    "files-scs:config/storage/resource-store/data-accessors/sparql-endpoint.json",
+    "files-scs:config/storage/resource-store/stores/converting.json",
+    "files-scs:config/storage/resource-store/stores/locking.json",
+    "files-scs:config/storage/resource-store/stores/patching.json",
+    "files-scs:config/storage/resource-store/stores/routing.json"
+  ],
+  "@graph": [
+    {
+      "comment": "A more complex example with 3 different stores being routed to.",
+      "@id": "urn:solid-server:default:ResourceStore",
+      "@type": "MonitoringStore",
+      "MonitoringStore:_source": {
+      "@id": "urn:solid-server:default:ResourceStore_Locking",
+      "LockingResourceStore:_source": {
+        "@id": "urn:solid-server:default:ResourceStore_Patching",
+        "PatchingStore:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Converting",
+          "RepresentationConvertingStore:_source": {
+              "@id": "urn:solid-server:default:ResourceStore_Routing"
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "comment": [
+        "Configure routing to send all requests containing /file/ to the file store, containing /memory/ to the memory store and /sparql/ to the sparql endpoint store.",
+        "The root .acl file will be stored in the sparql endpoint store."
+      ],
+      "@id": "urn:solid-server:default:RouterRule",
+      "@type": "RegexRouterRule",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "storeMap": [
+        {
+          "RegexRouterRule:_storeMap_key": "^/\\.acl$",
+          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+        },
+        {
+          "RegexRouterRule:_storeMap_key": "/file/",
+          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:FileResourceStore" }
+        },
+        {
+          "RegexRouterRule:_storeMap_key": "/memory/",
+          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:MemoryResourceStore" }
+        },
+        {
+          "RegexRouterRule:_storeMap_key": "/sparql/",
+          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:FileResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+    },
+    {
+      "@id": "urn:solid-server:default:MemoryResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:MemoryDataAccessor" }
+    },
+    {
+      "@id": "urn:solid-server:default:SparqlResourceStore",
+      "@type": "DataAccessorBasedStore",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts all outgoing resources based on the preferences.",
+      "@id": "urn:solid-server:default:ResourceStore_Converting",
+      "@type": "RepresentationConvertingStore",
+      "source": { "@id": "urn:solid-server:default:RoutingResourceStore" },
+      "options_outConverter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+    }
+  ]
+}

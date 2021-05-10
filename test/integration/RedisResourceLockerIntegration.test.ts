@@ -4,7 +4,7 @@ import type { RedisResourceLocker } from '../../src';
 import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { describeIf, getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 
 /**
  * Test the general functionality of the server using a RedisResourceLocker
@@ -19,7 +19,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
   beforeAll(async(): Promise<void> => {
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'run-with-redlock.json',
+      getTestConfigPath('run-with-redlock.json'),
       {
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),

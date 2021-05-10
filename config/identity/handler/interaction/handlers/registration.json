@@ -1,0 +1,29 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles all functionality on the register page",
+      "@id": "urn:solid-server:auth:password:RegistrationInteractionHandler",
+      "@type": "IdpRouteController",
+      "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/register/?$",
+      "postHandler": {
+        "@type": "RegistrationHandler",
+        "args_ownershipValidator": {
+          "@type": "IssuerOwnershipValidator",
+          "issuer": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        },
+        "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+        "args_interactionCompleter": { "@id": "urn:solid-server:auth:password:InteractionCompleter" }
+      },
+      "renderHandler": { "@id": "urn:solid-server:auth:password:RegisterRenderHandler" }
+    },
+
+    {
+      "comment": "Renders the register page",
+      "@id": "urn:solid-server:auth:password:RegisterRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
+      "templateFile": "./email-password-interaction/register.ejs"
+    }
+  ]
+}

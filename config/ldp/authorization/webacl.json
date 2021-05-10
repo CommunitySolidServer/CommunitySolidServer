@@ -1,0 +1,36 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/ldp/authorization/authorizers/acl.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Uses Web Access Control for authorization.",
+      "@id": "urn:solid-server:default:Authorizer",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
+          "@type": "AuxiliaryAuthorizer",
+          "resourceAuthorizer": { "@id": "urn:solid-server:default:WebAclAuthorizer" },
+          "auxStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
+        },
+        { "@id": "urn:solid-server:default:WebAclAuthorizer" }
+      ]
+    },
+
+    {
+      "comment": "Add to the list of initializers.",
+      "@id": "urn:solid-server:default:ParallelInitializer",
+      "ParallelHandler:_handlers": [
+        {
+          "comment": "Makes sure there is a root acl document. This is necessary for acl authorization.",
+          "@type": "AclInitializer",
+          "settings_store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "settings_aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
+          "settings_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        }
+      ]
+    }
+  ]
+}

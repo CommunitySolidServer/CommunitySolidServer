@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/ldp/metadata-writer/writers/constant.json",
+    "files-scs:config/ldp/metadata-writer/writers/link-rel.json",
+    "files-scs:config/ldp/metadata-writer/writers/mapped.json",
+    "files-scs:config/ldp/metadata-writer/writers/wac-allow.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Adds metadata to the response based on the RDF metadata.",
+      "@id": "urn:solid-server:default:MetadataWriter",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:MetadataWriter_Constant" },
+        { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
+        { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },
+        { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" }
+      ]
+    }
+  ]
+}

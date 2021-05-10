@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts all triples with the given predicate to headers of the given type.",
+      "@id": "urn:solid-server:default:MetadataWriter_Mapped",
+      "@type": "MappedMetadataWriter",
+      "headerMap": [
+        {
+          "MappedMetadataWriter:_headerMap_key": "http://www.w3.org/ns/ma-ont#format",
+          "MappedMetadataWriter:_headerMap_value": "Content-Type"
+        },
+        {
+          "MappedMetadataWriter:_headerMap_key": "urn:solid:http:location",
+          "MappedMetadataWriter:_headerMap_value": "Location"
+        }
+      ]
+    }
+  ]
+}

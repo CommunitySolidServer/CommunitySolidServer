@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Servers static files on fixed URLs.",
+      "@id": "urn:solid-server:default:StaticAssetHandler",
+      "@type": "StaticAssetHandler",
+      "assets": [
+        {
+          "StaticAssetHandler:_assets_key": "/favicon.ico",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"
+        },
+        {
+          "StaticAssetHandler:_assets_key": "/idp/style.css",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/views/email-password-interaction/main.css"
+        }
+      ]
+    }
+  ]
+}

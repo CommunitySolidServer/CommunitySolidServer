@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Ignores log messages.",
+      "@id": "urn:solid-server:default:LoggerFactory",
+      "@type": "VoidLoggerFactory"
+    }
+  ]
+}

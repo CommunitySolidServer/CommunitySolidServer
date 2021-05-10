@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The main entry point into pod provisioning.",
+      "@id": "urn:solid-server:default:PodManagerHandler",
+      "@type": "PodManagerHttpHandler",
+      "args_requestPath": "/pods",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_podSettingsParser": { "@type": "PodSettingsJsonParser" },
+      "args_manager": { "@id": "urn:solid-server:default:PodManager" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
+    }
+  ]
+}

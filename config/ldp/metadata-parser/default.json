@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts request metadata (e.g. headers) to RDF metadata.",
+      "@id": "urn:solid-server:default:MetadataParser",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@type": "ContentTypeParser" },
+        { "@type": "LinkTypeParser" },
+        { "@type": "SlugParser" }
+      ]
+    }
+  ]
+}

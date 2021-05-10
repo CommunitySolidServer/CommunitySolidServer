@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts all triples with the given predicates to Link headers.",
+      "@id": "urn:solid-server:default:MetadataWriter_LinkRel",
+      "@type": "LinkRelMetadataWriter",
+      "linkRelMap": [
+        {
+          "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+          "LinkRelMetadataWriter:_linkRelMap_value": "type"
+        },
+        {
+          "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/ns/auth/acl#accessControl",
+          "LinkRelMetadataWriter:_linkRelMap_value": "acl"
+        }
+      ]
+    }
+  ]
+}

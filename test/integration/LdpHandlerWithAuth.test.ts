@@ -6,7 +6,13 @@ import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
-import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import {
+  getPresetConfigPath,
+  getTestConfigPath,
+  getTestFolder,
+  instantiateFromConfig,
+  removeFolder,
+} from './Config';
 
 const port = getPort('LpdHandlerWithAuth');
 const baseUrl = `http://localhost:${port}/`;
@@ -14,16 +20,16 @@ const baseUrl = `http://localhost:${port}/`;
 const rootFilePath = getTestFolder('full-config-acl');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
-    storeUrn: 'urn:solid-server:default:MemoryResourceStore',
+    storeConfig: 'storage/resource-store/memory.json',
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    storeUrn: 'urn:solid-server:default:FileResourceStore',
+    storeConfig: 'storage/resource-store/file.json',
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
-describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, teardown }): void => {
+describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig, teardown }): void => {
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
@@ -37,17 +43,14 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeUrn, te
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
-    const internalStore = await instantiateFromConfig(
-      storeUrn,
-      'ldp-with-auth.json',
-      variables,
-    ) as ResourceStore;
-    variables['urn:solid-server:default:variable:store'] = internalStore;
 
     // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'ldp-with-auth.json',
+      [
+        getPresetConfigPath(storeConfig),
+        getTestConfigPath('ldp-with-auth.json'),
+      ],
       variables,
     ) as Record<string, any>;
     ({ factory, initializer, store } = instances);

@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Adds several constant headers.",
+      "@id": "urn:solid-server:default:Middleware_Header",
+      "@type": "HeaderHandler",
+      "headers": [
+        {
+          "HeaderHandler:_headers_key": "Vary",
+          "HeaderHandler:_headers_value": "Accept,Authorization,Origin"
+        },
+        {
+          "HeaderHandler:_headers_key": "X-Powered-By",
+          "HeaderHandler:_headers_value": "Community Solid Server"
+        }
+      ]
+    }
+  ]
+}

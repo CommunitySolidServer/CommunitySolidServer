@@ -1,11 +1,11 @@
 import { promises as fs } from 'fs';
 import type { Server } from 'http';
 import { joinFilePath } from '../../src/';
-import type { Initializer, ResourceStore } from '../../src/';
+import type { Initializer } from '../../src/';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { putResource } from '../util/FetchUtil';
 import { describeIf, getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getPresetConfigPath, getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
@@ -21,17 +21,14 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:4000/sparql',
     };
-    const internalStore = await instantiateFromConfig(
-      'urn:solid-server:default:SparqlResourceStore',
-      'ldp-with-auth.json',
-      variables,
-    ) as ResourceStore;
-    variables['urn:solid-server:default:variable:store'] = internalStore;
 
     // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'ldp-with-auth.json',
+      [
+        getPresetConfigPath('storage/resource-store/sparql.json'),
+        getTestConfigPath('ldp-with-auth.json'),
+      ],
       variables,
     ) as Record<string, any>;
     ({ factory, initializer } = instances);

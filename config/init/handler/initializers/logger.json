@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": [
+        "Sets up the global logging factory which is necessary for logging.",
+        "This needs to happen before any other activity takes places, since all other components depend on logging."
+      ],
+      "@id": "urn:solid-server:default:LoggerInitializer",
+      "@type": "LoggerInitializer",
+      "loggerFactory": {
+        "@id": "urn:solid-server:default:LoggerFactory"
+      }
+    }
+  ]
+}

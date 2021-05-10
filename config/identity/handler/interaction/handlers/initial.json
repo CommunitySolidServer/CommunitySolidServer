@@ -1,0 +1,26 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the initial route when the user is directed from their app to the IdP",
+      "@id": "urn:solid-server:auth:password:InitialInteractionHandler",
+      "@type": "RouterHandler",
+      "allowedMethods": [ "GET" ],
+      "allowedPathNames": [ "^/idp/interaction/[-_A-Za-z0-9]+/?$" ],
+      "handler": {
+        "@type": "InitialInteractionHandler",
+        "renderHandlerMap": [
+          {
+            "InitialInteractionHandler:_renderHandlerMap_key": "consent",
+            "InitialInteractionHandler:_renderHandlerMap_value": {
+              "@type": "RenderEjsHandler",
+              "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
+              "templateFile": "./email-password-interaction/confirm.ejs"
+            }
+          }
+        ],
+        "renderHandlerMap_default": { "@id": "urn:solid-server:auth:password:LoginRenderHandler" }
+      }
+    }
+  ]
+}

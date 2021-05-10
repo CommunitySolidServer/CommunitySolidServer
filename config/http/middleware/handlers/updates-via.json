@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Advertises the websocket connection.",
+      "@id": "urn:solid-server:default:Middleware_WebSocket",
+      "@type": "WebSocketAdvertiser",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}

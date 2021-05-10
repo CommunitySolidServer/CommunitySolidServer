@@ -39,7 +39,7 @@ describe('AppRunner', (): void => {
           dumpErrorState: true,
           logLevel: 'info',
         },
-        joinFilePath(__dirname, '../../../config/config-default.json'),
+        joinFilePath(__dirname, '../../../config/default.json'),
         {
           port: 3000,
           loggingLevel: 'info',
@@ -56,7 +56,7 @@ describe('AppRunner', (): void => {
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
-        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/config-default.json'));
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
       expect(manager.instantiate).toHaveBeenCalledTimes(1);
       expect(manager.instantiate).toHaveBeenCalledWith(
         'urn:solid-server:default:Initializer',
@@ -96,7 +96,7 @@ describe('AppRunner', (): void => {
       });
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register)
-        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/config-default.json'));
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
       expect(manager.instantiate).toHaveBeenCalledTimes(1);
       expect(manager.instantiate).toHaveBeenCalledWith(
         'urn:solid-server:default:Initializer',
@@ -267,7 +267,7 @@ describe('AppRunner', (): void => {
 
       expect(write).toHaveBeenCalledTimes(2);
       expect(write).toHaveBeenNthCalledWith(1,
-        expect.stringMatching(/^Error: could not instantiate server from .*config-default\.json/u));
+        expect.stringMatching(/^Error: could not instantiate server from .*default\.json/u));
       expect(write).toHaveBeenNthCalledWith(2,
         expect.stringMatching(/^Error: Fatal/u));
 

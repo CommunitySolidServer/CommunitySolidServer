@@ -1,0 +1,23 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/pod/handler/http/manager.json",
+    "files-scs:config/pod/handler/resource-generators/templated.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Stores all new resources for a pod in the default resource store under the generated identifier.",
+      "@id": "urn:solid-server:default:PodManager",
+      "@type": "GeneratedPodManager",
+      "store": {
+        "@id": "urn:solid-server:default:ResourceStore"
+      },
+      "idGenerator": {
+        "@id": "urn:solid-server:default:IdentifierGenerator"
+      },
+      "resourcesGenerator": {
+        "@id": "urn:solid-server:default:ResourcesGenerator"
+      }
+    }
+  ]
+}

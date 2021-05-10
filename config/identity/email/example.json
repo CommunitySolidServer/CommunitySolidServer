@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "This is an example of what an actual email sender configuration would look like.",
+      "@id": "urn:solid-server:default:EmailSender",
+      "@type": "BaseEmailSender",
+      "args_senderName": "Solid Server",
+      "args_emailConfig_host": "smtp.example.email",
+      "args_emailConfig_port": 587,
+      "args_emailConfig_auth_user": "alice@example.email",
+      "args_emailConfig_auth_pass": "NYEaCsqV7aVStRCbmC"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Uses the winston library for logging",
+      "@id": "urn:solid-server:default:LoggerFactory",
+      "@type": "WinstonLoggerFactory",
+      "level": { "@id": "urn:solid-server:default:variable:loggingLevel" }
+    }
+  ]
+}

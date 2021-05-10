@@ -1,0 +1,13 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Creates a server that supports HTTP requests.",
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "BaseHttpServerFactory",
+      "handler": {
+        "@id": "urn:solid-server:default:HttpHandler"
+      }
+    }
+  ]
+}

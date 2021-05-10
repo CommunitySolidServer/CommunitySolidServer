@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Stores data in memory.",
+      "@id": "urn:solid-server:default:MemoryDataAccessor",
+      "@type": "InMemoryDataAccessor",
+      "strategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import { DataFactory, Parser } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
-import type { Initializer, ResourceStore } from '../../src/';
+import type { Initializer } from '../../src/';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { LDP } from '../../src/util/Vocabularies';
 import { deleteResource, expectQuads, getResource, patchResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
-import { getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import { getPresetConfigPath, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
@@ -17,16 +17,16 @@ const baseUrl = `http://localhost:${port}/`;
 const rootFilePath = getTestFolder('full-config-no-auth');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
-    storeUrn: 'urn:solid-server:default:MemoryResourceStore',
+    storeConfig: 'storage/resource-store/memory.json',
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    storeUrn: 'urn:solid-server:default:FileResourceStore',
+    storeConfig: 'storage/resource-store/file.json',
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];
 
-describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeUrn, teardown }): void => {
+describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeConfig, teardown }): void => {
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
@@ -37,17 +37,14 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeU
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
-    const internalStore = await instantiateFromConfig(
-      storeUrn,
-      'ldp-with-auth.json',
-      variables,
-    ) as ResourceStore;
-    variables['urn:solid-server:default:variable:store'] = internalStore;
 
     // Create and initialize the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
-      'ldp-with-auth.json',
+      [
+        getPresetConfigPath(storeConfig),
+        getTestConfigPath('ldp-with-auth.json'),
+      ],
       variables,
     ) as Record<string, any>;
     ({ factory, initializer } = instances);

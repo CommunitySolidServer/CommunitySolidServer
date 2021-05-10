@@ -9,7 +9,7 @@ import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedE
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
-import { instantiateFromConfig } from './Config';
+import { getTestConfigPath, instantiateFromConfig } from './Config';
 import { IdentityTestState } from './IdentityTestState';
 
 const port = getPort('Identity');
@@ -49,7 +49,9 @@ describe('A Solid server with IDP', (): void => {
     Object.assign(nodemailer, { createTransport: (): any => ({ sendMail }) });
 
     const instances = await instantiateFromConfig(
-      'urn:solid-server:test:Instances', 'server-memory.json', {
+      'urn:solid-server:test:Instances',
+      getTestConfigPath('server-memory.json'),
+      {
         'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),

@@ -1,38 +1,36 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/presets/acl.json",
-    "files-scs:config/presets/identifiers/suffix-identifiers.json",
-    "files-scs:config/presets/init.json",
-    "files-scs:config/presets/ldp/credentials-extractor.json",
-    "files-scs:config/presets/ldp/metadata-handler.json",
-    "files-scs:config/presets/ldp/operation-handler.json",
-    "files-scs:config/presets/ldp/permissions-extractor.json",
-    "files-scs:config/presets/ldp/response-writer.json",
-    "files-scs:config/presets/ldp/request-parser.json",
-    "files-scs:config/presets/representation-conversion.json",
-    "files-scs:config/presets/static.json",
-    "files-scs:config/presets/storage/backend/storage-memory.json",
-    "files-scs:config/presets/storage/backend/storage-filesystem.json",
-    "files-scs:config/presets/storage/backend/storage-sparql-endpoint.json",
-    "files-scs:config/presets/storage-wrapper.json",
-    "files-scs:config/presets/cli-params.json"
+    "files-scs:config/http/handler/simple.json",
+    "files-scs:config/http/middleware/no-websockets.json",
+    "files-scs:config/http/server-factory/no-websockets.json",
+    "files-scs:config/http/static/default.json",
+    "files-scs:config/init/handler/default.json",
+    "files-scs:config/ldp/authentication/debug-auth-header.json",
+    "files-scs:config/ldp/authorization/webacl.json",
+    "files-scs:config/ldp/handler/default.json",
+    "files-scs:config/ldp/metadata-parser/default.json",
+    "files-scs:config/ldp/metadata-writer/default.json",
+    "files-scs:config/ldp/permissions/acl.json",
+    "files-scs:config/storage/key-value/memory.json",
+    "files-scs:config/util/auxiliary/acl.json",
+    "files-scs:config/util/identifiers/suffix.json",
+    "files-scs:config/util/index/default.json",
+    "files-scs:config/util/logging/winston.json",
+    "files-scs:config/util/representation-conversion/default.json",
+    "files-scs:config/util/resource-locker/memory.json",
+    "files-scs:config/util/variables/default.json"
   ],
   "@graph": [
     {
-      "comment": "Sets up an HTTP server with only the LDP handler as HttpHandler.",
+      "comment": "An HTTP server with only the LDP handler as HttpHandler and an unsecure authenticator.",
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
       "record": [
         {
+          "comment": "Only use the parallel initializer. Starting the server is done in the test code..",
           "RecordObject:_record_key": "initializer",
-          "RecordObject:_record_value": {
-            "@type": "SequenceHandler",
-            "SequenceHandler:_handlers": [
-              { "@id": "urn:solid-server:default:RootContainerInitializer" },
-              { "@id": "urn:solid-server:default:AclInitializer" }
-            ]
-          }
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ParallelInitializer" }
         },
         {
           "RecordObject:_record_key": "store",
@@ -43,57 +41,6 @@
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
         }
       ]
-    },
-
-    {
-      "comment": "The default LDP handler, but with an unsecure webId extractor.",
-      "@id": "urn:solid-server:default:LdpHandler",
-      "@type": "AuthenticatedLdpHandler",
-      "args_requestParser": {
-        "@id": "urn:solid-server:default:RequestParser"
-      },
-      "args_credentialsExtractor": {
-        "@type": "WaterfallHandler",
-        "WaterfallHandler:_handlers": [
-          {
-            "@type": "UnsecureWebIdExtractor"
-          },
-          {
-            "@type": "EmptyCredentialsExtractor"
-          }
-        ]
-      },
-      "args_permissionsExtractor": {
-        "@id": "urn:solid-server:default:PermissionsExtractor"
-      },
-      "args_authorizer": {
-        "@id": "urn:solid-server:default:AclBasedAuthorizer"
-      },
-      "args_operationHandler": {
-        "@id": "urn:solid-server:default:OperationHandler"
-      },
-      "args_responseWriter": {
-        "@id": "urn:solid-server:default:ResponseWriter"
-      }
-    },
-
-    {
-      "@id": "urn:solid-server:default:ServerFactory",
-      "@type": "BaseHttpServerFactory",
-      "handler": {
-        "@id": "urn:solid-server:default:LdpHandler"
-      }
-    },
-    {
-      "@id": "urn:solid-server:default:RoutingResourceStore",
-      "@type": "PassthroughStore",
-      "source": {
-        "@id": "urn:solid-server:default:variable:store"
-      }
-    },
-    {
-      "@id": "urn:solid-server:default:variable:store",
-      "@type": "Variable"
     }
   ]
 }
