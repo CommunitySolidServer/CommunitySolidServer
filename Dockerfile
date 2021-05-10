@@ -7,9 +7,6 @@ WORKDIR /community-server
 ## Copy the package.json for audit
 COPY package*.json ./
 
-## Verify if there are known vulnerabilities in the dependencies
-RUN npm audit --production --audit-level=high
-
 ## Copy the dockerfile's context's community server files
 COPY . .
 
