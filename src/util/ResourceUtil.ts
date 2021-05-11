@@ -1,29 +1,24 @@
 import arrayifyStream from 'arrayify-stream';
-import type { NamedNode, Quad } from 'rdf-js';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import { pushQuad } from './QuadUtil';
 import { guardedStreamFrom } from './StreamUtil';
 
 import { LDP, RDF } from './Vocabularies';
 
 /**
  * Helper function to generate type quads for a Container or Resource.
- * @param subject - Subject for the new quads.
+ * @param metadata - Metadata to add to.
  * @param isContainer - If the identifier corresponds to a container.
  *
  * @returns The generated quads.
  */
-export function generateResourceQuads(subject: NamedNode, isContainer: boolean): Quad[] {
-  const quads: Quad[] = [];
+export function addResourceMetadata(metadata: RepresentationMetadata, isContainer: boolean): void {
   if (isContainer) {
-    pushQuad(quads, subject, RDF.terms.type, LDP.terms.Container);
-    pushQuad(quads, subject, RDF.terms.type, LDP.terms.BasicContainer);
+    metadata.add(RDF.terms.type, LDP.terms.Container);
+    metadata.add(RDF.terms.type, LDP.terms.BasicContainer);
   }
-  pushQuad(quads, subject, RDF.terms.type, LDP.terms.Resource);
-
-  return quads;
+  metadata.add(RDF.terms.type, LDP.terms.Resource);
 }
 
 /**

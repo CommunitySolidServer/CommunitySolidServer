@@ -1,8 +1,7 @@
 import type { Stats } from 'fs';
 import { createWriteStream, createReadStream, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
-import { DataFactory } from 'n3';
-import type { NamedNode, Quad } from 'rdf-js';
+import type { Quad } from 'rdf-js';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -13,8 +12,8 @@ import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMedi
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
-import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
-import { generateResourceQuads } from '../../util/ResourceUtil';
+import { parseQuads, serializeQuads } from '../../util/QuadUtil';
+import { addResourceMetadata } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
@@ -251,8 +250,8 @@ export class FileDataAccessor implements DataAccessor {
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(link.identifier)
       .addQuads(await this.getRawMetadata(link.identifier));
-    metadata.addQuads(generateResourceQuads(metadata.identifier as NamedNode, isContainer));
-    metadata.addQuads(this.generatePosixQuads(metadata.identifier as NamedNode, stats));
+    addResourceMetadata(metadata, isContainer);
+    this.addPosixMetadata(metadata, stats);
     return metadata;
   }
 
@@ -306,30 +305,25 @@ export class FileDataAccessor implements DataAccessor {
         .mapFilePathToUrl(joinFilePath(link.filePath, childName), entry.isDirectory());
 
       // Generate metadata of this specific child
-      const subject = DataFactory.namedNode(childLink.identifier.path);
       const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
-      const quads: Quad[] = [];
-      quads.push(...generateResourceQuads(subject, childStats.isDirectory()));
-      quads.push(...this.generatePosixQuads(subject, childStats));
-      yield new RepresentationMetadata(subject).addQuads(quads);
+      const metadata = new RepresentationMetadata(childLink.identifier);
+      addResourceMetadata(metadata, childStats.isDirectory());
+      this.addPosixMetadata(metadata, childStats);
+      yield metadata;
     }
   }
 
   /**
    * Helper function to add file system related metadata.
-   * @param subject - Subject for the new quads.
+   * @param metadata - metadata object to add to
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
-  private generatePosixQuads(subject: NamedNode, stats: Stats): Quad[] {
-    const quads: Quad[] = [];
-    pushQuad(quads, subject, DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
-    pushQuad(quads, subject, POSIX.terms.mtime, toLiteral(
-      Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer,
-    ));
+  private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
+    metadata.add(DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
+    metadata.add(POSIX.terms.mtime, toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer));
     if (!stats.isDirectory()) {
-      pushQuad(quads, subject, POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
+      metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
     }
-    return quads;
   }
 
   /**
