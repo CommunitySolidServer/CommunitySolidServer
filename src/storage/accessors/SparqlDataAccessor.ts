@@ -4,16 +4,15 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import type {
-  ConstructQuery, GraphPattern,
+  ConstructQuery,
+  GraphPattern,
   GraphQuads,
   InsertDeleteOperation,
   SparqlGenerator,
   Update,
   UpdateOperation,
 } from 'sparqljs';
-import {
-  Generator,
-} from 'sparqljs';
+import { Generator } from 'sparqljs';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -83,9 +82,7 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const name = namedNode(identifier.path);
-    const query = isContainerIdentifier(identifier) ?
-      this.sparqlConstructContainer(name) :
-      this.sparqlConstruct(this.getMetadataNode(name));
+    const query = this.sparqlConstruct(this.getMetadataNode(name));
     const stream = await this.sendSparqlConstruct(query);
     const quads = await arrayifyStream(stream);
 
@@ -99,6 +96,15 @@ export class SparqlDataAccessor implements DataAccessor {
     }
 
     return metadata;
+  }
+
+  public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
+    // Only triples that have a container identifier as subject are the containment triples
+    const name = namedNode(identifier.path);
+    const stream = await this.sendSparqlConstruct(this.sparqlConstruct(name));
+    for await (const entry of stream) {
+      yield new RepresentationMetadata((entry as Quad).object as NamedNode);
+    }
   }
 
   /**
@@ -186,23 +192,6 @@ export class SparqlDataAccessor implements DataAccessor {
     };
   }
 
-  private sparqlConstructContainer(name: NamedNode): ConstructQuery {
-    const pattern = quad(variable('s'), variable('p'), variable('o'));
-    return {
-      queryType: 'CONSTRUCT',
-      template: [ pattern ],
-      where: [{
-        type: 'union',
-        patterns: [
-          this.sparqlSelectGraph(name, [ pattern ]),
-          this.sparqlSelectGraph(this.getMetadataNode(name), [ pattern ]),
-        ],
-      }],
-      type: 'query',
-      prefixes: {},
-    };
-  }
-
   private sparqlSelectGraph(name: NamedNode, triples: Quad[]): GraphPattern {
     return {
       type: 'graph',
@@ -215,8 +204,8 @@ export class SparqlDataAccessor implements DataAccessor {
    * Creates an update query that overwrites the data and metadata of a resource.
    * If there are no triples we assume it's a container (so don't overwrite the main graph with containment triples).
    * @param name - Name of the resource to update.
-   * @param parent - Name of the parent to update the containment triples.
    * @param metadata - New metadata of the resource.
+   * @param parent - Name of the parent to update the containment triples.
    * @param triples - New data of the resource.
    */
   private sparqlInsert(name: NamedNode, metadata: RepresentationMetadata, parent?: NamedNode, triples?: Quad[]):

@@ -103,7 +103,7 @@ describe('A SparqlDataAccessor', (): void => {
     ));
   });
 
-  it('requests container data for generating its metadata.', async(): Promise<void> => {
+  it('does not set the content-type for container metadata.', async(): Promise<void> => {
     metadata = await accessor.getMetadata({ path: 'http://container/' });
     expect(metadata.quads()).toBeRdfIsomorphic([
       quad(namedNode('this'), namedNode('a'), namedNode('triple')),
@@ -111,13 +111,25 @@ describe('A SparqlDataAccessor', (): void => {
 
     expect(fetchTriples).toHaveBeenCalledTimes(1);
     expect(fetchTriples.mock.calls[0][0]).toBe(endpoint);
-    expect(simplifyQuery(fetchTriples.mock.calls[0][1])).toBe(simplifyQuery([
-      'CONSTRUCT { ?s ?p ?o. } WHERE {',
-      '  { GRAPH <http://container/> { ?s ?p ?o. } }',
-      '  UNION',
-      '  { GRAPH <meta:http://container/> { ?s ?p ?o. } }',
-      '}',
-    ]));
+    expect(simplifyQuery(fetchTriples.mock.calls[0][1])).toBe(simplifyQuery(
+      'CONSTRUCT { ?s ?p ?o. } WHERE { GRAPH <meta:http://container/> { ?s ?p ?o. } }',
+    ));
+  });
+
+  it('requests the container data to find its children.', async(): Promise<void> => {
+    triples = [ quad(namedNode('http://container/'), LDP.terms.contains, namedNode('http://container/child')) ];
+    const children = [];
+    for await (const child of accessor.getChildren({ path: 'http://container/' })) {
+      children.push(child);
+    }
+    expect(children).toHaveLength(1);
+    expect(children[0].identifier.value).toBe('http://container/child');
+
+    expect(fetchTriples).toHaveBeenCalledTimes(1);
+    expect(fetchTriples.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchTriples.mock.calls[0][1])).toBe(simplifyQuery(
+      'CONSTRUCT { ?s ?p ?o. } WHERE { GRAPH <http://container/> { ?s ?p ?o. } }',
+    ));
   });
 
   it('throws 404 if no metadata was found.', async(): Promise<void> => {

@@ -1,13 +1,11 @@
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import type { NamedNode } from 'rdf-js';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
-import { generateContainmentQuads } from '../../util/ResourceUtil';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { DataAccessor } from './DataAccessor';
 
@@ -46,7 +44,15 @@ export class InMemoryDataAccessor implements DataAccessor {
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     const entry = this.getEntry(identifier);
-    return this.generateMetadata(entry);
+    return new RepresentationMetadata(entry.metadata);
+  }
+
+  public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
+    const entry = this.getEntry(identifier);
+    if (!this.isDataEntry(entry)) {
+      const childNames = Object.keys(entry.entries);
+      yield* childNames.map((name): RepresentationMetadata => new RepresentationMetadata({ path: name }));
+    }
   }
 
   public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
@@ -140,15 +146,5 @@ export class InMemoryDataAccessor implements DataAccessor {
       throw new NotFoundHttpError();
     }
     return entry;
-  }
-
-  private generateMetadata(entry: CacheEntry): RepresentationMetadata {
-    const metadata = new RepresentationMetadata(entry.metadata);
-    if (!this.isDataEntry(entry)) {
-      const childNames = Object.keys(entry.entries);
-      const quads = generateContainmentQuads(metadata.identifier as NamedNode, childNames);
-      metadata.addQuads(quads);
-    }
-    return metadata;
   }
 }

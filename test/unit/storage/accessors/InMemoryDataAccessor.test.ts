@@ -1,6 +1,5 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
@@ -85,16 +84,20 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(metadata.quads()).toHaveLength(0);
     });
 
-    it('generates the containment metadata for a container.', async(): Promise<void> => {
+    it('generates the children for a container.', async(): Promise<void> => {
       await expect(accessor.writeContainer({ path: `${base}container/` }, metadata)).resolves.toBeUndefined();
       await expect(accessor.writeDocument({ path: `${base}container/resource` }, data, metadata))
         .resolves.toBeUndefined();
       await expect(accessor.writeContainer({ path: `${base}container/container2/` }, metadata))
         .resolves.toBeUndefined();
-      metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
-        [ DataFactory.namedNode(`${base}container/resource`), DataFactory.namedNode(`${base}container/container2/`) ],
-      );
+
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(2);
+      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
+      expect(children[1].identifier.value).toEqual(`${base}container/container2/`);
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
@@ -136,10 +139,16 @@ describe('An InMemoryDataAccessor', (): void => {
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}container/`);
       const quads = metadata.quads();
-      expect(quads).toHaveLength(3);
+      expect(quads).toHaveLength(2);
       expect(metadata.getAll(RDF.type).map((term): string => term.value))
         .toEqual([ LDP.Container, LDP.BasicContainer ]);
-      expect(metadata.get(LDP.contains)?.value).toEqual(`${base}container/resource`);
+
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(1);
+      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
 
       await expect(accessor.getMetadata({ path: `${base}container/resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
@@ -147,7 +156,7 @@ describe('An InMemoryDataAccessor', (): void => {
     });
 
     it('can write to the root container without overriding its children.', async(): Promise<void> => {
-      const identifier = { path: `${base}` };
+      const identifier = { path: base };
       const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Container });
       await expect(accessor.writeContainer(identifier, inputMetadata)).resolves.toBeUndefined();
       const resourceMetadata = new RepresentationMetadata();
@@ -158,20 +167,38 @@ describe('An InMemoryDataAccessor', (): void => {
       metadata = await accessor.getMetadata(identifier);
       expect(metadata.identifier.value).toBe(`${base}`);
       const quads = metadata.quads();
-      expect(quads).toHaveLength(2);
+      expect(quads).toHaveLength(1);
       expect(metadata.getAll(RDF.type)).toHaveLength(1);
-      expect(metadata.getAll(LDP.contains)).toHaveLength(1);
+
+      const children = [];
+      for await (const child of accessor.getChildren(identifier)) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(1);
+      expect(children[0].identifier.value).toEqual(`${base}resource`);
 
       await expect(accessor.getMetadata({ path: `${base}resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
       expect(await readableToString(await accessor.getData({ path: `${base}resource` }))).toBe('data');
     });
 
-    it('errors when writing to an invalid container path..', async(): Promise<void> => {
+    it('errors when writing to an invalid container path.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource/` }, data, metadata)).resolves.toBeUndefined();
 
       await expect(accessor.writeContainer({ path: `${base}resource/container` }, metadata))
         .rejects.toThrow('Invalid path.');
+    });
+
+    it('returns no children for documents.', async(): Promise<void> => {
+      const identifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(identifier, { [RDF.type]: LDP.terms.Resource });
+      await expect(accessor.writeDocument(identifier, data, inputMetadata)).resolves.toBeUndefined();
+
+      const children = [];
+      for await (const child of accessor.getChildren(identifier)) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(0);
     });
   });
 

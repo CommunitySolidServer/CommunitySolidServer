@@ -94,9 +94,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     await this.auxiliaryStrategy.addMetadata(metadata);
 
     if (isContainerPath(metadata.identifier.value)) {
-      // Remove containment references of auxiliary resources
-      const auxContains = this.getContainedAuxiliaryResources(metadata);
-      metadata.remove(LDP.terms.contains, auxContains);
+      // Add containment triples of non-auxiliary resources
+      for await (const child of this.accessor.getChildren(identifier)) {
+        if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+          metadata.addQuads(child.quads());
+          metadata.add(LDP.terms.contains, child.identifier as NamedNode);
+        }
+      }
 
       // Generate a container representation from the metadata
       const data = metadata.quads();
@@ -139,7 +143,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // using the HTTP Slug header as defined in [RFC5023].
     // Clients who want the server to assign a URI of a resource, MUST use the POST request."
     // https://solid.github.io/specification/protocol#resource-type-heuristics
-    const newID = this.createSafeUri(container, representation.metadata, parentMetadata);
+    const newID = await this.createSafeUri(container, representation.metadata);
 
     // Write the data. New containers should never be made for a POST request.
     await this.writeData(newID, representation, isContainerIdentifier(newID), false);
@@ -205,8 +209,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://solid.github.io/specification/protocol#deleting-resources
     if (isContainerIdentifier(identifier)) {
       // Auxiliary resources are not counted when deleting a container since they will also be deleted
-      const auxContains = this.getContainedAuxiliaryResources(metadata);
-      if (metadata.getAll(LDP.contains).length > auxContains.length) {
+      if (await this.hasProperChildren(identifier)) {
         throw new ConflictHttpError('Can only delete empty containers.');
       }
     }
@@ -399,10 +402,9 @@ export class DataAccessorBasedStore implements ResourceStore {
    *
    * @param container - Identifier of the target container.
    * @param metadata - Metadata of the new resource.
-   * @param parentMetadata - Metadata of the parent container.
    */
-  protected createSafeUri(container: ResourceIdentifier, metadata: RepresentationMetadata,
-    parentMetadata: RepresentationMetadata): ResourceIdentifier {
+  protected async createSafeUri(container: ResourceIdentifier, metadata: RepresentationMetadata):
+  Promise<ResourceIdentifier> {
     // Get all values needed for naming the resource
     const isContainer = this.isNewContainer(metadata);
     const slug = metadata.get(HTTP.slug)?.value;
@@ -418,11 +420,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
-    const withSlash = ensureTrailingSlash(newID.path);
-    const withoutSlash = trimTrailingSlashes(newID.path);
-    const exists = parentMetadata.getAll(LDP.contains).some((term): boolean =>
-      term.value === withSlash || term.value === withoutSlash);
-    if (exists) {
+    const withSlash = { path: ensureTrailingSlash(newID.path) };
+    const withoutSlash = { path: trimTrailingSlashes(newID.path) };
+    if (await this.resourceExists(withSlash) || await this.resourceExists(withoutSlash)) {
       newID = this.createURI(container, isContainer);
     }
 
@@ -458,11 +458,15 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Extracts the identifiers of all auxiliary resources contained within the given metadata.
+   * Checks if the given container has any non-auxiliary resources.
    */
-  protected getContainedAuxiliaryResources(metadata: RepresentationMetadata): NamedNode[] {
-    return metadata.getAll(LDP.terms.contains).filter((object): boolean =>
-      this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: object.value })) as NamedNode[];
+  protected async hasProperChildren(container: ResourceIdentifier): Promise<boolean> {
+    for await (const child of this.accessor.getChildren(container)) {
+      if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

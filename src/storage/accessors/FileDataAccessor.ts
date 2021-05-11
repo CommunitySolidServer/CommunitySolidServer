@@ -14,7 +14,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, pushQuad, serializeQuads } from '../../util/QuadUtil';
-import { generateContainmentQuads, generateResourceQuads } from '../../util/ResourceUtil';
+import { generateResourceQuads } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
@@ -68,6 +68,11 @@ export class FileDataAccessor implements DataAccessor {
       return this.getDirectoryMetadata(link, stats);
     }
     throw new NotFoundHttpError();
+  }
+
+  public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
+    const link = await this.resourceMapper.mapUrlToFilePath(identifier);
+    yield* this.getChildMetadata(link);
   }
 
   /**
@@ -194,8 +199,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getDirectoryMetadata(link: ResourceLink, stats: Stats):
   Promise<RepresentationMetadata> {
-    return (await this.getBaseMetadata(link, stats, true))
-      .addQuads(await this.getChildMetadataQuads(link));
+    return await this.getBaseMetadata(link, stats, true);
   }
 
   /**
@@ -277,46 +281,38 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   /**
-   * Generate all containment related triples for a container.
-   * These include the actual containment triples and specific triples for every child resource.
+   * Generate metadata for all children in a container.
    *
    * @param link - Path related metadata.
    */
-  private async getChildMetadataQuads(link: ResourceLink): Promise<Quad[]> {
-    const quads: Quad[] = [];
-    const childURIs: string[] = [];
-    const files = await fsPromises.readdir(link.filePath);
+  private async* getChildMetadata(link: ResourceLink): AsyncIterableIterator<RepresentationMetadata> {
+    const dir = await fsPromises.opendir(link.filePath);
 
     // For every child in the container we want to generate specific metadata
-    for (const childName of files) {
-      // Hide metadata files from containment triples
+    for await (const entry of dir) {
+      const childName = entry.name;
+      // Hide metadata files
       if (this.isMetadataPath(childName)) {
         continue;
       }
 
       // Ignore non-file/directory entries in the folder
-      const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
-      if (!childStats.isFile() && !childStats.isDirectory()) {
+      if (!entry.isFile() && !entry.isDirectory()) {
         continue;
       }
 
       // Generate the URI corresponding to the child resource
       const childLink = await this.resourceMapper
-        .mapFilePathToUrl(joinFilePath(link.filePath, childName), childStats.isDirectory());
+        .mapFilePathToUrl(joinFilePath(link.filePath, childName), entry.isDirectory());
 
       // Generate metadata of this specific child
       const subject = DataFactory.namedNode(childLink.identifier.path);
+      const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
+      const quads: Quad[] = [];
       quads.push(...generateResourceQuads(subject, childStats.isDirectory()));
       quads.push(...this.generatePosixQuads(subject, childStats));
-      childURIs.push(childLink.identifier.path);
+      yield new RepresentationMetadata(subject).addQuads(quads);
     }
-
-    // Generate containment metadata
-    const containsQuads = generateContainmentQuads(
-      DataFactory.namedNode(link.identifier.path), childURIs,
-    );
-
-    return quads.concat(containsQuads);
   }
 
   /**

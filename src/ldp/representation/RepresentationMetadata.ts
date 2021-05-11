@@ -63,7 +63,7 @@ export class RepresentationMetadata {
   public constructor(contentType?: string);
 
   /**
-   * @param overrides - Metadata values (defaulting to content type if a string)
+   * @param metadata - Metadata values (defaulting to content type if a string)
    */
   public constructor(metadata?: RepresentationMetadata | MetadataRecord | string);
 

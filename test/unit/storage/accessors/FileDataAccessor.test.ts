@@ -111,7 +111,7 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
     });
 
-    it('generates the metadata for a container and its non-meta children.', async(): Promise<void> => {
+    it('generates the metadata for a container.', async(): Promise<void> => {
       cache.data = { container: { resource: 'data', 'resource.meta': 'metadata', notAFile: 5, container2: {}}};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.identifier.value).toBe(`${base}container/`);
@@ -121,18 +121,22 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(POSIX.size)).toBeUndefined();
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
-      expect(metadata.getAll(LDP.contains)).toEqualRdfTermArray(
-        [ namedNode(`${base}container/resource`), namedNode(`${base}container/container2/`) ],
-      );
+    });
 
-      const childQuads = metadata.quads().filter((quad): boolean =>
-        quad.subject.value === `${base}container/resource`);
-      const childMetadata = new RepresentationMetadata({ path: `${base}container/resource` }).addQuads(childQuads);
-      expect(childMetadata.get(RDF.type)?.value).toBe(LDP.Resource);
-      expect(childMetadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
-      expect(childMetadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(childMetadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
-        XSD.terms.integer));
+    it('generates metadata for container child resources.', async(): Promise<void> => {
+      cache.data = { container: { resource: 'data', 'resource.meta': 'metadata', notAFile: 5, container2: {}}};
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+      expect(children).toHaveLength(2);
+      for (const child of children) {
+        expect([ `${base}container/resource`, `${base}container/container2/` ]).toContain(child.identifier.value);
+        expect(child.getAll(RDF.type)!.some((type): boolean => type.equals(LDP.terms.Resource))).toBe(true);
+        expect(child.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+        expect(child.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+          XSD.terms.integer));
+      }
     });
 
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {

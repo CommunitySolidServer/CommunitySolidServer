@@ -11,7 +11,7 @@ import type { Guarded } from '../../util/GuardedStream';
  *  * If the input identifier ends with a slash, it should be assumed the identifier is targeting a container.
  *  * Similarly, if there is no trailing slash it should assume a document.
  *  * It should always throw a NotFoundHttpError if it does not have data matching the input identifier.
- *  * DataAccessors are responsible for generating the relevant containment triples for containers.
+ *  * DataAccessors should not generate containment triples. This will be done externally using `getChildren`.
  */
 export interface DataAccessor {
   /**
@@ -35,6 +35,20 @@ export interface DataAccessor {
    * @param identifier - Identifier for which the metadata is requested.
    */
   getMetadata: (identifier: ResourceIdentifier) => Promise<RepresentationMetadata>;
+
+  /**
+   * Returns metadata for all resources in the requested container.
+   * This should not be all metadata of those resources (but it can be),
+   * but instead the main metadata you want to show in situations
+   * where all these resources are presented simultaneously.
+   * Generally this would be metadata that is present for all of these resources,
+   * such as resource type or last modified date.
+   *
+   * It can be safely assumed that the incoming identifier will always correspond to a container.
+   *
+   * @param identifier - Identifier of the parent container.
+   */
+  getChildren: (identifier: ResourceIdentifier) => AsyncIterableIterator<RepresentationMetadata>;
 
   /**
    * Writes data and metadata for a document.
