@@ -1,4 +1,5 @@
-import type { Stats } from 'fs';
+import type { Dirent, Stats } from 'fs';
+
 import { PassThrough } from 'stream';
 import streamifyArray from 'streamify-array';
 import type { SystemError } from '../../src/util/errors/SystemError';
@@ -148,6 +149,19 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
           throwSystemError('ENOENT');
         }
         return Object.keys(folder[name]);
+      },
+      async* opendir(path: string): AsyncIterableIterator<Dirent> {
+        const { folder, name } = getFolder(path);
+        if (!folder[name]) {
+          throwSystemError('ENOENT');
+        }
+        for (const child of Object.keys(folder[name])) {
+          yield {
+            name: child,
+            isFile: (): boolean => typeof folder[name][child] === 'string',
+            isDirectory: (): boolean => typeof folder[name][child] === 'object',
+          } as Dirent;
+        }
       },
       mkdir(path: string): void {
         const { folder, name } = getFolder(path);

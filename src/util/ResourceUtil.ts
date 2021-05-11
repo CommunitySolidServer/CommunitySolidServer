@@ -1,5 +1,4 @@
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
@@ -25,18 +24,6 @@ export function generateResourceQuads(subject: NamedNode, isContainer: boolean):
   pushQuad(quads, subject, RDF.terms.type, LDP.terms.Resource);
 
   return quads;
-}
-
-/**
- * Helper function to generate the quads describing that the resource URIs are children of the container URI.
- * @param containerURI - The URI of the container.
- * @param childURIs - The URI of the child resources.
- *
- * @returns The generated quads.
- */
-export function generateContainmentQuads(containerURI: NamedNode, childURIs: string[]): Quad[] {
-  return new RepresentationMetadata(containerURI,
-    { [LDP.contains]: childURIs.map(DataFactory.namedNode) }).quads();
 }
 
 /**

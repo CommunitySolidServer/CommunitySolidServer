@@ -19,6 +19,7 @@ import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
+import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
@@ -54,6 +55,15 @@ class SimpleDataAccessor implements DataAccessor {
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     this.checkExists(identifier);
     return this.data[identifier.path].metadata;
+  }
+
+  public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
+    // Find all keys that look like children of the container
+    const children = Object.keys(this.data).filter((name): boolean =>
+      name.startsWith(identifier.path) &&
+      name.length > identifier.path.length &&
+      !trimTrailingSlashes(name.slice(identifier.path.length)).includes('/'));
+    yield* children.map((name): RepresentationMetadata => new RepresentationMetadata({ path: name }));
   }
 
   public async modifyResource(): Promise<void> {
@@ -100,7 +110,7 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
   public async addMetadata(metadata: RepresentationMetadata): Promise<void> {
     const identifier = { path: metadata.identifier.value };
     // Random triple to test on
-    metadata.add(identifier.path, this.getAuxiliaryIdentifier(identifier).path);
+    metadata.add(namedNode('AUXILIARY'), this.getAuxiliaryIdentifier(identifier).path);
   }
 
   public async validate(): Promise<void> {
@@ -157,7 +167,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: true });
       expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
       expect(result.metadata.contentType).toEqual('text/plain');
-      expect(result.metadata.get(resourceID.path)?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
@@ -170,22 +180,20 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: false });
       expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-      expect(result.metadata.get(resourceID.path)?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       containerMetadata.identifier = namedNode(resourceID.path);
-      containerMetadata.add(LDP.terms.contains, [
-        DataFactory.namedNode(`${root}container/.dummy`),
-        DataFactory.namedNode(`${root}container/resource`),
-        DataFactory.namedNode(`${root}container/resource.dummy`),
-      ]);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
+      accessor.data[`${resourceID.path}.dummy`] = representation;
+      accessor.data[`${resourceID.path}resource`] = representation;
+      accessor.data[`${resourceID.path}resource.dummy`] = representation;
       const result = await store.getRepresentation(resourceID);
       const contains = result.metadata.getAll(LDP.terms.contains);
       expect(contains).toHaveLength(1);
-      expect(contains[0].value).toEqual(`${root}container/resource`);
+      expect(contains[0].value).toEqual(`${resourceID.path}resource`);
     });
   });
 
@@ -280,7 +288,6 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.add(HTTP.slug, 'newName');
       accessor.data[`${root}newName`] = representation;
-      accessor.data[root].metadata.add(LDP.contains, DataFactory.namedNode(`${root}newName`));
       const result = await store.addResource(resourceID, representation);
       expect(result).not.toEqual({
         path: `${root}newName`,
@@ -522,7 +529,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will error when deleting non-empty containers.', async(): Promise<void> => {
       accessor.data[`${root}container/`] = representation;
-      accessor.data[`${root}container/`].metadata.add(LDP.contains, DataFactory.namedNode(`${root}otherThing`));
+      accessor.data[`${root}container/otherThing`] = representation;
       const result = store.deleteResource({ path: `${root}container/` });
       await expect(result).rejects.toThrow(ConflictHttpError);
       await expect(result).rejects.toThrow('Can only delete empty containers.');
