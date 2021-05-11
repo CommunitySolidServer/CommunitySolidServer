@@ -1,32 +1,12 @@
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
-import { DataFactory, StreamParser, StreamWriter } from 'n3';
-import type { Literal, NamedNode, Quad } from 'rdf-js';
+import { StreamParser, StreamWriter } from 'n3';
+import type { Quad } from 'rdf-js';
 import streamifyArray from 'streamify-array';
 import type { Guarded } from './GuardedStream';
 import { pipeSafely } from './StreamUtil';
-import { toSubjectTerm, toPredicateTerm, toObjectTerm } from './TermUtil';
 
-/**
- * Generates a quad with the given subject/predicate/object and pushes it to the given array.
- */
-export function pushQuad(
-  quads: Quad[] | Readable,
-  subject: string | NamedNode,
-  predicate: string | NamedNode,
-  object: string | NamedNode | Literal,
-): void {
-  quads.push(DataFactory.quad(toSubjectTerm(subject), toPredicateTerm(predicate), toObjectTerm(object)));
-}
-
-/**
- * Helper function for serializing an array of quads, with as result a Readable object.
- * @param quads - The array of quads.
- * @param contentType - The content-type to serialize to.
- *
- * @returns The Readable object.
- */
 export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Readable> {
   return pipeSafely(streamifyArray(quads), new StreamWriter({ format: contentType }));
 }

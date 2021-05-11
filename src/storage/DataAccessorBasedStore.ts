@@ -25,7 +25,7 @@ import {
   toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
-import { generateResourceQuads } from '../util/ResourceUtil';
+import { addResourceMetadata } from '../util/ResourceUtil';
 import { CONTENT_TYPE, DC, HTTP, LDP, POSIX, PIM, RDF, VANN, XSD } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
@@ -293,7 +293,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Need to do this before handling container data to have the correct identifier
     const { metadata } = representation;
     metadata.identifier = DataFactory.namedNode(identifier.path);
-    metadata.addQuads(generateResourceQuads(metadata.identifier, isContainer));
+    addResourceMetadata(metadata, isContainer);
 
     // Validate container data
     if (isContainer) {
