@@ -36,14 +36,47 @@ describe('A Solid server', (): void => {
     });
   });
 
-  it('can GET results from a container.', async(): Promise<void> => {
+  it('can do a successful HEAD request to a container.', async(): Promise<void> => {
+    const res = await fetch(baseUrl, { method: 'HEAD' });
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful HEAD request to a container without accept headers.', async(): Promise<void> => {
+    const res = await fetch(baseUrl, { method: 'HEAD', headers: { accept: '' }});
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful HEAD request to a document.', async(): Promise<void> => {
+    const url = `${baseUrl}.acl`;
+    const res = await fetch(url, { method: 'HEAD' });
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful HEAD request to a document without accept headers.', async(): Promise<void> => {
+    const url = `${baseUrl}.acl`;
+    const res = await fetch(url, { method: 'HEAD', headers: { accept: '' }});
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful GET request to a container.', async(): Promise<void> => {
     const res = await fetch(baseUrl);
     expect(res.status).toBe(200);
   });
 
-  it('can GET results from a resource.', async(): Promise<void> => {
+  it('can do a successful GET request to a container without accept headers.', async(): Promise<void> => {
+    const res = await fetch(baseUrl, { headers: { accept: '' }});
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful GET request to a document.', async(): Promise<void> => {
     const url = `${baseUrl}.acl`;
     const res = await fetch(url);
+    expect(res.status).toBe(200);
+  });
+
+  it('can do a successful GET request to a document without accept headers.', async(): Promise<void> => {
+    const url = `${baseUrl}.acl`;
+    const res = await fetch(url, { headers: { accept: '' }});
     expect(res.status).toBe(200);
   });
 
@@ -96,7 +129,7 @@ describe('A Solid server', (): void => {
     expect(res.headers.get('location')).toBe(`${baseUrl}containerPOST/`);
   });
 
-  it('can POST to create a resource.', async(): Promise<void> => {
+  it('can POST to create a document.', async(): Promise<void> => {
     const res = await fetch(baseUrl, {
       method: 'POST',
       headers: {
@@ -122,7 +155,7 @@ describe('A Solid server', (): void => {
     expect(res.status).toBe(205);
   });
 
-  it('can DELETE resources.', async(): Promise<void> => {
+  it('can DELETE documents.', async(): Promise<void> => {
     const url = `${baseUrl}resourceDELETE`;
     await fetch(url, {
       method: 'PUT',
@@ -135,7 +168,7 @@ describe('A Solid server', (): void => {
     expect(res.status).toBe(205);
   });
 
-  it('can PATCH resources.', async(): Promise<void> => {
+  it('can PATCH documents.', async(): Promise<void> => {
     const url = `${baseUrl}resourcePATCH`;
     await fetch(url, {
       method: 'PUT',

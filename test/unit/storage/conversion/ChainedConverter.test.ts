@@ -70,10 +70,6 @@ describe('A ChainedConverter', (): void => {
     const converters = [ new DummyConverter({ 'a/a': 1 }, { 'x/x': 1 }) ];
     const converter = new ChainedConverter(converters);
     await expect(converter.canHandle(args)).rejects.toThrow('Missing Content-Type header.');
-
-    args.representation.metadata.contentType = 'a/a';
-    args.preferences = { };
-    await expect(converter.canHandle(args)).rejects.toThrow('Missing type preferences.');
   });
 
   it('errors if no path can be found.', async(): Promise<void> => {
@@ -92,6 +88,20 @@ describe('A ChainedConverter', (): void => {
     const converter = new ChainedConverter(converters);
 
     const result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('b/b');
+  });
+
+  it('interprets no preferences as */*.', async(): Promise<void> => {
+    const converters = [ new DummyConverter({ 'a/a': 1 }, { 'x/x': 1 }) ];
+    const converter = new ChainedConverter(converters);
+    args.representation.metadata.contentType = 'b/b';
+    args.preferences.type = undefined;
+
+    let result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('b/b');
+
+    args.preferences.type = { };
+    result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
   });
 
