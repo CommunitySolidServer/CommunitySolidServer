@@ -174,15 +174,11 @@ export class ChainedConverter extends RepresentationConverter {
     if (!type) {
       throw new BadRequestHttpError('Missing Content-Type header.');
     }
-    let preferences = input.preferences.type;
-    if (!preferences) {
-      throw new BadRequestHttpError('Missing type preferences.');
-    }
-    preferences = cleanPreferences(preferences);
+    const preferences = cleanPreferences(input.preferences.type);
 
     const weight = getTypeWeight(type, preferences);
     if (weight > 0) {
-      this.logger.debug(`No conversion required: ${type} already matches ${Object.keys(input.preferences.type!)}`);
+      this.logger.debug(`No conversion required: ${type} already matches ${Object.keys(preferences)}`);
       return { value: type, weight };
     }
 

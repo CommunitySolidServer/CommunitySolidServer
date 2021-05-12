@@ -14,6 +14,9 @@ describe('An AcceptPreferenceParser', (): void => {
 
   it('returns an empty result if there is no relevant input.', async(): Promise<void> => {
     await expect(preferenceParser.handle({ request })).resolves.toEqual({});
+
+    request.headers = { accept: '' };
+    await expect(preferenceParser.handle({ request })).resolves.toEqual({});
   });
 
   it('parses accept headers.', async(): Promise<void> => {

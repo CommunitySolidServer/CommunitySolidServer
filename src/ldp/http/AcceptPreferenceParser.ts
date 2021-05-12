@@ -32,8 +32,12 @@ export class AcceptPreferenceParser extends PreferenceParser {
     for (const { name, header, parse } of parsers) {
       const value = headers[header];
       if (typeof value === 'string') {
-        preferences[name] = Object.fromEntries(parse(value)
+        const result = Object.fromEntries(parse(value)
           .map(({ range, weight }): [string, number] => [ range, weight ]));
+        // Interpret empty headers (or headers with no valid values) the same as missing headers
+        if (Object.keys(result).length > 0) {
+          preferences[name] = result;
+        }
       }
     }
     return preferences;
