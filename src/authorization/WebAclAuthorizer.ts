@@ -40,7 +40,7 @@ export class WebAclAuthorizer extends Authorizer {
 
   public async canHandle({ identifier }: AuthorizerArgs): Promise<void> {
     if (this.aclStrategy.isAuxiliaryIdentifier(identifier)) {
-      throw new NotImplementedHttpError('WebAclAuthorizer does not support permissions on acl files.');
+      throw new NotImplementedHttpError('WebAclAuthorizer does not support permissions on auxiliary resources.');
     }
   }
 
@@ -50,37 +50,48 @@ export class WebAclAuthorizer extends Authorizer {
    * @param input - Relevant data needed to check if access can be granted.
    */
   public async handle({ identifier, permissions, credentials }: AuthorizerArgs): Promise<WebAclAuthorization> {
+    // Determine the required access modes
     const modes = (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
-
-    // Verify that all required modes are set for the given agent
     this.logger.debug(`Checking if ${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
-    const store = await this.getAclRecursive(identifier);
-    const authorization = this.createAuthorization(credentials, store);
+
+    // Determine the full authorization for the agent granted by the applicable ACL
+    const acl = await this.getAclRecursive(identifier);
+    const authorization = this.createAuthorization(credentials, acl);
+
+    // Verify that the authorization allows all required modes
     for (const mode of modes) {
-      this.checkPermission(credentials, authorization, mode);
+      this.requirePermission(credentials, authorization, mode);
     }
     this.logger.debug(`${credentials.webId} has ${modes.join()} permissions for ${identifier.path}`);
     return authorization;
   }
 
   /**
-   * Creates an Authorization object based on the quads found in the store.
-   * @param agent - Agent who's credentials will be used for the `user` field.
-   * @param store - Store containing all relevant authorization triples.
+   * Checks whether the agent is authenticated (logged in) or not (public/anonymous).
+   * @param agent - Agent whose credentials will be checked.
    */
-  private createAuthorization(agent: Credentials, store: Store): WebAclAuthorization {
-    const publicPermissions = this.createPermissions({}, store);
-    const userPermissions = this.createPermissions(agent, store);
+  private isAuthenticated(agent: Credentials): agent is ({ webId: string }) {
+    return typeof agent.webId === 'string';
+  }
+
+  /**
+   * Creates an Authorization object based on the quads found in the ACL.
+   * @param agent - Agent whose credentials will be used for the `user` field.
+   * @param acl - Store containing all relevant authorization triples.
+   */
+  private createAuthorization(agent: Credentials, acl: Store): WebAclAuthorization {
+    const publicPermissions = this.determinePermissions({}, acl);
+    const userPermissions = this.determinePermissions(agent, acl);
 
     return new WebAclAuthorization(userPermissions, publicPermissions);
   }
 
   /**
-   * Creates the authorization permissions for the given credentials.
+   * Determines the available permissions for the given credentials.
    * @param credentials - Credentials to find the permissions for.
-   * @param store - Store containing all relevant authorization triples.
+   * @param acl - Store containing all relevant authorization triples.
    */
-  private createPermissions(credentials: Credentials, store: Store): PermissionSet {
+  private determinePermissions(credentials: Credentials, acl: Store): PermissionSet {
     const permissions: PermissionSet = {
       read: false,
       write: false,
@@ -88,7 +99,7 @@ export class WebAclAuthorizer extends Authorizer {
       control: false,
     };
     for (const mode of (Object.keys(permissions) as (keyof PermissionSet)[])) {
-      permissions[mode] = this.hasPermission(credentials, store, mode);
+      permissions[mode] = this.hasPermission(credentials, acl, mode);
     }
     return permissions;
   }
@@ -101,10 +112,9 @@ export class WebAclAuthorizer extends Authorizer {
    * @param authorization - An Authorization containing the permissions the agent has on the resource.
    * @param mode - Which mode is requested.
    */
-  private checkPermission(agent: Credentials, authorization: WebAclAuthorization, mode: keyof PermissionSet): void {
+  private requirePermission(agent: Credentials, authorization: WebAclAuthorization, mode: keyof PermissionSet): void {
     if (!authorization.user[mode]) {
-      const isLoggedIn = typeof agent.webId === 'string';
-      if (isLoggedIn) {
+      if (this.isAuthenticated(agent)) {
         this.logger.warn(`Agent ${agent.webId} has no ${mode} permissions`);
         throw new ForbiddenHttpError();
       } else {
@@ -118,21 +128,23 @@ export class WebAclAuthorizer extends Authorizer {
   }
 
   /**
-   * Checks if the given agent has permission to execute the given mode based on the triples in the store.
+   * Checks if the given agent has permission to execute the given mode based on the triples in the ACL.
    * @param agent - Agent that wants access.
-   * @param store - A store containing the relevant triples for authorization.
+   * @param acl - A store containing the relevant triples for authorization.
    * @param mode - Which mode is requested.
    */
-  private hasPermission(agent: Credentials, store: Store, mode: keyof PermissionSet): boolean {
+  private hasPermission(agent: Credentials, acl: Store, mode: keyof PermissionSet): boolean {
+    // Collect all authorization blocks for this specific mode
     const modeString = ACL[this.capitalize(mode) as 'Write' | 'Read' | 'Append' | 'Control'];
-    const auths = this.getModePermissions(store, modeString);
+    const auths = this.getModePermissions(acl, modeString);
 
-    // Having write permissions implies having append permissions
+    // Append permissions are implied by Write permissions
     if (modeString === ACL.Append) {
-      auths.push(...this.getModePermissions(store, ACL.Write));
+      auths.push(...this.getModePermissions(acl, ACL.Write));
     }
 
-    return auths.some((term): boolean => this.hasAccess(agent, term, store));
+    // Check if any collected authorization block allows the specific agent
+    return auths.some((term): boolean => this.hasAccess(agent, term, acl));
   }
 
   /**
@@ -147,44 +159,54 @@ export class WebAclAuthorizer extends Authorizer {
 
   /**
    * Returns the identifiers of all authorizations that grant the given mode access for a resource.
-   * @param store - The store containing the quads of the acl resource.
+   * @param acl - The store containing the quads of the ACL resource.
    * @param aclMode - A valid acl mode (ACL.Write/Read/...)
    */
-  private getModePermissions(store: Store, aclMode: string): Term[] {
-    return store.getQuads(null, ACL.mode, aclMode, null).map((quad: Quad): Term => quad.subject);
+  private getModePermissions(acl: Store, aclMode: string): Term[] {
+    return acl.getQuads(null, ACL.mode, aclMode, null).map((quad: Quad): Term => quad.subject);
   }
 
   /**
    * Checks if the given agent has access to the modes specified by the given authorization.
    * @param agent - Credentials of agent that needs access.
    * @param auth - acl:Authorization that needs to be checked.
-   * @param store - A store containing the relevant triples of the authorization.
+   * @param acl - A store containing the relevant triples of the authorization.
    *
    * @returns If the agent has access.
    */
-  private hasAccess(agent: Credentials, auth: Term, store: Store): boolean {
-    if (store.countQuads(auth, ACL.agentClass, FOAF.Agent, null) > 0) {
+  private hasAccess(agent: Credentials, auth: Term, acl: Store): boolean {
+    // Check if public access is allowed
+    if (acl.countQuads(auth, ACL.agentClass, FOAF.Agent, null) !== 0) {
       return true;
     }
-    if (typeof agent.webId !== 'string') {
-      return false;
+
+    // Check if authenticated access is allowed
+    if (this.isAuthenticated(agent)) {
+      // Check if any authenticated agent is allowed
+      if (acl.countQuads(auth, ACL.agentClass, ACL.AuthenticatedAgent, null) !== 0) {
+        return true;
+      }
+      // Check if this specific agent is allowed
+      if (acl.countQuads(auth, ACL.agent, agent.webId, null) !== 0) {
+        return true;
+      }
     }
-    if (store.countQuads(auth, ACL.agentClass, ACL.AuthenticatedAgent, null) > 0) {
-      return true;
-    }
-    return store.countQuads(auth, ACL.agent, agent.webId, null) > 0;
+
+    // Neither unauthenticated nor authenticated access are allowed
+    return false;
   }
 
   /**
-   * Returns the acl triples that are relevant for the given identifier.
-   * These can either be from a corresponding acl file or an acl file higher up with defaults.
+   * Returns the ACL triples that are relevant for the given identifier.
+   * These can either be from a corresponding ACL document or an ACL document higher up with defaults.
    * Rethrows any non-NotFoundHttpErrors thrown by the ResourceStore.
-   * @param id - ResourceIdentifier of which we need the acl triples.
+   * @param id - ResourceIdentifier of which we need the ACL triples.
    * @param recurse - Only used internally for recursion.
    *
-   * @returns A store containing the relevant acl triples.
+   * @returns A store containing the relevant ACL triples.
    */
   private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
+    // Obtain the direct ACL document for the resource, if it exists
     this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
     try {
       const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
@@ -202,6 +224,7 @@ export class WebAclAuthorizer extends Authorizer {
       }
     }
 
+    // Obtain the applicable ACL of the parent container
     this.logger.debug(`Traversing to the parent of ${id.path}`);
     if (this.identifierStrategy.isRootContainer(id)) {
       this.logger.error(`No ACL document found for root container ${id.path}`);
@@ -227,16 +250,18 @@ export class WebAclAuthorizer extends Authorizer {
    * @returns A store containing the relevant triples.
    */
   private async filterData(data: Representation, predicate: string, object: string): Promise<Store> {
-    const store = new Store();
-    const importEmitter = store.import(data.data);
+    // Import all triples from the representation into a queryable store
+    const quads = new Store();
+    const importer = quads.import(data.data);
     await new Promise((resolve, reject): void => {
-      importEmitter.on('end', resolve);
-      importEmitter.on('error', reject);
+      importer.on('end', resolve);
+      importer.on('error', reject);
     });
 
-    const auths = store.getQuads(null, predicate, object, null).map((quad: Quad): Term => quad.subject);
-    const newStore = new Store();
-    auths.forEach((subject): any => newStore.addQuads(store.getQuads(subject, null, null, null)));
-    return newStore;
+    // Find subjects that occur with a given predicate/object, and collect all their triples
+    const subjectData = new Store();
+    const subjects = quads.getQuads(null, predicate, object, null).map((quad: Quad): Term => quad.subject);
+    subjects.forEach((subject): any => subjectData.addQuads(quads.getQuads(subject, null, null, null)));
+    return subjectData;
   }
 }
