@@ -25,7 +25,8 @@
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/": "dist/components/",
     "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/config/": "config/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/dist/": "dist/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/dist/": "dist/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/templates/config/": "templates/config/"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

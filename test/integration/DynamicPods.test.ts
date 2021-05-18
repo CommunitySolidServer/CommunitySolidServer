@@ -13,10 +13,10 @@ const rootFilePath = getTestFolder('dynamicPods');
 const podConfigJson = joinFilePath(rootFilePath, 'config-pod.json');
 
 const configs: [string, any][] = [
-  [ 'storage-memory.json', {
+  [ 'memory.json', {
     teardown: (): void => removeFolder(rootFilePath),
   }],
-  [ 'storage-filesystem.json', {
+  [ 'filesystem.json', {
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];

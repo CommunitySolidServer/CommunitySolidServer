@@ -11,7 +11,7 @@ import type { PodGenerator } from './PodGenerator';
 import type { VariableHandler } from './variables/VariableHandler';
 import { isValidVariable, TEMPLATE, TEMPLATE_VARIABLE } from './variables/Variables';
 
-const DEFAULT_CONFIG_PATH = joinFilePath(__dirname, '../../../config/templates');
+const DEFAULT_CONFIG_PATH = joinFilePath(__dirname, '../../../templates/config/');
 
 /**
  * Creates a new ResourceStore when creating a pod based on a Components.js configuration.
