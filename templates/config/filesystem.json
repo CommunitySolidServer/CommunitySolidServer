@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/templates/storage-defaults.json"
+    "files-scs:templates/config/defaults.json"
   ],
   "@graph": [
     {
