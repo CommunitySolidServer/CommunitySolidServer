@@ -1,22 +1,47 @@
 import fs from 'fs';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
 
 describe('A ConstantConverter', (): void => {
   const identifier = { path: 'identifier' };
+  let options: ConstantConverterOptions;
+  let converter: ConstantConverter;
 
-  const converter = new ConstantConverter('abc/def/index.html', 'text/html');
+  beforeEach(async(): Promise<void> => {
+    options = { container: true, document: true, minQuality: 1 };
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', options);
+  });
 
   it('does not support requests without content type preferences.', async(): Promise<void> => {
     const preferences = {};
     const representation = {} as any;
     const args = { identifier, representation, preferences };
 
-    await expect(converter.canHandle(args)).rejects
-      .toThrow('No content type preferences specified');
+    await expect(converter.canHandle(args)).rejects.toThrow('No content type preferences specified');
+  });
+
+  it('does not support requests targeting documents if disabled in the options.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 1 }};
+    const representation = { metadata: new RepresentationMetadata() } as any;
+    const args = { identifier, representation, preferences };
+
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', { document: false });
+
+    await expect(converter.canHandle(args)).rejects.toThrow('Documents are not supported');
+  });
+
+  it('does not support requests targeting containers if disabled in the options.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 1 }};
+    const representation = { metadata: new RepresentationMetadata() } as any;
+    const args = { identifier: { path: 'container/' }, representation, preferences };
+
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', { container: false });
+
+    await expect(converter.canHandle(args)).rejects.toThrow('Containers are not supported');
   });
 
   it('does not support requests without matching content type preference.', async(): Promise<void> => {
@@ -24,8 +49,15 @@ describe('A ConstantConverter', (): void => {
     const representation = {} as any;
     const args = { identifier, representation, preferences };
 
-    await expect(converter.canHandle(args)).rejects
-      .toThrow('No preference for text/html');
+    await expect(converter.canHandle(args)).rejects.toThrow('No preference for text/html');
+  });
+
+  it('does not support requests not reaching the minimum preference quality.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 0.9 }};
+    const representation = {} as any;
+    const args = { identifier, representation, preferences };
+
+    await expect(converter.canHandle(args)).rejects.toThrow('Preference is lower than the specified minimum quality');
   });
 
   it('does not support representations that are already in the right format.', async(): Promise<void> => {
@@ -34,8 +66,7 @@ describe('A ConstantConverter', (): void => {
     const representation = { metadata } as any;
     const args = { identifier, representation, preferences };
 
-    await expect(converter.canHandle(args)).rejects
-      .toThrow('Representation is already text/html');
+    await expect(converter.canHandle(args)).rejects.toThrow('Representation is already text/html');
   });
 
   it('supports representations with an unknown content type.', async(): Promise<void> => {
@@ -63,5 +94,19 @@ describe('A ConstantConverter', (): void => {
 
     expect(converted.metadata.contentType).toBe('text/html');
     expect(await arrayifyStream(converted.data)).toEqual([ 'file contents' ]);
+  });
+
+  it('defaults to the most permissive options.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 0.1 }};
+    const metadata = new RepresentationMetadata();
+    const representation = { metadata } as any;
+    const args = { identifier, representation, preferences };
+
+    converter = new ConstantConverter('abc/def/index.html', 'text/html');
+
+    await expect(converter.canHandle(args)).resolves.toBeUndefined();
+
+    args.identifier = { path: 'container/' };
+    await expect(converter.canHandle(args)).resolves.toBeUndefined();
   });
 });

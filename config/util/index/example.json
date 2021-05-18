@@ -8,8 +8,11 @@
       ],
       "@id": "urn:solid-server:default:IndexConverter",
       "@type": "ConstantConverter",
-      "ConstantConverter:_contentType": "text/html",
-      "ConstantConverter:_filePath": "./node_modules/mashlib/dist/databrowser.html"
+      "contentType": "text/html",
+      "filePath": "./node_modules/mashlib/dist/databrowser.html",
+      "options_container": true,
+      "options_document": false,
+      "options_minQuality": 1
     }
   ]
 }
