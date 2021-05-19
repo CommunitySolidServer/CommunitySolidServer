@@ -64,7 +64,7 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | --------- | ------- | ----------- |
 | `--port, -p` | `3000` | |
 | `--baseUrl. -b` | `"http://localhost:$PORT/"` | Needs to be set to the base URL of the server for authnetication and authorization to function. |
-| `--config, -c` | `"config/config-default.json"` | `config-default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config-file.json` |
+| `--config, -c` | `"config/default.json"` | `config/default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config/file.json` |
 | `--mainModulePath, -m` | | Absolute path to the package root from which ComponentJS module resolution should start. |
 | `--loggingLevel, -l` | `"info"`| |
 | `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
@@ -198,7 +198,7 @@ Common usage:
   ```
 - Use alternative versions of the built in config. The filestorage is just the default configuration, you can override with any of the configurations included with the server
   ```shell
-  docker run --rm -p 3000:3000 -it css:latest -c config/config-default.json
+  docker run --rm -p 3000:3000 -it css:latest -c config/default.json
   ```
   Or override it with your own config mapped to the right directory
   ```shell
