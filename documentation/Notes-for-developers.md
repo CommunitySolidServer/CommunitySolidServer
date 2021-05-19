@@ -27,8 +27,8 @@ The advantage of this is that changing the configuration of components does not 
 ### Config file structure
 
 In order to add a component to the default configuration,
-you will have to update [`config-default.json`](https://github.com/solid/community-server/tree/master/config/config-default.json),
-or any of its _imported_ files, which exist in the [`presets`](https://github.com/solid/community-server/tree/master/config/presets) folder.
+you will have to update [`config/default.json`](https://github.com/solid/community-server/tree/master/config/default.json),
+or any of its _imported_ files, which exist in the [`config subfolders`](https://github.com/solid/community-server/tree/master/config/).
 
 A component in a configuration file has the following structure:
 ```json

@@ -47,4 +47,4 @@ EXPOSE 3000
 ENTRYPOINT [ "node", "bin/server.js" ]
 
 ## By default run in filemode (overriden if passing alternative arguments)
-CMD [ "-c", "config/config-file.json", "-f", "/data" ]
+CMD [ "-c", "config/file.json", "-f", "/data" ]
