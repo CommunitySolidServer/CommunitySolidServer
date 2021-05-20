@@ -1,5 +1,4 @@
 import type { HttpRequest } from '../../server/HttpRequest';
-import type { AcceptHeader } from '../../util/HeaderUtil';
 import {
   parseAccept,
   parseAcceptCharset,
@@ -7,13 +6,13 @@ import {
   parseAcceptLanguage,
   parseAcceptDateTime,
 } from '../../util/HeaderUtil';
-import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
+import type { RepresentationPreferences, ValuePreferences } from '../representation/RepresentationPreferences';
 import { PreferenceParser } from './PreferenceParser';
 
 const parsers: {
   name: keyof RepresentationPreferences;
   header: string;
-  parse: (value: string) => AcceptHeader[];
+  parse: (value: string) => ValuePreferences;
 }[] = [
   { name: 'type', header: 'accept', parse: parseAccept },
   { name: 'charset', header: 'accept-charset', parse: parseAcceptCharset },
@@ -32,8 +31,7 @@ export class AcceptPreferenceParser extends PreferenceParser {
     for (const { name, header, parse } of parsers) {
       const value = headers[header];
       if (typeof value === 'string') {
-        const result = Object.fromEntries(parse(value)
-          .map(({ range, weight }): [string, number] => [ range, weight ]));
+        const result: ValuePreferences = parse(value);
         // Interpret empty headers (or headers with no valid values) the same as missing headers
         if (Object.keys(result).length > 0) {
           preferences[name] = result;

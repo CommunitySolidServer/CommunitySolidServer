@@ -12,39 +12,35 @@ import {
 describe('HeaderUtil', (): void => {
   describe('#parseAccept', (): void => {
     it('parses empty Accept headers.', async(): Promise<void> => {
-      expect(parseAccept('')).toEqual([]);
+      expect(parseAccept('')).toEqual({});
     });
 
     it('parses Accept headers with a single entry.', async(): Promise<void> => {
-      expect(parseAccept('audio/basic')).toEqual([
-        { range: 'audio/basic', weight: 1, parameters: { mediaType: {}, extension: {}}},
-      ]);
+      expect(parseAccept('audio/basic')).toEqual({
+        'audio/basic': 1,
+      });
     });
 
     it('parses Accept headers with multiple entries.', async(): Promise<void> => {
-      expect(parseAccept('audio/*; q=0.2, audio/basic')).toEqual([
-        { range: 'audio/basic', weight: 1, parameters: { mediaType: {}, extension: {}}},
-        { range: 'audio/*', weight: 0.2, parameters: { mediaType: {}, extension: {}}},
-      ]);
+      expect(parseAccept('audio/*; q=0.2, audio/basic')).toEqual({
+        'audio/basic': 1,
+        'audio/*': 0.2,
+      });
     });
 
     it('parses complex Accept headers.', async(): Promise<void> => {
       expect(parseAccept(
         'text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4,text/x-dvi; q=0.8; mxb=100000; mxt',
-      )).toEqual([
-        { range: 'text/html', weight: 1, parameters: { mediaType: { level: '1' }, extension: {}}},
-        { range: 'text/x-dvi', weight: 0.8, parameters: { mediaType: {}, extension: { mxb: '100000', mxt: '' }}},
-        { range: 'text/html', weight: 0.7, parameters: { mediaType: {}, extension: {}}},
-        { range: 'text/html', weight: 0.4, parameters: { mediaType: { level: '2' }, extension: {}}},
-      ]);
+      )).toEqual({
+        'text/x-dvi': 0.8,
+        'text/html': 0.4,
+      });
     });
 
     it('parses Accept headers with double quoted values.', async(): Promise<void> => {
-      expect(parseAccept('audio/basic; param1="val" ; q=0.5 ;param2="\\\\\\"valid"')).toEqual([
-        { range: 'audio/basic',
-          weight: 0.5,
-          parameters: { mediaType: { param1: 'val' }, extension: { param2: '\\\\\\"valid' }}},
-      ]);
+      expect(parseAccept('audio/basic; param1="val" ; q=0.5 ;param2="\\\\\\"valid"')).toEqual({
+        'audio/basic': 0.5,
+      });
     });
 
     it('rejects Accept Headers with invalid types.', async(): Promise<void> => {
@@ -77,10 +73,10 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseCharset', (): void => {
     it('parses Accept-Charset headers.', async(): Promise<void> => {
-      expect(parseAcceptCharset('iso-8859-5, unicode-1-1;q=0.8')).toEqual([
-        { range: 'iso-8859-5', weight: 1 },
-        { range: 'unicode-1-1', weight: 0.8 },
-      ]);
+      expect(parseAcceptCharset('iso-8859-5, unicode-1-1;q=0.8')).toEqual({
+        'iso-8859-5': 1,
+        'unicode-1-1': 0.8,
+      });
     });
 
     it('rejects invalid Accept-Charset Headers.', async(): Promise<void> => {
@@ -92,15 +88,17 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseEncoding', (): void => {
     it('parses empty Accept-Encoding headers.', async(): Promise<void> => {
-      expect(parseAcceptCharset('')).toEqual([]);
+      expect(parseAcceptCharset('')).toEqual({});
     });
 
     it('parses Accept-Encoding headers.', async(): Promise<void> => {
-      expect(parseAcceptEncoding('gzip;q=1.000, identity; q=0.5, *;q=0')).toEqual([
-        { range: 'gzip', weight: 1 },
-        { range: 'identity', weight: 0.5 },
-        { range: '*', weight: 0 },
-      ]);
+      expect(parseAcceptEncoding('gzip;q=1.000, identity; q=0.5, *;q=0')).toEqual({
+        // eslint-disable-next-line quote-props
+        'gzip': 1,
+        // eslint-disable-next-line quote-props
+        'identity': 0.5,
+        '*': 0,
+      });
     });
 
     it('rejects invalid Accept-Encoding Headers.', async(): Promise<void> => {
@@ -112,11 +110,13 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseLanguage', (): void => {
     it('parses Accept-Language headers.', async(): Promise<void> => {
-      expect(parseAcceptLanguage('da, en-gb;q=0.8, en;q=0.7')).toEqual([
-        { range: 'da', weight: 1 },
-        { range: 'en-gb', weight: 0.8 },
-        { range: 'en', weight: 0.7 },
-      ]);
+      expect(parseAcceptLanguage('da, en-gb;q=0.8, en;q=0.7')).toEqual({
+        // eslint-disable-next-line quote-props
+        'da': 1,
+        'en-gb': 0.8,
+        // eslint-disable-next-line quote-props
+        'en': 0.7,
+      });
     });
 
     it('rejects invalid Accept-Language Headers.', async(): Promise<void> => {
@@ -134,14 +134,15 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseAcceptDateTime', (): void => {
     it('parses valid Accept-DateTime Headers.', async(): Promise<void> => {
-      expect(parseAcceptDateTime('Wed, 30 May 2007 18:47:52 GMT')).toEqual([
-        { range: 'Wed, 30 May 2007 18:47:52 GMT', weight: 1 },
-      ]);
+      expect(parseAcceptDateTime('Wed, 30 May 2007 18:47:52 GMT')).toEqual({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'Wed, 30 May 2007 18:47:52 GMT': 1,
+      });
     });
 
     it('parses empty Accept-DateTime headers.', async(): Promise<void> => {
-      expect(parseAcceptDateTime('')).toEqual([]);
-      expect(parseAcceptDateTime('   ')).toEqual([]);
+      expect(parseAcceptDateTime('')).toEqual({});
+      expect(parseAcceptDateTime('   ')).toEqual({});
     });
 
     it('rejects invalid Accept-DateTime Headers.', async(): Promise<void> => {

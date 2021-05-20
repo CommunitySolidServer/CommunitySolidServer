@@ -1,4 +1,5 @@
 import type { IncomingHttpHeaders } from 'http';
+import type { ValuePreferences } from '../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
@@ -288,12 +289,16 @@ function parseNoParameters(input: string): AcceptHeader[] {
  *
  * @returns An array of {@link Accept} objects, sorted by weight.
  */
-export function parseAccept(input: string): Accept[] {
+export function parseAccept(input: string): ValuePreferences {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
-  return splitAndClean(result)
+
+  const sortedAccepts: Accept[] = splitAndClean(result)
     .map((part): Accept => parseAcceptPart(part, replacements))
     .sort((left, right): number => right.weight - left.weight);
+
+  return Object.fromEntries(sortedAccepts
+    .map(({ range, weight }): [string, number] => [ range, weight ]));
 }
 
 /**
@@ -306,7 +311,7 @@ export function parseAccept(input: string): Accept[] {
  *
  * @returns An array of {@link AcceptCharset} objects, sorted by weight.
  */
-export function parseAcceptCharset(input: string): AcceptCharset[] {
+export function parseAcceptCharset(input: string): ValuePreferences {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
@@ -316,7 +321,9 @@ export function parseAcceptCharset(input: string): AcceptCharset[] {
       );
     }
   });
-  return results;
+
+  return Object.fromEntries(results
+    .map(({ range, weight }): [string, number] => [ range, weight ]));
 }
 
 /**
@@ -329,7 +336,7 @@ export function parseAcceptCharset(input: string): AcceptCharset[] {
  *
  * @returns An array of {@link AcceptEncoding} objects, sorted by weight.
  */
-export function parseAcceptEncoding(input: string): AcceptEncoding[] {
+export function parseAcceptEncoding(input: string): ValuePreferences {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     if (!token.test(result.range)) {
@@ -337,7 +344,9 @@ export function parseAcceptEncoding(input: string): AcceptEncoding[] {
       throw new BadRequestHttpError(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
     }
   });
-  return results;
+
+  return Object.fromEntries(results
+    .map(({ range, weight }): [string, number] => [ range, weight ]));
 }
 
 /**
@@ -350,7 +359,7 @@ export function parseAcceptEncoding(input: string): AcceptEncoding[] {
  *
  * @returns An array of {@link AcceptLanguage} objects, sorted by weight.
  */
-export function parseAcceptLanguage(input: string): AcceptLanguage[] {
+export function parseAcceptLanguage(input: string): ValuePreferences {
   const results = parseNoParameters(input);
   results.forEach((result): void => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
@@ -363,7 +372,9 @@ export function parseAcceptLanguage(input: string): AcceptLanguage[] {
       );
     }
   });
-  return results;
+
+  return Object.fromEntries(results
+    .map(({ range, weight }): [string, number] => [ range, weight ]));
 }
 
 // eslint-disable-next-line max-len
@@ -376,21 +387,23 @@ const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|
  *
  * @returns An array with a single {@link AcceptDatetime} object.
  */
-export function parseAcceptDateTime(input: string): AcceptDatetime[] {
+export function parseAcceptDateTime(input: string): ValuePreferences {
   const results: AcceptDatetime[] = [];
-  const range = input.trim();
-  if (range) {
-    if (!rfc1123Date.test(range)) {
+  const inputRange = input.trim();
+  if (inputRange) {
+    if (!rfc1123Date.test(inputRange)) {
       logger.warn(
-        `Invalid Accept-DateTime range: ${range}`,
+        `Invalid Accept-DateTime range: ${inputRange}`,
       );
       throw new BadRequestHttpError(
-        `Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`,
+        `Invalid Accept-DateTime range: ${inputRange} does not match the RFC1123 format`,
       );
     }
-    results.push({ range, weight: 1 });
+    results.push({ range: inputRange, weight: 1 });
   }
-  return results;
+
+  return Object.fromEntries(results
+    .map(({ range, weight }): [string, number] => [ range, weight ]));
 }
 
 /**
