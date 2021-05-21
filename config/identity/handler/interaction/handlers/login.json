@@ -5,7 +5,7 @@
       "comment": "Handles all functionality on the Login Page",
       "@id": "urn:solid-server:auth:password:LoginInteractionHandler",
       "@type": "IdpRouteController",
-      "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/login/?$",
+      "pathName": "^/idp/login/?$",
       "postHandler": {
         "@type": "LoginHandler",
         "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },

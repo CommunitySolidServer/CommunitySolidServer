@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:auth:password:SessionInteractionHandler",
       "@type": "RouterHandler",
       "allowedMethods": [ "POST" ],
-      "allowedPathNames": [ "^/idp/interaction/[-_A-Za-z0-9]+/confirm/?$" ],
+      "allowedPathNames": [ "^/idp/confirm/?$" ],
       "handler": {
         "@type": "SessionHttpHandler",
         "interactionCompleter": { "@id": "urn:solid-server:auth:password:InteractionCompleter" }

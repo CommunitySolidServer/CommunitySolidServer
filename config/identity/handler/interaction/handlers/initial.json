@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:auth:password:InitialInteractionHandler",
       "@type": "RouterHandler",
       "allowedMethods": [ "GET" ],
-      "allowedPathNames": [ "^/idp/interaction/[-_A-Za-z0-9]+/?$" ],
+      "allowedPathNames": [ "^/idp/?$" ],
       "handler": {
         "@type": "InitialInteractionHandler",
         "renderHandlerMap": [
