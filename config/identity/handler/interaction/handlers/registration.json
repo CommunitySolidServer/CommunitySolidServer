@@ -5,7 +5,7 @@
       "comment": "Handles all functionality on the register page",
       "@id": "urn:solid-server:auth:password:RegistrationInteractionHandler",
       "@type": "IdpRouteController",
-      "pathName": "^/idp/interaction/[-_A-Za-z0-9]+/register/?$",
+      "pathName": "^/idp/register/?$",
       "postHandler": {
         "@type": "RegistrationHandler",
         "args_ownershipValidator": {

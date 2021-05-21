@@ -1,12 +1,12 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import { interactionPolicy } from 'oidc-provider';
-import urljoin from 'url-join';
+import { ensureTrailingSlash } from '../../../util/PathUtil';
 import type {
   InteractionPolicy,
 } from '../InteractionPolicy';
 
 /**
- * Interaction policy that maps URLs to `${idpPath}/interaction/${context uid}`.
+ * Interaction policy that redirects to `idpPath`.
  * Uses the `select_account` interaction policy.
  */
 export class AccountInteractionPolicy implements InteractionPolicy {
@@ -24,14 +24,10 @@ export class AccountInteractionPolicy implements InteractionPolicy {
     });
     interactions.add(selectAccount, 0);
     this.policy = interactions;
-    this.url = this.createUrlFunction(idpPath);
-  }
 
-  /**
-   * Helper function to create the function that will be put in `url`.
-   * Needs to be done like this since the `this` reference is lost when passing this value along.
-   */
-  private createUrlFunction(idpPath: string): (ctx: KoaContextWithOIDC) => string {
-    return (ctx: KoaContextWithOIDC): string => urljoin(idpPath, 'interaction', ctx.oidc.uid);
+    // When oidc-provider cannot fulfill the authorization request for any of the possible reasons
+    // (missing user session, requested ACR not fulfilled, prompt requested, ...)
+    // it will resolve the interactions.url helper function and redirect the User-Agent to that url.
+    this.url = (): string => ensureTrailingSlash(idpPath);
   }
 }

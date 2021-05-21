@@ -14,7 +14,7 @@ describe('An AccountInteractionPolicy', (): void => {
     expect(interactionPolicy.policy[0].name).toBe('select_account');
   });
 
-  it('creates URLs by prepending /idp/interaction/.', async(): Promise<void> => {
-    expect(interactionPolicy.url({ oidc: { uid: 'valid-uid' }} as any)).toBe('/idp/interaction/valid-uid');
+  it('sets the default url to /idp/.', async(): Promise<void> => {
+    expect(interactionPolicy.url({ oidc: { uid: 'valid-uid' }} as any)).toBe('/idp/');
   });
 });
