@@ -8,6 +8,12 @@
       "source": { "@id": "urn:solid-server:default:ResourceStore" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "container": "/idp/data/"
+    },
+    {
+      "comment": "Stores expiring data. This class has a `finalize` function that needs to be called after stopping the server.",
+      "@id": "urn:solid-server:default:ExpiringIdpStorage",
+      "@type": "WrappedExpiringStorage",
+      "source": { "@id": "urn:solid-server:default:IdpStorage" }
     }
   ]
 }

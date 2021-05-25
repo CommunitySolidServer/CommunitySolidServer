@@ -10,12 +10,6 @@
         "args_storageName": "/idp/oidc",
         "args_storage": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
       }
-    },
-    {
-      "comment": "Stores expiring data. This class has a `finalize` function to call after stopping the server.",
-      "@id": "urn:solid-server:default:ExpiringIdpStorage",
-      "@type": "WrappedExpiringStorage",
-      "source": { "@id": "urn:solid-server:default:IdpStorage" }
     }
   ]
 }

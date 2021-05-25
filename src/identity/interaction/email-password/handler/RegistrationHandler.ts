@@ -44,11 +44,10 @@ export class RegistrationHandler extends InteractionHttpHandler {
   }
 
   public async handle(input: InteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     const { email, webId, password, remember } = await this.parseInput(input.request);
     try {
       // Check if WebId contains required triples and register new account if successful
-      await this.ownershipValidator.handleSafe({ webId, interactionId: interactionDetails.uid });
+      await this.ownershipValidator.handleSafe({ webId });
       await this.accountStore.create(email, webId, password);
       await this.interactionCompleter.handleSafe({
         ...input,
