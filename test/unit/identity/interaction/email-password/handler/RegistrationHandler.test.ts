@@ -14,17 +14,13 @@ describe('A RegistrationHandler', (): void => {
   const email = 'alice@test.email';
   let request: HttpRequest;
   const response: HttpResponse = {} as any;
-  let provider: Provider;
+  const provider: Provider = {} as any;
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
   let interactionCompleter: InteractionCompleter;
   let handler: RegistrationHandler;
 
   beforeEach(async(): Promise<void> => {
-    provider = {
-      interactionDetails: jest.fn().mockResolvedValue({ uid: '123456' }),
-    } as any;
-
     ownershipValidator = {
       handleSafe: jest.fn(),
     } as any;

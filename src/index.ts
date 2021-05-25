@@ -45,9 +45,9 @@ export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/IdpRouteController';
 export * from './identity/interaction/util/InitialInteractionHandler';
 export * from './identity/interaction/util/InteractionCompleter';
-export * from './identity/interaction/util/IssuerOwnershipValidator';
 export * from './identity/interaction/util/OwnershipValidator';
 export * from './identity/interaction/util/TemplateRenderer';
+export * from './identity/interaction/util/TokenOwnershipValidator';
 
 // Identity/Interaction
 export * from './identity/interaction/InteractionHttpHandler';

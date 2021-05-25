@@ -9,8 +9,8 @@
       "postHandler": {
         "@type": "RegistrationHandler",
         "args_ownershipValidator": {
-          "@type": "IssuerOwnershipValidator",
-          "issuer": { "@id": "urn:solid-server:default:variable:baseUrl" }
+          "@type": "TokenOwnershipValidator",
+          "storage": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
         },
         "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
         "args_interactionCompleter": { "@id": "urn:solid-server:auth:password:InteractionCompleter" }
