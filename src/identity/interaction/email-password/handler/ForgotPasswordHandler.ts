@@ -45,14 +45,13 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
   }
 
   public async handle(input: InteractionHttpHandlerInput): Promise<void> {
-    const interactionDetails = await input.provider.interactionDetails(input.request, input.response);
     try {
       // Validate incoming data
       const { email } = await getFormDataRequestBody(input.request);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
 
       await this.resetPassword(email);
-      await this.sendResponse(input.response, interactionDetails, email);
+      await this.sendResponse(input.response, email);
     } catch (err: unknown) {
       throwIdpInteractionError(err, {});
     }
@@ -93,15 +92,13 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
   /**
    * Sends a response through the messageRenderHandler.
    * @param response - HttpResponse to send to.
-   * @param details - Details of the interaction.
    * @param email - Will be inserted in `prefilled` for the template.
    */
-  private async sendResponse(response: HttpResponse, details: { uid: string }, email: string): Promise<void> {
+  private async sendResponse(response: HttpResponse, email: string): Promise<void> {
     // Send response
     await this.messageRenderHandler.handleSafe({
       response,
       props: {
-        details,
         errorMessage: '',
         prefilled: {
           email,

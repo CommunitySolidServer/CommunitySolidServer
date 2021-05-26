@@ -39,7 +39,6 @@ export class InitialInteractionHandler extends InteractionHttpHandler {
     await this.renderHandlerMap[name].handleSafe({
       response,
       props: {
-        details: interactionDetails,
         errorMessage: '',
         prefilled: {},
       },
