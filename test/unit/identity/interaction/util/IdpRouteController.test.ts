@@ -11,9 +11,7 @@ import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 describe('An IdpRouteController', (): void => {
   let request: HttpRequest;
   const response: HttpResponse = {} as any;
-  // `Interaction` type is not exposed
-  const details = {} as any;
-  let provider: Provider;
+  const provider: Provider = {} as any;
   let renderHandler: IdpRenderHandler;
   let postHandler: HttpHandler;
   let controller: IdpRouteController;
@@ -22,10 +20,6 @@ describe('An IdpRouteController', (): void => {
     request = {
       randomData: 'data!',
       method: 'GET',
-    } as any;
-
-    provider = {
-      interactionDetails: jest.fn().mockResolvedValue(details),
     } as any;
 
     renderHandler = {
@@ -44,7 +38,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { details, errorMessage: '', prefilled: {}},
+      props: { errorMessage: '', prefilled: {}},
     });
     expect(postHandler.handleSafe).toHaveBeenCalledTimes(0);
   });
@@ -67,7 +61,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { details, errorMessage: 'bad request!', prefilled: { more: 'data!' }},
+      props: { errorMessage: 'bad request!', prefilled: { more: 'data!' }},
     });
   });
 
@@ -80,7 +74,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { details, errorMessage: 'An unknown error occurred', prefilled: {}},
+      props: { errorMessage: 'An unknown error occurred', prefilled: {}},
     });
   });
 

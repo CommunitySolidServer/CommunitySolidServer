@@ -12,13 +12,8 @@
           <h1 class="title--white">Authorize</h1>
           <div class="login-panel">
             <div class="panel-body">
-              <form autocomplete="off" action="<%= details.pathPrefix %>/idp/confirm" method="post">
+              <form autocomplete="off" action="/idp/confirm" method="post">
                 <button autofocus type="submit" name="submit" class="ids-link-filled">Continue</button>
-
-                <hr />
-                <div class="space-between">
-                  <a href="<%= details.returnTo %>" class="link">Cancel</a>
-                </div>
               </form>
             </div>
           </div>

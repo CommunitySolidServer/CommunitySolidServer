@@ -36,7 +36,6 @@ describe('An InitialInteractionHandler', (): void => {
     expect(map.test.handleSafe).toHaveBeenLastCalledWith({
       response,
       props: {
-        details,
         errorMessage: '',
         prefilled: {},
       },
@@ -53,7 +52,6 @@ describe('An InitialInteractionHandler', (): void => {
     expect(map.default.handleSafe).toHaveBeenLastCalledWith({
       response,
       props: {
-        details,
         errorMessage: '',
         prefilled: {},
       },

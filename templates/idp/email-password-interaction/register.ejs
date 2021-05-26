@@ -12,7 +12,7 @@
           <h1 class="title--white">Register</h1>
           <div class="login-panel">
             <div class="panel-body">
-              <form autocomplete="off" action="<%= details.pathPrefix %>/idp/register" method="post">
+              <form autocomplete="off" action="/idp/register" method="post">
 
                 <%if (errorMessage) { %>
                   <div class="input-wrap">
@@ -50,7 +50,7 @@
 
                 <hr />
                 <div class="space-between">
-                  <a href="<%= details.pathPrefix %>/idp/login" class="link">Sign In</a>
+                  <a href="/idp/login" class="link">Sign In</a>
                 </div>
               </form>
             </div>

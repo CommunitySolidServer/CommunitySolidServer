@@ -16,10 +16,8 @@ describe('A ForgotPasswordHandler', (): void => {
   const email = 'test@test.email';
   const recordId = '123456';
   const html = `<a href="/base/idp/resetpassword?rid=${recordId}">Reset Password</a>`;
-  // `Interaction` type is not exposed
-  const details = {} as any;
-  const renderParams = { response, props: { details, errorMessage: '', prefilled: { email }}};
-  let provider: Provider;
+  const renderParams = { response, props: { errorMessage: '', prefilled: { email }}};
+  const provider: Provider = {} as any;
   let messageRenderHandler: IdpRenderHandler;
   let accountStore: AccountStore;
   const baseUrl = 'http://test.com/base/';
@@ -30,10 +28,6 @@ describe('A ForgotPasswordHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     request = createPostFormRequest({ email });
-
-    provider = {
-      interactionDetails: jest.fn().mockResolvedValue(details),
-    } as any;
 
     messageRenderHandler = {
       handleSafe: jest.fn(),

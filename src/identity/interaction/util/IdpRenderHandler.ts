@@ -1,14 +1,12 @@
 import { RenderHandler } from '../../../server/util/RenderHandler';
 
 export interface IdpRenderHandlerProps {
-  details: {
-    uid: string;
-  };
-  errorMessage: string;
-  prefilled: Record<string, any>;
+  errorMessage?: string;
+  prefilled?: Record<string, any>;
 }
 
 /**
- * A special Render Handler that renders an IDP form
+ * A special Render Handler that renders an IDP form.
+ * Contains an error message if something was wrong and prefilled values for forms.
  */
 export abstract class IdpRenderHandler extends RenderHandler<IdpRenderHandlerProps> {}
