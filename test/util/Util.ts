@@ -6,6 +6,7 @@ import type { SystemError } from '../../src/util/errors/SystemError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 const portNames = [
+  // Integration
   'DynamicPods',
   'Identity',
   'LpdHandlerWithAuth',
@@ -17,6 +18,8 @@ const portNames = [
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
+  // Unit
+  'BaseHttpServerFactory',
 ] as const;
 
 export function getPort(name: typeof portNames[number]): number {

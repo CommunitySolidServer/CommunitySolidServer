@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "An example of how to set up a server with HTTPS",
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "WebSocketServerFactory",
+      "baseServerFactory": {
+        "@id": "urn:solid-server:default:HttpServerFactory",
+        "@type": "BaseHttpServerFactory",
+        "handler": { "@id": "urn:solid-server:default:HttpHandler" },
+        "options_https": true,
+        "options_key": "/path/to/server.key",
+        "options_cert": "/path/to/server.cert"
+      },
+      "webSocketHandler": {
+        "@type": "UnsecureWebSocketsProtocol",
+        "source": { "@id": "urn:solid-server:default:ResourceStore" }
+      }
+    }
+  ]
+}
