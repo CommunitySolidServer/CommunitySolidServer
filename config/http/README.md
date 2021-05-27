@@ -16,6 +16,7 @@ and then pass the request along.
 The factory used to create the actual server object.
 * *no-websockets*: Only HTTP.
 * *websockets*: HTTP and websockets.
+* *https-example*: An example configuration to use HTTPS directly at the server (instead of at a reverse proxy).
 
 ## Static
 Support for static files that should be found at a specific path.

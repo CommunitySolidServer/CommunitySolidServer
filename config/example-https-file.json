@@ -1,0 +1,53 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/http/handler/default.json",
+    "files-scs:config/http/middleware/websockets.json",
+
+    "files-scs:config/http/static/default.json",
+    "files-scs:config/identity/handler/default.json",
+    "files-scs:config/identity/email/default.json",
+    "files-scs:config/init/handler/default.json",
+    "files-scs:config/ldp/authentication/dpop-bearer.json",
+    "files-scs:config/ldp/authorization/webacl.json",
+    "files-scs:config/ldp/handler/default.json",
+    "files-scs:config/ldp/metadata-parser/default.json",
+    "files-scs:config/ldp/metadata-writer/default.json",
+    "files-scs:config/ldp/permissions/acl.json",
+    "files-scs:config/pod/handler/static.json",
+    "files-scs:config/storage/key-value/memory.json",
+    "files-scs:config/storage/resource-store/file.json",
+    "files-scs:config/util/auxiliary/acl.json",
+    "files-scs:config/util/identifiers/suffix.json",
+    "files-scs:config/util/index/default.json",
+    "files-scs:config/util/logging/winston.json",
+    "files-scs:config/util/representation-conversion/default.json",
+    "files-scs:config/util/resource-locker/memory.json",
+    "files-scs:config/util/variables/default.json"
+  ],
+  "@graph": [
+    {
+      "comment": [
+        "An example of what a config could look like if HTTPS is required.",
+        "The http/server-factory import above has been omitted since that feature is set below."
+      ]
+    },
+    {
+      "comment": "The key/cert values should be replaces with paths to the correct files. The 'options' block can be removed if not needed.",
+      "@id": "urn:solid-server:default:ServerFactory",
+      "@type": "WebSocketServerFactory",
+      "baseServerFactory": {
+        "@id": "urn:solid-server:default:HttpServerFactory",
+        "@type": "BaseHttpServerFactory",
+        "handler": { "@id": "urn:solid-server:default:HttpHandler" },
+        "options_https": true,
+        "options_key": "/path/to/server.key",
+        "options_cert": "/path/to/server.cert"
+      },
+      "webSocketHandler": {
+        "@type": "UnsecureWebSocketsProtocol",
+        "source": { "@id": "urn:solid-server:default:ResourceStore" }
+      }
+    }
+  ]
+}
