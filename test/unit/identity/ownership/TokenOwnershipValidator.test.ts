@@ -4,9 +4,9 @@ import { DataFactory } from 'n3';
 import type { Quad } from 'n3';
 import type { DatasetCore } from 'rdf-js';
 import { v4 } from 'uuid';
-import { TokenOwnershipValidator } from '../../../../../src/identity/interaction/util/TokenOwnershipValidator';
-import type { ExpiringStorage } from '../../../../../src/storage/keyvalue/ExpiringStorage';
-import { SOLID } from '../../../../../src/util/Vocabularies';
+import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
+import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
+import { SOLID } from '../../../../src/util/Vocabularies';
 const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('@rdfjs/fetch');

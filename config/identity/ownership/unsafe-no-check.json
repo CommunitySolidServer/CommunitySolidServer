@@ -4,11 +4,10 @@
     {
       "comment": [
         "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
-        "This extractor always sets the credentials to the fixed value."
+        "Do no verification to determine WebID ownership."
       ],
-      "@id": "urn:solid-server:default:CredentialsExtractor",
-      "@type": "UnsecureConstantCredentialsExtractor",
-      "agent": "http://test.com/card#me"
+      "@id": "urn:solid-server:auth:password:OwnershipValidator",
+      "@type": "NoCheckOwnershipValidator"
     }
   ]
 }
