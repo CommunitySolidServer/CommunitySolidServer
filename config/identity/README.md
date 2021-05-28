@@ -12,3 +12,8 @@ Necessary for sending e-mail when using IDP.
 Contains everything needed for setting up the Identity Provider.
 * *default*: As of writing there is not much customization possible.
   This contains everything needed.
+  
+## Ownership
+Which technique to use to determine if a requesting agent owns a WebID.
+* *token*: A token needs to added to the WebID to prove ownership.
+* *unsafe-no-check*: No verification is done, the agent is always believed.

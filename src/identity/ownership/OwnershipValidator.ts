@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
+import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 /**
  * A class that validates if a someone owns a WebId.

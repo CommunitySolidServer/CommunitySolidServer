@@ -1,10 +1,10 @@
 import { DataFactory } from 'n3';
 import { v4 } from 'uuid';
-import { getLoggerFor } from '../../../logging/LogUtil';
-import type { ExpiringStorage } from '../../../storage/keyvalue/ExpiringStorage';
-import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { SOLID } from '../../../util/Vocabularies';
-import { fetchDataset } from '../../util/FetchUtil';
+import { getLoggerFor } from '../../logging/LogUtil';
+import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { SOLID } from '../../util/Vocabularies';
+import { fetchDataset } from '../util/FetchUtil';
 import { OwnershipValidator } from './OwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 
@@ -42,6 +42,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     if (!dataset.has(expectedQuad)) {
       this.throwError(webId, token);
     }
+    this.logger.debug(`Verified ownership of ${webId}`);
     await this.storage.delete(key);
   }
 
@@ -66,7 +67,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     this.logger.debug(`Missing verification token at ${webId}`);
     const errorMessage = [
       `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${token}" .`,
-      'Must be added to the WebId',
+      'Must be added to the WebId. This can be removed after registration.',
     ].join('\n');
     throw new BadRequestHttpError(errorMessage);
   }

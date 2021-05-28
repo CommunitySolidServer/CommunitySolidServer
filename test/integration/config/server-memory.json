@@ -6,6 +6,7 @@
     "files-scs:config/http/server-factory/websockets.json",
     "files-scs:config/http/static/default.json",
     "files-scs:config/identity/handler/default.json",
+    "files-scs:config/identity/ownership/token.json",
     "files-scs:config/init/handler/default.json",
     "files-scs:config/ldp/authentication/dpop-bearer.json",
     "files-scs:config/ldp/authorization/webacl.json",

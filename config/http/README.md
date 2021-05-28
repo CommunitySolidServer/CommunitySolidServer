@@ -4,7 +4,7 @@ Options related to the base support of HTTP requests by the server.
 ## Handler
 Sets up all the handlers a request will potentially pass through.
 * *default*: The full setup, that is middleware + static files + pod creation + IDP + LDP.
-* *simple*: A simpler setup that only supports the base solid features. Has no pod creation or IDP.
+* *simple*: A simpler setup in which the IDP is disabled.
 
 ## Middleware
 A set of handlers that will always be run on all requests to add some metadata
