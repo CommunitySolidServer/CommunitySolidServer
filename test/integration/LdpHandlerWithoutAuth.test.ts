@@ -33,7 +33,6 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };

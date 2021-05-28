@@ -21,7 +21,6 @@ describe('A Solid server', (): void => {
       'urn:solid-server:test:Instances',
       getTestConfigPath('server-memory.json'),
       {
-        'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
         'urn:solid-server:default:variable:idpTemplateFolder': '',
       },

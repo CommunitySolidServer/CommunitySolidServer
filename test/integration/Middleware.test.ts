@@ -24,7 +24,6 @@ describe('An http server with middleware', (): void => {
       getTestConfigPath('server-middleware.json'),
       {
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
-        'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },
     ) as BaseHttpServerFactory;
