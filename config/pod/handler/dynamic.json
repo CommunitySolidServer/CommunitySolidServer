@@ -1,7 +1,6 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/pod/handler/http/manager.json",
     "files-scs:config/pod/handler/pod-generators/templated.json",
     "files-scs:config/pod/handler/resource-generators/templated.json"
   ],
@@ -11,7 +10,6 @@
       "comment": "Generates pods based on config templates and stores the results in the correct places",
       "@id": "urn:solid-server:default:PodManager",
       "@type": "ConfigPodManager",
-      "idGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator"  },
       "podGenerator": { "@id": "urn:solid-server:default:PodGenerator" },
       "routingStorage": { "@id": "urn:solid-server:default:PodRoutingStorage" },
       "resourcesGenerator": { "@id": "urn:solid-server:default:ResourcesGenerator" }
