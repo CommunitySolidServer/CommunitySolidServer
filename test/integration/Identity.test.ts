@@ -2,7 +2,9 @@ import type { Server } from 'http';
 import { stringify } from 'querystring';
 import { URL } from 'url';
 import { load } from 'cheerio';
+import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
+import urljoin from 'url-join';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
@@ -24,6 +26,14 @@ jest.mock('nodemailer');
 // Prevent panva/node-openid-client from emitting DraftWarning
 jest.spyOn(process, 'emitWarning').mockImplementation();
 
+async function postForm(url: string, formBody: string): Promise<Response> {
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
+    body: formBody,
+  });
+}
+
 // No way around the cookies https://github.com/panva/node-oidc-provider/issues/552 .
 // They will be simulated by storing the values and passing them along.
 // This is why the redirects are handled manually.
@@ -35,7 +45,7 @@ describe('A Solid server with IDP', (): void => {
   let factory: HttpServerFactory;
   const redirectUrl = 'http://mockedredirect/';
   const oidcIssuer = baseUrl;
-  const card = new URL('profile/card', baseUrl).href;
+  const card = urljoin(baseUrl, 'profile/card');
   const webId = `${card}#me`;
   const email = 'test@test.com';
   const password = 'password!';
@@ -52,9 +62,7 @@ describe('A Solid server with IDP', (): void => {
       'urn:solid-server:test:Instances',
       getTestConfigPath('server-memory.json'),
       {
-        'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
         'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
       },
     ) as Record<string, any>;
@@ -79,27 +87,16 @@ describe('A Solid server with IDP', (): void => {
   });
 
   describe('doing registration', (): void => {
-    let state: IdentityTestState;
-    let nextUrl: string;
     let formBody: string;
     let registrationTriple: string;
 
     beforeAll(async(): Promise<void> => {
-      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-
       // We will need this twice
-      formBody = stringify({ email, webId, password, confirmPassword: password, remember: 'yes' });
-    });
-
-    it('initializes the session and finds the registration URL.', async(): Promise<void> => {
-      const url = await state.startSession();
-      const { register } = await state.parseLoginPage(url);
-      expect(typeof register).toBe('string');
-      nextUrl = (await state.extractFormUrl(register)).url;
+      formBody = stringify({ email, webId, password, confirmPassword: password, register: 'ok' });
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await state.fetchIdp(nextUrl, 'POST', formBody, APPLICATION_X_WWW_FORM_URLENCODED);
+      const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       // eslint-disable-next-line newline-per-chained-call
       registrationTriple = load(await res.text())('form div label').first().text().trim().split('\n')[0];
@@ -119,15 +116,14 @@ describe('A Solid server with IDP', (): void => {
       expect(res.status).toBe(205);
     });
 
-    it('sends the form again once the registration token was added.', async(): Promise<void> => {
-      const res = await state.fetchIdp(nextUrl, 'POST', formBody, APPLICATION_X_WWW_FORM_URLENCODED);
-      expect(res.status).toBe(302);
-      nextUrl = res.headers.get('location')!;
-    });
-
-    it('will be redirected internally and logged in.', async(): Promise<void> => {
-      await state.handleLoginRedirect(nextUrl);
-      expect(state.session.info?.webId).toBe(webId);
+    it('sends the form again to successfully register.', async(): Promise<void> => {
+      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+      expect(text).toMatch(new RegExp(`You can now identify as .*${webId}.*with our IDP using ${email}`, 'u'));
+      expect(text).toMatch(new RegExp(`Make sure you add the triple
+\\s*&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.
+\\s*to your WebID profile\\.`, 'mu'));
     });
   });
 
@@ -193,22 +189,10 @@ describe('A Solid server with IDP', (): void => {
   });
 
   describe('resetting password', (): void => {
-    let state: IdentityTestState;
     let nextUrl: string;
 
-    beforeAll(async(): Promise<void> => {
-      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-    });
-
-    it('initializes the session and finds the forgot password URL.', async(): Promise<void> => {
-      const url = await state.startSession();
-      const { forgotPassword } = await state.parseLoginPage(url);
-      expect(typeof forgotPassword).toBe('string');
-      nextUrl = (await state.extractFormUrl(forgotPassword)).url;
-    });
-
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
-      const res = await state.fetchIdp(nextUrl, 'POST', stringify({ email }), APPLICATION_X_WWW_FORM_URLENCODED);
+      const res = await postForm(`${baseUrl}idp/forgotpassword`, stringify({ email }));
       expect(res.status).toBe(200);
       expect(load(await res.text())('form div p').first().text().trim())
         .toBe('If your account exists, an email has been sent with a link to reset your password.');
@@ -222,13 +206,23 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('resets the password through the given link.', async(): Promise<void> => {
-      const { url, body } = await state.extractFormUrl(nextUrl);
+      // Extract the submit URL from the reset password form
+      let res = await fetch(nextUrl);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+      const relative = load(text)('form').attr('action');
+      expect(typeof relative).toBe('string');
 
-      const recordId = load(body)('input[name="recordId"]').attr('value');
+      const recordId = load(text)('input[name="recordId"]').attr('value');
       expect(typeof recordId).toBe('string');
 
+      // POST the new password
       const formData = stringify({ password: password2, confirmPassword: password2, recordId });
-      const res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
+      res = await fetch(new URL(relative!, baseUrl).href, {
+        method: 'POST',
+        headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
+        body: formData,
+      });
       expect(res.status).toBe(200);
       expect(await res.text()).toContain('Your password was successfully reset.');
     });
@@ -259,6 +253,99 @@ describe('A Solid server with IDP', (): void => {
     it('can log in with the new password.', async(): Promise<void> => {
       await state.login(nextUrl, email, password2);
       expect(state.session.info?.webId).toBe(webId);
+    });
+  });
+
+  describe('creating pods without registering', (): void => {
+    let formBody: string;
+    let registrationTriple: string;
+    const podName = 'myPod';
+
+    beforeAll(async(): Promise<void> => {
+      // We will need this twice
+      formBody = stringify({ email, webId, podName, createPod: 'ok' });
+    });
+
+    it('sends the form once to receive the registration triple.', async(): Promise<void> => {
+      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      expect(res.status).toBe(200);
+      // eslint-disable-next-line newline-per-chained-call
+      registrationTriple = load(await res.text())('form div label').first().text().trim().split('\n')[0];
+      expect(registrationTriple).toMatch(new RegExp(
+        `^<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken> "[^"]+"\\s*\\.\\s*$`,
+        'u',
+      ));
+    });
+
+    it('updates the webId with the registration token.', async(): Promise<void> => {
+      const patchBody = `INSERT DATA { ${registrationTriple} }`;
+      const res = await fetch(webId, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/sparql-update' },
+        body: patchBody,
+      });
+      expect(res.status).toBe(205);
+    });
+
+    it('sends the form again to successfully register.', async(): Promise<void> => {
+      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+      expect(text).toMatch(new RegExp(`Your new pod has been created and can be found at.*${baseUrl}${podName}/`, 'u'));
+    });
+  });
+
+  describe('creating a new WebID', (): void => {
+    const podName = 'alice';
+    const newMail = 'alice@test.email';
+    let newWebId: string;
+    let podLocation: string;
+    let state: IdentityTestState;
+
+    const formBody = stringify({
+      email: newMail, password, confirmPassword: password, podName, createWebId: 'ok', register: 'ok', createPod: 'ok',
+    });
+
+    it('sends the form to create the WebID and register.', async(): Promise<void> => {
+      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      expect(res.status).toBe(200);
+      const text = await res.text();
+
+      const matchWebId = /Your new WebID is [^>]+>([^<]+)/u.exec(text);
+      expect(matchWebId).toBeDefined();
+      expect(matchWebId).toHaveLength(2);
+      newWebId = matchWebId![1];
+      expect(text).toMatch(new RegExp(`You can now identify as .*${newWebId}.*with our IDP using ${newMail}`, 'u'));
+
+      const matchPod = /Your new pod has been created and can be found at [^>]+>([^<]+)/u.exec(text);
+      expect(matchPod).toBeDefined();
+      expect(matchPod).toHaveLength(2);
+      podLocation = matchPod![1];
+      expect(newWebId.startsWith(podLocation)).toBe(true);
+      expect(podLocation.startsWith(baseUrl)).toBe(true);
+    });
+
+    it('initializes the session and logs in.', async(): Promise<void> => {
+      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
+      const url = await state.startSession();
+      const { login } = await state.parseLoginPage(url);
+      expect(typeof login).toBe('string');
+      await state.login(login, newMail, password);
+      expect(state.session.info?.webId).toBe(newWebId);
+    });
+
+    it('can only write to the new profile when using the logged in session.', async(): Promise<void> => {
+      const patchOptions = {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/sparql-update' },
+        body: `INSERT DATA { <> <http://www.w3.org/2000/01/rdf-schema#label> "A cool WebID." }`,
+      };
+
+      let res = await fetch(newWebId, patchOptions);
+      expect(res.status).toBe(401);
+
+      res = await state.session.fetch(newWebId, patchOptions);
+      expect(res.status).toBe(205);
     });
   });
 });

@@ -28,12 +28,7 @@
                 </div>
 
                 <div class="input-wrap">
-                  <label for="webId">WebId:</label>
-                  <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
-                </div>
-
-                <div class="input-wrap">
-                  <label for="password">Password:</label>
+                  <label for="password">Password (when registering with the IDP):</label>
                   <input id="password" type="password" name="password" />
                 </div>
 
@@ -43,15 +38,28 @@
                 </div>
 
                 <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
+                  <label for="podName">Pod name (when creating a pod):</label>
+                  <input id="podName" type="text" name="podName" <% if (prefilled.podName) { %> value="<%= prefilled.podName %>" <% } %> />
                 </div>
 
-                <button type="submit" name="submit" class="ids-link-filled">Create Identity</button>
-
-                <hr />
-                <div class="space-between">
-                  <a href="/idp/login" class="link">Sign In</a>
+                <div class="input-wrap">
+                  <label for="webId">WebID (when not creating a WebID):</label>
+                  <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
                 </div>
+
+                <div class="input-wrap">
+                  <label class="checkbox"><input type="checkbox" name="createWebId" checked>Create new WebID (also requires the other two options)</label>
+                </div>
+
+                <div class="input-wrap">
+                  <label class="checkbox"><input type="checkbox" name="register" checked>Register your WebID with the IDP</label>
+                </div>
+
+                <div class="input-wrap">
+                  <label class="checkbox"><input type="checkbox" name="createPod" checked>Create a new pod</label>
+                </div>
+
+                <button type="submit" name="submit" class="ids-link-filled">Submit</button>
               </form>
             </div>
           </div>

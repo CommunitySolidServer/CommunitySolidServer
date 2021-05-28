@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Succesful</title>
+    <link rel="stylesheet" href="/idp/style.css">
+</head>
+<body>
+<div class="main-content">
+    <section class="main-content-section">
+        <div class="wrapper">
+            <h1 class="title--white">Registration Successful</h1>
+            <div class="login-panel">
+                <div class="panel-body">
+                    <% if (createWebId) { %>
+                        <p class="content__message">
+                            Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>
+                        </p>
+                    <% } %>
+                    <% if (register) { %>
+                        <p class="content__message">
+                            You can now identify as <a href="<%= webId %>" class="link"><%= webId %></a> with our IDP using <%= email %>
+                        </p>
+                        <% if (!createWebId) { %>
+                            <p class="content__message">
+                                Make sure you add the triple
+                                <%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%>
+                                to your WebID profile.
+                            </p>
+                        <% } %>
+                    <% } %>
+                    <% if (createPod) { %>
+                        <p class="content__message">
+                            Your new pod has been created and can be found at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>
+                        </p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

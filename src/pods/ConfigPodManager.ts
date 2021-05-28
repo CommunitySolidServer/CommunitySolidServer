@@ -3,7 +3,6 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { addGeneratedResources } from './generate/GenerateUtil';
-import type { IdentifierGenerator } from './generate/IdentifierGenerator';
 import type { PodGenerator } from './generate/PodGenerator';
 import type { ResourcesGenerator } from './generate/ResourcesGenerator';
 import type { PodManager } from './PodManager';
@@ -22,27 +21,23 @@ import type { PodSettings } from './settings/PodSettings';
  */
 export class ConfigPodManager implements PodManager {
   protected readonly logger = getLoggerFor(this);
-  private readonly idGenerator: IdentifierGenerator;
   private readonly podGenerator: PodGenerator;
   private readonly routingStorage: KeyValueStorage<string, ResourceStore>;
   private readonly resourcesGenerator: ResourcesGenerator;
 
   /**
-   * @param idGenerator - Generator for the pod identifiers.
    * @param podGenerator - Generator for the pod stores.
    * @param resourcesGenerator - Generator for the pod resources.
    * @param routingStorage - Where to store the generated pods so they can be routed to.
    */
-  public constructor(idGenerator: IdentifierGenerator, podGenerator: PodGenerator,
-    resourcesGenerator: ResourcesGenerator, routingStorage: KeyValueStorage<string, ResourceStore>) {
-    this.idGenerator = idGenerator;
+  public constructor(podGenerator: PodGenerator, resourcesGenerator: ResourcesGenerator,
+    routingStorage: KeyValueStorage<string, ResourceStore>) {
     this.podGenerator = podGenerator;
     this.routingStorage = routingStorage;
     this.resourcesGenerator = resourcesGenerator;
   }
 
-  public async createPod(settings: PodSettings): Promise<ResourceIdentifier> {
-    const identifier = this.idGenerator.generate(settings.login);
+  public async createPod(identifier: ResourceIdentifier, settings: PodSettings): Promise<void> {
     this.logger.info(`Creating pod ${identifier.path}`);
 
     // Will error in case there already is a store for the given identifier
@@ -52,7 +47,5 @@ export class ConfigPodManager implements PodManager {
     this.logger.info(`Added ${count} resources to ${identifier.path}`);
 
     await this.routingStorage.set(identifier.path, store);
-
-    return identifier;
   }
 }

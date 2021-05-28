@@ -1,8 +1,10 @@
 import { mkdirSync } from 'fs';
 import type { Server } from 'http';
+import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
 import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
 import { getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
@@ -27,15 +29,16 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
-  const agent = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob', template };
-  const podUrl = `${baseUrl}${agent.login}/`;
+  let expiringStorage: WrappedExpiringStorage<any, any>;
+  const settings = { podName: 'alice', webId: 'http://test.com/#alice', email: 'alice@test.email', template, createPod: true };
+  const podUrl = `${baseUrl}${settings.podName}/`;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': baseUrl,
-      'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
       'urn:solid-server:default:variable:podConfigJson': podConfigJson,
+      'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
     };
 
     // Need to make sure the temp folder exists so the podConfigJson can be written to it
@@ -47,7 +50,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       getTestConfigPath('server-dynamic-unsafe.json'),
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ factory, initializer, expiringStorage } = instances);
 
     // Set up the internal store
     await initializer.handleSafe();
@@ -56,6 +59,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   afterAll(async(): Promise<void> => {
+    expiringStorage.finalize();
     await new Promise((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
@@ -63,15 +67,13 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('creates a pod with the given config.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}pods`, {
+    const res = await fetch(`${baseUrl}idp/register`, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(agent),
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: stringify(settings),
     });
-    expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(podUrl);
+    expect(res.status).toBe(200);
+    await expect(res.text()).resolves.toContain(podUrl);
   });
 
   it('can fetch the created pod.', async(): Promise<void> => {
@@ -87,7 +89,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   it('should be able to read acl file with the correct credentials.', async(): Promise<void> => {
     const res = await fetch(`${podUrl}.acl`, {
       headers: {
-        authorization: `WebID ${agent.webId}`,
+        authorization: `WebID ${settings.webId}`,
       },
     });
     expect(res.status).toBe(200);
@@ -96,7 +98,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   it('should be able to write to the pod now as the owner.', async(): Promise<void> => {
     let res = await fetch(`${podUrl}test`, {
       headers: {
-        authorization: `WebID ${agent.webId}`,
+        authorization: `WebID ${settings.webId}`,
       },
     });
     expect(res.status).toBe(404);
@@ -104,7 +106,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
     res = await fetch(`${podUrl}test`, {
       method: 'PUT',
       headers: {
-        authorization: `WebID ${agent.webId}`,
+        authorization: `WebID ${settings.webId}`,
         'content-type': 'text/plain',
       },
       body: 'this is new data!',
@@ -113,7 +115,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
 
     res = await fetch(`${podUrl}test`, {
       headers: {
-        authorization: `WebID ${agent.webId}`,
+        authorization: `WebID ${settings.webId}`,
       },
     });
     expect(res.status).toBe(200);
@@ -121,13 +123,13 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('should not be able to create a pod with the same name.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}pods`, {
+    const res = await fetch(`${baseUrl}idp/register`, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(agent),
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: stringify(settings),
     });
-    expect(res.status).toBe(409);
+    // 200 due to there only being a HTML solution right now that only returns 200
+    expect(res.status).toBe(200);
+    await expect(res.text()).resolves.toContain(`There already is a pod at ${podUrl}`);
   });
 });

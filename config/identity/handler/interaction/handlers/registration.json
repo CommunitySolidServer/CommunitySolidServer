@@ -8,12 +8,13 @@
       "pathName": "^/idp/register/?$",
       "postHandler": {
         "@type": "RegistrationHandler",
-        "args_ownershipValidator": {
-          "@type": "TokenOwnershipValidator",
-          "storage": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
-        },
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_webIdSuffix": "/profile/card",
+        "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+        "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
         "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-        "args_interactionCompleter": { "@id": "urn:solid-server:auth:password:InteractionCompleter" }
+        "args_podManager": { "@id": "urn:solid-server:default:PodManager" },
+        "args_responseHandler": { "@id": "urn:solid-server:auth:password:RegisterResponseRenderHandler" }
       },
       "renderHandler": { "@id": "urn:solid-server:auth:password:RegisterRenderHandler" }
     },
@@ -24,6 +25,13 @@
       "@type": "RenderEjsHandler",
       "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
       "templateFile": "./email-password-interaction/register.ejs"
+    },
+    {
+      "comment": "Renders the successful registration page",
+      "@id": "urn:solid-server:auth:password:RegisterResponseRenderHandler",
+      "@type": "RenderEjsHandler",
+      "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
+      "templateFile": "./email-password-interaction/registerResponse.ejs"
     }
   ]
 }

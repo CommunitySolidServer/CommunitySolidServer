@@ -1,92 +1,260 @@
-import type { Provider } from 'oidc-provider';
+import urljoin from 'url-join';
 import {
   RegistrationHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/RegistrationHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import type { InteractionCompleter } from '../../../../../../src/identity/interaction/util/InteractionCompleter';
-import type { OwnershipValidator } from '../../../../../../src/identity/interaction/util/OwnershipValidator';
+import { IdpInteractionError } from '../../../../../../src/identity/interaction/util/IdpInteractionError';
+import type { OwnershipValidator } from '../../../../../../src/identity/ownership/OwnershipValidator';
+import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
+import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
+import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
+import type { RenderHandler } from '../../../../../../src/server/util/RenderHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A RegistrationHandler', (): void => {
+  // "Correct" values for easy object creation
   const webId = 'http://alice.test.com/card#me';
   const email = 'alice@test.email';
+  const password = 'superSecretPassword';
+  const confirmPassword = password;
+  const podName = 'alice';
+  // Strings instead of booleans because this is form data
+  const createWebId = 'true';
+  const register = 'true';
+  const createPod = 'true';
+
   let request: HttpRequest;
   const response: HttpResponse = {} as any;
-  const provider: Provider = {} as any;
+
+  const baseUrl = 'http://test.com/';
+  const webIdSuffix = '/profile/card';
+  let identifierGenerator: IdentifierGenerator;
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
-  let interactionCompleter: InteractionCompleter;
+  let podManager: PodManager;
+  let responseHandler: RenderHandler<NodeJS.Dict<any>>;
   let handler: RegistrationHandler;
 
   beforeEach(async(): Promise<void> => {
+    identifierGenerator = {
+      generate: jest.fn((name: string): ResourceIdentifier => ({ path: `${baseUrl}${name}/` })),
+    };
+
     ownershipValidator = {
       handleSafe: jest.fn(),
     } as any;
 
     accountStore = {
       create: jest.fn(),
+      verify: jest.fn(),
+      deleteAccount: jest.fn(),
     } as any;
 
-    interactionCompleter = {
+    podManager = {
+      createPod: jest.fn(),
+    };
+
+    responseHandler = {
       handleSafe: jest.fn(),
     } as any;
 
     handler = new RegistrationHandler({
-      ownershipValidator,
+      baseUrl,
+      webIdSuffix,
+      identifierGenerator,
       accountStore,
-      interactionCompleter,
+      ownershipValidator,
+      podManager,
+      responseHandler,
     });
   });
 
-  it('errors on non-string emails.', async(): Promise<void> => {
-    request = createPostFormRequest({});
-    await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
-    request = createPostFormRequest({ email: [ 'email', 'email2' ]});
-    await expect(handler.handle({ request, response, provider })).rejects.toThrow('Email required');
+  describe('validating data', (): void => {
+    it('rejects array inputs.', async(): Promise<void> => {
+      request = createPostFormRequest({ data: [ 'a', 'b' ]});
+      await expect(handler.handle({ request, response })).rejects.toThrow('Multiple values found for key data');
+    });
+
+    it('errors on invalid emails.', async(): Promise<void> => {
+      request = createPostFormRequest({ email: undefined });
+      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
+
+      request = createPostFormRequest({ email: '' });
+      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
+
+      request = createPostFormRequest({ email: 'invalidEmail' });
+      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
+    });
+
+    it('errors when an unnecessary WebID is provided.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId, createWebId });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A WebID should only be provided when no new one is being created');
+    });
+
+    it('errors when a required WebID is not valid.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId: undefined });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A WebID is required if no new one is being created');
+
+      request = createPostFormRequest({ email, webId: '' });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A WebID is required if no new one is being created');
+    });
+
+    it('errors when an unnecessary password is provided.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId, password });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A password should only be provided when registering');
+    });
+
+    it('errors on invalid passwords when registering.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId, password, confirmPassword: 'bad', register });
+      await expect(handler.handle({ request, response })).rejects.toThrow('Password and confirmation do not match');
+    });
+
+    it('errors when an unnecessary pod name is provided.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId, podName });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A pod name should only be provided when creating a pod and/or WebID');
+    });
+
+    it('errors on invalid pod names when required.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, podName: undefined, createWebId });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A pod name is required when creating a pod and/or WebID');
+
+      request = createPostFormRequest({ email, webId, podName: '', createPod });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('A pod name is required when creating a pod and/or WebID');
+    });
+
+    it('errors when trying to create a WebID without registering or creating a pod.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, podName, createWebId });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
+
+      request = createPostFormRequest({ email, podName, password, confirmPassword, createWebId, register });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
+
+      request = createPostFormRequest({ email, podName, createWebId, createPod });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
+    });
+
+    it('errors when no option is chosen.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId });
+      await expect(handler.handle({ request, response })).rejects.toThrow('At least one option needs to be chosen');
+    });
   });
 
-  it('errors on invalid emails.', async(): Promise<void> => {
-    request = createPostFormRequest({ email: 'invalidEmail' });
-    const prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('Invalid email');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { }}));
-  });
+  describe('handling data', (): void => {
+    it('can register a user.', async(): Promise<void> => {
+      request = createPostFormRequest({ email, webId, password, confirmPassword, register });
+      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
 
-  it('errors on non-string webIds.', async(): Promise<void> => {
-    request = createPostFormRequest({ email });
-    let prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('WebId required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
-    request = createPostFormRequest({ email, webId: [ 'a', 'b' ]});
-    prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('WebId required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
-  });
+      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
+      expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(accountStore.verify).toHaveBeenCalledTimes(1);
+      expect(accountStore.verify).toHaveBeenLastCalledWith(email);
 
-  it('errors on invalid passwords.', async(): Promise<void> => {
-    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'bad' });
-    const prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('Password and confirmation do not match');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email, webId }}));
-  });
+      expect(identifierGenerator.generate).toHaveBeenCalledTimes(0);
+      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
+      expect(podManager.createPod).toHaveBeenCalledTimes(0);
+    });
 
-  it('throws an IdpInteractionError if there is a problem.', async(): Promise<void> => {
-    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'password!' });
-    (accountStore.create as jest.Mock).mockRejectedValueOnce(new Error('create failed!'));
-    const prom = handler.handle({ request, response, provider });
-    await expect(prom).rejects.toThrow('create failed!');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email, webId }}));
-  });
+    it('can create a pod.', async(): Promise<void> => {
+      const params = { email, webId, podName, createPod };
+      request = createPostFormRequest(params);
+      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
 
-  it('calls the OidcInteractionCompleter when done.', async(): Promise<void> => {
-    request = createPostFormRequest({ email, webId, password: 'password!', confirmPassword: 'password!' });
-    await expect(handler.handle({ request, response, provider })).resolves.toBeUndefined();
-    expect(accountStore.create).toHaveBeenCalledTimes(1);
-    expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, 'password!');
-    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe)
-      .toHaveBeenLastCalledWith({ request, response, provider, webId, shouldRemember: false });
+      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
+      expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
+      expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
+      expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
+      expect(podManager.createPod).toHaveBeenCalledTimes(1);
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+
+      expect(accountStore.create).toHaveBeenCalledTimes(0);
+      expect(accountStore.verify).toHaveBeenCalledTimes(0);
+      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
+    });
+
+    it('adds an oidcIssuer to the data when doing both IDP registration and pod creation.', async(): Promise<void> => {
+      const params = { email, webId, password, confirmPassword, podName, register, createPod };
+      request = createPostFormRequest(params);
+      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+
+      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
+      expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
+      expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
+      (params as any).oidcIssuer = baseUrl;
+      expect(podManager.createPod).toHaveBeenCalledTimes(1);
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+      expect(accountStore.verify).toHaveBeenCalledTimes(1);
+      expect(accountStore.verify).toHaveBeenLastCalledWith(email);
+
+      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
+    });
+
+    it('deletes the created account if pod generation fails.', async(): Promise<void> => {
+      const params = { email, webId, password, confirmPassword, podName, register, createPod };
+      request = createPostFormRequest(params);
+      (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
+      await expect(handler.handle({ request, response })).rejects.toThrow('pod error');
+
+      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
+      expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
+      expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
+      (params as any).oidcIssuer = baseUrl;
+      expect(podManager.createPod).toHaveBeenCalledTimes(1);
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(1);
+      expect(accountStore.deleteAccount).toHaveBeenLastCalledWith(email);
+
+      expect(accountStore.verify).toHaveBeenCalledTimes(0);
+    });
+
+    it('can create a WebID with an account and pod.', async(): Promise<void> => {
+      const params = { email, password, confirmPassword, podName, createWebId, register, createPod };
+      request = createPostFormRequest(params);
+      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+
+      const generatedWebID = urljoin(baseUrl, podName, webIdSuffix);
+
+      expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
+      expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, generatedWebID, password);
+      expect(accountStore.verify).toHaveBeenCalledTimes(1);
+      expect(accountStore.verify).toHaveBeenLastCalledWith(email);
+      const podParams = { ...params, oidcIssuer: baseUrl, webId: generatedWebID };
+      expect(podManager.createPod).toHaveBeenCalledTimes(1);
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podParams);
+
+      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(0);
+      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an IdpInteractionError with all data prefilled if something goes wrong.', async(): Promise<void> => {
+      const params = { email, webId, podName, createPod };
+      request = createPostFormRequest(params);
+      (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
+      const prom = handler.handle({ request, response });
+      await expect(prom).rejects.toThrow('pod error');
+      await expect(prom).rejects.toThrow(IdpInteractionError);
+      await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: params }));
+    });
   });
 });
