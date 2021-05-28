@@ -17,7 +17,6 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       'urn:solid-server:default:ServerFactory',
       getTestConfigPath('server-without-auth.json'),
       {
-        'urn:solid-server:default:variable:port': port,
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
       },
     ) as HttpServerFactory;

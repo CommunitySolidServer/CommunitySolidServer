@@ -17,7 +17,6 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:4000/sparql',
     };

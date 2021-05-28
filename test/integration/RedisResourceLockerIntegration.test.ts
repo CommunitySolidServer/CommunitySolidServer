@@ -1,7 +1,6 @@
 import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import type { RedisResourceLocker } from '../../src';
-import { joinFilePath } from '../../src';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { describeIf, getPort } from '../util/Util';
 import { getTestConfigPath, instantiateFromConfig } from './Config';
@@ -22,7 +21,6 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       getTestConfigPath('run-with-redlock.json'),
       {
         'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:podTemplateFolder': joinFilePath(__dirname, '../assets/templates'),
       },
     ) as Record<string, any>;
     ({ factory, locker } = instances);

@@ -45,14 +45,17 @@ export * from './identity/interaction/util/IdpRenderHandler';
 export * from './identity/interaction/util/IdpRouteController';
 export * from './identity/interaction/util/InitialInteractionHandler';
 export * from './identity/interaction/util/InteractionCompleter';
-export * from './identity/interaction/util/OwnershipValidator';
 export * from './identity/interaction/util/TemplateRenderer';
-export * from './identity/interaction/util/TokenOwnershipValidator';
 
 // Identity/Interaction
 export * from './identity/interaction/InteractionHttpHandler';
 export * from './identity/interaction/InteractionPolicy';
 export * from './identity/interaction/SessionHttpHandler';
+
+// Identity/Ownership
+export * from './identity/ownership/NoCheckOwnershipValidator';
+export * from './identity/ownership/OwnershipValidator';
+export * from './identity/ownership/TokenOwnershipValidator';
 
 // Identity/Storage
 export * from './identity/storage/AdapterFactory';
@@ -178,14 +181,11 @@ export * from './pods/generate/TemplatedResourcesGenerator';
 
 // Pods/Settings
 export * from './pods/settings/PodSettings';
-export * from './pods/settings/PodSettingsJsonParser';
-export * from './pods/settings/PodSettingsParser';
 
 // Pods
 export * from './pods/ConfigPodManager';
 export * from './pods/GeneratedPodManager';
 export * from './pods/PodManager';
-export * from './pods/PodManagerHttpHandler';
 
 // Server
 export * from './server/BaseHttpServerFactory';

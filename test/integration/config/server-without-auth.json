@@ -43,11 +43,6 @@
     {
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "UnsupportedAsyncHandler"
-    },
-
-    {
-      "@id": "urn:solid-server:default:ResourcesGenerator",
-      "TemplatedResourcesGenerator:_templateFolder": "$PACKAGE_ROOT/test/assets/templates"
     }
   ]
 }

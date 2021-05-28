@@ -9,9 +9,9 @@ import { IdpInteractionError } from '../util/IdpInteractionError';
  * @param error - Error to create an IdPInteractionError from.
  * @param prefilled - Prefilled data for IdpInteractionError.
  */
-export function throwIdpInteractionError(error: unknown, prefilled?: any): never {
+export function throwIdpInteractionError(error: unknown, prefilled: Record<string, string> = {}): never {
   if (IdpInteractionError.isInstance(error)) {
-    if (prefilled) {
+    if (Object.keys(prefilled).length > 0) {
       throw new IdpInteractionError(error.statusCode, error.message, { ...error.prefilled, ...prefilled });
     } else {
       throw error;
