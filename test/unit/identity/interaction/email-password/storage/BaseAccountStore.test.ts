@@ -37,13 +37,24 @@ describe('A BaseAccountStore', (): void => {
     await expect(store.authenticate(email, password)).rejects.toThrow('No account by that email');
   });
 
+  it('errors when authenticating an unverified account.', async(): Promise<void> => {
+    await expect(store.create(email, webId, password)).resolves.toBeUndefined();
+    await expect(store.authenticate(email, 'wrongPassword')).rejects.toThrow('Account still needs to be verified');
+  });
+
+  it('errors when verifying a non-existent account.', async(): Promise<void> => {
+    await expect(store.verify(email)).rejects.toThrow('Account does not exist');
+  });
+
   it('errors when authenticating with the wrong password.', async(): Promise<void> => {
     await expect(store.create(email, webId, password)).resolves.toBeUndefined();
+    await expect(store.verify(email)).resolves.toBeUndefined();
     await expect(store.authenticate(email, 'wrongPassword')).rejects.toThrow('Incorrect password');
   });
 
   it('can authenticate.', async(): Promise<void> => {
     await expect(store.create(email, webId, password)).resolves.toBeUndefined();
+    await expect(store.verify(email)).resolves.toBeUndefined();
     await expect(store.authenticate(email, password)).resolves.toBe(webId);
   });
 
@@ -54,6 +65,7 @@ describe('A BaseAccountStore', (): void => {
   it('can change the password.', async(): Promise<void> => {
     const newPassword = 'newPassword!';
     await expect(store.create(email, webId, password)).resolves.toBeUndefined();
+    await expect(store.verify(email)).resolves.toBeUndefined();
     await expect(store.changePassword(email, newPassword)).resolves.toBeUndefined();
     await expect(store.authenticate(email, newPassword)).resolves.toBe(webId);
   });

@@ -20,6 +20,14 @@ export interface AccountStore {
   create: (email: string, webId: string, password: string) => Promise<void>;
 
   /**
+   * Verifies the account creation. This can be used with, for example, e-mail verification.
+   * The account can only be used after it is verified.
+   * In case verification is not required, this should be called immediately after the `create` call.
+   * @param email - the account email
+   */
+  verify: (email: string) => Promise<void>;
+
+  /**
    * Changes the password
    * @param email - the user's email
    * @param password - the user's password

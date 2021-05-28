@@ -11,6 +11,7 @@ export interface AccountPayload {
   webId: string;
   email: string;
   password: string;
+  verified: boolean;
 }
 
 /**
@@ -72,6 +73,7 @@ export class BaseAccountStore implements AccountStore {
   public async authenticate(email: string, password: string): Promise<string> {
     const { account } = await this.getAccountPayload(email);
     assert(account, 'No account by that email');
+    assert(account.verified, 'Account still needs to be verified');
     assert(await compare(password, account.password), 'Incorrect password');
     return account.webId;
   }
@@ -83,8 +85,16 @@ export class BaseAccountStore implements AccountStore {
       email,
       webId,
       password: await hash(password, this.saltRounds),
+      verified: false,
     };
     await this.storage.set(key, payload);
+  }
+
+  public async verify(email: string): Promise<void> {
+    const { key, account } = await this.getAccountPayload(email);
+    assert(account, 'Account does not exist');
+    account.verified = true;
+    await this.storage.set(key, account);
   }
 
   public async changePassword(email: string, password: string): Promise<void> {
