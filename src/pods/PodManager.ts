@@ -8,8 +8,8 @@ import type { PodSettings } from './settings/PodSettings';
 export interface PodManager {
   /**
    * Creates a pod for the given settings.
+   * @param identifier - Root identifier indicating where the pod should be created.
    * @param settings - Settings describing the pod.
-   * @returns {@link ResourceIdentifier} of the newly created pod.
    */
-  createPod: (settings: PodSettings) => Promise<ResourceIdentifier>;
+  createPod: (identifier: ResourceIdentifier, settings: PodSettings) => Promise<void>;
 }

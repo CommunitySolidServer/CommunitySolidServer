@@ -7,7 +7,6 @@
     foaf:primaryTopic <{{webId}}>.
 
 <{{webId}}>
-    a foaf:Person;
-    foaf:name "{{name}}";
-    solid:oidcIssuer <{{oidcIssuer}}> ;
-    solid:oidcIssuerRegistrationToken "{{oidcIssuerRegistrationToken}}" .
+    {{#if name}}foaf:name "{{name}}";{{/if}}
+    {{#if oidcIssuer}}solid:oidcIssuer <{{oidcIssuer}}>;{{/if}}
+    a foaf:Person.

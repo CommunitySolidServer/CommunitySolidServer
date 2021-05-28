@@ -5,10 +5,6 @@
  */
 export interface PodSettings extends NodeJS.Dict<string> {
   /**
-   * The name of the pod. Will be used for generating the identifier.
-   */
-  login: string;
-  /**
    * The WebId of the owner of this pod.
    */
   webId: string;
@@ -29,8 +25,4 @@ export interface PodSettings extends NodeJS.Dict<string> {
    * The OIDC issuer of the owner's WebId.
    */
   oidcIssuer?: string;
-  /**
-   * A registration token for linking the owner's WebId to an IDP.
-   */
-  oidcIssuerRegistrationToken?: string;
 }

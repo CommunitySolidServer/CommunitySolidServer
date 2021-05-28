@@ -1,7 +1,10 @@
 import type { Server } from 'http';
+import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
 import type { Initializer } from '../../src/init/Initializer';
 import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
+import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
 import { getPresetConfigPath, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -25,15 +28,16 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
   let server: Server;
   let initializer: Initializer;
   let factory: HttpServerFactory;
-  const settings = { login: 'alice', webId: 'http://test.com/#alice', name: 'Alice Bob' };
+  let expiringStorage: WrappedExpiringStorage<any, any>;
+  const settings = { podName: 'alice', webId: 'http://test.com/#alice', email: 'alice@test.email', createPod: true };
   const podHost = `alice.localhost:${port}`;
   const podUrl = `http://${podHost}/`;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:port': port,
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+      'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
     };
 
     // Create and initialize the server
@@ -45,13 +49,14 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       ],
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ factory, initializer, expiringStorage } = instances);
 
     await initializer.handleSafe();
     server = factory.startServer(port);
   });
 
   afterAll(async(): Promise<void> => {
+    expiringStorage.finalize();
     await new Promise((resolve, reject): void => {
       server.close((error): void => error ? reject(error) : resolve());
     });
@@ -83,15 +88,13 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
 
   describe('handling pods', (): void => {
     it('creates pods in a subdomain.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}pods`, {
+      const res = await fetch(`${baseUrl}idp/register`, {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(settings),
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: stringify(settings),
       });
-      expect(res.status).toBe(201);
-      expect(res.headers.get('location')).toBe(podUrl);
+      expect(res.status).toBe(200);
+      await expect(res.text()).resolves.toContain(podUrl);
     });
 
     it('can fetch the created pod in a subdomain.', async(): Promise<void> => {
@@ -145,14 +148,14 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
     });
 
     it('should not be able to create a pod with the same name.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}pods`, {
+      const res = await fetch(`${baseUrl}idp/register`, {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(settings),
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: stringify(settings),
       });
-      expect(res.status).toBe(409);
+      // 200 due to there only being a HTML solution right now that only returns 200
+      expect(res.status).toBe(200);
+      await expect(res.text()).resolves.toContain(`There already is a resource at ${podUrl}`);
     });
   });
 });

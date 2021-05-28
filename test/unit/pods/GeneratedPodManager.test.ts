@@ -1,5 +1,3 @@
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
-import type { IdentifierGenerator } from '../../../src/pods/generate/IdentifierGenerator';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';
 import { GeneratedPodManager } from '../../../src/pods/GeneratedPodManager';
 import type { PodSettings } from '../../../src/pods/settings/PodSettings';
@@ -11,9 +9,6 @@ describe('A GeneratedPodManager', (): void => {
   let settings: PodSettings;
   let store: jest.Mocked<ResourceStore>;
   let generatorData: Resource[];
-  const idGenerator: IdentifierGenerator = {
-    generate: (slug: string): ResourceIdentifier => ({ path: `${base}${slug}/` }),
-  };
   let resGenerator: ResourcesGenerator;
   let manager: GeneratedPodManager;
 
@@ -37,18 +32,18 @@ describe('A GeneratedPodManager', (): void => {
         yield* generatorData;
       }),
     };
-    manager = new GeneratedPodManager(store, idGenerator, resGenerator);
+    manager = new GeneratedPodManager(store, resGenerator);
   });
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(true);
-    const result = manager.createPod(settings);
+    const result = manager.createPod({ path: `${base}user/` }, settings);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);
   });
 
   it('generates an identifier and writes containers before writing the resources in them.', async(): Promise<void> => {
-    await expect(manager.createPod(settings)).resolves.toEqual({ path: `${base}${settings.login}/` });
+    await expect(manager.createPod({ path: `${base}${settings.login}/` }, settings)).resolves.toBeUndefined();
 
     expect(store.setRepresentation).toHaveBeenCalledTimes(3);
     expect(store.setRepresentation).toHaveBeenNthCalledWith(1, { path: '/path/' }, '/');
