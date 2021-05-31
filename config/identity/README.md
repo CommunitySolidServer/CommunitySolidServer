@@ -17,3 +17,9 @@ Contains everything needed for setting up the Identity Provider.
 Which technique to use to determine if a requesting agent owns a WebID.
 * *token*: A token needs to added to the WebID to prove ownership.
 * *unsafe-no-check*: No verification is done, the agent is always believed.
+
+## Pod
+What to use for pod creation.
+* *dynamic*: Every created pod has its own Components.js config for its ResourceStore,
+  which can differ from the others.
+* *static*: All pod data is stored in separate containers in the same ResourceStore.
