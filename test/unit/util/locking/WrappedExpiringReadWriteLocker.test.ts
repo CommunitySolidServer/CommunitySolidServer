@@ -46,6 +46,10 @@ describe('A WrappedExpiringReadWriteLocker', (): void => {
     expect(syncCb).toHaveBeenCalledTimes(1);
 
     prom = locker.withReadLock(identifier, asyncCb);
+
+    // Execute promise (without triggering timeout)
+    jest.advanceTimersByTime(100);
+
     await expect(prom).resolves.toBe('async');
     expect(asyncCb).toHaveBeenCalledTimes(1);
   });

@@ -17,7 +17,8 @@ import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedEx
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { BASE } from './Config';
 
-jest.useFakeTimers();
+// The modern fake timers implementation blocks certain parts with the current setup
+jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
   let path: string;
