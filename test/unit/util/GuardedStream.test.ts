@@ -75,7 +75,7 @@ describe('GuardedStream', (): void => {
       expect(errorListeners[2]).toHaveBeenCalledTimes(0);
       expect(endListener).toHaveBeenCalledTimes(0);
 
-      await new Promise((resolve): any => setImmediate(resolve));
+      jest.runAllTimers();
 
       expect(errorListeners[0]).toHaveBeenCalledTimes(2);
       expect(errorListeners[0]).toHaveBeenNthCalledWith(1, errors[0]);
@@ -137,7 +137,7 @@ describe('GuardedStream', (): void => {
       const errorCb3 = jest.fn();
       stream.on('error', errorCb3);
 
-      await new Promise((resolve): any => setImmediate(resolve));
+      jest.runAllTimers();
 
       expect(errorCb).toHaveBeenCalledTimes(0);
       expect(errorCb2).toHaveBeenCalledTimes(0);
@@ -167,7 +167,7 @@ describe('GuardedStream', (): void => {
       const errorCb = jest.fn();
       stream.on('error', errorCb);
 
-      await new Promise((resolve): any => setImmediate(resolve));
+      jest.runAllTimers();
 
       expect(errorCb).toHaveBeenCalledTimes(3);
       expect(errorCb).toHaveBeenNthCalledWith(1, errors[0]);

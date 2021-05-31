@@ -3,6 +3,9 @@ import { InteractionCompleter } from '../../../../../src/identity/interaction/ut
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
+// Use fixed dates
+jest.useFakeTimers();
+
 describe('An InteractionCompleter', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
@@ -11,8 +14,6 @@ describe('An InteractionCompleter', (): void => {
   const completer = new InteractionCompleter();
 
   beforeEach(async(): Promise<void> => {
-    const now = Date.now();
-    Date.now = jest.fn().mockReturnValue(now);
     provider = {
       interactionFinished: jest.fn(),
     } as any;

@@ -112,6 +112,10 @@ describe('A WrappedExpiringStorage', (): void => {
   });
 
   it('removes expired entries after a given time.', async(): Promise<void> => {
+    // Disable interval function and simply check it was called with the correct parameters
+    // Otherwise it gets quite difficult to verify the async interval function gets executed
+    const mockInterval = jest.spyOn(global, 'setInterval');
+    mockInterval.mockImplementation(jest.fn());
     // Timeout of 1 minute
     storage = new WrappedExpiringStorage(source, 1);
     const data = [
@@ -123,16 +127,22 @@ describe('A WrappedExpiringStorage', (): void => {
       yield* data;
     });
 
-    jest.advanceTimersByTime(60 * 1000);
+    // Make sure interval is created correctly
+    expect(mockInterval.mock.calls).toHaveLength(1);
+    expect(mockInterval.mock.calls[0]).toHaveLength(2);
+    expect(mockInterval.mock.calls[0][1]).toBe(60 * 1000);
 
-    // Allow timer promise callback to resolve
-    await new Promise(setImmediate);
+    // Await the function that should have been executed by the interval
+    await (mockInterval.mock.calls[0][0] as () => Promise<void>)();
 
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith('key2');
+    mockInterval.mockRestore();
   });
 
   it('can stop the timer.', async(): Promise<void> => {
+    const mockInterval = jest.spyOn(global, 'setInterval');
+    const mockClear = jest.spyOn(global, 'clearInterval');
     // Timeout of 1 minute
     storage = new WrappedExpiringStorage(source, 1);
     const data = [
@@ -145,11 +155,13 @@ describe('A WrappedExpiringStorage', (): void => {
     });
 
     expect(storage.finalize()).toBeUndefined();
-    jest.advanceTimersByTime(60 * 1000);
 
-    // Allow timer promise callback to resolve
-    await new Promise(setImmediate);
+    // Make sure clearInterval was called with the interval timer
+    expect(mockClear.mock.calls).toHaveLength(1);
+    expect(mockClear.mock.calls[0]).toHaveLength(1);
+    expect(mockClear.mock.calls[0][0]).toBe(mockInterval.mock.results[0].value);
 
-    expect(source.delete).toHaveBeenCalledTimes(0);
+    mockInterval.mockRestore();
+    mockClear.mockRestore();
   });
 });

@@ -3,6 +3,9 @@ import type { ExpiringAdapter } from '../../../../src/identity/storage/ExpiringA
 import { ExpiringAdapterFactory } from '../../../../src/identity/storage/ExpiringAdapterFactory';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 
+// Use fixed dates
+jest.useFakeTimers();
+
 describe('An ExpiringAdapterFactory', (): void => {
   const storageName = '/storage';
   const name = 'nnaammee';
@@ -12,14 +15,10 @@ describe('An ExpiringAdapterFactory', (): void => {
   let storage: ExpiringStorage<string, unknown>;
   let adapter: ExpiringAdapter;
   let factory: ExpiringAdapterFactory;
-  // Make sure this stays consistent in tests
-  const now = Date.now();
   const expiresIn = 333;
-  const expireDate = new Date(now + (expiresIn * 1000));
+  const expireDate = new Date(Date.now() + (expiresIn * 1000));
 
   beforeEach(async(): Promise<void> => {
-    Date.now = jest.fn().mockReturnValue(now);
-
     payload = { data: 'data!' };
 
     const map = new Map<string, any>();
