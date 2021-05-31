@@ -12,7 +12,6 @@
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
     "files-scs:config/ldp/permissions/acl.json",
-    "files-scs:config/pod/handler/static.json",
     "files-scs:config/storage/key-value/memory.json",
     "files-scs:config/storage/resource-store/memory.json",
     "files-scs:config/util/auxiliary/acl.json",
