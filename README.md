@@ -208,52 +208,30 @@ Common usage:
 
 ## Using the identity provider
 
-1. Launch the Community Solid Server:
-    ```bash
-    git clone git@github.com:solid/community-server.git
-    cd community-server
-    npm ci
-    npm start
-    ```
-2. To use the identity provider, you need a compatible client application.
+You can register and/or create a pod by going to `/idp/register` after starting the server.
+The input you need to provide depends on the chosen options,
+as is indicated next to the text fields.
+After submitting, you will get a summary of everything that was created.
+Below are descriptions of the 3 available options.
 
-    You can use for example `@inrupt/solid-client-authn-js`:
+### 1. Create new WebID
+Enabling this option will create a new WebID to be used for authentication.
+Since a WebID needs to be stored and registered somewhere to be used,
+this option also requires options 2 & 3 below to be enabled.
 
-    ```bash
-    git clone https://github.com/inrupt/solid-client-authn-js
-    cd solid-client-authn-js
-    npm ci
-    cd packages/node/example/demoClientApp/
-    npm ci
-    npm start
-    ```
+In case you do not choose this option,
+you will have to provide your own WebID.
+The server will then ask to verify that you are the owner of that WebID
+by adding a specific token to it.
 
-    Go to `http://localhost:3001`.
-3. Use the base URL of your running CSS instance to as Identity provider, for
-   example `http://localhost:3000`, to fill the form. Click the `login` button.
-4. Follow the instructions to register/login/...
+### 2. Register your WebID with the IDP
+This allows you to authenticate with your WebID using this server.
+After doing this you can use a client such as `@inrupt/solid-client-authn-js`
+to log in with the chosen email/password combination and this server as issuer.
+In case you are using an external WebID, 
+it is important to add the correct `solid:oidcIssuer` triple to your profile after registering.
 
-    A WebID hosted in your pod will be required to complete registration.
-    
-    In your running community server, you could create `http://localhost:3000/profile/card`
-    with the following content:
-    ```turtle
-    PREFIX : <#>
-    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
-
-    :me solid:oidcIssuer <http://localhost:3000/> .
-    ```
-
-    When registering, follow the on screen instructions and add the OIDC issuer
-    registration token to your WebID, which you can do for example by PATCHing
-    `http://localhost:3000/profile/card` with:
-    ```turtle
-    PREFIX : <#>
-    PREFIX solid: <http://www.w3.org/ns/solid/terms#>
-    INSERT DATA {
-      :me solid:oidcIssuerRegistrationToken "IDP_TOKEN" .
-    }
-    ```
-5. Once logged in, you are redirected to your client app, running for example on
-   `http://localhost:3001/`.
-6. You're now authenticated and can fetch public and private resources.
+### 3. Create a new pod
+Creates a new Solid pod. 
+The location of the pod will be determined by the chosen pod name.
+In case a WebID is also being created, it will be located inside this pod.
