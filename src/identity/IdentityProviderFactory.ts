@@ -6,8 +6,9 @@ import type { AnyObject,
   Account,
   ErrorOut } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
+import type { ErrorHandler } from '../ldp/http/ErrorHandler';
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
-
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import type { ConfigurationFactory } from './configuration/ConfigurationFactory';
 
 /**
@@ -18,13 +19,15 @@ import type { ConfigurationFactory } from './configuration/ConfigurationFactory'
 export class IdentityProviderFactory {
   private readonly issuer: string;
   private readonly configurationFactory: ConfigurationFactory;
-  private readonly errorResponseWriter: ResponseWriter;
+  private readonly errorHandler: ErrorHandler;
+  private readonly responseWriter: ResponseWriter;
 
   public constructor(issuer: string, configurationFactory: ConfigurationFactory,
-    errorResponseWriter: ResponseWriter) {
+    errorHandler: ErrorHandler, responseWriter: ResponseWriter) {
     this.issuer = issuer;
     this.configurationFactory = configurationFactory;
-    this.errorResponseWriter = errorResponseWriter;
+    this.errorHandler = errorHandler;
+    this.responseWriter = responseWriter;
   }
 
   public async createProvider(interactionPolicyOptions: {
@@ -81,7 +84,9 @@ export class IdentityProviderFactory {
       },
       renderError:
         async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
-          await this.errorResponseWriter.handleSafe({ response: ctx.res, result: error });
+          const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
+          const result = await this.errorHandler.handleSafe({ error, preferences });
+          await this.responseWriter.handleSafe({ response: ctx.res, result });
         },
     };
     return new Provider(this.issuer, augmentedConfig);

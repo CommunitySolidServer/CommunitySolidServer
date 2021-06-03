@@ -4,14 +4,8 @@
     {
       "comment": "Writes the result to the response stream.",
       "@id": "urn:solid-server:default:ResponseWriter",
-      "@type": "WaterfallHandler",
-      "handlers": [
-        { "@type": "ErrorResponseWriter" },
-        {
-          "@type": "BasicResponseWriter",
-          "metadataWriter": { "@id": "urn:solid-server:default:MetadataWriter" }
-        }
-      ]
+      "@type": "BasicResponseWriter",
+      "metadataWriter": { "@id": "urn:solid-server:default:MetadataWriter" }
     }
   ]
 }

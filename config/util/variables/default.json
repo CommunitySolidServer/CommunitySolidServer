@@ -23,7 +23,13 @@
       "@type": "Variable"
     },
     {
+      "comment": "The max level of log messages that should be output.",
       "@id": "urn:solid-server:default:variable:loggingLevel",
+      "@type": "Variable"
+    },
+    {
+      "comment": "Whether error stack traces should be shown in the server responses.",
+      "@id": "urn:solid-server:default:variable:showStackTrace",
       "@type": "Variable"
     },
     {

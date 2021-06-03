@@ -3,8 +3,7 @@ import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { ResponseDescription } from './response/ResponseDescription';
 
 /**
- * Writes to the HttpResponse.
- * Response depends on the operation result and potentially which errors was thrown.
+ * Writes the ResponseDescription to the HttpResponse.
  */
 export abstract class ResponseWriter
-  extends AsyncHandler<{ response: HttpResponse; result: ResponseDescription | Error }> {}
+  extends AsyncHandler<{ response: HttpResponse; result: ResponseDescription }> {}

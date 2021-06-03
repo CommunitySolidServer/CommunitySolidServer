@@ -1,9 +1,11 @@
 import type { Provider } from 'oidc-provider';
+import type { ErrorHandler } from '../ldp/http/ErrorHandler';
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
+import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
-import { isNativeError } from '../util/errors/ErrorUtil';
+import { assertNativeError, isNativeError } from '../util/errors/ErrorUtil';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
 import type { InteractionHttpHandler } from './interaction/InteractionHttpHandler';
 import type { InteractionPolicy } from './interaction/InteractionPolicy';
@@ -26,20 +28,23 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   private readonly providerFactory: IdentityProviderFactory;
   private readonly interactionPolicy: InteractionPolicy;
   private readonly interactionHttpHandler: InteractionHttpHandler;
-  private readonly errorResponseWriter: ResponseWriter;
+  private readonly errorHandler: ErrorHandler;
+  private readonly responseWriter: ResponseWriter;
   private provider?: Provider;
 
   public constructor(
     providerFactory: IdentityProviderFactory,
     interactionPolicy: InteractionPolicy,
     interactionHttpHandler: InteractionHttpHandler,
-    errorResponseWriter: ResponseWriter,
+    errorHandler: ErrorHandler,
+    responseWriter: ResponseWriter,
   ) {
     super();
     this.providerFactory = providerFactory;
     this.interactionPolicy = interactionPolicy;
     this.interactionHttpHandler = interactionHttpHandler;
-    this.errorResponseWriter = errorResponseWriter;
+    this.errorHandler = errorHandler;
+    this.responseWriter = responseWriter;
   }
 
   /**
@@ -70,11 +75,10 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     try {
       await this.interactionHttpHandler.handle({ ...input, provider });
     } catch (error: unknown) {
-      // ResponseWriter can only handle native errors
-      if (!isNativeError(error)) {
-        throw error;
-      }
-      await this.errorResponseWriter.handleSafe({ response: input.response, result: error });
+      assertNativeError(error);
+      const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
+      const result = await this.errorHandler.handleSafe({ error, preferences });
+      await this.responseWriter.handleSafe({ response: input.response, result });
     }
   }
 }

@@ -6,7 +6,8 @@ import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
-import { isNativeError } from '../util/errors/ErrorUtil';
+import { assertNativeError } from '../util/errors/ErrorUtil';
+import type { ErrorHandler } from './http/ErrorHandler';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
@@ -14,6 +15,7 @@ import type { Operation } from './operations/Operation';
 import type { OperationHandler } from './operations/OperationHandler';
 import type { PermissionSet } from './permissions/PermissionSet';
 import type { PermissionsExtractor } from './permissions/PermissionsExtractor';
+import type { RepresentationPreferences } from './representation/RepresentationPreferences';
 
 /**
  * Collection of handlers needed for {@link AuthenticatedLdpHandler} to function.
@@ -40,6 +42,10 @@ export interface AuthenticatedLdpHandlerArgs {
    */
   operationHandler: OperationHandler;
   /**
+   * Converts errors to a serializable format.
+   */
+  errorHandler: ErrorHandler;
+  /**
    * Writes out the response of the operation.
    */
   responseWriter: ResponseWriter;
@@ -54,6 +60,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
   private readonly permissionsExtractor!: PermissionsExtractor;
   private readonly authorizer!: Authorizer;
   private readonly operationHandler!: OperationHandler;
+  private readonly errorHandler!: ErrorHandler;
   private readonly responseWriter!: ResponseWriter;
   private readonly logger = getLoggerFor(this);
 
@@ -91,16 +98,16 @@ export class AuthenticatedLdpHandler extends HttpHandler {
    * @returns A promise resolving when the handling is finished.
    */
   public async handle(input: HttpHandlerInput): Promise<void> {
-    let writeData: { response: HttpResponse; result: ResponseDescription | Error };
+    let writeData: { response: HttpResponse; result: ResponseDescription };
 
     try {
       writeData = { response: input.response, result: await this.runHandlers(input.request) };
     } catch (error: unknown) {
-      if (isNativeError(error)) {
-        writeData = { response: input.response, result: error };
-      } else {
-        throw error;
-      }
+      assertNativeError(error);
+      // We don't know the preferences yet at this point
+      const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
+      const result = await this.errorHandler.handleSafe({ error, preferences });
+      writeData = { response: input.response, result };
     }
 
     await this.responseWriter.handleSafe(writeData);
@@ -119,6 +126,20 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     const operation: Operation = await this.requestParser.handleSafe(request);
     this.logger.verbose(`Parsed ${operation.method} operation on ${operation.target.path}`);
 
+    try {
+      return await this.handleOperation(request, operation);
+    } catch (error: unknown) {
+      assertNativeError(error);
+      return await this.errorHandler.handleSafe({ error, preferences: operation.preferences });
+    }
+  }
+
+  /**
+   * Handles the operation object.
+   * Runs all non-RequestParser handlers.
+   * This way the preferences can be used in case an error needs to be written.
+   */
+  private async handleOperation(request: HttpRequest, operation: Operation): Promise<ResponseDescription> {
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.verbose(`Extracted credentials: ${credentials.webId}`);
 

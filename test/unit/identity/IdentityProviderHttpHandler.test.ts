@@ -3,6 +3,8 @@ import type { IdentityProviderFactory } from '../../../src/identity/IdentityProv
 import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
 import type { InteractionHttpHandler } from '../../../src/identity/interaction/InteractionHttpHandler';
 import type { InteractionPolicy } from '../../../src/identity/interaction/InteractionPolicy';
+import type { ErrorHandler } from '../../../src/ldp/http/ErrorHandler';
+import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
@@ -16,7 +18,8 @@ describe('An IdentityProviderHttpHandler', (): void => {
     url: (ctx: KoaContextWithOIDC): string => `/idp/interaction/${ctx.oidc.uid}`,
   };
   let interactionHttpHandler: InteractionHttpHandler;
-  let errorResponseWriter: ResponseWriter;
+  let errorHandler: ErrorHandler;
+  let responseWriter: ResponseWriter;
   let provider: Provider;
   let handler: IdentityProviderHttpHandler;
 
@@ -34,15 +37,16 @@ describe('An IdentityProviderHttpHandler', (): void => {
       handle: jest.fn(),
     } as any;
 
-    errorResponseWriter = {
-      handleSafe: jest.fn(),
-    } as any;
+    errorHandler = { handleSafe: jest.fn() } as any;
+
+    responseWriter = { handleSafe: jest.fn() } as any;
 
     handler = new IdentityProviderHttpHandler(
       providerFactory,
       idpPolicy,
       interactionHttpHandler,
-      errorResponseWriter,
+      errorHandler,
+      responseWriter,
     );
   });
 
@@ -52,7 +56,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(provider.callback).toHaveBeenCalledTimes(1);
     expect(provider.callback).toHaveBeenLastCalledWith(request, response);
     expect(interactionHttpHandler.handle).toHaveBeenCalledTimes(0);
-    expect(errorResponseWriter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('calls the interaction handler if it can handle the input.', async(): Promise<void> => {
@@ -60,18 +64,22 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(provider.callback).toHaveBeenCalledTimes(0);
     expect(interactionHttpHandler.handle).toHaveBeenCalledTimes(1);
     expect(interactionHttpHandler.handle).toHaveBeenLastCalledWith({ request, response, provider });
-    expect(errorResponseWriter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
-  it('calls the errorResponseWriter if there was an issue with the interaction handler.', async(): Promise<void> => {
+  it('returns an error response if there was an issue with the interaction handler.', async(): Promise<void> => {
     const error = new Error('error!');
+    const errorResponse: ResponseDescription = { statusCode: 500 };
     (interactionHttpHandler.handle as jest.Mock).mockRejectedValueOnce(error);
+    (errorHandler.handleSafe as jest.Mock).mockResolvedValueOnce(errorResponse);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(provider.callback).toHaveBeenCalledTimes(0);
     expect(interactionHttpHandler.handle).toHaveBeenCalledTimes(1);
     expect(interactionHttpHandler.handle).toHaveBeenLastCalledWith({ request, response, provider });
-    expect(errorResponseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorResponseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: error });
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResponse });
   });
 
   it('re-throws the error if it is not a native Error.', async(): Promise<void> => {

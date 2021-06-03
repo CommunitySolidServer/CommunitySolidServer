@@ -2,7 +2,9 @@ import type { interactionPolicy, Configuration, KoaContextWithOIDC } from 'oidc-
 import type { ConfigurationFactory } from '../../../src/identity/configuration/ConfigurationFactory';
 import { IdentityProviderFactory } from '../../../src/identity/IdentityProviderFactory';
 import type { InteractionPolicy } from '../../../src/identity/interaction/InteractionPolicy';
+import type { ErrorHandler } from '../../../src/ldp/http/ErrorHandler';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
+import type { HttpResponse } from '../../../src/server/HttpResponse';
 
 jest.mock('oidc-provider', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -17,7 +19,8 @@ describe('An IdentityProviderFactory', (): void => {
   };
   const webId = 'http://alice.test.com/card#me';
   let configuration: any;
-  let errorResponseWriter: ResponseWriter;
+  let errorHandler: ErrorHandler;
+  let responseWriter: ResponseWriter;
   let factory: IdentityProviderFactory;
 
   beforeEach(async(): Promise<void> => {
@@ -26,11 +29,13 @@ describe('An IdentityProviderFactory', (): void => {
       createConfiguration: async(): Promise<any> => configuration,
     };
 
-    errorResponseWriter = {
-      handleSafe: jest.fn(),
+    errorHandler = {
+      handleSafe: jest.fn().mockResolvedValue({ statusCode: 500 }),
     } as any;
 
-    factory = new IdentityProviderFactory(issuer, configurationFactory, errorResponseWriter);
+    responseWriter = { handleSafe: jest.fn() } as any;
+
+    factory = new IdentityProviderFactory(issuer, configurationFactory, errorHandler, responseWriter);
   });
 
   it('has fixed default values.', async(): Promise<void> => {
@@ -65,9 +70,14 @@ describe('An IdentityProviderFactory', (): void => {
       aud: 'solid',
     });
 
-    await expect(result.config.renderError({ res: 'response!' }, null, 'error!')).resolves.toBeUndefined();
-    expect(errorResponseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorResponseWriter.handleSafe).toHaveBeenLastCalledWith({ response: 'response!', result: 'error!' });
+    // Test the renderError function
+    const response: HttpResponse = { } as any;
+    await expect(result.config.renderError({ res: response }, null, 'error!')).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error: 'error!', preferences: { type: { 'text/plain': 1 }}});
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
   });
 
   it('overwrites fields from the factory config.', async(): Promise<void> => {

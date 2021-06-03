@@ -1,0 +1,21 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Changes an error into a valid representation to send as a response.",
+      "@id": "urn:solid-server:default:ErrorHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "@type": "ConvertingErrorHandler",
+          "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+          "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
+        },
+        {
+          "@type": "TextErrorHandler",
+          "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
+        }
+      ]
+    }
+  ]
+}
