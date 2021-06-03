@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../../../../src/ldp/representation/Reso
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { HTTP } from '../../../../src/util/Vocabularies';
+import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   const store = {
@@ -31,7 +31,7 @@ describe('A PostOperationHandler', (): void => {
     const result = await handler.handle({ method: 'POST', body: { metadata }} as Operation);
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
-    expect(result.metadata?.get(HTTP.location)?.value).toBe('newPath');
+    expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe('newPath');
     expect(result.data).toBeUndefined();
   });
 });

@@ -11,7 +11,7 @@
           "MappedMetadataWriter:_headerMap_value": "Content-Type"
         },
         {
-          "MappedMetadataWriter:_headerMap_key": "urn:solid:http:location",
+          "MappedMetadataWriter:_headerMap_key": "urn:npm:solid:community-server:http:location",
           "MappedMetadataWriter:_headerMap_value": "Location"
         }
       ]

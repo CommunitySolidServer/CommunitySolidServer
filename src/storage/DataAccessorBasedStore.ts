@@ -26,7 +26,7 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { addResourceMetadata } from '../util/ResourceUtil';
-import { CONTENT_TYPE, DC, HTTP, LDP, POSIX, PIM, RDF, VANN, XSD } from '../util/Vocabularies';
+import { CONTENT_TYPE, DC, SOLID_HTTP, LDP, POSIX, PIM, RDF, VANN, XSD } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
 
@@ -407,8 +407,8 @@ export class DataAccessorBasedStore implements ResourceStore {
   Promise<ResourceIdentifier> {
     // Get all values needed for naming the resource
     const isContainer = this.isNewContainer(metadata);
-    const slug = metadata.get(HTTP.slug)?.value;
-    metadata.removeAll(HTTP.slug);
+    const slug = metadata.get(SOLID_HTTP.slug)?.value;
+    metadata.removeAll(SOLID_HTTP.slug);
 
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);
 
@@ -439,7 +439,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.hasContainerType(metadata.getAll(RDF.type))) {
       return true;
     }
-    const slug = suffix ?? metadata.get(HTTP.slug)?.value;
+    const slug = suffix ?? metadata.get(SOLID_HTTP.slug)?.value;
     return Boolean(slug && isContainerPath(slug));
   }
 
