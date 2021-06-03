@@ -2,7 +2,7 @@ import { SlugParser } from '../../../../../src/ldp/http/metadata/SlugParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
-import { HTTP } from '../../../../../src/util/Vocabularies';
+import { SOLID_HTTP } from '../../../../../src/util/Vocabularies';
 
 describe('A SlugParser', (): void => {
   const parser = new SlugParser();
@@ -30,6 +30,6 @@ describe('A SlugParser', (): void => {
     request.headers.slug = 'slugA';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.get(HTTP.slug)?.value).toBe('slugA');
+    expect(metadata.get(SOLID_HTTP.slug)?.value).toBe('slugA');
   });
 });

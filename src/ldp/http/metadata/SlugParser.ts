@@ -1,7 +1,7 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { HTTP } from '../../../util/Vocabularies';
+import { SOLID_HTTP } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
 
@@ -19,7 +19,7 @@ export class SlugParser extends MetadataParser {
         throw new BadRequestHttpError('Request has multiple Slug headers');
       }
       this.logger.debug(`Request Slug is '${slug}'.`);
-      input.metadata.set(HTTP.slug, slug);
+      input.metadata.set(SOLID_HTTP.slug, slug);
     }
   }
 }

@@ -22,7 +22,7 @@ import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/Sing
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
+import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 import namedNode = DataFactory.namedNode;
 
@@ -277,7 +277,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('creates a URI based on the incoming slug.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(HTTP.slug, 'newName');
+      representation.metadata.add(SOLID_HTTP.slug, 'newName');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: `${root}newName`,
@@ -286,7 +286,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(HTTP.slug, 'newName');
+      representation.metadata.add(SOLID_HTTP.slug, 'newName');
       accessor.data[`${root}newName`] = representation;
       const result = await store.addResource(resourceID, representation);
       expect(result).not.toEqual({
@@ -300,7 +300,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('generates http://test.com/%26%26 when slug is &%26.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(HTTP.slug, '&%26');
+      representation.metadata.add(SOLID_HTTP.slug, '&%26');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({ path: `${root}%26%26` });
     });
@@ -309,7 +309,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
       representation.data = guardedStreamFrom([ `` ]);
-      representation.metadata.add(HTTP.slug, 'sla/sh/es');
+      representation.metadata.add(SOLID_HTTP.slug, 'sla/sh/es');
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(BadRequestHttpError);
       await expect(result).rejects.toThrow('Slugs should not contain slashes');
@@ -318,7 +318,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('errors if the slug would cause an auxiliary resource URI to be generated.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(HTTP.slug, 'test.dummy');
+      representation.metadata.add(SOLID_HTTP.slug, 'test.dummy');
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(ForbiddenHttpError);
       await expect(result).rejects.toThrow('Slug bodies that would result in an auxiliary resource are forbidden');

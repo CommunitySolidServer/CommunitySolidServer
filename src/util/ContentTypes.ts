@@ -8,3 +8,4 @@ export const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlenco
 // Internal content types (not exposed over HTTP)
 export const INTERNAL_ALL = 'internal/*';
 export const INTERNAL_QUADS = 'internal/quads';
+export const INTERNAL_ERROR = 'internal/error';

@@ -75,16 +75,17 @@ export const AUTH = createUriAndTermNamespace('urn:solid:auth:',
 );
 
 export const DC = createUriAndTermNamespace('http://purl.org/dc/terms/',
+  'description',
   'modified',
+  'title',
 );
 
 export const FOAF = createUriAndTermNamespace('http://xmlns.com/foaf/0.1/',
   'Agent',
 );
 
-export const HTTP = createUriAndTermNamespace('urn:solid:http:',
-  'location',
-  'slug',
+export const HTTP = createUriAndTermNamespace('http://www.w3.org/2011/http#',
+  'statusCodeNumber',
 );
 
 export const LDP = createUriAndTermNamespace('http://www.w3.org/ns/ldp#',
@@ -112,6 +113,21 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
   'type',
 );
 
+export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
+  'oidcIssuer',
+  'oidcIssuerRegistrationToken',
+  'oidcRegistration',
+);
+
+export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
+  'stack',
+);
+
+export const SOLID_HTTP = createUriAndTermNamespace('urn:npm:solid:community-server:http:',
+  'location',
+  'slug',
+);
+
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
   'preferredNamespacePrefix',
 );
@@ -119,12 +135,6 @@ export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
 export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#',
   'dateTime',
   'integer',
-);
-
-export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
-  'oidcIssuer',
-  'oidcIssuerRegistrationToken',
-  'oidcRegistration',
 );
 
 // Alias for commonly used types
