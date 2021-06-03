@@ -1,80 +1,117 @@
-import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
-import type { Authorizer } from '../../../src/authorization/Authorizer';
+import type { Credentials } from '../../../src/authentication/Credentials';
+import type { Authorization } from '../../../src/authorization/Authorization';
 import type { AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
 import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandler';
-import type { RequestParser } from '../../../src/ldp/http/RequestParser';
-import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
+import { ResetResponseDescription } from '../../../src/ldp/http/response/ResetResponseDescription';
+import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { Operation } from '../../../src/ldp/operations/Operation';
-import type { OperationHandler } from '../../../src/ldp/operations/OperationHandler';
-import type { PermissionsExtractor } from '../../../src/ldp/permissions/PermissionsExtractor';
+import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
+import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
+import * as LogUtil from '../../../src/logging/LogUtil';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
-import { StaticAsyncHandler } from '../../util/StaticAsyncHandler';
 
 describe('An AuthenticatedLdpHandler', (): void => {
+  const request: HttpRequest = {} as any;
+  const response: HttpResponse = {} as any;
+  const preferences: RepresentationPreferences = { type: { 'text/turtle': 0.9 }};
+  let operation: Operation;
+  const credentials: Credentials = {};
+  const permissions: PermissionSet = { read: true, write: false, append: false, control: false };
+  const authorization: Authorization = { addMetadata: jest.fn() };
+  const result: ResponseDescription = new ResetResponseDescription();
+  const errorResult: ResponseDescription = { statusCode: 500 };
   let args: AuthenticatedLdpHandlerArgs;
-  let responseFn: jest.Mock<Promise<void>, [any]>;
+  let handler: AuthenticatedLdpHandler;
 
   beforeEach(async(): Promise<void> => {
-    const requestParser: RequestParser = new StaticAsyncHandler(true, ({ target: 'target' }) as any);
-    const credentialsExtractor: CredentialsExtractor = new StaticAsyncHandler(true, 'credentials' as any);
-    const permissionsExtractor: PermissionsExtractor = new StaticAsyncHandler(true, 'permissions' as any);
-    const authorizer: Authorizer = new StaticAsyncHandler(true, 'authorizer' as any);
-    const operationHandler: OperationHandler = new StaticAsyncHandler(true, 'operation' as any);
-    const responseWriter: ResponseWriter = new StaticAsyncHandler(true, 'response' as any);
-
-    responseFn = jest.fn(async(input: any): Promise<void> => {
-      if (!input) {
-        throw new Error('error');
-      }
-    });
-    responseWriter.canHandle = responseFn;
-
-    args = { requestParser, credentialsExtractor, permissionsExtractor, authorizer, operationHandler, responseWriter };
+    operation = { target: { path: 'identifier' }, method: 'GET', preferences };
+    args = {
+      requestParser: {
+        canHandle: jest.fn(),
+        handleSafe: jest.fn().mockResolvedValue(operation),
+      } as any,
+      credentialsExtractor: { handleSafe: jest.fn().mockResolvedValue(credentials) } as any,
+      permissionsExtractor: { handleSafe: jest.fn().mockResolvedValue(permissions) } as any,
+      authorizer: { handleSafe: jest.fn().mockResolvedValue(authorization) } as any,
+      operationHandler: { handleSafe: jest.fn().mockResolvedValue(result) } as any,
+      errorHandler: { handleSafe: jest.fn().mockResolvedValue(errorResult) } as any,
+      responseWriter: { handleSafe: jest.fn() } as any,
+    };
+    handler = new AuthenticatedLdpHandler(args);
   });
 
   it('can be created.', async(): Promise<void> => {
     expect(new AuthenticatedLdpHandler(args)).toBeInstanceOf(AuthenticatedLdpHandler);
   });
 
-  it('can check if it handles input.', async(): Promise<void> => {
-    const handler = new AuthenticatedLdpHandler(args);
+  it('can not handle the input if the RequestParser rejects it.', async(): Promise<void> => {
+    (args.requestParser.canHandle as jest.Mock).mockRejectedValueOnce(new Error('bad data!'));
+    await expect(handler.canHandle({ request, response })).rejects.toThrow('bad data!');
+    expect(args.requestParser.canHandle).toHaveBeenLastCalledWith(request);
+  });
 
-    await expect(handler.canHandle(
-      { request: {} as HttpRequest, response: {} as HttpResponse },
-    )).resolves.toBeUndefined();
+  it('can handle the input if the RequestParser can handle it.', async(): Promise<void> => {
+    await expect(handler.canHandle({ request, response })).resolves.toBeUndefined();
+    expect(args.requestParser.canHandle).toHaveBeenCalledTimes(1);
+    expect(args.requestParser.canHandle).toHaveBeenLastCalledWith(request);
   });
 
   it('can handle input.', async(): Promise<void> => {
-    const handler = new AuthenticatedLdpHandler(args);
-
-    await expect(handler.handle({ request: 'request' as any, response: 'response' as any })).resolves.toBeUndefined();
-    expect(responseFn).toHaveBeenCalledTimes(1);
-    expect(responseFn).toHaveBeenLastCalledWith({ response: 'response', result: 'operation' as any });
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(args.requestParser.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.requestParser.handleSafe).toHaveBeenLastCalledWith(request);
+    expect(args.credentialsExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.credentialsExtractor.handleSafe).toHaveBeenLastCalledWith(request);
+    expect(args.permissionsExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.permissionsExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(args.authorizer.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.authorizer.handleSafe)
+      .toHaveBeenLastCalledWith({ credentials, identifier: { path: 'identifier' }, permissions });
+    expect(operation.authorization).toBe(authorization);
+    expect(args.operationHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.operationHandler.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(args.errorHandler.handleSafe).toHaveBeenCalledTimes(0);
+    expect(args.responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result });
   });
 
-  it('sends an error to the output if a handler does not support the input.', async(): Promise<void> => {
-    args.requestParser = new StaticAsyncHandler(false, {} as Operation);
-    const handler = new AuthenticatedLdpHandler(args);
+  it('sets preferences to text/plain in case of an error during request parsing.', async(): Promise<void> => {
+    const error = new Error('bad request!');
+    (args.requestParser.handleSafe as jest.Mock).mockRejectedValueOnce(new Error('bad request!'));
 
-    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).resolves.toBeUndefined();
-    expect(responseFn).toHaveBeenCalledTimes(1);
-    expect(responseFn.mock.calls[0][0].result).toBeInstanceOf(Error);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(args.requestParser.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.credentialsExtractor.handleSafe).toHaveBeenCalledTimes(0);
+    expect(args.errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+    expect(args.responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResult });
   });
 
-  it('errors if the response writer does not support the result.', async(): Promise< void> => {
-    args.responseWriter = new StaticAsyncHandler(false, undefined);
-    const handler = new AuthenticatedLdpHandler(args);
+  it('sets preferences to the request preferences if they were parsed before the error.', async(): Promise<void> => {
+    const error = new Error('bad request!');
+    (args.credentialsExtractor.handleSafe as jest.Mock).mockRejectedValueOnce(new Error('bad request!'));
 
-    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toThrow(Error);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(args.requestParser.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.credentialsExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.authorizer.handleSafe).toHaveBeenCalledTimes(0);
+    expect(args.errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
+    expect(args.responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResult });
   });
 
-  it('errors an invalid object was thrown by a handler.', async(): Promise< void> => {
-    args.authorizer.handle = async(): Promise<any> => {
-      throw 'apple';
-    };
-    const handler = new AuthenticatedLdpHandler(args);
+  it('logs an error if authorization failed.', async(): Promise<void> => {
+    const logger = { verbose: jest.fn() };
+    const mock = jest.spyOn(LogUtil, 'getLoggerFor');
+    mock.mockReturnValueOnce(logger as any);
+    handler = new AuthenticatedLdpHandler(args);
+    (args.authorizer.handleSafe as jest.Mock).mockRejectedValueOnce(new Error('bad auth!'));
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(logger.verbose).toHaveBeenLastCalledWith('Authorization failed: bad auth!');
 
-    await expect(handler.handle({ request: 'request' as any, response: {} as HttpResponse })).rejects.toEqual('apple');
+    mock.mockRestore();
   });
 });

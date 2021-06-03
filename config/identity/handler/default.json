@@ -21,7 +21,8 @@
       "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
       "interactionPolicy": { "@id": "urn:solid-server:auth:password:AccountInteractionPolicy" },
       "interactionHttpHandler": { "@id": "urn:solid-server:auth:password:InteractionHttpHandler" },
-      "errorResponseWriter": { "@type": "ErrorResponseWriter" }
+      "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
     }
   ]
 }

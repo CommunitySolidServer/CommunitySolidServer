@@ -5,7 +5,8 @@
       "comment": "Creates a server that supports HTTP requests.",
       "@id": "urn:solid-server:default:ServerFactory",
       "@type": "BaseHttpServerFactory",
-      "handler": { "@id": "urn:solid-server:default:HttpHandler" }
+      "handler": { "@id": "urn:solid-server:default:HttpHandler" },
+      "options_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
     }
   ]
 }

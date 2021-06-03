@@ -7,7 +7,8 @@
       "@type": "IdentityProviderFactory",
       "issuer": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "configurationFactory": { "@id": "urn:solid-server:default:IdpConfigurationFactory" },
-      "errorResponseWriter": { "@type": "ErrorResponseWriter" }
+      "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
     },
     {
       "comment": "Sets up the JWKS and cookie keys.",

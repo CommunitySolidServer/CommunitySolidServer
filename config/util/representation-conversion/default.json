@@ -23,7 +23,8 @@
           "@type": "ChainedConverter",
           "converters": [
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
-            { "@id": "urn:solid-server:default:QuadToRdfConverter" }
+            { "@id": "urn:solid-server:default:QuadToRdfConverter" },
+            { "@type": "ErrorToQuadConverter" }
           ]
         }
       ]

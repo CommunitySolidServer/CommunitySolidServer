@@ -21,6 +21,11 @@ export interface BaseHttpServerOptions {
    */
   https?: boolean;
 
+  /**
+   * If the error stack traces should be shown in case the HttpHandler throws one.
+   */
+  showStackTrace?: boolean;
+
   key?: string;
   cert?: string;
 
@@ -61,7 +66,14 @@ export class BaseHttpServerFactory implements HttpServerFactory {
           this.logger.info(`Received ${request.method} request for ${request.url}`);
           await this.handler.handleSafe({ request: guardStream(request), response });
         } catch (error: unknown) {
-          const errMsg = isNativeError(error) ? `${error.name}: ${error.message}\n${error.stack}` : 'Unknown error.';
+          let errMsg: string;
+          if (!isNativeError(error)) {
+            errMsg = 'Unknown error.\n';
+          } else if (this.options.showStackTrace && error.stack) {
+            errMsg = `${error.stack}\n`;
+          } else {
+            errMsg = `${error.name}: ${error.message}\n`;
+          }
           this.logger.error(errMsg);
           if (response.headersSent) {
             response.end();

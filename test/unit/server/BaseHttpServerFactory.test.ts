@@ -66,12 +66,12 @@ describe('A BaseHttpServerFactory', (): void => {
       await expect(request(server).get('/').expect(404)).resolves.toBeDefined();
     });
 
-    it('writes an error to the HTTP response.', async(): Promise<void> => {
+    it('writes an error to the HTTP response without the stack trace.', async(): Promise<void> => {
       handler.handleSafe.mockRejectedValueOnce(new Error('dummyError'));
 
       const res = await request(server).get('/').expect(500);
       expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
-      expect(res.text).toContain('dummyError');
+      expect(res.text).toBe('Error: dummyError\n');
     });
 
     it('does not write an error if the response had been started.', async(): Promise<void> => {
@@ -89,6 +89,31 @@ describe('A BaseHttpServerFactory', (): void => {
 
       const res = await request(server).get('/').expect(500);
       expect(res.text).toContain('Unknown error.');
+    });
+  });
+
+  describe('with showStackTrace enabled', (): void => {
+    const httpOptions = {
+      http: true,
+      showStackTrace: true,
+    };
+
+    beforeAll(async(): Promise<void> => {
+      const factory = new BaseHttpServerFactory(handler, httpOptions);
+      server = factory.startServer(port);
+    });
+
+    afterAll(async(): Promise<void> => {
+      server.close();
+    });
+
+    it('throws unknown errors if its handler throw non-Error objects.', async(): Promise<void> => {
+      const error = new Error('dummyError');
+      handler.handleSafe.mockRejectedValueOnce(error);
+
+      const res = await request(server).get('/').expect(500);
+      expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
+      expect(res.text).toBe(`${error.stack}\n`);
     });
   });
 });
