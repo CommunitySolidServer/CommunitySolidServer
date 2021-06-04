@@ -188,4 +188,16 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     // Close response
     await response.text();
   });
+
+  it('returns the legacy WWW-Authenticate header on 401 requests.', async(): Promise<void> => {
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: {},
+      agentClass: 'agent',
+      accessTo: true,
+    });
+
+    const response = await fetch(`${baseUrl}.acl`);
+    expect(response.status).toBe(401);
+    expect(response.headers.get('www-authenticate')).toBe('Bearer scope="openid webid"');
+  });
 });

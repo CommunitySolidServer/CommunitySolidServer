@@ -97,6 +97,7 @@ export * from './ldp/http/metadata/MetadataParser';
 export * from './ldp/http/metadata/MetadataWriter';
 export * from './ldp/http/metadata/SlugParser';
 export * from './ldp/http/metadata/WacAllowMetadataWriter';
+export * from './ldp/http/metadata/WwwAuthMetadataWriter';
 
 // LDP/HTTP/Response
 export * from './ldp/http/response/CreatedResponseDescription';

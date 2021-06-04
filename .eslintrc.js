@@ -41,6 +41,7 @@ module.exports = {
     '@typescript-eslint/no-invalid-void-type': 'off',
     // Problems with optional parameters
     '@typescript-eslint/no-unnecessary-condition': 'off',
+    '@typescript-eslint/prefer-optional-chain': 'error',
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',
