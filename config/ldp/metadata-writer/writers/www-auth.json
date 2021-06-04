@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Adds the WWW-Authenticate header on 401 responses. The current auth value is required for the legacy solid-auth-client.",
+      "@id": "urn:solid-server:default:MetadataWriter_WwwAuth",
+      "@type": "WwwAuthMetadataWriter",
+      "auth": "Bearer scope=\"openid webid\""
+    }
+  ]
+}

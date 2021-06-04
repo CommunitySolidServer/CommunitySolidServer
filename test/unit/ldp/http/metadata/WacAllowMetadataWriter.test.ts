@@ -4,7 +4,7 @@ import { RepresentationMetadata } from '../../../../../src/ldp/representation/Re
 import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 import { ACL, AUTH } from '../../../../../src/util/Vocabularies';
 
-describe('WacAllowMetadataWriter', (): void => {
+describe('A WacAllowMetadataWriter', (): void => {
   const writer = new WacAllowMetadataWriter();
   let response: HttpResponse;
 

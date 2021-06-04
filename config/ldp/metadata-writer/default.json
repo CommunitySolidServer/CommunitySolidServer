@@ -4,7 +4,8 @@
     "files-scs:config/ldp/metadata-writer/writers/constant.json",
     "files-scs:config/ldp/metadata-writer/writers/link-rel.json",
     "files-scs:config/ldp/metadata-writer/writers/mapped.json",
-    "files-scs:config/ldp/metadata-writer/writers/wac-allow.json"
+    "files-scs:config/ldp/metadata-writer/writers/wac-allow.json",
+    "files-scs:config/ldp/metadata-writer/writers/www-auth.json"
   ],
   "@graph": [
     {
@@ -15,7 +16,8 @@
         { "@id": "urn:solid-server:default:MetadataWriter_Constant" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },
-        { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" }
+        { "@id": "urn:solid-server:default:MetadataWriter_WacAllow" },
+        { "@id": "urn:solid-server:default:MetadataWriter_WwwAuth" }
       ]
     }
   ]
