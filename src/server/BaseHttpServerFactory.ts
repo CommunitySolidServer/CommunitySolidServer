@@ -4,7 +4,7 @@ import { createServer as createHttpServer } from 'http';
 import { createServer as createHttpsServer } from 'https';
 import { URL } from 'url';
 import { getLoggerFor } from '../logging/LogUtil';
-import { isNativeError } from '../util/errors/ErrorUtil';
+import { isError } from '../util/errors/ErrorUtil';
 import { guardStream } from '../util/GuardedStream';
 import type { HttpHandler } from './HttpHandler';
 import type { HttpServerFactory } from './HttpServerFactory';
@@ -67,8 +67,8 @@ export class BaseHttpServerFactory implements HttpServerFactory {
           await this.handler.handleSafe({ request: guardStream(request), response });
         } catch (error: unknown) {
           let errMsg: string;
-          if (!isNativeError(error)) {
-            errMsg = 'Unknown error.\n';
+          if (!isError(error)) {
+            errMsg = `Unknown error: ${error}.\n`;
           } else if (this.options.showStackTrace && error.stack) {
             errMsg = `${error.stack}\n`;
           } else {

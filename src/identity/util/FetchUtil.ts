@@ -2,7 +2,7 @@ import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import type { Dataset } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { isNativeError } from '../../util/errors/ErrorUtil';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 
 const logger = getLoggerFor('FetchUtil');
 
@@ -14,17 +14,16 @@ export async function fetchDataset(url: string): Promise<Dataset> {
   try {
     rawResponse = (await fetch(url)) as DatasetResponse<Dataset>;
   } catch (err: unknown) {
-    const errorMessage = `Cannot fetch ${url}: ${isNativeError(err) ? err.message : 'Unknown error'}`;
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
+    logger.error(`Cannot fetch ${url}: ${createErrorMessage(err)}`);
+    throw new Error(`Cannot fetch ${url}`);
   }
   let dataset: Dataset;
   try {
     dataset = await rawResponse.dataset();
   } catch (err: unknown) {
-    const errorMessage = `Could not parse RDF in ${url}: ${isNativeError(err) ? err.message : 'Unknown error'}`;
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
+    logger.error(`Could not parse RDF in ${url}: ${createErrorMessage(err)}`);
+    // Keeping the error message the same to prevent leaking possible information about intranet
+    throw new Error(`Cannot fetch ${url}`);
   }
   return dataset;
 }

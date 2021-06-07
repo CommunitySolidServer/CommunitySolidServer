@@ -1,24 +1,42 @@
-import { assertNativeError, getStatusCode, isNativeError } from '../../../../src/util/errors/ErrorUtil';
+import { assertError, createErrorMessage, getStatusCode, isError } from '../../../../src/util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('ErrorUtil', (): void => {
-  describe('#isNativeError', (): void => {
+  describe('#isError', (): void => {
     it('returns true on native errors.', async(): Promise<void> => {
-      expect(isNativeError(new Error('error'))).toBe(true);
+      expect(isError(new Error('error'))).toBe(true);
+    });
+
+    it('returns true on error-like objects.', async(): Promise<void> => {
+      expect(isError({ name: 'name', message: 'message', stack: 'stack' })).toBe(true);
+    });
+
+    it('returns true on errors without a stack.', async(): Promise<void> => {
+      expect(isError({ name: 'name', message: 'message' })).toBe(true);
     });
 
     it('returns false on other values.', async(): Promise<void> => {
-      expect(isNativeError('apple')).toBe(false);
+      expect(isError('apple')).toBe(false);
     });
   });
 
-  describe('#assertNativeError', (): void => {
+  describe('#assertError', (): void => {
     it('returns undefined on native errors.', async(): Promise<void> => {
-      expect(assertNativeError(new Error('error'))).toBeUndefined();
+      expect(assertError(new Error('error'))).toBeUndefined();
     });
 
     it('throws on other values.', async(): Promise<void> => {
-      expect((): void => assertNativeError('apple')).toThrow('apple');
+      expect((): void => assertError('apple')).toThrow('apple');
+    });
+  });
+
+  describe('#createErrorMessage', (): void => {
+    it('returns the given message for normal Errors.', async(): Promise<void> => {
+      expect(createErrorMessage(new Error('error msg'))).toBe('error msg');
+    });
+
+    it('tries to put the object in a string .', async(): Promise<void> => {
+      expect(createErrorMessage('apple')).toBe('Unknown error: apple');
     });
   });
 

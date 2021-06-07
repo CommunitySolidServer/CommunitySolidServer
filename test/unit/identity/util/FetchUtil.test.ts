@@ -22,19 +22,13 @@ describe('FetchUtil', (): void => {
 
     it('errors if there was an issue fetching.', async(): Promise<void> => {
       fetchMock.mockRejectedValueOnce(new Error('Invalid webId!'));
-      await expect(fetchDataset(url)).rejects.toThrow(`Cannot fetch ${url}: Invalid webId!`);
+      await expect(fetchDataset(url)).rejects.toThrow(`Cannot fetch ${url}`);
       expect(fetchMock).toHaveBeenCalledWith(url);
-
-      fetchMock.mockRejectedValueOnce('apple');
-      await expect(fetchDataset(url)).rejects.toThrow(`Cannot fetch ${url}: Unknown error`);
     });
 
     it('errors if there was an issue parsing the returned RDF.', async(): Promise<void> => {
       (datasetResponse.dataset as jest.Mock).mockRejectedValueOnce(new Error('Invalid RDF!'));
-      await expect(fetchDataset(url)).rejects.toThrow(`Could not parse RDF in ${url}: Invalid RDF!`);
-
-      (datasetResponse.dataset as jest.Mock).mockRejectedValueOnce('apple');
-      await expect(fetchDataset(url)).rejects.toThrow(`Could not parse RDF in ${url}: Unknown error`);
+      await expect(fetchDataset(url)).rejects.toThrow(`Cannot fetch ${url}`);
     });
 
     it('returns the resulting Dataset.', async(): Promise<void> => {

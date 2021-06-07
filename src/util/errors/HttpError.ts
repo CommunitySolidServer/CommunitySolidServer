@@ -1,4 +1,4 @@
-import { isNativeError } from './ErrorUtil';
+import { isError } from './ErrorUtil';
 
 /**
  * A class for all errors that could be thrown by Solid.
@@ -21,6 +21,6 @@ export class HttpError extends Error {
   }
 
   public static isInstance(error: any): error is HttpError {
-    return isNativeError(error) && typeof (error as any).statusCode === 'number';
+    return isError(error) && typeof (error as any).statusCode === 'number';
   }
 }

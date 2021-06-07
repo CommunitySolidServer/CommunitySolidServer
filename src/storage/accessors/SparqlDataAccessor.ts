@@ -19,7 +19,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
-import { isNativeError } from '../../util/errors/ErrorUtil';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
@@ -300,9 +300,7 @@ export class SparqlDataAccessor implements DataAccessor {
     try {
       return guardStream(await this.fetcher.fetchTriples(this.endpoint, query));
     } catch (error: unknown) {
-      if (isNativeError(error)) {
-        this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${error.message}`);
-      }
+      this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${createErrorMessage(error)}`);
       throw error;
     }
   }
@@ -317,9 +315,7 @@ export class SparqlDataAccessor implements DataAccessor {
     try {
       return await this.fetcher.fetchUpdate(this.endpoint, query);
     } catch (error: unknown) {
-      if (isNativeError(error)) {
-        this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${error.message}`);
-      }
+      this.logger.error(`SPARQL endpoint ${this.endpoint} error: ${createErrorMessage(error)}`);
       throw error;
     }
   }

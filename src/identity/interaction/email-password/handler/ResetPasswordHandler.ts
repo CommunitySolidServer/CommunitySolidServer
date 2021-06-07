@@ -3,7 +3,7 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { RenderHandler } from '../../../../server/util/RenderHandler';
-import { isNativeError } from '../../../../util/errors/ErrorUtil';
+import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
@@ -53,11 +53,10 @@ export class ResetPasswordHandler extends HttpHandler {
         },
       });
     } catch (err: unknown) {
-      const errorMessage: string = isNativeError(err) ? err.message : 'An unknown error occurred';
       await this.renderHandler.handleSafe({
         response: input.response,
         props: {
-          errorMessage,
+          errorMessage: createErrorMessage(err),
           recordId: prefilledRecordId,
         },
       });

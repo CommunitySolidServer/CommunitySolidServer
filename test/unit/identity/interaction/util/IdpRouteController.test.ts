@@ -74,7 +74,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { errorMessage: 'An unknown error occurred', prefilled: {}},
+      props: { errorMessage: 'Unknown error: apple!', prefilled: {}},
     });
   });
 

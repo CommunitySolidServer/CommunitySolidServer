@@ -20,7 +20,6 @@ import { NotImplementedHttpError } from '../../../src/util/errors/NotImplemented
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
-import * as quadUtil from '../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
@@ -234,16 +233,6 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
-    });
-
-    it('passes the result along if the MetadataController throws a non-Error.', async(): Promise<void> => {
-      const resourceID = { path: root };
-      const mock = jest.spyOn(quadUtil, 'parseQuads').mockImplementationOnce(async(): Promise<any> => {
-        throw 'apple';
-      });
-      representation.metadata.add(RDF.type, LDP.terms.Container);
-      await expect(store.addResource(resourceID, representation)).rejects.toBe('apple');
-      mock.mockRestore();
     });
 
     it('can write resources.', async(): Promise<void> => {
@@ -584,7 +573,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(
-        'Problem deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
+        'Error deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
       );
     });
 
@@ -607,7 +596,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(
-        'Problem deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
+        'Error deleting auxiliary resource http://test.com/resource.dummy: Unknown error: auxiliary error!',
       );
     });
   });
