@@ -44,6 +44,7 @@ describe('AppRunner', (): void => {
           port: 3000,
           loggingLevel: 'info',
           rootFilePath: '/var/cwd/',
+          showStackTrace: false,
           podConfigJson: '/var/cwd/pod-config.json',
         },
       );
@@ -67,6 +68,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
             'urn:solid-server:default:variable:sparqlEndpoint': undefined,
             'urn:solid-server:default:variable:loggingLevel': 'info',
+            'urn:solid-server:default:variable:showStackTrace': false,
             'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
             'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../../templates/idp'),
           },
@@ -107,6 +109,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
             'urn:solid-server:default:variable:sparqlEndpoint': undefined,
             'urn:solid-server:default:variable:loggingLevel': 'info',
+            'urn:solid-server:default:variable:showStackTrace': false,
             'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
             'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../../templates/idp'),
           },
@@ -127,6 +130,7 @@ describe('AppRunner', (): void => {
           '-m', 'module/path',
           '-p', '4000',
           '-s', 'http://localhost:5000/sparql',
+          '-t',
           '--podConfigJson', '/different-path.json',
           '--idpTemplateFolder', 'templates/idp',
         ],
@@ -154,6 +158,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:port': 4000,
             'urn:solid-server:default:variable:rootFilePath': '/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+            'urn:solid-server:default:variable:showStackTrace': true,
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
             'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
@@ -172,6 +177,7 @@ describe('AppRunner', (): void => {
           '--port', '4000',
           '--rootFilePath', 'root',
           '--sparqlEndpoint', 'http://localhost:5000/sparql',
+          '--showStackTrace',
           '--podConfigJson', '/different-path.json',
           '--idpTemplateFolder', 'templates/idp',
         ],
@@ -199,6 +205,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:port': 4000,
             'urn:solid-server:default:variable:rootFilePath': '/var/cwd/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+            'urn:solid-server:default:variable:showStackTrace': true,
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
             'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
@@ -217,6 +224,7 @@ describe('AppRunner', (): void => {
         '-m', 'module/path',
         '-p', '4000',
         '-s', 'http://localhost:5000/sparql',
+        '-t',
         '--podConfigJson', '/different-path.json',
         '--idpTemplateFolder', 'templates/idp',
       ];
@@ -245,6 +253,7 @@ describe('AppRunner', (): void => {
             'urn:solid-server:default:variable:port': 4000,
             'urn:solid-server:default:variable:rootFilePath': '/root',
             'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:5000/sparql',
+            'urn:solid-server:default:variable:showStackTrace': true,
             'urn:solid-server:default:variable:podConfigJson': '/different-path.json',
             'urn:solid-server:default:variable:idpTemplateFolder': '/var/cwd/templates/idp',
           },
@@ -293,9 +302,7 @@ describe('AppRunner', (): void => {
 
     it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
       new AppRunner().runCli({
-        argv: [
-          'node', 'script', '--foo',
-        ],
+        argv: [ 'node', 'script', '--foo' ],
       });
 
       // Wait until initializer has been called, because we can't await AppRunner.run.
@@ -303,16 +310,14 @@ describe('AppRunner', (): void => {
         setImmediate(resolve);
       });
 
-      expect(error).toHaveBeenCalledWith('Unknown option: "foo"');
+      expect(error).toHaveBeenCalledWith('Unknown argument: foo');
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
     });
 
     it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
       new AppRunner().runCli({
-        argv: [
-          'node', 'script', '-s',
-        ],
+        argv: [ 'node', 'script', '-s' ],
       });
 
       // Wait until initializer has been called, because we can't await AppRunner.run.
@@ -320,16 +325,14 @@ describe('AppRunner', (): void => {
         setImmediate(resolve);
       });
 
-      expect(error).toHaveBeenCalledWith('Missing value for argument "s"');
+      expect(error).toHaveBeenCalledWith('Not enough arguments following: s');
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
     });
 
     it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
       new AppRunner().runCli({
-        argv: [
-          'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt',
-        ],
+        argv: [ 'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt' ],
       });
 
       // Wait until initializer has been called, because we can't await AppRunner.run.
@@ -337,17 +340,14 @@ describe('AppRunner', (): void => {
         setImmediate(resolve);
       });
 
-      // There seems to be an issue with yargs where the first and last `"` are missing.
-      expect(error).toHaveBeenCalledWith('Unsupported arguments: foo", "bar", "foo.txt", "bar.txt');
+      expect(error).toHaveBeenCalledWith('Unsupported positional arguments: "foo", "bar", "foo.txt", "bar.txt"');
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
     });
 
     it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
       new AppRunner().runCli({
-        argv: [
-          'node', 'script', '-ll',
-        ],
+        argv: [ 'node', 'script', '-l', 'info', '-l', 'debug' ],
       });
 
       // Wait until initializer has been called, because we can't await AppRunner.run.
@@ -355,7 +355,7 @@ describe('AppRunner', (): void => {
         setImmediate(resolve);
       });
 
-      expect(error).toHaveBeenCalledWith('Multiple values were provided for: "l", [info,info]');
+      expect(error).toHaveBeenCalledWith('Multiple values were provided for: "l": "info", "debug"');
       expect(exit).toHaveBeenCalledTimes(1);
       expect(exit).toHaveBeenCalledWith(1);
     });

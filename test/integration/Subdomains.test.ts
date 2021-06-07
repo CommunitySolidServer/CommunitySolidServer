@@ -37,6 +37,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
     const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': baseUrl,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+      'urn:solid-server:default:variable:showStackTrace': true,
       'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
     };
 

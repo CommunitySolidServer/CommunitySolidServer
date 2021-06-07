@@ -25,6 +25,7 @@ describe('An http server with middleware', (): void => {
       {
         'urn:solid-server:default:LdpHandler': new SimpleHttpHandler(),
         'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
+        'urn:solid-server:default:variable:showStackTrace': true,
       },
     ) as BaseHttpServerFactory;
     server = factory.startServer(port);

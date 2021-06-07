@@ -22,6 +22,7 @@ describe('A Solid server', (): void => {
       getTestConfigPath('server-memory.json'),
       {
         'urn:solid-server:default:variable:baseUrl': baseUrl,
+        'urn:solid-server:default:variable:showStackTrace': true,
         'urn:solid-server:default:variable:idpTemplateFolder': '',
       },
     ) as Record<string, any>;
