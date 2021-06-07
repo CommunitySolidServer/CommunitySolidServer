@@ -24,7 +24,13 @@
           "converters": [
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
-            { "@type": "ErrorToQuadConverter" }
+            { "@type": "ErrorToQuadConverter" },
+            {
+              "@type": "ErrorToTemplateConverter",
+              "engine": { "@type": "HandlebarsTemplateEngine" },
+              "templatePath": "$PACKAGE_ROOT/templates/error/error.hbs",
+              "contentType": "text/html"
+            }
           ]
         }
       ]

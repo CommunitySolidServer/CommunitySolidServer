@@ -220,6 +220,7 @@ export * from './storage/conversion/ChainedConverter';
 export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/ConversionUtil';
+export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/PassthroughConverter';
