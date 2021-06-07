@@ -5,7 +5,7 @@ import type { RepresentationPreferences } from '../ldp/representation/Representa
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
-import { assertNativeError, isNativeError } from '../util/errors/ErrorUtil';
+import { assertError, createErrorMessage } from '../util/errors/ErrorUtil';
 import type { IdentityProviderFactory } from './IdentityProviderFactory';
 import type { InteractionHttpHandler } from './interaction/InteractionHttpHandler';
 import type { InteractionPolicy } from './interaction/InteractionPolicy';
@@ -55,7 +55,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       try {
         this.provider = await this.providerFactory.createProvider(this.interactionPolicy);
       } catch (err: unknown) {
-        this.logger.error(`Failed to create Provider: ${isNativeError(err) ? err.message : 'Unknown error'}`);
+        this.logger.error(`Failed to create Provider: ${createErrorMessage(err)}`);
         throw err;
       }
     }
@@ -75,7 +75,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     try {
       await this.interactionHttpHandler.handle({ ...input, provider });
     } catch (error: unknown) {
-      assertNativeError(error);
+      assertError(error);
       const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
       const result = await this.errorHandler.handleSafe({ error, preferences });
       await this.responseWriter.handleSafe({ response: input.response, result });

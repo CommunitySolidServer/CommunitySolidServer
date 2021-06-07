@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { isNativeError } from '../../../util/errors/ErrorUtil';
+import { createErrorMessage } from '../../../util/errors/ErrorUtil';
 import { HttpError } from '../../../util/errors/HttpError';
 import { IdpInteractionError } from '../util/IdpInteractionError';
 
@@ -18,10 +18,8 @@ export function throwIdpInteractionError(error: unknown, prefilled: Record<strin
     }
   } else if (HttpError.isInstance(error)) {
     throw new IdpInteractionError(error.statusCode, error.message, prefilled);
-  } else if (isNativeError(error)) {
-    throw new IdpInteractionError(500, error.message, prefilled);
   } else {
-    throw new IdpInteractionError(500, 'Unknown Error', prefilled);
+    throw new IdpInteractionError(500, createErrorMessage(error), prefilled);
   }
 }
 

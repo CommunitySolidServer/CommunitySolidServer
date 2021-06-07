@@ -45,7 +45,7 @@ describe('EmailPasswordUtil', (): void => {
       const error = 'Error!';
       expect((): never => throwIdpInteractionError(error, prefilled)).toThrow(expect.objectContaining({
         statusCode: 500,
-        message: 'Unknown Error',
+        message: 'Unknown error: Error!',
         prefilled,
       }));
     });

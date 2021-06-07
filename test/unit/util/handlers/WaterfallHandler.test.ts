@@ -53,7 +53,7 @@ describe('A WaterfallHandler', (): void => {
       };
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
-      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error, Unknown error]');
+      await expect(handler.canHandle(null)).rejects.toThrow('[Unknown error: apple, Unknown error: apple]');
     });
 
     it('handles data if a handler supports it.', async(): Promise<void> => {

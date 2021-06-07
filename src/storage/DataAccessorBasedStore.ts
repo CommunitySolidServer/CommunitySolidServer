@@ -11,7 +11,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
-import { isNativeError } from '../util/errors/ErrorUtil';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
@@ -344,10 +344,7 @@ export class DataAccessorBasedStore implements ResourceStore {
         quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
       }
     } catch (error: unknown) {
-      if (isNativeError(error)) {
-        throw new BadRequestHttpError(`Can only create containers with RDF data. ${error.message}`);
-      }
-      throw error;
+      throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`);
     }
 
     // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s containment triples;
@@ -481,8 +478,7 @@ export class DataAccessorBasedStore implements ResourceStore {
         deleted.push(identifier);
       } catch (error: unknown) {
         if (!NotFoundHttpError.isInstance(error)) {
-          const errorMsg = isNativeError(error) ? error.message : error;
-          this.logger.error(`Problem deleting auxiliary resource ${identifier.path}: ${errorMsg}`);
+          this.logger.error(`Error deleting auxiliary resource ${identifier.path}: ${createErrorMessage(error)}`);
         }
       }
     }));

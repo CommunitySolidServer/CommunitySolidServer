@@ -6,7 +6,7 @@ import type { HttpHandlerInput } from '../server/HttpHandler';
 import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
-import { assertNativeError } from '../util/errors/ErrorUtil';
+import { assertError } from '../util/errors/ErrorUtil';
 import type { ErrorHandler } from './http/ErrorHandler';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
@@ -103,7 +103,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     try {
       writeData = { response: input.response, result: await this.runHandlers(input.request) };
     } catch (error: unknown) {
-      assertNativeError(error);
+      assertError(error);
       // We don't know the preferences yet at this point
       const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
       const result = await this.errorHandler.handleSafe({ error, preferences });
@@ -129,7 +129,7 @@ export class AuthenticatedLdpHandler extends HttpHandler {
     try {
       return await this.handleOperation(request, operation);
     } catch (error: unknown) {
-      assertNativeError(error);
+      assertError(error);
       return await this.errorHandler.handleSafe({ error, preferences: operation.preferences });
     }
   }

@@ -156,3 +156,15 @@ export function matchesMediaType(mediaA: string, mediaB: string): boolean {
   }
   return subTypeA === subTypeB;
 }
+
+/**
+ * Checks if the given content type is an internal content type such as internal/quads.
+ * Response will be `false` if the input type is undefined.
+ *
+ * Do not use this for media ranges.
+ *
+ * @param contentType - Type to check.
+ */
+export function isInternalContentType(contentType?: string): boolean {
+  return typeof contentType !== 'undefined' && matchesMediaType(contentType, INTERNAL_ALL);
+}

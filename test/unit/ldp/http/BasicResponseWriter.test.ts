@@ -25,12 +25,13 @@ describe('A BasicResponseWriter', (): void => {
   });
 
   it('requires the input to be a binary ResponseDescription.', async(): Promise<void> => {
-    await expect(writer.canHandle({ response, result: new Error('error') }))
-      .rejects.toThrow(NotImplementedHttpError);
     const metadata = new RepresentationMetadata(INTERNAL_QUADS);
     await expect(writer.canHandle({ response, result: { statusCode: 201, metadata }}))
       .rejects.toThrow(NotImplementedHttpError);
-    await expect(writer.canHandle({ response, result }))
+    metadata.contentType = 'text/turtle';
+    await expect(writer.canHandle({ response, result: { statusCode: 201, metadata }}))
+      .resolves.toBeUndefined();
+    await expect(writer.canHandle({ response, result: { statusCode: 201 }}))
       .resolves.toBeUndefined();
   });
 

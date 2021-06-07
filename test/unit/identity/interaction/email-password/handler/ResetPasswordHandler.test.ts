@@ -86,7 +86,7 @@ describe('A ResetPasswordHandler', (): void => {
   });
 
   it('has a default error for non-native errors.', async(): Promise<void> => {
-    const errorMessage = 'An unknown error occurred';
+    const errorMessage = 'Unknown error: not native';
     request = createPostFormRequest({ recordId, password: 'password!', confirmPassword: 'password!' });
     (accountStore.getForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('not native');
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();

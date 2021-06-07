@@ -88,7 +88,7 @@ describe('A BaseHttpServerFactory', (): void => {
       handler.handleSafe.mockRejectedValueOnce('apple');
 
       const res = await request(server).get('/').expect(500);
-      expect(res.text).toContain('Unknown error.');
+      expect(res.text).toContain('Unknown error: apple.');
     });
   });
 
@@ -107,7 +107,7 @@ describe('A BaseHttpServerFactory', (): void => {
       server.close();
     });
 
-    it('throws unknown errors if its handler throw non-Error objects.', async(): Promise<void> => {
+    it('does not print the stack if that option is disabled.', async(): Promise<void> => {
       const error = new Error('dummyError');
       handler.handleSafe.mockRejectedValueOnce(error);
 

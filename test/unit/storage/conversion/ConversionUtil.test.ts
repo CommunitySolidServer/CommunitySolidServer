@@ -4,7 +4,7 @@ import {
   getBestPreference,
   getConversionTarget,
   getTypeWeight,
-  getWeightedPreferences,
+  getWeightedPreferences, isInternalContentType,
   matchesMediaPreferences,
   matchesMediaType,
 } from '../../../../src/storage/conversion/ConversionUtil';
@@ -142,6 +142,15 @@ describe('ConversionUtil', (): void => {
       expect(matchesMediaType('text/*', 'application/*')).toBeFalsy();
       expect(matchesMediaType('text/plain', 'application/*')).toBeFalsy();
       expect(matchesMediaType('text/plain', 'text/turtle')).toBeFalsy();
+    });
+  });
+
+  describe('#isInternalContentType', (): void => {
+    it('only returns true on internal types.', async(): Promise<void> => {
+      expect(isInternalContentType('internal/quads')).toBeTruthy();
+
+      expect(isInternalContentType()).toBeFalsy();
+      expect(isInternalContentType('text/turtle')).toBeFalsy();
     });
   });
 });
