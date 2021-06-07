@@ -63,6 +63,7 @@ describe('A Solid server with IDP', (): void => {
       getTestConfigPath('server-memory.json'),
       {
         'urn:solid-server:default:variable:baseUrl': baseUrl,
+        'urn:solid-server:default:variable:showStackTrace': true,
         'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
       },
     ) as Record<string, any>;

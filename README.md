@@ -69,6 +69,7 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | `--loggingLevel, -l` | `"info"`| |
 | `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
 | `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
+| `--showStackTrace, -t` | false | Whether error stack traces should be shown in responses. |
 | `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |
 | `--idpTemplateFolder` | `"templates/idp"` | Folder containing the templates used for IDP interactions. |
 

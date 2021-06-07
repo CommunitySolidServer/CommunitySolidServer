@@ -21,6 +21,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       getTestConfigPath('run-with-redlock.json'),
       {
         'urn:solid-server:default:variable:baseUrl': baseUrl,
+        'urn:solid-server:default:variable:showStackTrace': true,
       },
     ) as Record<string, any>;
     ({ factory, locker } = instances);

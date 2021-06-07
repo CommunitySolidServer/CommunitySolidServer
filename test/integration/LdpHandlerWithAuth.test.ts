@@ -40,6 +40,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
       'urn:solid-server:default:variable:baseUrl': baseUrl,
+      'urn:solid-server:default:variable:showStackTrace': true,
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
 
