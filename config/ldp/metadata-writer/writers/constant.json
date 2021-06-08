@@ -11,6 +11,10 @@
           "ConstantMetadataWriter:_headers_value": "application/sparql-update"
         },
         {
+          "ConstantMetadataWriter:_headers_key": "Allow",
+          "ConstantMetadataWriter:_headers_value": "OPTIONS, HEAD, GET, PATCH, POST, PUT, DELETE"
+        },
+        {
           "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
           "ConstantMetadataWriter:_headers_value": "SPARQL"
         }
