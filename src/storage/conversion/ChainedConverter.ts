@@ -143,7 +143,7 @@ export class ChainedConverter extends RepresentationConverter {
     }
 
     const { path } = match;
-    this.logger.debug(`Converting ${match.inType} -> ${path.intermediateTypes.join(' -> ')} -> ${match.outType}.`);
+    this.logger.debug(`Converting ${match.inType} -> ${[ ...path.intermediateTypes, match.outType ].join(' -> ')}.`);
 
     const args = { ...input };
     for (let i = 0; i < path.converters.length - 1; ++i) {
