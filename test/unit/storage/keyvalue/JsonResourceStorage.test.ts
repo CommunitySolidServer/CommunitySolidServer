@@ -24,7 +24,7 @@ describe('A JsonResourceStorage', (): void => {
       },
       async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
         // Simulate container metadata
-        if (identifier.path === 'http://test.com/data/') {
+        if (identifier.path === 'http://test.com/data/' && Object.keys(data).length > 0) {
           const metadata = new RepresentationMetadata({ [LDP.contains]: Object.keys(data) });
           return new BasicRepresentation('', metadata);
         }
@@ -50,6 +50,10 @@ describe('A JsonResourceStorage', (): void => {
 
   it('returns undefined if there is no matching data.', async(): Promise<void> => {
     await expect(storage.get(identifier1)).resolves.toBeUndefined();
+  });
+
+  it('returns no entry data if the container does not exist yet.', async(): Promise<void> => {
+    await expect(storage.entries().next()).resolves.toEqual({ done: true });
   });
 
   it('returns data if it was set beforehand.', async(): Promise<void> => {
@@ -83,8 +87,9 @@ describe('A JsonResourceStorage', (): void => {
   });
 
   it('re-throws errors thrown by the store.', async(): Promise<void> => {
-    store.getRepresentation = jest.fn().mockRejectedValueOnce(new Error('bad GET'));
+    store.getRepresentation = jest.fn().mockRejectedValue(new Error('bad GET'));
     await expect(storage.get(identifier1)).rejects.toThrow('bad GET');
+    await expect(storage.entries().next()).rejects.toThrow('bad GET');
 
     store.deleteResource = jest.fn().mockRejectedValueOnce(new Error('bad DELETE'));
     await expect(storage.delete(identifier1)).rejects.toThrow('bad DELETE');

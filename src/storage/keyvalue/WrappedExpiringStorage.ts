@@ -1,3 +1,4 @@
+import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ExpiringStorage } from './ExpiringStorage';
 import type { KeyValueStorage } from './KeyValueStorage';
@@ -11,6 +12,8 @@ export type Expires<T> = { expires?: string; payload: T };
  * Has a timer that will delete all expired data every hour (default value).
  */
 export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKey, TValue> {
+  protected readonly logger = getLoggerFor(this);
+
   private readonly source: KeyValueStorage<TKey, Expires<TValue>>;
   private readonly timer: NodeJS.Timeout;
 
@@ -57,6 +60,7 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
    * Deletes all entries that have expired.
    */
   private async removeExpiredEntries(): Promise<void> {
+    this.logger.debug('Removing expired entries');
     const expired: TKey[] = [];
     for await (const [ key, value ] of this.source.entries()) {
       const { expires } = this.toData(value);
@@ -65,6 +69,7 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
       }
     }
     await Promise.all(expired.map(async(key): Promise<boolean> => this.source.delete(key)));
+    this.logger.debug('Finished removing expired entries');
   }
 
   /**
