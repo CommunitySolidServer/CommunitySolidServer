@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
+import type { Representation } from '../../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { ensureTrailingSlash } from '../../util/PathUtil';
@@ -65,7 +66,18 @@ export class JsonResourceStorage implements KeyValueStorage<string, unknown> {
   }
 
   public async* entries(): AsyncIterableIterator<[string, unknown]> {
-    const container = await this.source.getRepresentation({ path: this.container }, {});
+    // Getting ldp:contains metadata from container to find entries
+    let container: Representation;
+    try {
+      container = await this.source.getRepresentation({ path: this.container }, {});
+    } catch (error: unknown) {
+      // Container might not exist yet, will be created the first time `set` gets called
+      if (!NotFoundHttpError.isInstance(error)) {
+        throw error;
+      }
+      return;
+    }
+
     // Only need the metadata
     container.data.destroy();
     const members = container.metadata.getAll(LDP.terms.contains).map((term): string => term.value);
