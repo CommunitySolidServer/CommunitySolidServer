@@ -93,6 +93,13 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     await expect(handler.canHandle(input)).rejects.toThrow(NotImplementedHttpError);
   });
 
+  it('handles NOP operations by not doing anything.', async(): Promise<void> => {
+    await handle('');
+    expect(source.getRepresentation).toHaveBeenCalledTimes(0);
+    expect(converter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(source.setRepresentation).toHaveBeenCalledTimes(0);
+  });
+
   it('handles INSERT DATA updates.', async(): Promise<void> => {
     await handle(fullfilledDataInsert);
     expect(await basicChecks(startQuads.concat(

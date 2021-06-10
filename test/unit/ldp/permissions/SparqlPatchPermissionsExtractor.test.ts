@@ -32,6 +32,19 @@ describe('A SparqlPatchPermissionsExtractor', (): void => {
     await expect(result).rejects.toThrow('Can only determine permissions of a PATCH with DELETE/INSERT operations.');
   });
 
+  it('requires nothing for NOP operations.', async(): Promise<void> => {
+    const operation = {
+      method: 'PATCH',
+      body: { algebra: factory.createNop() },
+    } as unknown as Operation;
+    await expect(extractor.handle(operation)).resolves.toEqual({
+      read: false,
+      append: false,
+      write: false,
+      control: false,
+    });
+  });
+
   it('requires append for INSERT operations.', async(): Promise<void> => {
     const operation = {
       method: 'PATCH',

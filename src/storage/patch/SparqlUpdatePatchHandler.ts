@@ -47,6 +47,12 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
     // Verify the patch
     const { source, identifier, patch } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
+
+    // In case of a NOP we can skip everything
+    if (op.type === Algebra.types.NOP) {
+      return [];
+    }
+
     this.validateUpdate(op);
 
     return this.applyPatch(source, identifier, op);
