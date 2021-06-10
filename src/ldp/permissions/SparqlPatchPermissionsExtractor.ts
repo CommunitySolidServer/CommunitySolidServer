@@ -44,7 +44,7 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
   }
 
   private isSupported(op: Algebra.Operation): boolean {
-    if (op.type === Algebra.types.DELETE_INSERT) {
+    if (this.isDeleteInsert(op) || this.isNop(op)) {
       return true;
     }
     if (op.type === Algebra.types.COMPOSITE_UPDATE) {
@@ -57,7 +57,14 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
     return op.type === Algebra.types.DELETE_INSERT;
   }
 
+  private isNop(op: Algebra.Operation): op is Algebra.Nop {
+    return op.type === Algebra.types.NOP;
+  }
+
   private needsAppend(update: Algebra.Operation): boolean {
+    if (this.isNop(update)) {
+      return false;
+    }
     if (this.isDeleteInsert(update)) {
       return Boolean(update.insert && update.insert.length > 0);
     }
@@ -66,6 +73,9 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
   }
 
   private needsWrite(update: Algebra.Operation): boolean {
+    if (this.isNop(update)) {
+      return false;
+    }
     if (this.isDeleteInsert(update)) {
       return Boolean(update.delete && update.delete.length > 0);
     }
