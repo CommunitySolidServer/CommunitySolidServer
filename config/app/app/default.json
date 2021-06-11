@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "This is the entry point to the application. It can be used to both start and stop the server.",
+      "@id": "urn:solid-server:default:App",
+      "@type": "App",
+      "initializer": { "@id": "urn:solid-server:default:Initializer" },
+      "finalizer": {
+        "comment": "This is going to contain the list of finalizers that need to be called. These should be added in the configs where such classes are configured.",
+        "@id": "urn:solid-server:default:Finalizer",
+        "@type": "ParallelFinalizer",
+        "finalizers": [
+          { "@id": "urn:solid-server:default:ServerInitializer" }
+        ]
+      }
+    }
+  ]
+}

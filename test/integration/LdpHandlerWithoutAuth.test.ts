@@ -1,14 +1,18 @@
 import { createReadStream } from 'fs';
-import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import { DataFactory, Parser } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
-import type { Initializer } from '../../src/';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
 import { deleteResource, expectQuads, getResource, patchResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
-import { getPresetConfigPath, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import {
+  getDefaultVariables,
+  getPresetConfigPath,
+  getTestConfigPath,
+  getTestFolder,
+  instantiateFromConfig, removeFolder,
+} from './Config';
 const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
@@ -27,18 +31,15 @@ const stores: [string, any][] = [
 ];
 
 describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeConfig, teardown }): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let factory: HttpServerFactory;
+  let app: App;
 
   beforeAll(async(): Promise<void> => {
-    const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
-      'urn:solid-server:default:variable:showStackTrace': true,
+    const variables = {
+      ...getDefaultVariables(port, baseUrl),
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
 
-    // Create and initialize the server
+    // Create and start the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
@@ -47,17 +48,14 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       ],
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ app } = instances);
 
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
     await teardown();
-    await new Promise((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   it('can read a container listing.', async(): Promise<void> => {

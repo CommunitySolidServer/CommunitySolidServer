@@ -1,13 +1,10 @@
 import { mkdirSync } from 'fs';
-import type { Server } from 'http';
 import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
-import type { Initializer } from '../../src/init/Initializer';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
+import type { App } from '../../src/init/App';
 import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
-import { getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
 const port = getPort('DynamicPods');
 const baseUrl = `http://localhost:${port}/`;
@@ -26,45 +23,34 @@ const configs: [string, any][] = [
 // Using the actual templates instead of specific test ones to prevent a lot of duplication
 // Tests are very similar to subdomain/pod tests. Would be nice if they can be combined
 describe.each(configs)('A dynamic pod server with template config %s', (template, { teardown }): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let factory: HttpServerFactory;
-  let expiringStorage: WrappedExpiringStorage<any, any>;
+  let app: App;
   const settings = { podName: 'alice', webId: 'http://test.com/#alice', email: 'alice@test.email', template, createPod: true };
   const podUrl = `${baseUrl}${settings.podName}/`;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
+      ...getDefaultVariables(port, baseUrl),
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
       'urn:solid-server:default:variable:podConfigJson': podConfigJson,
-      'urn:solid-server:default:variable:showStackTrace': true,
-      'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
     };
 
     // Need to make sure the temp folder exists so the podConfigJson can be written to it
     mkdirSync(rootFilePath, { recursive: true });
 
-    // Create and initialize the HTTP handler and related components
+    // Create and start the HTTP handler and related components
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       getTestConfigPath('server-dynamic-unsafe.json'),
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer, expiringStorage } = instances);
+    ({ app } = instances);
 
-    // Set up the internal store
-    await initializer.handleSafe();
-
-    server = factory.startServer(port);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    expiringStorage.finalize();
-    await new Promise((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
     await teardown();
+    await app.stop();
   });
 
   it('creates a pod with the given config.', async(): Promise<void> => {

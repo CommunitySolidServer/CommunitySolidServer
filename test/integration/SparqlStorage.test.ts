@@ -1,28 +1,23 @@
 import { promises as fs } from 'fs';
-import type { Server } from 'http';
 import { joinFilePath } from '../../src/';
-import type { Initializer } from '../../src/';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { App } from '../../src/';
 import { putResource } from '../util/FetchUtil';
 import { describeIf, getPort } from '../util/Util';
-import { getPresetConfigPath, getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getPresetConfigPath, getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('SparqlStorage');
 const baseUrl = `http://localhost:${port}/`;
 
 describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let factory: HttpServerFactory;
+  let app: App;
 
   beforeAll(async(): Promise<void> => {
-    const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
-      'urn:solid-server:default:variable:showStackTrace': true,
+    const variables = {
+      ...getDefaultVariables(port, baseUrl),
       'urn:solid-server:default:variable:sparqlEndpoint': 'http://localhost:4000/sparql',
     };
 
-    // Create and initialize the server
+    // Create and start the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
@@ -31,16 +26,13 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
       ],
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer } = instances);
+    ({ app } = instances);
 
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    await new Promise((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   it('can add a Turtle file to the store.', async(): Promise<void> => {

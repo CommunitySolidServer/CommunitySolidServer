@@ -66,8 +66,13 @@ export * from './identity/storage/WrappedFetchAdapterFactory';
 export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
 
+// Init/Final
+export * from './init/final/Finalizable';
+export * from './init/final/ParallelFinalizer';
+
 // Init
 export * from './init/AclInitializer';
+export * from './init/App';
 export * from './init/AppRunner';
 export * from './init/ConfigPodInitializer';
 export * from './init/Initializer';

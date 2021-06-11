@@ -18,6 +18,11 @@
         "suffixes_write": "write"
       },
       "expiration": 3000
+    },
+    {
+      "comment": "Makes sure the redis connection is closed when the application needs to stop.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "ParallelFinalizer:_finalizers": [ { "@id": "urn:solid-server:default:RedisResourceLocker" } ]
     }
   ]
 }

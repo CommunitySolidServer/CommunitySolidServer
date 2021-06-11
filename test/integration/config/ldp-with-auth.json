@@ -1,11 +1,12 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/app/app/default.json",
+    "files-scs:config/app/init/default.json",
     "files-scs:config/http/handler/simple.json",
     "files-scs:config/http/middleware/no-websockets.json",
     "files-scs:config/http/server-factory/no-websockets.json",
     "files-scs:config/http/static/default.json",
-    "files-scs:config/init/handler/default.json",
     "files-scs:config/ldp/authentication/debug-auth-header.json",
     "files-scs:config/ldp/authorization/webacl.json",
     "files-scs:config/ldp/handler/default.json",
@@ -28,17 +29,12 @@
       "@type": "RecordObject",
       "record": [
         {
-          "comment": "Only use the parallel initializer. Starting the server is done in the test code..",
-          "RecordObject:_record_key": "initializer",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ParallelInitializer" }
+          "RecordObject:_record_key": "app",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
         },
         {
           "RecordObject:_record_key": "store",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:ResourceStore" }
-        },
-        {
-          "RecordObject:_record_key": "factory",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
         }
       ]
     }

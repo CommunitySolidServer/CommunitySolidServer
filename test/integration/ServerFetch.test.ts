@@ -1,41 +1,27 @@
-import type { Server } from 'http';
 import fetch from 'cross-fetch';
-import type { Initializer } from '../../src/init/Initializer';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
+import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
-import { getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('ServerFetch');
 const baseUrl = `http://localhost:${port}/`;
 
 // Some tests with real Requests/Responses until the mocking library has been removed from the tests
 describe('A Solid server', (): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let expiringStorage: WrappedExpiringStorage<any, any>;
-  let factory: HttpServerFactory;
+  let app: App;
 
   beforeAll(async(): Promise<void> => {
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       getTestConfigPath('server-memory.json'),
-      {
-        'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:showStackTrace': true,
-        'urn:solid-server:default:variable:idpTemplateFolder': '',
-      },
+      getDefaultVariables(port, baseUrl),
     ) as Record<string, any>;
-    ({ factory, initializer, expiringStorage } = instances);
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    ({ app } = instances);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    expiringStorage.finalize();
-    await new Promise<void>((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   it('can do a successful HEAD request to a container.', async(): Promise<void> => {

@@ -1,9 +1,8 @@
-import type { Server } from 'http';
 import fetch from 'cross-fetch';
-import type { RedisResourceLocker } from '../../src';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { App, RedisResourceLocker } from '../../src';
+
 import { describeIf, getPort } from '../util/Util';
-import { getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
 /**
  * Test the general functionality of the server using a RedisResourceLocker
@@ -11,28 +10,21 @@ import { getTestConfigPath, instantiateFromConfig } from './Config';
 describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', (): void => {
   const port = getPort('RedisResourceLocker');
   const baseUrl = `http://localhost:${port}/`;
-  let server: Server;
+  let app: App;
   let locker: RedisResourceLocker;
-  let factory: HttpServerFactory;
 
   beforeAll(async(): Promise<void> => {
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       getTestConfigPath('run-with-redlock.json'),
-      {
-        'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:showStackTrace': true,
-      },
+      getDefaultVariables(port, baseUrl),
     ) as Record<string, any>;
-    ({ factory, locker } = instances);
-    server = factory.startServer(port);
+    ({ app, locker } = instances);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    await locker.finalize();
-    await new Promise<void>((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   it('can add a file to the store, read it and delete it.', async(): Promise<void> => {
