@@ -1,6 +1,5 @@
 import { toASCII, toUnicode } from 'punycode/';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { TEXT_TURTLE } from '../../util/ContentTypes';
 import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
@@ -36,8 +35,8 @@ export class SubdomainExtensionBasedMapper extends ExtensionBasedMapper {
   private readonly baseParts: { scheme: string; rest: string };
 
   public constructor(base: string, rootFilepath: string, baseSubdomain = 'www',
-    overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
-    super(base, rootFilepath, overrideTypes);
+    customTypes?: Record<string, string>) {
+    super(base, rootFilepath, customTypes);
     this.baseSubdomain = baseSubdomain;
     this.regex = createSubdomainRegexp(ensureTrailingSlash(base));
     this.baseParts = extractScheme(ensureTrailingSlash(base));

@@ -1,18 +1,40 @@
 import { promises as fsPromises } from 'fs';
 import * as mime from 'mime-types';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { TEXT_TURTLE } from '../../util/ContentTypes';
+import { DEFAULT_CUSTOM_TYPES } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { joinFilePath, getExtension } from '../../util/PathUtil';
 import { BaseFileIdentifierMapper } from './BaseFileIdentifierMapper';
 import type { FileIdentifierMapperFactory, ResourceLink } from './FileIdentifierMapper';
 
+/**
+ * Supports the behaviour described in https://www.w3.org/DesignIssues/HTTPFilenameMapping.html
+ * Determines content-type based on the file extension.
+ * In case an identifier does not end on an extension matching its content-type,
+ * the corresponding file will be appended with the correct extension, preceded by $.
+ */
 export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
-  private readonly types: Record<string, any>;
+  private readonly customTypes: Record<string, string>;
+  private readonly customExtensions: Record<string, string>;
 
-  public constructor(base: string, rootFilepath: string, overrideTypes = { acl: TEXT_TURTLE, meta: TEXT_TURTLE }) {
+  public constructor(
+    base: string,
+    rootFilepath: string,
+    customTypes?: Record<string, string>,
+  ) {
     super(base, rootFilepath);
-    this.types = { ...mime.types, ...overrideTypes };
+
+    // Workaround for https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
+    if (!customTypes || Object.keys(customTypes).length === 0) {
+      this.customTypes = DEFAULT_CUSTOM_TYPES;
+    } else {
+      this.customTypes = customTypes;
+    }
+
+    this.customExtensions = {};
+    for (const [ extension, contentType ] of Object.entries(this.customTypes)) {
+      this.customExtensions[contentType] = extension;
+    }
   }
 
   protected async mapUrlToDocumentPath(identifier: ResourceIdentifier, filePath: string, contentType?: string):
@@ -42,7 +64,7 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     // If the extension of the identifier matches a different content-type than the one that is given,
     // we need to add a new extension to match the correct type.
     } else if (contentType !== await this.getContentTypeFromPath(filePath)) {
-      const extension = mime.extension(contentType);
+      const extension: string = mime.extension(contentType) || this.customExtensions[contentType];
       if (!extension) {
         this.logger.warn(`No extension found for ${contentType}`);
         throw new NotImplementedHttpError(`Unsupported content type ${contentType}`);
@@ -57,8 +79,10 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
   }
 
   protected async getContentTypeFromPath(filePath: string): Promise<string> {
-    return this.types[getExtension(filePath).toLowerCase()] ||
-      super.getContentTypeFromPath(filePath);
+    const extension = getExtension(filePath).toLowerCase();
+    return mime.lookup(extension) ||
+      this.customTypes[extension] ||
+      await super.getContentTypeFromPath(filePath);
   }
 
   /**

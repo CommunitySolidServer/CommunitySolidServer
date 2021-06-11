@@ -2,6 +2,7 @@
 export const APPLICATION_JSON = 'application/json';
 export const APPLICATION_OCTET_STREAM = 'application/octet-stream';
 export const APPLICATION_SPARQL_UPDATE = 'application/sparql-update';
+export const APPLICATION_TRIG = 'application/trig';
 export const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 export const TEXT_HTML = 'text/html';
 export const TEXT_MARKDOWN = 'text/markdown';
@@ -11,3 +12,10 @@ export const TEXT_TURTLE = 'text/turtle';
 export const INTERNAL_ALL = 'internal/*';
 export const INTERNAL_QUADS = 'internal/quads';
 export const INTERNAL_ERROR = 'internal/error';
+
+// Trig can be removed once the mime-types library is updated with the latest mime-db version
+export const DEFAULT_CUSTOM_TYPES = {
+  acl: TEXT_TURTLE,
+  meta: TEXT_TURTLE,
+  trig: APPLICATION_TRIG,
+};

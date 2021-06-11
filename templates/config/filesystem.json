@@ -16,9 +16,7 @@
       },
       "rootFilepath": {
         "@id": "urn:solid-server:template:variable:rootFilePath"
-      },
-      "overrideTypes_acl": "text/turtle",
-      "overrideTypes_meta": "text/turtle"
+      }
     },
 
     {

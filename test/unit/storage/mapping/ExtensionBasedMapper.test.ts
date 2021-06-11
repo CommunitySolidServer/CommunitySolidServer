@@ -130,6 +130,28 @@ describe('An ExtensionBasedMapper', (): void => {
       await expect(result).rejects.toThrow(NotImplementedHttpError);
       await expect(result).rejects.toThrow('Unsupported content type fake/data');
     });
+
+    it('supports custom types.', async(): Promise<void> => {
+      const customMapper = new ExtensionBasedMapper(base, rootFilepath, { cstm: 'text/custom' });
+      await expect(customMapper.mapUrlToFilePath({ path: `${base}test.cstm` }, false))
+        .resolves.toEqual({
+          identifier: { path: `${base}test.cstm` },
+          filePath: `${rootFilepath}test.cstm`,
+          contentType: 'text/custom',
+          isMetadata: false,
+        });
+    });
+
+    it('supports custom extensions.', async(): Promise<void> => {
+      const customMapper = new ExtensionBasedMapper(base, rootFilepath, { cstm: 'text/custom' });
+      await expect(customMapper.mapUrlToFilePath({ path: `${base}test` }, false, 'text/custom'))
+        .resolves.toEqual({
+          identifier: { path: `${base}test` },
+          filePath: `${rootFilepath}test$.cstm`,
+          contentType: 'text/custom',
+          isMetadata: false,
+        });
+    });
   });
 
   describe('mapFilePathToUrl', (): void => {
@@ -179,6 +201,17 @@ describe('An ExtensionBasedMapper', (): void => {
         contentType: 'application/octet-stream',
         isMetadata: false,
       });
+    });
+
+    it('supports custom extensions.', async(): Promise<void> => {
+      const customMapper = new ExtensionBasedMapper(base, rootFilepath, { cstm: 'text/custom' });
+      await expect(customMapper.mapFilePathToUrl(`${rootFilepath}test$.cstm`, false))
+        .resolves.toEqual({
+          identifier: { path: `${base}test` },
+          filePath: `${rootFilepath}test$.cstm`,
+          contentType: 'text/custom',
+          isMetadata: false,
+        });
     });
   });
 
