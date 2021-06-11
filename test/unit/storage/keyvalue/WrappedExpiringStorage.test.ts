@@ -154,7 +154,7 @@ describe('A WrappedExpiringStorage', (): void => {
       yield* data;
     });
 
-    expect(storage.finalize()).toBeUndefined();
+    await expect(storage.finalize()).resolves.toBeUndefined();
 
     // Make sure clearInterval was called with the interval timer
     expect(mockClear.mock.calls).toHaveLength(1);
