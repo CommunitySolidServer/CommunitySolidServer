@@ -3,6 +3,7 @@ import type { RedisClient } from 'redis';
 import { createClient } from 'redis';
 import type { Lock } from 'redlock';
 import Redlock from 'redlock';
+import type { Finalizable } from '../../init/final/Finalizable';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
@@ -37,7 +38,7 @@ const defaultRedlockConfig = {
  *    in that sense it is kind of multithreaded.
  *  - Redlock does not provide the ability to see which locks have expired
  */
-export class RedisResourceLocker implements ResourceLocker {
+export class RedisResourceLocker implements ResourceLocker, Finalizable {
   protected readonly logger = getLoggerFor(this);
 
   private readonly redlock: Redlock;
@@ -100,10 +101,13 @@ export class RedisResourceLocker implements ResourceLocker {
   public async finalize(): Promise<void> {
     // This for loop is an extra failsafe,
     // this extra code won't slow down anything, this function will only be called to shut down in peace
-    for (const [ , { lock }] of this.lockMap.entries()) {
-      await this.release({ path: lock.resource });
+    try {
+      for (const [ , { lock }] of this.lockMap.entries()) {
+        await this.release({ path: lock.resource });
+      }
+    } finally {
+      await this.redlock.quit();
     }
-    await this.redlock.quit();
   }
 
   public async acquire(identifier: ResourceIdentifier): Promise<void> {
