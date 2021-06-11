@@ -3,7 +3,6 @@ import { ComponentsManager } from 'componentsjs';
 import * as rimraf from 'rimraf';
 import { joinFilePath } from '../../src/util/PathUtil';
 
-export const BASE = 'http://test.com';
 let cachedModuleState: IModuleState;
 
 /**
@@ -41,4 +40,14 @@ export function getTestFolder(name: string): string {
 
 export function removeFolder(folder: string): void {
   rimraf.sync(folder, { glob: false });
+}
+
+export function getDefaultVariables(port: number, baseUrl?: string): Record<string, any> {
+  return {
+    'urn:solid-server:default:variable:baseUrl': baseUrl ?? `http://localhost:${port}/`,
+    'urn:solid-server:default:variable:port': port,
+    'urn:solid-server:default:variable:loggingLevel': 'off',
+    'urn:solid-server:default:variable:showStackTrace': true,
+    'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
+  };
 }

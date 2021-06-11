@@ -6,10 +6,24 @@ import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
 import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
-import type { Initializer } from './Initializer';
-
+import type { App } from './App';
 export class AppRunner {
   private readonly logger = getLoggerFor(this);
+
+  /**
+   * Generic function for getting the app object to start the server from JavaScript for a given config.
+   * @param loaderProperties - Components.js loader properties.
+   * @param configFile - Path to the server config file.
+   * @param variableParams - Variables to pass into the config file.
+   */
+  public async getApp(
+    loaderProperties: IComponentsManagerBuilderOptions<App>,
+    configFile: string,
+    variableParams: ConfigVariables,
+  ): Promise<App> {
+    const variables = this.createVariables(variableParams);
+    return this.createApp(loaderProperties, configFile, variables);
+  }
 
   /**
    * Generic run function for starting the server from JavaScript for a given config.
@@ -18,13 +32,12 @@ export class AppRunner {
    * @param variableParams - Variables to pass into the config file.
    */
   public async run(
-    loaderProperties: IComponentsManagerBuilderOptions<Initializer>,
+    loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
     variableParams: ConfigVariables,
   ): Promise<void> {
-    const variables = this.createVariables(variableParams);
-    const initializer = await this.createInitializer(loaderProperties, configFile, variables);
-    await initializer.handleSafe();
+    const app = await this.getApp(loaderProperties, configFile, variableParams);
+    await app.start();
   }
 
   /**
@@ -74,18 +87,17 @@ export class AppRunner {
       .help();
 
     // Gather settings for instantiating the server
-    const loaderProperties: IComponentsManagerBuilderOptions<Initializer> = {
+    const loaderProperties: IComponentsManagerBuilderOptions<App> = {
       mainModulePath: this.resolveFilePath(params.mainModulePath),
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
     const configFile = this.resolveFilePath(params.config, 'config/default.json');
-    const variables = this.createVariables(params);
 
     // Create and execute the server initializer
-    this.createInitializer(loaderProperties, configFile, variables)
+    this.getApp(loaderProperties, configFile, params)
       .then(
-        async(initializer): Promise<void> => initializer.handleSafe(),
+        async(app): Promise<void> => app.start(),
         (error: Error): void => {
           // Instantiation of components has failed, so there is no logger to use
           stderr.write(`Error: could not instantiate server from ${configFile}\n`);
@@ -93,7 +105,7 @@ export class AppRunner {
           process.exit(1);
         },
       ).catch((error): void => {
-        this.logger.error(`Could not initialize server: ${error}`, { error });
+        this.logger.error(`Could not start server: ${error}`, { error });
         process.exit(1);
       });
   }
@@ -131,14 +143,14 @@ export class AppRunner {
   /**
    * Creates the server initializer
    */
-  protected async createInitializer(
-    componentsProperties: IComponentsManagerBuilderOptions<Initializer>,
+  protected async createApp(
+    componentsProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
     variables: Record<string, any>,
-  ): Promise<Initializer> {
+  ): Promise<App> {
     const componentsManager = await ComponentsManager.build(componentsProperties);
 
-    const initializer = 'urn:solid-server:default:Initializer';
+    const initializer = 'urn:solid-server:default:App';
     await componentsManager.configRegistry.register(configFile);
     return await componentsManager.instantiate(initializer, { variables });
   }

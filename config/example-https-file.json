@@ -1,6 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/app/app/default.json",
+    "files-scs:config/app/init/default.json",
     "files-scs:config/http/handler/default.json",
     "files-scs:config/http/middleware/websockets.json",
 
@@ -8,7 +10,6 @@
     "files-scs:config/identity/email/default.json",
     "files-scs:config/identity/handler/default.json",
     "files-scs:config/identity/ownership/token.json",
-    "files-scs:config/init/handler/default.json",
     "files-scs:config/ldp/authentication/dpop-bearer.json",
     "files-scs:config/ldp/authorization/webacl.json",
     "files-scs:config/ldp/handler/default.json",

@@ -1,37 +1,31 @@
-import type { Server } from 'http';
 import fetch from 'cross-fetch';
 import WebSocket from 'ws';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
+import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
-import { getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
 const port = getPort('WebSocketsProtocol');
 const serverUrl = `http://localhost:${port}/`;
 const headers = { forwarded: 'host=example.pod;proto=https' };
 
 describe('A server with the Solid WebSockets API behind a proxy', (): void => {
-  let server: Server;
+  let app: App;
 
   beforeAll(async(): Promise<void> => {
-    const factory = await instantiateFromConfig(
-      'urn:solid-server:default:ServerFactory',
+    app = await instantiateFromConfig(
+      'urn:solid-server:default:App',
       getTestConfigPath('server-without-auth.json'),
-      {
-        'urn:solid-server:default:variable:baseUrl': 'https://example.pod/',
-        'urn:solid-server:default:variable:showStackTrace': true,
-      },
-    ) as HttpServerFactory;
-    server = factory.startServer(port);
+      getDefaultVariables(port, 'https://example.pod/'),
+    ) as App;
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    await new Promise<void>((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
-  it('returns a 404 if no data was initialized.', async(): Promise<void> => {
-    const response = await fetch(serverUrl, { headers });
+  it('returns a 404 if there is no data.', async(): Promise<void> => {
+    const response = await fetch(`${serverUrl}foo`, { headers });
     expect(response.status).toBe(404);
   });
 

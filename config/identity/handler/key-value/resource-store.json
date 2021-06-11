@@ -14,6 +14,11 @@
       "@id": "urn:solid-server:default:ExpiringIdpStorage",
       "@type": "WrappedExpiringStorage",
       "source": { "@id": "urn:solid-server:default:IdpStorage" }
+    },
+    {
+      "comment": "Makes sure the expiring storage cleanup timer is stopped when the application needs to stop.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "ParallelFinalizer:_finalizers": [ { "@id": "urn:solid-server:default:ExpiringIdpStorage" } ]
     }
   ]
 }

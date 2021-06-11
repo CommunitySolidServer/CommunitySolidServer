@@ -15,9 +15,6 @@ import type { ReadWriteLocker } from '../../src/util/locking/ReadWriteLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
-import { BASE } from './Config';
-
-// The modern fake timers implementation blocks certain parts with the current setup
 jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
@@ -44,7 +41,7 @@ describe('A LockingResourceStore', (): void => {
     );
 
     // Initialize store
-    const initializer = new RootContainerInitializer({ store: source, baseUrl: BASE });
+    const initializer = new RootContainerInitializer({ store: source, baseUrl: base });
     await initializer.handleSafe();
 
     locker = new EqualReadWriteLocker(new SingleThreadedResourceLocker());

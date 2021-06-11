@@ -1,12 +1,15 @@
-import type { Server } from 'http';
 import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
-import type { Initializer } from '../../src/init/Initializer';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
-import { joinFilePath } from '../../src/util/PathUtil';
+import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
-import { getPresetConfigPath, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
+import {
+  getDefaultVariables,
+  getPresetConfigPath,
+  getTestConfigPath,
+  getTestFolder,
+  instantiateFromConfig,
+  removeFolder,
+} from './Config';
 
 const port = getPort('Subdomains');
 const baseUrl = `http://localhost:${port}/`;
@@ -25,23 +28,18 @@ const stores: [string, any][] = [
 
 // Simulating subdomains using the forwarded header so no DNS changes are required
 describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardown }): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let factory: HttpServerFactory;
-  let expiringStorage: WrappedExpiringStorage<any, any>;
+  let app: App;
   const settings = { podName: 'alice', webId: 'http://test.com/#alice', email: 'alice@test.email', createPod: true };
   const podHost = `alice.localhost:${port}`;
   const podUrl = `http://${podHost}/`;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
+      ...getDefaultVariables(port, baseUrl),
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
-      'urn:solid-server:default:variable:showStackTrace': true,
-      'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
     };
 
-    // Create and initialize the server
+    // Create and start the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
@@ -50,18 +48,14 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       ],
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer, expiringStorage } = instances);
+    ({ app } = instances);
 
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    await app.start();
   });
 
   afterAll(async(): Promise<void> => {
-    expiringStorage.finalize();
-    await new Promise((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
     await teardown();
+    await app.stop();
   });
 
   describe('handling resources', (): void => {

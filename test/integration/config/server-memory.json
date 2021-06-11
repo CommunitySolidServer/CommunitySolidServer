@@ -1,6 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^0.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/app/app/default.json",
+    "files-scs:config/app/init/default.json",
     "files-scs:config/http/handler/default.json",
     "files-scs:config/http/middleware/websockets.json",
     "files-scs:config/http/server-factory/websockets.json",
@@ -8,7 +10,6 @@
     "files-scs:config/identity/handler/default.json",
     "files-scs:config/identity/ownership/token.json",
     "files-scs:config/identity/pod/static.json",
-    "files-scs:config/init/handler/default.json",
     "files-scs:config/ldp/authentication/dpop-bearer.json",
     "files-scs:config/ldp/authorization/webacl.json",
     "files-scs:config/ldp/handler/default.json",
@@ -31,18 +32,8 @@
       "@type": "RecordObject",
       "RecordObject:_record": [
         {
-          "comment": "Only use the parallel initializer. Starting the server is done in the test code..",
-          "RecordObject:_record_key": "initializer",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ParallelInitializer" }
-        },
-        {
-          "RecordObject:_record_key": "factory",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ServerFactory" }
-        },
-        {
-          "comment": "Timer needs to be stopped when tests are finished.",
-          "RecordObject:_record_key": "expiringStorage",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
+          "RecordObject:_record_key": "app",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
         }
       ]
     },

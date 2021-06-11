@@ -1,17 +1,13 @@
-import type { Server } from 'http';
 import { stringify } from 'querystring';
 import { URL } from 'url';
 import { load } from 'cheerio';
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import urljoin from 'url-join';
-import type { Initializer } from '../../src/init/Initializer';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
-import type { WrappedExpiringStorage } from '../../src/storage/keyvalue/WrappedExpiringStorage';
+import type { App } from '../../src/init/App';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
-import { joinFilePath } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
-import { getTestConfigPath, instantiateFromConfig } from './Config';
+import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 import { IdentityTestState } from './IdentityTestState';
 
 const port = getPort('Identity');
@@ -39,10 +35,7 @@ async function postForm(url: string, formBody: string): Promise<Response> {
 // This is why the redirects are handled manually.
 // We also need to parse the HTML in several steps since there is no API.
 describe('A Solid server with IDP', (): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let expiringStorage: WrappedExpiringStorage<any, any>;
-  let factory: HttpServerFactory;
+  let app: App;
   const redirectUrl = 'http://mockedredirect/';
   const oidcIssuer = baseUrl;
   const card = urljoin(baseUrl, 'profile/card');
@@ -61,15 +54,10 @@ describe('A Solid server with IDP', (): void => {
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       getTestConfigPath('server-memory.json'),
-      {
-        'urn:solid-server:default:variable:baseUrl': baseUrl,
-        'urn:solid-server:default:variable:showStackTrace': true,
-        'urn:solid-server:default:variable:idpTemplateFolder': joinFilePath(__dirname, '../../templates/idp'),
-      },
+      getDefaultVariables(port, baseUrl),
     ) as Record<string, any>;
-    ({ factory, initializer, expiringStorage } = instances);
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    ({ app } = instances);
+    await app.start();
 
     // Create a simple webId
     const turtle = `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${baseUrl}> .`;
@@ -81,10 +69,7 @@ describe('A Solid server with IDP', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
-    expiringStorage.finalize();
-    await new Promise<void>((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   describe('doing registration', (): void => {

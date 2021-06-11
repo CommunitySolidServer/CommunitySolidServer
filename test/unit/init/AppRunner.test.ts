@@ -1,14 +1,14 @@
 import { ComponentsManager } from 'componentsjs';
+import type { App } from '../../../src/init/App';
 import { AppRunner } from '../../../src/init/AppRunner';
-import type { Initializer } from '../../../src/init/Initializer';
 import { joinFilePath } from '../../../src/util/PathUtil';
 
-const initializer: jest.Mocked<Initializer> = {
-  handleSafe: jest.fn(),
+const app: jest.Mocked<App> = {
+  start: jest.fn(),
 } as any;
 
-const manager: jest.Mocked<ComponentsManager<Initializer>> = {
-  instantiate: jest.fn(async(): Promise<Initializer> => initializer),
+const manager: jest.Mocked<ComponentsManager<App>> = {
+  instantiate: jest.fn(async(): Promise<App> => app),
   configRegistry: {
     register: jest.fn(),
   },
@@ -17,7 +17,7 @@ const manager: jest.Mocked<ComponentsManager<Initializer>> = {
 jest.mock('componentsjs', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   ComponentsManager: {
-    build: jest.fn(async(): Promise<ComponentsManager<Initializer>> => manager),
+    build: jest.fn(async(): Promise<ComponentsManager<App>> => manager),
   },
 }));
 
@@ -60,7 +60,7 @@ describe('AppRunner', (): void => {
         .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
       expect(manager.instantiate).toHaveBeenCalledTimes(1);
       expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:Initializer',
+        'urn:solid-server:default:App',
         {
           variables: {
             'urn:solid-server:default:variable:port': 3000,
@@ -74,8 +74,8 @@ describe('AppRunner', (): void => {
           },
         },
       );
-      expect(initializer.handleSafe).toHaveBeenCalledTimes(1);
-      expect(initializer.handleSafe).toHaveBeenCalledWith();
+      expect(app.start).toHaveBeenCalledTimes(1);
+      expect(app.start).toHaveBeenCalledWith();
     });
   });
 
@@ -85,7 +85,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -101,7 +101,7 @@ describe('AppRunner', (): void => {
         .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
       expect(manager.instantiate).toHaveBeenCalledTimes(1);
       expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:Initializer',
+        'urn:solid-server:default:App',
         {
           variables: {
             'urn:solid-server:default:variable:port': 3000,
@@ -115,8 +115,8 @@ describe('AppRunner', (): void => {
           },
         },
       );
-      expect(initializer.handleSafe).toHaveBeenCalledTimes(1);
-      expect(initializer.handleSafe).toHaveBeenCalledWith();
+      expect(app.start).toHaveBeenCalledTimes(1);
+      expect(app.start).toHaveBeenCalledWith();
     });
 
     it('accepts abbreviated flags.', async(): Promise<void> => {
@@ -136,7 +136,7 @@ describe('AppRunner', (): void => {
         ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -150,7 +150,7 @@ describe('AppRunner', (): void => {
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
       expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:Initializer',
+        'urn:solid-server:default:App',
         {
           variables: {
             'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
@@ -183,7 +183,7 @@ describe('AppRunner', (): void => {
         ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -197,7 +197,7 @@ describe('AppRunner', (): void => {
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
       expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:Initializer',
+        'urn:solid-server:default:App',
         {
           variables: {
             'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
@@ -231,7 +231,7 @@ describe('AppRunner', (): void => {
 
       new AppRunner().runCli();
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -245,7 +245,7 @@ describe('AppRunner', (): void => {
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith('/var/cwd/myconfig.json');
       expect(manager.instantiate).toHaveBeenCalledWith(
-        'urn:solid-server:default:Initializer',
+        'urn:solid-server:default:App',
         {
           variables: {
             'urn:solid-server:default:variable:baseUrl': 'http://pod.example/',
@@ -269,7 +269,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -285,12 +285,12 @@ describe('AppRunner', (): void => {
     });
 
     it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
-      initializer.handleSafe.mockRejectedValueOnce(new Error('Fatal'));
+      app.start.mockRejectedValueOnce(new Error('Fatal'));
       new AppRunner().runCli({
         argv: [ 'node', 'script' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -305,7 +305,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script', '--foo' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -320,7 +320,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script', '-s' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -335,7 +335,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });
@@ -350,7 +350,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script', '-l', 'info', '-l', 'debug' ],
       });
 
-      // Wait until initializer has been called, because we can't await AppRunner.run.
+      // Wait until app.start has been called, because we can't await AppRunner.run.
       await new Promise((resolve): void => {
         setImmediate(resolve);
       });

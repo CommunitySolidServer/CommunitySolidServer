@@ -1,8 +1,12 @@
-# Init
-Options related to the server initialization.
-This is the entry point to the main server setup.
+# App
+Options related to the server startup.
 
-## Handler
+## Base
+This is the entry point to the main server setup.
+* *default*: The main application. This should only be changed/replaced 
+             if you want to start from a different kind of class.
+
+## Init
 Contains a list of initializer that need to be run when starting the server.
 For example, when acl authorization is used,
 an initializer will be added that makes sure there is an acl file in the root.

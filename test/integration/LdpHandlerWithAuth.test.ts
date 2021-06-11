@@ -1,12 +1,11 @@
-import type { Server } from 'http';
 import fetch from 'cross-fetch';
-import type { Initializer, ResourceStore } from '../../src/';
+import type { ResourceStore, App } from '../../src/';
 import { BasicRepresentation } from '../../src/';
-import type { HttpServerFactory } from '../../src/server/HttpServerFactory';
 import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
 import {
+  getDefaultVariables,
   getPresetConfigPath,
   getTestConfigPath,
   getTestFolder,
@@ -30,21 +29,18 @@ const stores: [string, any][] = [
 ];
 
 describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig, teardown }): void => {
-  let server: Server;
-  let initializer: Initializer;
-  let factory: HttpServerFactory;
+  let app: App;
   let store: ResourceStore;
   let aclHelper: AclHelper;
   const permanent = `${baseUrl}document.txt`;
 
   beforeAll(async(): Promise<void> => {
-    const variables: Record<string, any> = {
-      'urn:solid-server:default:variable:baseUrl': baseUrl,
-      'urn:solid-server:default:variable:showStackTrace': true,
+    const variables = {
+      ...getDefaultVariables(port, baseUrl),
       'urn:solid-server:default:variable:rootFilePath': rootFilePath,
     };
 
-    // Create and initialize the server
+    // Create and start the server
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
@@ -53,10 +49,9 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
       ],
       variables,
     ) as Record<string, any>;
-    ({ factory, initializer, store } = instances);
+    ({ app, store } = instances);
 
-    await initializer.handleSafe();
-    server = factory.startServer(port);
+    await app.start();
 
     // Create test helper for manipulating acl
     aclHelper = new AclHelper(store);
@@ -75,9 +70,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
   afterAll(async(): Promise<void> => {
     await teardown();
-    await new Promise((resolve, reject): void => {
-      server.close((error): void => error ? reject(error) : resolve());
-    });
+    await app.stop();
   });
 
   it('can add a document, read it and delete it if allowed.', async(): Promise<void> => {
