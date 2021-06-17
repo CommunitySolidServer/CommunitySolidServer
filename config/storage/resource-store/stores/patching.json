@@ -5,7 +5,6 @@
       "comment": "Allows for PATCH operations on stores that don't have native support.",
       "@id": "urn:solid-server:default:ResourceStore_Patching",
       "@type": "PatchingStore",
-      "source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
       "patcher": {
         "@id": "urn:solid-server:default:PatchHandler",
         "@type": "SparqlUpdatePatchHandler",
