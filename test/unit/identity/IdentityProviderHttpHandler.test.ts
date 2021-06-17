@@ -26,6 +26,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     provider = {
       callback: jest.fn(),
+      use: jest.fn(),
     } as any;
 
     providerFactory = {
@@ -54,6 +55,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     (interactionHttpHandler.canHandle as jest.Mock).mockRejectedValueOnce(new Error('error!'));
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(provider.callback).toHaveBeenCalledTimes(1);
+    expect(provider.use).toHaveBeenCalledTimes(1);
     expect(provider.callback).toHaveBeenLastCalledWith(request, response);
     expect(interactionHttpHandler.handle).toHaveBeenCalledTimes(0);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(0);
