@@ -26,9 +26,17 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { addResourceMetadata } from '../util/ResourceUtil';
-import { CONTENT_TYPE, DC, SOLID_HTTP, LDP, POSIX, PIM, RDF, VANN, XSD } from '../util/Vocabularies';
+import { CONTENT_TYPE, DC, SOLID_HTTP, LDP, POSIX, PIM, PREFERRED_PREFIX_TERM, RDF, XSD } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
+
+// These are used to prettify container serializations
+const preferredNamespaces = {
+  dc: DC.terms.namespace,
+  ldp: LDP.terms.namespace,
+  posix: POSIX.terms.namespace,
+  xsd: XSD.terms.namespace,
+};
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -104,10 +112,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
       // Generate a container representation from the metadata
       const data = metadata.quads();
-      metadata.addQuad(DC.terms.namespace, VANN.terms.preferredNamespacePrefix, 'dc');
-      metadata.addQuad(LDP.terms.namespace, VANN.terms.preferredNamespacePrefix, 'ldp');
-      metadata.addQuad(POSIX.terms.namespace, VANN.terms.preferredNamespacePrefix, 'posix');
-      metadata.addQuad(XSD.terms.namespace, VANN.terms.preferredNamespacePrefix, 'xsd');
+
+      // Add metadata to prettify serializations
+      for (const [ prefix, namespace ] of Object.entries(preferredNamespaces)) {
+        metadata.addQuad(namespace, PREFERRED_PREFIX_TERM, prefix);
+      }
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
     } else {
       // Retrieve a document representation from the accessor
@@ -356,6 +365,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Input content type doesn't matter anymore
     representation.metadata.removeAll(CONTENT_TYPE);
+
+    // Remove preferred prefixes since these get added when requesting the container
+    for (const [ prefix, namespace ] of Object.entries(preferredNamespaces)) {
+      representation.metadata.removeQuad(namespace, PREFERRED_PREFIX_TERM, prefix);
+    }
 
     // Container data is stored in the metadata
     representation.metadata.addQuads(quads);

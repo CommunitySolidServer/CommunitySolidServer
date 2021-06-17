@@ -21,9 +21,8 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
+import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, PREFERRED_PREFIX_TERM, DC } from '../../../src/util/Vocabularies';
+const { literal, namedNode, quad } = DataFactory;
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -179,6 +178,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: false });
       expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
+      expect(result.metadata.quads(DC.terms.namespace, PREFERRED_PREFIX_TERM, literal('dc'))).toHaveLength(1);
       expect(result.metadata.get('AUXILIARY')?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
@@ -383,6 +383,8 @@ describe('A DataAccessorBasedStore', (): void => {
         { path: 'http://test.com/resource' },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.quads(DC.terms.namespace, PREFERRED_PREFIX_TERM, literal('dc')))
+        .toHaveLength(0);
     });
 
     it('can write containers.', async(): Promise<void> => {
