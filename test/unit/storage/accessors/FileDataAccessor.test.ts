@@ -182,6 +182,11 @@ describe('A FileDataAccessor', (): void => {
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
       metadata.add(RDF.type, LDP.terms.Resource);
+      metadata.add(RDF.type, LDP.terms.Container);
+      metadata.add(RDF.type, LDP.terms.BasicContainer);
+      metadata.add(DC.terms.modified, '123');
+      metadata.add(POSIX.terms.mtime, '123');
+      metadata.add(POSIX.terms.size, '123');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
       expect(cache.data['resource.meta']).toBeUndefined();

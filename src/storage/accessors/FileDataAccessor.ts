@@ -15,7 +15,7 @@ import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
+import { DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -61,10 +61,10 @@ export class FileDataAccessor implements DataAccessor {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier);
     const stats = await this.getStats(link.filePath);
     if (!isContainerIdentifier(identifier) && stats.isFile()) {
-      return this.getFileMetadata(link, stats);
+      return this.getBaseMetadata(link, stats);
     }
     if (isContainerIdentifier(identifier) && stats.isDirectory()) {
-      return this.getDirectoryMetadata(link, stats);
+      return this.getBaseMetadata(link, stats);
     }
     throw new NotFoundHttpError();
   }
@@ -177,31 +177,6 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   /**
-   * Reads and generates all metadata relevant for the given file,
-   * ingesting it into a RepresentationMetadata object.
-   *
-   * @param link - Path related metadata.
-   * @param stats - Stats object of the corresponding file.
-   */
-  private async getFileMetadata(link: ResourceLink, stats: Stats):
-  Promise<RepresentationMetadata> {
-    return (await this.getBaseMetadata(link, stats, false))
-      .set(CONTENT_TYPE, link.contentType);
-  }
-
-  /**
-   * Reads and generates all metadata relevant for the given directory,
-   * ingesting it into a RepresentationMetadata object.
-   *
-   * @param link - Path related metadata.
-   * @param stats - Stats object of the corresponding directory.
-   */
-  private async getDirectoryMetadata(link: ResourceLink, stats: Stats):
-  Promise<RepresentationMetadata> {
-    return await this.getBaseMetadata(link, stats, true);
-  }
-
-  /**
    * Writes the metadata of the resource to a meta file.
    * @param link - Path related metadata of the resource.
    * @param metadata - Metadata to write.
@@ -209,11 +184,9 @@ export class FileDataAccessor implements DataAccessor {
    * @returns True if data was written to a file.
    */
   private async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
-    // These are stored by file system conventions
-    metadata.remove(RDF.type, LDP.terms.Resource);
-    metadata.remove(RDF.type, LDP.terms.Container);
-    metadata.remove(RDF.type, LDP.terms.BasicContainer);
-    metadata.removeAll(CONTENT_TYPE);
+    // Clear all metadata that gets added automatically when calling `getMetadata`
+    this.clearGeneratedMetadata(metadata);
+
     const quads = metadata.quads();
     const metadataLink = await this.getMetadataLink(link.identifier);
     let wroteMetadata: boolean;
@@ -244,14 +217,12 @@ export class FileDataAccessor implements DataAccessor {
    * Generates metadata relevant for any resources stored by this accessor.
    * @param link - Path related metadata.
    * @param stats - Stats objects of the corresponding directory.
-   * @param isContainer - If the path points to a container (directory) or not.
    */
-  private async getBaseMetadata(link: ResourceLink, stats: Stats, isContainer: boolean):
-  Promise<RepresentationMetadata> {
+  private async getBaseMetadata(link: ResourceLink, stats: Stats): Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(link.identifier)
       .addQuads(await this.getRawMetadata(link.identifier));
-    addResourceMetadata(metadata, isContainer);
-    this.addPosixMetadata(metadata, stats);
+    this.addGeneratedMetadata(metadata, stats);
+    metadata.contentType = link.contentType;
     return metadata;
   }
 
@@ -307,23 +278,38 @@ export class FileDataAccessor implements DataAccessor {
       // Generate metadata of this specific child
       const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
       const metadata = new RepresentationMetadata(childLink.identifier);
-      addResourceMetadata(metadata, childStats.isDirectory());
-      this.addPosixMetadata(metadata, childStats);
+      this.addGeneratedMetadata(metadata, childStats);
       yield metadata;
     }
   }
 
   /**
    * Helper function to add file system related metadata.
-   * @param metadata - metadata object to add to
+   * @param metadata - Metadata object to add to.
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
-  private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
+  private addGeneratedMetadata(metadata: RepresentationMetadata, stats: Stats): void {
+    addResourceMetadata(metadata, stats.isDirectory());
     metadata.add(DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
     metadata.add(POSIX.terms.mtime, toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer));
     if (!stats.isDirectory()) {
       metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
     }
+  }
+
+  /**
+   * Clears all metadata that is stored by the file system itself.
+   * @param metadata - Metadata to clean up.
+   */
+  private clearGeneratedMetadata(metadata: RepresentationMetadata): void {
+    // Setting subject to null so we also clear the corresponding child metadata for containers
+    metadata.removeQuads(metadata.quads(null, RDF.terms.type, LDP.terms.Resource));
+    metadata.removeQuads(metadata.quads(null, RDF.terms.type, LDP.terms.Container));
+    metadata.removeQuads(metadata.quads(null, RDF.terms.type, LDP.terms.BasicContainer));
+    metadata.removeQuads(metadata.quads(null, DC.terms.modified));
+    metadata.removeQuads(metadata.quads(null, POSIX.terms.mtime));
+    metadata.removeQuads(metadata.quads(null, POSIX.terms.size));
+    metadata.contentType = undefined;
   }
 
   /**
