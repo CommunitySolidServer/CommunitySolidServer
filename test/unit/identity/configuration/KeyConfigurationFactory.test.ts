@@ -43,6 +43,9 @@ function getExpected(adapter: any, cookieKeys: any, jwks: any): any {
       token: '/foo/idp/token',
       userinfo: '/foo/idp/me',
     },
+    discovery: {
+      solid_oidc_supported: 'https://solidproject.org/TR/solid-oidc',
+    },
   };
 }
 

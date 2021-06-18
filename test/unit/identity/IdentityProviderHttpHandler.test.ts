@@ -26,7 +26,6 @@ describe('An IdentityProviderHttpHandler', (): void => {
   beforeEach(async(): Promise<void> => {
     provider = {
       callback: jest.fn(),
-      use: jest.fn(),
     } as any;
 
     providerFactory = {
@@ -55,18 +54,9 @@ describe('An IdentityProviderHttpHandler', (): void => {
     (interactionHttpHandler.canHandle as jest.Mock).mockRejectedValueOnce(new Error('error!'));
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(provider.callback).toHaveBeenCalledTimes(1);
-    expect(provider.use).toHaveBeenCalledTimes(1);
     expect(provider.callback).toHaveBeenLastCalledWith(request, response);
     expect(interactionHttpHandler.handle).toHaveBeenCalledTimes(0);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('should add solid_oidc_supported to the response.', async(): Promise<void> => {
-    (interactionHttpHandler.canHandle as jest.Mock).mockRejectedValueOnce(new Error('error!'));
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    await (provider.use as jest.Mock).mock.calls[0][0]({ response }, jest.fn());
-    expect(provider.use).toHaveBeenCalledTimes(1);
-    expect((response as any).body.solid_oidc_supported).toEqual('https://solidproject.org/TR/solid-oidc');
   });
 
   it('calls the interaction handler if it can handle the input.', async(): Promise<void> => {

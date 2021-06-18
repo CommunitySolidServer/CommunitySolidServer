@@ -69,12 +69,6 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       await this.interactionHttpHandler.canHandle({ ...input, provider });
     } catch {
       this.logger.debug(`Sending request to oidc-provider: ${input.request.url}`);
-      provider.use(async(ctx, next): Promise<void> => {
-        // eslint-disable-next-line callback-return
-        await next();
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        ctx.response.body = { ...ctx.response.body, solid_oidc_supported: 'https://solidproject.org/TR/solid-oidc' };
-      });
       return provider.callback(input.request, input.response);
     }
 

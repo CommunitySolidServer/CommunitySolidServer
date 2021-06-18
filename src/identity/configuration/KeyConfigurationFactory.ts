@@ -128,6 +128,9 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
         token: this.createRoute('token'),
         userinfo: this.createRoute('me'),
       },
+      discovery: {
+        solid_oidc_supported: 'https://solidproject.org/TR/solid-oidc',
+      },
     };
   }
 }
