@@ -334,4 +334,14 @@ describe('A Solid server with IDP', (): void => {
       expect(res.status).toBe(205);
     });
   });
+
+  describe('openid-configuration', (): void => {
+    it('should contain solid_oidc_supported key.', async(): Promise<void> => {
+      const res = await fetch(`${baseUrl}.well-known/openid-configuration`);
+      const jsonBody = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(jsonBody.solid_oidc_supported).toEqual('https://solidproject.org/TR/solid-oidc');
+    });
+  });
 });
