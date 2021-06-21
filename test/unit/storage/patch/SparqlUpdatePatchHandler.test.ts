@@ -15,13 +15,13 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
-  let converter: RepresentationConverter;
+  let converter: jest.Mocked<RepresentationConverter>;
   let handler: SparqlUpdatePatchHandler;
-  let source: ResourceStore;
+  let source: jest.Mocked<ResourceStore>;
   let startQuads: Quad[];
-  const dummyType = 'internal/not-quads';
+  const defaultType = 'internal/not-quads';
   const identifier = { path: 'http://test.com/foo' };
-  const fullfilledDataInsert = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 . }';
+  const fulfilledDataInsert = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 . }';
 
   beforeEach(async(): Promise<void> => {
     startQuads = [ quad(
@@ -37,17 +37,14 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     converter = {
       handleSafe: jest.fn(async({ representation, preferences }: RepresentationConverterArgs): Promise<any> =>
         new BasicRepresentation(representation.data, Object.keys(preferences.type!)[0])),
-    } as unknown as RepresentationConverter;
+    } as any;
 
     source = {
-      getRepresentation: jest.fn(async(): Promise<any> => new BasicRepresentation(startQuads, dummyType)),
+      getRepresentation: jest.fn(async(): Promise<any> => new BasicRepresentation(startQuads, defaultType)),
       setRepresentation: jest.fn(),
-      modifyResource: jest.fn(async(): Promise<any> => {
-        throw new Error('noModify');
-      }),
-    } as unknown as ResourceStore;
+    } as any;
 
-    handler = new SparqlUpdatePatchHandler(converter, dummyType);
+    handler = new SparqlUpdatePatchHandler(converter, defaultType);
   });
 
   async function basicChecks(quads: Quad[]): Promise<boolean> {
@@ -55,24 +52,24 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     expect(source.getRepresentation).toHaveBeenLastCalledWith(identifier, { });
     expect(converter.handleSafe).toHaveBeenCalledTimes(2);
     expect(converter.handleSafe).toHaveBeenCalledWith({
-      representation: await (source.getRepresentation as jest.Mock).mock.results[0].value,
+      representation: await source.getRepresentation.mock.results[0].value,
       identifier,
       preferences: { type: { [INTERNAL_QUADS]: 1 }},
     });
     expect(converter.handleSafe).toHaveBeenLastCalledWith({
       representation: expect.objectContaining({ binary: false, metadata: expect.any(RepresentationMetadata) }),
       identifier,
-      preferences: { type: { [dummyType]: 1 }},
+      preferences: { type: { [defaultType]: 1 }},
     });
 
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
+    const setParams = source.setRepresentation.mock.calls[0];
     expect(setParams[0]).toEqual(identifier);
     expect(setParams[1]).toEqual(expect.objectContaining({
       binary: true,
       metadata: expect.any(RepresentationMetadata),
     }));
-    expect(setParams[1].metadata.contentType).toEqual(dummyType);
+    expect(setParams[1].metadata.contentType).toEqual(defaultType);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
     return true;
   }
@@ -101,7 +98,7 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('handles INSERT DATA updates.', async(): Promise<void> => {
-    await handle(fullfilledDataInsert);
+    await handle(fulfilledDataInsert);
     expect(await basicChecks(startQuads.concat(
       [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
         quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')) ],
@@ -202,15 +199,13 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   });
 
   it('throws the error returned by the store if there is one.', async(): Promise<void> => {
-    source.getRepresentation = jest.fn(async(): Promise<any> => {
-      throw new Error('error');
-    });
-    await expect(handle(fullfilledDataInsert)).rejects.toThrow('error');
+    source.getRepresentation.mockRejectedValueOnce(new Error('error'));
+    await expect(handle(fulfilledDataInsert)).rejects.toThrow('error');
   });
 
   it('creates a new resource if it does not exist yet.', async(): Promise<void> => {
     startQuads = [];
-    (source.getRepresentation as jest.Mock).mockRejectedValueOnce(new NotFoundHttpError());
+    source.getRepresentation.mockRejectedValueOnce(new NotFoundHttpError());
     const query = 'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }';
     await handle(query);
 
@@ -218,37 +213,26 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     expect(converter.handleSafe).toHaveBeenLastCalledWith({
       representation: expect.objectContaining({ binary: false, metadata: expect.any(RepresentationMetadata) }),
       identifier,
-      preferences: { type: { [dummyType]: 1 }},
+      preferences: { type: { [defaultType]: 1 }},
     });
 
     const quads =
       [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')) ];
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
-    expect(setParams[1].metadata.contentType).toEqual(dummyType);
+    const setParams = source.setRepresentation.mock.calls[0];
+    expect(setParams[1].metadata.contentType).toEqual(defaultType);
     await expect(arrayifyStream(setParams[1].data)).resolves.toBeRdfIsomorphic(quads);
-  });
-
-  it('can handle representations without content-type.', async(): Promise<void> => {
-    (source.getRepresentation as jest.Mock).mockResolvedValueOnce(
-      new BasicRepresentation(startQuads, new RepresentationMetadata()),
-    );
-    await handle(fullfilledDataInsert);
-    expect(await basicChecks(startQuads.concat(
-      [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-        quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')) ],
-    ))).toBe(true);
   });
 
   it('defaults to text/turtle if no default type was set.', async(): Promise<void> => {
     handler = new SparqlUpdatePatchHandler(converter);
     startQuads = [];
-    (source.getRepresentation as jest.Mock).mockRejectedValueOnce(new NotFoundHttpError());
+    source.getRepresentation.mockRejectedValueOnce(new NotFoundHttpError());
     const query = 'INSERT DATA { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1>. }';
     await handle(query);
 
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
-    const setParams = (source.setRepresentation as jest.Mock).mock.calls[0];
+    const setParams = source.setRepresentation.mock.calls[0];
     expect(setParams[1].metadata.contentType).toEqual('text/turtle');
   });
 });

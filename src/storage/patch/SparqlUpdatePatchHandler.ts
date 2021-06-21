@@ -7,34 +7,26 @@ import { Algebra } from 'sparqlalgebrajs';
 import type { Patch } from '../../ldp/http/Patch';
 import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
+import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { RepresentationConverter } from '../conversion/RepresentationConverter';
-import type { ResourceStore } from '../ResourceStore';
+import { ConvertingPatchHandler } from './ConvertingPatchHandler';
 import type { PatchHandlerArgs } from './PatchHandler';
-import { PatchHandler } from './PatchHandler';
 
 /**
- * PatchHandler that supports specific types of SPARQL updates.
- * Currently all DELETE/INSERT types are supported that have empty where bodies and no variables.
+ * Supports application/sparql-update PATCH requests on RDF resources.
  *
- * Will try to keep the content-type and metadata of the original resource intact.
- * In case this PATCH would create a new resource, it will have content-type `defaultType`.
+ * Only DELETE/INSERT updates without variables are supported.
  */
-export class SparqlUpdatePatchHandler extends PatchHandler {
+export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly converter: RepresentationConverter;
-  private readonly defaultType: string;
-
   public constructor(converter: RepresentationConverter, defaultType = 'text/turtle') {
-    super();
-    this.converter = converter;
-    this.defaultType = defaultType;
+    super(converter, INTERNAL_QUADS, defaultType);
   }
 
   public async canHandle({ patch }: PatchHandlerArgs): Promise<void> {
@@ -45,7 +37,7 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
   public async handle(input: PatchHandlerArgs): Promise<ResourceIdentifier[]> {
     // Verify the patch
-    const { source, identifier, patch } = input;
+    const { patch } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
@@ -55,7 +47,8 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
 
     this.validateUpdate(op);
 
-    return this.applyPatch(source, identifier, op);
+    // Only start conversion if we know the operation is valid
+    return super.handle(input);
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {
@@ -126,51 +119,27 @@ export class SparqlUpdatePatchHandler extends PatchHandler {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  private async applyPatch(source: ResourceStore, identifier: ResourceIdentifier, op: Algebra.Operation):
-  Promise<ResourceIdentifier[]> {
-    // These are used to make sure we keep the original content-type and metadata
-    let contentType: string;
+  protected async patch(input: PatchHandlerArgs, representation?: Representation): Promise<Representation> {
+    const { identifier, patch } = input;
+    const result = new Store<BaseQuad>();
     let metadata: RepresentationMetadata;
 
-    const result = new Store<BaseQuad>();
-    try {
-      // Read the quads of the current representation
-      const representation = await source.getRepresentation(identifier, {});
-      contentType = representation.metadata.contentType ?? this.defaultType;
-      const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-      const quads = await this.converter.handleSafe({ representation, identifier, preferences });
-      // eslint-disable-next-line prefer-destructuring
-      metadata = quads.metadata;
-
-      const importEmitter = result.import(quads.data);
+    if (representation) {
+      ({ metadata } = representation);
+      const importEmitter = result.import(representation.data);
       await new Promise((resolve, reject): void => {
         importEmitter.on('end', resolve);
         importEmitter.on('error', reject);
       });
       this.logger.debug(`${result.size} quads in ${identifier.path}.`);
-    } catch (error: unknown) {
-      // Solid, §5.1: "When a successful PUT or PATCH request creates a resource,
-      // the server MUST use the effective request URI to assign the URI to that resource."
-      // https://solid.github.io/specification/protocol#resource-type-heuristics
-      if (!NotFoundHttpError.isInstance(error)) {
-        throw error;
-      }
-      contentType = this.defaultType;
+    } else {
       metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
-      this.logger.debug(`Patching new resource ${identifier.path}.`);
     }
 
-    this.applyOperation(result, op);
+    this.applyOperation(result, (patch as SparqlUpdatePatch).algebra);
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    // Convert back to the original type and write the result
-    const patched = new BasicRepresentation(result.match() as Readable, metadata);
-    const converted = await this.converter.handleSafe({
-      representation: patched,
-      identifier,
-      preferences: { type: { [contentType]: 1 }},
-    });
-    return source.setRepresentation(identifier, converted);
+    return new BasicRepresentation(result.match() as Readable, metadata);
   }
 
   /**
