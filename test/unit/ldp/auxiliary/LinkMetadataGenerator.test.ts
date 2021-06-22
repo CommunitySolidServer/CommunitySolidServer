@@ -20,20 +20,31 @@ describe('A LinkMetadataGenerator', (): void => {
     generator = new LinkMetadataGenerator(link, strategy);
   });
 
-  it('can handle all metadata.', async(): Promise<void> => {
-    await expect(generator.canHandle(null as any)).resolves.toBeUndefined();
-  });
-
   it('stores no metadata if the input is an associated resource.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata(auxiliaryId);
-    await expect(generator.handle(metadata)).resolves.toBeUndefined();
+    await expect(generator.add(metadata)).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(0);
   });
 
   it('uses the stored link to add metadata for associated resources.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata(associatedId);
-    await expect(generator.handle(metadata)).resolves.toBeUndefined();
+    await expect(generator.add(metadata)).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.get(link)?.value).toBe(auxiliaryId.path);
+  });
+
+  it('removes no metadata if the input is an associated resource.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata(auxiliaryId);
+    metadata.add(link, 'val');
+    await expect(generator.remove(metadata)).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(1);
+  });
+
+  it('removes metadata that was added by the `add` call.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata(associatedId);
+    await expect(generator.add(metadata)).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(1);
+    await expect(generator.remove(metadata)).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(0);
   });
 });

@@ -46,7 +46,13 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
 
   public async addMetadata(metadata: RepresentationMetadata): Promise<void> {
     if (this.metadataGenerator) {
-      return this.metadataGenerator.handleSafe(metadata);
+      return this.metadataGenerator.add(metadata);
+    }
+  }
+
+  public async removeMetadata(metadata: RepresentationMetadata): Promise<void> {
+    if (this.metadataGenerator) {
+      return this.metadataGenerator.remove(metadata);
     }
   }
 

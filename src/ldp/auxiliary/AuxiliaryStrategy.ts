@@ -34,6 +34,14 @@ export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   addMetadata: (metadata: RepresentationMetadata) => Promise<void>;
 
   /**
+   * Removes the metadata that has been added by the `addMetadata` call.
+   * This should be used when writing a resource to make sure we don't store metadata that gets generated.
+   *
+   * @param metadata - Metadata to update.
+   */
+  removeMetadata: (metadata: RepresentationMetadata) => Promise<void>;
+
+  /**
    * Validates if the representation contains valid data for an auxiliary resource.
    * Should throw an error in case the data is invalid.
    * @param identifier - Identifier of the auxiliary resource.

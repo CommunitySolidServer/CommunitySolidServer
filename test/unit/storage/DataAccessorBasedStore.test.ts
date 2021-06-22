@@ -111,6 +111,10 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     metadata.add(namedNode('AUXILIARY'), this.getAuxiliaryIdentifier(identifier).path);
   }
 
+  public async removeMetadata(metadata: RepresentationMetadata): Promise<void> {
+    metadata.removeAll(namedNode('AUXILIARY'));
+  }
+
   public async validate(): Promise<void> {
     // Always validates
   }
@@ -480,6 +484,19 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(Object.keys(accessor.data)).toHaveLength(1);
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+    });
+
+    it('getting and setting a resource with the result should not change the metadata.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      representation.metadata.identifier = DataFactory.namedNode(resourceID.path);
+      accessor.data[resourceID.path] = representation;
+      const metadata = new RepresentationMetadata(representation.metadata);
+      const result = await store.getRepresentation(resourceID);
+      await expect(store.setRepresentation(resourceID, result)).resolves.toEqual([
+        { path: `${root}` },
+        resourceID,
+      ]);
+      expect(accessor.data[resourceID.path].metadata.quads()).toEqualRdfQuadArray(metadata.quads());
     });
   });
 

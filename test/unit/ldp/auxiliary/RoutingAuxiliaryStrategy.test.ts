@@ -35,6 +35,10 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     // Empty fn
   }
 
+  public async removeMetadata(): Promise<void> {
+    // Empty fn
+  }
+
   public async validate(): Promise<void> {
     // Always validates
   }
@@ -75,6 +79,27 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
     expect(sources[0].addMetadata).toHaveBeenCalledTimes(0);
     expect(sources[1].addMetadata).toHaveBeenCalledTimes(1);
     expect(sources[1].addMetadata).toHaveBeenLastCalledWith(metadata);
+  });
+
+  it('#removeMetadata removes the metadata of all sources for the base identifier.', async(): Promise<void> => {
+    sources[0].removeMetadata = jest.fn();
+    sources[1].removeMetadata = jest.fn();
+    const metadata = new RepresentationMetadata(baseId);
+    await expect(strategy.removeMetadata(metadata)).resolves.toBeUndefined();
+    expect(sources[0].removeMetadata).toHaveBeenCalledTimes(1);
+    expect(sources[0].removeMetadata).toHaveBeenLastCalledWith(metadata);
+    expect(sources[1].removeMetadata).toHaveBeenCalledTimes(1);
+    expect(sources[1].removeMetadata).toHaveBeenLastCalledWith(metadata);
+  });
+
+  it('#removeMetadata removes the metadata of the correct source for aux identifiers.', async(): Promise<void> => {
+    sources[0].removeMetadata = jest.fn();
+    sources[1].removeMetadata = jest.fn();
+    const metadata = new RepresentationMetadata(dummy2Id);
+    await expect(strategy.removeMetadata(metadata)).resolves.toBeUndefined();
+    expect(sources[0].removeMetadata).toHaveBeenCalledTimes(0);
+    expect(sources[1].removeMetadata).toHaveBeenCalledTimes(1);
+    expect(sources[1].removeMetadata).toHaveBeenLastCalledWith(metadata);
   });
 
   it('#isRootRequired returns the result of the correct source.', async(): Promise<void> => {

@@ -36,6 +36,19 @@ export class RoutingAuxiliaryStrategy extends RoutingAuxiliaryIdentifierStrategy
     }
   }
 
+  public async removeMetadata(metadata: RepresentationMetadata): Promise<void> {
+    const identifier = { path: metadata.identifier.value };
+    // Make sure only the relevant source gets called if the input is an auxiliary resource
+    const match = this.sources.find((source): boolean => source.isAuxiliaryIdentifier(identifier));
+    if (match) {
+      await match.removeMetadata(metadata);
+    } else {
+      for (const source of this.sources) {
+        await source.removeMetadata(metadata);
+      }
+    }
+  }
+
   public async validate(representation: Representation): Promise<void> {
     const identifier = { path: representation.metadata.identifier.value };
     const source = this.getMatchingSource(identifier);

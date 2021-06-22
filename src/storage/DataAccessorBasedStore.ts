@@ -314,6 +314,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.auxiliaryStrategy.validate(representation);
     }
 
+    // Remove auxiliary metadata since it gets added automatically
+    await this.auxiliaryStrategy.removeMetadata(metadata);
+
     // Root container should not have a parent container
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."

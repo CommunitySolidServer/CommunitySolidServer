@@ -19,7 +19,8 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
       isAuxiliaryIdentifier: jest.fn(),
     };
     metadataGenerator = {
-      handleSafe: jest.fn(),
+      add: jest.fn(),
+      remove: jest.fn(),
     } as any;
     validator = {
       handleSafe: jest.fn(),
@@ -52,8 +53,15 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
   it('adds metadata through the MetadataGenerator.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata();
     await expect(strategy.addMetadata(metadata)).resolves.toBeUndefined();
-    expect(metadataGenerator.handleSafe).toHaveBeenCalledTimes(1);
-    expect(metadataGenerator.handleSafe).toHaveBeenLastCalledWith(metadata);
+    expect(metadataGenerator.add).toHaveBeenCalledTimes(1);
+    expect(metadataGenerator.add).toHaveBeenLastCalledWith(metadata);
+  });
+
+  it('removes metadata through the MetadataGenerator.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    await expect(strategy.removeMetadata(metadata)).resolves.toBeUndefined();
+    expect(metadataGenerator.remove).toHaveBeenCalledTimes(1);
+    expect(metadataGenerator.remove).toHaveBeenLastCalledWith(metadata);
   });
 
   it('validates data through the Validator.', async(): Promise<void> => {
@@ -68,11 +76,12 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     expect(strategy.isRootRequired()).toBe(false);
   });
 
-  it('does not add metadata or validate if the corresponding classes are not injected.', async(): Promise<void> => {
+  it('does not handle metadata or validate if the corresponding classes are not injected.', async(): Promise<void> => {
     strategy = new ComposedAuxiliaryStrategy(identifierStrategy);
 
     const metadata = new RepresentationMetadata();
     await expect(strategy.addMetadata(metadata)).resolves.toBeUndefined();
+    await expect(strategy.removeMetadata(metadata)).resolves.toBeUndefined();
 
     const representation = { data: 'data!' } as any;
     await expect(strategy.validate(representation)).resolves.toBeUndefined();
