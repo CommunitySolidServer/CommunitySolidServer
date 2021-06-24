@@ -84,6 +84,8 @@ export class IdentityProviderFactory {
       },
       renderError:
         async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
+          // This allows us to stream directly to to the response object, see https://github.com/koajs/koa/issues/944
+          ctx.respond = false;
           const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
           const result = await this.errorHandler.handleSafe({ error, preferences });
           await this.responseWriter.handleSafe({ response: ctx.res, result });
