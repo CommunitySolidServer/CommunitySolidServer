@@ -20,12 +20,6 @@ and thereby shape the future of Solid.
 ## Current status
 This server is in beta stage, which means you can start using it for developing
 and testing apps, with some limitations:
-- User account / pod creation is not yet supported fully, and you must rely on
-  an external identity provider to log you in and authenticate your WebID.
-  [solid/node-solid-server](https://github.com/solid/node-solid-server) or any
-  other pod provider can serve this purpose, and all you need to do is pass in
-  an external WebID when creating pods. More information on creating pods can be
-  found under [Interacting with the server](#interacting-with-the-server).
 - The spec is still under active development, and as such some features (like
   `trustedApps`) are not yet implemented because they are likely to change. If
   your users rely on this functionality, migrating is not yet recommended.
