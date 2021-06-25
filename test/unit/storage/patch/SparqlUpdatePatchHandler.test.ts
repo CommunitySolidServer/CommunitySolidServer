@@ -13,6 +13,7 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 
 describe('A SparqlUpdatePatchHandler', (): void => {
   let converter: jest.Mocked<RepresentationConverter>;
@@ -75,11 +76,16 @@ describe('A SparqlUpdatePatchHandler', (): void => {
   }
 
   async function handle(query: string): Promise<void> {
-    const sparqlPrefix = 'prefix : <http://test.com/>\n';
+    const prefixedQuery = `prefix : <http://test.com/>\n${query}`;
     await handler.handle({
       source,
       identifier,
-      patch: { algebra: translate(sparqlPrefix.concat(query), { quads: true }) } as SparqlUpdatePatch,
+      patch: {
+        algebra: translate(prefixedQuery, { quads: true }),
+        data: guardedStreamFrom(prefixedQuery),
+        metadata: new RepresentationMetadata(),
+        binary: true,
+      } as SparqlUpdatePatch,
     });
   }
 
@@ -116,6 +122,16 @@ describe('A SparqlUpdatePatchHandler', (): void => {
 
   it('handles DELETE WHERE updates with no variables.', async(): Promise<void> => {
     const query = 'DELETE WHERE { :startS1 :startP1 :startO1 }';
+    await handle(query);
+    expect(await basicChecks(
+      [ quad(namedNode('http://test.com/startS2'),
+        namedNode('http://test.com/startP2'),
+        namedNode('http://test.com/startO2')) ],
+    )).toBe(true);
+  });
+
+  it('handles DELETE WHERE updates with variables.', async(): Promise<void> => {
+    const query = 'DELETE WHERE { :startS1 :startP1 ?o }';
     await handle(query);
     expect(await basicChecks(
       [ quad(namedNode('http://test.com/startS2'),
@@ -178,18 +194,13 @@ describe('A SparqlUpdatePatchHandler', (): void => {
     await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('rejects DELETE/INSERT updates with a non-empty WHERE.', async(): Promise<void> => {
-    const query = 'DELETE { :s1 :p1 :o1 } INSERT { :s1 :p1 :o1 } WHERE { ?s ?p ?o }';
+  it('rejects DELETE/INSERT updates with non-BGP WHERE.', async(): Promise<void> => {
+    const query = 'DELETE { :s1 :p1 :o1 } INSERT { :s1 :p1 :o1 } WHERE { ?s ?p ?o. FILTER (?o > 5) }';
     await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('rejects INSERT WHERE updates with a UNION.', async(): Promise<void> => {
     const query = 'INSERT { :s1 :p1 :o1 . } WHERE { { :s1 :p1 :o1 } UNION { :s1 :p1 :o2 } }';
-    await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
-  });
-
-  it('rejects DELETE WHERE updates with variables.', async(): Promise<void> => {
-    const query = 'DELETE WHERE { ?v :startP1 :startO1 }';
     await expect(handle(query)).rejects.toThrow(NotImplementedHttpError);
   });
 

@@ -75,6 +75,7 @@
     "templates"
   ],
   "dependencies": {
+    "@comunica/actor-init-sparql": "^1.21.3",
     "@rdfjs/data-model": "^1.2.0",
     "@rdfjs/fetch": "^2.1.0",
     "@solid/identity-token-verifier": "^0.8.0",
@@ -119,7 +120,6 @@
     "punycode": "^2.1.1",
     "rdf-parse": "^1.7.0",
     "rdf-serialize": "^1.1.0",
-    "rdf-terms": "^1.5.1",
     "redis": "^3.0.2",
     "redlock": "^4.2.0",
     "sparqlalgebrajs": "^3.0.0",
