@@ -38,7 +38,7 @@
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "storeMap": [
         {
-          "RegexRouterRule:_storeMap_key": "^/\\.acl$",
+          "RegexRouterRule:_storeMap_key": "^/(\\.acl)?$",
           "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         },
         {
