@@ -1,8 +1,10 @@
 import type { Readable } from 'stream';
+import type { ActorInitSparql } from '@comunica/actor-init-sparql';
+import { newEngine } from '@comunica/actor-init-sparql';
+import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
 import { defaultGraph } from '@rdfjs/data-model';
 import { Store } from 'n3';
 import type { BaseQuad } from 'rdf-js';
-import { someTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import type { Patch } from '../../ldp/http/Patch';
 import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
@@ -13,6 +15,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { readableToString } from '../../util/StreamUtil';
 import type { RepresentationConverter } from '../conversion/RepresentationConverter';
 import { ConvertingPatchHandler } from './ConvertingPatchHandler';
 import type { PatchHandlerArgs } from './PatchHandler';
@@ -25,8 +28,11 @@ import type { PatchHandlerArgs } from './PatchHandler';
 export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly engine: ActorInitSparql;
+
   public constructor(converter: RepresentationConverter, defaultType = 'text/turtle') {
     super(converter, INTERNAL_QUADS, defaultType);
+    this.engine = newEngine();
   }
 
   public async canHandle({ patch }: PatchHandlerArgs): Promise<void> {
@@ -63,14 +69,6 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
     return op.type === Algebra.types.COMPOSITE_UPDATE;
   }
 
-  private isBasicGraphPatternWithoutVariables(op: Algebra.Operation): op is Algebra.Bgp {
-    if (op.type !== Algebra.types.BGP) {
-      return false;
-    }
-    return !(op.patterns as BaseQuad[]).some((pattern): boolean =>
-      someTerms(pattern, (term): boolean => term.termType === 'Variable'));
-  }
-
   /**
    * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
    */
@@ -101,9 +99,9 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
       this.logger.warn('GRAPH statement in INSERT clause');
       throw new NotImplementedHttpError('GRAPH statements are not supported');
     }
-    if (!(typeof op.where === 'undefined' || this.isBasicGraphPatternWithoutVariables(op.where))) {
-      this.logger.warn('WHERE statements are not supported');
-      throw new NotImplementedHttpError('WHERE statements are not supported');
+    if (!(typeof op.where === 'undefined' || op.where.type === Algebra.types.BGP)) {
+      this.logger.warn('Non-BGP WHERE statements are not supported');
+      throw new NotImplementedHttpError('Non-BGP WHERE statements are not supported');
     }
   }
 
@@ -136,41 +134,14 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
       metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
     }
 
-    this.applyOperation(result, (patch as SparqlUpdatePatch).algebra);
+    // Run the query through Comunica
+    const sparql = await readableToString(patch.data);
+    const query = await this.engine.query(sparql,
+      { sources: [ result ], baseIRI: identifier.path }) as IQueryResultUpdate;
+    await query.updateResult;
+
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
     return new BasicRepresentation(result.match() as Readable, metadata);
-  }
-
-  /**
-   * Apply the given algebra update operation to the store of quads.
-   */
-  private applyOperation(store: Store<BaseQuad>, op: Algebra.Operation): void {
-    if (this.isDeleteInsert(op)) {
-      this.applyDeleteInsert(store, op);
-    // Only other options is Composite after passing `validateUpdate`
-    } else {
-      this.applyComposite(store, op as Algebra.CompositeUpdate);
-    }
-  }
-
-  /**
-   * Apply the given composite update operation to the store of quads.
-   */
-  private applyComposite(store: Store<BaseQuad>, op: Algebra.CompositeUpdate): void {
-    for (const update of op.updates) {
-      this.applyOperation(store, update);
-    }
-  }
-
-  /**
-   * Apply the given DELETE/INSERT update operation to the store of quads.
-   */
-  private applyDeleteInsert(store: Store<BaseQuad>, op: Algebra.DeleteInsert): void {
-    const deletes = op.delete ?? [];
-    const inserts = op.insert ?? [];
-    store.removeQuads(deletes);
-    store.addQuads(inserts);
-    this.logger.debug(`Removed ${deletes.length} and added ${inserts.length} quads.`);
   }
 }
