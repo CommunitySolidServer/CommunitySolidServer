@@ -1,8 +1,8 @@
 import { DataFactory, Store } from 'n3';
-import type { BlankNode, Literal, NamedNode, Quad, Term } from 'rdf-js';
+import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { toSubjectTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
+import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
 import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
@@ -10,6 +10,7 @@ import { isResourceIdentifier } from './ResourceIdentifier';
 export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
 export type MetadataValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 export type MetadataRecord = Record<string, MetadataValue>;
+export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 
 /**
  * Determines whether the object is a `RepresentationMetadata`.
@@ -159,13 +160,18 @@ export class RepresentationMetadata {
    * @param subject - Subject of quad to add.
    * @param predicate - Predicate of quad to add.
    * @param object - Object of quad to add.
+   * @param graph - Optional graph of quad to add.
    */
   public addQuad(
     subject: NamedNode | BlankNode | string,
     predicate: NamedNode | string,
     object: NamedNode | BlankNode | Literal | string,
+    graph?: MetadataGraph,
   ): this {
-    this.store.addQuad(toSubjectTerm(subject), toCachedNamedNode(predicate), toObjectTerm(object, true));
+    this.store.addQuad(toNamedTerm(subject),
+      toCachedNamedNode(predicate),
+      toObjectTerm(object, true),
+      graph ? toNamedTerm(graph) : undefined);
     return this;
   }
 
@@ -181,14 +187,19 @@ export class RepresentationMetadata {
    * @param subject - Subject of quad to remove.
    * @param predicate - Predicate of quad to remove.
    * @param object - Object of quad to remove.
+   * @param graph - Optional graph of quad to remove.
    */
   public removeQuad(
     subject: NamedNode | BlankNode | string,
     predicate: NamedNode | string,
     object: NamedNode | BlankNode | Literal | string,
+    graph?: MetadataGraph,
   ): this {
-    this.store.removeQuad(toSubjectTerm(subject), toCachedNamedNode(predicate), toObjectTerm(object, true));
-    return this;
+    const quads = this.quads(toNamedTerm(subject),
+      toCachedNamedNode(predicate),
+      toObjectTerm(object, true),
+      graph ? toNamedTerm(graph) : undefined);
+    return this.removeQuads(quads);
   }
 
   /**
@@ -203,18 +214,20 @@ export class RepresentationMetadata {
    * Adds a value linked to the identifier. Strings get converted to literals.
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value(s) to add.
+   * @param graph - Optional graph of where to add the values to.
    */
-  public add(predicate: NamedNode | string, object: MetadataValue): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj));
+  public add(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+    return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
   }
 
   /**
    * Removes the given value from the metadata. Strings get converted to literals.
    * @param predicate - Predicate linking identifier to value.
    * @param object - Value(s) to remove.
+   * @param graph - Optional graph of where to remove the values from.
    */
-  public remove(predicate: NamedNode | string, object: MetadataValue): this {
-    return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj));
+  public remove(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+    return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
   }
 
   /**
@@ -234,33 +247,36 @@ export class RepresentationMetadata {
   /**
    * Removes all values linked through the given predicate.
    * @param predicate - Predicate to remove.
+   * @param graph - Optional graph where to remove from.
    */
-  public removeAll(predicate: NamedNode | string): this {
-    this.removeQuads(this.store.getQuads(this.id, toCachedNamedNode(predicate), null, null));
+  public removeAll(predicate: NamedNode | string, graph?: MetadataGraph): this {
+    this.removeQuads(this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null));
     return this;
   }
 
   /**
-   * Finds all object values matching the given predicate.
-   * @param predicate - Predicate to get the values for.
+   * Finds all object values matching the given predicate and/or graph.
+   * @param predicate - Optional predicate to get the values for.
+   * @param graph - Optional graph where to get from.
    *
    * @returns An array with all matches.
    */
-  public getAll(predicate: NamedNode | string): Term[] {
-    return this.store.getQuads(this.id, toCachedNamedNode(predicate), null, null)
+  public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
+    return this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null)
       .map((quad): Term => quad.object);
   }
 
   /**
    * @param predicate - Predicate to get the value for.
+   * @param graph - Optional graph where the triple should be found.
    *
    * @throws Error
    * If there are multiple matching values.
    *
    * @returns The corresponding value. Undefined if there is no match
    */
-  public get(predicate: NamedNode | string): Term | undefined {
-    const terms = this.getAll(predicate);
+  public get(predicate: NamedNode | string, graph?: MetadataGraph): Term | undefined {
+    const terms = this.getAll(predicate, graph);
     if (terms.length === 0) {
       return;
     }
@@ -278,11 +294,12 @@ export class RepresentationMetadata {
    * In case the object is undefined this is identical to `removeAll(predicate)`.
    * @param predicate - Predicate linking to the value.
    * @param object - Value(s) to set.
+   * @param graph - Optional graph where the triple should be stored.
    */
-  public set(predicate: NamedNode | string, object?: MetadataValue): this {
-    this.removeAll(predicate);
+  public set(predicate: NamedNode | string, object?: MetadataValue, graph?: MetadataGraph): this {
+    this.removeAll(predicate, graph);
     if (object) {
-      this.add(predicate, object);
+      this.add(predicate, object, graph);
     }
     return this;
   }
