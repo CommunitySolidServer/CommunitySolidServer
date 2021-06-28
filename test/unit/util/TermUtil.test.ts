@@ -2,7 +2,7 @@ import 'jest-rdf';
 import { literal, namedNode } from '@rdfjs/data-model';
 import {
   toCachedNamedNode,
-  toSubjectTerm,
+  toNamedTerm,
   toPredicateTerm,
   toObjectTerm,
   toLiteral,
@@ -45,11 +45,11 @@ describe('TermUtil', (): void => {
   describe('toSubjectTerm function', (): void => {
     it('returns the input if it was a term.', async(): Promise<void> => {
       const nn = namedNode('name');
-      expect(toSubjectTerm(nn)).toBe(nn);
+      expect(toNamedTerm(nn)).toBe(nn);
     });
 
     it('returns a named node when a string is used.', async(): Promise<void> => {
-      expect(toSubjectTerm('nn')).toEqualRdfTerm(namedNode('nn'));
+      expect(toNamedTerm('nn')).toEqualRdfTerm(namedNode('nn'));
     });
   });
 

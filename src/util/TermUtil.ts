@@ -38,17 +38,17 @@ export function isTerm(input?: any): input is Term {
 }
 
 /**
- * Converts a subject to a named node when needed.
+ * Converts a string to a named node when needed.
  * @param subject - Subject to potentially transform.
  */
-export function toSubjectTerm(subject: string): NamedNode;
-export function toSubjectTerm<T extends Term>(subject: T): T;
-export function toSubjectTerm<T extends Term>(subject: T | string): T | NamedNode;
-export function toSubjectTerm(subject: Term | string): Term {
+export function toNamedTerm(subject: string): NamedNode;
+export function toNamedTerm<T extends Term>(subject: T): T;
+export function toNamedTerm<T extends Term>(subject: T | string): T | NamedNode;
+export function toNamedTerm(subject: Term | string): Term {
   return typeof subject === 'string' ? namedNode(subject) : subject;
 }
 
-export const toPredicateTerm = toSubjectTerm;
+export const toPredicateTerm = toNamedTerm;
 
 /**
  * Converts an object term when needed.
