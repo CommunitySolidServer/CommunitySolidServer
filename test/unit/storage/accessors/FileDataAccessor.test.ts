@@ -11,9 +11,10 @@ import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 import type { Guarded } from '../../../../src/util/GuardedStream';
+import { isContainerPath } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { toLiteral } from '../../../../src/util/TermUtil';
-import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
@@ -102,6 +103,7 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(3);
     });
 
     it('does not generate size metadata for a container.', async(): Promise<void> => {
@@ -121,6 +123,7 @@ describe('A FileDataAccessor', (): void => {
       expect(metadata.get(POSIX.size)).toBeUndefined();
       expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
       expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
     });
 
     it('generates metadata for container child resources.', async(): Promise<void> => {
@@ -136,6 +139,8 @@ describe('A FileDataAccessor', (): void => {
         expect(child.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
         expect(child.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
           XSD.terms.integer));
+        expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
+          .toHaveLength(isContainerPath(child.identifier.value) ? 2 : 3);
       }
     });
 

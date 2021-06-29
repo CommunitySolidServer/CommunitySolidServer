@@ -2,6 +2,7 @@ import type { AuxiliaryIdentifierStrategy } from '../../../../src/ldp/auxiliary/
 import { LinkMetadataGenerator } from '../../../../src/ldp/auxiliary/LinkMetadataGenerator';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { SOLID_META } from '../../../../src/util/Vocabularies';
 
 describe('A LinkMetadataGenerator', (): void => {
   const link = 'link';
@@ -35,5 +36,6 @@ describe('A LinkMetadataGenerator', (): void => {
     await expect(generator.handle(metadata)).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.get(link)?.value).toBe(auxiliaryId.path);
+    expect(metadata.getAll(link, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
   });
 });
