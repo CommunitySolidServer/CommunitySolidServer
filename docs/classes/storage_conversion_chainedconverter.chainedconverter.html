@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ChainedConverter | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>ChainedConverter | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_conversion_chainedconverter.html">storage/conversion/ChainedConverter</a>
@@ -155,7 +155,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -180,7 +180,7 @@
 					<div class="tsd-signature tsd-kind-icon">cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LruPathCache</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L121">src/storage/conversion/ChainedConverter.ts:121</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,7 +190,7 @@
 					<div class="tsd-signature tsd-kind-icon">converters<span class="tsd-signature-symbol">:</span> <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">TypedRepresentationConverter</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L120">src/storage/conversion/ChainedConverter.ts:120</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L120">src/storage/conversion/ChainedConverter.ts:120</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -200,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L118">src/storage/conversion/ChainedConverter.ts:118</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L118">src/storage/conversion/ChainedConverter.ts:118</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -218,9 +218,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L132">src/storage/conversion/ChainedConverter.ts:132</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L132">src/storage/conversion/ChainedConverter.ts:132</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input data can be handled by this class.
+									Throws an error if it can&#39;t handle the data.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -241,7 +247,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L245">src/storage/conversion/ChainedConverter.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L241">src/storage/conversion/ChainedConverter.ts:241</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -277,7 +283,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L172">src/storage/conversion/ChainedConverter.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L172">src/storage/conversion/ChainedConverter.ts:172</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -306,7 +312,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L206">src/storage/conversion/ChainedConverter.ts:206</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L202">src/storage/conversion/ChainedConverter.ts:202</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -340,9 +346,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L137">src/storage/conversion/ChainedConverter.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L137">src/storage/conversion/ChainedConverter.ts:137</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Handles the given input. This should only be done if the <a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle">canHandle</a> function returned <code>true</code>.
+									Therefore, consider using the <a href="storage_conversion_chainedconverter.chainedconverter.html#handlesafe">handleSafe</a> function instead.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -364,9 +376,16 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L159">src/storage/conversion/ChainedConverter.ts:159</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L159">src/storage/conversion/ChainedConverter.ts:159</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Helper function that first runs the canHandle function followed by the handle function.
+										Throws the error of the <a href="storage_conversion_chainedconverter.chainedconverter.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
+									or returns the result of the <a href="storage_conversion_chainedconverter.chainedconverter.html#handle">handle</a> function otherwise.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -387,7 +406,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L164">src/storage/conversion/ChainedConverter.ts:164</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L164">src/storage/conversion/ChainedConverter.ts:164</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -410,7 +429,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L279">src/storage/conversion/ChainedConverter.ts:279</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L275">src/storage/conversion/ChainedConverter.ts:275</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -442,7 +461,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L286">src/storage/conversion/ChainedConverter.ts:286</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L282">src/storage/conversion/ChainedConverter.ts:282</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -473,7 +492,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ChainedConverter.ts#L262">src/storage/conversion/ChainedConverter.ts:262</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ChainedConverter.ts#L258">src/storage/conversion/ChainedConverter.ts:258</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -498,7 +517,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/storage_conversion_chainedconverter.html">storage/conversion/<wbr>Chained<wbr>Converter</a>

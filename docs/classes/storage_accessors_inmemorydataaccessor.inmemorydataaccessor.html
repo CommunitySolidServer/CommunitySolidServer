@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>InMemoryDataAccessor | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>InMemoryDataAccessor | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_accessors_inmemorydataaccessor.html">storage/accessors/InMemoryDataAccessor</a>
@@ -104,7 +104,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#generatemetadata" class="tsd-kind-icon">generate<wbr>Metadata</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#getchildren" class="tsd-kind-icon">get<wbr>Children</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#getdata" class="tsd-kind-icon">get<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#getentry" class="tsd-kind-icon">get<wbr>Entry</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#gethierarchy" class="tsd-kind-icon">get<wbr>Hierarchy</a></li>
@@ -130,7 +130,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L27">src/storage/accessors/InMemoryDataAccessor.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -152,7 +152,7 @@
 					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ContainerEntry</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L27">src/storage/accessors/InMemoryDataAccessor.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -170,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L23">src/storage/accessors/InMemoryDataAccessor.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -188,14 +188,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.canHandle</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L35">src/storage/accessors/InMemoryDataAccessor.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L33">src/storage/accessors/InMemoryDataAccessor.ts:33</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Should throw a NotImplementedHttpError if the DataAccessor does not support storing the given Representation.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -211,17 +206,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.deleteResource</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L81">src/storage/accessors/InMemoryDataAccessor.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L87">src/storage/accessors/InMemoryDataAccessor.ts:87</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Deletes the resource and its corresponding metadata.</p>
-								</div>
-								<p>Solid, §5.4: &quot;When a contained resource is deleted, the server MUST also remove the corresponding containment
-									triple, which has the effect of removing the deleted resource from the containing container.&quot;
-								<a href="https://solid.github.io/specification/protocol#deleting-resources">https://solid.github.io/specification/protocol#deleting-resources</a></p>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -232,26 +219,27 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="generatemetadata" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> generate<wbr>Metadata</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">generate<wbr>Metadata<span class="tsd-signature-symbol">(</span>entry<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CacheEntry</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getchildren" class="tsd-anchor"></a>
+					<h3>get<wbr>Children</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Children<span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of DataAccessor.getChildren</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L145">src/storage/accessors/InMemoryDataAccessor.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L50">src/storage/accessors/InMemoryDataAccessor.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>entry: <span class="tsd-signature-type">CacheEntry</span></h5>
+									<h5>identifier: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -266,15 +254,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.getData</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L39">src/storage/accessors/InMemoryDataAccessor.ts:39</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L37">src/storage/accessors/InMemoryDataAccessor.ts:37</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns a data stream stored for the given identifier.
-									It can be assumed that the incoming identifier will always correspond to a document.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -295,7 +277,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L136">src/storage/accessors/InMemoryDataAccessor.ts:136</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L142">src/storage/accessors/InMemoryDataAccessor.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -324,7 +306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L98">src/storage/accessors/InMemoryDataAccessor.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L104">src/storage/accessors/InMemoryDataAccessor.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -354,14 +336,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.getMetadata</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L47">src/storage/accessors/InMemoryDataAccessor.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L45">src/storage/accessors/InMemoryDataAccessor.ts:45</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns the metadata corresponding to the identifier.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -382,7 +359,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L111">src/storage/accessors/InMemoryDataAccessor.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L117">src/storage/accessors/InMemoryDataAccessor.ts:117</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -411,7 +388,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L90">src/storage/accessors/InMemoryDataAccessor.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L96">src/storage/accessors/InMemoryDataAccessor.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -435,16 +412,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.writeContainer</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L62">src/storage/accessors/InMemoryDataAccessor.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L68">src/storage/accessors/InMemoryDataAccessor.ts:68</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Writes metadata for a container.
-										If the container does not exist yet it should be created,
-									if it does its metadata should be overwritten, except for the containment triples.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -469,15 +439,9 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.writeDocument</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/accessors/InMemoryDataAccessor.ts#L52">src/storage/accessors/InMemoryDataAccessor.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L58">src/storage/accessors/InMemoryDataAccessor.ts:58</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Writes data and metadata for a document.
-									If any data and/or metadata exist for the given identifier, it should be overwritten.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -500,7 +464,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/storage_accessors_inmemorydataaccessor.html">storage/accessors/<wbr>InMemory<wbr>Data<wbr>Accessor</a>
@@ -529,8 +493,8 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#deleteresource" class="tsd-kind-icon">delete<wbr>Resource</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#generatemetadata" class="tsd-kind-icon">generate<wbr>Metadata</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#getchildren" class="tsd-kind-icon">get<wbr>Children</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#getdata" class="tsd-kind-icon">get<wbr>Data</a>

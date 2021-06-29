@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AuxiliaryStrategy | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>AuxiliaryStrategy | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/ldp_auxiliary_auxiliarystrategy.html">ldp/auxiliary/AuxiliaryStrategy</a>
@@ -124,27 +124,9 @@
 					<div class="tsd-signature tsd-kind-icon">add<wbr>Metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>metadata<span class="tsd-signature-symbol">: </span><a href="../classes/ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryStrategy.ts#L34">src/ldp/auxiliary/AuxiliaryStrategy.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryStrategy.ts#L34">src/ldp/auxiliary/AuxiliaryStrategy.ts:34</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Adds metadata related to this auxiliary resource,
-								in case this is required for this type of auxiliary resource.
-								The metadata that is added depends on the given identifier being an auxiliary or associated resource:
-							the metadata will be used to link to the other one, and potentially add extra typing info.</p>
-						</div>
-						<p>Used for:
-							Solid, §4.3.1: &quot;For any defined auxiliary resource available for a given Solid resource, all representations of
-							that resource MUST include an HTTP Link header pointing to the location of each auxiliary resource.&quot;
-						<a href="https://solid.github.io/specification/protocol#auxiliary-resources-server">https://solid.github.io/specification/protocol#auxiliary-resources-server</a></p>
-						<p>The above is an example of how that metadata would only be added in case the input is the associated identifier.</p>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>Metadata to update.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -154,10 +136,28 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Adds metadata related to this auxiliary resource,
+													in case this is required for this type of auxiliary resource.
+													The metadata that is added depends on the given identifier being an auxiliary or associated resource:
+												the metadata will be used to link to the other one, and potentially add extra typing info.</p>
+											</div>
+											<p>Used for:
+												Solid, §4.3.1: &quot;For any defined auxiliary resource available for a given Solid resource, all representations of
+												that resource MUST include an HTTP Link header pointing to the location of each auxiliary resource.&quot;
+											<a href="https://solid.github.io/specification/protocol#auxiliary-resources-server">https://solid.github.io/specification/protocol#auxiliary-resources-server</a></p>
+											<p>The above is an example of how that metadata would only be added in case the input is the associated identifier.</p>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>metadata: <a href="../classes/ldp_representation_representationmetadata.representationmetadata.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationMetadata</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Metadata to update.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -174,23 +174,9 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html">AuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html#getassociatedidentifier">getAssociatedIdentifier</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L47">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L47">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:47</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Returns the identifier of the resource which this auxiliary resource is referring to.
-							This does not guarantee that this resource exists.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>Identifier of the auxiliary resource.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>The ResourceIdentifier of the corresponding resource.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -200,13 +186,25 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Returns the identifier of the resource which this auxiliary resource is referring to.
+												This does not guarantee that this resource exists.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Identifier of the auxiliary resource.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h4>
+										<p>The ResourceIdentifier of the corresponding resource.</p>
 									</li>
 								</ul>
 							</li>
@@ -220,24 +218,9 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html">AuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html#getauxiliaryidentifier">getAuxiliaryIdentifier</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L17">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L17">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:17</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Returns the identifier of the auxiliary resource corresponding to the given resource.
-							This does not guarantee that this auxiliary resource exists.</p>
-						</div>
-						<p>Should error if there are multiple results: see <a href="ldp_auxiliary_auxiliarystrategy.auxiliarystrategy.html#getauxiliaryidentifiers">getAuxiliaryIdentifiers</a>.</p>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>The ResourceIdentifier of which we need the corresponding auxiliary resource.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>The ResourceIdentifier of the corresponding auxiliary resource.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -247,13 +230,26 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Returns the identifier of the auxiliary resource corresponding to the given resource.
+												This does not guarantee that this auxiliary resource exists.</p>
+											</div>
+											<p>Should error if there are multiple results: see <a href="ldp_auxiliary_auxiliarystrategy.auxiliarystrategy.html#getauxiliaryidentifiers">getAuxiliaryIdentifiers</a>.</p>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>The ResourceIdentifier of which we need the corresponding auxiliary resource.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h4>
+										<p>The ResourceIdentifier of the corresponding auxiliary resource.</p>
 									</li>
 								</ul>
 							</li>
@@ -267,24 +263,9 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html">AuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html#getauxiliaryidentifiers">getAuxiliaryIdentifiers</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L28">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L28">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:28</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Returns all the identifiers of corresponding auxiliary resources.
-								This can be used when there are potentially multiple results.
-							In the case of a single result this should be an array containing the result of <a href="ldp_auxiliary_auxiliarystrategy.auxiliarystrategy.html#getauxiliaryidentifier">getAuxiliaryIdentifier</a>.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>The ResourceIdentifier of which we need the corresponding auxiliary resources.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>The ResourceIdentifiers of the corresponding auxiliary resources.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -294,13 +275,26 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Returns all the identifiers of corresponding auxiliary resources.
+													This can be used when there are potentially multiple results.
+												In the case of a single result this should be an array containing the result of <a href="ldp_auxiliary_auxiliarystrategy.auxiliarystrategy.html#getauxiliaryidentifier">getAuxiliaryIdentifier</a>.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>The ResourceIdentifier of which we need the corresponding auxiliary resources.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">[]</span></h4>
+										<p>The ResourceIdentifiers of the corresponding auxiliary resources.</p>
 									</li>
 								</ul>
 							</li>
@@ -314,24 +308,9 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html">AuxiliaryIdentifierStrategy</a>.<a href="ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html#isauxiliaryidentifier">isAuxiliaryIdentifier</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L38">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts#L38">src/ldp/auxiliary/AuxiliaryIdentifierStrategy.ts:38</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Checks if the input identifier corresponds to an auxiliary resource.
-								This does not check if that auxiliary resource exists,
-							only if the identifier indicates that there could be an auxiliary resource there.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>Identifier to check.</p>
-							</dd>
-							<dt>returns</dt>
-							<dd><p>true if the input identifier points to an auxiliary resource.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -341,13 +320,26 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Checks if the input identifier corresponds to an auxiliary resource.
+													This does not check if that auxiliary resource exists,
+												only if the identifier indicates that there could be an auxiliary resource there.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Identifier to check.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+										<p>true if the input identifier points to an auxiliary resource.</p>
 									</li>
 								</ul>
 							</li>
@@ -360,20 +352,9 @@
 					<div class="tsd-signature tsd-kind-icon">is<wbr>Root<wbr>Required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>identifier<span class="tsd-signature-symbol">: </span><a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryStrategy.ts#L17">src/ldp/auxiliary/AuxiliaryStrategy.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryStrategy.ts#L17">src/ldp/auxiliary/AuxiliaryStrategy.ts:17</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether this auxiliary resource in a root storage container.
-							If yes, this means they can&#39;t be deleted individually from such a container.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>Identifier of the auxiliary resource.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -383,10 +364,21 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Whether this auxiliary resource in a root storage container.
+												If yes, this means they can&#39;t be deleted individually from such a container.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>identifier: <a href="ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Identifier of the auxiliary resource.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -402,23 +394,9 @@
 					<div class="tsd-signature tsd-kind-icon">validate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>representation<span class="tsd-signature-symbol">: </span><a href="ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/ldp/auxiliary/AuxiliaryStrategy.ts#L42">src/ldp/auxiliary/AuxiliaryStrategy.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/ldp/auxiliary/AuxiliaryStrategy.ts#L42">src/ldp/auxiliary/AuxiliaryStrategy.ts:42</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Validates if the representation contains valid data for an auxiliary resource.
-							Should throw an error in case the data is invalid.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>param</dt>
-							<dd><p>Identifier of the auxiliary resource.</p>
-							</dd>
-							<dt>param</dt>
-							<dd><p>Representation of the auxiliary resource.</p>
-							</dd>
-						</dl>
-					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -428,10 +406,21 @@
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Validates if the representation contains valid data for an auxiliary resource.
+												Should throw an error in case the data is invalid.</p>
+											</div>
+										</div>
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
 												<h5>representation: <a href="ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+												<div class="tsd-comment tsd-typography">
+													<div class="lead">
+														<p>Representation of the auxiliary resource.</p>
+													</div>
+												</div>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -447,7 +436,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/ldp_auxiliary_auxiliarystrategy.html">ldp/auxiliary/<wbr>Auxiliary<wbr>Strategy</a>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AppRunner | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>AppRunner | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/init_apprunner.html">init/AppRunner</a>
@@ -95,8 +95,9 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="init_apprunner.apprunner.html#createinitializer" class="tsd-kind-icon">create<wbr>Initializer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="init_apprunner.apprunner.html#createapp" class="tsd-kind-icon">create<wbr>App</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="init_apprunner.apprunner.html#createvariables" class="tsd-kind-icon">create<wbr>Variables</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="init_apprunner.apprunner.html#getapp" class="tsd-kind-icon">get<wbr>App</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="init_apprunner.apprunner.html#resolvefilepath" class="tsd-kind-icon">resolve<wbr>File<wbr>Path</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="init_apprunner.apprunner.html#run" class="tsd-kind-icon">run</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="init_apprunner.apprunner.html#runcli" class="tsd-kind-icon">run<wbr>Cli</a></li>
@@ -130,7 +131,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L12">src/init/AppRunner.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L11">src/init/AppRunner.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -138,16 +139,16 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<a name="createinitializer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> create<wbr>Initializer</h3>
+					<a name="createapp" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> create<wbr>App</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Initializer<span class="tsd-signature-symbol">(</span>componentsProperties<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span>, configFile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>App<span class="tsd-signature-symbol">(</span>componentsProperties<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span>, configFile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L142">src/init/AppRunner.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L146">src/init/AppRunner.ts:146</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -158,7 +159,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>componentsProperties: <span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>componentsProperties: <span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>configFile: <span class="tsd-signature-type">string</span></h5>
@@ -167,7 +168,7 @@
 									<h5>variables: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -181,7 +182,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L123">src/init/AppRunner.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L126">src/init/AppRunner.ts:126</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -199,6 +200,49 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getapp" class="tsd-anchor"></a>
+					<h3>get<wbr>App</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>App<span class="tsd-signature-symbol">(</span>loaderProperties<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span>, configFile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variableParams<span class="tsd-signature-symbol">: </span><a href="../interfaces/init_apprunner.configvariables.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigVariables</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L19">src/init/AppRunner.ts:19</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generic function for getting the app object to start the server from JavaScript for a given config.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>loaderProperties: <span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Components.js loader properties.</p>
+									</div>
+								</li>
+								<li>
+									<h5>configFile: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Path to the server config file.</p>
+									</div>
+								</li>
+								<li>
+									<h5>variableParams: <a href="../interfaces/init_apprunner.configvariables.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigVariables</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Variables to pass into the config file.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 					<a name="resolvefilepath" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> resolve<wbr>File<wbr>Path</h3>
@@ -209,7 +253,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L114">src/init/AppRunner.ts:114</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L117">src/init/AppRunner.ts:117</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,13 +279,13 @@
 					<a name="run" class="tsd-anchor"></a>
 					<h3>run</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">run<span class="tsd-signature-symbol">(</span>loaderProperties<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span>, configFile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variableParams<span class="tsd-signature-symbol">: </span><a href="../interfaces/init_apprunner.configvariables.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigVariables</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<span class="tsd-signature-symbol">(</span>loaderProperties<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span>, configFile<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, variableParams<span class="tsd-signature-symbol">: </span><a href="../interfaces/init_apprunner.configvariables.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigVariables</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L20">src/init/AppRunner.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L34">src/init/AppRunner.ts:34</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,7 +296,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>loaderProperties: <span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_initializer.initializer.html" class="tsd-signature-type" data-tsd-kind="Class">Initializer</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>loaderProperties: <span class="tsd-signature-type">IComponentsManagerBuilderOptions</span><span class="tsd-signature-symbol">&lt;</span><a href="init_app.app.html" class="tsd-signature-type" data-tsd-kind="Class">App</a><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Components.js loader properties.</p>
 									</div>
@@ -284,7 +328,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/init/AppRunner.ts#L36">src/init/AppRunner.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/init/AppRunner.ts#L49">src/init/AppRunner.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,7 +370,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/init_apprunner.html">init/<wbr>App<wbr>Runner</a>
@@ -347,10 +391,13 @@
 								<a href="init_apprunner.apprunner.html#logger" class="tsd-kind-icon">logger</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="init_apprunner.apprunner.html#createinitializer" class="tsd-kind-icon">create<wbr>Initializer</a>
+								<a href="init_apprunner.apprunner.html#createapp" class="tsd-kind-icon">create<wbr>App</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 								<a href="init_apprunner.apprunner.html#createvariables" class="tsd-kind-icon">create<wbr>Variables</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="init_apprunner.apprunner.html#getapp" class="tsd-kind-icon">get<wbr>App</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 								<a href="init_apprunner.apprunner.html#resolvefilepath" class="tsd-kind-icon">resolve<wbr>File<wbr>Path</a>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>WebAclAuthorizer | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>WebAclAuthorizer | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/authorization_webaclauthorizer.html">authorization/WebAclAuthorizer</a>
@@ -114,9 +114,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="authorization_webaclauthorizer.webaclauthorizer.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#capitalize" class="tsd-kind-icon">capitalize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#checkpermission" class="tsd-kind-icon">check<wbr>Permission</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#createauthorization" class="tsd-kind-icon">create<wbr>Authorization</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#createpermissions" class="tsd-kind-icon">create<wbr>Permissions</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#determinepermissions" class="tsd-kind-icon">determine<wbr>Permissions</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#filterdata" class="tsd-kind-icon">filter<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#getaclrecursive" class="tsd-kind-icon">get<wbr>Acl<wbr>Recursive</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#getmodepermissions" class="tsd-kind-icon">get<wbr>Mode<wbr>Permissions</a></li>
@@ -124,6 +123,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="authorization_webaclauthorizer.webaclauthorizer.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#hasaccess" class="tsd-kind-icon">has<wbr>Access</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#haspermission" class="tsd-kind-icon">has<wbr>Permission</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#isauthenticated" class="tsd-kind-icon">is<wbr>Authenticated</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="authorization_webaclauthorizer.webaclauthorizer.html#requirepermission" class="tsd-kind-icon">require<wbr>Permission</a></li>
 							</ul>
 						</section>
 					</div>
@@ -142,7 +143,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="authorization_authorizer.authorizer.html">Authorizer</a>.<a href="authorization_authorizer.authorizer.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L31">src/authorization/WebAclAuthorizer.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L31">src/authorization/WebAclAuthorizer.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -170,7 +171,7 @@
 					<div class="tsd-signature tsd-kind-icon">acl<wbr>Strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ldp_auxiliary_auxiliaryidentifierstrategy.auxiliaryidentifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">AuxiliaryIdentifierStrategy</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L29">src/authorization/WebAclAuthorizer.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L29">src/authorization/WebAclAuthorizer.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -180,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">identifier<wbr>Strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L31">src/authorization/WebAclAuthorizer.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L31">src/authorization/WebAclAuthorizer.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,7 +191,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L27">src/authorization/WebAclAuthorizer.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L27">src/authorization/WebAclAuthorizer.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -200,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">resource<wbr>Store<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_resourcestore.resourcestore.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceStore</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L30">src/authorization/WebAclAuthorizer.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L30">src/authorization/WebAclAuthorizer.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -218,9 +219,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="authorization_authorizer.authorizer.html">Authorizer</a>.<a href="authorization_authorizer.authorizer.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L41">src/authorization/WebAclAuthorizer.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L41">src/authorization/WebAclAuthorizer.ts:41</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input data can be handled by this class.
+									Throws an error if it can&#39;t handle the data.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -228,6 +235,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise resolving if the input can be handled, rejecting with an Error if not.</p>
 						</li>
 					</ul>
 				</section>
@@ -241,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L144">src/authorization/WebAclAuthorizer.ts:144</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L156">src/authorization/WebAclAuthorizer.ts:156</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -264,66 +272,21 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="checkpermission" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> check<wbr>Permission</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>Permission<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, authorization<span class="tsd-signature-symbol">: </span><a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L104">src/authorization/WebAclAuthorizer.ts:104</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Checks if the authorization grants the agent permission to use the given mode.
-										Throws a <a href="util_errors_forbiddenhttperror.forbiddenhttperror.html">ForbiddenHttpError</a> or <a href="util_errors_unauthorizedhttperror.unauthorizedhttperror.html">UnauthorizedHttpError</a> depending on the credentials
-									if access is not allowed.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>agent: <a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Agent that wants access.</p>
-									</div>
-								</li>
-								<li>
-									<h5>authorization: <a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An Authorization containing the permissions the agent has on the resource.</p>
-									</div>
-								</li>
-								<li>
-									<h5>mode: <span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Which mode is requested.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="createauthorization" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> create<wbr>Authorization</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Authorization<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Authorization<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, acl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L71">src/authorization/WebAclAuthorizer.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L82">src/authorization/WebAclAuthorizer.ts:82</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates an Authorization object based on the quads found in the store.</p>
+									<p>Creates an Authorization object based on the quads found in the ACL.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -331,11 +294,11 @@
 								<li>
 									<h5>agent: <a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Agent who&#39;s credentials will be used for the <code>user</code> field.</p>
+										<p>Agent whose credentials will be used for the <code>user</code> field.</p>
 									</div>
 								</li>
 								<li>
-									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>acl: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Store containing all relevant authorization triples.</p>
 									</div>
@@ -346,21 +309,21 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<a name="createpermissions" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> create<wbr>Permissions</h3>
+					<a name="determinepermissions" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> determine<wbr>Permissions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Permissions<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_permissions_permissionset.permissionset.html" class="tsd-signature-type" data-tsd-kind="Interface">PermissionSet</a></li>
+						<li class="tsd-signature tsd-kind-icon">determine<wbr>Permissions<span class="tsd-signature-symbol">(</span>credentials<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, acl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_permissions_permissionset.permissionset.html" class="tsd-signature-type" data-tsd-kind="Interface">PermissionSet</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L83">src/authorization/WebAclAuthorizer.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L94">src/authorization/WebAclAuthorizer.ts:94</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Creates the authorization permissions for the given credentials.</p>
+									<p>Determines the available permissions for the given credentials.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -372,7 +335,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>acl: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Store containing all relevant authorization triples.</p>
 									</div>
@@ -392,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L229">src/authorization/WebAclAuthorizer.ts:229</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L252">src/authorization/WebAclAuthorizer.ts:252</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -440,13 +403,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L187">src/authorization/WebAclAuthorizer.ts:187</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L208">src/authorization/WebAclAuthorizer.ts:208</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns the acl triples that are relevant for the given identifier.
-										These can either be from a corresponding acl file or an acl file higher up with defaults.
+									<p>Returns the ACL triples that are relevant for the given identifier.
+										These can either be from a corresponding ACL document or an ACL document higher up with defaults.
 									Rethrows any non-NotFoundHttpErrors thrown by the ResourceStore.</p>
 								</div>
 							</div>
@@ -455,7 +418,7 @@
 								<li>
 									<h5>id: <a href="../interfaces/ldp_representation_resourceidentifier.resourceidentifier.html" class="tsd-signature-type" data-tsd-kind="Interface">ResourceIdentifier</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>ResourceIdentifier of which we need the acl triples.</p>
+										<p>ResourceIdentifier of which we need the ACL triples.</p>
 									</div>
 								</li>
 								<li>
@@ -466,7 +429,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A store containing the relevant acl triples.</p>
+							<p>A store containing the relevant ACL triples.</p>
 						</li>
 					</ul>
 				</section>
@@ -474,13 +437,13 @@
 					<a name="getmodepermissions" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Mode<wbr>Permissions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Mode<wbr>Permissions<span class="tsd-signature-symbol">(</span>store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, aclMode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Mode<wbr>Permissions<span class="tsd-signature-symbol">(</span>acl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, aclMode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L153">src/authorization/WebAclAuthorizer.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L165">src/authorization/WebAclAuthorizer.ts:165</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -491,9 +454,9 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>acl: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The store containing the quads of the acl resource.</p>
+										<p>The store containing the quads of the ACL resource.</p>
 									</div>
 								</li>
 								<li>
@@ -518,7 +481,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="authorization_authorizer.authorizer.html">Authorizer</a>.<a href="authorization_authorizer.authorizer.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L52">src/authorization/WebAclAuthorizer.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L52">src/authorization/WebAclAuthorizer.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -548,7 +511,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="authorization_authorizer.authorizer.html">Authorizer</a>.<a href="authorization_authorizer.authorizer.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -577,13 +540,13 @@
 					<a name="hasaccess" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Access</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">has<wbr>Access<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, auth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Access<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, auth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Term</span>, acl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L165">src/authorization/WebAclAuthorizer.ts:165</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L177">src/authorization/WebAclAuthorizer.ts:177</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -606,7 +569,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>acl: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>A store containing the relevant triples of the authorization.</p>
 									</div>
@@ -621,18 +584,18 @@
 					<a name="haspermission" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Permission</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">has<wbr>Permission<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, store<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Permission<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, acl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/authorization/WebAclAuthorizer.ts#L126">src/authorization/WebAclAuthorizer.ts:126</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L136">src/authorization/WebAclAuthorizer.ts:136</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Checks if the given agent has permission to execute the given mode based on the triples in the store.</p>
+									<p>Checks if the given agent has permission to execute the given mode based on the triples in the ACL.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -644,7 +607,7 @@
 									</div>
 								</li>
 								<li>
-									<h5>store: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>acl: <span class="tsd-signature-type">Store</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>A store containing the relevant triples for authorization.</p>
 									</div>
@@ -660,13 +623,89 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="isauthenticated" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Authenticated</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Authenticated<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">agent</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L73">src/authorization/WebAclAuthorizer.ts:73</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks whether the agent is authenticated (logged in) or not (public/anonymous).</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>agent: <a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Agent whose credentials will be checked.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">agent</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="requirepermission" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> require<wbr>Permission</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">require<wbr>Permission<span class="tsd-signature-symbol">(</span>agent<span class="tsd-signature-symbol">: </span><a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a>, authorization<span class="tsd-signature-symbol">: </span><a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/authorization/WebAclAuthorizer.ts#L115">src/authorization/WebAclAuthorizer.ts:115</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the authorization grants the agent permission to use the given mode.
+										Throws a <a href="util_errors_forbiddenhttperror.forbiddenhttperror.html">ForbiddenHttpError</a> or <a href="util_errors_unauthorizedhttperror.unauthorizedhttperror.html">UnauthorizedHttpError</a> depending on the credentials
+									if access is not allowed.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>agent: <a href="../interfaces/authentication_credentials.credentials.html" class="tsd-signature-type" data-tsd-kind="Interface">Credentials</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Agent that wants access.</p>
+									</div>
+								</li>
+								<li>
+									<h5>authorization: <a href="authorization_webaclauthorization.webaclauthorization.html" class="tsd-signature-type" data-tsd-kind="Class">WebAclAuthorization</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An Authorization containing the permissions the agent has on the resource.</p>
+									</div>
+								</li>
+								<li>
+									<h5>mode: <span class="tsd-signature-type">&quot;read&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;write&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;control&quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Which mode is requested.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
@@ -702,13 +741,10 @@
 								<a href="authorization_webaclauthorizer.webaclauthorizer.html#capitalize" class="tsd-kind-icon">capitalize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="authorization_webaclauthorizer.webaclauthorizer.html#checkpermission" class="tsd-kind-icon">check<wbr>Permission</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="authorization_webaclauthorizer.webaclauthorizer.html#createauthorization" class="tsd-kind-icon">create<wbr>Authorization</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-								<a href="authorization_webaclauthorizer.webaclauthorizer.html#createpermissions" class="tsd-kind-icon">create<wbr>Permissions</a>
+								<a href="authorization_webaclauthorizer.webaclauthorizer.html#determinepermissions" class="tsd-kind-icon">determine<wbr>Permissions</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="authorization_webaclauthorizer.webaclauthorizer.html#filterdata" class="tsd-kind-icon">filter<wbr>Data</a>
@@ -730,6 +766,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="authorization_webaclauthorizer.webaclauthorizer.html#haspermission" class="tsd-kind-icon">has<wbr>Permission</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="authorization_webaclauthorizer.webaclauthorizer.html#isauthenticated" class="tsd-kind-icon">is<wbr>Authenticated</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="authorization_webaclauthorizer.webaclauthorizer.html#requirepermission" class="tsd-kind-icon">require<wbr>Permission</a>
 							</li>
 						</ul>
 					</li>

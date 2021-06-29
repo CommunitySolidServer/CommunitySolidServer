@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PodSettingsParser | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>OwnershipValidator | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,16 +52,16 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
-					<a href="../modules/pods_settings_podsettingsparser.html">pods/settings/PodSettingsParser</a>
+					<a href="../modules/identity_ownership_ownershipvalidator.html">identity/ownership/OwnershipValidator</a>
 				</li>
 				<li>
-					<a href="pods_settings_podsettingsparser.podsettingsparser.html">PodSettingsParser</a>
+					<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html">OwnershipValidator</a>
 				</li>
 			</ul>
-			<h1>Class PodSettingsParser</h1>
+			<h1>Class OwnershipValidator</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Parser that generates a <a href="../interfaces/pods_settings_podsettings.podsettings.html">PodSettings</a> from the data in the given <a href="../interfaces/ldp_representation_representation.representation.html">Representation</a>.</p>
+						<p>A class that validates if a someone owns a WebId.
+							Will throw an error if the WebId is not valid or ownership could not be validated.
+						The error message should contain a description of what is wrong and how it can be resolved.</p>
 					</div>
 				</div>
 			</section>
@@ -79,13 +81,16 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/pods_settings_podsettings.podsettings.html" class="tsd-signature-type" data-tsd-kind="Interface">PodSettings</a><span class="tsd-signature-symbol">&gt;</span>
+						<a href="util_handlers_asynchandler.asynchandler.html" class="tsd-signature-type" data-tsd-kind="Class">AsyncHandler</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">PodSettingsParser</span>
+								<span class="target">OwnershipValidator</span>
 								<ul class="tsd-hierarchy">
 									<li>
-										<a href="pods_settings_podsettingsjsonparser.podsettingsjsonparser.html" class="tsd-signature-type" data-tsd-kind="Class">PodSettingsJsonParser</a>
+										<a href="identity_ownership_nocheckownershipvalidator.nocheckownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">NoCheckOwnershipValidator</a>
+									</li>
+									<li>
+										<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">TokenOwnershipValidator</a>
 									</li>
 								</ul>
 							</li>
@@ -100,15 +105,15 @@
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="pods_settings_podsettingsparser.podsettingsparser.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="pods_settings_podsettingsparser.podsettingsparser.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="pods_settings_podsettingsparser.podsettingsparser.html#handle" class="tsd-kind-icon">handle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="pods_settings_podsettingsparser.podsettingsparser.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handle" class="tsd-kind-icon">handle</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
 							</ul>
 						</section>
 					</div>
@@ -120,14 +125,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Pod<wbr>Settings<wbr>Parser<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pods_settings_podsettingsparser.podsettingsparser.html" class="tsd-signature-type" data-tsd-kind="Class">PodSettingsParser</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Ownership<wbr>Validator<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="identity_ownership_ownershipvalidator.ownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">OwnershipValidator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#constructor">constructor</a></p>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="pods_settings_podsettingsparser.podsettingsparser.html" class="tsd-signature-type" data-tsd-kind="Class">PodSettingsParser</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">OwnershipValidator</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -138,14 +143,14 @@
 					<a name="canhandle" class="tsd-anchor"></a>
 					<h3>can<wbr>Handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L13">src/util/handlers/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L13">src/util/handlers/AsyncHandler.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -157,10 +162,15 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+									<h5>input: <span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Input data that could potentially be handled.</p>
 									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>web<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -172,32 +182,37 @@
 					<a name="handle" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> handle</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pods_settings_podsettings.podsettings.html" class="tsd-signature-type" data-tsd-kind="Interface">PodSettings</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L24">src/util/handlers/AsyncHandler.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L24">src/util/handlers/AsyncHandler.ts:24</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Handles the given input. This should only be done if the <a href="pods_settings_podsettingsparser.podsettingsparser.html#canhandle">canHandle</a> function returned <code>true</code>.
-									Therefore, consider using the <a href="pods_settings_podsettingsparser.podsettingsparser.html#handlesafe">handleSafe</a> function instead.</p>
+									<p>Handles the given input. This should only be done if the <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#canhandle">canHandle</a> function returned <code>true</code>.
+									Therefore, consider using the <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handlesafe">handleSafe</a> function instead.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+									<h5>input: <span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Input data that needs to be handled.</p>
 									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>web<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pods_settings_podsettings.podsettings.html" class="tsd-signature-type" data-tsd-kind="Interface">PodSettings</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A promise resolving when the handling is finished. Return value depends on the given type.</p>
 						</li>
 					</ul>
@@ -206,33 +221,38 @@
 					<a name="handlesafe" class="tsd-anchor"></a>
 					<h3>handle<wbr>Safe</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pods_settings_podsettings.podsettings.html" class="tsd-signature-type" data-tsd-kind="Interface">PodSettings</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Safe<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="util_handlers_asynchandler.asynchandler.html">AsyncHandler</a>.<a href="util_handlers_asynchandler.asynchandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Helper function that first runs the canHandle function followed by the handle function.
-										Throws the error of the <a href="pods_settings_podsettingsparser.podsettingsparser.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
-									or returns the result of the <a href="pods_settings_podsettingsparser.podsettingsparser.html#handle">handle</a> function otherwise.</p>
+										Throws the error of the <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#canhandle">canHandle</a> function if the data can&#39;t be handled,
+									or returns the result of the <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handle">handle</a> function otherwise.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>input: <a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a></h5>
+									<h5>input: <span class="tsd-signature-symbol">{ </span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Input data that will be handled if it can be handled.</p>
 									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>web<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pods_settings_podsettings.podsettings.html" class="tsd-signature-type" data-tsd-kind="Interface">PodSettings</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A promise resolving if the input can be handled, rejecting with an Error if not.
 							Return value depends on the given type.</p>
 						</li>
@@ -244,10 +264,10 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/pods_settings_podsettingsparser.html">pods/settings/<wbr>Pod<wbr>Settings<wbr>Parser</a>
+						<a href="../modules/identity_ownership_ownershipvalidator.html">identity/ownership/<wbr>Ownership<wbr>Validator</a>
 					</li>
 				</ul>
 			</nav>
@@ -256,19 +276,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="pods_settings_podsettingsparser.podsettingsparser.html" class="tsd-kind-icon">Pod<wbr>Settings<wbr>Parser</a>
+						<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html" class="tsd-kind-icon">Ownership<wbr>Validator</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-								<a href="pods_settings_podsettingsparser.podsettingsparser.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="pods_settings_podsettingsparser.podsettingsparser.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
+								<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="pods_settings_podsettingsparser.podsettingsparser.html#handle" class="tsd-kind-icon">handle</a>
+								<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handle" class="tsd-kind-icon">handle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="pods_settings_podsettingsparser.podsettingsparser.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+								<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
 							</li>
 						</ul>
 					</li>

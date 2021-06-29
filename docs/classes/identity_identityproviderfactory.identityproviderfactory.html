@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IdentityProviderFactory | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>IdentityProviderFactory | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/identity_identityproviderfactory.html">identity/IdentityProviderFactory</a>
@@ -99,8 +99,9 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_identityproviderfactory.identityproviderfactory.html#configurationfactory" class="tsd-kind-icon">configuration<wbr>Factory</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_identityproviderfactory.identityproviderfactory.html#errorresponsewriter" class="tsd-kind-icon">error<wbr>Response<wbr>Writer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_identityproviderfactory.identityproviderfactory.html#errorhandler" class="tsd-kind-icon">error<wbr>Handler</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_identityproviderfactory.identityproviderfactory.html#issuer" class="tsd-kind-icon">issuer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_identityproviderfactory.identityproviderfactory.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -118,13 +119,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Identity<wbr>Provider<wbr>Factory<span class="tsd-signature-symbol">(</span>issuer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, configurationFactory<span class="tsd-signature-symbol">: </span><a href="../interfaces/identity_configuration_configurationfactory.configurationfactory.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigurationFactory</a>, errorResponseWriter<span class="tsd-signature-symbol">: </span><a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="identity_identityproviderfactory.identityproviderfactory.html" class="tsd-signature-type" data-tsd-kind="Class">IdentityProviderFactory</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Identity<wbr>Provider<wbr>Factory<span class="tsd-signature-symbol">(</span>issuer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, configurationFactory<span class="tsd-signature-symbol">: </span><a href="../interfaces/identity_configuration_configurationfactory.configurationfactory.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigurationFactory</a>, errorHandler<span class="tsd-signature-symbol">: </span><a href="ldp_http_errorhandler.errorhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ErrorHandler</a>, responseWriter<span class="tsd-signature-symbol">: </span><a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="identity_identityproviderfactory.identityproviderfactory.html" class="tsd-signature-type" data-tsd-kind="Class">IdentityProviderFactory</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/identity/IdentityProviderFactory.ts#L21">src/identity/IdentityProviderFactory.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L23">src/identity/IdentityProviderFactory.ts:23</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -136,7 +137,10 @@
 									<h5>configurationFactory: <a href="../interfaces/identity_configuration_configurationfactory.configurationfactory.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigurationFactory</a></h5>
 								</li>
 								<li>
-									<h5>errorResponseWriter: <a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a></h5>
+									<h5>errorHandler: <a href="ldp_http_errorhandler.errorhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ErrorHandler</a></h5>
+								</li>
+								<li>
+									<h5>responseWriter: <a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="identity_identityproviderfactory.identityproviderfactory.html" class="tsd-signature-type" data-tsd-kind="Class">IdentityProviderFactory</a></h4>
@@ -152,17 +156,17 @@
 					<div class="tsd-signature tsd-kind-icon">configuration<wbr>Factory<span class="tsd-signature-symbol">:</span> <a href="../interfaces/identity_configuration_configurationfactory.configurationfactory.html" class="tsd-signature-type" data-tsd-kind="Interface">ConfigurationFactory</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/identity/IdentityProviderFactory.ts#L20">src/identity/IdentityProviderFactory.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L21">src/identity/IdentityProviderFactory.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="errorresponsewriter" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> error<wbr>Response<wbr>Writer</h3>
-					<div class="tsd-signature tsd-kind-icon">error<wbr>Response<wbr>Writer<span class="tsd-signature-symbol">:</span> <a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a></div>
+					<a name="errorhandler" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> error<wbr>Handler</h3>
+					<div class="tsd-signature tsd-kind-icon">error<wbr>Handler<span class="tsd-signature-symbol">:</span> <a href="ldp_http_errorhandler.errorhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ErrorHandler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/identity/IdentityProviderFactory.ts#L21">src/identity/IdentityProviderFactory.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L22">src/identity/IdentityProviderFactory.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -172,7 +176,17 @@
 					<div class="tsd-signature tsd-kind-icon">issuer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/identity/IdentityProviderFactory.ts#L19">src/identity/IdentityProviderFactory.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L20">src/identity/IdentityProviderFactory.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="responsewriter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> response<wbr>Writer</h3>
+					<div class="tsd-signature tsd-kind-icon">response<wbr>Writer<span class="tsd-signature-symbol">:</span> <a href="ldp_http_responsewriter.responsewriter.html" class="tsd-signature-type" data-tsd-kind="Class">ResponseWriter</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L23">src/identity/IdentityProviderFactory.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -189,7 +203,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/identity/IdentityProviderFactory.ts#L30">src/identity/IdentityProviderFactory.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/identity/IdentityProviderFactory.ts#L33">src/identity/IdentityProviderFactory.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -234,7 +248,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/identity_identityproviderfactory.html">identity/<wbr>Identity<wbr>Provider<wbr>Factory</a>
@@ -255,10 +269,13 @@
 								<a href="identity_identityproviderfactory.identityproviderfactory.html#configurationfactory" class="tsd-kind-icon">configuration<wbr>Factory</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="identity_identityproviderfactory.identityproviderfactory.html#errorresponsewriter" class="tsd-kind-icon">error<wbr>Response<wbr>Writer</a>
+								<a href="identity_identityproviderfactory.identityproviderfactory.html#errorhandler" class="tsd-kind-icon">error<wbr>Handler</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="identity_identityproviderfactory.identityproviderfactory.html#issuer" class="tsd-kind-icon">issuer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="identity_identityproviderfactory.identityproviderfactory.html#responsewriter" class="tsd-kind-icon">response<wbr>Writer</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="identity_identityproviderfactory.identityproviderfactory.html#createprovider" class="tsd-kind-icon">create<wbr>Provider</a>

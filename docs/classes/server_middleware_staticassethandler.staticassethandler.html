@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>StaticAssetHandler | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>StaticAssetHandler | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/server_middleware_staticassethandler.html">server/middleware/StaticAssetHandler</a>
@@ -135,7 +135,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L23">src/server/middleware/StaticAssetHandler.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L23">src/server/middleware/StaticAssetHandler.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -166,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L23">src/server/middleware/StaticAssetHandler.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L23">src/server/middleware/StaticAssetHandler.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -176,7 +176,7 @@
 					<div class="tsd-signature tsd-kind-icon">mappings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L21">src/server/middleware/StaticAssetHandler.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L21">src/server/middleware/StaticAssetHandler.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,7 +186,7 @@
 					<div class="tsd-signature tsd-kind-icon">path<wbr>Matcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RegExp</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L22">src/server/middleware/StaticAssetHandler.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L22">src/server/middleware/StaticAssetHandler.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,9 +204,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L75">src/server/middleware/StaticAssetHandler.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L75">src/server/middleware/StaticAssetHandler.ts:75</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input data can be handled by this class.
+									Throws an error if it can&#39;t handle the data.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -214,6 +220,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise resolving if the input can be handled, rejecting with an Error if not.</p>
 						</li>
 					</ul>
 				</section>
@@ -227,7 +234,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L42">src/server/middleware/StaticAssetHandler.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L42">src/server/middleware/StaticAssetHandler.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -255,7 +262,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L61">src/server/middleware/StaticAssetHandler.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L61">src/server/middleware/StaticAssetHandler.ts:61</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -284,9 +291,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/server/middleware/StaticAssetHandler.ts#L82">src/server/middleware/StaticAssetHandler.ts:82</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/server/middleware/StaticAssetHandler.ts#L82">src/server/middleware/StaticAssetHandler.ts:82</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Handles the given input. This should only be done if the <a href="server_middleware_staticassethandler.staticassethandler.html#canhandle">canHandle</a> function returned <code>true</code>.
+									Therefore, consider using the <a href="server_middleware_staticassethandler.staticassethandler.html#handlesafe">handleSafe</a> function instead.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -294,6 +307,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise resolving when the handling is finished. Return value depends on the given type.</p>
 						</li>
 					</ul>
 				</section>
@@ -308,7 +322,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="server_httphandler.httphandler.html">HttpHandler</a>.<a href="server_httphandler.httphandler.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -339,7 +353,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/server_middleware_staticassethandler.html">server/middleware/<wbr>Static<wbr>Asset<wbr>Handler</a>

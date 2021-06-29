@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ConstantConverter | Community Solid Server - v0.9.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v0.9.0">
+	<title>ConstantConverter | Community Solid Server - v1.0.0-beta.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v0.9.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v0.9.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
 				</li>
 				<li>
 					<a href="../modules/storage_conversion_constantconverter.html">storage/conversion/ConstantConverter</a>
@@ -78,6 +78,7 @@
 					others are replaced by a constant document.</p>
 					<p>This can for example be used to serve an index.html file,
 					which could then interactively load another representation.</p>
+					<p>Options default to the most permissive values when not defined.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -108,6 +109,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_constantconverter.constantconverter.html#contenttype" class="tsd-kind-icon">content<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_constantconverter.constantconverter.html#filepath" class="tsd-kind-icon">file<wbr>Path</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_constantconverter.constantconverter.html#options" class="tsd-kind-icon">options</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -127,14 +129,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Constant<wbr>Converter<span class="tsd-signature-symbol">(</span>filePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, contentType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_constantconverter.constantconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ConstantConverter</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Constant<wbr>Converter<span class="tsd-signature-symbol">(</span>filePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, contentType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/storage_conversion_constantconverter.constantconverteroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ConstantConverterOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_constantconverter.constantconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ConstantConverter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConstantConverter.ts#L21">src/storage/conversion/ConstantConverter.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L43">src/storage/conversion/ConstantConverter.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -156,6 +158,12 @@
 										<p>The content type of the constant representation.</p>
 									</div>
 								</li>
+								<li>
+									<h5>options: <a href="../interfaces/storage_conversion_constantconverter.constantconverteroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ConstantConverterOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Extra options for the converter.</p>
+									</div>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_conversion_constantconverter.constantconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ConstantConverter</a></h4>
 						</li>
@@ -170,7 +178,7 @@
 					<div class="tsd-signature tsd-kind-icon">content<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConstantConverter.ts#L21">src/storage/conversion/ConstantConverter.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L42">src/storage/conversion/ConstantConverter.ts:42</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -180,7 +188,17 @@
 					<div class="tsd-signature tsd-kind-icon">file<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConstantConverter.ts#L20">src/storage/conversion/ConstantConverter.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L41">src/storage/conversion/ConstantConverter.ts:41</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="options" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/storage_conversion_constantconverter.constantconverteroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ConstantConverterOptions</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L43">src/storage/conversion/ConstantConverter.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -198,9 +216,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConstantConverter.ts#L35">src/storage/conversion/ConstantConverter.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L63">src/storage/conversion/ConstantConverter.ts:63</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Checks if the input data can be handled by this class.
+									Throws an error if it can&#39;t handle the data.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -222,9 +246,15 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/storage/conversion/ConstantConverter.ts#L50">src/storage/conversion/ConstantConverter.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ConstantConverter.ts#L92">src/storage/conversion/ConstantConverter.ts:92</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Handles the given input. This should only be done if the <a href="storage_conversion_constantconverter.constantconverter.html#canhandle">canHandle</a> function returned <code>true</code>.
+									Therefore, consider using the <a href="storage_conversion_constantconverter.constantconverter.html#handlesafe">handleSafe</a> function instead.</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -246,7 +276,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_representationconverter.representationconverter.html">RepresentationConverter</a>.<a href="storage_conversion_representationconverter.representationconverter.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/0a68fbf/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -277,7 +307,7 @@
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../modules.html">Modules</a>
 					</li>
 					<li class="current tsd-kind-module">
 						<a href="../modules/storage_conversion_constantconverter.html">storage/conversion/<wbr>Constant<wbr>Converter</a>
@@ -300,6 +330,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_conversion_constantconverter.constantconverter.html#filepath" class="tsd-kind-icon">file<wbr>Path</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_constantconverter.constantconverter.html#options" class="tsd-kind-icon">options</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="storage_conversion_constantconverter.constantconverter.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
 							</li>
@@ -313,6 +346,9 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/storage_conversion_constantconverter.constantconverteroptions.html" class="tsd-kind-icon">Constant<wbr>Converter<wbr>Options</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
