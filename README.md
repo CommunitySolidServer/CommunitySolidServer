@@ -46,7 +46,31 @@ issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+
 
 ## Running the server
 
-### Configuring the server
+### Installing and running locally
+```shell
+npm install -g @solid/community-server
+community-solid-server # add parameters if needed
+```
+
+### Installing and running from source
+```shell
+npm ci
+npm start -- # add parameters if needed
+```
+
+### Running via Docker
+```shell
+# Build the Docker image
+docker build --rm -f Dockerfile -t css:latest .
+# Run the image against your `~/Solid` directory on `http://localhost:3000`
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
+# Use alternative built-in configurations
+docker run --rm -p 3000:3000 -it css:latest -c config/default.json
+# Use your own configuration mapped to the right directory
+docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
+```
+
+## Configuring the server
 Community Solid Server (CSS) uses
 [ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all
 configuration for the server. There are a variety of configuration files for
@@ -54,47 +78,18 @@ common use cases in the `config` folder.
 
 Additional recipes for configuring and deploying the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
 
-| Parameter | Default | Description |
-| --------- | ------- | ----------- |
-| `--port, -p` | `3000` | |
-| `--baseUrl. -b` | `"http://localhost:$PORT/"` | Needs to be set to the base URL of the server for authnetication and authorization to function. |
-| `--config, -c` | `"config/default.json"` | `config/default.json` stores all data in memory. If you would like to persist data to your filesystem, try `config/file.json` |
-| `--mainModulePath, -m` | | Absolute path to the package root from which ComponentJS module resolution should start. |
-| `--loggingLevel, -l` | `"info"`| |
-| `--rootFilePath, -f` | `"./"` | Folder to start the server in when using a file-based config. |
-| `--sparqlEndpoint, -s` | | Endpoint to call when using a SPARQL-based config. |
-| `--showStackTrace, -t` | false | Whether error stack traces should be shown in responses. |
-| `--podConfigJson` | `"./pod-config.json"` | JSON file to store pod configuration when using a dynamic config. |
-| `--idpTemplateFolder` | `"templates/idp"` | Folder containing the templates used for IDP interactions. |
-
-### Installing and running locally
-
-```shell
-$ npm ci
-$ npm start [-- ARGS]
-```
-
-## Run using Docker
-
-A Docker image is available to run the containerised Solid Community Server against your filesystem.
-
-Common usage:
-- Build the Docker image
-  ```shell
-  docker build --rm -f Dockerfile -t css:latest .
-  ```
-- Run the image against your `~/Solid` directory on `http://localhost:3000`
-  ```shell
-  docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
-  ```
-- Use alternative versions of the built in config. The filestorage is just the default configuration, you can override with any of the configurations included with the server
-  ```shell
-  docker run --rm -p 3000:3000 -it css:latest -c config/default.json
-  ```
-  Or override it with your own config mapped to the right directory
-  ```shell
-  docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
-  ```
+| Parameter              | Default                     | Description                                                                                                 |
+| ---------              | -------                     | -----------                                                                                                 |
+| `--port, -p`           | `3000`                      |                                                                                                             |
+| `--baseUrl. -b`        | `"http://localhost:$PORT/"` | Needs to be set to the base URL of the server for authentication and authorization to function.             |
+| `--config, -c`         | `"config/default.json"`     | `config/default.json` stores all data in memory. To persist data to your filesystem, try `config/file.json` |
+| `--mainModulePath, -m` |                             | Absolute path to the package root from which ComponentJS module resolution should start.                    |
+| `--loggingLevel, -l`   | `"info"`                    |                                                                                                             |
+| `--rootFilePath, -f`   | `"./"`                      | Folder to start the server in when using a file-based config.                                               |
+| `--sparqlEndpoint, -s` |                             | Endpoint to call when using a SPARQL-based config.                                                          |
+| `--showStackTrace, -t` | false                       | Whether error stack traces should be shown in responses.                                                    |
+| `--podConfigJson`      | `"./pod-config.json"`       | JSON file to store pod configuration when using a dynamic config.                                           |
+| `--idpTemplateFolder`  | `"templates/idp"`           | Folder containing the templates used for IDP interactions.                                                  |
 
 ## Using the identity provider
 
