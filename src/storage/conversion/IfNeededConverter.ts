@@ -44,7 +44,7 @@ export class IfNeededConverter extends RepresentationConverter {
     const noMatchingMediaType = !matchesMediaPreferences(contentType, preferences.type);
     if (noMatchingMediaType) {
       this.logger.debug(`Conversion needed for ${identifier
-        .path} from ${representation.metadata.contentType} to satisfy ${!preferences.type ?
+        .path} from ${contentType} to satisfy ${!preferences.type ?
         '""' :
         Object.entries(preferences.type).map(([ value, weight ]): string => `${value};q=${weight}`).join(', ')}`);
     }

@@ -207,11 +207,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     // if it contains no resources. If the container contains resources,
     // the server MUST respond with the 409 status code and response body describing the error."
     // https://solid.github.io/specification/protocol#deleting-resources
-    if (isContainerIdentifier(identifier)) {
-      // Auxiliary resources are not counted when deleting a container since they will also be deleted
-      if (await this.hasProperChildren(identifier)) {
-        throw new ConflictHttpError('Can only delete empty containers.');
-      }
+    // Auxiliary resources are not counted when deleting a container since they will also be deleted.
+    if (isContainerIdentifier(identifier) && await this.hasProperChildren(identifier)) {
+      throw new ConflictHttpError('Can only delete empty containers.');
     }
     // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
     // resources"
@@ -291,9 +289,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     createContainers?: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
-    const { metadata } = representation;
-    metadata.identifier = DataFactory.namedNode(identifier.path);
-    addResourceMetadata(metadata, isContainer);
+    representation.metadata.identifier = DataFactory.namedNode(identifier.path);
+    addResourceMetadata(representation.metadata, isContainer);
 
     // Validate container data
     if (isContainer) {

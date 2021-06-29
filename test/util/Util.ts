@@ -4,7 +4,6 @@ import { PassThrough } from 'stream';
 import streamifyArray from 'streamify-array';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const portNames = [
   // Integration
   'DynamicPods',

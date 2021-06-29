@@ -45,7 +45,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     // and extract the WebID provided by the client
     try {
       const { webid: webId } = await this.verify(
-        authorization as string,
+        authorization!,
         {
           header: dpop as string,
           method: method as RequestMethod,

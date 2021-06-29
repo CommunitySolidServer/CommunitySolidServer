@@ -19,6 +19,6 @@ export class SessionHttpHandler extends InteractionHttpHandler {
     if (!details.session || !details.session.accountId) {
       throw new NotImplementedHttpError('Only confirm actions with a session and accountId are supported');
     }
-    await this.interactionCompleter.handleSafe({ ...input, webId: details.session.accountId });
+    await this.interactionCompleter.handleSafe({ ...input, webId: details.session.accountId as any });
   }
 }

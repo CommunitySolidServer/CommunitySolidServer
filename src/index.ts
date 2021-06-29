@@ -200,6 +200,7 @@ export * from './server/BaseHttpServerFactory';
 export * from './server/HttpHandler';
 export * from './server/HttpRequest';
 export * from './server/HttpResponse';
+export * from './server/HttpServerFactory';
 export * from './server/WebSocketServerFactory';
 export * from './server/WebSocketHandler';
 

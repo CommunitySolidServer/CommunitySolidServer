@@ -188,16 +188,16 @@ export class RegistrationHandler extends HttpHandler {
    * Verifies that all the data combinations make sense.
    */
   private validateInput(parsed: NodeJS.Dict<string>): ParseResult {
-    const { email, password, confirmPassword, podName, webId } = parsed;
+    const { email, password, confirmPassword, podName, webId, createWebId, register, createPod } = parsed;
 
     assert(typeof email === 'string' && email.length > 0 && emailRegex.test(email),
       'A valid e-mail address is required');
 
     const result: ParseResult = {
       email,
-      createWebId: Boolean(parsed.createWebId),
-      register: Boolean(parsed.register),
-      createPod: Boolean(parsed.createPod),
+      createWebId: Boolean(createWebId),
+      register: Boolean(register),
+      createPod: Boolean(createPod),
       data: parsed,
     };
 

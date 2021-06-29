@@ -30,7 +30,7 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
     const { headers: { authorization }} = request;
 
     try {
-      const { webid: webId } = await this.verify(authorization as string);
+      const { webid: webId } = await this.verify(authorization!);
       this.logger.info(`Verified WebID via Bearer access token: ${webId}`);
       return { webId };
     } catch (error: unknown) {

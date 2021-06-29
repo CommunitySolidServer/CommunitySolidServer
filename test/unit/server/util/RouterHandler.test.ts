@@ -15,7 +15,7 @@ describe('RouterHandler', (): void => {
     genericRequest = guardStream(createRequest({
       url: '/test',
     }));
-    genericResponse = createResponse();
+    genericResponse = createResponse() as HttpResponse;
     genericInput = {
       request: genericRequest,
       response: genericResponse,

@@ -18,7 +18,7 @@ export class UnsecureWebIdExtractor extends CredentialsExtractor {
   }
 
   public async handle({ headers }: HttpRequest): Promise<Credentials> {
-    const webId = /^WebID\s+(.*)/u.exec(headers.authorization as string)![1];
+    const webId = /^WebID\s+(.*)/u.exec(headers.authorization!)![1];
     this.logger.info(`Agent unsecurely claims to be ${webId}`);
     return { webId };
   }

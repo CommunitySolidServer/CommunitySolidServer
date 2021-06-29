@@ -54,7 +54,7 @@ export class ExpiringAdapter implements Adapter {
     if (payload.grantId) {
       storagePromises.push(
         (async(): Promise<void> => {
-          const grantKey = this.grantKeyFor(payload.grantId as string);
+          const grantKey = this.grantKeyFor(payload.grantId!);
           const grants = (await this.storage.get(grantKey) || []) as string[];
           grants.push(key);
           await this.storage.set(grantKey, grants, expires);

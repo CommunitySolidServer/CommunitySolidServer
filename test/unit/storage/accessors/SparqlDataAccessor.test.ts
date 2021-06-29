@@ -265,7 +265,7 @@ describe('A SparqlDataAccessor', (): void => {
     fetchError = 'error';
     await expect(accessor.getMetadata({ path: 'http://identifier' })).rejects.toBe(fetchError);
 
-    fetchError = new Error();
+    fetchError = new Error('read error');
     await expect(accessor.getMetadata({ path: 'http://identifier' })).rejects.toThrow(fetchError);
 
     fetchError = undefined;
@@ -278,7 +278,7 @@ describe('A SparqlDataAccessor', (): void => {
     updateError = 'error';
     await expect(accessor.writeContainer(identifier, metadata)).rejects.toBe(updateError);
 
-    updateError = new Error();
+    updateError = new Error('write error');
     await expect(accessor.writeContainer(identifier, metadata)).rejects.toThrow(updateError);
 
     updateError = undefined;

@@ -122,7 +122,7 @@ describe('A StaticAssetHandler', (): void => {
   it('throws a 404 when the asset does not exist.', async(): Promise<void> => {
     const request = { method: 'GET', url: '/foo/bar/main' };
     const response = createResponse({ eventEmitter: EventEmitter });
-    const error = new Error() as SystemError;
+    const error = new Error('no file') as SystemError;
     error.code = 'ENOENT';
     const stream = new PassThrough();
     stream._read = (): any => stream.emit('error', error);
@@ -135,7 +135,7 @@ describe('A StaticAssetHandler', (): void => {
   it('throws a 404 when the asset is folder.', async(): Promise<void> => {
     const request = { method: 'GET', url: '/foo/bar/main' };
     const response = createResponse({ eventEmitter: EventEmitter });
-    const error = new Error() as SystemError;
+    const error = new Error('is directory') as SystemError;
     error.code = 'EISDIR';
     const stream = new PassThrough();
     stream._read = (): any => stream.emit('error', error);
@@ -149,7 +149,7 @@ describe('A StaticAssetHandler', (): void => {
     const request = { method: 'GET', url: '/foo/bar/main' };
     const response = createResponse({ eventEmitter: EventEmitter });
     const responseEnd = new Promise((resolve): any => response.on('end', resolve));
-    const error = new Error();
+    const error = new Error('random error');
     const stream = new PassThrough();
     stream._read = (): any => stream.emit('error', error);
     createReadStream.mockReturnValueOnce(stream as any);

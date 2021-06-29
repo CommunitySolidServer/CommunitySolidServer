@@ -142,6 +142,6 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    return new BasicRepresentation(result.match() as Readable, metadata);
+    return new BasicRepresentation(result.match() as unknown as Readable, metadata);
   }
 }

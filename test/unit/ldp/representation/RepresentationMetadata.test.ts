@@ -112,8 +112,8 @@ describe('A RepresentationMetadata', (): void => {
       metadata.setMetadata(other);
 
       expect(metadata.identifier).toEqual(other.identifier);
-      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.concat([
-        quad(identifier, namedNode('test:pred'), literal('objVal')) ]));
+      expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads,
+        quad(identifier, namedNode('test:pred'), literal('objVal')) ]);
     });
 
     it('updates its identifier when copying metadata.', async(): Promise<void> => {
@@ -134,7 +134,7 @@ describe('A RepresentationMetadata', (): void => {
         quad(namedNode('random'), namedNode('new'), namedNode('triple')),
       ];
       metadata.addQuads(newQuads);
-      expect(metadata.quads()).toBeRdfIsomorphic(newQuads.concat(inputQuads));
+      expect(metadata.quads()).toBeRdfIsomorphic([ ...newQuads, ...inputQuads ]);
     });
 
     it('can remove quads.', async(): Promise<void> => {
@@ -145,13 +145,13 @@ describe('A RepresentationMetadata', (): void => {
     it('can add a single value for a predicate.', async(): Promise<void> => {
       const newQuad = quad(identifier, namedNode('new'), namedNode('triple'));
       metadata.add(newQuad.predicate as NamedNode, newQuad.object as NamedNode);
-      expect(metadata.quads()).toBeRdfIsomorphic([ newQuad ].concat(inputQuads));
+      expect(metadata.quads()).toBeRdfIsomorphic([ newQuad, ...inputQuads ]);
     });
 
     it('can add single values as string.', async(): Promise<void> => {
       const newQuad = quad(identifier, namedNode('new'), literal('triple'));
       metadata.add(newQuad.predicate as NamedNode, newQuad.object.value);
-      expect(metadata.quads()).toBeRdfIsomorphic([ newQuad ].concat(inputQuads));
+      expect(metadata.quads()).toBeRdfIsomorphic([ newQuad, ...inputQuads ]);
     });
 
     it('can add multiple values for a predicate.', async(): Promise<void> => {
@@ -160,7 +160,7 @@ describe('A RepresentationMetadata', (): void => {
         quad(identifier, namedNode('new'), namedNode('triple2')),
       ];
       metadata.add(namedNode('new'), [ namedNode('triple'), namedNode('triple2') ]);
-      expect(metadata.quads()).toBeRdfIsomorphic(newQuads.concat(inputQuads));
+      expect(metadata.quads()).toBeRdfIsomorphic([ ...newQuads, ...inputQuads ]);
     });
 
     it('can remove a single value for a predicate.', async(): Promise<void> => {

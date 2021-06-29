@@ -6,6 +6,8 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: [ './tsconfig.json', './test/tsconfig.json' ],
   },
+  // Ignoring js files (such as this one) since they seem to conflict with rules that require typing info
+  ignorePatterns: [ '*.js' ],
   globals: {
     AsyncIterable: 'readonly',
     NodeJS: 'readonly',
@@ -49,6 +51,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'comma-dangle': [ 'error', 'always-multiline' ],
     'dot-location': [ 'error', 'property' ],
+    'eslint-comments/disable-enable-pair': 'off',
     // Allow declaring overloads in TypeScript (https://eslint.org/docs/rules/func-style)
     'func-style': [ 'error', 'declaration' ],
     'generator-star-spacing': [ 'error', 'after' ],
@@ -74,7 +77,8 @@ module.exports = {
     'unicorn/catch-error-name': 'off',
     'unicorn/import-index': 'off',
     'unicorn/import-style': 'off',
-    // This prevents some functional programming paradigms
+    // The next 2 some functional programming paradigms
+    'unicorn/no-array-callback-reference': 'off',
     'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
