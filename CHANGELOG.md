@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.0.0-beta.0"></a>
+## [v1.0.0-beta.0](https://github.com/solid/community-server/compare/v0.9.0...v1.0.0-beta.0) - 2021-06-29
+
+### Added
+* [feat: Support creation of HTTPS server](https://github.com/solid/community-server/commit/7faad0aef0f0d9d5c106e57c16e17340cb1ba303)
+* [feat: Combine pod creation with IDP registration](https://github.com/solid/community-server/commit/4d7d939dc4ab0a4da3eca6e0656cb0325aba06e2)
+* [feat: Create ErrorHandler to convert errors to Representations](https://github.com/solid/community-server/commit/e1f95877dac6a8f77d2c7a687bf478440ee5cb17)
+* [feat: Add showStackTrace CLI variable](https://github.com/solid/community-server/commit/b604dd8331e1c7682dd6080c696981855e277df6)
+* [feat: Create WWW-Authenticate metadata writer](https://github.com/solid/community-server/commit/e3c5b3975266e5eee3939f9d1e8f5e0537417782)
+* [Expose constant Allow header](https://github.com/solid/community-server/commit/a6371b073597ae922c3374d952dfdf2f920017ac)
+* [feat: Add ErrorToHtmlConverter using templates](https://github.com/solid/community-server/commit/9c0fa775276b8ba3383d25a155a2507309e0a1de)
+* [fix: Support BGPs with variables in SPARQL UPDATE queries](https://github.com/solid/community-server/commit/f299b36e2429245bf82be85ca0cccf733d658619)
+
+### Changed
+* [refactor: Move config templates to templates folder](https://github.com/solid/community-server/commit/fadbaefce239e2367c0d24727edf1afb14cbf03d)
+* [feat: Split preset configurations by feature](https://github.com/solid/community-server/commit/452032e3120d490d7261b9d304c8c393410f0406)
+* [feat: Remove /interaction/:uid from IDP URLs](https://github.com/solid/community-server/commit/df33b6dc472490568490ad5de4a011938e9cb205)
+
+### Fixed
+* [fix: Support missing type preferences in ChainedConverter](https://github.com/solid/community-server/commit/52a3b84ee0dd55baed0dd244f75c12d06ed77666)
+* [fix: Add solid_oidc_supported to openid config](https://github.com/solid/community-server/commit/b328f9a1b06e2bc7994a82d4a7f90712a19c9b88)
+
+
 <a name="v0.9.0"></a>
 ## [v0.9.0](https://github.com/solid/community-server/compare/v0.8.1...v0.9.0) - 2021-05-04
 
