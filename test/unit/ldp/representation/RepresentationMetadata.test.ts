@@ -150,13 +150,13 @@ describe('A RepresentationMetadata', (): void => {
     it('can add a quad.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'));
       metadata.addQuad('random', 'new', 'triple');
-      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.concat([ newQuad ]));
+      expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add a quad with a graph.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'), namedNode('graph'));
       metadata.addQuad('random', 'new', 'triple', 'graph');
-      expect(metadata.quads()).toBeRdfIsomorphic(inputQuads.concat([ newQuad ]));
+      expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add quads.', async(): Promise<void> => {

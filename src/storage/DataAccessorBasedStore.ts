@@ -26,7 +26,18 @@ import {
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
 import { addResourceMetadata } from '../util/ResourceUtil';
-import { CONTENT_TYPE, DC, SOLID_HTTP, LDP, POSIX, PIM, RDF, VANN, XSD } from '../util/Vocabularies';
+import {
+  CONTENT_TYPE,
+  DC,
+  SOLID_HTTP,
+  LDP,
+  POSIX,
+  PIM,
+  RDF,
+  XSD,
+  SOLID_META,
+  PREFERRED_PREFIX_TERM,
+} from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { ResourceStore } from './ResourceStore';
 
@@ -98,16 +109,23 @@ export class DataAccessorBasedStore implements ResourceStore {
       for await (const child of this.accessor.getChildren(identifier)) {
         if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
           metadata.addQuads(child.quads());
-          metadata.add(LDP.terms.contains, child.identifier as NamedNode);
+          metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
       }
 
       // Generate a container representation from the metadata
-      const data = metadata.quads();
-      metadata.addQuad(DC.terms.namespace, VANN.terms.preferredNamespacePrefix, 'dc');
-      metadata.addQuad(LDP.terms.namespace, VANN.terms.preferredNamespacePrefix, 'ldp');
-      metadata.addQuad(POSIX.terms.namespace, VANN.terms.preferredNamespacePrefix, 'posix');
-      metadata.addQuad(XSD.terms.namespace, VANN.terms.preferredNamespacePrefix, 'xsd');
+      // All triples should be in the same graph for the data representation
+      const data = metadata.quads().map((triple): Quad => {
+        if (triple.graph.termType === 'DefaultGraph') {
+          return triple;
+        }
+        return DataFactory.quad(triple.subject, triple.predicate, triple.object);
+      });
+
+      metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
     } else {
       // Retrieve a document representation from the accessor
@@ -316,6 +334,11 @@ export class DataAccessorBasedStore implements ResourceStore {
         modified.push(...created.length === 0 ? [ container ] : created);
       }
     }
+
+    // Remove all generated metadata to prevent it from being stored permanently
+    representation.metadata.removeQuads(
+      representation.metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata),
+    );
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :

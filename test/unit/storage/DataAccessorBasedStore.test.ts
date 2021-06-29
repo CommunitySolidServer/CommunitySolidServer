@@ -21,9 +21,8 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF } from '../../../src/util/Vocabularies';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
+import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META } from '../../../src/util/Vocabularies';
+const { namedNode, quad } = DataFactory;
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -379,8 +378,8 @@ describe('A DataAccessorBasedStore', (): void => {
     it('can write resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: 'http://test.com/' },
-        { path: 'http://test.com/resource' },
+        { path: root },
+        { path: `${root}resource` },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
@@ -393,11 +392,24 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}` },
+        { path: root },
         { path: `${root}container/` },
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+    });
+
+    it('does not write generated metadata.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      representation.metadata.add('notGen', 'value');
+      representation.metadata.add('gen', 'value', SOLID_META.terms.ResponseMetadata);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: root },
+        { path: `${root}resource` },
+      ]);
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.get('notGen')?.value).toBe('value');
+      expect(accessor.data[resourceID.path].metadata.get('gen')).toBeUndefined();
     });
 
     it('can write resources even if root does not exist.', async(): Promise<void> => {

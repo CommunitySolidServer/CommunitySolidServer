@@ -15,7 +15,7 @@ import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, DC, LDP, POSIX, RDF, XSD } from '../../util/Vocabularies';
+import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -319,10 +319,14 @@ export class FileDataAccessor implements DataAccessor {
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
   private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
-    metadata.add(DC.terms.modified, toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime));
-    metadata.add(POSIX.terms.mtime, toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer));
+    metadata.add(DC.terms.modified,
+      toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime),
+      SOLID_META.terms.ResponseMetadata);
+    metadata.add(POSIX.terms.mtime,
+      toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer),
+      SOLID_META.terms.ResponseMetadata);
     if (!stats.isDirectory()) {
-      metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer));
+      metadata.add(POSIX.terms.size, toLiteral(stats.size, XSD.terms.integer), SOLID_META.terms.ResponseMetadata);
     }
   }
 

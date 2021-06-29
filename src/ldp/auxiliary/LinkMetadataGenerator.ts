@@ -1,4 +1,5 @@
 import { namedNode } from '@rdfjs/data-model';
+import { SOLID_META } from '../../util/Vocabularies';
 import type { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy';
 import { MetadataGenerator } from './MetadataGenerator';
@@ -22,7 +23,9 @@ export class LinkMetadataGenerator extends MetadataGenerator {
   public async handle(metadata: RepresentationMetadata): Promise<void> {
     const identifier = { path: metadata.identifier.value };
     if (!this.identifierStrategy.isAuxiliaryIdentifier(identifier)) {
-      metadata.add(this.link, namedNode(this.identifierStrategy.getAuxiliaryIdentifier(identifier).path));
+      metadata.add(this.link,
+        namedNode(this.identifierStrategy.getAuxiliaryIdentifier(identifier).path),
+        SOLID_META.terms.ResponseMetadata);
     }
   }
 }
