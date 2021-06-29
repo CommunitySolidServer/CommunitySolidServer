@@ -17,33 +17,6 @@ to create and test new Solid applications.
 trying out new ideas on the server side
 and thereby shape the future of Solid.
 
-## Current status
-This server is in beta stage, which means you can start using it for developing
-and testing apps, with some limitations:
-- The spec is still under active development, and as such some features (like
-  `trustedApps`) are not yet implemented because they are likely to change. If
-  your users rely on this functionality, migrating is not yet recommended.
-
-Your feedback is most welcome as [issues on this
-repository](https://github.com/solid/community-server/issues/new).
-
-However, you can already boot up the server, play around with it, and check how
-it is made.
-
-The [📗 API documentation](https://solid.github.io/community-server/docs/) and
-the [📐 architectural
-diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
-can help you find your way. The organization and structure of the classes and
-components in the [src folder](/src) is designed to align with this
-architectural diagram to the extent possible (i.e. the [ldp folder](src/ldp)
-should contain all the components from the `ldp` section of the diagram.
-
-If you are interested in helping out with the development of this server, be
-sure to have a look at the [📓 developer
-notes](guides/developer-notes.md) and
-[🛠️ good first
-issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
-
 ## Running the server
 
 ### Installing and running locally
@@ -120,3 +93,18 @@ it is important to add the correct `solid:oidcIssuer` triple to your profile aft
 Creates a new Solid pod. 
 The location of the pod will be determined by the chosen pod name.
 In case a WebID is also being created, it will be located inside this pod.
+
+## Developing server code
+The [📗 API documentation](https://solid.github.io/community-server/docs/) and
+the [📐 architectural
+diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
+can help you find your way. The organization and structure of the classes and
+components in the [src folder](/src) is designed to align with this
+architectural diagram to the extent possible (i.e. the [ldp folder](src/ldp)
+should contain all the components from the `ldp` section of the diagram.
+
+If you are interested in helping out with the development of this server, be
+sure to have a look at the [📓 developer
+notes](guides/developer-notes.md) and
+[🛠️ good first
+issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
