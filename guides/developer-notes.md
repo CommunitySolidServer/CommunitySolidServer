@@ -59,8 +59,6 @@ If you edit this config file, `npm run build` MUST have been invoked before so t
 
 Learn more about Components.js in its [documentation](https://componentsjs.readthedocs.io/en/latest/).
 
-[Click here to learn more about creating custom configs](https://github.com/solid/community-server/wiki/Create-a-custom-configuration).
-
 ## Releasing a new version
 
 _This is only relevant to developers with push-access._

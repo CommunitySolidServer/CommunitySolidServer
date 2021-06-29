@@ -40,7 +40,7 @@ should contain all the components from the `ldp` section of the diagram.
 
 If you are interested in helping out with the development of this server, be
 sure to have a look at the [📓 developer
-notes](documentation/Notes-for-developers.md) and
+notes](guides/developer-notes.md) and
 [🛠️ good first
 issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
