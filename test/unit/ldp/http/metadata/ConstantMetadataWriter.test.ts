@@ -1,11 +1,12 @@
 import { createResponse } from 'node-mocks-http';
 import { ConstantMetadataWriter } from '../../../../../src/ldp/http/metadata/ConstantMetadataWriter';
+import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
 describe('A ConstantMetadataWriter', (): void => {
   const writer = new ConstantMetadataWriter({ 'custom-Header': 'X', other: 'Y' });
 
   it('adds new headers.', async(): Promise<void> => {
-    const response = createResponse();
+    const response = createResponse() as HttpResponse;
 
     await expect(writer.handle({ response })).resolves.toBeUndefined();
 
@@ -13,7 +14,7 @@ describe('A ConstantMetadataWriter', (): void => {
   });
 
   it('extends existing headers.', async(): Promise<void> => {
-    const response = createResponse();
+    const response = createResponse() as HttpResponse;
     response.setHeader('Other', 'A');
 
     await expect(writer.handle({ response })).resolves.toBeUndefined();

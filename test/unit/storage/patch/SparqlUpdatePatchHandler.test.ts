@@ -105,10 +105,10 @@ describe('A SparqlUpdatePatchHandler', (): void => {
 
   it('handles INSERT DATA updates.', async(): Promise<void> => {
     await handle(fulfilledDataInsert);
-    expect(await basicChecks(startQuads.concat(
-      [ quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-        quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')) ],
-    ))).toBe(true);
+    expect(await basicChecks([ ...startQuads,
+      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
+      quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
+    ])).toBe(true);
   });
 
   it('handles DELETE DATA updates.', async(): Promise<void> => {

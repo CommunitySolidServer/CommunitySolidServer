@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention, function-paren-newline */
+/* eslint-disable function-paren-newline */
 import { namedNode } from '@rdfjs/data-model';
 import type { NamedNode } from 'rdf-js';
 

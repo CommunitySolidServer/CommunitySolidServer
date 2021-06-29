@@ -37,7 +37,6 @@ export class IdentityTestState {
    * @param body - Body to send along.
    * @param contentType - Content-Type of the body.
    */
-  // eslint-disable-next-line default-param-last
   public async fetchIdp(url: string, method = 'GET', body?: string, contentType?: string): Promise<Response> {
     const options = { method, headers: { cookie: this.cookie }, body, redirect: 'manual' } as any;
     if (contentType) {

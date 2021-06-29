@@ -144,7 +144,7 @@ export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
  * E.g., `http://test.com/` results in `{ scheme: 'http://', rest: 'test.com/' }`.
  * @param url - String to parse.
  */
-export function extractScheme(url: string): { scheme: string; rest: string} {
+export function extractScheme(url: string): { scheme: string; rest: string } {
   const match = /^([^:]+:\/\/)(.*)$/u.exec(url)!;
   return { scheme: match[1], rest: match[2] };
 }

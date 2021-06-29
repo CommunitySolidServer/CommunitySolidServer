@@ -142,8 +142,8 @@ export class ChainedConverter extends RepresentationConverter {
       return input.representation;
     }
 
-    const { path } = match;
-    this.logger.debug(`Converting ${match.inType} -> ${[ ...path.intermediateTypes, match.outType ].join(' -> ')}.`);
+    const { path, inType, outType } = match;
+    this.logger.debug(`Converting ${inType} -> ${[ ...path.intermediateTypes, outType ].join(' -> ')}.`);
 
     const args = { ...input };
     for (let i = 0; i < path.converters.length - 1; ++i) {
@@ -152,7 +152,7 @@ export class ChainedConverter extends RepresentationConverter {
       args.representation = await path.converters[i].handle(args);
     }
     // For the last converter we set the preferences to the best output type
-    args.preferences = { type: { [match.outType]: 1 }};
+    args.preferences = { type: { [outType]: 1 }};
     return path.converters.slice(-1)[0].handle(args);
   }
 

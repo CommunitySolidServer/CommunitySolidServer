@@ -7,6 +7,7 @@ import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
 import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { App } from './App';
+
 export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
@@ -56,7 +57,8 @@ export class AppRunner {
     stderr?: WriteStream;
   } = {}): void {
     // Parse the command-line arguments
-    const { argv: params } = yargs(argv.slice(2))
+    // eslint-disable-next-line no-sync
+    const params = yargs(argv.slice(2))
       .strict()
       .usage('node ./bin/server.js [args]')
       .check((args): boolean => {
@@ -84,7 +86,7 @@ export class AppRunner {
         sparqlEndpoint: { type: 'string', alias: 's', requiresArg: true },
         podConfigJson: { type: 'string', default: './pod-config.json', requiresArg: true },
       })
-      .help();
+      .parseSync();
 
     // Gather settings for instantiating the server
     const loaderProperties: IComponentsManagerBuilderOptions<App> = {

@@ -9,7 +9,7 @@ describe('RenderEjsHandler', (): void => {
   let templateFile: string;
 
   beforeEach((): void => {
-    response = createResponse();
+    response = createResponse() as HttpResponse;
     templatePath = joinFilePath(__dirname, '../../../assets/idp');
     templateFile = 'testHtml.ejs';
   });

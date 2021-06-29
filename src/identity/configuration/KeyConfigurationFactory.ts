@@ -46,6 +46,8 @@ export class KeyConfigurationFactory implements ConfigurationFactory {
     // If they are not, generate and save them
     const { privateKey } = await generateKeyPair('RS256');
     const jwk = await fromKeyLike(privateKey);
+    // Required for Solid authn client
+    jwk.alg = 'RS256';
     // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
     // which is why we convert it into a plain object here.
     // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.

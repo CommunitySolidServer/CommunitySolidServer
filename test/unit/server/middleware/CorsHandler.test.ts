@@ -1,4 +1,5 @@
 import { createRequest, createResponse } from 'node-mocks-http';
+import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import { CorsHandler } from '../../../../src/server/middleware/CorsHandler';
 import { guardStream } from '../../../../src/util/GuardedStream';
 
@@ -7,7 +8,7 @@ describe('a CorsHandler', (): void => {
     const handler = new CorsHandler();
 
     const request = guardStream(createRequest());
-    const response = createResponse();
+    const response = createResponse() as HttpResponse;
     await handler.handleSafe({ request, response });
 
     expect(response.getHeaders()).toEqual(expect.objectContaining({
@@ -23,7 +24,7 @@ describe('a CorsHandler', (): void => {
         origin: 'example.org',
       },
     }));
-    const response = createResponse();
+    const response = createResponse() as HttpResponse;
     await handler.handleSafe({ request, response });
 
     expect(response.getHeaders()).toEqual(expect.objectContaining({
@@ -37,7 +38,7 @@ describe('a CorsHandler', (): void => {
     });
 
     const request = guardStream(createRequest());
-    const response = createResponse();
+    const response = createResponse() as HttpResponse;
     await handler.handleSafe({ request, response });
 
     expect(response.getHeaders()).toEqual(expect.objectContaining({

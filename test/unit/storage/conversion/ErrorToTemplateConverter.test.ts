@@ -32,7 +32,7 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('does not support multiple errors.', async(): Promise<void> => {
-    const representation = new BasicRepresentation([ new Error(), new Error() ], 'internal/error', false);
+    const representation = new BasicRepresentation([ new Error('a'), new Error('b') ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).rejects.toThrow('Only single errors are supported.');
     await expect(prom).rejects.toThrow(InternalServerError);
