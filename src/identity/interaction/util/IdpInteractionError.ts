@@ -1,3 +1,4 @@
+import type { HttpErrorOptions } from '../../../util/errors/HttpError';
 import { HttpError } from '../../../util/errors/HttpError';
 
 /**
@@ -7,8 +8,8 @@ import { HttpError } from '../../../util/errors/HttpError';
 export class IdpInteractionError extends HttpError {
   public readonly prefilled: Record<string, string>;
 
-  public constructor(status: number, message: string, prefilled: Record<string, string>) {
-    super(status, 'IdpInteractionError', message);
+  public constructor(status: number, message: string, prefilled: Record<string, string>, options?: HttpErrorOptions) {
+    super(status, 'IdpInteractionError', message, options);
     this.prefilled = prefilled;
   }
 
