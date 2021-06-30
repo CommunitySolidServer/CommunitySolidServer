@@ -155,7 +155,7 @@ export class FileDataAccessor implements DataAccessor {
       return await fsPromises.lstat(path);
     } catch (error: unknown) {
       if (isSystemError(error) && error.code === 'ENOENT') {
-        throw new NotFoundHttpError();
+        throw new NotFoundHttpError('', { cause: error });
       }
       throw error;
     }

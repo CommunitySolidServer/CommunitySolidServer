@@ -341,7 +341,8 @@ export class DataAccessorBasedStore implements ResourceStore {
         quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
       }
     } catch (error: unknown) {
-      throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`);
+      throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`,
+        { cause: error });
     }
 
     // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s containment triples;

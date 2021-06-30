@@ -36,7 +36,7 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
     } catch (error: unknown) {
       const message = `Error verifying WebID via Bearer access token: ${(error as Error).message}`;
       this.logger.warn(message);
-      throw new BadRequestHttpError(message);
+      throw new BadRequestHttpError(message, { cause: error });
     }
   }
 }

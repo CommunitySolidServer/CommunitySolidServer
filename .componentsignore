@@ -4,6 +4,7 @@
   "Configuration",
   "Error",
   "EventEmitter",
+  "HttpErrorOptions",
   "LRUCache",
   "Provider",
   "ValuePreferencesArg"

@@ -29,7 +29,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       algebra = translate(sparql, { quads: true, baseIRI: metadata.identifier.value });
     } catch (error: unknown) {
       this.logger.warn('Could not translate SPARQL query to SPARQL algebra', { error });
-      throw new BadRequestHttpError(createErrorMessage(error));
+      throw new BadRequestHttpError(createErrorMessage(error), { cause: error });
     }
 
     // Prevent body from being requested again
