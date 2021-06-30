@@ -94,7 +94,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
         { ...defaultRedlockConfig, ...redlockOptions },
       );
     } catch (error: unknown) {
-      throw new InternalServerError(`Error initializing Redlock: ${error}`);
+      throw new InternalServerError(`Error initializing Redlock: ${error}`, { cause: error });
     }
   }
 
@@ -118,7 +118,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
       assert(lock);
     } catch (error: unknown) {
       this.logger.debug(`Unable to acquire lock for ${resource}`);
-      throw new InternalServerError(`Unable to acquire lock for ${resource} (${error})`);
+      throw new InternalServerError(`Unable to acquire lock for ${resource} (${error})`, { cause: error });
     }
     if (this.lockMap.get(resource)) {
       throw new InternalServerError(`Acquired duplicate lock on ${resource}`);
@@ -145,7 +145,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
       this.logger.debug(`Released lock for ${resource}, ${this.getLockCount()} active locks remaining!`);
     } catch (error: unknown) {
       this.logger.error(`Error releasing lock for ${resource} (${error})`);
-      throw new InternalServerError(`Unable to release lock for: ${resource}, ${error}`);
+      throw new InternalServerError(`Unable to release lock for: ${resource}, ${error}`, { cause: error });
     }
   }
 

@@ -46,9 +46,9 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
 
     try {
       handler = await this.findHandler(input);
-    } catch {
+    } catch (error: unknown) {
       this.logger.warn('All handlers failed. This might be the consequence of calling handle before canHandle.');
-      throw new InternalServerError('All handlers failed');
+      throw new InternalServerError('All handlers failed', { cause: error });
     }
 
     return handler.handle(input);

@@ -12,14 +12,15 @@ import { IdpInteractionError } from '../util/IdpInteractionError';
 export function throwIdpInteractionError(error: unknown, prefilled: Record<string, string> = {}): never {
   if (IdpInteractionError.isInstance(error)) {
     if (Object.keys(prefilled).length > 0) {
-      throw new IdpInteractionError(error.statusCode, error.message, { ...error.prefilled, ...prefilled });
+      const { statusCode, message } = error;
+      throw new IdpInteractionError(statusCode, message, { ...error.prefilled, ...prefilled }, { cause: error });
     } else {
       throw error;
     }
   } else if (HttpError.isInstance(error)) {
-    throw new IdpInteractionError(error.statusCode, error.message, prefilled);
+    throw new IdpInteractionError(error.statusCode, error.message, prefilled, { cause: error });
   } else {
-    throw new IdpInteractionError(500, createErrorMessage(error), prefilled);
+    throw new IdpInteractionError(500, createErrorMessage(error), prefilled, { cause: error });
   }
 }
 

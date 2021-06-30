@@ -57,7 +57,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
     } catch (error: unknown) {
       const message = `Error verifying WebID via DPoP-bound access token: ${(error as Error).message}`;
       this.logger.warn(message);
-      throw new BadRequestHttpError(message);
+      throw new BadRequestHttpError(message, { cause: error });
     }
   }
 }
