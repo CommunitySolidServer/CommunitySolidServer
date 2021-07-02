@@ -3,6 +3,7 @@ import { isError } from './ErrorUtil';
 export interface HttpErrorOptions {
   cause?: unknown;
   errorCode?: string;
+  details?: NodeJS.Dict<unknown>;
 }
 
 /**
