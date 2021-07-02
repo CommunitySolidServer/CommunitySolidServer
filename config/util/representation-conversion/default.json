@@ -28,8 +28,15 @@
             {
               "@type": "ErrorToTemplateConverter",
               "engine": { "@type": "HandlebarsTemplateEngine" },
-              "templatePath": "$PACKAGE_ROOT/templates/error/error.hbs",
-              "contentType": "text/html"
+              "templatePath": "$PACKAGE_ROOT/templates/error/main.md",
+              "descriptions": "$PACKAGE_ROOT/templates/error/descriptions/",
+              "contentType": "text/markdown",
+              "extension": ".md"
+            },
+            {
+              "@type": "MarkdownToHtmlConverter",
+              "engine": { "@type": "HandlebarsTemplateEngine" },
+              "templatePath": "$PACKAGE_ROOT/templates/main.html"
             }
           ]
         }

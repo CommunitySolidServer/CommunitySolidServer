@@ -229,6 +229,7 @@ export * from './storage/conversion/ConversionUtil';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/IfNeededConverter';
+export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';
 export * from './storage/conversion/QuadToRdfConverter';
 export * from './storage/conversion/RdfToQuadConverter';
