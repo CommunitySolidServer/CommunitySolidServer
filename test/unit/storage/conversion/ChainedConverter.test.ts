@@ -126,7 +126,7 @@ describe('A ChainedConverter', (): void => {
     expect(result.metadata.contentType).toBe('x/x');
   });
 
-  it('will use the best path among the shortest found.', async(): Promise<void> => {
+  it('will use the shortest path among the best found.', async(): Promise<void> => {
     // Valid paths: 0 -> 1 -> 2, 3 -> 2, 4 -> 2, 5 -> 2, *6 -> 2*
     const converters = [
       new DummyConverter({ 'a/a': 1 }, { 'b/b': 1 }),
@@ -135,7 +135,7 @@ describe('A ChainedConverter', (): void => {
       new DummyConverter({ '*/*': 0.5 }, { 'c/c': 1 }),
       new DummyConverter({ 'a/a': 0.8 }, { 'c/c': 1 }),
       new DummyConverter({ 'a/*': 1 }, { 'c/c': 0.5 }),
-      new DummyConverter({ 'a/a': 1 }, { 'c/c': 0.9 }),
+      new DummyConverter({ 'a/a': 1 }, { 'c/c': 1 }),
     ];
     const converter = new ChainedConverter(converters);
 
@@ -170,6 +170,43 @@ describe('A ChainedConverter', (): void => {
     expect(metadata.contentType).toBe('c/c');
     ({ metadata } = await (converters[1].handle as jest.Mock).mock.results[0].value);
     expect(metadata.contentType).toBe('d/d');
+  });
+
+  it('will continue if an even better path can be found by adding a converter.', async(): Promise<void> => {
+    // Path: a/a -> x/a -> x/x
+    const converters = [
+      new DummyConverter({ 'a/a': 1 }, { 'x/a': 0.9 }),
+      new DummyConverter({ 'x/a': 1 }, { 'x/x': 1 }),
+    ];
+    const converter = new ChainedConverter(converters);
+
+    const result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('x/x');
+  });
+
+  it('will continue if an even better path can be found through another path.', async(): Promise<void> => {
+    // Path: a/a -> b/b -> x/x
+    const converters = [
+      new DummyConverter({ 'a/a': 1 }, { 'x/a': 0.5 }),
+      new DummyConverter({ 'a/a': 1 }, { 'b/b': 1 }),
+      new DummyConverter({ 'b/b': 1 }, { 'x/x': 0.6 }),
+    ];
+    const converter = new ChainedConverter(converters);
+
+    const result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('x/x');
+  });
+
+  it('will stop if all future paths are worse.', async(): Promise<void> => {
+    // Path: a/a -> x/a
+    const converters = [
+      new DummyConverter({ 'a/a': 1 }, { 'x/a': 1 }),
+      new DummyConverter({ 'x/a': 1 }, { 'x/x': 0.1 }),
+    ];
+    const converter = new ChainedConverter(converters);
+
+    const result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('x/a');
   });
 
   it('calls handle when calling handleSafe.', async(): Promise<void> => {

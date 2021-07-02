@@ -96,7 +96,7 @@ class LruPathCache {
  * A meta converter that takes an array of other converters as input.
  * It chains these converters by finding a path of converters
  * that can go from the given content-type to the given type preferences.
- * In case there are multiple paths, the shortest one with the highest weight gets found.
+ * In case there are multiple paths, the one with the highest weight gets found.
  * Will error in case no path can be found.
  *
  * Generated paths get stored in an internal cache for later re-use on similar requests.
@@ -194,7 +194,7 @@ export class ChainedConverter extends RepresentationConverter {
   }
 
   /**
-   * Tries to generate the optimal and shortest `ConversionPath` that supports the given parameters,
+   * Tries to generate the optimal `ConversionPath` that supports the given parameters,
    * which will then be used to instantiate a specific `MatchedPath` for those parameters.
    *
    * Errors if such a path does not exist.
@@ -215,13 +215,21 @@ export class ChainedConverter extends RepresentationConverter {
       return matches;
     }, Promise.resolve([]));
 
+    // It's impossible for a path to have a higher weight than this value
+    const maxWeight = Math.max(...Object.values(outPreferences));
+
     let bestPath = this.findBest(inType, outPreferences, paths);
+    paths = this.removeBadPaths(paths, maxWeight, inType, bestPath);
     // This will always stop at some point since paths can't have the same converter twice
-    while (!bestPath && paths.length > 0) {
+    while (paths.length > 0) {
       // For every path, find all the paths that can be made by adding 1 more converter
       const promises = paths.map(async(path): Promise<ConversionPath[]> => this.takeStep(path));
       paths = (await Promise.all(promises)).flat();
-      bestPath = this.findBest(inType, outPreferences, paths);
+      const newBest = this.findBest(inType, outPreferences, paths);
+      if (newBest && (!bestPath || newBest.weight > bestPath.weight)) {
+        bestPath = newBest;
+      }
+      paths = this.removeBadPaths(paths, maxWeight, inType, bestPath);
     }
 
     if (!bestPath) {
@@ -249,6 +257,35 @@ export class ChainedConverter extends RepresentationConverter {
       }
       return best;
     }, null) ?? undefined;
+  }
+
+  /**
+   * Filter out paths that can no longer be better than the current best solution.
+   * This depends on a valid path already being found, if not all the input paths will be returned.
+   *
+   * @param paths - Paths to filter.
+   * @param maxWeight - The maximum weight in the output preferences.
+   * @param inType - The input type.
+   * @param bestMatch - The current best path.
+   */
+  private removeBadPaths(paths: ConversionPath[], maxWeight: number, inType: string, bestMatch?: MatchedPath):
+  ConversionPath[] {
+    // All paths are still good if there is no best match yet
+    if (!bestMatch) {
+      return paths;
+    }
+    // Do not improve if the maximum weight has been achieved (accounting for floating point errors)
+    if (bestMatch.weight >= maxWeight - 0.01) {
+      return [];
+    }
+
+    // Only return paths that can potentially improve upon bestPath
+    return paths.filter((path): boolean => {
+      const optimisticWeight = getTypeWeight(inType, path.inTypes) *
+        Math.max(...Object.values(path.outTypes)) *
+        maxWeight;
+      return optimisticWeight > bestMatch.weight;
+    });
   }
 
   /**
