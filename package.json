@@ -154,7 +154,7 @@
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unused-imports": "^1.1.1",
-    "husky": "^4.3.8",
+    "husky": "^7.0.0",
     "jest": "^27.0.6",
     "jest-rdf": "^1.6.0",
     "manual-git-changelog": "^1.0.1",
