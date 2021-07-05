@@ -1,6 +1,7 @@
+import { promises as fsPromises } from 'fs';
 import fetch from 'cross-fetch';
 import type { ResourceStore, App } from '../../src/';
-import { BasicRepresentation } from '../../src/';
+import { BasicRepresentation, isSystemError, joinFilePath } from '../../src/';
 import { AclHelper } from '../util/AclHelper';
 import { deleteResource, getResource, postResource, putResource } from '../util/FetchUtil';
 import { getPort } from '../util/Util';
@@ -192,5 +193,44 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     const response = await fetch(`${baseUrl}.acl`);
     expect(response.status).toBe(401);
     expect(response.headers.get('www-authenticate')).toBe('Bearer scope="openid webid"');
+  });
+
+  it('supports file paths with spaces.', async(): Promise<void> => {
+    // Specific problem for file store, so only do this if the rootFilePath folder exists
+    try {
+      await fsPromises.lstat(rootFilePath);
+    } catch (error: unknown) {
+      if (isSystemError(error) && error.code === 'ENOENT') {
+        return;
+      }
+      throw error;
+    }
+
+    // Correct identifier when there are spaces
+    const identifier = { path: `${baseUrl}with%20spaces.txt` };
+
+    // Set acl specifically for this identifier
+    const acl = `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+<#authorization>
+    a               acl:Authorization;
+    acl:agentClass  foaf:Agent;
+    acl:mode        acl:Read;
+    acl:accessTo    <${identifier.path}>.`;
+
+    // Prevent other access to make sure there is no hierarchy bug
+    await aclHelper.setSimpleAcl(baseUrl, {
+      permissions: {},
+      agentClass: 'agent',
+      default: true,
+    });
+
+    // Write files manually to make sure there are spaces
+    await fsPromises.writeFile(joinFilePath(rootFilePath, 'with spaces.txt.acl'), acl);
+    await fsPromises.writeFile(joinFilePath(rootFilePath, 'with spaces.txt'), 'valid data');
+
+    // GET file
+    const response = await getResource(identifier.path);
+    expect(await response.text()).toContain('valid data');
   });
 });
