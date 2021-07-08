@@ -5,19 +5,42 @@
       "comment": "Sets all the relevant oidc parameters.",
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
-      "issuer": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "configurationFactory": { "@id": "urn:solid-server:default:IdpConfigurationFactory" },
-      "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
-      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
-    },
-    {
-      "comment": "Sets up the JWKS and cookie keys.",
-      "@id": "urn:solid-server:default:IdpConfigurationFactory",
-      "@type": "KeyConfigurationFactory",
-      "adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "idpPath": "/idp",
-      "storage": { "@id": "urn:solid-server:default:IdpStorage" }
+      "args_adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_idpPath": "/idp",
+      "args_storage": { "@id": "urn:solid-server:default:IdpStorage" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "config": {
+        "claims": {
+          "webid": [ "webid", "client_id" ]
+        },
+        "cookies": {
+          "long": { "signed": true, "maxAge": 86400000 },
+          "short": { "signed": true }
+        },
+        "discovery": {
+          "solid_oidc_supported": "https://solidproject.org/TR/solid-oidc"
+        },
+        "features": {
+          "claimsParameter": { "enabled": true },
+          "devInteractions": { "enabled": false },
+          "dPoP": { "enabled": true, "ack": "draft-01" },
+          "introspection": { "enabled": true },
+          "registration": { "enabled": true },
+          "revocation": { "enabled": true }
+        },
+        "formats": {
+          "AccessToken": "jwt"
+        },
+        "ttl": {
+          "AccessToken": 3600,
+          "AuthorizationCode": 600,
+          "DeviceCode": 600,
+          "IdToken": 3600,
+          "RefreshToken": 86400
+        }
+      }
     }
   ]
 }

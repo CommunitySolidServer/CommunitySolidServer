@@ -1,11 +1,8 @@
 [
   "Adapter",
   "BasicRepresentation",
-  "Configuration",
   "Error",
   "EventEmitter",
   "HttpErrorOptions",
-  "LRUCache",
-  "Provider",
   "ValuePreferencesArg"
 ]
