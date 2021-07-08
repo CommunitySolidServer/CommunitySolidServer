@@ -16,8 +16,8 @@ export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
 // Identity/Configuration
-export * from './identity/configuration/ConfigurationFactory';
-export * from './identity/configuration/KeyConfigurationFactory';
+export * from './identity/configuration/IdentityProviderFactory';
+export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Handler
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
@@ -32,7 +32,6 @@ export * from './identity/interaction/email-password/storage/AccountStore';
 export * from './identity/interaction/email-password/storage/BaseAccountStore';
 
 // Identity/Interaction/Email-Password
-export * from './identity/interaction/email-password/AccountInteractionPolicy';
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
 // Identity/Interaction/Util
@@ -49,7 +48,6 @@ export * from './identity/interaction/util/TemplateRenderer';
 
 // Identity/Interaction
 export * from './identity/interaction/InteractionHttpHandler';
-export * from './identity/interaction/InteractionPolicy';
 export * from './identity/interaction/SessionHttpHandler';
 
 // Identity/Ownership
@@ -63,7 +61,6 @@ export * from './identity/storage/ExpiringAdapterFactory';
 export * from './identity/storage/WrappedFetchAdapterFactory';
 
 // Identity
-export * from './identity/IdentityProviderFactory';
 export * from './identity/IdentityProviderHttpHandler';
 
 // Init/Final

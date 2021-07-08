@@ -19,7 +19,6 @@
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
       "@type": "IdentityProviderHttpHandler",
       "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
-      "interactionPolicy": { "@id": "urn:solid-server:auth:password:AccountInteractionPolicy" },
       "interactionHttpHandler": { "@id": "urn:solid-server:auth:password:InteractionHttpHandler" },
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }

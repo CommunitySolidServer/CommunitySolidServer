@@ -40,12 +40,6 @@
       "comment": "Responsible for completing an OIDC interaction after login or registration",
       "@id": "urn:solid-server:auth:password:InteractionCompleter",
       "@type": "InteractionCompleter"
-    },
-    {
-      "comment": "Sets up the email password interaction policy",
-      "@id": "urn:solid-server:auth:password:AccountInteractionPolicy",
-      "@type": "AccountInteractionPolicy",
-      "idpPath": "/idp"
     }
   ]
 }
