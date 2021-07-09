@@ -9,19 +9,14 @@
       "allowedPathNames": [ "^/idp/?$" ],
       "handler": {
         "@type": "InitialInteractionHandler",
-        "renderHandlerMap": [
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "redirectMap": [
           {
-            "InitialInteractionHandler:_renderHandlerMap_key": "consent",
-            "InitialInteractionHandler:_renderHandlerMap_value": {
-              "@type": "TemplateHandler",
-              "templateEngine": {
-                "@type": "EjsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/identity/email-password/confirm.html.ejs"
-              }
-            }
+            "InitialInteractionHandler:_redirectMap_key": "consent",
+            "InitialInteractionHandler:_redirectMap_value": "/idp/confirm"
           }
         ],
-        "renderHandlerMap_default": { "@id": "urn:solid-server:auth:password:LoginRenderHandler" }
+        "redirectMap_default": "/idp/login"
       }
     }
   ]

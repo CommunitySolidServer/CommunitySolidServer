@@ -87,7 +87,12 @@ export class IdentityTestState {
     expect(nextUrl.startsWith(this.oidcIssuer)).toBeTruthy();
 
     // Need to catch the redirect so we can copy the cookies
-    const res = await this.fetchIdp(nextUrl);
+    let res = await this.fetchIdp(nextUrl);
+    expect(res.status).toBe(302);
+    nextUrl = res.headers.get('location')!;
+
+    // Redirect from main page to specific page (login or confirmation)
+    res = await this.fetchIdp(nextUrl);
     expect(res.status).toBe(302);
     nextUrl = res.headers.get('location')!;
 
