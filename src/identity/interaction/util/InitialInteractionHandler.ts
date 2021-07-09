@@ -1,47 +1,45 @@
+import urljoin from 'url-join';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { InteractionHttpHandlerInput } from '../InteractionHttpHandler';
 import { InteractionHttpHandler } from '../InteractionHttpHandler';
-import type { IdpRenderHandler } from './IdpRenderHandler';
 
-export interface RenderHandlerMap {
-  [key: string]: IdpRenderHandler;
-  default: IdpRenderHandler;
+export interface RedirectMap {
+  [key: string]: string;
+  default: string;
 }
 
 /**
- * An {@link InteractionHttpHandler} that redirects requests
- * to a specific {@link IdpRenderHandler} based on their prompt.
+ * An {@link InteractionHttpHandler} that redirects requests based on their prompt.
  * A list of possible prompts can be found at https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
  * In case there is no prompt or there is no match in the input map,
- * the `default` render handler will be used.
+ * the `default` redirect will be used.
  *
- * Specifically, the prompt determines how the server should handle re-authentication and consent.
- *
- * Since this class specifically redirects to render handlers,
- * it is advised to wrap it in a {@link RouterHandler} that only allows GET requests.
+ * Specifically, this is used to redirect the client to the correct way to login,
+ * such as a login page, or a confirmation page if a login procedure already succeeded previously.
  */
 export class InitialInteractionHandler extends InteractionHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly renderHandlerMap: RenderHandlerMap;
+  private readonly baseUrl: string;
+  private readonly redirectMap: RedirectMap;
 
-  public constructor(renderHandlerMap: RenderHandlerMap) {
+  public constructor(baseUrl: string, redirectMap: RedirectMap) {
     super();
-    this.renderHandlerMap = renderHandlerMap;
+    this.baseUrl = baseUrl;
+    this.redirectMap = redirectMap;
   }
 
   public async handle({ request, response, provider }: InteractionHttpHandlerInput): Promise<void> {
+    // Find the matching redirect in the map or take the default
     const interactionDetails = await provider.interactionDetails(request, response);
-    const name = interactionDetails.prompt.name in this.renderHandlerMap ? interactionDetails.prompt.name : 'default';
+    const name = interactionDetails.prompt.name in this.redirectMap ? interactionDetails.prompt.name : 'default';
 
-    this.logger.debug(`Calling ${name} render handler.`);
+    // Create a valid redirect URL
+    const location = urljoin(this.baseUrl, this.redirectMap[name]);
+    this.logger.debug(`Redirecting ${name} prompt to ${location}.`);
 
-    await this.renderHandlerMap[name].handleSafe({
-      response,
-      contents: {
-        errorMessage: '',
-        prefilled: {},
-      },
-    });
+    // Redirect to the result
+    response.writeHead(302, { location });
+    response.end();
   }
 }
