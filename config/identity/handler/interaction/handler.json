@@ -19,7 +19,6 @@
         { "@id": "urn:solid-server:auth:password:LoginInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:SessionInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:ForgotPasswordInteractionHandler" },
-        { "@id": "urn:solid-server:auth:password:ResetPasswordViewInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:ResetPasswordInteractionHandler" }
       ]
     },

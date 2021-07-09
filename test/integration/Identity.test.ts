@@ -200,7 +200,7 @@ describe('A Solid server with IDP', (): void => {
       const match = /(http:.*)$/u.exec(mail.text);
       expect(match).toBeDefined();
       nextUrl = match![1];
-      expect(nextUrl).toContain('resetpassword?rid=');
+      expect(nextUrl).toMatch(/\/resetpassword\/[^/]+$/u);
     });
 
     it('resets the password through the given link.', async(): Promise<void> => {
@@ -209,14 +209,12 @@ describe('A Solid server with IDP', (): void => {
       expect(res.status).toBe(200);
       const text = await res.text();
       const relative = load(text)('form').attr('action');
-      expect(typeof relative).toBe('string');
+      // Reset password form has no action causing the current URL to be used
+      expect(relative).toBeUndefined();
 
-      const recordId = load(text)('input[name="recordId"]').attr('value');
-      expect(typeof recordId).toBe('string');
-
-      // POST the new password
-      const formData = stringify({ password: password2, confirmPassword: password2, recordId });
-      res = await fetch(new URL(relative!, baseUrl).href, {
+      // POST the new password to the same URL
+      const formData = stringify({ password: password2, confirmPassword: password2 });
+      res = await fetch(nextUrl, {
         method: 'POST',
         headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
         body: formData,

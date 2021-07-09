@@ -15,7 +15,7 @@ describe('A ForgotPasswordHandler', (): void => {
   const response: HttpResponse = {} as any;
   const email = 'test@test.email';
   const recordId = '123456';
-  const html = `<a href="/base/idp/resetpassword?rid=${recordId}">Reset Password</a>`;
+  const html = `<a href="/base/idp/resetpassword/${recordId}">Reset Password</a>`;
   const renderParams = { response, contents: { errorMessage: '', prefilled: { email }}};
   const provider: Provider = {} as any;
   let messageRenderHandler: IdpRenderHandler;
@@ -76,7 +76,7 @@ describe('A ForgotPasswordHandler', (): void => {
     expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
       recipient: email,
       subject: 'Reset your password',
-      text: `To reset your password, go to this link: http://test.com/base/idp/resetpassword?rid=${recordId}`,
+      text: `To reset your password, go to this link: http://test.com/base/idp/resetpassword/${recordId}`,
       html,
     });
     expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);

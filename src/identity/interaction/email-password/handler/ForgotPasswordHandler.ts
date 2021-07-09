@@ -79,7 +79,7 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
    */
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
-    const resetLink = urljoin(this.baseUrl, this.idpPath, `resetpassword?rid=${recordId}`);
+    const resetLink = urljoin(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
     const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,

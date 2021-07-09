@@ -3,15 +3,12 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { TemplateHandler } from '../../../../server/util/TemplateHandler';
-import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import { assertPassword } from '../EmailPasswordUtil';
+import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-import type { ResetPasswordRenderHandler } from './ResetPasswordRenderHandler';
 
 export interface ResetPasswordHandlerArgs {
   accountStore: AccountStore;
-  renderHandler: ResetPasswordRenderHandler;
   messageRenderHandler: TemplateHandler<{ message: string }>;
 }
 
@@ -23,26 +20,24 @@ export class ResetPasswordHandler extends HttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
-  private readonly renderHandler: ResetPasswordRenderHandler;
   private readonly messageRenderHandler: TemplateHandler<{ message: string }>;
 
   public constructor(args: ResetPasswordHandlerArgs) {
     super();
     this.accountStore = args.accountStore;
-    this.renderHandler = args.renderHandler;
     this.messageRenderHandler = args.messageRenderHandler;
   }
 
   public async handle(input: HttpHandlerInput): Promise<void> {
-    let prefilledRecordId = '';
     try {
+      // Extract record ID from request URL
+      const recordId = /\/([^/]+)$/u.exec(input.request.url!)?.[1];
       // Validate input data
-      const { password, confirmPassword, recordId } = await getFormDataRequestBody(input.request);
+      const { password, confirmPassword } = await getFormDataRequestBody(input.request);
       assert(
         typeof recordId === 'string' && recordId.length > 0,
         'Invalid request. Open the link from your email again',
       );
-      prefilledRecordId = recordId;
       assertPassword(password, confirmPassword);
 
       await this.resetPassword(recordId, password);
@@ -52,14 +47,8 @@ export class ResetPasswordHandler extends HttpHandler {
           message: 'Your password was successfully reset.',
         },
       });
-    } catch (err: unknown) {
-      await this.renderHandler.handleSafe({
-        response: input.response,
-        contents: {
-          errorMessage: createErrorMessage(err),
-          recordId: prefilledRecordId,
-        },
-      });
+    } catch (error: unknown) {
+      throwIdpInteractionError(error);
     }
   }
 
