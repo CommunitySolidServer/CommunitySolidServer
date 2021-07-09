@@ -2884,6 +2884,7 @@ body, html {
   background-repeat: no-repeat;
   padding-bottom: 60px;
   padding-top: 60px;
+  overflow: auto;
 }
 
 .main-content-section {
