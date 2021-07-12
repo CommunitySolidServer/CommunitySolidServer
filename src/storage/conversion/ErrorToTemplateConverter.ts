@@ -14,7 +14,7 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * Serializes an Error by filling in the provided template.
  * Content-type is based on the constructor parameter.
  *
- * In case the input Error has an `options.errorCode` value,
+ * In case the input Error has an `errorCode` value,
  * the converter will look in the `descriptions` for a file
  * with the exact same name as that error code + `extension`.
  * The templating engine will then be applied to that file.
@@ -56,8 +56,8 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
   }
 
   private async getErrorCodeMessage(error: Error): Promise<string | undefined> {
-    if (HttpError.isInstance(error) && error.options.errorCode) {
-      const filePath = joinFilePath(this.descriptions, `${error.options.errorCode}${this.extension}`);
+    if (HttpError.isInstance(error) && error.errorCode) {
+      const filePath = joinFilePath(this.descriptions, `${error.errorCode}${this.extension}`);
       let template: string;
       try {
         template = await fsPromises.readFile(filePath, 'utf8');
@@ -66,7 +66,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
         return;
       }
 
-      return this.engine.apply(template, (error.options.details ?? {}) as NodeJS.Dict<string>);
+      return this.engine.apply(template, (error.details ?? {}) as NodeJS.Dict<string>);
     }
   }
 }
