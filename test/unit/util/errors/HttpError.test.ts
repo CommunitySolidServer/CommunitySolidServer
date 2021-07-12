@@ -16,7 +16,7 @@ class FixedHttpError extends HttpError {
   }
 }
 
-describe('An HttpError', (): void => {
+describe('HttpError', (): void => {
   const errors: [string, number, typeof FixedHttpError][] = [
     [ 'BadRequestHttpError', 400, BadRequestHttpError ],
     [ 'UnauthorizedHttpError', 401, UnauthorizedHttpError ],
@@ -30,11 +30,23 @@ describe('An HttpError', (): void => {
     [ 'NotImplementedHttpError', 501, NotImplementedHttpError ],
   ];
 
-  it.each(errors)('%s is valid', (name, statusCode, constructor): void => {
-    const instance = new constructor('message');
-    expect(constructor.isInstance(instance)).toBeTruthy();
-    expect(instance.statusCode).toBe(statusCode);
-    expect(instance.name).toBe(name);
-    expect(instance.message).toBe('message');
+  describe.each(errors)('%s', (name, statusCode, constructor): void => {
+    const instance = new constructor('my message');
+
+    it(`is an instance of ${name}.`, (): void => {
+      expect(constructor.isInstance(instance)).toBeTruthy();
+    });
+
+    it(`has name ${name}.`, (): void => {
+      expect(instance.name).toBe(name);
+    });
+
+    it(`has status code ${statusCode}.`, (): void => {
+      expect(instance.statusCode).toBe(statusCode);
+    });
+
+    it('sets the message.', (): void => {
+      expect(instance.message).toBe('my message');
+    });
   });
 });
