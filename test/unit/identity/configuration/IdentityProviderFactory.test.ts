@@ -94,18 +94,19 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.routes).toEqual(routes);
 
     expect((config.interactions?.url as any)()).toEqual('/idp/');
-    expect((config.audiences as any)()).toBe('solid');
+    expect((config.audiences as any)(null, null, {}, 'access_token')).toBe('solid');
+    expect((config.audiences as any)(null, null, { clientId: 'clientId' }, 'client_credentials')).toBe('clientId');
 
-    const findResult = await config.findAccount?.({} as any, webId);
+    const findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
     expect(findResult?.accountId).toBe(webId);
     await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId });
 
     expect((config.extraAccessTokenClaims as any)({}, {})).toEqual({});
-    expect((config.extraAccessTokenClaims as any)({}, { accountId: webId })).toEqual({
-      webid: webId,
-      // This will need to change once #718 is fixed
-      client_id: 'http://localhost:3001/',
-    });
+    expect((config.extraAccessTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
+      .toEqual({
+        webid: webId,
+        client_id: 'clientId',
+      });
 
     // Test the renderError function
     const response = { } as HttpResponse;

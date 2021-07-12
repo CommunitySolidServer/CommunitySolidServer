@@ -120,10 +120,6 @@ export class IdentityProviderFactory implements ProviderFactory {
       return factory.createStorageAdapter(name);
     };
 
-    // This needs to be a function, can't have a static string
-    // Sets the "aud" value to "solid" for all tokens
-    config.audiences = (): string => 'solid';
-
     // Cast necessary due to typing conflict between jose 2.x and 3.x
     config.jwks = await this.generateJwks() as any;
     config.cookies = {
@@ -176,21 +172,35 @@ export class IdentityProviderFactory implements ProviderFactory {
   }
 
   /**
+   * Checks if the given token is an access token.
+   * The AccessToken interface is not exported so we have to access it like this.
+   */
+  private isAccessToken(token: any): token is KoaContextWithOIDC['oidc']['accessToken'] {
+    return token.kind === 'AccessToken';
+  }
+
+  /**
    * Adds the necessary claims the to id token and access token based on the Solid OIDC spec.
    */
   private configureClaims(config: Configuration): void {
-    // Returns the id_token and adds the webid claim
+    // Access token audience is 'solid', ID token audience is the client_id
+    config.audiences = (ctx, sub, token, use): string =>
+      use === 'access_token' ? 'solid' : token.clientId!;
+
+    // Returns the id_token
+    // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-id
     config.findAccount = async(ctx: KoaContextWithOIDC, sub: string): Promise<Account> => ({
       accountId: sub,
-      claims: async(): Promise<{ sub: string; [key: string]: any }> => ({ sub, webid: sub }),
+      claims: async(): Promise<{ sub: string; [key: string]: any }> =>
+        ({ sub, webid: sub }),
     });
 
     // Add extra claims in case an AccessToken is being issued.
     // Specifically this sets the required webid and client_id claims for the access token
+    // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-access
     config.extraAccessTokenClaims = (ctx, token): CanBePromise<AnyObject | void> =>
-      // AccessToken interface is not exported
-      (token as any).accountId ?
-        { webid: (token as any).accountId, client_id: 'http://localhost:3001/' } :
+      this.isAccessToken(token) ?
+        { webid: token.accountId, client_id: token.clientId } :
         {};
   }
 
