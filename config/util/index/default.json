@@ -3,7 +3,7 @@
   "@graph": [
     {
       "comment": "This value can be used to set a custom handler for index files. See the example file.",
-      "@id": "urn:solid-server:default:IndexConverter",
+      "@id": "urn:solid-server:default:DefaultUiConverter",
       "@type": "UnsupportedAsyncHandler"
     }
   ]

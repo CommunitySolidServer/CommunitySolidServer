@@ -6,7 +6,7 @@
         "This converter replaces every browser request for text/html with the Databrowser UI (which then in turn loads a Turtle or other representation of the same resource).",
         "This is useful when you want to serve a UI for every file from the pod."
       ],
-      "@id": "urn:solid-server:default:IndexConverter",
+      "@id": "urn:solid-server:default:DefaultUiConverter",
       "@type": "ConstantConverter",
       "contentType": "text/html",
       "filePath": "./node_modules/mashlib/dist/databrowser.html",
