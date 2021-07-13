@@ -68,10 +68,6 @@ export function getWeightedPreferences(types: ValuePreferences, preferred: Value
 }
 
 /**
- * Finds the best result from the `available` values when matching against the `preferred` preferences.
- * `undefined` if there is no match.
- */
-/**
  * Finds the type from the given types that has the best match with the given preferences,
  * based on the calculated weight.
  *
