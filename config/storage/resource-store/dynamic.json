@@ -14,14 +14,17 @@
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
-        "@id": "urn:solid-server:default:ResourceStore_Locking",
-        "LockingResourceStore:_source": {
-          "@id": "urn:solid-server:default:ResourceStore_Patching",
-          "PatchingStore:_source": {
-            "@id": "urn:solid-server:default:ResourceStore_Converting",
-            "RepresentationConvertingStore:_source": {
-              "@id": "urn:solid-server:default:ResourceStore_Routing",
-              "comment": "A router rule will be defined when activating dynamic pods."
+        "@id": "urn:solid-server:default:ResourceStore_Index",
+        "IndexRepresentationStore:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Locking",
+          "LockingResourceStore:_source": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching",
+            "PatchingStore:_source": {
+              "@id": "urn:solid-server:default:ResourceStore_Converting",
+              "RepresentationConvertingStore:_source": {
+                "@id": "urn:solid-server:default:ResourceStore_Routing",
+                "comment": "A router rule will be defined when activating dynamic pods."
+              }
             }
           }
         }

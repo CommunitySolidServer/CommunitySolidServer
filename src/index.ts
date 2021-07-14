@@ -265,6 +265,7 @@ export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
 export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
+export * from './storage/IndexRepresentationStore';
 export * from './storage/LockingResourceStore';
 export * from './storage/MonitoringStore';
 export * from './storage/PassthroughStore';
