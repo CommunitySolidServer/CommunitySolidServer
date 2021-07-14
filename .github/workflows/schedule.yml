@@ -1,0 +1,39 @@
+name: Conformance test harness
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  push:
+    branches:
+     - test/conformance
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Check out the project
+        uses: actions/checkout@v2
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Start the server in the background
+        run: npm start &
+      - name: Create the necessary folders
+        run: mkdir -p reports/css
+      - name: Pull the conformance harness docker
+        run: docker pull solidconformancetestbeta/conformance-test-harness
+      - name: Wait until the server has started
+        run: |
+          until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
+            sleep 1
+          done
+      - name: Run the test harness
+        run: >
+          docker run -i --rm
+          -v "$(pwd)"/reports/css:/reports
+          --env-file=./test/deploy/conformance.env
+          --network="host" solidconformancetestbeta/conformance-test-harness
+          --output=/reports --target=css
