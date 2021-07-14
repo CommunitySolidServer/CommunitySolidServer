@@ -41,7 +41,22 @@ describe('An ErrorToTemplateConverter', (): void => {
     await expect(prom).rejects.toThrow(InternalServerError);
   });
 
-  it('calls the template engine with all error fields.', async(): Promise<void> => {
+  it('works with non-HTTP errors.', async(): Promise<void> => {
+    const error = new Error('error text');
+    const representation = new BasicRepresentation([ error ], 'internal/error', false);
+    const prom = converter.handle({ identifier, representation, preferences });
+    await expect(prom).resolves.toBeDefined();
+    const result = await prom;
+    expect(result.binary).toBe(true);
+    expect(result.metadata.contentType).toBe('text/html');
+    await expect(readableToString(result.data)).resolves.toBe('<html>');
+    expect(engine.apply).toHaveBeenCalledTimes(1);
+    expect(engine.apply).toHaveBeenLastCalledWith(
+      '{{ template }}', { name: 'Error', message: 'error text', stack: error.stack },
+    );
+  });
+
+  it('calls the template engine with all HTTP error fields.', async(): Promise<void> => {
     const error = new BadRequestHttpError('error text');
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
