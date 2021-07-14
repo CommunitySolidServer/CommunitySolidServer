@@ -40,7 +40,6 @@ jobs:
           - '12.x'
           - '14.2'
           - '14.x'
-          - '15.x'
           - '16.0'
           - '16.x'
     env:
@@ -88,7 +87,6 @@ jobs:
         node-version:
           - '12.x'
           - '14.x'
-          - '15.x'
           - '16.x'
     timeout-minutes: 10
     steps:
