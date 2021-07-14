@@ -57,7 +57,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
   }
 
   private async getErrorCodeMessage(error: Error): Promise<string | undefined> {
-    if (HttpError.isInstance(error) && error.errorCode) {
+    if (HttpError.isInstance(error)) {
       let template: string;
       try {
         const fileName = `${error.errorCode}${this.extension}`;

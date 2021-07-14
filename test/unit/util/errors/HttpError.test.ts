@@ -63,6 +63,10 @@ describe('HttpError', (): void => {
       expect(instance.errorCode).toBe(options.errorCode);
     });
 
+    it('defaults to an HTTP-specific error code.', (): void => {
+      expect(new constructor().errorCode).toBe(`H${statusCode}`);
+    });
+
     it('sets the details.', (): void => {
       expect(instance.details).toBe(options.details);
     });
