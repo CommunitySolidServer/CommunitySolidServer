@@ -13,18 +13,23 @@
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
-        "@id": "urn:solid-server:default:ResourceStore_Locking",
-        "LockingResourceStore:_source": {
-          "@id": "urn:solid-server:default:ResourceStore_Patching",
-          "PatchingStore:_source": {
-            "@id": "urn:solid-server:default:ResourceStore_Converting",
-            "comment": "This makes it so all incoming data is converted to quad objects.",
-            "RepresentationConvertingStore:_options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-            "RepresentationConvertingStore:_options_inType": "internal/quads",
-            "RepresentationConvertingStore:_source": {
-              "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
-              "DataAccessorBasedStore:_accessor": {
-                "@id": "urn:solid-server:default:SparqlDataAccessor"
+        "@id": "urn:solid-server:default:ResourceStore_Index",
+        "IndexRepresentationStore:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Locking",
+          "LockingResourceStore:_source": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching",
+            "PatchingStore:_source": {
+              "@id": "urn:solid-server:default:ResourceStore_Converting",
+              "comment": "This makes it so all incoming data is converted to quad objects.",
+              "RepresentationConvertingStore:_options_inConverter": {
+                "@id": "urn:solid-server:default:RepresentationConverter"
+              },
+              "RepresentationConvertingStore:_options_inType": "internal/quads",
+              "RepresentationConvertingStore:_source": {
+                "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
+                "DataAccessorBasedStore:_accessor": {
+                  "@id": "urn:solid-server:default:SparqlDataAccessor"
+                }
               }
             }
           }

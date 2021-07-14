@@ -13,15 +13,18 @@
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",
       "MonitoringStore:_source": {
-        "@id": "urn:solid-server:default:ResourceStore_Locking",
-        "LockingResourceStore:_source": {
-          "@id": "urn:solid-server:default:ResourceStore_Patching",
-          "PatchingStore:_source": {
-            "@id": "urn:solid-server:default:ResourceStore_Converting",
-            "RepresentationConvertingStore:_source": {
-              "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
-              "DataAccessorBasedStore:_accessor": {
-                "@id": "urn:solid-server:default:FileDataAccessor"
+        "@id": "urn:solid-server:default:ResourceStore_Index",
+        "IndexRepresentationStore:_source": {
+          "@id": "urn:solid-server:default:ResourceStore_Locking",
+          "LockingResourceStore:_source": {
+            "@id": "urn:solid-server:default:ResourceStore_Patching",
+            "PatchingStore:_source": {
+              "@id": "urn:solid-server:default:ResourceStore_Converting",
+              "RepresentationConvertingStore:_source": {
+                "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
+                "DataAccessorBasedStore:_accessor": {
+                  "@id": "urn:solid-server:default:FileDataAccessor"
+                }
               }
             }
           }
