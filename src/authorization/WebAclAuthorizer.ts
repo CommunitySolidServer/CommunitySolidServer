@@ -8,7 +8,9 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
@@ -214,13 +216,14 @@ export class WebAclAuthorizer extends Authorizer {
       const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
-      return this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+      return await this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
         this.logger.debug(`No direct ACL document found for ${id.path}`);
       } else {
-        this.logger.error(`Error reading ACL for ${id.path}: ${(error as Error).message}`, { error });
-        throw error;
+        const message = `Error reading ACL for ${id.path}: ${createErrorMessage(error)}`;
+        this.logger.error(message);
+        throw new InternalServerError(message, { cause: error });
       }
     }
 

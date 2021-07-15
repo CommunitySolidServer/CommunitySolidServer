@@ -48,9 +48,9 @@ export class AclInitializer extends Initializer {
       try {
         await this.store.setRepresentation(rootAcl, new BasicRepresentation(aclDocument, rootAcl, TEXT_TURTLE));
       } catch (error: unknown) {
-        const msg = `There was an issue initializing the root .acl resource: ${createErrorMessage(error)}`;
-        this.logger.error(msg);
-        throw new InternalServerError(msg, { cause: error });
+        const message = `Issue initializing the root ACL resource: ${createErrorMessage(error)}`;
+        this.logger.error(message);
+        throw new InternalServerError(message, { cause: error });
       }
     }
   }
