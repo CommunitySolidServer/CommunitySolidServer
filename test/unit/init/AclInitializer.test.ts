@@ -3,6 +3,7 @@ import { AclInitializer } from '../../../src/init/AclInitializer';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
+import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { joinFilePath } from '../../../src/util/PathUtil';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
@@ -72,9 +73,11 @@ describe('AclInitializer', (): void => {
   });
 
   it('errors when the root ACL check errors.', async(): Promise<void> => {
-    store.resourceExists.mockRejectedValueOnce(new Error('Fatal'));
+    store.setRepresentation.mockRejectedValueOnce(new Error('Fatal'));
 
     const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
-    await expect(initializer.handle()).rejects.toThrow('Fatal');
+    const prom = initializer.handle();
+    await expect(prom).rejects.toThrow('There was an issue initializing the root .acl resource: Fatal');
+    await expect(prom).rejects.toThrow(InternalServerError);
   });
 });
