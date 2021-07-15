@@ -1,34 +1,16 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/resource-store/data-accessors/file.json",
-    "files-scs:config/storage/resource-store/data-accessors/memory.json",
-    "files-scs:config/storage/resource-store/data-accessors/sparql-endpoint.json",
-    "files-scs:config/storage/resource-store/stores/converting.json",
-    "files-scs:config/storage/resource-store/stores/locking.json",
-    "files-scs:config/storage/resource-store/stores/patching.json",
-    "files-scs:config/storage/resource-store/stores/routing.json"
+    "files-scs:config/storage/backend/data-accessors/file.json",
+    "files-scs:config/storage/backend/data-accessors/memory.json",
+    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
   ],
   "@graph": [
     {
       "comment": "A more complex example with 3 different stores being routed to.",
-      "@id": "urn:solid-server:default:ResourceStore",
-      "@type": "MonitoringStore",
-      "MonitoringStore:_source": {
-        "@id": "urn:solid-server:default:ResourceStore_Index",
-        "IndexRepresentationStore:_source": {
-          "@id": "urn:solid-server:default:ResourceStore_Locking",
-          "LockingResourceStore:_source": {
-            "@id": "urn:solid-server:default:ResourceStore_Patching",
-            "PatchingStore:_source": {
-              "@id": "urn:solid-server:default:ResourceStore_Converting",
-              "RepresentationConvertingStore:_source": {
-                "@id": "urn:solid-server:default:ResourceStore_Routing"
-              }
-            }
-          }
-        }
-      }
+      "@id": "urn:solid-server:default:ResourceStore_Backend",
+      "@type": "RoutingResourceStore",
+      "rule": { "@id": "urn:solid-server:default:RouterRule" }
     },
 
     {

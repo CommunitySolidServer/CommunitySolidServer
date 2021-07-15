@@ -20,11 +20,11 @@ const baseUrl = `http://localhost:${port}/`;
 const rootFilePath = getTestFolder('full-config-acl');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
-    storeConfig: 'storage/resource-store/memory.json',
+    storeConfig: 'storage/backend/memory.json',
     teardown: jest.fn(),
   }],
   [ 'on-disk storage', {
-    storeConfig: 'storage/resource-store/file.json',
+    storeConfig: 'storage/backend/file.json',
     teardown: (): void => removeFolder(rootFilePath),
   }],
 ];

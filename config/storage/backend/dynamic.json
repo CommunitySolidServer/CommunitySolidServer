@@ -1,0 +1,25 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/backend/data-accessors/file.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Setup when using dynamic pods. A router rule will be defined when activating dynamic pods.",
+      "@id": "urn:solid-server:default:ResourceStore_Backend",
+      "@type": "RoutingResourceStore",
+      "rule": { "@id": "urn:solid-server:default:RouterRule" }
+    },
+    {
+      "comment": "Which store to use for requests that do not match any pod, e.g. for storage.",
+      "@id": "urn:solid-server:default:RouterRule",
+      "BaseUrlRouterRule:_baseStore": {
+        "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
+        "@type": "DataAccessorBasedStore",
+        "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+        "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+      }
+    }
+  ]
+}

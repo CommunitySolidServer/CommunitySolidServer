@@ -18,6 +18,7 @@
     "files-scs:config/ldp/metadata-writer/default.json",
     "files-scs:config/ldp/permissions/acl.json",
     "files-scs:config/storage/key-value/memory.json",
+    "files-scs:config/storage/middleware/default.json",
     "files-scs:config/util/auxiliary/acl.json",
     "files-scs:config/util/identifiers/subdomain.json",
     "files-scs:config/util/index/default.json",

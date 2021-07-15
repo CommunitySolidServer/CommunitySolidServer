@@ -21,7 +21,7 @@ describeIf('docker', 'A server with a SPARQL endpoint as storage', (): void => {
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       [
-        getPresetConfigPath('storage/resource-store/sparql.json'),
+        getPresetConfigPath('storage/backend/sparql.json'),
         getTestConfigPath('ldp-with-auth.json'),
       ],
       variables,
