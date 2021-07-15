@@ -18,6 +18,11 @@ html {
   background-color: var(--solid-purple);
   background-image: linear-gradient(135deg, var(--solid-purple) 10%, var(--solid-blue) 90%);
   height: 100%;
+}
+
+body, input, button {
+  font: 12pt/1.3 Raleway, sans-serif;
+  font-weight: 300;
   color: #222222;
 }
 
@@ -25,25 +30,29 @@ body {
   max-width: 750px;
   margin: 2em auto;
   padding: 1em 2em;
-  font: 12pt/1.3 Raleway, sans-serif;
-  font-weight: 300;
+
   background: white;
   box-shadow: 5px 5px 2px rgba(0, 0, 0, .1);
   border-radius: 3px;
+
+  font: 12pt/1.3 Raleway, sans-serif;
+  font-weight: 300;
 }
 
 header {
   margin: 1em 0 2em;
+
   display: grid;
   grid-template-columns: [logo] 5em [title] auto;
   grid-gap: 1.5em;
   align-items: center;
 }
 header h1 {
+  margin: 0;
+
   font-size: 3.33em;
   letter-spacing: .25px;
   font-weight: 600;
-  margin: 0;
 }
 header img {
   width: 100%;
@@ -59,8 +68,100 @@ main h2 {
 }
 
 footer {
-  font-size: 90%;
   margin-top: 1em;
   text-align: right;
+  font-size: 90%;
   color: #666666;
+}
+
+strong {
+  font-weight: 600;
+}
+
+a {
+  color: var(--solid-purple);
+  font-weight: 500;
+}
+a:hover {
+  color: var(--solid-blue);
+}
+
+li {
+  margin: .5em 0;
+}
+ul > li {
+  list-style-type: square;
+}
+ul > li::marker {
+  color: var(--solid-purple);
+}
+
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0 0 0 1em;
+  max-width: 600px;
+}
+fieldset ol {
+  list-style: none;
+  margin; 0;
+  padding: 0;
+}
+fieldset ol ol {
+  margin: 0 0 1em 2em;
+}
+fieldset ol li:not(.checkbox) {
+  display: grid;
+  grid-template-columns: 10em auto;
+  grid-gap: 1em;
+  align-items: center;
+}
+fieldset ol ol li:not(.checkbox) {
+  grid-template-columns: 8em auto;
+}
+fieldset li label {
+  font-weight: 600;
+}
+fieldset li:not(.checkbox) > label:after {
+  content: ": ";
+}
+fieldset li.checkbox > label > input {
+  margin: 0 .5em 0 0;
+}
+
+input {
+  border: 1px solid var(--solid-purple);
+}
+
+button {
+  cursor: pointer;
+  padding: .5em 2em;
+
+  border: 0px;
+  background-color: var(--solid-purple);
+  color: white;
+
+  font-weight: 600;
+}
+button:hover {
+  background-color: var(--solid-blue);
+}
+
+form p.actions {
+  margin: 0 0 1em 12em;
+}
+
+form p.error {
+  color: #ad0f0f;
+  font-weight: 600;
+}
+
+form ul.actions {
+  padding: 0;
+  margin: 0 0 1em 12em;
+}
+form ul.actions > li {
+  list-style-type: none;
+  display: inline;
+  margin-right: 1em;
 }

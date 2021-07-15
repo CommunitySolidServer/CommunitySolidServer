@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Registration Succesful</title>
-    <link rel="stylesheet" href="/idp/style.css">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>You are signed up</title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
 </head>
 <body>
-<div class="main-content">
-    <section class="main-content-section">
-        <div class="wrapper">
-            <h1 class="title--white">Registration Successful</h1>
-            <div class="login-panel">
-                <div class="panel-body">
-                    <% if (createWebId) { %>
-                        <p class="content__message">
-                            Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>
-                        </p>
-                    <% } %>
-                    <% if (register) { %>
-                        <p class="content__message">
-                            You can now identify as <a href="<%= webId %>" class="link"><%= webId %></a> with our IDP using <%= email %>
-                        </p>
-                        <% if (!createWebId) { %>
-                            <p class="content__message">
-                                Make sure you add the triple
-                                <%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%>
-                                to your WebID profile.
-                            </p>
-                        <% } %>
-                    <% } %>
-                    <% if (createPod) { %>
-                        <p class="content__message">
-                            Your new pod has been created and can be found at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>
-                        </p>
-                    <% } %>
-                </div>
-            </div>
-        </div>
-    </section>
-</div>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <h1>You are signed up</h1>
+    <% if (createWebId) { %>
+      <p>
+        Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>.
+      </p>
+    <% } %>
+    <% if (register) { %>
+      <p>
+        You can now identify as <a href="<%= webId %>" class="link"><%= webId %></a>
+        on this server using <em><%= email %></em>.
+      </p>
+      <% if (!createWebId) { %>
+        <p>
+          Make sure you add the triple
+          <code><%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%></code>
+          to your WebID profile.
+        </p>
+      <% } %>
+    <% } %>
+    <% if (createPod) { %>
+      <p>
+        Your new pod has been created
+        and can be found at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
+      </p>
+    <% } %>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
 </body>
 </html>
