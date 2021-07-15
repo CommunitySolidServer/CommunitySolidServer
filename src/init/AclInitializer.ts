@@ -5,6 +5,8 @@ import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifie
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { TEXT_TURTLE } from '../util/ContentTypes';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import { ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import { Initializer } from './Initializer';
 
@@ -43,7 +45,13 @@ export class AclInitializer extends Initializer {
     } else {
       this.logger.debug(`Installing root ACL document at ${rootAcl.path}`);
       const aclDocument = createReadStream(this.aclPath, 'utf8');
-      await this.store.setRepresentation(rootAcl, new BasicRepresentation(aclDocument, rootAcl, TEXT_TURTLE));
+      try {
+        await this.store.setRepresentation(rootAcl, new BasicRepresentation(aclDocument, rootAcl, TEXT_TURTLE));
+      } catch (error: unknown) {
+        const msg = `There was an issue initializing the root .acl resource: ${createErrorMessage(error)}`;
+        this.logger.error(msg);
+        throw new InternalServerError(msg, { cause: error });
+      }
     }
   }
 }
