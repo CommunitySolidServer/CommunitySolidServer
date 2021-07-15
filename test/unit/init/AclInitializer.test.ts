@@ -77,7 +77,7 @@ describe('AclInitializer', (): void => {
 
     const initializer = new AclInitializer({ baseUrl, store, aclStrategy });
     const prom = initializer.handle();
-    await expect(prom).rejects.toThrow('There was an issue initializing the root .acl resource: Fatal');
+    await expect(prom).rejects.toThrow('Issue initializing the root ACL resource: Fatal');
     await expect(prom).rejects.toThrow(InternalServerError);
   });
 });

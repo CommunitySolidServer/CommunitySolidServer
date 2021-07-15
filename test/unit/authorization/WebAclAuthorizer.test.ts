@@ -8,6 +8,7 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
+import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
@@ -145,11 +146,13 @@ describe('A WebAclAuthorizer', (): void => {
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
-  it('passes errors of the ResourceStore along.', async(): Promise<void> => {
+  it('re-throws ResourceStore errors as internal errors.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => {
       throw new Error('TEST!');
     };
-    await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow('TEST!');
+    const promise = authorizer.handle({ identifier, permissions, credentials });
+    await expect(promise).rejects.toThrow(`Error reading ACL for ${identifier.path}: TEST!`);
+    await expect(promise).rejects.toThrow(InternalServerError);
   });
 
   it('errors if the root container has no corresponding acl document.', async(): Promise<void> => {
