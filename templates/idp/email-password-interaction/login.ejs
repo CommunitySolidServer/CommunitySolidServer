@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Sign-in</title>
-    <link rel="stylesheet" href="/idp/style.css">
-  </head>
-  <body>
-    <div class="main-content">
-      <section class="main-content-section">
-        <div class="wrapper">
-          <h1 class="title--white">Sign In</h1>
-          <div class="login-panel">
-            <div class="panel-body">
-              <form autocomplete="off" action="/idp/login" method="post">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Log in</title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
+</head>
+<body>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <h1>Log in</h1>
+    <form action="/idp/login" method="post">
+      <%if (errorMessage) { %>
+        <p class="error"><%= errorMessage %></p>
+      <% } %>
 
-                <%if (errorMessage) { %>
-                  <div class="input-wrap">
-                    <label style="color: #D0021B">
-                      <%= errorMessage %>
-                    </label>
-                  </div>
-                <% } %>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
+          </li>
+          <li>
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password">
+          </li>
+          <li class="checkbox">
+            <label><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
+          </li>
+        </ol>
+      </fieldset>
 
-                <div class="input-wrap">
-                  <label for="email">Email:</label>
-                  <input id="email" type="email" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
-                </div>
+      <p class="actions"><button type="submit" name="submit">Log in</button></p>
 
-                <div class="input-wrap">
-                  <label for="password">Password:</label>
-                  <input id="password" type="password" name="password">
-                </div>
-
-                <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="remember" value="yes" checked>Stay signed in</label>
-                </div>
-
-                <button type="submit" name="submit" class="ids-link-filled">Sign In</button>
-
-                <hr />
-                <div class="space-between">
-
-                  <a href="/idp/register" class="link">Register</a>
-                  <a href="/idp/forgotpassword" class="link">Forgot Password</a>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </body>
+      <ul class="actions">
+        <li><a href="/idp/register" class="link">Sign up</a></li>
+        <li><a href="/idp/forgotpassword" class="link">Forgot password</a></li>
+      </ul>
+    </form>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
+</body>
 </html>

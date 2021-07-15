@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-    <link rel="stylesheet" href="/idp/style.css">
-  </head>
-  <body>
-    <div class="main-content">
-      <section class="main-content-section">
-        <div class="wrapper">
-          <h1 class="title--white">Register</h1>
-          <div class="login-panel">
-            <div class="panel-body">
-              <form autocomplete="off" action="/idp/register" method="post">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Register</title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
+</head>
+<body>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <h1>Sign up for an account</h1>
+    <form action="/idp/register" method="post">
 
-                <%if (errorMessage) { %>
-                  <div class="input-wrap">
-                    <label style="color: #D0021B">
-                      <%= errorMessage %>
-                    </label>
-                  </div>
-                <% } %>
+      <%if (errorMessage) { %>
+        <p class="error">Error: <%= errorMessage %></p>
+      <% } %>
 
-                <div class="input-wrap">
-                  <label for="email">Email:</label>
-                  <input id="email" type="text" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %> />
-                </div>
+      <fieldset>
+        <ol>
+          <li>
+            <label for="email">Email</label>
+            <input id="email" type="text" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %> />
+          </li>
+          <li>
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" />
+          </li>
+          <li>
+            <label for="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" type="password" name="confirmPassword" />
+          </li>
+        </ol>
+      </fieldset>
 
-                <div class="input-wrap">
-                  <label for="password">Password (when registering with the IDP):</label>
-                  <input id="password" type="password" name="password" />
-                </div>
+      <fieldset>
+        <ol>
+          <li class="checkbox">
+            <label><input type="checkbox" name="createWebId" checked>Create a new WebID <em>(requires the other two options)</em></label>
+          </li>
+          <li class="checkbox">
+            <label><input type="checkbox" name="register" checked>Register your WebID with the IDP</label>
+            <ol>
+              <li>
+                <label for="webId">Alternatively, existing WebID</label>
+                <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
+              </li>
+            </ol>
+          </li>
+          <li class="checkbox">
+            <label><input type="checkbox" name="createPod" checked>Create a new pod</label>
+            <ol>
+              <li>
+                <label for="podName">Pod name</label>
+                <input id="podName" type="text" name="podName" <% if (prefilled.podName) { %> value="<%= prefilled.podName %>" <% } %> />
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </fieldset>
 
-                <div class="input-wrap">
-                  <label for="confirmPassword">Confirm Password:</label>
-                  <input id="confirmPassword" type="password" name="confirmPassword" />
-                </div>
-
-                <div class="input-wrap">
-                  <label for="podName">Pod name (when creating a pod):</label>
-                  <input id="podName" type="text" name="podName" <% if (prefilled.podName) { %> value="<%= prefilled.podName %>" <% } %> />
-                </div>
-
-                <div class="input-wrap">
-                  <label for="webId">WebID (when not creating a WebID):</label>
-                  <input id="webId" type="text" name="webId" <% if (prefilled.webId) { %> value="<%= prefilled.webId %>" <% } %> />
-                </div>
-
-                <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="createWebId" checked>Create new WebID (also requires the other two options)</label>
-                </div>
-
-                <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="register" checked>Register your WebID with the IDP</label>
-                </div>
-
-                <div class="input-wrap">
-                  <label class="checkbox"><input type="checkbox" name="createPod" checked>Create a new pod</label>
-                </div>
-
-                <button type="submit" name="submit" class="ids-link-filled">Submit</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </body>
+      <p class="actions"><button type="submit" name="submit">Sign up</button></p>
+    </form>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
+</body>
 </html>
