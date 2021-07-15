@@ -11,6 +11,18 @@
           "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"
         },
         {
+          "StaticAssetHandler:_assets_key": "/.well_known/css/styles/",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/styles/"
+        },
+        {
+          "StaticAssetHandler:_assets_key": "/.well_known/css/fonts/",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/fonts/"
+        },
+        {
+          "StaticAssetHandler:_assets_key": "/.well_known/css/images/",
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/images/"
+        },
+        {
           "StaticAssetHandler:_assets_key": "/idp/style.css",
           "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/idp/email-password-interaction/main.css"
         }

@@ -6,9 +6,18 @@
   {{#if title}}
   <title>{{ title }}</title>
   {{/if}}
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
 </head>
 <body>
-{{! Triple braces to prevent HTML escaping }}
-{{{ htmlBody }}}
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    {{{ htmlBody }}}
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
 </body>
 </html>
