@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Authorize</title>
-    <link rel="stylesheet" href="/idp/style.css">
-  </head>
-  <body>
-    <div class="main-content">
-      <section class="main-content-section">
-        <div class="wrapper">
-          <h1 class="title--white">Authorize</h1>
-          <div class="login-panel">
-            <div class="panel-body">
-              <form autocomplete="off" action="/idp/confirm" method="post">
-                <button autofocus type="submit" name="submit" class="ids-link-filled">Continue</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </body>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Authorize</title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
+</head>
+<body>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <h1>Authorize</h1>
+    <form action="/idp/confirm" method="post">
+      <p class="actions"><button autofocus type="submit" name="submit" class="ids-link-filled">Continue</button></p>
+    </form>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
+</body>
 </html>

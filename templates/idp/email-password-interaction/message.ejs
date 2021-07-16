@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title><%= message %></title>
-    <link rel="stylesheet" href="/idp/style.css">
-  </head>
-  <body>
-    <div class="main-content">
-      <section class="main-content-section">
-        <div class="wrapper">
-          <section class="toaster-wrap--primary toaster" style="margin-top: 114px">
-            <div class="toaster-wrap__content">
-              <p class="content__message">
-                <%= message %>
-              </p>
-            </div>
-          </section>
-        </div>
-      </section>
-    </div>
-  </body>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title><%= message %></title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
+</head>
+<body>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <p><%= message %></p>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
+</body>
 </html>

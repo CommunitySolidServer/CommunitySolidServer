@@ -1,41 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Sign-in</title>
-    <link rel="stylesheet" href="/idp/style.css">
-  </head>
-  <body>
-    <div class="main-content">
-      <section class="main-content-section">
-        <div class="wrapper">
-          <h1 class="title--white">Email Sent</h1>
-          <div class="login-panel">
-            <div class="panel-body">
-              <form autocomplete="off" action="/idp/forgotpassword" method="post">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Email sent</title>
+  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
+</head>
+<body>
+  <header>
+    <img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" />
+    <h1>Community Solid Server</h1>
+  </header>
+  <main>
+    <h1>Email sent</h1>
+    <form action="/idp/forgotpassword" method="post">
+      <p>If your account exists, an email has been sent with a link to reset your password.</p>
+      <p>If you do not receive your email in a couple of minutes, check your spam folder or click the link below to send another email.</p>
 
-                <div class="input-wrap">
-                  <p>If your account exists, an email has been sent with a link to reset your password.</p>
-                </div>
+      <input type="hidden" name="email" value="<%= prefilled.email %>" />
 
-                <div class="input-wrap">
-                  <p>If you do not receive your email in a couple of minutes, check your spam folder or click the link below to send another email.</p>
-                </div>
+      <p class="actions"><a href="/idp/login">Back to Log In</a></p>
 
-                <input type="hidden" name="email" value="<%= prefilled.email %>" />
-
-                <a href="/idp/login" class="ids-link-filled">Back to Log In</a>
-
-                <hr />
-                <div class="space-between">
-                  <button type="submit" name="submit" class="link">Send Another Email</button>
-                </div>
-
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </body>
+      <hr />
+      <p class="actions">
+        <button type="submit" name="submit" class="link">Send Another Email</button>
+      </p>
+    </form>
+  </main>
+  <footer>
+    <p>©2019–2021 Inrupt Inc. and imec</p>
+  </footer>
+</body>
 </html>
