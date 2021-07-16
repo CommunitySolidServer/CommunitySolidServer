@@ -30,6 +30,22 @@ async function postForm(url: string, formBody: string): Promise<Response> {
   });
 }
 
+/**
+ * Extracts the registration triple from the registration form body.
+ */
+function extractRegistrationTriple(body: string, webId: string): string {
+  const error = load(body)('p.error').first().text().trim()
+    .split('\n')[0];
+  const regex = new RegExp(
+    `(<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken> "[^"]+"\\s*\\.\\s*)$`, 'u',
+  );
+  const match = regex.exec(error);
+  expect(match).toHaveLength(2);
+  const registrationTriple = match![1];
+  expect(registrationTriple).not.toHaveLength(0);
+  return registrationTriple;
+}
+
 // No way around the cookies https://github.com/panva/node-oidc-provider/issues/552 .
 // They will be simulated by storing the values and passing them along.
 // This is why the redirects are handled manually.
@@ -84,12 +100,7 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
-      // eslint-disable-next-line newline-per-chained-call
-      registrationTriple = load(await res.text())('form div label').first().text().trim().split('\n')[0];
-      expect(registrationTriple).toMatch(new RegExp(
-        `^<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken> "[^"]+"\\s*\\.\\s*$`,
-        'u',
-      ));
+      registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
@@ -106,9 +117,10 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`You can now identify as .*${webId}.*with our IDP using ${email}`, 'u'));
+      expect(text).toMatch(new RegExp(`You can now identify as .*${webId}`, 'u'));
+      expect(text).toMatch(new RegExp(`on this server using <em>${email}</em>`, 'u'));
       expect(text).toMatch(new RegExp(`Make sure you add the triple
-\\s*&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.
+\\s*<code>&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.</code>
 \\s*to your WebID profile\\.`, 'mu'));
     });
   });
@@ -180,7 +192,7 @@ describe('A Solid server with IDP', (): void => {
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/forgotpassword`, stringify({ email }));
       expect(res.status).toBe(200);
-      expect(load(await res.text())('form div p').first().text().trim())
+      expect(load(await res.text())('form p').first().text().trim())
         .toBe('If your account exists, an email has been sent with a link to reset your password.');
 
       const mail = sendMail.mock.calls[0][0];
@@ -255,12 +267,7 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
-      // eslint-disable-next-line newline-per-chained-call
-      registrationTriple = load(await res.text())('form div label').first().text().trim().split('\n')[0];
-      expect(registrationTriple).toMatch(new RegExp(
-        `^<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken> "[^"]+"\\s*\\.\\s*$`,
-        'u',
-      ));
+      registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
@@ -277,7 +284,8 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`Your new pod has been created and can be found at.*${baseUrl}${podName}/`, 'u'));
+      expect(text).toMatch(new RegExp(`Your new pod has been created
+\\s*and can be found at.*${baseUrl}${podName}/`, 'u'));
     });
   });
 
@@ -301,9 +309,10 @@ describe('A Solid server with IDP', (): void => {
       expect(matchWebId).toBeDefined();
       expect(matchWebId).toHaveLength(2);
       newWebId = matchWebId![1];
-      expect(text).toMatch(new RegExp(`You can now identify as .*${newWebId}.*with our IDP using ${newMail}`, 'u'));
+      expect(text).toMatch(new RegExp(`You can now identify as .*${newWebId}`, 'u'));
+      expect(text).toMatch(new RegExp(`on this server using <em>${newMail}</em>.`, 'u'));
 
-      const matchPod = /Your new pod has been created and can be found at [^>]+>([^<]+)/u.exec(text);
+      const matchPod = /Your new pod has been created\n\s*and can be found at [^>]+>([^<]+)/u.exec(text);
       expect(matchPod).toBeDefined();
       expect(matchPod).toHaveLength(2);
       podLocation = matchPod![1];

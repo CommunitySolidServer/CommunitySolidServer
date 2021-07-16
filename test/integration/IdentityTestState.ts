@@ -98,9 +98,9 @@ export class IdentityTestState {
     const res = await this.fetchIdp(url);
     expect(res.status).toBe(200);
     const text = await res.text();
-    const register = this.extractUrl(text, 'a:contains("Register")', 'href');
+    const register = this.extractUrl(text, 'a:contains("Sign up")', 'href');
     const login = this.extractUrl(text, 'form', 'action');
-    const forgotPassword = this.extractUrl(text, 'a:contains("Forgot Password")', 'href');
+    const forgotPassword = this.extractUrl(text, 'a:contains("Forgot password")', 'href');
 
     return { register, login, forgotPassword };
   }
