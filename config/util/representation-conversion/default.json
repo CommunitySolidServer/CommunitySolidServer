@@ -26,17 +26,24 @@
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
             { "@type": "ErrorToQuadConverter" },
             {
+              "comment": "Converts an error into a Markdown description of its details.",
               "@type": "ErrorToTemplateConverter",
-              "engine": { "@type": "HandlebarsTemplateEngine" },
-              "templatePath": "$PACKAGE_ROOT/templates/error/main.md",
-              "descriptions": "$PACKAGE_ROOT/templates/error/descriptions/",
-              "contentType": "text/markdown",
-              "extension": ".md"
+              "templateEngine": {
+                "@type": "HandlebarsTemplateEngine",
+                "template": { "templateFile": "$PACKAGE_ROOT/templates/error/main.md" }
+              },
+              "templatePath": "$PACKAGE_ROOT/templates/error/descriptions/",
+              "extension": ".md",
+              "contentType": "text/markdown"
             },
             {
+              "comment": "Renders Markdown snippets into the main page template.",
               "@type": "MarkdownToHtmlConverter",
-              "engine": { "@type": "HandlebarsTemplateEngine" },
-              "templatePath": "$PACKAGE_ROOT/templates/main.html"
+              "templateEngine": {
+                "@id": "urn:solid-server:default:MainTemplateEngine",
+                "@type": "HandlebarsTemplateEngine",
+                "template": { "templateFile": "$PACKAGE_ROOT/templates/main.html" }
+              }
             }
           ]
         }

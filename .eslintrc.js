@@ -86,6 +86,10 @@ module.exports = {
     'unicorn/prefer-ternary': 'off',
     'yield-star-spacing': [ 'error', 'after' ],
 
+    // Need to use the typescript version of this rule to support overloading
+    "no-dupe-class-members": "off",
+    "@typescript-eslint/no-dupe-class-members": ["error"],
+
     // Naming conventions
     '@typescript-eslint/naming-convention': [
       'error',
