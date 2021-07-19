@@ -16,10 +16,10 @@ describe('An IndexRepresentationStore', (): void => {
     source = {
       getRepresentation: jest.fn((identifier: ResourceIdentifier): any => {
         if (identifier.path === `${baseUrl}index.html`) {
-          return new BasicRepresentation('index data', 'text/html');
+          return new BasicRepresentation('index data', identifier, 'text/html');
         }
         if (identifier.path.endsWith('/')) {
-          return new BasicRepresentation('container data', 'text/turtle');
+          return new BasicRepresentation('container data', identifier, 'text/turtle');
         }
         throw new NotFoundHttpError();
       }),
@@ -36,7 +36,13 @@ describe('An IndexRepresentationStore', (): void => {
   it('retrieves the index resource if it exists.', async(): Promise<void> => {
     const result = await store.getRepresentation({ path: baseUrl }, {});
     await expect(readableToString(result.data)).resolves.toBe('index data');
-    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(source.getRepresentation).toHaveBeenCalledTimes(2);
+    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}index.html` }, {}, undefined);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, {}, undefined);
+
+    // Use correct metadata
+    expect(result.metadata.identifier.value).toBe(baseUrl);
+    expect(result.metadata.contentType).toBe('text/html');
   });
 
   it('errors if a non-404 error was thrown when accessing the index resource.', async(): Promise<void> => {
@@ -69,7 +75,12 @@ describe('An IndexRepresentationStore', (): void => {
     const preferences = { type: { 'text/turtle': 0.8, 'text/html': 0.5 }};
     const result = await store.getRepresentation({ path: baseUrl }, preferences);
     await expect(readableToString(result.data)).resolves.toBe('index data');
-    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: `${baseUrl}base.html` }, preferences, undefined);
+    expect(source.getRepresentation).toHaveBeenCalledTimes(2);
+    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}base.html` }, preferences, undefined);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, {}, undefined);
+
+    // Use correct metadata
+    expect(result.metadata.identifier.value).toBe(baseUrl);
+    expect(result.metadata.contentType).toBe('text/html');
   });
 });
