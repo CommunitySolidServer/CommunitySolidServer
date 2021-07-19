@@ -56,7 +56,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
   });
 
   it('fills in a template with the given options.', async(): Promise<void> => {
-    cache.data = { template };
+    cache.data = { 'template.hbs': template };
     const result = await genToArray(generator.generate(location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}template` };
@@ -70,7 +70,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
   });
 
   it('creates the necessary containers.', async(): Promise<void> => {
-    cache.data = { container: { container: { template }}};
+    cache.data = { container: { container: { 'template.hbs': template }}};
     const result = await genToArray(generator.generate(location, { webId }));
     const identifiers = result.map((res): ResourceIdentifier => res.identifier);
     const id = { path: `${location.path}container/container/template` };
@@ -84,6 +84,19 @@ describe('A TemplatedResourcesGenerator', (): void => {
     const { representation } = result[3];
     await expect(readableToString(representation.data)).resolves
       .toEqual(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
+  });
+
+  it('copies the file stream directly if no template extension is found.', async(): Promise<void> => {
+    cache.data = { noTemplate: template };
+    const result = await genToArray(generator.generate(location, { webId }));
+    const identifiers = result.map((res): ResourceIdentifier => res.identifier);
+    const id = { path: `${location.path}noTemplate` };
+    expect(identifiers).toEqual([ location, id ]);
+
+    const { representation } = result[1];
+    expect(representation.binary).toBe(true);
+    expect(representation.metadata.contentType).toBe('text/turtle');
+    await expect(readableToString(representation.data)).resolves.toEqual(template);
   });
 
   it('adds metadata from .meta files.', async(): Promise<void> => {
