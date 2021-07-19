@@ -1,12 +1,12 @@
-import { RootContainerInitializer } from '../../src/init/RootContainerInitializer';
 import { RoutingAuxiliaryStrategy } from '../../src/ldp/auxiliary/RoutingAuxiliaryStrategy';
 import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore';
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
-import { APPLICATION_OCTET_STREAM } from '../../src/util/ContentTypes';
+import { APPLICATION_OCTET_STREAM, TEXT_TURTLE } from '../../src/util/ContentTypes';
 import { InternalServerError } from '../../src/util/errors/InternalServerError';
 import { SingleRootIdentifierStrategy } from '../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { EqualReadWriteLocker } from '../../src/util/locking/EqualReadWriteLocker';
@@ -15,6 +15,7 @@ import type { ReadWriteLocker } from '../../src/util/locking/ReadWriteLocker';
 import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThreadedResourceLocker';
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
+import { PIM, RDF } from '../../src/util/Vocabularies';
 jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
@@ -41,8 +42,9 @@ describe('A LockingResourceStore', (): void => {
     );
 
     // Initialize store
-    const initializer = new RootContainerInitializer({ store: source, baseUrl: base });
-    await initializer.handleSafe();
+    const metadata = new RepresentationMetadata({ path: base }, TEXT_TURTLE);
+    metadata.add(RDF.type, PIM.terms.Storage);
+    await source.setRepresentation({ path: base }, new BasicRepresentation([], metadata));
 
     locker = new EqualReadWriteLocker(new SingleThreadedResourceLocker());
     expiringLocker = new WrappedExpiringReadWriteLocker(locker, 1000);

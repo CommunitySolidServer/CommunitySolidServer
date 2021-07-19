@@ -58,12 +58,10 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await app.stop();
   });
 
-  it('can read a container listing.', async(): Promise<void> => {
-    const response = await getResource(baseUrl);
+  it('can read the root container index page.', async(): Promise<void> => {
+    const response = await getResource(baseUrl, { contentType: 'text/html' });
 
-    await expectQuads(response, [
-      quad(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container),
-    ]);
+    await expect(response.text()).resolves.toContain('Welcome to the Community Solid Server');
 
     // This is only here because we're accessing the root container
     expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
@@ -71,7 +69,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
   it('can read a container listing with a query string.', async(): Promise<void> => {
     // Helper functions would fail due to query params
-    const response = await fetch(`${baseUrl}?abc=def&xyz`);
+    const response = await fetch(`${baseUrl}?abc=def&xyz`, { headers: { accept: 'text/turtle' }});
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('text/turtle');
     expect(response.headers.get('link')).toContain(`<${LDP.Container}>; rel="type"`);
@@ -124,7 +122,12 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await putResource(containerUrl, { contentType: 'text/turtle' });
 
     // GET
-    await getResource(containerUrl);
+    const response = await getResource(containerUrl);
+
+    // Verify container listing
+    await expectQuads(response, [
+      quad(namedNode(containerUrl), RDF.terms.type, LDP.terms.Container),
+    ]);
 
     // DELETE
     expect(await deleteResource(containerUrl)).toBeUndefined();

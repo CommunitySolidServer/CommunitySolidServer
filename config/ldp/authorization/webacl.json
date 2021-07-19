@@ -17,20 +17,6 @@
         },
         { "@id": "urn:solid-server:default:WebAclAuthorizer" }
       ]
-    },
-
-    {
-      "comment": "Add to the list of initializers.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
-      "ParallelHandler:_handlers": [
-        {
-          "comment": "Makes sure there is a root acl document. This is necessary for acl authorization.",
-          "@type": "AclInitializer",
-          "settings_store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "settings_aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" },
-          "settings_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
-        }
-      ]
     }
   ]
 }
