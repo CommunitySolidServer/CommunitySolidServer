@@ -66,13 +66,12 @@ export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
 
 // Init
-export * from './init/AclInitializer';
 export * from './init/App';
 export * from './init/AppRunner';
 export * from './init/ConfigPodInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
-export * from './init/RootContainerInitializer';
+export * from './init/RootInitializer';
 export * from './init/ServerInitializer';
 
 // LDP/Authorization

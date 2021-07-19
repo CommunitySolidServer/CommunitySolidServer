@@ -1,6 +1,5 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../storage/ResourceStore';
-import type { PodSettings } from '../settings/PodSettings';
 import type { ResourcesGenerator } from './ResourcesGenerator';
 
 /**
@@ -12,7 +11,7 @@ import type { ResourcesGenerator } from './ResourcesGenerator';
  *
  * @returns The amount of resources that were added.
  */
-export async function addGeneratedResources(identifier: ResourceIdentifier, settings: PodSettings,
+export async function addGeneratedResources(identifier: ResourceIdentifier, settings: NodeJS.Dict<string>,
   generator: ResourcesGenerator, store: ResourceStore): Promise<number> {
   const resources = generator.generate(identifier, settings);
   let count = 0;

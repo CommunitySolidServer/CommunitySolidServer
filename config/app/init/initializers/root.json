@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure the root container exists and contains the necessary resources.",
+      "@id": "urn:solid-server:default:RootInitializer",
+      "@type": "RootInitializer",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "store": { "@id": "urn:solid-server:default:ResourceStore" },
+      "generator": {
+        "@type": "TemplatedResourcesGenerator",
+        "templateFolder": "$PACKAGE_ROOT/templates/root",
+        "factory": { "@type": "ExtensionBasedMapperFactory" },
+        "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+      }
+    }
+  ]
+}

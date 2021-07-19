@@ -9,6 +9,7 @@ import type {
   FileIdentifierMapperFactory,
   ResourceLink,
 } from '../../storage/mapping/FileIdentifierMapper';
+import { TEXT_TURTLE } from '../../util/ContentTypes';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
@@ -130,7 +131,10 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
     const metadata = new RepresentationMetadata(link.identifier);
 
     // Read file if it is not a container
-    if (!isContainerIdentifier(link.identifier)) {
+    if (isContainerIdentifier(link.identifier)) {
+      // Containers need to be an RDF type
+      metadata.contentType = TEXT_TURTLE;
+    } else {
       data = await this.processFile(link, options);
       metadata.contentType = link.contentType;
     }

@@ -111,16 +111,18 @@ describe('A TemplatedResourcesGenerator', (): void => {
       { path: `${location.path}container/` },
       { path: `${location.path}container/template` },
     ]);
-    // Root has the 1 raw metadata triple (with <> changed to its identifier)
+    // Root has the 1 raw metadata triple (with <> changed to its identifier) and content-type
     const rootMetadata = result[0].representation.metadata;
     expect(rootMetadata.identifier.value).toBe(location.path);
-    expect(rootMetadata.quads()).toHaveLength(1);
+    expect(rootMetadata.quads()).toHaveLength(2);
     expect(rootMetadata.get('pre:has')?.value).toBe('metadata');
+    expect(rootMetadata.contentType).toBe('text/turtle');
 
-    // Container has no metadata triples
+    // Container has no metadata triples besides content-type
     const contMetadata = result[1].representation.metadata;
     expect(contMetadata.identifier.value).toBe(`${location.path}container/`);
-    expect(contMetadata.quads()).toHaveLength(0);
+    expect(contMetadata.quads()).toHaveLength(1);
+    expect(contMetadata.contentType).toBe('text/turtle');
 
     // Document has the 1 raw metadata triple (with <> changed to its identifier) and content-type
     const docMetadata = result[2].representation.metadata;

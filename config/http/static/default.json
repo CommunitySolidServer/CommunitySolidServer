@@ -8,7 +8,7 @@
       "assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/root/favicon.ico"
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/images/favicon.ico"
         },
         {
           "StaticAssetHandler:_assets_key": "/.well_known/css/styles/",
