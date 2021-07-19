@@ -41,7 +41,19 @@ export class IndexRepresentationStore extends PassthroughStore {
     if (isContainerIdentifier(identifier) && this.matchesPreferences(preferences)) {
       try {
         const indexIdentifier = { path: `${identifier.path}${this.indexName}` };
-        return await this.source.getRepresentation(indexIdentifier, preferences, conditions);
+        const index = await this.source.getRepresentation(indexIdentifier, preferences, conditions);
+        // We only care about the container metadata so preferences don't matter
+        const container = await this.source.getRepresentation(identifier, {}, conditions);
+        container.data.destroy();
+
+        // Uses the container metadata but with the index content-type.
+        // There is potential metadata loss if there is more representation-specific metadata,
+        // but that can be looked into once the issues above are resolved.
+        const { contentType } = index.metadata;
+        index.metadata = container.metadata;
+        index.metadata.contentType = contentType;
+
+        return index;
       } catch (error: unknown) {
         if (!NotFoundHttpError.isInstance(error)) {
           throw error;
