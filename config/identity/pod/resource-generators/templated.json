@@ -9,7 +9,7 @@
       "factory": {
         "@type": "ExtensionBasedMapperFactory"
       },
-      "engine": {
+      "templateEngine": {
         "@type": "HandlebarsTemplateEngine"
       }
     }

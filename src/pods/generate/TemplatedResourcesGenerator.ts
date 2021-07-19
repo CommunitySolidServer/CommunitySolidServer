@@ -13,8 +13,8 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier, resolveAssetPath } from '../../util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../util/StreamUtil';
+import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { Resource, ResourcesGenerator } from './ResourcesGenerator';
-import type { TemplateEngine } from './TemplateEngine';
 import Dict = NodeJS.Dict;
 
 interface TemplateResourceLink extends ResourceLink {
@@ -33,7 +33,7 @@ interface TemplateResourceLink extends ResourceLink {
 export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateFolder: string;
   private readonly factory: FileIdentifierMapperFactory;
-  private readonly engine: TemplateEngine;
+  private readonly templateEngine: TemplateEngine;
   private readonly templateExtension: string;
 
   /**
@@ -41,28 +41,28 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
    *
    * @param templateFolder - Folder where the templates are located.
    * @param factory - Factory used to generate mapper relative to the base identifier.
-   * @param engine - Template engine for generating the resources.
+   * @param templateEngine - Template engine for generating the resources.
    * @param templateExtension - The extension of files that need to be interpreted as templates.
    *                            Will be removed to generate the identifier.
    */
-  public constructor(templateFolder: string, factory: FileIdentifierMapperFactory, engine: TemplateEngine,
+  public constructor(templateFolder: string, factory: FileIdentifierMapperFactory, templateEngine: TemplateEngine,
     templateExtension = '.hbs') {
     this.templateFolder = resolveAssetPath(templateFolder);
     this.factory = factory;
-    this.engine = engine;
+    this.templateEngine = templateEngine;
     this.templateExtension = templateExtension;
   }
 
   public async* generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
     const mapper = await this.factory.create(location.path, this.templateFolder);
     const folderLink = await this.toTemplateLink(this.templateFolder, mapper);
-    yield* this.parseFolder(folderLink, mapper, options);
+    yield* this.processFolder(folderLink, mapper, options);
   }
 
   /**
    * Generates results for all entries in the given folder, including the folder itself.
    */
-  private async* parseFolder(folderLink: TemplateResourceLink, mapper: FileIdentifierMapper, options: Dict<string>):
+  private async* processFolder(folderLink: TemplateResourceLink, mapper: FileIdentifierMapper, options: Dict<string>):
   AsyncIterable<Resource> {
     // Group resource links with their corresponding metadata links
     const links = await this.groupLinks(folderLink.filePath, mapper);
@@ -76,7 +76,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
 
     for (const { link, meta } of Object.values(links)) {
       if (isContainerIdentifier(link.identifier)) {
-        yield* this.parseFolder(link, mapper, options);
+        yield* this.processFolder(link, mapper, options);
       } else {
         yield this.generateResource(link, options, meta);
       }
@@ -131,7 +131,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
 
     // Read file if it is not a container
     if (!isContainerIdentifier(link.identifier)) {
-      data = await this.parseFile(link, options);
+      data = await this.processFile(link, options);
       metadata.contentType = link.contentType;
     }
 
@@ -154,7 +154,7 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(metaLink.identifier);
 
-    const data = await this.parseFile(metaLink, options);
+    const data = await this.processFile(metaLink, options);
     const parser = new Parser({ format: metaLink.contentType, baseIRI: metaLink.identifier.path });
     const quads = parser.parse(await readableToString(data));
     metadata.addQuads(quads);
@@ -165,11 +165,10 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   /**
    * Creates a read stream from the file and applies the template if necessary.
    */
-  private async parseFile(link: TemplateResourceLink, options: Dict<string>): Promise<Guarded<Readable>> {
+  private async processFile(link: TemplateResourceLink, options: Dict<string>): Promise<Guarded<Readable>> {
     if (link.isTemplate) {
-      const raw = await fsPromises.readFile(link.filePath, 'utf8');
-      const result = this.engine.apply(raw, options);
-      return guardedStreamFrom(result);
+      const rendered = await this.templateEngine.render(options, { templateFile: link.filePath });
+      return guardedStreamFrom(rendered);
     }
     return guardStream(createReadStream(link.filePath));
   }

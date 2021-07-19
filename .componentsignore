@@ -4,5 +4,6 @@
   "Error",
   "EventEmitter",
   "HttpErrorOptions",
+  "Template",
   "ValuePreferencesArg"
 ]

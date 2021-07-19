@@ -1,32 +1,23 @@
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { TemplateEngine } from '../../../../src/pods/generate/TemplateEngine';
 import { ErrorToTemplateConverter } from '../../../../src/storage/conversion/ErrorToTemplateConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToString } from '../../../../src/util/StreamUtil';
-import { mockFs } from '../../../util/Util';
-
-jest.mock('fs');
+import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 
 describe('An ErrorToTemplateConverter', (): void => {
-  let cache: { data: any };
   const identifier = { path: 'http://test.com/error' };
-  const templatePath = '/templates/error.template';
-  const descriptions = '/templates/codes';
+  const templatePath = '/templates/codes';
   const errorCode = 'E0001';
-  let engine: TemplateEngine;
+  let templateEngine: jest.Mocked<TemplateEngine>;
   let converter: ErrorToTemplateConverter;
   const preferences = {};
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs('/templates');
-    cache.data['error.template'] = '{{ template }}';
-    cache.data.codes = { [`${errorCode}.html`]: '{{{ errorText }}}' };
-    engine = {
-      apply: jest.fn().mockReturnValue('<html>'),
+    templateEngine = {
+      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
     };
-
-    converter = new ErrorToTemplateConverter(engine, templatePath, descriptions, 'text/html', '.html');
+    converter = new ErrorToTemplateConverter(templateEngine, templatePath, '.html', 'text/html');
   });
 
   it('supports going from errors to the given content type.', async(): Promise<void> => {
@@ -46,13 +37,14 @@ describe('An ErrorToTemplateConverter', (): void => {
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
+
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}', { name: 'Error', message: 'error text', stack: error.stack },
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenLastCalledWith(
+      { name: 'Error', message: 'error text', stack: error.stack },
     );
   });
 
@@ -60,15 +52,19 @@ describe('An ErrorToTemplateConverter', (): void => {
     const error = new BadRequestHttpError('error text');
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
+    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
+
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}', { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
-    );
+    expect(templateEngine.render).toHaveBeenCalledTimes(2);
+    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
+      {},
+      { templatePath: '/templates/codes', templateFile: 'H400.html' });
+    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
+      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack });
   });
 
   it('only adds stack if it is defined.', async(): Promise<void> => {
@@ -76,18 +72,22 @@ describe('An ErrorToTemplateConverter', (): void => {
     delete error.stack;
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
+    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
+
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}', { name: 'BadRequestHttpError', message: 'error text' },
-    );
+    expect(templateEngine.render).toHaveBeenCalledTimes(2);
+    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
+      {},
+      { templatePath: '/templates/codes', templateFile: 'H400.html' });
+    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
+      { name: 'BadRequestHttpError', message: 'error text' });
   });
 
-  it('adds additional information if an error code is found.', async(): Promise<void> => {
+  it('adds additional information if an error code description is found.', async(): Promise<void> => {
     const error = new BadRequestHttpError('error text', { errorCode, details: { key: 'val' }});
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
@@ -96,14 +96,12 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(2);
-    expect(engine.apply).toHaveBeenCalledWith(
-      '{{{ errorText }}}', { key: 'val' },
-    );
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}',
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-    );
+    expect(templateEngine.render).toHaveBeenCalledTimes(2);
+    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
+      { key: 'val' },
+      { templatePath: '/templates/codes', templateFile: 'E0001.html' });
+    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
+      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' });
   });
 
   it('sends an empty object for additional error code parameters if none are defined.', async(): Promise<void> => {
@@ -111,33 +109,35 @@ describe('An ErrorToTemplateConverter', (): void => {
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
     await expect(prom).resolves.toBeDefined();
+
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(2);
-    expect(engine.apply).toHaveBeenCalledWith(
-      '{{{ errorText }}}', { },
-    );
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}',
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-    );
+    expect(templateEngine.render).toHaveBeenCalledTimes(2);
+    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
+      {},
+      { templatePath: '/templates/codes', templateFile: 'E0001.html' });
+    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
+      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' });
   });
 
   it('converts errors with a code as usual if no corresponding template is found.', async(): Promise<void> => {
     const error = new BadRequestHttpError('error text', { errorCode: 'invalid' });
     const representation = new BasicRepresentation([ error ], 'internal/error', false);
     const prom = converter.handle({ identifier, representation, preferences });
+    templateEngine.render.mockRejectedValueOnce(new Error('error-specific template not found'));
     await expect(prom).resolves.toBeDefined();
+
     const result = await prom;
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}',
-      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack },
-    );
+    expect(templateEngine.render).toHaveBeenCalledTimes(2);
+    expect(templateEngine.render).toHaveBeenNthCalledWith(1,
+      {},
+      { templatePath: '/templates/codes', templateFile: 'invalid.html' });
+    expect(templateEngine.render).toHaveBeenNthCalledWith(2,
+      { name: 'BadRequestHttpError', message: 'error text', stack: error.stack });
   });
 });

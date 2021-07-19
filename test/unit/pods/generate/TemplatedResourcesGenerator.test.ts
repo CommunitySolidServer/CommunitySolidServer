@@ -1,5 +1,4 @@
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
-import { HandlebarsTemplateEngine } from '../../../../src/pods/generate/HandlebarsTemplateEngine';
 import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
 import type {
   FileIdentifierMapper,
@@ -8,6 +7,7 @@ import type {
 } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
+import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');

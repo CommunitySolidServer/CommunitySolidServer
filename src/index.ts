@@ -174,14 +174,12 @@ export * from './pods/generate/variables/VariableSetter';
 export * from './pods/generate/BaseComponentsJsFactory';
 export * from './pods/generate/ComponentsJsFactory';
 export * from './pods/generate/GenerateUtil';
-export * from './pods/generate/HandlebarsTemplateEngine';
 export * from './pods/generate/IdentifierGenerator';
 export * from './pods/generate/PodGenerator';
 export * from './pods/generate/ResourcesGenerator';
 export * from './pods/generate/SubdomainIdentifierGenerator';
 export * from './pods/generate/SuffixIdentifierGenerator';
 export * from './pods/generate/TemplatedPodGenerator';
-export * from './pods/generate/TemplateEngine';
 export * from './pods/generate/TemplatedResourcesGenerator';
 
 // Pods/Settings
@@ -223,8 +221,8 @@ export * from './storage/conversion/ChainedConverter';
 export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/ConversionUtil';
-export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
+export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';
@@ -310,6 +308,10 @@ export * from './util/locking/RedisResourceLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
+
+// Util/Templates
+export * from './util/templates/HandlebarsTemplateEngine';
+export * from './util/templates/TemplateEngine';
 
 // Util
 export * from './util/ContentTypes';

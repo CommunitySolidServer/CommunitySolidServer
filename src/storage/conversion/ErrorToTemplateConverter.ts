@@ -1,13 +1,11 @@
 import assert from 'assert';
-import { promises as fsPromises } from 'fs';
 import arrayifyStream from 'arrayify-stream';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
-import type { TemplateEngine } from '../../pods/generate/TemplateEngine';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { joinFilePath, resolveAssetPath } from '../../util/PathUtil';
+import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
@@ -23,52 +21,45 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  * using the variable `codeMessage`.
  */
 export class ErrorToTemplateConverter extends TypedRepresentationConverter {
-  private readonly engine: TemplateEngine;
+  private readonly templateEngine: TemplateEngine;
   private readonly templatePath: string;
-  private readonly descriptions: string;
-  private readonly contentType: string;
   private readonly extension: string;
+  private readonly contentType: string;
 
-  public constructor(engine: TemplateEngine, templatePath: string, descriptions: string, contentType: string,
-    extension: string) {
+  public constructor(templateEngine: TemplateEngine, templatePath: string, extension: string, contentType: string) {
     super(INTERNAL_ERROR, contentType);
-    this.engine = engine;
-    this.templatePath = resolveAssetPath(templatePath);
-    this.descriptions = resolveAssetPath(descriptions);
-    this.contentType = contentType;
+    this.templateEngine = templateEngine;
+    this.templatePath = templatePath;
     this.extension = extension;
+    this.contentType = contentType;
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
+    // Obtain the error from the representation stream
     const errors = await arrayifyStream(representation.data);
     if (errors.length !== 1) {
       throw new InternalServerError('Only single errors are supported.');
     }
     const error = errors[0] as Error;
 
-    // Render the template
+    // Render the error description using an error-specific template
+    let description: string | undefined;
+    if (HttpError.isInstance(error)) {
+      try {
+        const templateFile = `${error.errorCode}${this.extension}`;
+        assert(/^[\w.-]+$/u.test(templateFile), 'Invalid error template name');
+        description = await this.templateEngine.render(error.details ?? {},
+          { templateFile, templatePath: this.templatePath });
+      } catch {
+        // In case no template is found, or rendering errors, we still want to convert
+      }
+    }
+
+    // Render the main template, embedding the rendered error description
     const { name, message, stack } = error;
-    const description = await this.getErrorCodeMessage(error);
     const variables = { name, message, stack, description };
-    const template = await fsPromises.readFile(this.templatePath, 'utf8');
-    const rendered = this.engine.apply(template, variables);
+    const rendered = await this.templateEngine.render(variables);
 
     return new BasicRepresentation(rendered, representation.metadata, this.contentType);
-  }
-
-  private async getErrorCodeMessage(error: Error): Promise<string | undefined> {
-    if (HttpError.isInstance(error)) {
-      let template: string;
-      try {
-        const fileName = `${error.errorCode}${this.extension}`;
-        assert(/^[\w.-]+$/u.test(fileName), 'Invalid error template name');
-        template = await fsPromises.readFile(joinFilePath(this.descriptions, fileName), 'utf8');
-      } catch {
-        // In case no template is found we still want to convert
-        return;
-      }
-
-      return this.engine.apply(template, (error.details ?? {}) as NodeJS.Dict<string>);
-    }
   }
 }

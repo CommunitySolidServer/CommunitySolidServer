@@ -1,27 +1,19 @@
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { TemplateEngine } from '../../../../src/pods/generate/TemplateEngine';
 import { MarkdownToHtmlConverter } from '../../../../src/storage/conversion/MarkdownToHtmlConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';
-import { mockFs } from '../../../util/Util';
-
-jest.mock('fs');
+import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 
 describe('A MarkdownToHtmlConverter', (): void => {
-  let cache: { data: any };
   const identifier = { path: 'http://test.com/text' };
-  const templatePath = '/templates/error.template';
   const preferences = {};
-  let engine: TemplateEngine;
+  let templateEngine: TemplateEngine;
   let converter: MarkdownToHtmlConverter;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs('/templates');
-    cache.data['error.template'] = '{{ template }}';
-    engine = {
-      apply: jest.fn().mockReturnValue('<html>'),
+    templateEngine = {
+      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
     };
-
-    converter = new MarkdownToHtmlConverter(engine, templatePath);
+    converter = new MarkdownToHtmlConverter(templateEngine);
   });
 
   it('supports going from markdown to html.', async(): Promise<void> => {
@@ -38,9 +30,9 @@ describe('A MarkdownToHtmlConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}', { htmlBody: '<p>Text <code>code</code> more text.</p>\n' },
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenLastCalledWith(
+      { htmlBody: '<p>Text <code>code</code> more text.</p>\n' },
     );
   });
 
@@ -53,9 +45,9 @@ describe('A MarkdownToHtmlConverter', (): void => {
     expect(result.binary).toBe(true);
     expect(result.metadata.contentType).toBe('text/html');
     await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(engine.apply).toHaveBeenCalledTimes(1);
-    expect(engine.apply).toHaveBeenLastCalledWith(
-      '{{ template }}', { htmlBody: '<h1 id="title-text">title text</h1>\n<p>more text</p>\n', title: 'title text' },
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenLastCalledWith(
+      { htmlBody: '<h1 id="title-text">title text</h1>\n<p>more text</p>\n', title: 'title text' },
     );
   });
 });
