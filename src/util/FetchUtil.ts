@@ -1,8 +1,8 @@
 import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import type { Dataset } from 'rdf-js';
-import { getLoggerFor } from '../../logging/LogUtil';
-import { createErrorMessage } from '../../util/errors/ErrorUtil';
+import { getLoggerFor } from '../logging/LogUtil';
+import { createErrorMessage } from './errors/ErrorUtil';
 
 const logger = getLoggerFor('FetchUtil');
 

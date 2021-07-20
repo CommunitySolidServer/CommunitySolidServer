@@ -1,7 +1,7 @@
 import fetch from '@rdfjs/fetch';
 import type { DatasetResponse } from '@rdfjs/fetch-lite';
 import type { Dataset } from 'rdf-js';
-import { fetchDataset } from '../../../../src/identity/util/FetchUtil';
+import { fetchDataset } from '../../../src/util/FetchUtil';
 
 jest.mock('@rdfjs/fetch');
 

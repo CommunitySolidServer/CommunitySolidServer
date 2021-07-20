@@ -3,8 +3,8 @@ import { v4 } from 'uuid';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { fetchDataset } from '../../util/FetchUtil';
 import { SOLID } from '../../util/Vocabularies';
-import { fetchDataset } from '../util/FetchUtil';
 import { OwnershipValidator } from './OwnershipValidator';
 const { literal, namedNode, quad } = DataFactory;
 

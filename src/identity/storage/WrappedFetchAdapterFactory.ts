@@ -2,8 +2,8 @@ import { DataFactory } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
 import type { Dataset, Quad } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { fetchDataset } from '../../util/FetchUtil';
 import { SOLID } from '../../util/Vocabularies';
-import { fetchDataset } from '../util/FetchUtil';
 import type { AdapterFactory } from './AdapterFactory';
 import namedNode = DataFactory.namedNode;
 
