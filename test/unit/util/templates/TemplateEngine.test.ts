@@ -22,15 +22,19 @@ describe('readTemplate', (): void => {
     await expect(readTemplate()).resolves.toBe('');
   });
 
-  it('accepts string templates.', async(): Promise<void> => {
+  it('accepts a filename.', async(): Promise<void> => {
+    await expect(readTemplate(templateFile)).resolves.toBe('{{template}}');
+  });
+
+  it('accepts options with a string template.', async(): Promise<void> => {
     await expect(readTemplate({ templateString: 'abc' })).resolves.toBe('abc');
   });
 
-  it('accepts a filename.', async(): Promise<void> => {
+  it('accepts options with a filename.', async(): Promise<void> => {
     await expect(readTemplate({ templateFile })).resolves.toBe('{{template}}');
   });
 
-  it('accepts a filename and path.', async(): Promise<void> => {
+  it('accepts options with a filename and a path.', async(): Promise<void> => {
     await expect(readTemplate({ templateFile, templatePath })).resolves.toBe('{{other}}');
   });
 });

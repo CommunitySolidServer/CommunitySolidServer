@@ -17,9 +17,11 @@
     {
       "comment": "Renders the login page",
       "@id": "urn:solid-server:auth:password:LoginRenderHandler",
-      "@type": "RenderEjsHandler",
-      "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
-      "templateFile": "./email-password-interaction/login.ejs"
+      "@type": "TemplateHandler",
+      "templateEngine": {
+        "@type": "EjsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/login.ejs"
+      }
     }
   ]
 }

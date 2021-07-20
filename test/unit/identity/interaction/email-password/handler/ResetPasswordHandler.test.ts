@@ -7,7 +7,7 @@ import type {
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import type { RenderHandler } from '../../../../../../src/server/util/RenderHandler';
+import type { TemplateHandler } from '../../../../../../src/server/util/TemplateHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A ResetPasswordHandler', (): void => {
@@ -17,7 +17,7 @@ describe('A ResetPasswordHandler', (): void => {
   const email = 'alice@test.email';
   let accountStore: AccountStore;
   let renderHandler: ResetPasswordRenderHandler;
-  let messageRenderHandler: RenderHandler<{ message: string }>;
+  let messageRenderHandler: TemplateHandler<{ message: string }>;
   let handler: ResetPasswordHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -47,11 +47,11 @@ describe('A ResetPasswordHandler', (): void => {
     request = createPostFormRequest({});
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId: '' }});
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, contents: { errorMessage, recordId: '' }});
     request = createPostFormRequest({ recordId: [ 'a', 'b' ]});
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(2);
-    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId: '' }});
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, contents: { errorMessage, recordId: '' }});
   });
 
   it('renders errors for invalid passwords.', async(): Promise<void> => {
@@ -59,7 +59,7 @@ describe('A ResetPasswordHandler', (): void => {
     request = createPostFormRequest({ recordId, password: 'password!', confirmPassword: 'otherPassword!' });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, contents: { errorMessage, recordId }});
   });
 
   it('renders errors for invalid emails.', async(): Promise<void> => {
@@ -68,7 +68,7 @@ describe('A ResetPasswordHandler', (): void => {
     (accountStore.getForgotPasswordRecord as jest.Mock).mockResolvedValueOnce(undefined);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, contents: { errorMessage, recordId }});
   });
 
   it('renders a message on success.', async(): Promise<void> => {
@@ -82,7 +82,7 @@ describe('A ResetPasswordHandler', (): void => {
     expect(accountStore.changePassword).toHaveBeenLastCalledWith(email, 'password!');
     expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(messageRenderHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ response, props: { message: 'Your password was successfully reset.' }});
+      .toHaveBeenLastCalledWith({ response, contents: { message: 'Your password was successfully reset.' }});
   });
 
   it('has a default error for non-native errors.', async(): Promise<void> => {
@@ -91,6 +91,6 @@ describe('A ResetPasswordHandler', (): void => {
     (accountStore.getForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('not native');
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, props: { errorMessage, recordId }});
+    expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({ response, contents: { errorMessage, recordId }});
   });
 });

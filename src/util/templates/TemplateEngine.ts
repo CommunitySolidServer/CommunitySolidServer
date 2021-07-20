@@ -2,7 +2,9 @@ import { promises as fsPromises } from 'fs';
 import { joinFilePath, resolveAssetPath } from '../PathUtil';
 import Dict = NodeJS.Dict;
 
-export type Template = TemplateString | TemplatePath;
+export type Template = TemplateFileName | TemplateString | TemplatePath;
+
+export type TemplateFileName = string;
 
 export interface TemplateString {
   // String contents of the template
@@ -38,6 +40,10 @@ export interface TemplateEngine<T extends Dict<any> = Dict<any>> {
  * Reads the template and returns it as a string.
  */
 export async function readTemplate(template: Template = { templateString: '' }): Promise<string> {
+  // The template has been passed as a filename
+  if (typeof template === 'string') {
+    return readTemplate({ templateFile: template });
+  }
   // The template has already been given as a string
   if ('templateString' in template) {
     return template.templateString;

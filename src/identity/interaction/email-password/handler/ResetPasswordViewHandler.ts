@@ -27,7 +27,7 @@ export class ResetPasswordViewHandler extends HttpHandler {
       );
       await this.renderHandler.handleSafe({
         response,
-        props: { errorMessage: '', recordId },
+        contents: { errorMessage: '', recordId },
       });
     } catch (error: unknown) {
       throwIdpInteractionError(error, {});

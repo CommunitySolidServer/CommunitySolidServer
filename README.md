@@ -62,7 +62,6 @@ Additional recipes for configuring and deploying the server can be found at [sol
 | `--sparqlEndpoint, -s` |                             | Endpoint to call when using a SPARQL-based config.                                                          |
 | `--showStackTrace, -t` | false                       | Whether error stack traces should be shown in responses.                                                    |
 | `--podConfigJson`      | `"./pod-config.json"`       | JSON file to store pod configuration when using a dynamic config.                                           |
-| `--idpTemplateFolder`  | `"templates/idp"`           | Folder containing the templates used for IDP interactions.                                                  |
 
 ## Using the identity provider
 

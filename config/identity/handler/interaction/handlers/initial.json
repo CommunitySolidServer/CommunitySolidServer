@@ -13,9 +13,11 @@
           {
             "InitialInteractionHandler:_renderHandlerMap_key": "consent",
             "InitialInteractionHandler:_renderHandlerMap_value": {
-              "@type": "RenderEjsHandler",
-              "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
-              "templateFile": "./email-password-interaction/confirm.ejs"
+              "@type": "TemplateHandler",
+              "templateEngine": {
+                "@type": "EjsTemplateEngine",
+                "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/confirm.ejs"
+              }
             }
           }
         ],

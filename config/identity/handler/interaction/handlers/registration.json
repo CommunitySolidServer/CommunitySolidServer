@@ -22,16 +22,20 @@
     {
       "comment": "Renders the register page",
       "@id": "urn:solid-server:auth:password:RegisterRenderHandler",
-      "@type": "RenderEjsHandler",
-      "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
-      "templateFile": "./email-password-interaction/register.ejs"
+      "@type": "TemplateHandler",
+      "templateEngine": {
+        "@type": "EjsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/register.ejs"
+      }
     },
     {
       "comment": "Renders the successful registration page",
       "@id": "urn:solid-server:auth:password:RegisterResponseRenderHandler",
-      "@type": "RenderEjsHandler",
-      "templatePath": { "@id": "urn:solid-server:default:variable:idpTemplateFolder" },
-      "templateFile": "./email-password-interaction/registerResponse.ejs"
+      "@type": "TemplateHandler",
+      "templateEngine": {
+        "@type": "EjsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/registerResponse.ejs"
+      }
     }
   ]
 }
