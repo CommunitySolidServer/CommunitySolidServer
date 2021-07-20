@@ -26,30 +26,31 @@ describe('An ExtensionBasedMapper', (): void => {
 
   describe('mapUrlToFilePath', (): void => {
     it('throws 404 if the input path does not contain the base.', async(): Promise<void> => {
-      await expect(mapper.mapUrlToFilePath({ path: 'invalid' })).rejects.toThrow(NotFoundHttpError);
+      await expect(mapper.mapUrlToFilePath({ path: 'invalid' }, false)).rejects.toThrow(NotFoundHttpError);
     });
 
     it('throws 404 if the relative path does not start with a slash.', async(): Promise<void> => {
-      const result = mapper.mapUrlToFilePath({ path: `${trimTrailingSlashes(base)}test` });
+      const result = mapper.mapUrlToFilePath({ path: `${trimTrailingSlashes(base)}test` }, false);
       await expect(result).rejects.toThrow(BadRequestHttpError);
       await expect(result).rejects.toThrow('URL needs a / after the base');
     });
 
     it('throws 400 if the input path contains relative parts.', async(): Promise<void> => {
-      const result = mapper.mapUrlToFilePath({ path: `${base}test/../test2` });
+      const result = mapper.mapUrlToFilePath({ path: `${base}test/../test2` }, false);
       await expect(result).rejects.toThrow(BadRequestHttpError);
       await expect(result).rejects.toThrow('Disallowed /.. segment in URL');
     });
 
     it('returns the corresponding file path for container identifiers.', async(): Promise<void> => {
-      await expect(mapper.mapUrlToFilePath({ path: `${base}container/` })).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}container/` }, false)).resolves.toEqual({
         identifier: { path: `${base}container/` },
         filePath: `${rootFilepath}container/`,
+        isMetadata: false,
       });
     });
 
     it('rejects URLs that end with "$.{extension}".', async(): Promise<void> => {
-      const result = mapper.mapUrlToFilePath({ path: `${base}test$.txt` });
+      const result = mapper.mapUrlToFilePath({ path: `${base}test$.txt` }, false);
       await expect(result).rejects.toThrow(NotImplementedHttpError);
       await expect(result).rejects.toThrow('Identifiers cannot contain a dollar sign before their extension');
     });
@@ -58,58 +59,74 @@ describe('An ExtensionBasedMapper', (): void => {
       fsPromises.readdir.mockImplementation((): void => {
         throw new Error('does not exist');
       });
-      await expect(mapper.mapUrlToFilePath({ path: `${base}no/test.txt` })).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}no/test.txt` }, false)).resolves.toEqual({
         identifier: { path: `${base}no/test.txt` },
         filePath: `${rootFilepath}no/test.txt`,
         contentType: 'text/plain',
+        isMetadata: false,
       });
     });
 
     it('determines content-type by extension when looking for a file that does not exist.', async(): Promise<void> => {
       fsPromises.readdir.mockReturnValue([ 'test.ttl' ]);
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` })).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false)).resolves.toEqual({
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt`,
         contentType: 'text/plain',
+        isMetadata: false,
       });
     });
 
     it('determines the content-type based on the extension.', async(): Promise<void> => {
       fsPromises.readdir.mockReturnValue([ 'test.txt' ]);
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` })).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false)).resolves.toEqual({
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt`,
         contentType: 'text/plain',
+        isMetadata: false,
+      });
+    });
+
+    it('determines the content-type correctly for metadata files.', async(): Promise<void> => {
+      fsPromises.readdir.mockReturnValue([ 'test.meta' ]);
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test` }, true)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test.meta`,
+        contentType: 'text/turtle',
+        isMetadata: true,
       });
     });
 
     it('matches even if the content-type does not match the extension.', async(): Promise<void> => {
       fsPromises.readdir.mockReturnValue([ 'test.txt$.ttl' ]);
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` })).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false)).resolves.toEqual({
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt$.ttl`,
         contentType: 'text/turtle',
+        isMetadata: false,
       });
     });
 
     it('generates a file path if the content-type was provided.', async(): Promise<void> => {
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, 'text/plain')).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false, 'text/plain')).resolves.toEqual({
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt`,
         contentType: 'text/plain',
+        isMetadata: false,
       });
     });
 
     it('adds an extension if the given extension does not match the given content-type.', async(): Promise<void> => {
-      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, 'text/turtle')).resolves.toEqual({
+      await expect(mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false, 'text/turtle')).resolves.toEqual({
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt$.ttl`,
         contentType: 'text/turtle',
+        isMetadata: false,
       });
     });
 
     it('throws 501 if the given content-type is not recognized.', async(): Promise<void> => {
-      const result = mapper.mapUrlToFilePath({ path: `${base}test.txt` }, 'fake/data');
+      const result = mapper.mapUrlToFilePath({ path: `${base}test.txt` }, false, 'fake/data');
       await expect(result).rejects.toThrow(NotImplementedHttpError);
       await expect(result).rejects.toThrow('Unsupported content type fake/data');
     });
@@ -124,6 +141,7 @@ describe('An ExtensionBasedMapper', (): void => {
       await expect(mapper.mapFilePathToUrl(`${rootFilepath}container/`, true)).resolves.toEqual({
         identifier: { path: `${base}container/` },
         filePath: `${rootFilepath}container/`,
+        isMetadata: false,
       });
     });
 
@@ -132,6 +150,16 @@ describe('An ExtensionBasedMapper', (): void => {
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt`,
         contentType: 'text/plain',
+        isMetadata: false,
+      });
+    });
+
+    it('returns a generated identifier for metadata files.', async(): Promise<void> => {
+      await expect(mapper.mapFilePathToUrl(`${rootFilepath}test.meta`, false)).resolves.toEqual({
+        identifier: { path: `${base}test` },
+        filePath: `${rootFilepath}test.meta`,
+        contentType: 'text/turtle',
+        isMetadata: true,
       });
     });
 
@@ -140,6 +168,7 @@ describe('An ExtensionBasedMapper', (): void => {
         identifier: { path: `${base}test.txt` },
         filePath: `${rootFilepath}test.txt$.ttl`,
         contentType: 'text/turtle',
+        isMetadata: false,
       });
     });
 
@@ -148,6 +177,7 @@ describe('An ExtensionBasedMapper', (): void => {
         identifier: { path: `${base}test` },
         filePath: `${rootFilepath}test`,
         contentType: 'application/octet-stream',
+        isMetadata: false,
       });
     });
   });

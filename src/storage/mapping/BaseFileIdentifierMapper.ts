@@ -2,6 +2,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
@@ -33,12 +34,23 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    * Determines the content type if none was provided.
    * For containers the content-type input is ignored.
    * @param identifier - The input identifier.
+   * @param isMetadata - If we need the data or metadata file path.
    * @param contentType - The content-type provided with the request.
    *
    * @returns A ResourceLink with all the necessary metadata.
    */
-  public async mapUrlToFilePath(identifier: ResourceIdentifier, contentType?: string): Promise<ResourceLink> {
-    const path = this.getRelativePath(identifier);
+  public async mapUrlToFilePath(identifier: ResourceIdentifier, isMetadata: boolean, contentType?: string):
+  Promise<ResourceLink> {
+    // Technically we could allow paths ending on .meta as long as we make sure there is never a mixup.
+    // But this can lead to potential issues.
+    // This also immediately stops users that expect they can update metadata like this.
+    if (this.isMetadataPath(identifier.path)) {
+      throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
+    }
+    let path = this.getRelativePath(identifier);
+    if (isMetadata) {
+      path += '.meta';
+    }
     this.validateRelativePath(path, identifier);
 
     const filePath = this.getAbsolutePath(path);
@@ -57,7 +69,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    */
   protected async mapUrlToContainerPath(identifier: ResourceIdentifier, filePath: string): Promise<ResourceLink> {
     this.logger.debug(`URL ${identifier.path} points to the container ${filePath}`);
-    return { identifier, filePath };
+    return { identifier, filePath, isMetadata: this.isMetadataPath(filePath) };
   }
 
   /**
@@ -75,7 +87,7 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
   Promise<ResourceLink> {
     contentType = await this.getContentTypeFromUrl(identifier, contentType);
     this.logger.debug(`The path for ${identifier.path} is ${filePath}`);
-    return { identifier, filePath, contentType };
+    return { identifier, filePath, contentType, isMetadata: this.isMetadataPath(filePath) };
   }
 
   /**
@@ -113,7 +125,11 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
       this.logger.debug(`Document ${filePath} maps to URL ${url}`);
       contentType = await this.getContentTypeFromPath(filePath);
     }
-    return { identifier: { path: url }, filePath, contentType };
+    const isMetadata = this.isMetadataPath(filePath);
+    if (isMetadata) {
+      url = url.slice(0, -'.meta'.length);
+    }
+    return { identifier: { path: url }, filePath, contentType, isMetadata };
   }
 
   /**
@@ -193,5 +209,12 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
       this.logger.warn(`Disallowed /.. segment in URL ${identifier.path}.`);
       throw new BadRequestHttpError('Disallowed /.. segment in URL');
     }
+  }
+
+  /**
+   * Checks if the given path is a metadata path.
+   */
+  protected isMetadataPath(path: string): boolean {
+    return path.endsWith('.meta');
   }
 }

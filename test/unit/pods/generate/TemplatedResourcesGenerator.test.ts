@@ -18,11 +18,16 @@ class DummyFactory implements FileIdentifierMapperFactory {
     const trimRoot = trimTrailingSlashes(rootFilePath);
     return {
       async mapFilePathToUrl(filePath: string, isContainer: boolean): Promise<ResourceLink> {
-        const path = `${trimBase}${filePath.slice(trimRoot.length)}`;
+        let path = `${trimBase}${filePath.slice(trimRoot.length)}`;
+        const isMetadata = filePath.endsWith('.meta');
+        if (isMetadata) {
+          path = path.slice(0, -'.meta'.length);
+        }
         return {
           identifier: { path: isContainer ? ensureTrailingSlash(path) : path },
           filePath,
           contentType: isContainer ? undefined : 'text/turtle',
+          isMetadata,
         };
       },
     } as any;

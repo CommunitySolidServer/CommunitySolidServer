@@ -26,7 +26,6 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateFolder: string;
   private readonly factory: FileIdentifierMapperFactory;
   private readonly engine: TemplateEngine;
-  private readonly metaExtension = '.meta';
 
   /**
    * A mapper is needed to convert the template file paths to identifiers relative to the given base identifier.
@@ -91,9 +90,8 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
     const links: Record<string, { link: ResourceLink; meta?: ResourceLink }> = { };
     for await (const link of linkGen) {
       const { path } = link.identifier;
-      if (this.isMeta(path)) {
-        const resourcePath = this.metaToResource(link.identifier).path;
-        links[resourcePath] = Object.assign(links[resourcePath] || {}, { meta: link });
+      if (link.isMetadata) {
+        links[path] = Object.assign(links[path] || {}, { meta: link });
       } else {
         links[path] = Object.assign(links[path] || {}, { link });
       }
@@ -135,11 +133,10 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
    */
   private async generateMetadata(metaLink: ResourceLink, options: Dict<string>):
   Promise<RepresentationMetadata> {
-    const identifier = this.metaToResource(metaLink.identifier);
-    const metadata = new RepresentationMetadata(identifier);
+    const metadata = new RepresentationMetadata(metaLink.identifier);
 
     const data = await this.parseTemplate(metaLink.filePath, options);
-    const parser = new Parser({ format: metaLink.contentType, baseIRI: identifier.path });
+    const parser = new Parser({ format: metaLink.contentType, baseIRI: metaLink.identifier.path });
     const quads = parser.parse(data);
     metadata.addQuads(quads);
 
@@ -152,19 +149,5 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private async parseTemplate(filePath: string, options: Dict<string>): Promise<string> {
     const raw = await fsPromises.readFile(filePath, 'utf8');
     return this.engine.apply(raw, options);
-  }
-
-  /**
-   * Verifies if the given path corresponds to a metadata file.
-   */
-  private isMeta(path: string): boolean {
-    return path.endsWith(this.metaExtension);
-  }
-
-  /**
-   * Converts a generated metadata identifier to the identifier of its corresponding resource.
-   */
-  private metaToResource(metaIdentifier: ResourceIdentifier): ResourceIdentifier {
-    return { path: metaIdentifier.path.slice(0, -this.metaExtension.length) };
   }
 }
