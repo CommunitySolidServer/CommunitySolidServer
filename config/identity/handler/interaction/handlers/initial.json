@@ -16,7 +16,7 @@
               "@type": "TemplateHandler",
               "templateEngine": {
                 "@type": "EjsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/confirm.ejs"
+                "template": "$PACKAGE_ROOT/templates/identity/email-password/confirm.html.ejs"
               }
             }
           }

@@ -30,10 +30,10 @@
               "@type": "ErrorToTemplateConverter",
               "templateEngine": {
                 "@type": "HandlebarsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/error/main.md"
+                "template": "$PACKAGE_ROOT/templates/error/main.md.hbs"
               },
               "templatePath": "$PACKAGE_ROOT/templates/error/descriptions/",
-              "extension": ".md",
+              "extension": ".md.hbs",
               "contentType": "text/markdown"
             },
             {
@@ -42,7 +42,7 @@
               "templateEngine": {
                 "@id": "urn:solid-server:default:MainTemplateEngine",
                 "@type": "HandlebarsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/main.html"
+                "template": "$PACKAGE_ROOT/templates/main.html.hbs"
               }
             }
           ]

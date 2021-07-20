@@ -25,7 +25,7 @@
       "@type": "TemplateHandler",
       "templateEngine": {
         "@type": "EjsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/register.ejs"
+        "template": "$PACKAGE_ROOT/templates/identity/email-password/register.html.ejs"
       }
     },
     {
@@ -34,7 +34,7 @@
       "@type": "TemplateHandler",
       "templateEngine": {
         "@type": "EjsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/idp/email-password-interaction/registerResponse.ejs"
+        "template": "$PACKAGE_ROOT/templates/identity/email-password/register-response.html.ejs"
       }
     }
   ]
