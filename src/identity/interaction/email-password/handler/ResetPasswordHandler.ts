@@ -2,7 +2,7 @@ import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
-import type { RenderHandler } from '../../../../server/util/RenderHandler';
+import type { TemplateHandler } from '../../../../server/util/TemplateHandler';
 import { createErrorMessage } from '../../../../util/errors/ErrorUtil';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword } from '../EmailPasswordUtil';
@@ -12,7 +12,7 @@ import type { ResetPasswordRenderHandler } from './ResetPasswordRenderHandler';
 export interface ResetPasswordHandlerArgs {
   accountStore: AccountStore;
   renderHandler: ResetPasswordRenderHandler;
-  messageRenderHandler: RenderHandler<{ message: string }>;
+  messageRenderHandler: TemplateHandler<{ message: string }>;
 }
 
 /**
@@ -24,7 +24,7 @@ export class ResetPasswordHandler extends HttpHandler {
 
   private readonly accountStore: AccountStore;
   private readonly renderHandler: ResetPasswordRenderHandler;
-  private readonly messageRenderHandler: RenderHandler<{ message: string }>;
+  private readonly messageRenderHandler: TemplateHandler<{ message: string }>;
 
   public constructor(args: ResetPasswordHandlerArgs) {
     super();
@@ -48,14 +48,14 @@ export class ResetPasswordHandler extends HttpHandler {
       await this.resetPassword(recordId, password);
       await this.messageRenderHandler.handleSafe({
         response: input.response,
-        props: {
+        contents: {
           message: 'Your password was successfully reset.',
         },
       });
     } catch (err: unknown) {
       await this.renderHandler.handleSafe({
         response: input.response,
-        props: {
+        contents: {
           errorMessage: createErrorMessage(err),
           recordId: prefilledRecordId,
         },

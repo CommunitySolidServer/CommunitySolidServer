@@ -24,7 +24,7 @@ export class IdpRouteController extends RouterHandler {
   Promise<void> {
     return this.renderHandler.handleSafe({
       response: input.response,
-      props: { errorMessage, prefilled },
+      contents: { errorMessage, prefilled },
     });
   }
 

@@ -38,7 +38,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { errorMessage: '', prefilled: {}},
+      contents: { errorMessage: '', prefilled: {}},
     });
     expect(postHandler.handleSafe).toHaveBeenCalledTimes(0);
   });
@@ -61,7 +61,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { errorMessage: 'bad request!', prefilled: { more: 'data!' }},
+      contents: { errorMessage: 'bad request!', prefilled: { more: 'data!' }},
     });
   });
 
@@ -74,7 +74,7 @@ describe('An IdpRouteController', (): void => {
     expect(renderHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(renderHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
-      props: { errorMessage: 'Unknown error: apple!', prefilled: {}},
+      contents: { errorMessage: 'Unknown error: apple!', prefilled: {}},
     });
   });
 

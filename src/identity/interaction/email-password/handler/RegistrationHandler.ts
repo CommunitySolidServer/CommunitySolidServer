@@ -7,7 +7,7 @@ import type { PodManager } from '../../../../pods/PodManager';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
-import type { RenderHandler } from '../../../../server/util/RenderHandler';
+import type { TemplateHandler } from '../../../../server/util/TemplateHandler';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
@@ -43,7 +43,7 @@ export interface RegistrationHandlerArgs {
   /**
    * Renders the response when registration is successful.
    */
-  responseHandler: RenderHandler<NodeJS.Dict<any>>;
+  responseHandler: TemplateHandler;
 }
 
 /**
@@ -83,7 +83,7 @@ export class RegistrationHandler extends HttpHandler {
   private readonly ownershipValidator: OwnershipValidator;
   private readonly accountStore: AccountStore;
   private readonly podManager: PodManager;
-  private readonly responseHandler: RenderHandler<NodeJS.Dict<any>>;
+  private readonly responseHandler: TemplateHandler;
 
   public constructor(args: RegistrationHandlerArgs) {
     super();
@@ -100,9 +100,8 @@ export class RegistrationHandler extends HttpHandler {
     const result = await this.parseInput(request);
 
     try {
-      const props = await this.register(result);
-
-      await this.responseHandler.handleSafe({ response, props });
+      const contents = await this.register(result);
+      await this.responseHandler.handleSafe({ response, contents });
     } catch (error: unknown) {
       throwIdpInteractionError(error, result.data as Record<string, string>);
     }

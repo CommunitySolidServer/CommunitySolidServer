@@ -10,7 +10,7 @@ import type { IdentifierGenerator } from '../../../../../../src/pods/generate/Id
 import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import type { RenderHandler } from '../../../../../../src/server/util/RenderHandler';
+import type { TemplateHandler } from '../../../../../../src/server/util/TemplateHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A RegistrationHandler', (): void => {
@@ -34,7 +34,7 @@ describe('A RegistrationHandler', (): void => {
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
   let podManager: PodManager;
-  let responseHandler: RenderHandler<NodeJS.Dict<any>>;
+  let responseHandler: TemplateHandler<NodeJS.Dict<any>>;
   let handler: RegistrationHandler;
 
   beforeEach(async(): Promise<void> => {

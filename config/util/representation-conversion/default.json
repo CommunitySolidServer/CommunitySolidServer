@@ -30,7 +30,7 @@
               "@type": "ErrorToTemplateConverter",
               "templateEngine": {
                 "@type": "HandlebarsTemplateEngine",
-                "template": { "templateFile": "$PACKAGE_ROOT/templates/error/main.md" }
+                "template": "$PACKAGE_ROOT/templates/error/main.md"
               },
               "templatePath": "$PACKAGE_ROOT/templates/error/descriptions/",
               "extension": ".md",
@@ -42,7 +42,7 @@
               "templateEngine": {
                 "@id": "urn:solid-server:default:MainTemplateEngine",
                 "@type": "HandlebarsTemplateEngine",
-                "template": { "templateFile": "$PACKAGE_ROOT/templates/main.html" }
+                "template": "$PACKAGE_ROOT/templates/main.html"
               }
             }
           ]

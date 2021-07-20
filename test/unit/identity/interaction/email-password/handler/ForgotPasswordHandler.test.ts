@@ -5,9 +5,9 @@ import {
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { EmailSender } from '../../../../../../src/identity/interaction/util/EmailSender';
 import type { IdpRenderHandler } from '../../../../../../src/identity/interaction/util/IdpRenderHandler';
-import type { TemplateRenderer } from '../../../../../../src/identity/interaction/util/TemplateRenderer';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
+import type { TemplateEngine } from '../../../../../../src/util/templates/TemplateEngine';
 import { createPostFormRequest } from './Util';
 
 describe('A ForgotPasswordHandler', (): void => {
@@ -16,13 +16,13 @@ describe('A ForgotPasswordHandler', (): void => {
   const email = 'test@test.email';
   const recordId = '123456';
   const html = `<a href="/base/idp/resetpassword?rid=${recordId}">Reset Password</a>`;
-  const renderParams = { response, props: { errorMessage: '', prefilled: { email }}};
+  const renderParams = { response, contents: { errorMessage: '', prefilled: { email }}};
   const provider: Provider = {} as any;
   let messageRenderHandler: IdpRenderHandler;
   let accountStore: AccountStore;
   const baseUrl = 'http://test.com/base/';
   const idpPath = '/idp';
-  let emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
+  let templateEngine: TemplateEngine<{ resetLink: string }>;
   let emailSender: EmailSender;
   let handler: ForgotPasswordHandler;
 
@@ -37,8 +37,8 @@ describe('A ForgotPasswordHandler', (): void => {
       generateForgotPasswordRecord: jest.fn().mockResolvedValue(recordId),
     } as any;
 
-    emailTemplateRenderer = {
-      handleSafe: jest.fn().mockResolvedValue(html),
+    templateEngine = {
+      render: jest.fn().mockResolvedValue(html),
     } as any;
 
     emailSender = {
@@ -50,7 +50,7 @@ describe('A ForgotPasswordHandler', (): void => {
       accountStore,
       baseUrl,
       idpPath,
-      emailTemplateRenderer,
+      templateEngine,
       emailSender,
     });
   });

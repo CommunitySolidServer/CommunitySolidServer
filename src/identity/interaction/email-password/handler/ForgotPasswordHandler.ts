@@ -3,12 +3,12 @@ import urljoin from 'url-join';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpResponse } from '../../../../server/HttpResponse';
 import { ensureTrailingSlash } from '../../../../util/PathUtil';
+import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { InteractionHttpHandlerInput } from '../../InteractionHttpHandler';
 import { InteractionHttpHandler } from '../../InteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
-import type { TemplateRenderer } from '../../util/TemplateRenderer';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 
@@ -17,7 +17,7 @@ export interface ForgotPasswordHandlerArgs {
   accountStore: AccountStore;
   baseUrl: string;
   idpPath: string;
-  emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
+  templateEngine: TemplateEngine<{ resetLink: string }>;
   emailSender: EmailSender;
 }
 
@@ -31,7 +31,7 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
   private readonly accountStore: AccountStore;
   private readonly baseUrl: string;
   private readonly idpPath: string;
-  private readonly emailTemplateRenderer: TemplateRenderer<{ resetLink: string }>;
+  private readonly templateEngine: TemplateEngine<{ resetLink: string }>;
   private readonly emailSender: EmailSender;
 
   public constructor(args: ForgotPasswordHandlerArgs) {
@@ -40,7 +40,7 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
     this.accountStore = args.accountStore;
     this.baseUrl = ensureTrailingSlash(args.baseUrl);
     this.idpPath = args.idpPath;
-    this.emailTemplateRenderer = args.emailTemplateRenderer;
+    this.templateEngine = args.templateEngine;
     this.emailSender = args.emailSender;
   }
 
@@ -80,7 +80,7 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
     const resetLink = urljoin(this.baseUrl, this.idpPath, `resetpassword?rid=${recordId}`);
-    const renderedEmail = await this.emailTemplateRenderer.handleSafe({ resetLink });
+    const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,
       subject: 'Reset your password',
@@ -98,7 +98,7 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
     // Send response
     await this.messageRenderHandler.handleSafe({
       response,
-      props: {
+      contents: {
         errorMessage: '',
         prefilled: {
           email,
