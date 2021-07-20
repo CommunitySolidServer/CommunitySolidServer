@@ -13,6 +13,10 @@ export interface ResourceLink {
    * Content-type for a document (not defined for containers).
    */
   contentType?: string;
+  /**
+   * If the resource is a metadata file.
+   */
+  isMetadata: boolean;
 }
 
 /**
@@ -33,11 +37,13 @@ export interface FileIdentifierMapper {
    * If there is no corresponding file a file path will be generated.
    * For containers the content-type input gets ignored.
    * @param identifier - The input identifier.
+   * @param isMetadata - If we are mapping the metadata of the resource instead of its data.
    * @param contentType - The (optional) content-type of the resource.
    *
    * @returns A ResourceLink with all the necessary metadata.
    */
-  mapUrlToFilePath: (identifier: ResourceIdentifier, contentType?: string) => Promise<ResourceLink>;
+  mapUrlToFilePath: (identifier: ResourceIdentifier, isMetadata: boolean, contentType?: string) =>
+  Promise<ResourceLink>;
 }
 
 /**

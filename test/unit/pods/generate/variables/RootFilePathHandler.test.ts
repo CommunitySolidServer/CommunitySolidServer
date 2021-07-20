@@ -23,6 +23,7 @@ describe('A RootFilePathHandler', (): void => {
       mapUrlToFilePath: async(id): Promise<ResourceLink> => ({
         identifier: id,
         filePath: joinFilePath(rootFilePath, id.path.slice(baseUrl.length)),
+        isMetadata: false,
       }),
       mapFilePathToUrl: jest.fn(),
     });

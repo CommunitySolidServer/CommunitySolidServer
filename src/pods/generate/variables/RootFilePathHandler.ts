@@ -21,7 +21,7 @@ export class RootFilePathHandler extends VariableHandler {
 
   public async handle({ identifier, settings }: { identifier: ResourceIdentifier; settings: PodSettings }):
   Promise<void> {
-    const path = (await this.fileMapper.mapUrlToFilePath(identifier)).filePath;
+    const path = (await this.fileMapper.mapUrlToFilePath(identifier, false)).filePath;
     try {
       // Even though we check if it already exists, there is still a potential race condition
       // in between this check and the store being created.
