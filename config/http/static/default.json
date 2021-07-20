@@ -24,7 +24,7 @@
         },
         {
           "StaticAssetHandler:_assets_key": "/idp/style.css",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/idp/email-password-interaction/main.css"
+          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/identity/email-password/main.css"
         }
       ]
     }
