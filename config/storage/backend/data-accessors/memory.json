@@ -5,7 +5,7 @@
       "comment": "Stores data in memory.",
       "@id": "urn:solid-server:default:MemoryDataAccessor",
       "@type": "InMemoryDataAccessor",
-      "strategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
     }
   ]
 }

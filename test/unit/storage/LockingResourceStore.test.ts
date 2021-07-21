@@ -19,7 +19,7 @@ describe('A LockingResourceStore', (): void => {
   let store: LockingResourceStore;
   let locker: ExpiringReadWriteLocker;
   let source: ResourceStore;
-  let strategy: AuxiliaryIdentifierStrategy;
+  let auxiliaryStrategy: AuxiliaryIdentifierStrategy;
   let order: string[];
   let timeoutTrigger: EventEmitter;
 
@@ -70,12 +70,12 @@ describe('A LockingResourceStore', (): void => {
       }),
     };
 
-    strategy = {
+    auxiliaryStrategy = {
       isAuxiliaryIdentifier: jest.fn((id: ResourceIdentifier): any => id.path.endsWith('.dummy')),
       getAssociatedIdentifier: jest.fn((id: ResourceIdentifier): any => ({ path: id.path.slice(0, -6) })),
     } as any;
 
-    store = new LockingResourceStore(source, locker, strategy);
+    store = new LockingResourceStore(source, locker, auxiliaryStrategy);
   });
 
   function registerEventOrder(eventSource: EventEmitter, event: string): void {

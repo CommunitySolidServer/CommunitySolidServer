@@ -14,12 +14,12 @@ export class AuxiliaryAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
   private readonly resourceAuthorizer: Authorizer;
-  private readonly auxStrategy: AuxiliaryIdentifierStrategy;
+  private readonly auxiliaryStrategy: AuxiliaryIdentifierStrategy;
 
-  public constructor(resourceAuthorizer: Authorizer, auxStrategy: AuxiliaryIdentifierStrategy) {
+  public constructor(resourceAuthorizer: Authorizer, auxiliaryStrategy: AuxiliaryIdentifierStrategy) {
     super();
     this.resourceAuthorizer = resourceAuthorizer;
-    this.auxStrategy = auxStrategy;
+    this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
   public async canHandle(auxiliaryAuth: AuthorizerArgs): Promise<void> {
@@ -40,12 +40,12 @@ export class AuxiliaryAuthorizer extends Authorizer {
   }
 
   private getRequiredAuthorization(auxiliaryAuth: AuthorizerArgs): AuthorizerArgs {
-    if (!this.auxStrategy.isAuxiliaryIdentifier(auxiliaryAuth.identifier)) {
+    if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(auxiliaryAuth.identifier)) {
       throw new NotImplementedHttpError('AuxiliaryAuthorizer only supports auxiliary resources.');
     }
     return {
       ...auxiliaryAuth,
-      identifier: this.auxStrategy.getAssociatedIdentifier(auxiliaryAuth.identifier),
+      identifier: this.auxiliaryStrategy.getAssociatedIdentifier(auxiliaryAuth.identifier),
     };
   }
 }

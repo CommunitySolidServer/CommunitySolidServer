@@ -13,7 +13,7 @@
           "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
           "@type": "AuxiliaryAuthorizer",
           "resourceAuthorizer": { "@id": "urn:solid-server:default:WebAclAuthorizer" },
-          "auxStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
+          "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
         },
         { "@id": "urn:solid-server:default:WebAclAuthorizer" }
       ]

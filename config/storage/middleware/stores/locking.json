@@ -6,7 +6,7 @@
       "@id": "urn:solid-server:default:ResourceStore_Locking",
       "@type": "LockingResourceStore",
       "locks": { "@id": "urn:solid-server:default:ResourceLocker" },
-      "strategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
     }
   ]
 }

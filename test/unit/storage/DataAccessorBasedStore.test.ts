@@ -121,7 +121,7 @@ describe('A DataAccessorBasedStore', (): void => {
   let accessor: SimpleDataAccessor;
   const root = 'http://test.com/';
   const identifierStrategy = new SingleRootIdentifierStrategy(root);
-  let auxStrategy: AuxiliaryStrategy;
+  let auxiliaryStrategy: AuxiliaryStrategy;
   let containerMetadata: RepresentationMetadata;
   let representation: Representation;
   const resourceData = 'text';
@@ -129,8 +129,8 @@ describe('A DataAccessorBasedStore', (): void => {
   beforeEach(async(): Promise<void> => {
     accessor = new SimpleDataAccessor();
 
-    auxStrategy = new SimpleSuffixStrategy('.dummy');
-    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxStrategy);
+    auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
+    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
@@ -165,7 +165,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: true });
       expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
       expect(result.metadata.contentType).toEqual('text/plain');
-      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
@@ -173,12 +173,12 @@ describe('A DataAccessorBasedStore', (): void => {
       containerMetadata.identifier = namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaMirror = new RepresentationMetadata(containerMetadata);
-      await auxStrategy.addMetadata(metaMirror);
+      await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
       expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
@@ -371,7 +371,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create an auxiliary resource with invalid data.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource.dummy` };
-      auxStrategy.validate = jest.fn().mockRejectedValue(new Error('bad data!'));
+      auxiliaryStrategy.validate = jest.fn().mockRejectedValue(new Error('bad data!'));
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow('bad data!');
     });
 
@@ -520,7 +520,7 @@ describe('A DataAccessorBasedStore', (): void => {
       storageMetadata.add(RDF.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
       const result = store.deleteResource({ path: `${root}container/.dummy` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow(
@@ -548,7 +548,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
       await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
         { path: `${root}container/.dummy` },
       ]);
@@ -571,7 +571,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
       accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
+        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
           throw new Error('auxiliary error!');
         }
         await deleteFn.call(accessor, identifier);
@@ -594,7 +594,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource.dummy`] = representation;
       const deleteFn = accessor.deleteResource;
       accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxStrategy.isAuxiliaryIdentifier(identifier)) {
+        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
           throw 'auxiliary error!';
         }
         await deleteFn.call(accessor, identifier);

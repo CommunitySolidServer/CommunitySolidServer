@@ -20,12 +20,12 @@ interface ContainerEntry {
 type CacheEntry = DataEntry | ContainerEntry;
 
 export class InMemoryDataAccessor implements DataAccessor {
-  private readonly strategy: IdentifierStrategy;
+  private readonly identifierStrategy: IdentifierStrategy;
   // A dummy container where every entry corresponds to a root container
   private readonly store: { entries: Record<string, ContainerEntry> };
 
-  public constructor(strategy: IdentifierStrategy) {
-    this.strategy = strategy;
+  public constructor(identifierStrategy: IdentifierStrategy) {
+    this.identifierStrategy = identifierStrategy;
 
     this.store = { entries: { }};
   }
@@ -102,10 +102,10 @@ export class InMemoryDataAccessor implements DataAccessor {
    * This does not verify if these identifiers actually exist.
    */
   private getHierarchy(identifier: ResourceIdentifier): ResourceIdentifier[] {
-    if (this.strategy.isRootContainer(identifier)) {
+    if (this.identifierStrategy.isRootContainer(identifier)) {
       return [ identifier ];
     }
-    const hierarchy = this.getHierarchy(this.strategy.getParentContainer(identifier));
+    const hierarchy = this.getHierarchy(this.identifierStrategy.getParentContainer(identifier));
     hierarchy.push(identifier);
     return hierarchy;
   }
@@ -117,11 +117,11 @@ export class InMemoryDataAccessor implements DataAccessor {
   private getParentEntry(identifier: ResourceIdentifier): ContainerEntry {
     // Casting is fine here as the parent should never be used as a real container
     let parent: CacheEntry = this.store as ContainerEntry;
-    if (this.strategy.isRootContainer(identifier)) {
+    if (this.identifierStrategy.isRootContainer(identifier)) {
       return parent;
     }
 
-    const hierarchy = this.getHierarchy(this.strategy.getParentContainer(identifier));
+    const hierarchy = this.getHierarchy(this.identifierStrategy.getParentContainer(identifier));
     for (const entry of hierarchy) {
       parent = parent.entries[entry.path];
       if (!parent) {

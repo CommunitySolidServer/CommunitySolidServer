@@ -27,12 +27,13 @@ export class LockingResourceStore implements AtomicResourceStore {
 
   private readonly source: ResourceStore;
   private readonly locks: ExpiringReadWriteLocker;
-  private readonly strategy: AuxiliaryIdentifierStrategy;
+  private readonly auxiliaryStrategy: AuxiliaryIdentifierStrategy;
 
-  public constructor(source: ResourceStore, locks: ExpiringReadWriteLocker, strategy: AuxiliaryIdentifierStrategy) {
+  public constructor(source: ResourceStore, locks: ExpiringReadWriteLocker,
+    auxiliaryStrategy: AuxiliaryIdentifierStrategy) {
     this.source = source;
     this.locks = locks;
-    this.strategy = strategy;
+    this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
   public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
@@ -75,8 +76,8 @@ export class LockingResourceStore implements AtomicResourceStore {
    * For auxiliary resources this means the associated identifier.
    */
   protected getLockIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
-    return this.strategy.isAuxiliaryIdentifier(identifier) ?
-      this.strategy.getAssociatedIdentifier(identifier) :
+    return this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) ?
+      this.auxiliaryStrategy.getAssociatedIdentifier(identifier) :
       identifier;
   }
 
