@@ -1,0 +1,95 @@
+import { namedNode as nn, quad } from '@rdfjs/data-model';
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { ContainerToTemplateConverter } from '../../../../src/storage/conversion/ContainerToTemplateConverter';
+import { readableToString } from '../../../../src/util/StreamUtil';
+import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
+import { LDP, RDF } from '../../../../src/util/Vocabularies';
+
+describe('A ContainerToTemplateConverter', (): void => {
+  const preferences = {};
+  let templateEngine: jest.Mocked<TemplateEngine>;
+  let converter: ContainerToTemplateConverter;
+
+  beforeEach(async(): Promise<void> => {
+    templateEngine = {
+      render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
+    };
+    converter = new ContainerToTemplateConverter(templateEngine, 'text/html');
+  });
+
+  it('supports containers.', async(): Promise<void> => {
+    const container = { path: 'http://test.com/foo/bar/container/' };
+    const representation = new BasicRepresentation([], 'internal/quads', false);
+    await expect(converter.canHandle({ identifier: container, representation, preferences }))
+      .resolves.toBeUndefined();
+  });
+
+  it('does not support documents.', async(): Promise<void> => {
+    const document = { path: 'http://test.com/foo/bar/document' };
+    const representation = new BasicRepresentation([], 'internal/quads', false);
+    await expect(converter.canHandle({ identifier: document, representation, preferences }))
+      .rejects.toThrow('Can only convert containers');
+  });
+
+  it('calls the template with the contained resources.', async(): Promise<void> => {
+    const container = { path: 'http://test.com/foo/bar/my-container/' };
+    const representation = new BasicRepresentation([
+      quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}ccc`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}d/`)),
+      quad(nn(`${container.path}d/`), LDP.terms.contains, nn(`${container.path}d`)),
+    ], 'internal/quads', false);
+    const converted = await converter.handle({ identifier: container, representation, preferences });
+
+    expect(converted.binary).toBe(true);
+    expect(converted.metadata.contentType).toBe('text/html');
+    await expect(readableToString(converted.data)).resolves.toBe('<html>');
+
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenCalledWith({
+      container: 'my-container',
+      children: [
+        {
+          identifier: `${container.path}d/`,
+          name: 'd/',
+          container: true,
+        },
+        {
+          identifier: `${container.path}a`,
+          name: 'a',
+          container: false,
+        },
+        {
+          identifier: `${container.path}b`,
+          name: 'b',
+          container: false,
+        },
+        {
+          identifier: `${container.path}ccc`,
+          name: 'ccc',
+          container: false,
+        },
+      ],
+    });
+  });
+
+  it('converts the root container.', async(): Promise<void> => {
+    const container = { path: 'http://test.com/' };
+    const representation = new BasicRepresentation([
+      quad(nn(container.path), RDF.terms.type, LDP.terms.BasicContainer),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c`)),
+    ], 'internal/quads', false);
+    await converter.handle({ identifier: container, representation, preferences });
+
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenCalledWith({
+      container: '/',
+      children: expect.objectContaining({ length: 3 }),
+    });
+  });
+});

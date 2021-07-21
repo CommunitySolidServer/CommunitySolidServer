@@ -1,11 +1,15 @@
 import type { Writable, ReadableOptions, DuplexOptions } from 'stream';
 import { Readable, Transform } from 'stream';
+import { promisify } from 'util';
 import arrayifyStream from 'arrayify-stream';
+import eos from 'end-of-stream';
 import pump from 'pump';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isHttpRequest } from '../server/HttpRequest';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
+
+export const endOfStream = promisify(eos);
 
 const logger = getLoggerFor('StreamUtil');
 

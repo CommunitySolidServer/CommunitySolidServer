@@ -174,3 +174,12 @@ form ul.actions > li {
   display: inline;
   margin-right: 1em;
 }
+
+ul.container > li {
+  margin: 0.25em 0;
+  list-style-type: none;
+}
+
+ul.container > li.container > a {
+  font-weight: 800;
+}

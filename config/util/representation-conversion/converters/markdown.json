@@ -14,6 +14,16 @@
         "@type": "HandlebarsTemplateEngine",
         "template": "$PACKAGE_ROOT/templates/main.html.hbs"
       }
+    },
+    {
+      "comment": "Converts a container into a Markdown listing of its contents.",
+      "@id": "urn:solid-server:default:ContainerToTemplateConverter",
+      "@type": "ContainerToTemplateConverter",
+      "templateEngine": {
+        "@type": "HandlebarsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/container.md.hbs"
+      },
+      "contentType": "text/markdown"
     }
   ]
 }

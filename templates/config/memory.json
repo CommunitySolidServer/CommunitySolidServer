@@ -12,7 +12,7 @@
       "@id": "urn:solid-server:template:DataAccessor",
       "@type": "InMemoryDataAccessor",
       "identifierStrategy": {
-        "@id": "urn:solid-server:template:IdentifierStrategy"
+        "@id": "urn:solid-server:default:IdentifierStrategy"
       }
     }
   ]

@@ -11,7 +11,8 @@
     },
 
     {
-      "@id": "urn:solid-server:template:IdentifierStrategy",
+      "comment": "Custom pods always use the suffix strategy with their pod URL as base.",
+      "@id": "urn:solid-server:default:IdentifierStrategy",
       "@type": "SingleRootIdentifierStrategy",
       "baseUrl": {
         "@id": "urn:solid-server:template:variable:baseUrl"
@@ -25,7 +26,7 @@
         "@id": "urn:solid-server:template:DataAccessor"
       },
       "identifierStrategy": {
-        "@id": "urn:solid-server:template:IdentifierStrategy"
+        "@id": "urn:solid-server:default:IdentifierStrategy"
       },
       "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
