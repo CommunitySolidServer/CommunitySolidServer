@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
+    "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
+    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Renders Markdown snippets into the main page template.",
+      "@id": "urn:solid-server:default:MarkdownToHtmlConverter",
+      "@type": "MarkdownToHtmlConverter",
+      "templateEngine": {
+        "@type": "HandlebarsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/main.html.hbs"
+      }
+    }
+  ]
+}

@@ -3,7 +3,8 @@
   "import": [
     "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
     "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
-    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json"
+    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json",
+    "files-scs:config/util/representation-conversion/converters/markdown.json"
   ],
   "@graph": [
     {
@@ -12,6 +13,7 @@
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:DefaultUiConverter" },
+        { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
         {
           "@type": "IfNeededConverter",
           "comment": "Only continue converting if the requester cannot accept the available content type"
@@ -36,15 +38,7 @@
               "extension": ".md.hbs",
               "contentType": "text/markdown"
             },
-            {
-              "comment": "Renders Markdown snippets into the main page template.",
-              "@type": "MarkdownToHtmlConverter",
-              "templateEngine": {
-                "@id": "urn:solid-server:default:MainTemplateEngine",
-                "@type": "HandlebarsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/main.html.hbs"
-              }
-            }
+            { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" }
           ]
         }
       ]
