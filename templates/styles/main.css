@@ -15,9 +15,13 @@ html {
   --solid-purple: #7c4dff;
   --solid-blue: #18a9e6;
 
+  height: 100%;
+
   background-color: var(--solid-purple);
   background-image: linear-gradient(135deg, var(--solid-purple) 10%, var(--solid-blue) 90%);
-  height: 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overscroll-behavior: none;
 }
 
 body, input, button {
@@ -34,9 +38,6 @@ body {
   background: white;
   box-shadow: 5px 5px 2px rgba(0, 0, 0, .1);
   border-radius: 3px;
-
-  font: 12pt/1.3 Raleway, sans-serif;
-  font-weight: 300;
 }
 
 header {
@@ -86,6 +87,10 @@ a:hover {
   color: var(--solid-blue);
 }
 
+code {
+  font-size: 90%;
+}
+
 li {
   margin: .5em 0;
 }
@@ -94,6 +99,10 @@ ul > li {
 }
 ul > li::marker {
   color: var(--solid-purple);
+}
+
+pre {
+  overflow-x: scroll;
 }
 
 fieldset {
