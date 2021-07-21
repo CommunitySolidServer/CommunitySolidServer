@@ -1,8 +1,15 @@
-# Contents of {{container}}
+# Contents of {{name}}
+<ol class="breadcrumbs">
+{{#each parents}}
+  <li class="container"><a href="{{identifier}}">{{name}}</a></li>
+{{/each}}
+  <li class="current container">{{name}}</li>
+</ol>
+
 <ul class="container">
 {{#each children}}
   <li class="{{#if container}}container{{else}}document{{/if}}">
-    <a href="{{identifier}}">{{name}}</a>
+    <a href="{{identifier}}">{{name}}{{#if container}}/{{/if}}</a>
   </li>
 {{/each}}
 </ul>

@@ -23,7 +23,8 @@
         "@type": "HandlebarsTemplateEngine",
         "template": "$PACKAGE_ROOT/templates/container.md.hbs"
       },
-      "contentType": "text/markdown"
+      "contentType": "text/markdown",
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
     }
   ]
 }
