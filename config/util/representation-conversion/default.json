@@ -2,9 +2,10 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
+    "files-scs:config/util/representation-conversion/converters/errors.json",
+    "files-scs:config/util/representation-conversion/converters/markdown.json",
     "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
-    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json",
-    "files-scs:config/util/representation-conversion/converters/markdown.json"
+    "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json"
   ],
   "@graph": [
     {
@@ -26,18 +27,9 @@
           "converters": [
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
-            { "@type": "ErrorToQuadConverter" },
-            {
-              "comment": "Converts an error into a Markdown description of its details.",
-              "@type": "ErrorToTemplateConverter",
-              "templateEngine": {
-                "@type": "HandlebarsTemplateEngine",
-                "template": "$PACKAGE_ROOT/templates/error/main.md.hbs"
-              },
-              "templatePath": "$PACKAGE_ROOT/templates/error/descriptions/",
-              "extension": ".md.hbs",
-              "contentType": "text/markdown"
-            },
+            { "@id": "urn:solid-server:default:ContainerToTemplateConverter" },
+            { "@id": "urn:solid-server:default:ErrorToQuadConverter" },
+            { "@id": "urn:solid-server:default:ErrorToTemplateConverter" },
             { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" }
           ]
         }

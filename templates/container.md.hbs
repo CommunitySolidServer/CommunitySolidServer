@@ -1,0 +1,8 @@
+# Contents of {{container}}
+<ul class="container">
+{{#each children}}
+  <li class="{{#if container}}container{{else}}document{{/if}}">
+    <a href="{{identifier}}">{{name}}</a>
+  </li>
+{{/each}}
+</ul>
