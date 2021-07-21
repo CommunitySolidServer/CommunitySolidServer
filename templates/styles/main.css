@@ -14,6 +14,7 @@
 html {
   --solid-purple: #7c4dff;
   --solid-blue: #18a9e6;
+  --solid-gray: #8a8a8a;
 
   height: 100%;
 
@@ -179,7 +180,36 @@ ul.container > li {
   margin: 0.25em 0;
   list-style-type: none;
 }
-
 ul.container > li.container > a {
   font-weight: 800;
+}
+
+ol.breadcrumbs {
+  list-style: none;
+  padding: 0;
+  font-size: 90%;
+}
+ol.breadcrumbs > li {
+  display: inline;
+}
+ol.breadcrumbs > li > a {
+  color: var(--solid-gray);
+  font-weight: 400;
+  white-space: nowrap;
+}
+ol.breadcrumbs > li > a:hover {
+  color: var(--solid-purple);
+}
+ol.breadcrumbs > li:not(:last-child):after {
+  padding: 0 .25em;
+  content: ' > ';
+  font-weight: 300;
+  color: var(--solid-gray);
+}
+ol.breadcrumbs > li:last-child {
+  font-weight: 500;
+  color: var(--solid-purple);
+}
+ol.breadcrumbs > li:only-child {
+  display: none;
 }

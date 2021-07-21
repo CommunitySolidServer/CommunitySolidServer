@@ -1,12 +1,14 @@
 import { namedNode as nn, quad } from '@rdfjs/data-model';
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import { ContainerToTemplateConverter } from '../../../../src/storage/conversion/ContainerToTemplateConverter';
+import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
 
 describe('A ContainerToTemplateConverter', (): void => {
   const preferences = {};
+  const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
   let templateEngine: jest.Mocked<TemplateEngine>;
   let converter: ContainerToTemplateConverter;
 
@@ -14,7 +16,7 @@ describe('A ContainerToTemplateConverter', (): void => {
     templateEngine = {
       render: jest.fn().mockReturnValue(Promise.resolve('<html>')),
     };
-    converter = new ContainerToTemplateConverter(templateEngine, 'text/html');
+    converter = new ContainerToTemplateConverter(templateEngine, 'text/html', identifierStrategy);
   });
 
   it('supports containers.', async(): Promise<void> => {
@@ -38,7 +40,7 @@ describe('A ContainerToTemplateConverter', (): void => {
       quad(nn(container.path), LDP.terms.contains, nn(`${container.path}b`)),
       quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
       quad(nn(container.path), LDP.terms.contains, nn(`${container.path}a`)),
-      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}ccc`)),
+      quad(nn(container.path), LDP.terms.contains, nn(`${container.path}c%20c`)),
       quad(nn(container.path), LDP.terms.contains, nn(`${container.path}d/`)),
       quad(nn(`${container.path}d/`), LDP.terms.contains, nn(`${container.path}d`)),
     ], 'internal/quads', false);
@@ -50,11 +52,13 @@ describe('A ContainerToTemplateConverter', (): void => {
 
     expect(templateEngine.render).toHaveBeenCalledTimes(1);
     expect(templateEngine.render).toHaveBeenCalledWith({
-      container: 'my-container',
+      identifier: container.path,
+      name: 'my-container',
+      container: true,
       children: [
         {
           identifier: `${container.path}d/`,
-          name: 'd/',
+          name: 'd',
           container: true,
         },
         {
@@ -68,9 +72,26 @@ describe('A ContainerToTemplateConverter', (): void => {
           container: false,
         },
         {
-          identifier: `${container.path}ccc`,
-          name: 'ccc',
+          identifier: `${container.path}c%20c`,
+          name: 'c c',
           container: false,
+        },
+      ],
+      parents: [
+        {
+          identifier: 'http://test.com/',
+          name: 'test.com',
+          container: true,
+        },
+        {
+          identifier: 'http://test.com/foo/',
+          name: 'foo',
+          container: true,
+        },
+        {
+          identifier: 'http://test.com/foo/bar/',
+          name: 'bar',
+          container: true,
         },
       ],
     });
@@ -88,8 +109,27 @@ describe('A ContainerToTemplateConverter', (): void => {
 
     expect(templateEngine.render).toHaveBeenCalledTimes(1);
     expect(templateEngine.render).toHaveBeenCalledWith({
-      container: '/',
+      identifier: container.path,
+      name: 'test.com',
+      container: true,
       children: expect.objectContaining({ length: 3 }),
+      parents: [],
+    });
+  });
+
+  it('converts an improperly named container.', async(): Promise<void> => {
+    const container = { path: 'http//test.com/foo/bar' };
+    const representation = new BasicRepresentation([], 'internal/quads', false);
+    jest.spyOn(identifierStrategy, 'isRootContainer').mockReturnValueOnce(true);
+    await converter.handle({ identifier: container, representation, preferences });
+
+    expect(templateEngine.render).toHaveBeenCalledTimes(1);
+    expect(templateEngine.render).toHaveBeenCalledWith({
+      identifier: container.path,
+      name: container.path,
+      container: true,
+      children: [],
+      parents: [],
     });
   });
 });

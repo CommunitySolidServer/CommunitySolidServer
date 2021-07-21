@@ -3,8 +3,10 @@ import orderBy from 'lodash.orderby';
 import type { Quad } from 'rdf-js';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
+import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier, isContainerPath } from '../../util/PathUtil';
 import { endOfStream } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
@@ -22,13 +24,15 @@ interface ResourceDetails {
  * A {@link RepresentationConverter} that creates a templated representation of a container.
  */
 export class ContainerToTemplateConverter extends TypedRepresentationConverter {
+  private readonly identifierStrategy: IdentifierStrategy;
   private readonly templateEngine: TemplateEngine;
   private readonly contentType: string;
 
-  public constructor(templateEngine: TemplateEngine, contentType: string) {
+  public constructor(templateEngine: TemplateEngine, contentType: string, identifierStrategy: IdentifierStrategy) {
     super(INTERNAL_QUADS, contentType);
     this.templateEngine = templateEngine;
     this.contentType = contentType;
+    this.identifierStrategy = identifierStrategy;
   }
 
   public async canHandle(args: RepresentationConverterArgs): Promise<void> {
@@ -40,8 +44,11 @@ export class ContainerToTemplateConverter extends TypedRepresentationConverter {
 
   public async handle({ identifier, representation }: RepresentationConverterArgs): Promise<Representation> {
     const rendered = await this.templateEngine.render({
-      container: this.getLocalName(identifier.path),
-      children: await this.getChildResources(identifier.path, representation.data),
+      identifier: identifier.path,
+      name: this.getLocalName(identifier.path),
+      container: true,
+      children: await this.getChildResources(identifier, representation.data),
+      parents: this.getParentContainers(identifier),
     });
     return new BasicRepresentation(rendered, representation.metadata, this.contentType);
   }
@@ -49,11 +56,11 @@ export class ContainerToTemplateConverter extends TypedRepresentationConverter {
   /**
    * Collects the children of the container as simple objects.
    */
-  private async getChildResources(container: string, quads: Readable): Promise<ResourceDetails[]> {
+  private async getChildResources(container: ResourceIdentifier, quads: Readable): Promise<ResourceDetails[]> {
     // Collect the needed bits of information from the containment triples
     const resources = new Set<string>();
     quads.on('data', ({ subject, predicate, object }: Quad): void => {
-      if (subject.value === container && predicate.equals(LDP.terms.contains)) {
+      if (subject.value === container.path && predicate.equals(LDP.terms.contains)) {
         resources.add(object.value);
       }
     });
@@ -71,10 +78,27 @@ export class ContainerToTemplateConverter extends TypedRepresentationConverter {
   }
 
   /**
+   * Collects the ancestors of the container as simple objects.
+   */
+  private getParentContainers(container: ResourceIdentifier): ResourceDetails[] {
+    const parents = [];
+    let current = container;
+    while (!this.identifierStrategy.isRootContainer(current)) {
+      current = this.identifierStrategy.getParentContainer(current);
+      parents.push({
+        identifier: current.path,
+        name: this.getLocalName(current.path),
+        container: true,
+      });
+    }
+    return parents.reverse();
+  }
+
+  /**
    * Derives a short name for the given resource.
    */
-  private getLocalName(iri: string, keepTrailingSlash = false): string {
-    const match = /:\/+[^/]+.*\/(([^/]+)\/?)$/u.exec(iri);
-    return match ? decodeURIComponent(match[keepTrailingSlash ? 1 : 2]) : '/';
+  private getLocalName(iri: string): string {
+    const match = /:\/+([^/]+).*?\/([^/]*)\/?$/u.exec(iri);
+    return match?.[2] ? decodeURIComponent(match[2]) : match?.[1] ?? iri;
   }
 }
