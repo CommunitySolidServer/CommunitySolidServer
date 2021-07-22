@@ -87,6 +87,10 @@ a {
 a:hover {
   color: var(--solid-blue);
 }
+footer a {
+  color: inherit;
+  font-weight: inherit;
+}
 
 code {
   font-size: 90%;
