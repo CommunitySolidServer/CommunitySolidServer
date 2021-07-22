@@ -4,12 +4,13 @@
     {
       "comment": "An adapter is responsible for storing all interaction metadata.",
       "@id": "urn:solid-server:default:IdpAdapterFactory",
-      "@type": "WrappedFetchAdapterFactory",
+      "@type": "WebIdAdapterFactory",
       "source": {
         "@type": "ExpiringAdapterFactory",
         "args_storageName": "/idp/oidc",
         "args_storage": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
-      }
+      },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     }
   ]
 }

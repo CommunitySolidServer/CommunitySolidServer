@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/handler/adapter-factory/wrapped-fetch.json",
+    "files-scs:config/identity/handler/adapter-factory/webid.json",
     "files-scs:config/identity/handler/interaction/handler.json",
     "files-scs:config/identity/handler/key-value/resource-store.json",
     "files-scs:config/identity/handler/provider-factory/identity.json"

@@ -37,6 +37,7 @@
           "AccessToken": "jwt"
         },
         "scopes": [ "openid", "profile", "offline_access" ],
+        "subjectTypes": [ "public", "pairwise" ],
         "ttl": {
           "AccessToken": 3600,
           "AuthorizationCode": 600,
