@@ -54,7 +54,7 @@ export * from './identity/ownership/TokenOwnershipValidator';
 // Identity/Storage
 export * from './identity/storage/AdapterFactory';
 export * from './identity/storage/ExpiringAdapterFactory';
-export * from './identity/storage/WrappedFetchAdapterFactory';
+export * from './identity/storage/WebIdAdapterFactory';
 
 // Identity
 export * from './identity/IdentityProviderHttpHandler';
