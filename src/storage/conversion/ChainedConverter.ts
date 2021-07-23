@@ -32,106 +32,42 @@ type MatchedPath = {
 };
 
 /**
- * An LRU cache for storing `ConversionPath`s.
- */
-class LruPathCache {
-  private readonly maxSize: number;
-  // Contents are ordered from least to most recently used
-  private readonly paths: ConversionPath[] = [];
-
-  public constructor(maxSize: number) {
-    this.maxSize = maxSize;
-  }
-
-  /**
-   * Add the given path to the cache as most recently used.
-   */
-  public add(path: ConversionPath): void {
-    this.paths.push(path);
-    if (this.paths.length > this.maxSize) {
-      this.paths.shift();
-    }
-  }
-
-  /**
-   * Find a path that can convert the given type to the given preferences.
-   * Note that this finds the first matching path in the cache,
-   * not the best one, should there be multiple results.
-   * In practice this should almost never be the case though.
-   */
-  public find(inType: string, outPreferences: ValuePreferences): MatchedPath | undefined {
-    // Last element is most recently used so has more chance of being the correct one
-    for (let i = this.paths.length - 1; i >= 0; --i) {
-      const path = this.paths[i];
-      // Check if `inType` matches the input and `outPreferences` the output types of the path
-      const match = this.getMatchedPath(inType, outPreferences, path);
-      if (match) {
-        // Set matched path to most recent result in the cache
-        this.paths.splice(i, 1);
-        this.paths.push(path);
-        return match;
-      }
-    }
-  }
-
-  /**
-   * Calculates the weights and exact types when using the given path on the given type and preferences.
-   * Undefined if there is no match
-   */
-  private getMatchedPath(inType: string, outPreferences: ValuePreferences, path: ConversionPath):
-  MatchedPath | undefined {
-    const inWeight = getTypeWeight(inType, path.inTypes);
-    if (inWeight === 0) {
-      return;
-    }
-    const outMatch = getBestPreference(path.outTypes, outPreferences);
-    if (!outMatch) {
-      return;
-    }
-    return { path, inType, outType: outMatch.value, weight: inWeight * outMatch.weight };
-  }
-}
-
-/**
  * A meta converter that takes an array of other converters as input.
  * It chains these converters by finding a path of converters
  * that can go from the given content-type to the given type preferences.
  * In case there are multiple paths, the one with the highest weight gets found.
  * Will error in case no path can be found.
  *
- * Generated paths get stored in an internal cache for later re-use on similar requests.
- * Note that due to this caching `RepresentationConverter`s
- * that change supported input/output types at runtime are not supported,
- * unless cache size is set to 0.
- *
  * This is not a TypedRepresentationConverter since the supported output types
  * might depend on what is the input content-type.
  *
+ * This converter should be the last in a WaterfallHandler if there are multiple,
+ * since it will try to convert any representation with a content-type.
+ *
  * Some suggestions on how this class can be even more optimized should this ever be needed in the future.
  * Most of these decrease computation time at the cost of more memory.
- *  - Subpaths that are generated could also be cached.
- *  - When looking for the next step, cached paths could also be considered.
  *  - The algorithm could start on both ends of a possible path and work towards the middle.
  *  - When creating a path, store the list of unused converters instead of checking every step.
+ *  - Caching: https://github.com/solid/community-server/issues/832
  */
 export class ChainedConverter extends RepresentationConverter {
   protected readonly logger = getLoggerFor(this);
 
   private readonly converters: TypedRepresentationConverter[];
-  private readonly cache: LruPathCache;
 
-  public constructor(converters: TypedRepresentationConverter[], maxCacheSize = 50) {
+  public constructor(converters: TypedRepresentationConverter[]) {
     super();
     if (converters.length === 0) {
       throw new Error('At least 1 converter is required.');
     }
     this.converters = [ ...converters ];
-    this.cache = new LruPathCache(maxCacheSize);
   }
 
   public async canHandle(input: RepresentationConverterArgs): Promise<void> {
-    // Will cache the path if found, and error if not
-    await this.findPath(input);
+    const type = input.representation.metadata.contentType;
+    if (!type) {
+      throw new BadRequestHttpError('Missing Content-Type header.');
+    }
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -156,24 +92,15 @@ export class ChainedConverter extends RepresentationConverter {
     return path.converters.slice(-1)[0].handle(args);
   }
 
-  public async handleSafe(input: RepresentationConverterArgs): Promise<Representation> {
-    // This way we don't run `findPath` twice, even though it would be cached for the second call
-    return this.handle(input);
-  }
-
   private isMatchedPath(path: unknown): path is MatchedPath {
     return typeof (path as MatchedPath).path === 'object';
   }
 
   /**
-   * Finds a conversion path that can handle the given input,
-   * either in the cache or by generating a new one.
+   * Finds a conversion path that can handle the given input.
    */
   private async findPath(input: RepresentationConverterArgs): Promise<MatchedPath | ValuePreference> {
-    const type = input.representation.metadata.contentType;
-    if (!type) {
-      throw new BadRequestHttpError('Missing Content-Type header.');
-    }
+    const type = input.representation.metadata.contentType!;
     const preferences = cleanPreferences(input.preferences.type);
 
     const weight = getTypeWeight(type, preferences);
@@ -182,15 +109,7 @@ export class ChainedConverter extends RepresentationConverter {
       return { value: type, weight };
     }
 
-    // Use a cached solution if we have one.
-    // Note that it's possible that a better one could be generated.
-    // But this is usually highly unlikely.
-    let match = this.cache.find(type, preferences);
-    if (!match) {
-      match = await this.generatePath(type, preferences);
-      this.cache.add(match.path);
-    }
-    return match;
+    return this.generatePath(type, preferences);
   }
 
   /**
