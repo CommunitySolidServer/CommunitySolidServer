@@ -1,6 +1,34 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.0.0-beta.1"></a>
+## [v1.0.0-beta.1](https://github.com/solid/community-server/compare/v1.0.0-beta.0...v1.0.0-beta.1) - 2021-07-23
+
+### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
+### Added
+* [feat: Support metadata in multiple graphs](https://github.com/solid/community-server/commit/35a7cf988c139de0c7bf3f6e821ea4a52e83d2b4)
+* [feat: Allow HttpErrors to store cause and errorCode](https://github.com/solid/community-server/commit/e44c337d0f3b7a4090ce9602f954540a5180ca3b)
+* [feat: Convert errorCodes using markdown](https://github.com/solid/community-server/commit/f2f967ff8add626aa47a6b2da48071bcde18c12d)
+* [feat: Add IndexRepresentationStore to support index resources](https://github.com/solid/community-server/commit/cc1e33239417fe9cd45c07af0e5f03d09c5980a1)
+* [feat: Style main template.](https://github.com/solid/community-server/commit/264b9707ace44c3758f2045f0a15db5635073f54)
+* [refactor: Match IDP templates to main template.](https://github.com/solid/community-server/commit/6897784a92edc072ef9d0ac29ab5f6bf77d72638)
+* [feat: Render Markdown documents as HTML.](https://github.com/solid/community-server/commit/c0dac12111ccbd3fb9473a0c010bda4760d1c84b)
+* [feat: Add HTML container listing.](https://github.com/solid/community-server/commit/1394b9cb56c38599ae9cb36af223952be046b5d9)
+* [feat: Add support for client_id WebIDs](https://github.com/solid/community-server/commit/3bb7a32c0ca6b672fc9f576e24b7c3c2c299e03d)
+
+### Changed
+* [feat: Split ResourceStore config into 2 parts](https://github.com/solid/community-server/commit/ad7f4ed134ea387352806c992713caad6039d0ca)
+
+### Fixed
+* [fix: Use #me for WebID generation](https://github.com/solid/community-server/commit/ee456a5c110bf480ddd18351e57067c67c161d7f)
+* [fix: Fix incorrect path in https example config](https://github.com/solid/community-server/commit/0c3210fae724870809d462aaa1c5fedf336d8f54)
+* [fix: Always find the best path with ChainedConverter](https://github.com/solid/community-server/commit/e7ff134b258f984f241969d4ba18dfe0525d5f6a)
+* [fix: Prevent generated metadata from being stored](https://github.com/solid/community-server/commit/12e501844fe925747b5740bd0987b1716deafee9)
+* [fix: Throw internal error with invalid ACL.](https://github.com/solid/community-server/commit/e43b579ae7a14a0b7be5c89545922346c7fb3833)
+* [fix: Make sure there is always a fallback for error handling](https://github.com/solid/community-server/commit/bd10256e5901320d9736310868bed1d820aba5d1)
+* [fix: Remove the cache from the ChainedConverter](https://github.com/solid/community-server/commit/fe8d579c72bb5b146e638647644252f05e4bd353)
+
+
 <a name="v1.0.0-beta.0"></a>
 ## [v1.0.0-beta.0](https://github.com/solid/community-server/compare/v0.9.0...v1.0.0-beta.0) - 2021-06-29
 
