@@ -20,6 +20,7 @@ describe('A RegistrationHandler', (): void => {
   const password = 'superSecretPassword';
   const confirmPassword = password;
   const podName = 'alice';
+  const podBaseUrl = 'http://test.com/alice/';
   // Strings instead of booleans because this is form data
   const createWebId = 'true';
   const register = 'true';
@@ -178,7 +179,9 @@ describe('A RegistrationHandler', (): void => {
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+      expect(podManager.createPod).toHaveBeenLastCalledWith(
+        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
+      );
 
       expect(accountStore.create).toHaveBeenCalledTimes(0);
       expect(accountStore.verify).toHaveBeenCalledTimes(0);
@@ -198,7 +201,9 @@ describe('A RegistrationHandler', (): void => {
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       (params as any).oidcIssuer = baseUrl;
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+      expect(podManager.createPod).toHaveBeenLastCalledWith(
+        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
+      );
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
 
@@ -219,7 +224,9 @@ describe('A RegistrationHandler', (): void => {
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       (params as any).oidcIssuer = baseUrl;
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, params);
+      expect(podManager.createPod).toHaveBeenLastCalledWith(
+        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
+      );
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(1);
       expect(accountStore.deleteAccount).toHaveBeenLastCalledWith(email);
 
@@ -239,9 +246,10 @@ describe('A RegistrationHandler', (): void => {
       expect(accountStore.create).toHaveBeenLastCalledWith(email, generatedWebID, password);
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
-      const podParams = { ...params, oidcIssuer: baseUrl, webId: generatedWebID };
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podParams);
+      expect(podManager.createPod).toHaveBeenLastCalledWith(
+        { path: `${baseUrl}${podName}/` }, { ...params, podBaseUrl, oidcIssuer: baseUrl, webId: generatedWebID },
+      );
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(0);
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);

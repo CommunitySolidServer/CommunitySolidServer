@@ -135,7 +135,11 @@ export class RegistrationHandler extends HttpHandler {
     if (result.createPod) {
       podBaseUrl = podBaseUrl ?? this.identifierGenerator.generate(result.podName!);
       try {
-        await this.podManager.createPod(podBaseUrl, { ...result.data, webId: result.webId! });
+        await this.podManager.createPod(podBaseUrl, {
+          ...result.data,
+          podBaseUrl: podBaseUrl.path,
+          webId: result.webId!,
+        });
       } catch (error: unknown) {
         // In case pod creation errors we don't want to keep the account
         if (result.register) {
