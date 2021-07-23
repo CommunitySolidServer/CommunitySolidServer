@@ -13,29 +13,44 @@
   </header>
   <main>
     <h1>You are signed up</h1>
-    <% if (createWebId) { %>
+    <p>
+      <strong>Welcome to Solid.</strong>
+      We wish you an exciting experience!
+    </p>
+
+    <% if (createPod) { %>
+      <h2>Your new pod</h2>
       <p>
-        Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>.
+        Your new pod is located at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
+        <br>
+        You can store your documents and data there.
       </p>
     <% } %>
-    <% if (register) { %>
+
+    <% if (createWebId) { %>
+      <h2>Your new WebID</h2>
       <p>
-        You can now identify as <a href="<%= webId %>" class="link"><%= webId %></a>
-        on this server using <em><%= email %></em>.
+        Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>.
+        <br>
+        You can use this identifier to interact with Solid pods and apps.
+      </p>
+    <% } %>
+
+    <% if (register) { %>
+      <h2>Your new login</h2>
+      <p>
+        You can <a href="./login">log in</a>
+        with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
+        on this server via your email address <em><%= email %></em>.
       </p>
       <% if (!createWebId) { %>
         <p>
-          Make sure you add the triple
+          You will need to add the triple
           <code><%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%></code>
-          to your WebID profile.
+          to your existing WebID document <em><%= webId %></em>
+          to indicate that you trust this server as a login provider for your WebID.
         </p>
       <% } %>
-    <% } %>
-    <% if (createPod) { %>
-      <p>
-        Your new pod has been created
-        and can be found at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
-      </p>
     <% } %>
   </main>
   <footer>

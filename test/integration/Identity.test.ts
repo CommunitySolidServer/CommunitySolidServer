@@ -117,11 +117,9 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`You can now identify as .*${webId}`, 'u'));
-      expect(text).toMatch(new RegExp(`on this server using <em>${email}</em>`, 'u'));
-      expect(text).toMatch(new RegExp(`Make sure you add the triple
-\\s*<code>&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.</code>
-\\s*to your WebID profile\\.`, 'mu'));
+      expect(text).toMatch(new RegExp(`your WebID.*${webId}`, 'u'));
+      expect(text).toMatch(new RegExp(`your email address.*${email}`, 'u'));
+      expect(text).toMatch(new RegExp(`<code>&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.</code>`, 'mu'));
     });
   });
 
@@ -282,8 +280,7 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`Your new pod has been created
-\\s*and can be found at.*${baseUrl}${podName}/`, 'u'));
+      expect(text).toMatch(new RegExp(`Your new pod.*${baseUrl}${podName}/`, 'u'));
     });
   });
 
@@ -291,7 +288,6 @@ describe('A Solid server with IDP', (): void => {
     const podName = 'alice';
     const newMail = 'alice@test.email';
     let newWebId: string;
-    let podLocation: string;
     let state: IdentityTestState;
 
     const formBody = stringify({
@@ -307,15 +303,9 @@ describe('A Solid server with IDP', (): void => {
       expect(matchWebId).toBeDefined();
       expect(matchWebId).toHaveLength(2);
       newWebId = matchWebId![1];
-      expect(text).toMatch(new RegExp(`You can now identify as .*${newWebId}`, 'u'));
-      expect(text).toMatch(new RegExp(`on this server using <em>${newMail}</em>.`, 'u'));
-
-      const matchPod = /Your new pod has been created\n\s*and can be found at [^>]+>([^<]+)/u.exec(text);
-      expect(matchPod).toBeDefined();
-      expect(matchPod).toHaveLength(2);
-      podLocation = matchPod![1];
-      expect(newWebId.startsWith(podLocation)).toBe(true);
-      expect(podLocation.startsWith(baseUrl)).toBe(true);
+      expect(text).toMatch(new RegExp(`new WebID is.*${newWebId}`, 'u'));
+      expect(text).toMatch(new RegExp(`your email address.*${newMail}`, 'u'));
+      expect(text).toMatch(new RegExp(`Your new pod.*${baseUrl}${podName}/`, 'u'));
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
