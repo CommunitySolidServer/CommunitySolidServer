@@ -117,10 +117,10 @@ export * from './ldp/http/PreferenceParser';
 export * from './ldp/http/RawBodyParser';
 export * from './ldp/http/RequestParser';
 export * from './ldp/http/ResponseWriter';
+export * from './ldp/http/SafeErrorHandler';
 export * from './ldp/http/SparqlUpdateBodyParser';
 export * from './ldp/http/SparqlUpdatePatch';
 export * from './ldp/http/TargetExtractor';
-export * from './ldp/http/TextErrorHandler';
 
 // LDP/Operations
 export * from './ldp/operations/DeleteOperationHandler';

@@ -1,4 +1,5 @@
-import { getStatusCode } from '../../util/errors/ErrorUtil';
+import { getLoggerFor } from '../../logging/LogUtil';
+import { createErrorMessage, getStatusCode } from '../../util/errors/ErrorUtil';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import { toLiteral } from '../../util/TermUtil';
 import { HTTP, XSD } from '../../util/Vocabularies';
@@ -9,17 +10,27 @@ import type { ResponseDescription } from './response/ResponseDescription';
 
 /**
  * Returns a simple text description of an error.
- * This class is mostly a failsafe in case all other solutions fail.
+ * This class is a failsafe in case the wrapped error handler fails.
  */
-export class TextErrorHandler extends ErrorHandler {
+export class SafeErrorHandler extends ErrorHandler {
+  protected readonly logger = getLoggerFor(this);
+
+  private readonly errorHandler: ErrorHandler;
   private readonly showStackTrace: boolean;
 
-  public constructor(showStackTrace = false) {
+  public constructor(errorHandler: ErrorHandler, showStackTrace = false) {
     super();
+    this.errorHandler = errorHandler;
     this.showStackTrace = showStackTrace;
   }
 
-  public async handle({ error }: ErrorHandlerArgs): Promise<ResponseDescription> {
+  public async handle(input: ErrorHandlerArgs): Promise<ResponseDescription> {
+    try {
+      return await this.errorHandler.handleSafe(input);
+    } catch (error: unknown) {
+      this.logger.debug(`Recovering from error handler failure: ${createErrorMessage(error)}`);
+    }
+    const { error } = input;
     const statusCode = getStatusCode(error);
     const metadata = new RepresentationMetadata('text/plain');
     metadata.add(HTTP.terms.statusCodeNumber, toLiteral(statusCode, XSD.terms.integer));

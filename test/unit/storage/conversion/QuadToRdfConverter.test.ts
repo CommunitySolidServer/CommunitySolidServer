@@ -1,6 +1,5 @@
 import { namedNode, triple } from '@rdfjs/data-model';
 import rdfSerializer from 'rdf-serialize';
-import stringifyStream from 'stream-to-string';
 import streamifyArray from 'streamify-array';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
@@ -8,6 +7,7 @@ import type { RepresentationPreferences } from '../../../../src/ldp/representati
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
+import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
 
 describe('A QuadToRdfConverter', (): void => {
@@ -63,7 +63,7 @@ describe('A QuadToRdfConverter', (): void => {
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toEqual('text/turtle');
-    await expect(stringifyStream(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toEqual(
       `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
 `,
     );
@@ -83,7 +83,7 @@ describe('A QuadToRdfConverter', (): void => {
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toEqual('text/turtle');
-    await expect(stringifyStream(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toEqual(
       `@prefix dc: <http://purl.org/dc/terms/>.
 @prefix test: <http://test.com/>.
 
@@ -104,7 +104,7 @@ test:s dc:modified test:o.
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toEqual('text/turtle');
-    await expect(stringifyStream(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toEqual(
       `<> <#abc> <def/ghi>.
 `,
     );
@@ -127,7 +127,7 @@ test:s dc:modified test:o.
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toEqual('application/ld+json');
-    await expect(stringifyStream(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toEqual(
       `[
   {
     "@id": "http://test.com/s",
