@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HttpError | Community Solid Server - v1.0.0-beta.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
+	<title>HttpError | Community Solid Server - v1.0.0-beta.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.1</a>
 				</li>
 				<li>
 					<a href="../modules/util_errors_httperror.html">util/errors/HttpError</a>
@@ -121,6 +121,12 @@
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/util_errors_httperror.httperroroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpErrorOptions</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -134,6 +140,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="util_errors_httperror.httperror.html#cause" class="tsd-kind-icon">cause</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="util_errors_httperror.httperror.html#details" class="tsd-kind-icon">details</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="util_errors_httperror.httperror.html#errorcode" class="tsd-kind-icon">error<wbr>Code</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="util_errors_httperror.httperror.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="util_errors_httperror.httperror.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="util_errors_httperror.httperror.html#stack" class="tsd-kind-icon">stack</a></li>
@@ -159,14 +168,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Http<wbr>Error<span class="tsd-signature-symbol">(</span>statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_errors_httperror.httperror.html" class="tsd-signature-type" data-tsd-kind="Class">HttpError</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Http<wbr>Error<span class="tsd-signature-symbol">(</span>statusCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/util_errors_httperror.httperroroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpErrorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="util_errors_httperror.httperror.html" class="tsd-signature-type" data-tsd-kind="Class">HttpError</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides Error.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/errors/HttpError.ts#L9">src/util/errors/HttpError.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L18">src/util/errors/HttpError.ts:18</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -191,7 +200,13 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>Message to be thrown.</p>
+										<p>Error message.</p>
+									</div>
+								</li>
+								<li>
+									<h5>options: <a href="../interfaces/util_errors_httperror.httperroroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">HttpErrorOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional options.</p>
 									</div>
 								</li>
 							</ul>
@@ -202,6 +217,39 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="cause" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> cause</h3>
+					<div class="tsd-signature tsd-kind-icon">cause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/util_errors_httperror.httperroroptions.html">HttpErrorOptions</a>.<a href="../interfaces/util_errors_httperror.httperroroptions.html#cause">cause</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L16">src/util/errors/HttpError.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="details" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> details</h3>
+					<div class="tsd-signature tsd-kind-icon">details<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Dict</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/util_errors_httperror.httperroroptions.html">HttpErrorOptions</a>.<a href="../interfaces/util_errors_httperror.httperroroptions.html#details">details</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L18">src/util/errors/HttpError.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="errorcode" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> error<wbr>Code</h3>
+					<div class="tsd-signature tsd-kind-icon">error<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/util_errors_httperror.httperroroptions.html">HttpErrorOptions</a>.<a href="../interfaces/util_errors_httperror.httperroroptions.html#errorcode">errorCode</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L17">src/util/errors/HttpError.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="message" class="tsd-anchor"></a>
 					<h3>message</h3>
@@ -241,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">status<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/errors/HttpError.ts#L9">src/util/errors/HttpError.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L15">src/util/errors/HttpError.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -302,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">status<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/errors/HttpError.ts#L8">src/util/errors/HttpError.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L14">src/util/errors/HttpError.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -351,7 +399,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/errors/HttpError.ts#L23">src/util/errors/HttpError.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/errors/HttpError.ts#L36">src/util/errors/HttpError.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -387,6 +435,15 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="util_errors_httperror.httperror.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="util_errors_httperror.httperror.html#cause" class="tsd-kind-icon">cause</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="util_errors_httperror.httperror.html#details" class="tsd-kind-icon">details</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="util_errors_httperror.httperror.html#errorcode" class="tsd-kind-icon">error<wbr>Code</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="util_errors_httperror.httperror.html#message" class="tsd-kind-icon">message</a>
 							</li>
@@ -418,6 +475,9 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/util_errors_httperror.httperroroptions.html" class="tsd-kind-icon">Http<wbr>Error<wbr>Options</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

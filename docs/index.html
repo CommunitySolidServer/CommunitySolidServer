@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v1.0.0-beta.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
+	<title>Community Solid Server - v1.0.0-beta.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="index.html" class="title">Community Solid Server - v1.0.0-beta.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>Community Solid Server - v1.0.0-beta.0</h1>
+			<h1>Community Solid Server - v1.0.0-beta.1</h1>
 		</div>
 	</div>
 </header>
@@ -167,11 +167,6 @@
 							<td><code>&quot;./pod-config.json&quot;</code></td>
 							<td>JSON file to store pod configuration when using a dynamic config.</td>
 						</tr>
-						<tr>
-							<td><code>--idpTemplateFolder</code></td>
-							<td><code>&quot;templates/idp&quot;</code></td>
-							<td>Folder containing the templates used for IDP interactions.</td>
-						</tr>
 				</tbody></table>
 				<a href="#using-the-identity-provider" id="using-the-identity-provider" style="color: inherit; text-decoration: none;">
 					<h2>Using the identity provider</h2>
@@ -209,17 +204,11 @@
 					<h2>Developing server code</h2>
 				</a>
 				<p>The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a> and
-					the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural
-					diagram</a>
-					can help you find your way. The organization and structure of the classes and
-					components in the <a href="/src">src folder</a> is designed to align with this
-					architectural diagram to the extent possible (i.e. the <a href="src/ldp">ldp folder</a>
-				should contain all the components from the <code>ldp</code> section of the diagram.</p>
-				<p>If you are interested in helping out with the development of this server, be
-					sure to have a look at the <a href="guides/developer-notes.md">📓 developer
-					notes</a> and
-					<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first
-				issues</a>.</p>
+					the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural diagram</a>
+				can help you find your way.</p>
+				<p>If you want to help out with the development of this server,
+					have a look at the <a href="guides/developer-notes.md">📓 developer notes</a> and
+				<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first issues</a>.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -268,28 +257,19 @@
 						<a href="modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_identityproviderfactory.html">identity/<wbr>Identity<wbr>Provider<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/identity_identityproviderhttphandler.html">identity/<wbr>Identity<wbr>Provider<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_configuration_configurationfactory.html">identity/configuration/<wbr>Configuration<wbr>Factory</a>
+						<a href="modules/identity_configuration_identityproviderfactory.html">identity/configuration/<wbr>Identity<wbr>Provider<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_configuration_keyconfigurationfactory.html">identity/configuration/<wbr>Key<wbr>Configuration<wbr>Factory</a>
+						<a href="modules/identity_configuration_providerfactory.html">identity/configuration/<wbr>Provider<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_interactionhttphandler.html">identity/interaction/<wbr>Interaction<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_interactionpolicy.html">identity/interaction/<wbr>Interaction<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_sessionhttphandler.html">identity/interaction/<wbr>Session<wbr>Http<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_accountinteractionpolicy.html">identity/interaction/email-<wbr>password/<wbr>Account<wbr>Interaction<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_email_password_emailpasswordutil.html">identity/interaction/email-<wbr>password/<wbr>Email<wbr>Password<wbr>Util</a>
@@ -307,12 +287,6 @@
 						<a href="modules/identity_interaction_email_password_handler_resetpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_resetpasswordrenderhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>Render<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_resetpasswordviewhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>View<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_email_password_storage_accountstore.html">identity/interaction/email-<wbr>password/storage/<wbr>Account<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -320,9 +294,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_util_baseemailsender.html">identity/interaction/util/<wbr>Base<wbr>Email<wbr>Sender</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_ejstemplaterenderer.html">identity/interaction/util/<wbr>Ejs<wbr>Template<wbr>Renderer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_util_emailsender.html">identity/interaction/util/<wbr>Email<wbr>Sender</a>
@@ -346,9 +317,6 @@
 						<a href="modules/identity_interaction_util_interactioncompleter.html">identity/interaction/util/<wbr>Interaction<wbr>Completer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_templaterenderer.html">identity/interaction/util/<wbr>Template<wbr>Renderer</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/identity_ownership_nocheckownershipvalidator.html">identity/ownership/<wbr>NoCheck<wbr>Ownership<wbr>Validator</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -364,16 +332,10 @@
 						<a href="modules/identity_storage_expiringadapterfactory.html">identity/storage/<wbr>Expiring<wbr>Adapter<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_storage_wrappedfetchadapterfactory.html">identity/storage/<wbr>Wrapped<wbr>Fetch<wbr>Adapter<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_util_fetchutil.html">identity/util/<wbr>Fetch<wbr>Util</a>
+						<a href="modules/identity_storage_webidadapterfactory.html">identity/storage/<wbr>Web<wbr>IdAdapter<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/index.html">index</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_aclinitializer.html">init/<wbr>Acl<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_app.html">init/<wbr>App</a>
@@ -391,7 +353,7 @@
 						<a href="modules/init_loggerinitializer.html">init/<wbr>Logger<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/init_rootcontainerinitializer.html">init/<wbr>Root<wbr>Container<wbr>Initializer</a>
+						<a href="modules/init_rootinitializer.html">init/<wbr>Root<wbr>Initializer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/init_serverinitializer.html">init/<wbr>Server<wbr>Initializer</a>
@@ -475,6 +437,9 @@
 						<a href="modules/ldp_http_responsewriter.html">ldp/http/<wbr>Response<wbr>Writer</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/ldp_http_safeerrorhandler.html">ldp/http/<wbr>Safe<wbr>Error<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_sparqlupdatebodyparser.html">ldp/http/<wbr>Sparql<wbr>Update<wbr>Body<wbr>Parser</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -482,9 +447,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_targetextractor.html">ldp/http/<wbr>Target<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_texterrorhandler.html">ldp/http/<wbr>Text<wbr>Error<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/ldp_http_metadata_constantmetadatawriter.html">ldp/http/metadata/<wbr>Constant<wbr>Metadata<wbr>Writer</a>
@@ -631,9 +593,6 @@
 						<a href="modules/pods_generate_generateutil.html">pods/generate/<wbr>Generate<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_handlebarstemplateengine.html">pods/generate/<wbr>Handlebars<wbr>Template<wbr>Engine</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_identifiergenerator.html">pods/generate/<wbr>Identifier<wbr>Generator</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -647,9 +606,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_suffixidentifiergenerator.html">pods/generate/<wbr>Suffix<wbr>Identifier<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_templateengine.html">pods/generate/<wbr>Template<wbr>Engine</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/pods_generate_templatedpodgenerator.html">pods/generate/<wbr>Templated<wbr>Pod<wbr>Generator</a>
@@ -709,13 +665,10 @@
 						<a href="modules/server_middleware_websocketadvertiser.html">server/middleware/<wbr>Web<wbr>Socket<wbr>Advertiser</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/server_util_renderejshandler.html">server/util/<wbr>Render<wbr>Ejs<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_util_renderhandler.html">server/util/<wbr>Render<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/server_util_routerhandler.html">server/util/<wbr>Router<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/server_util_templatehandler.html">server/util/<wbr>Template<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_atomicresourcestore.html">storage/<wbr>Atomic<wbr>Resource<wbr>Store</a>
@@ -728,6 +681,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_dataaccessorbasedstore.html">storage/<wbr>Data<wbr>Accessor<wbr>Based<wbr>Store</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_indexrepresentationstore.html">storage/<wbr>Index<wbr>Representation<wbr>Store</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_lockingresourcestore.html">storage/<wbr>Locking<wbr>Resource<wbr>Store</a>
@@ -772,6 +728,9 @@
 						<a href="modules/storage_conversion_constantconverter.html">storage/conversion/<wbr>Constant<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="modules/storage_conversion_containertotemplateconverter.html">storage/conversion/<wbr>Container<wbr>ToTemplate<wbr>Converter</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="modules/storage_conversion_contenttypereplacer.html">storage/conversion/<wbr>Content<wbr>Type<wbr>Replacer</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -785,6 +744,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_conversion_ifneededconverter.html">storage/conversion/<wbr>IfNeeded<wbr>Converter</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage_conversion_markdowntohtmlconverter.html">storage/conversion/<wbr>Markdown<wbr>ToHtml<wbr>Converter</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/storage_conversion_passthroughconverter.html">storage/conversion/<wbr>Passthrough<wbr>Converter</a>
@@ -860,6 +822,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_contenttypes.html">util/<wbr>Content<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_fetchutil.html">util/<wbr>Fetch<wbr>Util</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_guardedstream.html">util/<wbr>Guarded<wbr>Stream</a>
@@ -974,6 +939,15 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_locking_wrappedexpiringreadwritelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_templates_ejstemplateengine.html">util/templates/<wbr>Ejs<wbr>Template<wbr>Engine</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_templates_handlebarstemplateengine.html">util/templates/<wbr>Handlebars<wbr>Template<wbr>Engine</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_templates_templateengine.html">util/templates/<wbr>Template<wbr>Engine</a>
 					</li>
 				</ul>
 			</nav>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ErrorToTemplateConverter | Community Solid Server - v1.0.0-beta.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
+	<title>ErrorToTemplateConverter | Community Solid Server - v1.0.0-beta.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.1</a>
 				</li>
 				<li>
 					<a href="../modules/storage_conversion_errortotemplateconverter.html">storage/conversion/ErrorToTemplateConverter</a>
@@ -74,6 +74,12 @@
 						<p>Serializes an Error by filling in the provided template.
 						Content-type is based on the constructor parameter.</p>
 					</div>
+					<p>In case the input Error has an <code>errorCode</code> value,
+						the converter will look in the <code>descriptions</code> for a file
+						with the exact same name as that error code + <code>extension</code>.
+						The templating engine will then be applied to that file.
+						That result will be passed as an additional parameter to the main templating call,
+					using the variable <code>codeMessage</code>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -103,9 +109,10 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#contenttype" class="tsd-kind-icon">content<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#engine" class="tsd-kind-icon">engine</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#extension" class="tsd-kind-icon">extension</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#templateengine" class="tsd-kind-icon">template<wbr>Engine</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#templatepath" class="tsd-kind-icon">template<wbr>Path</a></li>
 							</ul>
 						</section>
@@ -128,23 +135,26 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Error<wbr>ToTemplate<wbr>Converter<span class="tsd-signature-symbol">(</span>engine<span class="tsd-signature-symbol">: </span><a href="../interfaces/pods_generate_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a>, templatePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, contentType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ErrorToTemplateConverter</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Error<wbr>ToTemplate<wbr>Converter<span class="tsd-signature-symbol">(</span>templateEngine<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_templates_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Dict</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, templatePath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, extension<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, contentType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html" class="tsd-signature-type" data-tsd-kind="Class">ErrorToTemplateConverter</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ErrorToTemplateConverter.ts#L19">src/storage/conversion/ErrorToTemplateConverter.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L27">src/storage/conversion/ErrorToTemplateConverter.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>engine: <a href="../interfaces/pods_generate_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a></h5>
+									<h5>templateEngine: <a href="../interfaces/util_templates_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Dict</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>templatePath: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>extension: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5>contentType: <span class="tsd-signature-type">string</span></h5>
@@ -163,39 +173,49 @@
 					<div class="tsd-signature tsd-kind-icon">content<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ErrorToTemplateConverter.ts#L19">src/storage/conversion/ErrorToTemplateConverter.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L27">src/storage/conversion/ErrorToTemplateConverter.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="engine" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> engine</h3>
-					<div class="tsd-signature tsd-kind-icon">engine<span class="tsd-signature-symbol">:</span> <a href="../interfaces/pods_generate_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a></div>
+					<a name="extension" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> extension</h3>
+					<div class="tsd-signature tsd-kind-icon">extension<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ErrorToTemplateConverter.ts#L17">src/storage/conversion/ErrorToTemplateConverter.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L26">src/storage/conversion/ErrorToTemplateConverter.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a name="inputtypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> input<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">input<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">input<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#inputtypes">inputTypes</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/TypedRepresentationConverter.ts#L28">src/storage/conversion/TypedRepresentationConverter.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/TypedRepresentationConverter.ts#L28">src/storage/conversion/TypedRepresentationConverter.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 					<a name="outputtypes" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> output<wbr>Types</h3>
-					<div class="tsd-signature tsd-kind-icon">output<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">output<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#outputtypes">outputTypes</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/TypedRepresentationConverter.ts#L29">src/storage/conversion/TypedRepresentationConverter.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/TypedRepresentationConverter.ts#L29">src/storage/conversion/TypedRepresentationConverter.ts:29</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="templateengine" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> template<wbr>Engine</h3>
+					<div class="tsd-signature tsd-kind-icon">template<wbr>Engine<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_templates_templateengine.templateengine.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateEngine</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Dict</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L24">src/storage/conversion/ErrorToTemplateConverter.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -205,7 +225,7 @@
 					<div class="tsd-signature tsd-kind-icon">template<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ErrorToTemplateConverter.ts#L18">src/storage/conversion/ErrorToTemplateConverter.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L25">src/storage/conversion/ErrorToTemplateConverter.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +243,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/TypedRepresentationConverter.ts#L59">src/storage/conversion/TypedRepresentationConverter.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/TypedRepresentationConverter.ts#L59">src/storage/conversion/TypedRepresentationConverter.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -252,14 +272,14 @@
 					<a name="getinputtypes" class="tsd-anchor"></a>
 					<h3>get<wbr>Input<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Input<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Input<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#getinputtypes">getInputTypes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/TypedRepresentationConverter.ts#L40">src/storage/conversion/TypedRepresentationConverter.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/TypedRepresentationConverter.ts#L40">src/storage/conversion/TypedRepresentationConverter.ts:40</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -267,7 +287,7 @@
 									<p>Gets the supported input content types for this converter, mapped to a numerical priority.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -275,14 +295,14 @@
 					<a name="getoutputtypes" class="tsd-anchor"></a>
 					<h3>get<wbr>Output<wbr>Types</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Output<wbr>Types<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#getoutputtypes">getOutputTypes</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/TypedRepresentationConverter.ts#L47">src/storage/conversion/TypedRepresentationConverter.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/TypedRepresentationConverter.ts#L47">src/storage/conversion/TypedRepresentationConverter.ts:47</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -290,7 +310,7 @@
 									<p>Gets the supported output content types for this converter, mapped to a numerical quality.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/ldp_representation_representationpreferences.html#valuepreferences" class="tsd-signature-type" data-tsd-kind="Type alias">ValuePreferences</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -305,7 +325,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/conversion/ErrorToTemplateConverter.ts#L28">src/storage/conversion/ErrorToTemplateConverter.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/conversion/ErrorToTemplateConverter.ts#L37">src/storage/conversion/ErrorToTemplateConverter.ts:37</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -321,6 +341,7 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ldp_representation_representation.representation.html" class="tsd-signature-type" data-tsd-kind="Interface">Representation</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise resolving when the handling is finished. Return value depends on the given type.</p>
 						</li>
 					</ul>
 				</section>
@@ -335,7 +356,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html">TypedRepresentationConverter</a>.<a href="storage_conversion_typedrepresentationconverter.typedrepresentationconverter.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -387,13 +408,16 @@
 								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#contenttype" class="tsd-kind-icon">content<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#engine" class="tsd-kind-icon">engine</a>
+								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#extension" class="tsd-kind-icon">extension</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#inputtypes" class="tsd-kind-icon">input<wbr>Types</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
 								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#outputtypes" class="tsd-kind-icon">output<wbr>Types</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#templateengine" class="tsd-kind-icon">template<wbr>Engine</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="storage_conversion_errortotemplateconverter.errortotemplateconverter.html#templatepath" class="tsd-kind-icon">template<wbr>Path</a>

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>InMemoryDataAccessor | Community Solid Server - v1.0.0-beta.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.0">
+	<title>InMemoryDataAccessor | Community Solid Server - v1.0.0-beta.1</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.1">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v1.0.0-beta.0</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0-beta.1</a>
 				</li>
 				<li>
 					<a href="../modules/storage_accessors_inmemorydataaccessor.html">storage/accessors/InMemoryDataAccessor</a>
@@ -95,8 +95,8 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#identifierstrategy" class="tsd-kind-icon">identifier<wbr>Strategy</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#store" class="tsd-kind-icon">store</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#strategy" class="tsd-kind-icon">strategy</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -124,19 +124,19 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>InMemory<wbr>Data<wbr>Accessor<span class="tsd-signature-symbol">(</span>strategy<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html" class="tsd-signature-type" data-tsd-kind="Class">InMemoryDataAccessor</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>InMemory<wbr>Data<wbr>Accessor<span class="tsd-signature-symbol">(</span>identifierStrategy<span class="tsd-signature-symbol">: </span><a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html" class="tsd-signature-type" data-tsd-kind="Class">InMemoryDataAccessor</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>strategy: <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></h5>
+									<h5>identifierStrategy: <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html" class="tsd-signature-type" data-tsd-kind="Class">InMemoryDataAccessor</a></h4>
@@ -147,12 +147,22 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="identifierstrategy" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> identifier<wbr>Strategy</h3>
+					<div class="tsd-signature tsd-kind-icon">identifier<wbr>Strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L23">src/storage/accessors/InMemoryDataAccessor.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="store" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> store</h3>
 					<div class="tsd-signature tsd-kind-icon">store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ContainerEntry</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L25">src/storage/accessors/InMemoryDataAccessor.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -163,16 +173,6 @@
 							</li>
 						</ul>
 					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="strategy" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> strategy</h3>
-					<div class="tsd-signature tsd-kind-icon">strategy<span class="tsd-signature-symbol">:</span> <a href="../interfaces/util_identifiers_identifierstrategy.identifierstrategy.html" class="tsd-signature-type" data-tsd-kind="Interface">IdentifierStrategy</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L23">src/storage/accessors/InMemoryDataAccessor.ts:23</a></li>
-						</ul>
-					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -188,7 +188,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.canHandle</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L33">src/storage/accessors/InMemoryDataAccessor.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L33">src/storage/accessors/InMemoryDataAccessor.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -206,7 +206,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.deleteResource</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L87">src/storage/accessors/InMemoryDataAccessor.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L87">src/storage/accessors/InMemoryDataAccessor.ts:87</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -230,7 +230,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.getChildren</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L50">src/storage/accessors/InMemoryDataAccessor.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L50">src/storage/accessors/InMemoryDataAccessor.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -254,7 +254,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.getData</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L37">src/storage/accessors/InMemoryDataAccessor.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L37">src/storage/accessors/InMemoryDataAccessor.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -277,7 +277,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L142">src/storage/accessors/InMemoryDataAccessor.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L142">src/storage/accessors/InMemoryDataAccessor.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -306,7 +306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L104">src/storage/accessors/InMemoryDataAccessor.ts:104</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L104">src/storage/accessors/InMemoryDataAccessor.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -336,7 +336,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.getMetadata</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L45">src/storage/accessors/InMemoryDataAccessor.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L45">src/storage/accessors/InMemoryDataAccessor.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -359,7 +359,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L117">src/storage/accessors/InMemoryDataAccessor.ts:117</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L117">src/storage/accessors/InMemoryDataAccessor.ts:117</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -388,7 +388,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L96">src/storage/accessors/InMemoryDataAccessor.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L96">src/storage/accessors/InMemoryDataAccessor.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -412,7 +412,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.writeContainer</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L68">src/storage/accessors/InMemoryDataAccessor.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L68">src/storage/accessors/InMemoryDataAccessor.ts:68</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -439,7 +439,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of DataAccessor.writeDocument</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/d01382d/src/storage/accessors/InMemoryDataAccessor.ts#L58">src/storage/accessors/InMemoryDataAccessor.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/0be8222/src/storage/accessors/InMemoryDataAccessor.ts#L58">src/storage/accessors/InMemoryDataAccessor.ts:58</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -482,10 +482,10 @@
 								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#store" class="tsd-kind-icon">store</a>
+								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#identifierstrategy" class="tsd-kind-icon">identifier<wbr>Strategy</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#strategy" class="tsd-kind-icon">strategy</a>
+								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#store" class="tsd-kind-icon">store</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="storage_accessors_inmemorydataaccessor.inmemorydataaccessor.html#canhandle" class="tsd-kind-icon">can<wbr>Handle</a>
