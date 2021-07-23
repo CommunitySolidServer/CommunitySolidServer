@@ -33,11 +33,12 @@ describe('An IndexRepresentationStore', (): void => {
       .toThrow('Invalid index name');
   });
 
-  it('retrieves the index resource if it exists.', async(): Promise<void> => {
-    const result = await store.getRepresentation({ path: baseUrl }, {});
+  it('retrieves the index resource if it is explicitly preferred.', async(): Promise<void> => {
+    const preferences = { type: { 'text/turtle': 0.5, 'text/html': 0.8 }};
+    const result = await store.getRepresentation({ path: baseUrl }, preferences);
     await expect(readableToString(result.data)).resolves.toBe('index data');
     expect(source.getRepresentation).toHaveBeenCalledTimes(2);
-    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}index.html` }, {}, undefined);
+    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}index.html` }, preferences, undefined);
     expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, {}, undefined);
 
     // Use correct metadata
@@ -45,18 +46,54 @@ describe('An IndexRepresentationStore', (): void => {
     expect(result.metadata.contentType).toBe('text/html');
   });
 
+  it('retrieves the index resource if there is a range preference.', async(): Promise<void> => {
+    const preferences = { type: { 'text/*': 0.8, 'other/other': 0.7 }};
+    const result = await store.getRepresentation({ path: baseUrl }, preferences);
+    await expect(readableToString(result.data)).resolves.toBe('index data');
+    expect(source.getRepresentation).toHaveBeenCalledTimes(2);
+    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}index.html` }, preferences, undefined);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, {}, undefined);
+
+    // Use correct metadata
+    expect(result.metadata.identifier.value).toBe(baseUrl);
+    expect(result.metadata.contentType).toBe('text/html');
+  });
+
+  it('does not retrieve the index resource if there are no type preferences.', async(): Promise<void> => {
+    const preferences = {};
+    const result = await store.getRepresentation({ path: baseUrl }, preferences);
+    await expect(readableToString(result.data)).resolves.toBe('container data');
+    expect(source.getRepresentation).toHaveBeenCalledTimes(1);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, preferences, undefined);
+
+    // Use correct metadata
+    expect(result.metadata.identifier.value).toBe(baseUrl);
+    expect(result.metadata.contentType).toBe('text/turtle');
+  });
+
+  it('does not retrieve the index resource on */*.', async(): Promise<void> => {
+    const preferences = { type: { '*/*': 1 }};
+    const result = await store.getRepresentation({ path: baseUrl }, preferences);
+    await expect(readableToString(result.data)).resolves.toBe('container data');
+  });
+
   it('errors if a non-404 error was thrown when accessing the index resource.', async(): Promise<void> => {
+    const preferences = { type: { 'text/turtle': 0.5, 'text/html': 0.8 }};
     source.getRepresentation.mockRejectedValueOnce(new ConflictHttpError('conflict!'));
-    await expect(store.getRepresentation({ path: baseUrl }, {})).rejects.toThrow('conflict!');
+    await expect(store.getRepresentation({ path: baseUrl }, preferences)).rejects.toThrow('conflict!');
     expect(source.getRepresentation).toHaveBeenCalledTimes(1);
   });
 
   it('requests the usual data if there is no index resource.', async(): Promise<void> => {
-    const result = await store.getRepresentation(emptyContainer, {});
+    const preferences = { type: { 'text/turtle': 0.5, 'text/html': 0.8 }};
+    source.getRepresentation.mockRejectedValueOnce(new NotFoundHttpError());
+    const result = await store.getRepresentation(emptyContainer, preferences);
     await expect(readableToString(result.data)).resolves.toBe('container data');
     expect(source.getRepresentation).toHaveBeenCalledTimes(2);
-    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${emptyContainer.path}index.html` }, {}, undefined);
-    expect(source.getRepresentation).toHaveBeenLastCalledWith(emptyContainer, {}, undefined);
+    expect(source.getRepresentation).toHaveBeenCalledWith(
+      { path: `${emptyContainer.path}index.html` }, preferences, undefined,
+    );
+    expect(source.getRepresentation).toHaveBeenLastCalledWith(emptyContainer, preferences, undefined);
   });
 
   it('requests the usual data if the index media range is not the most preferred.', async(): Promise<void> => {
@@ -67,7 +104,7 @@ describe('An IndexRepresentationStore', (): void => {
     expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, preferences, undefined);
   });
 
-  it('always returns the index resource if the media range is set to */*.', async(): Promise<void> => {
+  it('returns the index resource if the media range is set to */*.', async(): Promise<void> => {
     store = new IndexRepresentationStore(source, 'base.html', '*/*');
     // Mocking because we also change the index name
     source.getRepresentation.mockResolvedValueOnce(new BasicRepresentation('index data', 'text/html'));
@@ -82,5 +119,18 @@ describe('An IndexRepresentationStore', (): void => {
     // Use correct metadata
     expect(result.metadata.identifier.value).toBe(baseUrl);
     expect(result.metadata.contentType).toBe('text/html');
+  });
+
+  it('returns the index resource if media range and Accept header are */*.', async(): Promise<void> => {
+    store = new IndexRepresentationStore(source, 'base.html', '*/*');
+    // Mocking because we also change the index name
+    source.getRepresentation.mockResolvedValueOnce(new BasicRepresentation('index data', 'text/html'));
+
+    const preferences = { type: { '*/*': 1 }};
+    const result = await store.getRepresentation({ path: baseUrl }, preferences);
+    await expect(readableToString(result.data)).resolves.toBe('index data');
+    expect(source.getRepresentation).toHaveBeenCalledTimes(2);
+    expect(source.getRepresentation).toHaveBeenCalledWith({ path: `${baseUrl}base.html` }, preferences, undefined);
+    expect(source.getRepresentation).toHaveBeenLastCalledWith({ path: baseUrl }, {}, undefined);
   });
 });

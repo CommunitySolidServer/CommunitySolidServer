@@ -65,12 +65,18 @@ export class IndexRepresentationStore extends PassthroughStore {
   }
 
   /**
-   * Makes sure the stored media range matches the highest weight preference.
+   * Makes sure the stored media range explicitly matches the highest weight preference.
    */
   private matchesPreferences(preferences: RepresentationPreferences): boolean {
-    const cleaned = cleanPreferences(preferences.type);
-    const max = Math.max(...Object.values(cleaned));
-    return Object.entries(cleaned).some(([ range, weight ]): boolean =>
-      matchesMediaType(range, this.mediaRange) && weight === max);
+    // Always match */*
+    if (this.mediaRange === '*/*') {
+      return true;
+    }
+
+    // Otherwise, determine if an explicit match has the highest weight
+    const types = cleanPreferences(preferences.type);
+    const max = Math.max(...Object.values(types));
+    return Object.entries(types).some(([ range, weight ]): boolean =>
+      range !== '*/*' && (max - weight) < 0.01 && matchesMediaType(range, this.mediaRange));
   }
 }

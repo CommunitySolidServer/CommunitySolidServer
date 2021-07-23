@@ -58,12 +58,24 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await app.stop();
   });
 
-  it('can read the root container index page.', async(): Promise<void> => {
-    const response = await getResource(baseUrl, { contentType: 'text/html' });
+  it('returns the root container listing.', async(): Promise<void> => {
+    const response = await getResource(baseUrl, {}, { contentType: 'text/turtle' });
+
+    await expect(response.text()).resolves.toContain('ldp:BasicContainer');
+    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
+  });
+
+  it('returns the root container listing when asking for */*.', async(): Promise<void> => {
+    const response = await getResource(baseUrl, { accept: '*/*' }, { contentType: 'text/turtle' });
+
+    await expect(response.text()).resolves.toContain('ldp:BasicContainer');
+    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
+  });
+
+  it('can read the root container index page when asking for HTML.', async(): Promise<void> => {
+    const response = await getResource(baseUrl, { accept: 'text/html' }, { contentType: 'text/html' });
 
     await expect(response.text()).resolves.toContain('Welcome to the Community Solid Server');
-
-    // This is only here because we're accessing the root container
     expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
@@ -89,7 +101,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
     // GET
-    const response = await getResource(documentUrl, { contentType: 'text/plain' });
+    const response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
@@ -102,14 +114,14 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
     // GET
-    let response = await getResource(documentUrl, { contentType: 'text/plain' });
+    let response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // PUT
     await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1' });
 
     // GET
-    response = await getResource(documentUrl, { contentType: 'text/plain' });
+    response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
     await expect(response.text()).resolves.toBe('TESTFILE1');
 
     // DELETE
@@ -133,6 +145,32 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
+  it('can create a container and retrieve it.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer0/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
+
+    // GET representation
+    const response = await getResource(containerUrl, { accept: '*/*' }, { contentType: 'text/turtle' });
+    await expect(response.text()).resolves.toContain('ldp:BasicContainer');
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+  });
+
+  it('can create a container and view it as HTML.', async(): Promise<void> => {
+    // Create container
+    const containerUrl = `${baseUrl}testcontainer0/`;
+    await putResource(containerUrl, { contentType: 'text/turtle' });
+
+    // GET representation
+    const response = await getResource(containerUrl, { accept: 'text/html' }, { contentType: 'text/html' });
+    await expect(response.text()).resolves.toContain('Contents of testcontainer0');
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+  });
+
   it('can create a container and put a document in it.', async(): Promise<void> => {
     // Create container
     const containerUrl = `${baseUrl}testcontainer0/`;
@@ -143,7 +181,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
 
     // GET document
-    const response = await getResource(documentUrl, { contentType: 'text/plain' });
+    const response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // DELETE
@@ -227,7 +265,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toHaveLength(0);
 
     // GET
-    await getResource(documentUrl, { contentType: 'image/png' });
+    await getResource(documentUrl, {}, { contentType: 'image/png' });
 
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();
