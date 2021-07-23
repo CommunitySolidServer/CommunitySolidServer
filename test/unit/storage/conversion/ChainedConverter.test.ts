@@ -77,7 +77,7 @@ describe('A ChainedConverter', (): void => {
     const converter = new ChainedConverter(converters);
 
     args.representation.metadata.contentType = 'b/b';
-    await expect(converter.canHandle(args)).rejects
+    await expect(converter.handle(args)).rejects
       .toThrow('No conversion path could be made from b/b to x/x,x/*,internal/*.');
   });
 
@@ -217,105 +217,5 @@ describe('A ChainedConverter', (): void => {
     await converter.handleSafe(args);
     expect(converter.handle).toHaveBeenCalledTimes(1);
     expect(converter.handle).toHaveBeenLastCalledWith(args);
-  });
-
-  it('caches paths for re-use.', async(): Promise<void> => {
-    const converters = [
-      new DummyConverter({ 'a/a': 0.8 }, { 'b/b': 0.9 }),
-      new DummyConverter({ 'b/b': 0.8 }, { 'x/x': 1 }),
-    ];
-    const converter = new ChainedConverter(converters);
-    let result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('x/x');
-
-    jest.spyOn(converters[0], 'getInputTypes');
-    jest.spyOn(converters[0], 'getOutputTypes');
-    result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('x/x');
-    expect(converters[0].getInputTypes).toHaveBeenCalledTimes(0);
-    expect(converters[0].getOutputTypes).toHaveBeenCalledTimes(0);
-  });
-
-  it('removes unused paths from the cache.', async(): Promise<void> => {
-    const converters = [
-      new DummyConverter({ 'a/a': 0.8 }, { 'b/b': 0.9 }),
-      new DummyConverter({ 'b/b': 0.8 }, { 'x/x': 1 }),
-      new DummyConverter({ 'c/c': 0.8 }, { 'b/b': 0.9 }),
-    ];
-    // Cache size 1
-    const converter = new ChainedConverter(converters, 1);
-    let result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('x/x');
-
-    // Should remove previous path (which contains converter 0)
-    args.representation.metadata.contentType = 'c/c';
-    result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('x/x');
-
-    jest.spyOn(converters[0], 'getInputTypes');
-    jest.spyOn(converters[0], 'getOutputTypes');
-    args.representation.metadata.contentType = 'a/a';
-    result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('x/x');
-    expect(converters[0].getInputTypes).not.toHaveBeenCalledTimes(0);
-    expect(converters[0].getOutputTypes).not.toHaveBeenCalledTimes(0);
-  });
-
-  it('keeps the most recently used paths in the cache.', async(): Promise<void> => {
-    const converters = [
-      new DummyConverter({ 'a/a': 1 }, { 'd/d': 1 }),
-      new DummyConverter({ 'b/b': 1 }, { 'd/d': 1 }),
-      new DummyConverter({ 'c/c': 1 }, { 'd/d': 1 }),
-      new DummyConverter({ 'd/d': 1 }, { 'x/x': 1 }),
-    ];
-    // Cache size 2
-    const converter = new ChainedConverter(converters, 2);
-    // Caches path 0
-    await converter.handle(args);
-
-    // Caches path 1
-    args.representation.metadata.contentType = 'b/b';
-    await converter.handle(args);
-
-    // Reset path 0 in cache
-    args.representation.metadata.contentType = 'a/a';
-    await converter.handle(args);
-
-    // Caches path 2 and removes 1
-    args.representation.metadata.contentType = 'c/c';
-    await converter.handle(args);
-
-    jest.spyOn(converters[0], 'getInputTypes');
-    jest.spyOn(converters[1], 'getInputTypes');
-    jest.spyOn(converters[2], 'getInputTypes');
-
-    // Path 0 and 2 should be cached now
-    args.representation.metadata.contentType = 'a/a';
-    await converter.handle(args);
-    expect(converters[0].getInputTypes).toHaveBeenCalledTimes(0);
-    args.representation.metadata.contentType = 'c/c';
-    await converter.handle(args);
-    expect(converters[2].getInputTypes).toHaveBeenCalledTimes(0);
-    args.representation.metadata.contentType = 'b/b';
-    await converter.handle(args);
-    expect(converters[1].getInputTypes).not.toHaveBeenCalledTimes(0);
-  });
-
-  it('does not use cached paths that match content-type but not preferences.', async(): Promise<void> => {
-    const converters = [
-      new DummyConverter({ 'a/a': 1 }, { 'b/b': 1 }),
-      new DummyConverter({ 'b/b': 1 }, { 'x/x': 1 }),
-      new DummyConverter({ 'a/a': 1 }, { 'c/c': 1 }),
-      new DummyConverter({ 'c/c': 1 }, { 'y/y': 1 }),
-    ];
-    const converter = new ChainedConverter(converters);
-
-    // Cache a-b-x path
-    await converter.handle(args);
-
-    // Generate new a-c-y path
-    args.preferences.type = { 'y/y': 1 };
-    const result = await converter.handle(args);
-    expect(result.metadata.contentType).toBe('y/y');
   });
 });
