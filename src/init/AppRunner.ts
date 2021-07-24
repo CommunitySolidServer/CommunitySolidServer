@@ -8,26 +8,22 @@ import { getLoggerFor } from '../logging/LogUtil';
 import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
 import type { App } from './App';
 
+export interface CliParams {
+  loggingLevel: string;
+  port: number;
+  baseUrl?: string;
+  rootFilePath?: string;
+  sparqlEndpoint?: string;
+  showStackTrace?: boolean;
+  podConfigJson?: string;
+}
+
 export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
   /**
-   * Generic function for getting the app object to start the server from JavaScript for a given config.
-   * @param loaderProperties - Components.js loader properties.
-   * @param configFile - Path to the server config file.
-   * @param variableParams - Variables to pass into the config file.
-   */
-  public async getApp(
-    loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string,
-    variableParams: ConfigVariables,
-  ): Promise<App> {
-    const variables = this.createVariables(variableParams);
-    return this.createApp(loaderProperties, configFile, variables);
-  }
-
-  /**
-   * Generic run function for starting the server from JavaScript for a given config.
+   * Starts the server with a given config.
+   * This method can be used to start the server from within another JavaScript application.
    * @param loaderProperties - Components.js loader properties.
    * @param configFile - Path to the server config file.
    * @param variableParams - Variables to pass into the config file.
@@ -35,15 +31,15 @@ export class AppRunner {
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variableParams: ConfigVariables,
+    variableParams: CliParams,
   ): Promise<void> {
-    const app = await this.getApp(loaderProperties, configFile, variableParams);
+    const app = await this.createApp(loaderProperties, configFile, variableParams);
     await app.start();
   }
 
   /**
-   * Generic run function for starting the server on the CLI from a given config
-   * Made run to be non-async to lower the chance of unhandled promise rejection errors in the future.
+   * Starts the server as a command-line application.
+   * Made non-async to lower the risk of unhandled promise rejections.
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
@@ -95,8 +91,8 @@ export class AppRunner {
     };
     const configFile = this.resolveFilePath(params.config, 'config/default.json');
 
-    // Create and execute the server initializer
-    this.getApp(loaderProperties, configFile, params)
+    // Create and execute the app
+    this.createApp(loaderProperties, configFile, params)
       .then(
         async(app): Promise<void> => app.start(),
         (error: Error): void => {
@@ -112,19 +108,34 @@ export class AppRunner {
   }
 
   /**
-   * Resolves a path relative to the current working directory,
-   * falling back to a path relative to this module.
+   * Creates the main app object to start the server from a given config.
+   * @param loaderProperties - Components.js loader properties.
+   * @param configFile - Path to a Components.js config file.
+   * @param variables - Variables to pass into the config file.
    */
-  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
-    return typeof cwdPath === 'string' ?
-      absoluteFilePath(cwdPath) :
-      joinFilePath(__dirname, '../../', modulePath);
+  public async createApp(
+    loaderProperties: IComponentsManagerBuilderOptions<App>,
+    configFile: string,
+    variables: CliParams | Record<string, any>,
+  ): Promise<App> {
+    // Translate command-line parameters if needed
+    if (typeof variables.loggingLevel === 'string') {
+      variables = this.createVariables(variables as CliParams);
+    }
+
+    // Set up Components.js
+    const componentsManager = await ComponentsManager.build(loaderProperties);
+    await componentsManager.configRegistry.register(configFile);
+
+    // Create the app
+    const app = 'urn:solid-server:default:App';
+    return await componentsManager.instantiate(app, { variables });
   }
 
   /**
-   * Translates command-line parameters into configuration variables
+   * Translates command-line parameters into Components.js variables.
    */
-  protected createVariables(params: ConfigVariables): Record<string, any> {
+  protected createVariables(params: CliParams): Record<string, any> {
     return {
       'urn:solid-server:default:variable:baseUrl':
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
@@ -140,27 +151,12 @@ export class AppRunner {
   }
 
   /**
-   * Creates the server initializer
+   * Resolves a path relative to the current working directory,
+   * falling back to a path relative to this module.
    */
-  protected async createApp(
-    componentsProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string,
-    variables: Record<string, any>,
-  ): Promise<App> {
-    const componentsManager = await ComponentsManager.build(componentsProperties);
-
-    const initializer = 'urn:solid-server:default:App';
-    await componentsManager.configRegistry.register(configFile);
-    return await componentsManager.instantiate(initializer, { variables });
+  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
+    return typeof cwdPath === 'string' ?
+      absoluteFilePath(cwdPath) :
+      joinFilePath(__dirname, '../../', modulePath);
   }
-}
-
-export interface ConfigVariables {
-  loggingLevel: string;
-  port: number;
-  baseUrl?: string;
-  rootFilePath?: string;
-  sparqlEndpoint?: string;
-  showStackTrace?: boolean;
-  podConfigJson?: string;
 }
