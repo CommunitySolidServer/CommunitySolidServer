@@ -21,10 +21,6 @@
         {
           "StaticAssetHandler:_assets_key": "/.well_known/css/images/",
           "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/images/"
-        },
-        {
-          "StaticAssetHandler:_assets_key": "/idp/style.css",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/identity/email-password/main.css"
         }
       ]
     }
