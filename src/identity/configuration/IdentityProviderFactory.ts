@@ -101,7 +101,10 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Render errors with our own error handler
     this.configureErrors(config);
 
-    return new Provider(this.baseUrl, config);
+    // Allow provider to interpret reverse proxy headers
+    const provider = new Provider(this.baseUrl, config);
+    provider.proxy = true;
+    return provider;
   }
 
   /**

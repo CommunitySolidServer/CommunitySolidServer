@@ -79,7 +79,9 @@ describe('An IdentityProviderFactory', (): void => {
 
   it('creates a correct configuration.', async(): Promise<void> => {
     // This is the output of our mock function
-    const { issuer, config } = await factory.getProvider() as unknown as { issuer: string; config: Configuration };
+    const provider = await factory.getProvider() as any;
+    expect(provider.proxy).toBe(true);
+    const { issuer, config } = provider as { issuer: string; config: Configuration };
     expect(issuer).toBe(baseUrl);
 
     // Copies the base config
