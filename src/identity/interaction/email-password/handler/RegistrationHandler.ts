@@ -4,6 +4,7 @@ import type { ResourceIdentifier } from '../../../../ldp/representation/Resource
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';
+import type { PodSettings } from '../../../../pods/settings/PodSettings';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { HttpHandler } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
@@ -48,17 +49,29 @@ export interface RegistrationHandlerArgs {
 
 /**
  * All the parameters that will be parsed from a request.
- * `data` contains all the raw values to potentially be used by pod templates.
  */
-interface ParseResult {
+interface ParsedInput {
   email: string;
+  webId?: string;
   password?: string;
   podName?: string;
-  webId?: string;
+  template?: string;
   createWebId: boolean;
   register: boolean;
   createPod: boolean;
-  data: NodeJS.Dict<string>;
+}
+
+/**
+ * The results that will be applied to the response template.
+ */
+interface RegistrationResponse {
+  email: string;
+  webId?: string;
+  oidcIssuer?: string;
+  podBaseUrl?: string;
+  createWebId: boolean;
+  register: boolean;
+  createPod: boolean;
 }
 
 /**
@@ -103,7 +116,9 @@ export class RegistrationHandler extends HttpHandler {
       const contents = await this.register(result);
       await this.responseHandler.handleSafe({ response, contents });
     } catch (error: unknown) {
-      throwIdpInteractionError(error, result.data as Record<string, string>);
+      // Don't expose the password field
+      delete result.password;
+      throwIdpInteractionError(error, result as Record<string, any>);
     }
   }
 
@@ -111,14 +126,16 @@ export class RegistrationHandler extends HttpHandler {
    * Does the full registration and pod creation process,
    * with the steps chosen by the values in the `ParseResult`.
    */
-  private async register(result: ParseResult): Promise<NodeJS.Dict<any>> {
+  private async register(result: ParsedInput): Promise<RegistrationResponse> {
     // This is only used when createWebId and/or createPod are true
     let podBaseUrl: ResourceIdentifier | undefined;
+    if (result.createWebId || result.createPod) {
+      podBaseUrl = this.identifierGenerator.generate(result.podName!);
+    }
 
     // Create or verify the WebID
     if (result.createWebId) {
-      podBaseUrl = this.identifierGenerator.generate(result.podName!);
-      result.webId = urljoin(podBaseUrl.path, this.webIdSuffix);
+      result.webId = urljoin(podBaseUrl!.path, this.webIdSuffix);
     } else {
       await this.ownershipValidator.handleSafe({ webId: result.webId! });
     }
@@ -126,20 +143,24 @@ export class RegistrationHandler extends HttpHandler {
     // Register the account
     if (result.register) {
       await this.accountStore.create(result.email, result.webId!, result.password!);
-
-      // Add relevant data for the templates
-      result.data.oidcIssuer = this.baseUrl;
     }
 
     // Create the pod
     if (result.createPod) {
-      podBaseUrl = podBaseUrl ?? this.identifierGenerator.generate(result.podName!);
+      const podSettings: PodSettings = {
+        email: result.email,
+        webId: result.webId!,
+        template: result.template,
+        podBaseUrl: podBaseUrl!.path,
+      };
+
+      // Set the OIDC issuer to our server when registering with the IDP
+      if (result.register) {
+        podSettings.oidcIssuer = this.baseUrl;
+      }
+
       try {
-        await this.podManager.createPod(podBaseUrl, {
-          ...result.data,
-          podBaseUrl: podBaseUrl.path,
-          webId: result.webId!,
-        });
+        await this.podManager.createPod(podBaseUrl!, podSettings);
       } catch (error: unknown) {
         // In case pod creation errors we don't want to keep the account
         if (result.register) {
@@ -170,7 +191,7 @@ export class RegistrationHandler extends HttpHandler {
   /**
    * Parses the input request into a `ParseResult`.
    */
-  private async parseInput(request: HttpRequest): Promise<ParseResult> {
+  private async parseInput(request: HttpRequest): Promise<ParsedInput> {
     const parsed = await getFormDataRequestBody(request);
     let prefilled: Record<string, string> = {};
     try {
@@ -190,18 +211,18 @@ export class RegistrationHandler extends HttpHandler {
    * Converts the raw input date into a `ParseResult`.
    * Verifies that all the data combinations make sense.
    */
-  private validateInput(parsed: NodeJS.Dict<string>): ParseResult {
-    const { email, password, confirmPassword, podName, webId, createWebId, register, createPod } = parsed;
+  private validateInput(parsed: NodeJS.Dict<string>): ParsedInput {
+    const { email, password, confirmPassword, podName, webId, template, createWebId, register, createPod } = parsed;
 
     assert(typeof email === 'string' && email.length > 0 && emailRegex.test(email),
       'A valid e-mail address is required');
 
-    const result: ParseResult = {
+    const result: ParsedInput = {
       email,
+      template,
       createWebId: Boolean(createWebId),
       register: Boolean(register),
       createPod: Boolean(createPod),
-      data: parsed,
     };
 
     const validWebId = typeof webId === 'string' && webId.length > 0;
