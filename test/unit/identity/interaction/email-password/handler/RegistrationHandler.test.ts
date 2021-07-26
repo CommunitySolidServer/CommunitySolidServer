@@ -8,6 +8,7 @@ import type { OwnershipValidator } from '../../../../../../src/identity/ownershi
 import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
 import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../../../src/pods/PodManager';
+import type { PodSettings } from '../../../../../../src/pods/settings/PodSettings';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 import type { TemplateHandler } from '../../../../../../src/server/util/TemplateHandler';
@@ -31,6 +32,7 @@ describe('A RegistrationHandler', (): void => {
 
   const baseUrl = 'http://test.com/';
   const webIdSuffix = '/profile/card';
+  let podSettings: PodSettings;
   let identifierGenerator: IdentifierGenerator;
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
@@ -39,6 +41,8 @@ describe('A RegistrationHandler', (): void => {
   let handler: RegistrationHandler;
 
   beforeEach(async(): Promise<void> => {
+    podSettings = { email, webId, podBaseUrl };
+
     identifierGenerator = {
       generate: jest.fn((name: string): ResourceIdentifier => ({ path: `${baseUrl}${name}/` })),
     };
@@ -179,9 +183,7 @@ describe('A RegistrationHandler', (): void => {
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith(
-        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
-      );
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings);
 
       expect(accountStore.create).toHaveBeenCalledTimes(0);
       expect(accountStore.verify).toHaveBeenCalledTimes(0);
@@ -190,6 +192,7 @@ describe('A RegistrationHandler', (): void => {
 
     it('adds an oidcIssuer to the data when doing both IDP registration and pod creation.', async(): Promise<void> => {
       const params = { email, webId, password, confirmPassword, podName, register, createPod };
+      podSettings.oidcIssuer = baseUrl;
       request = createPostFormRequest(params);
       await expect(handler.handle({ request, response })).resolves.toBeUndefined();
 
@@ -199,11 +202,8 @@ describe('A RegistrationHandler', (): void => {
       expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
-      (params as any).oidcIssuer = baseUrl;
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith(
-        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
-      );
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings);
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
 
@@ -212,6 +212,7 @@ describe('A RegistrationHandler', (): void => {
 
     it('deletes the created account if pod generation fails.', async(): Promise<void> => {
       const params = { email, webId, password, confirmPassword, podName, register, createPod };
+      podSettings.oidcIssuer = baseUrl;
       request = createPostFormRequest(params);
       (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
       await expect(handler.handle({ request, response })).rejects.toThrow('pod error');
@@ -222,11 +223,8 @@ describe('A RegistrationHandler', (): void => {
       expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
-      (params as any).oidcIssuer = baseUrl;
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith(
-        { path: `${baseUrl}${podName}/` }, { podBaseUrl, ...params },
-      );
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings);
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(1);
       expect(accountStore.deleteAccount).toHaveBeenLastCalledWith(email);
 
@@ -235,10 +233,12 @@ describe('A RegistrationHandler', (): void => {
 
     it('can create a WebID with an account and pod.', async(): Promise<void> => {
       const params = { email, password, confirmPassword, podName, createWebId, register, createPod };
+      podSettings.oidcIssuer = baseUrl;
       request = createPostFormRequest(params);
       await expect(handler.handle({ request, response })).resolves.toBeUndefined();
 
       const generatedWebID = urljoin(baseUrl, podName, webIdSuffix);
+      podSettings.webId = generatedWebID;
 
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
@@ -247,9 +247,7 @@ describe('A RegistrationHandler', (): void => {
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith(
-        { path: `${baseUrl}${podName}/` }, { ...params, podBaseUrl, oidcIssuer: baseUrl, webId: generatedWebID },
-      );
+      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings);
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(0);
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
@@ -262,7 +260,13 @@ describe('A RegistrationHandler', (): void => {
       const prom = handler.handle({ request, response });
       await expect(prom).rejects.toThrow('pod error');
       await expect(prom).rejects.toThrow(IdpInteractionError);
-      await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: params }));
+      // Using the cleaned input for prefilled
+      await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: {
+        ...params,
+        createWebId: false,
+        register: false,
+        createPod: true,
+      }}));
     });
   });
 });
