@@ -23,3 +23,8 @@ What to use for pod creation.
 * *dynamic*: Every created pod has its own Components.js config for its ResourceStore,
   which can differ from the others.
 * *static*: All pod data is stored in separate containers in the same ResourceStore.
+
+## Registration
+If users should be able to register on the server.
+* *enabled*: Enables registration.
+* *disabled*: Disables registration.

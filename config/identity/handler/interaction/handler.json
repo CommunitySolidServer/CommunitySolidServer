@@ -4,7 +4,6 @@
     "files-scs:config/identity/handler/interaction/handlers/forgot-password.json",
     "files-scs:config/identity/handler/interaction/handlers/initial.json",
     "files-scs:config/identity/handler/interaction/handlers/login.json",
-    "files-scs:config/identity/handler/interaction/handlers/registration.json",
     "files-scs:config/identity/handler/interaction/handlers/reset-password.json",
     "files-scs:config/identity/handler/interaction/handlers/session.json"
   ],
@@ -15,7 +14,6 @@
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:auth:password:InitialInteractionHandler" },
-        { "@id": "urn:solid-server:auth:password:RegistrationInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:LoginInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:SessionInteractionHandler" },
         { "@id": "urn:solid-server:auth:password:ForgotPasswordInteractionHandler" },

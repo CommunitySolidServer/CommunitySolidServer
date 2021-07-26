@@ -1,0 +1,8 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Disable registration by not attaching a registration handler."
+    }
+  ]
+}
