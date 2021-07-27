@@ -8,7 +8,7 @@ export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization
-export * from './authorization/AllowEverythingAuthorizer';
+export * from './authorization/AllowAllAuthorizer';
 export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryAuthorizer';

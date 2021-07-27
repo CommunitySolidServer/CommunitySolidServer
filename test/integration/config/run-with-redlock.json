@@ -8,7 +8,7 @@
     "files-scs:config/http/server-factory/no-websockets.json",
     "files-scs:config/http/static/default.json",
     "files-scs:config/ldp/authentication/debug-auth-header.json",
-    "files-scs:config/ldp/authorization/allow-everything.json",
+    "files-scs:config/ldp/authorization/allow-all.json",
     "files-scs:config/ldp/handler/default.json",
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
