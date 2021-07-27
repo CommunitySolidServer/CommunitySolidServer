@@ -20,20 +20,23 @@ import type { HttpRequest } from '../HttpRequest';
 export class StaticAssetHandler extends HttpHandler {
   private readonly mappings: Record<string, string>;
   private readonly pathMatcher: RegExp;
+  private readonly expires: number;
   private readonly logger = getLoggerFor(this);
 
   /**
    * Creates a handler for the provided static resources.
    * @param assets - A mapping from URL paths to paths,
    *  where URL paths ending in a slash are interpreted as entire folders.
+   * @param options - Cache expiration time in seconds.
    */
-  public constructor(assets: Record<string, string>) {
+  public constructor(assets: Record<string, string>, options: { expires?: number } = {}) {
     super();
     this.mappings = {};
     for (const [ url, path ] of Object.entries(assets)) {
       this.mappings[url] = resolveAssetPath(path);
     }
     this.pathMatcher = this.createPathMatcher(assets);
+    this.expires = Number.isInteger(options.expires) ? Math.max(0, options.expires!) : 0;
   }
 
   /**
@@ -90,7 +93,10 @@ export class StaticAssetHandler extends HttpHandler {
       // Write a 200 response when the asset becomes readable
       asset.once('readable', (): void => {
         const contentType = mime.lookup(filePath) || APPLICATION_OCTET_STREAM;
-        response.writeHead(200, { 'content-type': contentType });
+        response.writeHead(200, {
+          'content-type': contentType,
+          ...this.getCacheHeaders(),
+        });
 
         // With HEAD, only write the headers
         if (request.method === 'HEAD') {
@@ -119,5 +125,14 @@ export class StaticAssetHandler extends HttpHandler {
         }
       });
     });
+  }
+
+  private getCacheHeaders(): Record<string, string> {
+    return this.expires <= 0 ?
+      {} :
+      {
+        'cache-control': `max-age=${this.expires}`,
+        expires: new Date(Date.now() + (this.expires * 1000)).toUTCString(),
+      };
   }
 }

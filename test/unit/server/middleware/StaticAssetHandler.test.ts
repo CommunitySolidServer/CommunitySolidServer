@@ -213,4 +213,21 @@ describe('A StaticAssetHandler', (): void => {
     const response = createResponse({ eventEmitter: EventEmitter });
     await expect(handler.canHandle({ request, response } as any)).rejects.toThrow();
   });
+
+  it('caches responses when the expires option is set.', async(): Promise<void> => {
+    jest.spyOn(Date, 'now').mockReturnValue(0);
+    const cachedHandler = new StaticAssetHandler({
+      '/foo/bar/style': '/assets/styles/bar.css',
+    }, {
+      expires: 86400,
+    });
+    const request = { method: 'GET', url: '/foo/bar/style' };
+    const response = createResponse();
+    await cachedHandler.handleSafe({ request, response } as any);
+    jest.restoreAllMocks();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeaders()).toHaveProperty('cache-control', 'max-age=86400');
+    expect(response.getHeaders()).toHaveProperty('expires', 'Fri, 02 Jan 1970 00:00:00 GMT');
+  });
 });
