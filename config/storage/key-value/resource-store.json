@@ -22,6 +22,20 @@
       "source": { "@id": "urn:solid-server:default:ResourceStore" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "container": "/idp/data/"
+    },
+    {
+      "comment": "Block external access to the storage containers to avoid exposing internal data.",
+      "@id": "urn:solid-server:default:PathBasedAuthorizer",
+      "PathBasedAuthorizer:_paths": [
+        {
+          "PathBasedAuthorizer:_paths_key": "^/locks(/.*)?$",
+          "PathBasedAuthorizer:_paths_value": { "@type": "DenyAllAuthorizer" }
+        },
+        {
+          "PathBasedAuthorizer:_paths_key": "^/idp/data(/.*)?$",
+          "PathBasedAuthorizer:_paths_value": { "@type": "DenyAllAuthorizer" }
+        }
+      ]
     }
   ]
 }

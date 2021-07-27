@@ -10,6 +10,12 @@
       "@type": "WaterfallHandler",
       "handlers": [
         {
+          "comment": "This authorizer will be used to prevent external access to containers used for internal storage.",
+          "@id": "urn:solid-server:default:PathBasedAuthorizer",
+          "@type": "PathBasedAuthorizer",
+          "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        },
+        {
           "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
           "@type": "AuxiliaryAuthorizer",
           "resourceAuthorizer": { "@id": "urn:solid-server:default:WebAclAuthorizer" },
