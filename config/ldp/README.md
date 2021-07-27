@@ -11,7 +11,7 @@ Covers how agents are identified.
 
 ## Authorization
 Covers how operations are authorized (or rejected).
-* *allow-everything*: No authorization, everything is allowed.
+* *allow-all*: No authorization, everything is allowed.
 * *webacl*: Use the default Web Access Control.
 
 ## Handler

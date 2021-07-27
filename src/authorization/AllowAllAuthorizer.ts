@@ -2,7 +2,7 @@ import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import { Authorizer } from './Authorizer';
 import { WebAclAuthorization } from './WebAclAuthorization';
 
-const allowEverything: PermissionSet = {
+const allowAll: PermissionSet = {
   read: true,
   write: true,
   append: true,
@@ -12,8 +12,8 @@ const allowEverything: PermissionSet = {
 /**
  * Authorizer which allows all access independent of the identifier and requested permissions.
  */
-export class AllowEverythingAuthorizer extends Authorizer {
+export class AllowAllAuthorizer extends Authorizer {
   public async handle(): Promise<WebAclAuthorization> {
-    return new WebAclAuthorization(allowEverything, allowEverything);
+    return new WebAclAuthorization(allowAll, allowAll);
   }
 }

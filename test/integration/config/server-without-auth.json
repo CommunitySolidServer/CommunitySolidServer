@@ -8,7 +8,7 @@
     "files-scs:config/http/server-factory/websockets.json",
     "files-scs:config/http/static/default.json",
     "files-scs:config/ldp/authentication/dpop-bearer.json",
-    "files-scs:config/ldp/authorization/allow-everything.json",
+    "files-scs:config/ldp/authorization/allow-all.json",
     "files-scs:config/ldp/handler/default.json",
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
