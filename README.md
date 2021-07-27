@@ -1,73 +1,142 @@
 # Community Solid Server
+
+<img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
+
 [![Build Status](https://github.com/solid/community-server/workflows/CI/badge.svg)](https://github.com/solid/community-server/actions)
 [![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
 [![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 
-**An open and modular implementation of the
-[Solid](https://solidproject.org/)
-[specifications](https://solid.github.io/specification/)**
+**The Community Solid Server is open software
+that provides you with a [Solid](https://solidproject.org/) Pod and identity.
+This Pod acts as your own personal storage space
+so you can share data with people and Solid applications.**
 
-- Community Solid Server is open software
-to provide people with their own Solid Pod.
+As an open and modular implementation of the
+[Solid specifications](https://solid.github.io/specification/),
+the Community Solid Server is a great companion:
 
-- It will give developers an environment
-to create and test new Solid applications.
+- 🧑🏽 **for people** who want to try out having their own Pod
 
-- Its modular architecture allows
-trying out new ideas on the server side
-and thereby shape the future of Solid.
+- 👨🏿‍💻 **for developers** who want to create and test Solid apps
 
-## Running the server
+- 👩🏻‍🔬 **for researchers** who want to design new features for Solid
 
-### Installing and running locally
+And, of course, for many others who like to experience Solid.
+
+You can install the software locally or on your server
+and get started with Solid immediately.
+
+
+## ⚡ Running the server
+To run the server, you will need [Node.js](https://nodejs.org/en/).
+We support versions 12.7 and up.
+<br>
+If you do not use Node.js,
+you can run a [Docker](https://www.docker.com/) version instead.
+
+### 💻 Installing and running locally
+After installing Node.js,
+you can install and run the latest published version
+from the [npm package repository](https://www.npmjs.com/)
+like this:
+
 ```shell
 npm install -g @solid/community-server
 community-solid-server # add parameters if needed
 ```
 
-### Installing and running from source
+### 📃 Installing and running from source
+If you rather prefer to run the latest source code version,
+or if you want to try a specific [branch](https://www.npmjs.com/) of the code,
+you can use:
 ```shell
+git clone https://github.com/solid/community-server.git
+cd community-server
 npm ci
 npm start -- # add parameters if needed
 ```
 
-### Running via Docker
+### 📦 Running via Docker
+Docker allows you to run the server without having Node.js installed:
 ```shell
 # Build the Docker image
 docker build --rm -f Dockerfile -t css:latest .
-# Run the image against your `~/Solid` directory on `http://localhost:3000`
+# Run the image, serving your `~/Solid` directory on `http://localhost:3000`
 docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
-# Use alternative built-in configurations
+# Or use one of the built-in configurations
 docker run --rm -p 3000:3000 -it css:latest -c config/default.json
-# Use your own configuration mapped to the right directory
+# Or use your own configuration mapped to the right directory
 docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
 ```
 
-## Configuring the server
-Community Solid Server (CSS) uses
-[ComponentJS](https://componentsjs.readthedocs.io/en/latest/) to manage all
-configuration for the server. There are a variety of configuration files for
-common use cases in the `config` folder.
 
-Additional recipes for configuring and deploying the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
+## 🔧 Configuring the server
+The Community Solid Server is designed to be flexible
+such that people can easily run different configurations.
+This is useful for customizing the server with plugins,
+testing applications in different setups,
+or developing new parts for the server
+without needing to change its base code.
 
-| Parameter              | Default                     | Description                                                                                                 |
-| ---------              | -------                     | -----------                                                                                                 |
-| `--port, -p`           | `3000`                      |                                                                                                             |
-| `--baseUrl. -b`        | `"http://localhost:$PORT/"` | Needs to be set to the base URL of the server for authentication and authorization to function.             |
-| `--config, -c`         | `"config/default.json"`     | `config/default.json` stores all data in memory. To persist data to your filesystem, try `config/file.json` |
-| `--mainModulePath, -m` |                             | Absolute path to the package root from which ComponentJS module resolution should start.                    |
-| `--loggingLevel, -l`   | `"info"`                    |                                                                                                             |
-| `--rootFilePath, -f`   | `"./"`                      | Folder to start the server in when using a file-based config.                                               |
-| `--sparqlEndpoint, -s` |                             | Endpoint to call when using a SPARQL-based config.                                                          |
-| `--showStackTrace, -t` | false                       | Whether error stack traces should be shown in responses.                                                    |
-| `--podConfigJson`      | `"./pod-config.json"`       | JSON file to store pod configuration when using a dynamic config.                                           |
+### ⏱️ Parameters
+An easy way to customize the server is
+by passing parameters to the server command.
+These parameters give you direct access
+to some commonly used settings:
 
-## Developing server code
+| parameter name         | default value             | description                                                                                                                     |
+| ---------              | -------                   | -----------                                                                                                                     |
+| `--port, -p`           | `3000`                    | The TCP port on which the server runs.                                                                                          |
+| `--baseUrl. -b`        | `http://localhost:$PORT/` | The public URL of your server.                                                                                                  |
+| `--loggingLevel, -l`   | `info`                    | The detail level of logging; useful for debugging problems.                                                                     |
+| `--config, -c`         | `config/default.json`     | The configuration for the server. The default only stores data in memory; to persist to your filesystem, try `config/file.json` |
+| `--rootFilePath, -f`   | `./`                      | Root folder of the server, when using a file-based configuration.                                                               |
+| `--sparqlEndpoint, -s` |                           | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                         |
+| `--showStackTrace, -t` | false                     | Enables detailed logging on error pages.                                                                                        |
+| `--podConfigJson`      | `./pod-config.json`       | Path to the file that keeps track of dynamic pod configurations.                                                                |
+| `--mainModulePath, -m` |                           | Path from where Components.js will start its lookup when initializing configurations.
+
+### 🧶 Custom configurations
+More substantial changes to server behavior can be achieved
+by writing new configuration files in JSON-LD.
+The Community Solid Server uses [Components.js](https://componentsjs.readthedocs.io/en/latest/)
+to specify how modules and components need to be wired together at runtime.
+
+Examples and guidance on configurations
+are available in the [`config` folder](https://github.com/solid/community-server/tree/main/config).
+
+Recipes for configuring the server can be found at [solid/community-server-recipes](https://github.com/solid/community-server-recipes).
+
+
+## 👩🏽‍💻 Developing server code
+The server allows writing and plugging in custom modules
+without altering its base source code.
+
 The [📗 API documentation](https://solid.github.io/community-server/docs/) and
 the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf)
 can help you find your way.
 
-If you want to help out with the development of this server,
+If you want to help out with server development,
 have a look at the [📓 developer notes](guides/developer-notes.md) and
 [🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+
+
+## 📜 License
+The Solid Community Server code
+is copyrighted by [Inrupt Inc.](https://inrupt.com/)
+and [imec](https://www.imec-int.com/)
+and available under the [MIT License](https://github.com/solid/community-server/blob/main/LICENSE.md).
+
+Core contributors are
+[Joachim Van Herwegen](https://github.com/joachimvh),
+[Ruben Verborgh](https://github.com/RubenVerborgh),
+[Ruben Taelman](https://github.com/rubensworks),
+and
+[Matthieu Bosquet](https://github.com/matthieubosquet).
+
+
+## 🎤 Feedback and questions
+Don't hesitate to [start a discussion](https://github.com/solid/community-server/discussions)
+or [report a bug](https://github.com/solid/community-server/issues).
+
+Learn more about Solid at [solidproject.org](https://solidproject.org/).
