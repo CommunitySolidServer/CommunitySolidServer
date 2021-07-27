@@ -13,6 +13,7 @@ export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryAuthorizer';
 export * from './authorization/DenyAllAuthorizer';
+export * from './authorization/PathBasedAuthorizer';
 export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
