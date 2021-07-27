@@ -2,8 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Used for internal storage by some classes. This uses a memory based solution.",
-      "@id": "urn:solid-server:default:Storage",
+      "comment": "These storage solutions store their data in memory."
+    },
+    {
+      "comment": "Used for internal storage by the locker.",
+      "@id": "urn:solid-server:default:LockStorage",
+      "@type": "MemoryMapStorage"
+    },
+    {
+      "comment": "Storage used by the IDP component.",
+      "@id": "urn:solid-server:default:IdpStorage",
       "@type": "MemoryMapStorage"
     }
   ]

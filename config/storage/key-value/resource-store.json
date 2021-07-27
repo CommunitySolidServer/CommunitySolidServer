@@ -2,12 +2,26 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Used for internal storage by some classes. The specified container in the resource store will store internal data.",
-      "@id": "urn:solid-server:default:Storage",
+      "comment": "These storage solutions use the specified container in the ResourceStore to store their data."
+    },
+    {
+      "comment": [
+        "This is the internal storage for the locker, which maintains what resources are in use.",
+        "It writes directly to a low-level store, because higher-level storage typically already uses the locker and would thus cause a loop."
+      ],
+      "@id": "urn:solid-server:default:LockStorage",
+      "@type": "JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/locks/"
+    },
+    {
+      "comment": "Storage used by the IDP component.",
+      "@id": "urn:solid-server:default:IdpStorage",
       "@type": "JsonResourceStorage",
       "source": { "@id": "urn:solid-server:default:ResourceStore" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/storage/"
+      "container": "/idp/data/"
     }
   ]
 }

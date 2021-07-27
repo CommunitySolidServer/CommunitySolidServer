@@ -10,7 +10,7 @@
         "locker": {
           "@type": "SingleThreadedResourceLocker"
         },
-        "storage": { "@id": "urn:solid-server:default:Storage" },
+        "storage": { "@id": "urn:solid-server:default:LockStorage" },
         "suffixes_count": "count",
         "suffixes_read": "read",
         "suffixes_write": "write"
