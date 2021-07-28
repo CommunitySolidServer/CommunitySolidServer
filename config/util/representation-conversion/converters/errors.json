@@ -9,19 +9,13 @@
   "@graph": [
     {
       "@id": "urn:solid-server:default:ErrorToQuadConverter",
-      "@type": "ErrorToQuadConverter",
+      "@type": "ErrorToQuadConverter"
     },
     {
       "comment": "Converts an error into a Markdown description of its details.",
       "@id": "urn:solid-server:default:ErrorToTemplateConverter",
       "@type": "ErrorToTemplateConverter",
-      "templateEngine": {
-        "@type": "HandlebarsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/error/main.md.hbs"
-      },
-      "templatePath": "$PACKAGE_ROOT/templates/error/descriptions/",
-      "extension": ".md.hbs",
-      "contentType": "text/markdown"
+      "templateEngine": { "@type": "HandlebarsTemplateEngine" }
     }
   ]
 }
