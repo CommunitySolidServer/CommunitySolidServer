@@ -17,6 +17,7 @@
       "options_credentials": true,
       "options_exposedHeaders": [
         "Accept-Patch",
+        "Link",
         "Location",
         "MS-Author-Via",
         "Updates-Via",

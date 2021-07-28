@@ -99,6 +99,12 @@ describe('An http server with middleware', (): void => {
     expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Patch');
   });
 
+  it('exposes the Link header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('Link');
+  });
+
   it('exposes the Location header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
