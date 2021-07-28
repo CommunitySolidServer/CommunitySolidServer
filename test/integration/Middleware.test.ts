@@ -111,6 +111,12 @@ describe('An http server with middleware', (): void => {
     expect(exposed.split(/\s*,\s*/u)).toContain('MS-Author-Via');
   });
 
+  it('exposes the WAC-Allow header via CORS.', async(): Promise<void> => {
+    const res = await request(server).get('/').expect(200);
+    const exposed = res.header['access-control-expose-headers'];
+    expect(exposed.split(/\s*,\s*/u)).toContain('WAC-Allow');
+  });
+
   it('exposes the Updates-Via header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];

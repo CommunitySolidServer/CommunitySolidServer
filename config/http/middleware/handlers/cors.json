@@ -19,7 +19,8 @@
         "Accept-Patch",
         "Location",
         "MS-Author-Via",
-        "Updates-Via"
+        "Updates-Via",
+        "WAC-Allow"
       ]
     }
   ]
