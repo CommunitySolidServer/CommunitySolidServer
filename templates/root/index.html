@@ -12,29 +12,72 @@
     <h1>Community Solid Server</h1>
   </header>
   <main>
-    <h1>Welcome to the Community Solid Server</h1>
+    <h1>Welcome to Solid</h1>
     <p>
       This server implements
-      the <a href="https://solid.github.io/specification/protocol">Solid protocol</a>,
-      so you can set your own Solid pods.
+      the <a href="https://solid.github.io/specification/protocol">Solid protocol</a>
+      so you can create your own <a href="https://solidproject.org/about">Solid Pod</a>
+      and identity.
+    </p>
+
+    <h2 id="users">Getting started as a <em>user</em></h2>
+    <p>
+      <strong><a href="/idp/register/">Sign up</a> for an account</strong>
+      to get started with your own Pod and WebID.
     </p>
     <p>
-      Some things you can try:
+      The <em>default</em> configuration stores data only in memory,
+      so be sure to choose a configuration that saves data to disk.
+      If you are exposing this server publicly,
+      <a href="#public">read the guidelines below</a>.
+    </p>
+
+    <h2 id="developers">Getting started as a <em>developer</em></h2>
+    <p>
+      The <em>default</em> server configuration includes
+      this <strong>ready-to-use root Pod</strong> you're looking at.
+      That way, you don't need to create an account
+      to read and write data or to test apps.
+    </p>
+    <p>
+      You can easily choose any folder on your disk
+      to expose as the root Pod.
+      <br>
+      Use the <code>--help</code> switch to learn more.
+    </p>
+
+    <h2 id="public">Making this server public</h2>
+    <p>
+      Before making this server public,
+      you might want to <strong>disable certain convenience features</strong>
+      so they remain only accessible to you:
     </p>
     <ul>
       <li>
-        Read or write documents in the <strong>default pod</strong>.
-        <ul>
-          <li>This is the pod you are reading from now.</li>
-          <li>Anyone can read or write;
-              update the <a href="/.acl">access controls</a> to change this.</li>
-          <li>You can disable the default pod in the configuration.</li>
-        </ul>
+        Modify or delete this welcome document
+        at <a href="index.html"><code>index.html</code></a>.
       </li>
       <li>
-        <strong>Create your own</strong> pod by <a href="/idp/register/">registering</a>.
+        Prevent public write and control access to the root Pod
+        by modifying <a href=".acl"><code>.acl</code></a>.
+      </li>
+      <li>
+        Disable Pod registration
+        by <a href="https://github.com/solid/community-server/blob/main/config/identity/README.md">changing
+          the configuration</a>.
       </li>
     </ul>
+
+    <h2>Have a wonderful Solid experience</h2>
+    <p>
+      <strong>Learn more about Solid
+      at <a href="https://solidproject.org/">solidproject.org</a>.</strong>
+    </p>
+    <p>
+      You are warmly invited
+      to <a href="https://github.com/solid/community-server/discussions">share your experiences</a>
+      and to <a href="https://github.com/solid/community-server/issues">report any bugs</a> you encounter.
+    </p>
   </main>
   <footer>
     <p>

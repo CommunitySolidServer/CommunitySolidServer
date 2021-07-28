@@ -14,7 +14,8 @@
 html {
   --solid-purple: #7c4dff;
   --solid-blue: #18a9e6;
-  --solid-gray: #8a8a8a;
+  --solid-dark: #162542;
+  --solid-gray: #6a6a6a;
 
   height: 100%;
 
@@ -26,19 +27,26 @@ html {
 }
 
 body, input, button {
-  font: 12pt/1.3 Raleway, sans-serif;
+  font: 12pt/1.6 Raleway, sans-serif;
   font-weight: 300;
-  color: #222222;
+  color: var(--solid-dark);
 }
 
 body {
-  max-width: 750px;
+  box-sizing: border-box;
+  max-width: 780px;
   margin: 2em auto;
-  padding: 1em 2em;
+  padding: 2em 3em 1em;
 
   background: white;
   box-shadow: 5px 5px 2px rgba(0, 0, 0, .1);
   border-radius: 3px;
+}
+@media (max-width: 800px) {
+  body {
+    margin: 0;
+    padding: 1em 2em;
+  }
 }
 
 header {
@@ -52,25 +60,35 @@ header {
 header h1 {
   margin: 0;
 
-  font-size: 3.33em;
+  font-size: 3em;
+  line-height: 1;
   letter-spacing: .25px;
   font-weight: 600;
 }
 header img {
   width: 100%;
+  margin-bottom: -.5em;
 }
 
 main h1 {
   margin: 1em 0 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 main h2 {
-  margin: 1.5em 0 0;
-  font-weight: 500;
+  margin: 1em 0 0;
+  font-weight: 600;
+  color: var(--solid-gray);
+}
+main p {
+  margin: .75em 0;
+}
+main h1 + p,
+main h2 + p {
+  margin-top: .25em;
 }
 
 footer {
-  margin-top: 1em;
+  margin-top: 2em;
   text-align: right;
   font-size: 90%;
   color: #666666;
@@ -96,6 +114,9 @@ code {
   font-size: 90%;
 }
 
+ul {
+  margin: .75em 0;
+}
 li {
   margin: .5em 0;
 }
@@ -191,6 +212,7 @@ ul.container > li.container > a {
 ol.breadcrumbs {
   list-style: none;
   padding: 0;
+  margin: 0 0 0 .25em;
   font-size: 90%;
 }
 ol.breadcrumbs > li {

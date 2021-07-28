@@ -75,7 +75,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   it('can read the root container index page when asking for HTML.', async(): Promise<void> => {
     const response = await getResource(baseUrl, { accept: 'text/html' }, { contentType: 'text/html' });
 
-    await expect(response.text()).resolves.toContain('Welcome to the Community Solid Server');
+    await expect(response.text()).resolves.toContain('Welcome to Solid');
     expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
