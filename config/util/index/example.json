@@ -2,11 +2,6 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "This an example on how to disable the routing to index.html when accessing a container.",
-      "@id": "urn:solid-server:default:ResourceStore_Index",
-      "@type": "PassthroughStore"
-    },
-    {
       "comment": [
         "This converter replaces every browser request for text/html with the Databrowser UI (which then in turn loads a Turtle or other representation of the same resource).",
         "This is useful when you want to serve a UI for every file from the pod."
