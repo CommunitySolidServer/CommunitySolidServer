@@ -14,7 +14,8 @@ import type { Representation,
   Logger } from '../../src';
 
 jest.mock('../../src/logging/LogUtil', (): any => {
-  const logger: Logger = { error: jest.fn(), debug: jest.fn(), warn: jest.fn(), info: jest.fn() } as any;
+  const logger: Logger =
+    { error: jest.fn(), debug: jest.fn(), warn: jest.fn(), info: jest.fn(), log: jest.fn() } as any;
   return { getLoggerFor: (): Logger => logger };
 });
 const logger: jest.Mocked<Logger> = getLoggerFor('GuardedStream') as any;

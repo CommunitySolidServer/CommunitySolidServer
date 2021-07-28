@@ -1,8 +1,16 @@
 import { PassThrough } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import streamifyArray from 'streamify-array';
+import type { Logger } from '../../../src/logging/Logger';
+import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
 import { guardedStreamFrom, pipeSafely, transformSafely, readableToString } from '../../../src/util/StreamUtil';
+
+jest.mock('../../../src/logging/LogUtil', (): any => {
+  const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
+  return { getLoggerFor: (): Logger => logger };
+});
+const logger: jest.Mocked<Logger> = getLoggerFor('StreamUtil') as any;
 
 jest.mock('../../../src/server/HttpRequest', (): any => ({
   isHttpRequest: jest.fn(),
@@ -18,7 +26,7 @@ describe('StreamUtil', (): void => {
 
   describe('#pipeSafely', (): void => {
     beforeEach(async(): Promise<void> => {
-      (isHttpRequest as unknown as jest.Mock).mockClear();
+      jest.clearAllMocks();
     });
 
     it('pipes data from one stream to the other.', async(): Promise<void> => {
@@ -37,6 +45,8 @@ describe('StreamUtil', (): void => {
       const output = new PassThrough();
       const piped = pipeSafely(input, output);
       await expect(readableToString(piped)).rejects.toThrow('error');
+      expect(logger.log).toHaveBeenCalledTimes(1);
+      expect(logger.log).toHaveBeenLastCalledWith('warn', 'Piped stream errored with error');
     });
 
     it('supports mapping errors to something else.', async(): Promise<void> => {
@@ -48,6 +58,22 @@ describe('StreamUtil', (): void => {
       const output = new PassThrough();
       const piped = pipeSafely(input, output, (): any => new Error('other error'));
       await expect(readableToString(piped)).rejects.toThrow('other error');
+    });
+
+    it('logs specific safer errors as debug.', async(): Promise<void> => {
+      const input = streamifyArray([ 'data' ]);
+      input.read = (): any => {
+        input.emit('error', new Error('Cannot call write after a stream was destroyed'));
+        return null;
+      };
+      const output = new PassThrough();
+      const piped = pipeSafely(input, output);
+      await expect(readableToString(piped)).rejects.toThrow('Cannot call write after a stream was destroyed');
+      expect(logger.log).toHaveBeenCalledTimes(1);
+      expect(logger.log).toHaveBeenLastCalledWith(
+        'debug',
+        'Piped stream errored with Cannot call write after a stream was destroyed',
+      );
     });
 
     it('destroys the source stream in case the destinations becomes unpiped.', async(): Promise<void> => {
