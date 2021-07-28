@@ -9,6 +9,21 @@ import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
+// Fields optional due to https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
+export interface TemplateOptions {
+  mainTemplatePath?: string;
+  codeTemplatesPath?: string;
+  extension?: string;
+  contentType?: string;
+}
+
+const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
+  mainTemplatePath: '$PACKAGE_ROOT/templates/error/main.md.hbs',
+  codeTemplatesPath: '$PACKAGE_ROOT/templates/error/descriptions/',
+  extension: '.md.hbs',
+  contentType: 'text/markdown',
+};
+
 /**
  * Serializes an Error by filling in the provided template.
  * Content-type is based on the constructor parameter.
@@ -22,16 +37,22 @@ import { TypedRepresentationConverter } from './TypedRepresentationConverter';
  */
 export class ErrorToTemplateConverter extends TypedRepresentationConverter {
   private readonly templateEngine: TemplateEngine;
-  private readonly templatePath: string;
+  private readonly mainTemplatePath: string;
+  private readonly codeTemplatesPath: string;
   private readonly extension: string;
   private readonly contentType: string;
 
-  public constructor(templateEngine: TemplateEngine, templatePath: string, extension: string, contentType: string) {
-    super(INTERNAL_ERROR, contentType);
+  public constructor(templateEngine: TemplateEngine, templateOptions?: TemplateOptions) {
+    super(INTERNAL_ERROR, templateOptions?.contentType ?? DEFAULT_TEMPLATE_OPTIONS.contentType);
+    // Workaround for https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
+    if (!templateOptions || Object.keys(templateOptions).length === 0) {
+      templateOptions = DEFAULT_TEMPLATE_OPTIONS;
+    }
     this.templateEngine = templateEngine;
-    this.templatePath = templatePath;
-    this.extension = extension;
-    this.contentType = contentType;
+    this.mainTemplatePath = templateOptions.mainTemplatePath!;
+    this.codeTemplatesPath = templateOptions.codeTemplatesPath!;
+    this.extension = templateOptions.extension!;
+    this.contentType = templateOptions.contentType!;
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
@@ -49,7 +70,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
         const templateFile = `${error.errorCode}${this.extension}`;
         assert(/^[\w.-]+$/u.test(templateFile), 'Invalid error template name');
         description = await this.templateEngine.render(error.details ?? {},
-          { templateFile, templatePath: this.templatePath });
+          { templateFile, templatePath: this.codeTemplatesPath });
       } catch {
         // In case no template is found, or rendering errors, we still want to convert
       }
@@ -58,7 +79,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
     // Render the main template, embedding the rendered error description
     const { name, message, stack } = error;
     const variables = { name, message, stack, description };
-    const rendered = await this.templateEngine.render(variables);
+    const rendered = await this.templateEngine.render(variables, { templateFile: this.mainTemplatePath });
 
     return new BasicRepresentation(rendered, representation.metadata, this.contentType);
   }
