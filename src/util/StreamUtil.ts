@@ -23,6 +23,15 @@ export async function readableToString(stream: Readable): Promise<string> {
   return (await arrayifyStream(stream)).join('');
 }
 
+// These error messages usually indicate expected behaviour so should not give a warning.
+// We compare against the error message instead of the code
+// since the second one is from an external library that does not assign an error code.
+// At the time of writing the first one gets thrown in Node 16 and the second one in Node 14.
+const safeErrors = new Set([
+  'Cannot call write after a stream was destroyed',
+  'premature close',
+]);
+
 /**
  * Pipes one stream into another and emits errors of the first stream with the second.
  * In case of an error in the first stream the second one will be destroyed with the given error.
@@ -53,7 +62,9 @@ export function pipeSafely<T extends Writable>(readable: NodeJS.ReadableStream, 
     // In case the input readable is guarded, it will no longer log errors since `pump` attaches a new error listener
     pump(readable, destination, (error): void => {
       if (error) {
-        logger.warn(`Piped stream errored with ${error.message}`);
+        const msg = `Piped stream errored with ${error.message}`;
+        logger.log(safeErrors.has(error.message) ? 'debug' : 'warn', msg);
+
         // Make sure the final error can be handled in a normal streaming fashion
         destination.emit('error', mapError ? mapError(error) : error);
       }
