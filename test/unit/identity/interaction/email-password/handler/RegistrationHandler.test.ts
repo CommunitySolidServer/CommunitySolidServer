@@ -11,7 +11,6 @@ import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { PodSettings } from '../../../../../../src/pods/settings/PodSettings';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import type { TemplateHandler } from '../../../../../../src/server/util/TemplateHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A RegistrationHandler', (): void => {
@@ -37,7 +36,6 @@ describe('A RegistrationHandler', (): void => {
   let ownershipValidator: OwnershipValidator;
   let accountStore: AccountStore;
   let podManager: PodManager;
-  let responseHandler: TemplateHandler<NodeJS.Dict<any>>;
   let handler: RegistrationHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -61,10 +59,6 @@ describe('A RegistrationHandler', (): void => {
       createPod: jest.fn(),
     };
 
-    responseHandler = {
-      handleSafe: jest.fn(),
-    } as any;
-
     handler = new RegistrationHandler({
       baseUrl,
       webIdSuffix,
@@ -72,7 +66,6 @@ describe('A RegistrationHandler', (): void => {
       accountStore,
       ownershipValidator,
       podManager,
-      responseHandler,
     });
   });
 
@@ -151,7 +144,17 @@ describe('A RegistrationHandler', (): void => {
   describe('handling data', (): void => {
     it('can register a user.', async(): Promise<void> => {
       request = createPostFormRequest({ email, webId, password, confirmPassword, register });
-      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+      await expect(handler.handle({ request, response })).resolves.toEqual({
+        details: {
+          email,
+          webId,
+          oidcIssuer: baseUrl,
+          createWebId: false,
+          register: true,
+          createPod: false,
+        },
+        type: 'response',
+      });
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
@@ -168,7 +171,18 @@ describe('A RegistrationHandler', (): void => {
     it('can create a pod.', async(): Promise<void> => {
       const params = { email, webId, podName, createPod };
       request = createPostFormRequest(params);
-      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+      await expect(handler.handle({ request, response })).resolves.toEqual({
+        details: {
+          email,
+          webId,
+          oidcIssuer: baseUrl,
+          podBaseUrl: `${baseUrl}${podName}/`,
+          createWebId: false,
+          register: false,
+          createPod: true,
+        },
+        type: 'response',
+      });
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
@@ -186,7 +200,18 @@ describe('A RegistrationHandler', (): void => {
       const params = { email, webId, password, confirmPassword, podName, register, createPod };
       podSettings.oidcIssuer = baseUrl;
       request = createPostFormRequest(params);
-      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+      await expect(handler.handle({ request, response })).resolves.toEqual({
+        details: {
+          email,
+          webId,
+          oidcIssuer: baseUrl,
+          podBaseUrl: `${baseUrl}${podName}/`,
+          createWebId: false,
+          register: true,
+          createPod: true,
+        },
+        type: 'response',
+      });
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
@@ -225,12 +250,23 @@ describe('A RegistrationHandler', (): void => {
 
     it('can create a WebID with an account and pod.', async(): Promise<void> => {
       const params = { email, password, confirmPassword, podName, createWebId, register, createPod };
-      podSettings.oidcIssuer = baseUrl;
-      request = createPostFormRequest(params);
-      await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-
       const generatedWebID = urljoin(baseUrl, podName, webIdSuffix);
       podSettings.webId = generatedWebID;
+      podSettings.oidcIssuer = baseUrl;
+
+      request = createPostFormRequest(params);
+      await expect(handler.handle({ request, response })).resolves.toEqual({
+        details: {
+          email,
+          webId: generatedWebID,
+          oidcIssuer: baseUrl,
+          podBaseUrl: `${baseUrl}${podName}/`,
+          createWebId: true,
+          register: true,
+          createPod: true,
+        },
+        type: 'response',
+      });
 
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);

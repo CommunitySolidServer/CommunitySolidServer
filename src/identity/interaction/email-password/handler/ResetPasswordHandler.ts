@@ -1,34 +1,27 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
-import { HttpHandler } from '../../../../server/HttpHandler';
-import type { TemplateHandler } from '../../../../server/util/TemplateHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-
-export interface ResetPasswordHandlerArgs {
-  accountStore: AccountStore;
-  messageRenderHandler: TemplateHandler<{ message: string }>;
-}
+import type { InteractionResponseResult } from './InteractionHandler';
+import { InteractionHandler } from './InteractionHandler';
 
 /**
  * Handles the submission of the ResetPassword form:
  * this is the form that is linked in the reset password email.
  */
-export class ResetPasswordHandler extends HttpHandler {
+export class ResetPasswordHandler extends InteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
-  private readonly messageRenderHandler: TemplateHandler<{ message: string }>;
 
-  public constructor(args: ResetPasswordHandlerArgs) {
+  public constructor(accountStore: AccountStore) {
     super();
-    this.accountStore = args.accountStore;
-    this.messageRenderHandler = args.messageRenderHandler;
+    this.accountStore = accountStore;
   }
 
-  public async handle(input: HttpHandlerInput): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<InteractionResponseResult> {
     try {
       // Extract record ID from request URL
       const recordId = /\/([^/]+)$/u.exec(input.request.url!)?.[1];
@@ -41,12 +34,7 @@ export class ResetPasswordHandler extends HttpHandler {
       assertPassword(password, confirmPassword);
 
       await this.resetPassword(recordId, password);
-      await this.messageRenderHandler.handleSafe({
-        response: input.response,
-        contents: {
-          message: 'Your password was successfully reset.',
-        },
-      });
+      return { type: 'response', details: { message: 'Your password was successfully reset.' }};
     } catch (error: unknown) {
       throwIdpInteractionError(error);
     }

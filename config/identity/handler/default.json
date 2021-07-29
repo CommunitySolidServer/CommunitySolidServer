@@ -1,8 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/identity/handler/account-store/default.json",
     "files-scs:config/identity/handler/adapter-factory/webid.json",
-    "files-scs:config/identity/handler/interaction/handler.json",
+    "files-scs:config/identity/handler/interaction/routes.json",
     "files-scs:config/identity/handler/key-value/storage.json",
     "files-scs:config/identity/handler/provider-factory/identity.json"
   ],
@@ -18,8 +19,17 @@
     {
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
       "@type": "IdentityProviderHttpHandler",
+      "idpPath": "/idp",
       "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
-      "interactionHttpHandler": { "@id": "urn:solid-server:auth:password:InteractionHttpHandler" },
+      "templateHandler": {
+        "@type": "TemplateHandler",
+        "templateEngine": { "@type": "EjsTemplateEngine" }
+      },
+      "interactionCompleter": {
+        "comment": "Responsible for finishing OIDC interactions.",
+        "@type": "InteractionCompleter",
+        "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+      },
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
     }

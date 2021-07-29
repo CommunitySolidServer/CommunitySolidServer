@@ -1,0 +1,20 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/identity/handler/interaction/routes/forgot-password.json",
+    "files-scs:config/identity/handler/interaction/routes/login.json",
+    "files-scs:config/identity/handler/interaction/routes/reset-password.json",
+    "files-scs:config/identity/handler/interaction/routes/session.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+      "IdentityProviderHttpHandler:_interactionRoutes": [
+        { "@id": "urn:solid-server:auth:password:ForgotPasswordRoute" },
+        { "@id": "urn:solid-server:auth:password:LoginRoute" },
+        { "@id": "urn:solid-server:auth:password:ResetPasswordRoute" },
+        { "@id": "urn:solid-server:auth:password:SessionRoute" }
+      ]
+    }
+  ]
+}

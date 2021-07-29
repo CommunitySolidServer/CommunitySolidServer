@@ -1,17 +1,28 @@
 import type { InteractionResults } from 'oidc-provider';
+import type { HttpHandlerInput } from '../../../server/HttpHandler';
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
-import type { InteractionHttpHandlerInput } from '../InteractionHttpHandler';
+import type { ProviderFactory } from '../../configuration/ProviderFactory';
 
-export interface InteractionCompleterInput extends InteractionHttpHandlerInput {
+export interface InteractionCompleterParams {
   webId: string;
   shouldRemember?: boolean;
 }
+
+export type InteractionCompleterInput = HttpHandlerInput & InteractionCompleterParams;
 
 /**
  * Completes an IDP interaction, logging the user in.
  */
 export class InteractionCompleter extends AsyncHandler<InteractionCompleterInput> {
+  private readonly providerFactory: ProviderFactory;
+
+  public constructor(providerFactory: ProviderFactory) {
+    super();
+    this.providerFactory = providerFactory;
+  }
+
   public async handle(input: InteractionCompleterInput): Promise<void> {
+    const provider = await this.providerFactory.getProvider();
     const result: InteractionResults = {
       login: {
         account: input.webId,
@@ -23,6 +34,6 @@ export class InteractionCompleter extends AsyncHandler<InteractionCompleterInput
       },
     };
 
-    return input.provider.interactionFinished(input.request, input.response, result);
+    return provider.interactionFinished(input.request, input.response, result);
   }
 }

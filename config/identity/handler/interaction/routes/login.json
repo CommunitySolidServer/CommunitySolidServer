@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles all functionality on the Login Page",
+      "@id": "urn:solid-server:auth:password:LoginRoute",
+      "@type": "InteractionRoute",
+      "route": "^/login/?$",
+      "prompt": "default",
+      "viewTemplate": "$PACKAGE_ROOT/templates/identity/email-password/login.html.ejs",
+      "handler": {
+        "@type": "LoginHandler",
+        "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" }
+      }
+    }
+  ]
+}

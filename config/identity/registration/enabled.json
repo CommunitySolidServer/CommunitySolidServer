@@ -1,14 +1,14 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/registration/handler/registration.json"
+    "files-scs:config/identity/registration/route/registration.json"
   ],
   "@graph": [
     {
-      "comment": "Enable registration by adding a registration handler to the list of interaction handlers.",
-      "@id": "urn:solid-server:auth:password:InteractionHttpHandler",
-      "WaterfallHandler:_handlers": [
-        { "@id": "urn:solid-server:auth:password:RegistrationInteractionHandler" }
+      "comment": "Enable registration by adding a registration handler to the list of interaction routes.",
+      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+      "IdentityProviderHttpHandler:_interactionRoutes": [
+        { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
       ]
     }
   ]

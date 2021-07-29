@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The storage adapter that persists usernames, passwords, etc.",
+      "@id": "urn:solid-server:auth:password:AccountStore",
+      "@type": "BaseAccountStore",
+      "args_storageName": "/idp/email-password-db",
+      "args_saltRounds": 10,
+      "args_storage": {
+        "@id": "urn:solid-server:default:IdpStorage"
+      }
+    }
+  ]
+}

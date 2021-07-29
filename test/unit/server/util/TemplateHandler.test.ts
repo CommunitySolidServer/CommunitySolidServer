@@ -5,6 +5,7 @@ import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngi
 
 describe('A TemplateHandler', (): void => {
   const contents = { contents: 'contents' };
+  const templateFile = '/templates/main.html.ejs';
   let templateEngine: jest.Mocked<TemplateEngine>;
   let response: HttpResponse;
 
@@ -17,10 +18,10 @@ describe('A TemplateHandler', (): void => {
 
   it('renders the template in the response.', async(): Promise<void> => {
     const handler = new TemplateHandler(templateEngine);
-    await handler.handle({ response, contents });
+    await handler.handle({ response, contents, templateFile });
 
     expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenCalledWith(contents);
+    expect(templateEngine.render).toHaveBeenCalledWith(contents, { templateFile });
 
     expect(response.getHeaders()).toHaveProperty('content-type', 'text/html');
     expect((response as any)._isEndCalled()).toBe(true);
