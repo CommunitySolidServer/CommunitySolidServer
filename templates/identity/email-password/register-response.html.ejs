@@ -19,9 +19,9 @@
     </p>
 
     <% if (createPod) { %>
-      <h2>Your new pod</h2>
+      <h2>Your new Pod</h2>
       <p>
-        Your new pod is located at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
+        Your new Pod is located at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
         <br>
         You can store your documents and data there.
       </p>
@@ -37,18 +37,18 @@
     <% } %>
 
     <% if (register) { %>
-      <h2>Your new login</h2>
+      <h2>Your new account</h2>
       <p>
-        You can <a href="./login">log in</a>
-        with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
-        on this server via your email address <em><%= email %></em>.
+        Via your email address <em><%= email %></em>,
+        this server lets you <a href="./login">log in</a> to Solid apps
+        with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
       </p>
       <% if (!createWebId) { %>
         <p>
           You will need to add the triple
           <code><%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%></code>
           to your existing WebID document <em><%= webId %></em>
-          to indicate that you trust this server as a login provider for your WebID.
+          to indicate that you trust this server as a login provider.
         </p>
       <% } %>
     <% } %>

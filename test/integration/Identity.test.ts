@@ -117,8 +117,8 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`your WebID.*${webId}`, 'u'));
-      expect(text).toMatch(new RegExp(`your email address.*${email}`, 'u'));
+      expect(text).toMatch(new RegExp(`your.WebID.*${webId}`, 'u'));
+      expect(text).toMatch(new RegExp(`your.email.address.*${email}`, 'u'));
       expect(text).toMatch(new RegExp(`<code>&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.</code>`, 'mu'));
     });
   });
@@ -280,7 +280,7 @@ describe('A Solid server with IDP', (): void => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
-      expect(text).toMatch(new RegExp(`Your new pod.*${baseUrl}${podName}/`, 'u'));
+      expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
     });
   });
 
@@ -305,7 +305,7 @@ describe('A Solid server with IDP', (): void => {
       newWebId = matchWebId![1];
       expect(text).toMatch(new RegExp(`new WebID is.*${newWebId}`, 'u'));
       expect(text).toMatch(new RegExp(`your email address.*${newMail}`, 'u'));
-      expect(text).toMatch(new RegExp(`Your new pod.*${baseUrl}${podName}/`, 'u'));
+      expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {

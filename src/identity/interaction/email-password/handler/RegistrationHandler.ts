@@ -193,14 +193,12 @@ export class RegistrationHandler extends HttpHandler {
    */
   private async parseInput(request: HttpRequest): Promise<ParsedInput> {
     const parsed = await getFormDataRequestBody(request);
-    let prefilled: Record<string, string> = {};
+    const prefilled: Record<string, string> = {};
     try {
-      for (const key of Object.keys(parsed)) {
-        if (Array.isArray(parsed[key])) {
-          throw new Error(`Multiple values found for key ${key}`);
-        }
+      for (const [ key, value ] of Object.entries(parsed)) {
+        assert(!Array.isArray(value), `Unexpected multiple values for ${key}.`);
+        prefilled[key] = value ? value.trim() : '';
       }
-      prefilled = parsed as Record<string, string>;
       return this.validateInput(prefilled);
     } catch (err: unknown) {
       throwIdpInteractionError(err, prefilled);
@@ -212,54 +210,38 @@ export class RegistrationHandler extends HttpHandler {
    * Verifies that all the data combinations make sense.
    */
   private validateInput(parsed: NodeJS.Dict<string>): ParsedInput {
-    const { email, password, confirmPassword, podName, webId, template, createWebId, register, createPod } = parsed;
+    const { email, password, confirmPassword, webId, podName, register, createPod, createWebId, template } = parsed;
 
-    assert(typeof email === 'string' && email.length > 0 && emailRegex.test(email),
-      'A valid e-mail address is required');
+    // Parse email
+    assert(typeof email === 'string' && emailRegex.test(email), 'Please enter a valid e-mail address.');
 
-    const result: ParsedInput = {
+    const validated: ParsedInput = {
       email,
       template,
+      register: Boolean(register) || Boolean(createWebId),
+      createPod: Boolean(createPod) || Boolean(createWebId),
       createWebId: Boolean(createWebId),
-      register: Boolean(register),
-      createPod: Boolean(createPod),
     };
+    assert(validated.register || validated.createPod, 'Please register for a WebID or create a Pod.');
 
-    const validWebId = typeof webId === 'string' && webId.length > 0;
-    if (result.createWebId) {
-      if (validWebId) {
-        throw new Error('A WebID should only be provided when no new one is being created');
-      }
-    } else {
-      if (!validWebId) {
-        throw new Error('A WebID is required if no new one is being created');
-      }
-      result.webId = webId;
+    // Parse WebID
+    if (!validated.createWebId) {
+      assert(typeof webId === 'string' && /^https?:\/\/[^/]+/u.test(webId), 'Please enter a valid WebID.');
+      validated.webId = webId;
     }
 
-    if (result.register) {
+    // Parse Pod name
+    if (validated.createWebId || validated.createPod) {
+      assert(typeof podName === 'string' && podName.length > 0, 'Please specify a Pod name.');
+      validated.podName = podName;
+    }
+
+    // Parse account
+    if (validated.register) {
       assertPassword(password, confirmPassword);
-      result.password = password;
-    } else if (typeof password === 'string' && password.length > 0) {
-      throw new Error('A password should only be provided when registering');
+      validated.password = password;
     }
 
-    if (result.createWebId || result.createPod) {
-      assert(typeof podName === 'string' && podName.length > 0,
-        'A pod name is required when creating a pod and/or WebID');
-      result.podName = podName;
-    } else if (typeof podName === 'string' && podName.length > 0) {
-      throw new Error('A pod name should only be provided when creating a pod and/or WebID');
-    }
-
-    if (result.createWebId && !(result.register && result.createPod)) {
-      throw new Error('Creating a WebID is only possible when also registering and creating a pod');
-    }
-
-    if (!result.createWebId && !result.register && !result.createPod) {
-      throw new Error('At least one option needs to be chosen');
-    }
-
-    return result;
+    return validated;
   }
 }

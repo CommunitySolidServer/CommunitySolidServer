@@ -72,10 +72,14 @@ header img {
 
 main h1 {
   margin: 1em 0 0;
+
+  font-size: 2em;
   font-weight: 700;
 }
 main h2 {
   margin: 1em 0 0;
+
+  font-size: 1.5em;
   font-weight: 600;
   color: var(--solid-gray);
 }
@@ -134,34 +138,48 @@ pre {
 fieldset {
   border: none;
   margin: 0;
-  padding: 0 0 0 1em;
+  padding: 0;
   max-width: 600px;
+}
+fieldset > legend {
+  margin: .5em 0 0;
+
+  font-size: 1.5em;
+  font-weight: 600;
+  color: var(--solid-gray);
+}
+fieldset > legend + p {
+  margin: 0 0 .5em .25em;
 }
 fieldset ol {
   list-style: none;
-  margin; 0;
-  padding: 0;
+  margin: 0;
+  padding: 0 0 0 2em;
 }
 fieldset ol ol {
-  margin: 0 0 1em 2em;
+  margin: 0 0 1em .5em;
 }
-fieldset ol li:not(.checkbox) {
+fieldset ol li:not(.checkbox, .radio) {
   display: grid;
   grid-template-columns: 10em auto;
   grid-gap: 1em;
   align-items: center;
 }
-fieldset ol ol li:not(.checkbox) {
-  grid-template-columns: 8em auto;
+fieldset ol ol li:not(.checkbox, .radio) {
+  grid-template-columns: 7.5em auto;
 }
 fieldset li label {
   font-weight: 600;
 }
-fieldset li:not(.checkbox) > label:after {
-  content: ": ";
+fieldset li li label {
+  font-weight: 500;
 }
-fieldset li.checkbox > label > input {
+fieldset li.checkbox > label > input,
+fieldset li.radio > label > input {
   margin: 0 .5em 0 0;
+}
+fieldset li p {
+  margin-top: .25em;
 }
 
 input {
@@ -183,7 +201,7 @@ button:hover {
 }
 
 form p.actions {
-  margin: 0 0 1em 12em;
+  margin: .5em 0 1em 11em;
 }
 
 form p.error {
@@ -193,12 +211,21 @@ form p.error {
 
 form ul.actions {
   padding: 0;
-  margin: 0 0 1em 12em;
+  margin: 0 0 1em 11em;
 }
 form ul.actions > li {
   list-style-type: none;
   display: inline;
   margin-right: 1em;
+}
+
+form.loaded * {
+  max-height: 500px;
+  transition: max-height .2s;
+}
+form .hidden {
+  max-height: 0;
+  overflow: hidden;
 }
 
 ul.container > li {

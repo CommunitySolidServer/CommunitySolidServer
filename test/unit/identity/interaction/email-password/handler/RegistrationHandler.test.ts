@@ -78,81 +78,73 @@ describe('A RegistrationHandler', (): void => {
 
   describe('validating data', (): void => {
     it('rejects array inputs.', async(): Promise<void> => {
-      request = createPostFormRequest({ data: [ 'a', 'b' ]});
-      await expect(handler.handle({ request, response })).rejects.toThrow('Multiple values found for key data');
+      request = createPostFormRequest({ mydata: [ 'a', 'b' ]});
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Unexpected multiple values for mydata.');
     });
 
     it('errors on invalid emails.', async(): Promise<void> => {
       request = createPostFormRequest({ email: undefined });
-      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Please enter a valid e-mail address.');
 
       request = createPostFormRequest({ email: '' });
-      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Please enter a valid e-mail address.');
 
       request = createPostFormRequest({ email: 'invalidEmail' });
-      await expect(handler.handle({ request, response })).rejects.toThrow('A valid e-mail address is required');
-    });
-
-    it('errors when an unnecessary WebID is provided.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, createWebId });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A WebID should only be provided when no new one is being created');
+        .rejects.toThrow('Please enter a valid e-mail address.');
     });
 
     it('errors when a required WebID is not valid.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId: undefined });
+      request = createPostFormRequest({ email, register, webId: undefined });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A WebID is required if no new one is being created');
+        .rejects.toThrow('Please enter a valid WebID.');
 
-      request = createPostFormRequest({ email, webId: '' });
+      request = createPostFormRequest({ email, register, webId: '' });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A WebID is required if no new one is being created');
-    });
-
-    it('errors when an unnecessary password is provided.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, password });
-      await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A password should only be provided when registering');
+        .rejects.toThrow('Please enter a valid WebID.');
     });
 
     it('errors on invalid passwords when registering.', async(): Promise<void> => {
       request = createPostFormRequest({ email, webId, password, confirmPassword: 'bad', register });
-      await expect(handler.handle({ request, response })).rejects.toThrow('Password and confirmation do not match');
-    });
-
-    it('errors when an unnecessary pod name is provided.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, podName });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A pod name should only be provided when creating a pod and/or WebID');
+        .rejects.toThrow('Your password and confirmation did not match.');
     });
 
     it('errors on invalid pod names when required.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, podName: undefined, createWebId });
+      request = createPostFormRequest({ email, webId, createPod, podName: undefined });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A pod name is required when creating a pod and/or WebID');
+        .rejects.toThrow('Please specify a Pod name.');
 
-      request = createPostFormRequest({ email, webId, podName: '', createPod });
+      request = createPostFormRequest({ email, webId, createPod, podName: ' ' });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('A pod name is required when creating a pod and/or WebID');
+        .rejects.toThrow('Please specify a Pod name.');
+
+      request = createPostFormRequest({ email, webId, createWebId });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Please specify a Pod name.');
     });
 
     it('errors when trying to create a WebID without registering or creating a pod.', async(): Promise<void> => {
       request = createPostFormRequest({ email, podName, createWebId });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
-
-      request = createPostFormRequest({ email, podName, password, confirmPassword, createWebId, register });
-      await expect(handler.handle({ request, response }))
-        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
+        .rejects.toThrow('Please enter a password.');
 
       request = createPostFormRequest({ email, podName, createWebId, createPod });
       await expect(handler.handle({ request, response }))
-        .rejects.toThrow('Creating a WebID is only possible when also registering and creating a pod');
+        .rejects.toThrow('Please enter a password.');
+
+      request = createPostFormRequest({ email, podName, createWebId, createPod, register });
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Please enter a password.');
     });
 
     it('errors when no option is chosen.', async(): Promise<void> => {
       request = createPostFormRequest({ email, webId });
-      await expect(handler.handle({ request, response })).rejects.toThrow('At least one option needs to be chosen');
+      await expect(handler.handle({ request, response }))
+        .rejects.toThrow('Please register for a WebID or create a Pod.');
     });
   });
 

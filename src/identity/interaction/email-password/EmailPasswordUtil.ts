@@ -31,13 +31,16 @@ export function throwIdpInteractionError(error: unknown, prefilled: Record<strin
  * @param confirmPassword - Confirmation of password to match.
  */
 export function assertPassword(password: any, confirmPassword: any): asserts password is string {
-  assert(typeof password === 'string' && password.length > 0, 'Password required');
+  assert(
+    typeof password === 'string' && password.length > 0,
+    'Please enter a password.',
+  );
   assert(
     typeof confirmPassword === 'string' && confirmPassword.length > 0,
-    'Password confirmation required',
+    'Please confirm your password.',
   );
   assert(
     password === confirmPassword,
-    'Password and confirmation do not match',
+    'Your password and confirmation did not match.',
   );
 }
