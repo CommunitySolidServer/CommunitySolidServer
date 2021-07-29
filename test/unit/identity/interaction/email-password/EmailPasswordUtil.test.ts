@@ -53,12 +53,11 @@ describe('EmailPasswordUtil', (): void => {
 
   describe('#assertPassword', (): void => {
     it('validates the password against the confirmPassword.', async(): Promise<void> => {
-      expect((): void => assertPassword(undefined, undefined)).toThrow('Password required');
-      expect((): void => assertPassword([], undefined)).toThrow('Password required');
-      expect((): void => assertPassword('password', undefined)).toThrow('Password confirmation required');
-      expect((): void => assertPassword('password', [])).toThrow('Password confirmation required');
-      expect((): void => assertPassword('password', 'confirmPassword'))
-        .toThrow('Password and confirmation do not match');
+      expect((): void => assertPassword(undefined, undefined)).toThrow('Please enter a password.');
+      expect((): void => assertPassword([], undefined)).toThrow('Please enter a password.');
+      expect((): void => assertPassword('password', undefined)).toThrow('Please confirm your password.');
+      expect((): void => assertPassword('password', [])).toThrow('Please confirm your password.');
+      expect((): void => assertPassword('password', 'other')).toThrow('Your password and confirmation did not match');
       expect(assertPassword('password', 'password')).toBeUndefined();
     });
   });

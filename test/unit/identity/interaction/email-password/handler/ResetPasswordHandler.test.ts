@@ -43,7 +43,7 @@ describe('A ResetPasswordHandler', (): void => {
   });
 
   it('errors for invalid passwords.', async(): Promise<void> => {
-    const errorMessage = 'Password and confirmation do not match';
+    const errorMessage = 'Your password and confirmation did not match.';
     request = createPostFormRequest({ password: 'password!', confirmPassword: 'otherPassword!' }, url);
     await expect(handler.handle({ request, response })).rejects.toThrow(errorMessage);
   });
