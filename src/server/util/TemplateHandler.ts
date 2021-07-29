@@ -7,7 +7,7 @@ import Dict = NodeJS.Dict;
  * A Render Handler that uses a template engine to render a response.
  */
 export class TemplateHandler<T extends Dict<any> = Dict<any>>
-  extends AsyncHandler<{ response: HttpResponse; contents: T }> {
+  extends AsyncHandler<{ response: HttpResponse; templateFile: string; contents: T }> {
   private readonly templateEngine: TemplateEngine;
   private readonly contentType: string;
 
@@ -17,8 +17,9 @@ export class TemplateHandler<T extends Dict<any> = Dict<any>>
     this.contentType = contentType;
   }
 
-  public async handle({ response, contents }: { response: HttpResponse; contents: T }): Promise<void> {
-    const rendered = await this.templateEngine.render(contents);
+  public async handle({ response, templateFile, contents }:
+  { response: HttpResponse; templateFile: string; contents: T }): Promise<void> {
+    const rendered = await this.templateEngine.render(contents, { templateFile });
     // eslint-disable-next-line @typescript-eslint/naming-convention
     response.writeHead(200, { 'Content-Type': this.contentType });
     response.end(rendered);

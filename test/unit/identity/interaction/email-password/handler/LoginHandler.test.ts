@@ -1,15 +1,13 @@
 import { LoginHandler } from '../../../../../../src/identity/interaction/email-password/handler/LoginHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import type { InteractionHttpHandlerInput } from '../../../../../../src/identity/interaction/InteractionHttpHandler';
-import type { InteractionCompleter } from '../../../../../../src/identity/interaction/util/InteractionCompleter';
+import type { HttpHandlerInput } from '../../../../../../src/server/HttpHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A LoginHandler', (): void => {
   const webId = 'http://alice.test.com/card#me';
   const email = 'alice@test.email';
-  let input: InteractionHttpHandlerInput;
+  let input: HttpHandlerInput;
   let storageAdapter: AccountStore;
-  let interactionCompleter: InteractionCompleter;
   let handler: LoginHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -19,11 +17,7 @@ describe('A LoginHandler', (): void => {
       authenticate: jest.fn().mockResolvedValue(webId),
     } as any;
 
-    interactionCompleter = {
-      handleSafe: jest.fn(),
-    } as any;
-
-    handler = new LoginHandler({ accountStore: storageAdapter, interactionCompleter });
+    handler = new LoginHandler(storageAdapter);
   });
 
   it('errors on invalid emails.', async(): Promise<void> => {
@@ -56,13 +50,13 @@ describe('A LoginHandler', (): void => {
     await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
   });
 
-  it('calls the OidcInteractionCompleter when done.', async(): Promise<void> => {
+  it('returns an InteractionCompleteResult when done.', async(): Promise<void> => {
     input.request = createPostFormRequest({ email, password: 'password!' });
-    await expect(handler.handle(input)).resolves.toBeUndefined();
+    await expect(handler.handle(input)).resolves.toEqual({
+      type: 'complete',
+      details: { webId, shouldRemember: false },
+    });
     expect(storageAdapter.authenticate).toHaveBeenCalledTimes(1);
     expect(storageAdapter.authenticate).toHaveBeenLastCalledWith(email, 'password!');
-    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe)
-      .toHaveBeenLastCalledWith({ ...input, webId, shouldRemember: false });
   });
 });

@@ -4,7 +4,6 @@ import {
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
-import type { TemplateHandler } from '../../../../../../src/server/util/TemplateHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A ResetPasswordHandler', (): void => {
@@ -14,7 +13,6 @@ describe('A ResetPasswordHandler', (): void => {
   const url = `/resetURL/${recordId}`;
   const email = 'alice@test.email';
   let accountStore: AccountStore;
-  let messageRenderHandler: TemplateHandler<{ message: string }>;
   let handler: ResetPasswordHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -24,14 +22,7 @@ describe('A ResetPasswordHandler', (): void => {
       changePassword: jest.fn(),
     } as any;
 
-    messageRenderHandler = {
-      handleSafe: jest.fn(),
-    } as any;
-
-    handler = new ResetPasswordHandler({
-      accountStore,
-      messageRenderHandler,
-    });
+    handler = new ResetPasswordHandler(accountStore);
   });
 
   it('errors for non-string recordIds.', async(): Promise<void> => {
@@ -57,16 +48,16 @@ describe('A ResetPasswordHandler', (): void => {
 
   it('renders a message on success.', async(): Promise<void> => {
     request = createPostFormRequest({ password: 'password!', confirmPassword: 'password!' }, url);
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    await expect(handler.handle({ request, response })).resolves.toEqual({
+      details: { message: 'Your password was successfully reset.' },
+      type: 'response',
+    });
     expect(accountStore.getForgotPasswordRecord).toHaveBeenCalledTimes(1);
     expect(accountStore.getForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
     expect(accountStore.deleteForgotPasswordRecord).toHaveBeenCalledTimes(1);
     expect(accountStore.deleteForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
     expect(accountStore.changePassword).toHaveBeenCalledTimes(1);
     expect(accountStore.changePassword).toHaveBeenLastCalledWith(email, 'password!');
-    expect(messageRenderHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(messageRenderHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ response, contents: { message: 'Your password was successfully reset.' }});
   });
 
   it('has a default error for non-native errors.', async(): Promise<void> => {

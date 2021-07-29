@@ -6,13 +6,13 @@ import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGe
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
 import type { HttpHandlerInput } from '../../../../server/HttpHandler';
-import { HttpHandler } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
-import type { TemplateHandler } from '../../../../server/util/TemplateHandler';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
+import type { InteractionResponseResult } from './InteractionHandler';
+import { InteractionHandler } from './InteractionHandler';
 
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/u;
 
@@ -41,10 +41,6 @@ export interface RegistrationHandlerArgs {
    * Creates the new pods.
    */
   podManager: PodManager;
-  /**
-   * Renders the response when registration is successful.
-   */
-  responseHandler: TemplateHandler;
 }
 
 /**
@@ -87,7 +83,7 @@ interface RegistrationResponse {
  *  * Ownership will be verified when the WebID is provided.
  *  * When registering and creating a pod, the base URL will be used as oidcIssuer value.
  */
-export class RegistrationHandler extends HttpHandler {
+export class RegistrationHandler extends InteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly baseUrl: string;
@@ -96,7 +92,6 @@ export class RegistrationHandler extends HttpHandler {
   private readonly ownershipValidator: OwnershipValidator;
   private readonly accountStore: AccountStore;
   private readonly podManager: PodManager;
-  private readonly responseHandler: TemplateHandler;
 
   public constructor(args: RegistrationHandlerArgs) {
     super();
@@ -106,15 +101,14 @@ export class RegistrationHandler extends HttpHandler {
     this.ownershipValidator = args.ownershipValidator;
     this.accountStore = args.accountStore;
     this.podManager = args.podManager;
-    this.responseHandler = args.responseHandler;
   }
 
-  public async handle({ request, response }: HttpHandlerInput): Promise<void> {
+  public async handle({ request }: HttpHandlerInput): Promise<InteractionResponseResult<RegistrationResponse>> {
     const result = await this.parseInput(request);
 
     try {
-      const contents = await this.register(result);
-      await this.responseHandler.handleSafe({ response, contents });
+      const details = await this.register(result);
+      return { type: 'response', details };
     } catch (error: unknown) {
       // Don't expose the password field
       delete result.password;

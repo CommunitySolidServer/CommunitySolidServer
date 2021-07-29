@@ -22,6 +22,7 @@ export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Handler
+export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
@@ -39,13 +40,9 @@ export * from './identity/interaction/util/BaseEmailSender';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/FormDataUtil';
 export * from './identity/interaction/util/IdpInteractionError';
-export * from './identity/interaction/util/IdpRenderHandler';
-export * from './identity/interaction/util/IdpRouteController';
-export * from './identity/interaction/util/InitialInteractionHandler';
 export * from './identity/interaction/util/InteractionCompleter';
 
 // Identity/Interaction
-export * from './identity/interaction/InteractionHttpHandler';
 export * from './identity/interaction/SessionHttpHandler';
 
 // Identity/Ownership

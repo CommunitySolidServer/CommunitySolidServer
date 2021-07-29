@@ -1,19 +1,17 @@
 import assert from 'assert';
 import urljoin from 'url-join';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpResponse } from '../../../../server/HttpResponse';
+import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { ensureTrailingSlash } from '../../../../util/PathUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
-import type { InteractionHttpHandlerInput } from '../../InteractionHttpHandler';
-import { InteractionHttpHandler } from '../../InteractionHttpHandler';
 import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import type { IdpRenderHandler } from '../../util/IdpRenderHandler';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
+import { InteractionHandler } from './InteractionHandler';
+import type { InteractionResponseResult } from './InteractionHandler';
 
 export interface ForgotPasswordHandlerArgs {
-  messageRenderHandler: IdpRenderHandler;
   accountStore: AccountStore;
   baseUrl: string;
   idpPath: string;
@@ -24,10 +22,9 @@ export interface ForgotPasswordHandlerArgs {
 /**
  * Handles the submission of the ForgotPassword form
  */
-export class ForgotPasswordHandler extends InteractionHttpHandler {
+export class ForgotPasswordHandler extends InteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly messageRenderHandler: IdpRenderHandler;
   private readonly accountStore: AccountStore;
   private readonly baseUrl: string;
   private readonly idpPath: string;
@@ -36,7 +33,6 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
 
   public constructor(args: ForgotPasswordHandlerArgs) {
     super();
-    this.messageRenderHandler = args.messageRenderHandler;
     this.accountStore = args.accountStore;
     this.baseUrl = ensureTrailingSlash(args.baseUrl);
     this.idpPath = args.idpPath;
@@ -44,14 +40,14 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
     this.emailSender = args.emailSender;
   }
 
-  public async handle(input: InteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
     try {
       // Validate incoming data
       const { email } = await getFormDataRequestBody(input.request);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
 
       await this.resetPassword(email);
-      await this.sendResponse(input.response, email);
+      return { type: 'response', details: { email }};
     } catch (err: unknown) {
       throwIdpInteractionError(err, {});
     }
@@ -86,24 +82,6 @@ export class ForgotPasswordHandler extends InteractionHttpHandler {
       subject: 'Reset your password',
       text: `To reset your password, go to this link: ${resetLink}`,
       html: renderedEmail,
-    });
-  }
-
-  /**
-   * Sends a response through the messageRenderHandler.
-   * @param response - HttpResponse to send to.
-   * @param email - Will be inserted in `prefilled` for the template.
-   */
-  private async sendResponse(response: HttpResponse, email: string): Promise<void> {
-    // Send response
-    await this.messageRenderHandler.handleSafe({
-      response,
-      contents: {
-        errorMessage: '',
-        prefilled: {
-          email,
-        },
-      },
     });
   }
 }

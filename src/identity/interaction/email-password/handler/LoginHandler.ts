@@ -1,40 +1,36 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
+import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
-import type { InteractionHttpHandlerInput } from '../../InteractionHttpHandler';
-import { InteractionHttpHandler } from '../../InteractionHttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import type { InteractionCompleter } from '../../util/InteractionCompleter';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-
-export interface LoginHandlerArgs {
-  accountStore: AccountStore;
-  interactionCompleter: InteractionCompleter;
-}
+import { InteractionHandler } from './InteractionHandler';
+import type { InteractionCompleteResult } from './InteractionHandler';
 
 /**
  * Handles the submission of the Login Form and logs the user in.
  */
-export class LoginHandler extends InteractionHttpHandler {
+export class LoginHandler extends InteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
-  private readonly interactionCompleter: InteractionCompleter;
 
-  public constructor(args: LoginHandlerArgs) {
+  public constructor(accountStore: AccountStore) {
     super();
-    this.accountStore = args.accountStore;
-    this.interactionCompleter = args.interactionCompleter;
+    this.accountStore = accountStore;
   }
 
-  public async handle(input: InteractionHttpHandlerInput): Promise<void> {
+  public async handle(input: HttpHandlerInput): Promise<InteractionCompleteResult> {
     const { email, password, remember } = await this.parseInput(input.request);
     try {
       // Try to log in, will error if email/password combination is invalid
       const webId = await this.accountStore.authenticate(email, password);
-      await this.interactionCompleter.handleSafe({ ...input, webId, shouldRemember: Boolean(remember) });
       this.logger.debug(`Logging in user ${email}`);
+      return {
+        type: 'complete',
+        details: { webId, shouldRemember: Boolean(remember) },
+      };
     } catch (err: unknown) {
       throwIdpInteractionError(err, { email });
     }
