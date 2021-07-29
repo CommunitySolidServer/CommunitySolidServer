@@ -46,7 +46,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
 
     beforeAll(async(): Promise<void> => {
       client = new WebSocket(`ws://localhost:${port}`, [ 'solid-0.1' ], { headers });
-      client.on('message', (message: string): any => messages.push(message));
+      client.on('message', (message: Buffer): any => messages.push(message.toString()));
       await new Promise((resolve): any => client.on('open', resolve));
     });
 
