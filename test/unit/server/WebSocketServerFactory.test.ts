@@ -47,8 +47,8 @@ describe('SimpleWebSocketHandler', (): void => {
 
   it('has a functioning WebSockets interface.', async(): Promise<void> => {
     const client = new WebSocket('ws://localhost:5556');
-    const text = await new Promise((resolve): any => client.on('message', resolve));
-    expect(text).toBe('SimpleWebSocketHandler');
+    const buffer = await new Promise<Buffer>((resolve): any => client.on('message', resolve));
+    expect(buffer.toString()).toBe('SimpleWebSocketHandler');
     expect(webSocketHandler.host).toBe('localhost:5556');
   });
 });
