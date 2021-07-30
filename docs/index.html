@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v1.0.0-beta.1</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.1">
+	<title>Community Solid Server - v1.0.0-beta.2</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.2">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">Community Solid Server - v1.0.0-beta.1</a>
+					<a href="index.html" class="title">Community Solid Server - v1.0.0-beta.2</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>Community Solid Server - v1.0.0-beta.1</h1>
+			<h1>Community Solid Server - v1.0.0-beta.2</h1>
 		</div>
 	</div>
 </header>
@@ -61,154 +61,180 @@
 				<a href="#community-solid-server" id="community-solid-server" style="color: inherit; text-decoration: none;">
 					<h1>Community Solid Server</h1>
 				</a>
+				<img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
 				<p><a href="https://github.com/solid/community-server/actions"><img src="https://github.com/solid/community-server/workflows/CI/badge.svg" alt="Build Status"></a>
 					<a href="https://coveralls.io/github/solid/community-server"><img src="https://coveralls.io/repos/github/solid/community-server/badge.svg" alt="Coverage Status"></a>
 				<a href="https://www.npmjs.com/package/@solid/community-server"><img src="https://img.shields.io/npm/v/@solid/community-server" alt="npm version"></a></p>
-				<p><strong>An open and modular implementation of the
-						<a href="https://solidproject.org/">Solid</a>
-				<a href="https://solid.github.io/specification/">specifications</a></strong></p>
+				<p><strong>The Community Solid Server is open software
+						that provides you with a <a href="https://solidproject.org/">Solid</a> Pod and identity.
+						This Pod acts as your own personal storage space
+				so you can share data with people and Solid applications.</strong></p>
+				<p>As an open and modular implementation of the
+					<a href="https://solid.github.io/specification/">Solid specifications</a>,
+				the Community Solid Server is a great companion:</p>
 				<ul>
-					<li><p>Community Solid Server is open software
-						to provide people with their own Solid Pod.</p>
+					<li><p>🧑🏽 <strong>for people</strong> who want to try out having their own Pod</p>
 					</li>
-					<li><p>It will give developers an environment
-						to create and test new Solid applications.</p>
+					<li><p>👨🏿‍💻 <strong>for developers</strong> who want to create and test Solid apps</p>
 					</li>
-					<li><p>Its modular architecture allows
-							trying out new ideas on the server side
-						and thereby shape the future of Solid.</p>
+					<li><p>👩🏻‍🔬 <strong>for researchers</strong> who want to design new features for Solid</p>
 					</li>
 				</ul>
-				<a href="#running-the-server" id="running-the-server" style="color: inherit; text-decoration: none;">
-					<h2>Running the server</h2>
+				<p>And, of course, for many others who like to experience Solid.</p>
+				<p>You can install the software locally or on your server
+				and get started with Solid immediately.</p>
+				<a href="#⚡-running-the-server" id="⚡-running-the-server" style="color: inherit; text-decoration: none;">
+					<h2>⚡ Running the server</h2>
 				</a>
-				<a href="#installing-and-running-locally" id="installing-and-running-locally" style="color: inherit; text-decoration: none;">
-					<h3>Installing and running locally</h3>
+				<p>To run the server, you will need <a href="https://nodejs.org/en/">Node.js</a>.
+					We support versions 12.7 and up.
+					<br>
+					If you do not use Node.js,
+				you can run a <a href="https://www.docker.com/">Docker</a> version instead.</p>
+				<a href="#💻-installing-and-running-locally" id="💻-installing-and-running-locally" style="color: inherit; text-decoration: none;">
+					<h3>💻 Installing and running locally</h3>
 				</a>
+				<p>After installing Node.js,
+					you can install and run the latest published version
+					from the <a href="https://www.npmjs.com/">npm package repository</a>
+				like this:</p>
 				<pre><code class="language-shell"><span style="color: #000000">npm install -g @solid/community-server</span>
 <span style="color: #000000">community-solid-server </span><span style="color: #008000"># add parameters if needed</span>
 </code></pre>
-				<a href="#installing-and-running-from-source" id="installing-and-running-from-source" style="color: inherit; text-decoration: none;">
-					<h3>Installing and running from source</h3>
+				<a href="#📃-installing-and-running-from-source" id="📃-installing-and-running-from-source" style="color: inherit; text-decoration: none;">
+					<h3>📃 Installing and running from source</h3>
 				</a>
-				<pre><code class="language-shell"><span style="color: #000000">npm ci</span>
+				<p>If you rather prefer to run the latest source code version,
+					or if you want to try a specific <a href="https://www.npmjs.com/">branch</a> of the code,
+				you can use:</p>
+				<pre><code class="language-shell"><span style="color: #000000">git clone https://github.com/solid/community-server.git</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> community-server</span>
+<span style="color: #000000">npm ci</span>
 <span style="color: #000000">npm start -- </span><span style="color: #008000"># add parameters if needed</span>
 </code></pre>
-				<a href="#running-via-docker" id="running-via-docker" style="color: inherit; text-decoration: none;">
-					<h3>Running via Docker</h3>
+				<a href="#📦-running-via-docker" id="📦-running-via-docker" style="color: inherit; text-decoration: none;">
+					<h3>📦 Running via Docker</h3>
 				</a>
+				<p>Docker allows you to run the server without having Node.js installed:</p>
 				<pre><code class="language-shell"><span style="color: #008000"># Build the Docker image</span>
 <span style="color: #000000">docker build --rm -f Dockerfile -t css:latest </span><span style="color: #795E26">.</span>
-<span style="color: #008000"># Run the image against your `~/Solid` directory on `http://localhost:3000`</span>
+<span style="color: #008000"># Run the image, serving your `~/Solid` directory on `http://localhost:3000`</span>
 <span style="color: #000000">docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest</span>
-<span style="color: #008000"># Use alternative built-in configurations</span>
+<span style="color: #008000"># Or use one of the built-in configurations</span>
 <span style="color: #000000">docker run --rm -p 3000:3000 -it css:latest -c config/default.json</span>
-<span style="color: #008000"># Use your own configuration mapped to the right directory</span>
+<span style="color: #008000"># Or use your own configuration mapped to the right directory</span>
 <span style="color: #000000">docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json</span>
 </code></pre>
-				<a href="#configuring-the-server" id="configuring-the-server" style="color: inherit; text-decoration: none;">
-					<h2>Configuring the server</h2>
+				<a href="#🔧-configuring-the-server" id="🔧-configuring-the-server" style="color: inherit; text-decoration: none;">
+					<h2>🔧 Configuring the server</h2>
 				</a>
-				<p>Community Solid Server (CSS) uses
-					<a href="https://componentsjs.readthedocs.io/en/latest/">ComponentJS</a> to manage all
-					configuration for the server. There are a variety of configuration files for
-				common use cases in the <code>config</code> folder.</p>
-				<p>Additional recipes for configuring and deploying the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
+				<p>The Community Solid Server is designed to be flexible
+					such that people can easily run different configurations.
+					This is useful for customizing the server with plugins,
+					testing applications in different setups,
+					or developing new parts for the server
+				without needing to change its base code.</p>
+				<a href="#⏱️-parameters" id="⏱️-parameters" style="color: inherit; text-decoration: none;">
+					<h3>⏱️ Parameters</h3>
+				</a>
+				<p>An easy way to customize the server is
+					by passing parameters to the server command.
+					These parameters give you direct access
+				to some commonly used settings:</p>
 				<table>
 					<thead>
 						<tr>
-							<th>Parameter</th>
-							<th>Default</th>
-							<th>Description</th>
+							<th>parameter name</th>
+							<th>default value</th>
+							<th>description</th>
 						</tr>
 					</thead>
 					<tbody><tr>
 							<td><code>--port, -p</code></td>
 							<td><code>3000</code></td>
-							<td></td>
+							<td>The TCP port on which the server runs.</td>
 						</tr>
 						<tr>
 							<td><code>--baseUrl. -b</code></td>
-							<td><code>&quot;http://localhost:$PORT/&quot;</code></td>
-							<td>Needs to be set to the base URL of the server for authentication and authorization to function.</td>
-						</tr>
-						<tr>
-							<td><code>--config, -c</code></td>
-							<td><code>&quot;config/default.json&quot;</code></td>
-							<td><code>config/default.json</code> stores all data in memory. To persist data to your filesystem, try <code>config/file.json</code></td>
-						</tr>
-						<tr>
-							<td><code>--mainModulePath, -m</code></td>
-							<td></td>
-							<td>Absolute path to the package root from which ComponentJS module resolution should start.</td>
+							<td><code>http://localhost:$PORT/</code></td>
+							<td>The public URL of your server.</td>
 						</tr>
 						<tr>
 							<td><code>--loggingLevel, -l</code></td>
-							<td><code>&quot;info&quot;</code></td>
-							<td></td>
+							<td><code>info</code></td>
+							<td>The detail level of logging; useful for debugging problems.</td>
+						</tr>
+						<tr>
+							<td><code>--config, -c</code></td>
+							<td><code>config/default.json</code></td>
+							<td>The configuration for the server. The default only stores data in memory; to persist to your filesystem, try <code>config/file.json</code></td>
 						</tr>
 						<tr>
 							<td><code>--rootFilePath, -f</code></td>
-							<td><code>&quot;./&quot;</code></td>
-							<td>Folder to start the server in when using a file-based config.</td>
+							<td><code>./</code></td>
+							<td>Root folder of the server, when using a file-based configuration.</td>
 						</tr>
 						<tr>
 							<td><code>--sparqlEndpoint, -s</code></td>
 							<td></td>
-							<td>Endpoint to call when using a SPARQL-based config.</td>
+							<td>URL of the SPARQL endpoint, when using a quadstore-based configuration.</td>
 						</tr>
 						<tr>
 							<td><code>--showStackTrace, -t</code></td>
 							<td>false</td>
-							<td>Whether error stack traces should be shown in responses.</td>
+							<td>Enables detailed logging on error pages.</td>
 						</tr>
 						<tr>
 							<td><code>--podConfigJson</code></td>
-							<td><code>&quot;./pod-config.json&quot;</code></td>
-							<td>JSON file to store pod configuration when using a dynamic config.</td>
+							<td><code>./pod-config.json</code></td>
+							<td>Path to the file that keeps track of dynamic Pod configurations.</td>
+						</tr>
+						<tr>
+							<td><code>--mainModulePath, -m</code></td>
+							<td></td>
+							<td>Path from where Components.js will start its lookup when initializing configurations.</td>
 						</tr>
 				</tbody></table>
-				<a href="#using-the-identity-provider" id="using-the-identity-provider" style="color: inherit; text-decoration: none;">
-					<h2>Using the identity provider</h2>
+				<a href="#🧶-custom-configurations" id="🧶-custom-configurations" style="color: inherit; text-decoration: none;">
+					<h3>🧶 Custom configurations</h3>
 				</a>
-				<p>You can register and/or create a pod by going to <code>/idp/register</code> after starting the server.
-					The input you need to provide depends on the chosen options,
-					as is indicated next to the text fields.
-					After submitting, you will get a summary of everything that was created.
-				Below are descriptions of the 3 available options.</p>
-				<a href="#1-create-new-webid" id="1-create-new-webid" style="color: inherit; text-decoration: none;">
-					<h3>1. Create new WebID</h3>
+				<p>More substantial changes to server behavior can be achieved
+					by writing new configuration files in JSON-LD.
+					The Community Solid Server uses <a href="https://componentsjs.readthedocs.io/en/latest/">Components.js</a>
+				to specify how modules and components need to be wired together at runtime.</p>
+				<p>Examples and guidance on configurations
+				are available in the <a href="https://github.com/solid/community-server/tree/main/config"><code>config</code> folder</a>.</p>
+				<p>Recipes for configuring the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
+				<a href="#👩🏽💻-developing-server-code" id="👩🏽💻-developing-server-code" style="color: inherit; text-decoration: none;">
+					<h2>👩🏽‍💻 Developing server code</h2>
 				</a>
-				<p>Enabling this option will create a new WebID to be used for authentication.
-					Since a WebID needs to be stored and registered somewhere to be used,
-				this option also requires options 2 &amp; 3 below to be enabled.</p>
-				<p>In case you do not choose this option,
-					you will have to provide your own WebID.
-					The server will then ask to verify that you are the owner of that WebID
-				by adding a specific token to it.</p>
-				<a href="#2-register-your-webid-with-the-idp" id="2-register-your-webid-with-the-idp" style="color: inherit; text-decoration: none;">
-					<h3>2. Register your WebID with the IDP</h3>
-				</a>
-				<p>This allows you to authenticate with your WebID using this server.
-					After doing this you can use a client such as <code>@inrupt/solid-client-authn-js</code>
-					to log in with the chosen email/password combination and this server as issuer.
-					In case you are using an external WebID,
-				it is important to add the correct <code>solid:oidcIssuer</code> triple to your profile after registering.</p>
-				<a href="#3-create-a-new-pod" id="3-create-a-new-pod" style="color: inherit; text-decoration: none;">
-					<h3>3. Create a new pod</h3>
-				</a>
-				<p>Creates a new Solid pod.
-					The location of the pod will be determined by the chosen pod name.
-				In case a WebID is also being created, it will be located inside this pod.</p>
-				<a href="#developing-server-code" id="developing-server-code" style="color: inherit; text-decoration: none;">
-					<h2>Developing server code</h2>
-				</a>
+				<p>The server allows writing and plugging in custom modules
+				without altering its base source code.</p>
 				<p>The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a> and
 					the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural diagram</a>
 				can help you find your way.</p>
-				<p>If you want to help out with the development of this server,
+				<p>If you want to help out with server development,
 					have a look at the <a href="guides/developer-notes.md">📓 developer notes</a> and
 				<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first issues</a>.</p>
+				<a href="#📜-license" id="📜-license" style="color: inherit; text-decoration: none;">
+					<h2>📜 License</h2>
+				</a>
+				<p>The Solid Community Server code
+					is copyrighted by <a href="https://inrupt.com/">Inrupt Inc.</a>
+					and <a href="https://www.imec-int.com/">imec</a>
+				and available under the <a href="https://github.com/solid/community-server/blob/main/LICENSE.md">MIT License</a>.</p>
+				<p>Core contributors are
+					<a href="https://github.com/joachimvh">Joachim Van Herwegen</a>,
+					<a href="https://github.com/RubenVerborgh">Ruben Verborgh</a>,
+					<a href="https://github.com/rubensworks">Ruben Taelman</a>,
+					and
+				<a href="https://github.com/matthieubosquet">Matthieu Bosquet</a>.</p>
+				<a href="#🎤-feedback-and-questions" id="🎤-feedback-and-questions" style="color: inherit; text-decoration: none;">
+					<h2>🎤 Feedback and questions</h2>
+				</a>
+				<p>Don&#39;t hesitate to <a href="https://github.com/solid/community-server/discussions">start a discussion</a>
+				or <a href="https://github.com/solid/community-server/issues">report a bug</a>.</p>
+				<p>Learn more about Solid at <a href="https://solidproject.org/">solidproject.org</a>.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -239,7 +265,7 @@
 						<a href="modules/authentication_unsecurewebidextractor.html">authentication/<wbr>Unsecure<wbr>Web<wbr>IdExtractor</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/authorization_alloweverythingauthorizer.html">authorization/<wbr>Allow<wbr>Everything<wbr>Authorizer</a>
+						<a href="modules/authorization_allowallauthorizer.html">authorization/<wbr>Allow<wbr>All<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/authorization_authorization.html">authorization/<wbr>Authorization</a>
@@ -249,6 +275,12 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/authorization_auxiliaryauthorizer.html">authorization/<wbr>Auxiliary<wbr>Authorizer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/authorization_denyallauthorizer.html">authorization/<wbr>Deny<wbr>All<wbr>Authorizer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/authorization_pathbasedauthorizer.html">authorization/<wbr>Path<wbr>Based<wbr>Authorizer</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/authorization_webaclauthorization.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorization</a>
