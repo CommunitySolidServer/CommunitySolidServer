@@ -1,10 +1,30 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.0.0-beta.2"></a>
+## [v1.0.0-beta.2](https://github.com/solid/community-server/compare/v1.0.0-beta.1...v1.0.0-beta.2) - 2021-07-30
+
+### Added
+* [feat: Allow registration to be disabled](https://github.com/solid/community-server/commit/916dce5bd5eb28bfeacfc294cb689614b2386c36)
+* [feat: Prevent access to internal storage containers](https://github.com/solid/community-server/commit/7b94b71e7ed087ee065608d300b8bae9989642b7)
+* [feat: Cache static assets.](https://github.com/solid/community-server/commit/745eef798a6fe8a0900c99a10c0b04db959f6663)
+* [feat: Update ExtensionBasedMapper custom types](https://github.com/solid/community-server/commit/3f8f822d819720f69f8ef362feeaa2b126d3220a)
+* [docs: Make registration form self-explanatory.](https://github.com/solid/community-server/commit/969bb0ee6c1706b2541ae2dc520f8a2dff5e9ede)
+
+### Changed
+* [refactor: Rename AllowEverythingAuthorizer to AllowAllAuthorizer](https://github.com/solid/community-server/commit/dee382849d742afff20ad2c8c02dba976a7195d8)
+
+### Fixed
+* [fix: Trust X-Forwarded headers in the IDP](https://github.com/solid/community-server/commit/2df3f1f28c6e56ef0333bf91e86ad5d60f8396d9)
+* [fix: Prevent cyclical dependency with locker and storage](https://github.com/solid/community-server/commit/45f9a51d7cc45d5aa85e2f439d93d2ba06e84159)
+* [fix: Use memory key/value storage for sparql backends](https://github.com/solid/community-server/commit/c01e33ecd9b25efa9219cc98519de8042b3ad380)
+* [fix: Expose WAC-Allow via CORS.](https://github.com/solid/community-server/commit/02715363139e7fd193e9ffae6bbffa9288948316)
+* [fix: Expose Link via CORS.](https://github.com/solid/community-server/commit/643ceced362dc5d002b98ab044b597b7ad11d182)
+
+
 <a name="v1.0.0-beta.1"></a>
 ## [v1.0.0-beta.1](https://github.com/solid/community-server/compare/v1.0.0-beta.0...v1.0.0-beta.1) - 2021-07-23
 
-### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
 ### Added
 * [feat: Support metadata in multiple graphs](https://github.com/solid/community-server/commit/35a7cf988c139de0c7bf3f6e821ea4a52e83d2b4)
 * [feat: Allow HttpErrors to store cause and errorCode](https://github.com/solid/community-server/commit/e44c337d0f3b7a4090ce9602f954540a5180ca3b)
