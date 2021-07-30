@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/app/default.json",
+    "files-scs:config/app/main/default.json",
     "files-scs:config/app/init/default.json",
     "files-scs:config/http/handler/default.json",
     "files-scs:config/http/middleware/no-websockets.json",
