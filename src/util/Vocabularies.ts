@@ -100,6 +100,10 @@ export const MA = createUriAndTermNamespace('http://www.w3.org/ns/ma-ont#',
   'format',
 );
 
+export const OIDC = createUriAndTermNamespace('http://www.w3.org/ns/solid/oidc#',
+  'redirect_uris',
+);
+
 export const PIM = createUriAndTermNamespace('http://www.w3.org/ns/pim/space#',
   'Storage',
 );

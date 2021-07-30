@@ -1,12 +1,12 @@
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
-import { Store } from 'n3';
+import type { Quad } from 'n3';
 import type { Adapter, AdapterPayload } from 'oidc-provider';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
-import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
+import { fetchDataset } from '../../util/FetchUtil';
+import { OIDC } from '../../util/Vocabularies';
 import type { AdapterFactory } from './AdapterFactory';
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -84,29 +84,27 @@ export class WebIdAdapter implements Adapter {
     return payload;
   }
 
+  /**
+   * Parses RDF data found at a client WebID.
+   * @param data - Raw data from the WebID.
+   * @param id - The actual WebID.
+   * @param response - Response object from the request.
+   */
   private async parseRdfWebId(data: string, id: string, response: Response): Promise<AdapterPayload> {
-    const contentType = response.headers.get('content-type');
-    if (!contentType) {
-      throw new Error(`No content-type received for client WebID ${id}`);
+    const representation = await fetchDataset(response, this.converter, data);
+
+    // Find the valid redirect URIs
+    const redirectUris: string[] = [];
+    for await (const entry of representation.data) {
+      const triple = entry as Quad;
+      if (triple.predicate.equals(OIDC.terms.redirect_uris)) {
+        redirectUris.push(triple.object.value);
+      }
     }
-
-    // Try to convert to quads
-    const representation = new BasicRepresentation(data, contentType);
-    const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-    const converted = await this.converter.handleSafe({ representation, identifier: { path: id }, preferences });
-    const quads = new Store();
-    const importer = quads.import(converted.data);
-    await new Promise((resolve, reject): void => {
-      importer.on('end', resolve);
-      importer.on('error', reject);
-    });
-
-    // Find the valid redirect uris
-    const match = quads.getObjects(id, 'http://www.w3.org/ns/solid/oidc#redirect_uris', null);
 
     return {
       client_id: id,
-      redirect_uris: match.map((node): string => node.value),
+      redirect_uris: redirectUris,
     };
   }
 
