@@ -1,6 +1,8 @@
+import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
 import { v4 } from 'uuid';
 import { getLoggerFor } from '../../logging/LogUtil';
+import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { fetchDataset } from '../../util/FetchUtil';
@@ -15,11 +17,13 @@ const { literal, namedNode, quad } = DataFactory;
 export class TokenOwnershipValidator extends OwnershipValidator {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly converter: RepresentationConverter;
   private readonly storage: ExpiringStorage<string, string>;
   private readonly expiration: number;
 
-  public constructor(storage: ExpiringStorage<string, string>, expiration = 30) {
+  public constructor(converter: RepresentationConverter, storage: ExpiringStorage<string, string>, expiration = 30) {
     super();
+    this.converter = converter;
     this.storage = storage;
     // Convert minutes to milliseconds
     this.expiration = expiration * 60 * 1000;
@@ -37,9 +41,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     }
 
     // Verify if the token can be found in the WebId
-    const dataset = await fetchDataset(webId);
-    const expectedQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
-    if (!dataset.has(expectedQuad)) {
+    if (!await this.hasToken(webId, token)) {
       this.throwError(webId, token);
     }
     this.logger.debug(`Verified ownership of ${webId}`);
@@ -58,6 +60,22 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    */
   private generateToken(): string {
     return v4();
+  }
+
+  /**
+   * Fetches data from the WebID to determine if the token is present.
+   */
+  private async hasToken(webId: string, token: string): Promise<boolean> {
+    const representation = await fetchDataset(webId, this.converter);
+    const expectedQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
+    for await (const data of representation.data) {
+      const triple = data as Quad;
+      if (triple.equals(expectedQuad)) {
+        representation.data.destroy();
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

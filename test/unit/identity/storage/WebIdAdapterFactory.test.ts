@@ -10,7 +10,6 @@ jest.mock('cross-fetch');
 describe('A WebIdAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const id = 'https://app.test.com/card#me';
-  let data: string;
   let json: any;
   let rdf: string;
   let source: Adapter;
@@ -34,7 +33,7 @@ describe('A WebIdAdapterFactory', (): void => {
     };
     rdf = `<${id}> <http://www.w3.org/ns/solid/oidc#redirect_uris> <http://test.com>.`;
 
-    fetchMock.mockReturnValue({ text: (): any => data });
+    fetchMock.mockImplementation((url: string): any => ({ text: (): any => '', url, status: 200 }));
 
     source = {
       upsert: jest.fn(),
@@ -110,12 +109,12 @@ describe('A WebIdAdapterFactory', (): void => {
   });
 
   it('errors if the client ID requests does not respond with 200.', async(): Promise<void> => {
-    fetchMock.mockResolvedValueOnce({ status: 400, text: (): string => 'error' });
+    fetchMock.mockResolvedValueOnce({ url: id, status: 400, text: (): string => 'error' });
     await expect(adapter.find(id)).rejects.toThrow(`Unable to access data at ${id}: error`);
   });
 
   it('can handle a valid JSON-LD response.', async(): Promise<void> => {
-    fetchMock.mockResolvedValueOnce({ status: 200, text: (): string => JSON.stringify(json) });
+    fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });
     await expect(adapter.find(id)).resolves.toEqual({
       ...json,
       token_endpoint_auth_method: 'none',
@@ -124,14 +123,14 @@ describe('A WebIdAdapterFactory', (): void => {
 
   it('errors if there is a client_id mismatch.', async(): Promise<void> => {
     json.client_id = 'someone else';
-    fetchMock.mockResolvedValueOnce({ status: 200, text: (): string => JSON.stringify(json) });
+    fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });
     await expect(adapter.find(id)).rejects
       .toThrow('The client registration `client_id` field must match the client WebID');
   });
 
   it('can handle a valid RDF response.', async(): Promise<void> => {
     fetchMock.mockResolvedValueOnce(
-      { status: 200, text: (): string => rdf, headers: { get: (): any => 'text/turtle' }},
+      { url: id, status: 200, text: (): string => rdf, headers: { get: (): any => 'text/turtle' }},
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,
@@ -147,7 +146,10 @@ describe('A WebIdAdapterFactory', (): void => {
       'http://randomField': { '@value': 'this will not be there since RDF parsing only takes preset fields' },
     };
     fetchMock.mockResolvedValueOnce(
-      { status: 200, text: (): string => JSON.stringify(json), headers: { get: (): any => 'application/ld+json' }},
+      { url: id,
+        status: 200,
+        text: (): string => JSON.stringify(json),
+        headers: { get: (): any => 'application/ld+json' }},
     );
     await expect(adapter.find(id)).resolves.toEqual({
       client_id: id,
@@ -158,9 +160,9 @@ describe('A WebIdAdapterFactory', (): void => {
 
   it('errors if there is no content-type.', async(): Promise<void> => {
     fetchMock.mockResolvedValueOnce(
-      { status: 200, text: (): string => rdf, headers: { get: jest.fn() }},
+      { url: id, status: 200, text: (): string => rdf, headers: { get: jest.fn() }},
     );
     await expect(adapter.find(id)).rejects
-      .toThrow(`No content-type received for client WebID ${id}`);
+      .toThrow(`Unable to access data at ${id}`);
   });
 });

@@ -77,7 +77,6 @@
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.21.3",
     "@rdfjs/data-model": "^1.2.0",
-    "@rdfjs/fetch": "^2.1.0",
     "@solid/access-token-verifier": "^0.10.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
@@ -93,8 +92,6 @@
     "@types/pump": "^1.1.1",
     "@types/punycode": "^2.1.0",
     "@types/rdf-js": "^4.0.2",
-    "@types/rdfjs__fetch": "^2.0.3",
-    "@types/rdfjs__fetch-lite": "^2.0.3",
     "@types/redis": "^2.8.30",
     "@types/redlock": "^4.0.1",
     "@types/sparqljs": "^3.1.2",
