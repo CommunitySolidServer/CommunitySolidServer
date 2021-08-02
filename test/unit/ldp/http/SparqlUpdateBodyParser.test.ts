@@ -3,13 +3,13 @@ import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import { Algebra } from 'sparqlalgebrajs';
 import * as algebra from 'sparqlalgebrajs';
-import streamifyArray from 'streamify-array';
 import type { BodyParserArgs } from '../../../../src/ldp/http/BodyParser';
 import { SparqlUpdateBodyParser } from '../../../../src/ldp/http/SparqlUpdateBodyParser';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
+import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 
 describe('A SparqlUpdateBodyParser', (): void => {
   const bodyParser = new SparqlUpdateBodyParser();
@@ -32,7 +32,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
   });
 
   it('errors when handling invalid SPARQL updates.', async(): Promise<void> => {
-    input.request = streamifyArray([ 'VERY INVALID UPDATE' ]) as HttpRequest;
+    input.request = guardedStreamFrom([ 'VERY INVALID UPDATE' ]) as HttpRequest;
     await expect(bodyParser.handle(input)).rejects.toThrow(BadRequestHttpError);
   });
 
@@ -40,7 +40,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
     const mock = jest.spyOn(algebra, 'translate').mockImplementationOnce((): any => {
       throw 'apple';
     });
-    input.request = streamifyArray(
+    input.request = guardedStreamFrom(
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     ) as HttpRequest;
     await expect(bodyParser.handle(input)).rejects.toThrow(BadRequestHttpError);
@@ -48,7 +48,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
   });
 
   it('converts SPARQL updates to algebra.', async(): Promise<void> => {
-    input.request = streamifyArray(
+    input.request = guardedStreamFrom(
       [ 'DELETE DATA { <http://test.com/s> <http://test.com/p> <http://test.com/o> }' ],
     ) as HttpRequest;
     const result = await bodyParser.handle(input);
@@ -67,7 +67,7 @@ describe('A SparqlUpdateBodyParser', (): void => {
   });
 
   it('accepts relative references.', async(): Promise<void> => {
-    input.request = streamifyArray(
+    input.request = guardedStreamFrom(
       [ 'INSERT DATA { <#it> <http://test.com/p> <http://test.com/o> }' ],
     ) as HttpRequest;
     input.metadata.identifier = namedNode('http://test.com/my-document.ttl');

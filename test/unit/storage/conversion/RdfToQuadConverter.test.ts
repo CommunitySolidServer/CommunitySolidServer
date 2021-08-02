@@ -3,7 +3,7 @@ import { Readable } from 'stream';
 import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import rdfParser from 'rdf-parse';
-import streamifyArray from 'streamify-array';
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
@@ -40,10 +40,9 @@ describe('A RdfToQuadConverter', (): void => {
 
   it('converts turtle to quads.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
-    const representation = {
-      data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation(
+      '<http://test.com/s> <http://test.com/p> <http://test.com/o>.', metadata,
+    );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
@@ -61,10 +60,9 @@ describe('A RdfToQuadConverter', (): void => {
 
   it('converts JSON-LD to quads.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('application/ld+json');
-    const representation = {
-      data: streamifyArray([ '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}' ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation(
+      '{"@id": "http://test.com/s", "http://test.com/p": { "@id": "http://test.com/o" }}', metadata,
+    );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
@@ -82,10 +80,9 @@ describe('A RdfToQuadConverter', (): void => {
 
   it('throws an BadRequestHttpError on invalid triple data.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
-    const representation = {
-      data: streamifyArray([ '<http://test.com/s> <http://test.com/p> <http://test.co' ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation(
+      '<http://test.com/s> <http://test.com/p> <http://test.co', metadata,
+    );
     const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toEqual({
