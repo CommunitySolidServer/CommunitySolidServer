@@ -35,19 +35,4 @@ describe('A MarkdownToHtmlConverter', (): void => {
       { htmlBody: '<p>Text <code>code</code> more text.</p>\n' },
     );
   });
-
-  it('uses the main markdown header as title if there is one.', async(): Promise<void> => {
-    const markdown = '# title text\nmore text';
-    const representation = new BasicRepresentation(markdown, 'text/markdown', true);
-    const prom = converter.handle({ identifier, representation, preferences });
-    await expect(prom).resolves.toBeDefined();
-    const result = await prom;
-    expect(result.binary).toBe(true);
-    expect(result.metadata.contentType).toBe('text/html');
-    await expect(readableToString(result.data)).resolves.toBe('<html>');
-    expect(templateEngine.render).toHaveBeenCalledTimes(1);
-    expect(templateEngine.render).toHaveBeenLastCalledWith(
-      { htmlBody: '<h1 id="title-text">title text</h1>\n<p>more text</p>\n', title: 'title text' },
-    );
-  });
 });

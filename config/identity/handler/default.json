@@ -23,7 +23,22 @@
       "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
       "templateHandler": {
         "@type": "TemplateHandler",
-        "templateEngine": { "@type": "EjsTemplateEngine" }
+        "templateEngine": {
+          "comment": "Renders the specific page and embeds it into the main HTML body.",
+          "@type": "ChainedTemplateEngine",
+          "renderedName": "htmlBody",
+          "engines": [
+            {
+              "comment": "Will be called with specific interaction templates to generate HTML snippets.",
+              "@type": "EjsTemplateEngine"
+            },
+            {
+              "comment": "Will embed the result of the first engine into the main HTML template.",
+              "@type": "EjsTemplateEngine",
+              "template": "$PACKAGE_ROOT/templates/main.html.ejs",
+            }
+          ]
+        }
       },
       "interactionCompleter": {
         "comment": "Responsible for finishing OIDC interactions.",

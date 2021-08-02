@@ -304,6 +304,7 @@ export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 
 // Util/Templates
+export * from './util/templates/ChainedTemplateEngine';
 export * from './util/templates/EjsTemplateEngine';
 export * from './util/templates/HandlebarsTemplateEngine';
 export * from './util/templates/TemplateEngine';

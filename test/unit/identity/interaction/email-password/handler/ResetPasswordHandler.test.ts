@@ -48,10 +48,7 @@ describe('A ResetPasswordHandler', (): void => {
 
   it('renders a message on success.', async(): Promise<void> => {
     request = createPostFormRequest({ password: 'password!', confirmPassword: 'password!' }, url);
-    await expect(handler.handle({ request, response })).resolves.toEqual({
-      details: { message: 'Your password was successfully reset.' },
-      type: 'response',
-    });
+    await expect(handler.handle({ request, response })).resolves.toEqual({ type: 'response' });
     expect(accountStore.getForgotPasswordRecord).toHaveBeenCalledTimes(1);
     expect(accountStore.getForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
     expect(accountStore.deleteForgotPasswordRecord).toHaveBeenCalledTimes(1);

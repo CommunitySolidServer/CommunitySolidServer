@@ -100,6 +100,19 @@ describe('An IdentityProviderHttpHandler', (): void => {
     );
   });
 
+  it('supports InteractionResponseResults without details.', async(): Promise<void> => {
+    request.url = '/idp/routeResponse';
+    request.method = 'POST';
+    (routes.response.handler as jest.Mocked<InteractionHandler>).handleSafe.mockResolvedValueOnce({ type: 'response' });
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, response });
+    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
+      { response, templateFile: routes.response.responseTemplate, contents: {}},
+    );
+  });
+
   it('calls the interactionCompleter for InteractionCompleteResults.', async(): Promise<void> => {
     request.url = '/idp/routeComplete';
     request.method = 'POST';
