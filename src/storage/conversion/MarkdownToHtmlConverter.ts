@@ -23,12 +23,8 @@ export class MarkdownToHtmlConverter extends TypedRepresentationConverter {
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
     const markdown = await readableToString(representation.data);
-    // Try to extract the main title for use in the <title> tag
-    const title = /^#+\s*([^\n]+)\n/u.exec(markdown)?.[1];
-
-    // Place the rendered Markdown into the HTML template
     const htmlBody = marked(markdown);
-    const html = await this.templateEngine.render({ htmlBody, title });
+    const html = await this.templateEngine.render({ htmlBody });
 
     return new BasicRepresentation(html, representation.metadata, TEXT_HTML);
   }

@@ -1,63 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>You are signed up</title>
-  <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
-</head>
-<body>
-  <header>
-    <a href="/"><img src="/.well_known/css/images/solid.svg" alt="[Solid logo]" /></a>
-    <h1>Community Solid Server</h1>
-  </header>
-  <main>
-    <h1>You are signed up</h1>
+<h1>You've been signed up</h1>
+<p>
+  <strong>Welcome to Solid.</strong>
+  We wish you an exciting experience!
+</p>
+
+<% if (createPod) { %>
+  <h2>Your new Pod</h2>
+  <p>
+    Your new Pod is located at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
+    <br>
+    You can store your documents and data there.
+  </p>
+<% } %>
+
+<% if (createWebId) { %>
+  <h2>Your new WebID</h2>
+  <p>
+    Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>.
+    <br>
+    You can use this identifier to interact with Solid pods and apps.
+  </p>
+<% } %>
+
+<% if (register) { %>
+  <h2>Your new account</h2>
+  <p>
+    Via your email address <em><%= email %></em>,
+    this server lets you <a href="./login">log in</a> to Solid apps
+    with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
+  </p>
+  <% if (!createWebId) { %>
     <p>
-      <strong>Welcome to Solid.</strong>
-      We wish you an exciting experience!
+      You will need to add the triple
+      <code><%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%></code>
+      to your existing WebID document <em><%= webId %></em>
+      to indicate that you trust this server as a login provider.
     </p>
-
-    <% if (createPod) { %>
-      <h2>Your new Pod</h2>
-      <p>
-        Your new Pod is located at <a href="<%= podBaseUrl %>" class="link"><%= podBaseUrl %></a>.
-        <br>
-        You can store your documents and data there.
-      </p>
-    <% } %>
-
-    <% if (createWebId) { %>
-      <h2>Your new WebID</h2>
-      <p>
-        Your new WebID is <a href="<%= webId %>" class="link"><%= webId %></a>.
-        <br>
-        You can use this identifier to interact with Solid pods and apps.
-      </p>
-    <% } %>
-
-    <% if (register) { %>
-      <h2>Your new account</h2>
-      <p>
-        Via your email address <em><%= email %></em>,
-        this server lets you <a href="./login">log in</a> to Solid apps
-        with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
-      </p>
-      <% if (!createWebId) { %>
-        <p>
-          You will need to add the triple
-          <code><%= `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`%></code>
-          to your existing WebID document <em><%= webId %></em>
-          to indicate that you trust this server as a login provider.
-        </p>
-      <% } %>
-    <% } %>
-  </main>
-  <footer>
-    <p>
-      ©2019–2021 <a href="https://inrupt.com/">Inrupt Inc.</a>
-      and <a href="https://www.imec-int.com/">imec</a>
-    </p>
-  </footer>
-</body>
-</html>
+  <% } %>
+<% } %>

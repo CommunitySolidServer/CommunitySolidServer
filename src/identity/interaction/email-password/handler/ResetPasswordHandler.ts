@@ -34,7 +34,7 @@ export class ResetPasswordHandler extends InteractionHandler {
       assertPassword(password, confirmPassword);
 
       await this.resetPassword(recordId, password);
-      return { type: 'response', details: { message: 'Your password was successfully reset.' }};
+      return { type: 'response' };
     } catch (error: unknown) {
       throwIdpInteractionError(error);
     }

@@ -182,9 +182,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     throw new BadRequestHttpError(`Unsupported request: ${request.method} ${request.url}`);
   }
 
-  private async handleTemplateResponse(response: HttpResponse, templateFile: string, contents: NodeJS.Dict<any>):
+  private async handleTemplateResponse(response: HttpResponse, templateFile: string, contents?: NodeJS.Dict<any>):
   Promise<void> {
-    await this.templateHandler.handleSafe({ response, templateFile, contents });
+    await this.templateHandler.handleSafe({ response, templateFile, contents: contents ?? {}});
   }
 
   /**

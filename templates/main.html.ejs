@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title><%= message %></title>
+  <title><%= extractTitle(htmlBody) %></title>
   <link rel="stylesheet" href="/.well_known/css/styles/main.css" type="text/css">
 </head>
 <body>
@@ -12,7 +12,7 @@
     <h1>Community Solid Server</h1>
   </header>
   <main>
-    <p><%= message %></p>
+    <%- htmlBody %>
   </main>
   <footer>
     <p>
@@ -22,3 +22,10 @@
   </footer>
 </body>
 </html>
+
+<%
+function extractTitle(body) {
+  const match = /^<h1[^>]*>([^<]*)<\/h1>/u.exec(body);
+  return match ? match[1] : 'Solid';
+}
+%>

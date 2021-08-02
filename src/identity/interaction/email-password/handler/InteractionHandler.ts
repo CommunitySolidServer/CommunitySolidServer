@@ -6,7 +6,7 @@ export type InteractionHandlerResult = InteractionResponseResult | InteractionCo
 
 export interface InteractionResponseResult<T = NodeJS.Dict<any>> {
   type: 'response';
-  details: T;
+  details?: T;
 }
 
 export interface InteractionCompleteResult {

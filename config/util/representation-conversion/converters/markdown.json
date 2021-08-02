@@ -11,8 +11,8 @@
       "@id": "urn:solid-server:default:MarkdownToHtmlConverter",
       "@type": "MarkdownToHtmlConverter",
       "templateEngine": {
-        "@type": "HandlebarsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/main.html.hbs"
+        "@type": "EjsTemplateEngine",
+        "template": "$PACKAGE_ROOT/templates/main.html.ejs"
       }
     },
     {
