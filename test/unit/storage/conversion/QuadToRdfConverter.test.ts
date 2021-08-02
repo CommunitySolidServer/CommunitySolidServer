@@ -1,6 +1,6 @@
 import { namedNode, triple } from '@rdfjs/data-model';
 import rdfSerializer from 'rdf-serialize';
-import streamifyArray from 'streamify-array';
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
@@ -48,14 +48,12 @@ describe('A QuadToRdfConverter', (): void => {
   });
 
   it('converts quads to Turtle.', async(): Promise<void> => {
-    const representation = {
-      data: streamifyArray([ triple(
-        namedNode('http://test.com/s'),
-        namedNode('http://test.com/p'),
-        namedNode('http://test.com/o'),
-      ) ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation([ triple(
+      namedNode('http://test.com/s'),
+      namedNode('http://test.com/p'),
+      namedNode('http://test.com/o'),
+    ) ],
+    metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({
@@ -72,14 +70,12 @@ describe('A QuadToRdfConverter', (): void => {
   it('converts quads with prefixes to Turtle.', async(): Promise<void> => {
     metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc');
     metadata.addQuad('http://test.com/', PREFERRED_PREFIX_TERM, 'test');
-    const representation = {
-      data: streamifyArray([ triple(
-        namedNode('http://test.com/s'),
-        DC.terms.modified,
-        namedNode('http://test.com/o'),
-      ) ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation([ triple(
+      namedNode('http://test.com/s'),
+      DC.terms.modified,
+      namedNode('http://test.com/o'),
+    ) ],
+    metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toEqual('text/turtle');
@@ -93,14 +89,12 @@ test:s dc:modified test:o.
   });
 
   it('uses the base IRI when converting quads to Turtle.', async(): Promise<void> => {
-    const representation = {
-      data: streamifyArray([ triple(
-        namedNode('http://example.org/foo/bar/'),
-        namedNode('http://example.org/foo/bar/#abc'),
-        namedNode('http://example.org/foo/bar/def/ghi'),
-      ) ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation([ triple(
+      namedNode('http://example.org/foo/bar/'),
+      namedNode('http://example.org/foo/bar/#abc'),
+      namedNode('http://example.org/foo/bar/def/ghi'),
+    ) ],
+    metadata);
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toEqual('text/turtle');
@@ -112,14 +106,12 @@ test:s dc:modified test:o.
 
   it('converts quads to JSON-LD.', async(): Promise<void> => {
     metadata.contentType = INTERNAL_QUADS;
-    const representation = {
-      data: streamifyArray([ triple(
-        namedNode('http://test.com/s'),
-        namedNode('http://test.com/p'),
-        namedNode('http://test.com/o'),
-      ) ]),
-      metadata,
-    } as Representation;
+    const representation = new BasicRepresentation([ triple(
+      namedNode('http://test.com/s'),
+      namedNode('http://test.com/p'),
+      namedNode('http://test.com/o'),
+    ) ],
+    metadata);
     const preferences: RepresentationPreferences = { type: { 'application/ld+json': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result).toMatchObject({

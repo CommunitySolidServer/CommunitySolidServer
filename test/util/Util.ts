@@ -1,7 +1,5 @@
 import type { Dirent, Stats } from 'fs';
-
-import { PassThrough } from 'stream';
-import streamifyArray from 'streamify-array';
+import { PassThrough, Readable } from 'stream';
 import type { SystemError } from '../../src/util/errors/SystemError';
 
 const portNames = [
@@ -95,7 +93,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
   const mock = {
     createReadStream(path: string): any {
       const { folder, name } = getFolder(path);
-      return streamifyArray([ folder[name] ]);
+      return Readable.from([ folder[name] ]);
     },
     createWriteStream(path: string): any {
       const { folder, name } = getFolder(path);

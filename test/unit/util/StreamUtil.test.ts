@@ -1,6 +1,5 @@
-import { PassThrough } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import streamifyArray from 'streamify-array';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
@@ -19,7 +18,7 @@ jest.mock('../../../src/server/HttpRequest', (): any => ({
 describe('StreamUtil', (): void => {
   describe('#readableToString', (): void => {
     it('concatenates all elements of a Readable.', async(): Promise<void> => {
-      const stream = streamifyArray([ 'a', 'b', 'c' ]);
+      const stream = Readable.from([ 'a', 'b', 'c' ]);
       await expect(readableToString(stream)).resolves.toEqual('abc');
     });
   });
@@ -30,7 +29,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('pipes data from one stream to the other.', async(): Promise<void> => {
-      const input = streamifyArray([ 'data' ]);
+      const input = Readable.from([ 'data' ]);
       const output = new PassThrough();
       const piped = pipeSafely(input, output);
       await expect(readableToString(piped)).resolves.toEqual('data');
@@ -50,7 +49,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('supports mapping errors to something else.', async(): Promise<void> => {
-      const input = streamifyArray([ 'data' ]);
+      const input = Readable.from([ 'data' ]);
       input.read = (): any => {
         input.emit('error', new Error('error'));
         return null;
@@ -61,7 +60,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('logs specific safer errors as debug.', async(): Promise<void> => {
-      const input = streamifyArray([ 'data' ]);
+      const input = Readable.from([ 'data' ]);
       input.read = (): any => {
         input.emit('error', new Error('Cannot call write after a stream was destroyed'));
         return null;
@@ -123,7 +122,7 @@ describe('StreamUtil', (): void => {
 
     it('can map errors if the input is an HttpRequest.', async(): Promise<void> => {
       (isHttpRequest as unknown as jest.Mock).mockReturnValueOnce(true);
-      const input = streamifyArray([ 'data' ]);
+      const input = Readable.from([ 'data' ]);
       input.read = (): any => {
         input.emit('error', new Error('error'));
         return null;
@@ -136,7 +135,7 @@ describe('StreamUtil', (): void => {
 
   describe('#transformSafely', (): void => {
     it('can transform a stream without arguments.', async(): Promise<void> => {
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely(source);
       transformed.setEncoding('utf8');
       const result = await arrayifyStream(transformed);
@@ -144,7 +143,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('can transform a stream synchronously.', async(): Promise<void> => {
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         encoding: 'utf8',
         transform(data: string): void {
@@ -160,7 +159,7 @@ describe('StreamUtil', (): void => {
     });
 
     it('can transform a stream asynchronously.', async(): Promise<void> => {
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         encoding: 'utf8',
         async transform(data: string): Promise<void> {
@@ -187,7 +186,7 @@ describe('StreamUtil', (): void => {
 
     it('catches synchronous errors on transform.', async(): Promise<void> => {
       const error = new Error('stream error');
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         transform(): never {
           throw error;
@@ -198,7 +197,7 @@ describe('StreamUtil', (): void => {
 
     it('catches synchronous errors on flush.', async(): Promise<void> => {
       const error = new Error('stream error');
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         async flush(): Promise<never> {
           await new Promise((resolve): any => setImmediate(resolve));
@@ -210,7 +209,7 @@ describe('StreamUtil', (): void => {
 
     it('catches asynchronous errors on transform.', async(): Promise<void> => {
       const error = new Error('stream error');
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         transform(): never {
           throw error;
@@ -221,7 +220,7 @@ describe('StreamUtil', (): void => {
 
     it('catches asynchronous errors on flush.', async(): Promise<void> => {
       const error = new Error('stream error');
-      const source = streamifyArray([ 'data' ]);
+      const source = Readable.from([ 'data' ]);
       const transformed = transformSafely<string>(source, {
         async flush(): Promise<never> {
           await new Promise((resolve): any => setImmediate(resolve));

@@ -1,15 +1,14 @@
 import { EventEmitter } from 'events';
 import fs from 'fs';
-import { PassThrough } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { createResponse } from 'node-mocks-http';
-import streamifyArray from 'streamify-array';
 import { StaticAssetHandler } from '../../../../src/server/middleware/StaticAssetHandler';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { getModuleRoot, joinFilePath } from '../../../../src/util/PathUtil';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream')
-  .mockImplementation((): any => streamifyArray([ 'file contents' ]));
+  .mockImplementation((): any => Readable.from([ 'file contents' ]));
 
 describe('A StaticAssetHandler', (): void => {
   const handler = new StaticAssetHandler({

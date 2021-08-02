@@ -1,7 +1,7 @@
 import 'jest-rdf';
+import { Readable } from 'stream';
 import { namedNode } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
-import streamifyArray from 'streamify-array';
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
@@ -34,7 +34,7 @@ describe('BasicRepresentation', (): void => {
   });
 
   it('creates a representation with (unguarded data, metadata).', (): void => {
-    const data = streamifyArray([ '' ]);
+    const data = Readable.from([ '' ]);
     const metadata = new RepresentationMetadata();
     const representation = new BasicRepresentation(data, metadata);
     expect(representation.data).toBe(data);

@@ -3,12 +3,11 @@ import arrayifyStream from 'arrayify-stream';
 import type { ParserOptions } from 'n3';
 import { StreamParser, StreamWriter } from 'n3';
 import type { Quad } from 'rdf-js';
-import streamifyArray from 'streamify-array';
 import type { Guarded } from './GuardedStream';
-import { pipeSafely } from './StreamUtil';
+import { guardedStreamFrom, pipeSafely } from './StreamUtil';
 
 export function serializeQuads(quads: Quad[], contentType?: string): Guarded<Readable> {
-  return pipeSafely(streamifyArray(quads), new StreamWriter({ format: contentType }));
+  return pipeSafely(guardedStreamFrom(quads), new StreamWriter({ format: contentType }));
 }
 
 /**
