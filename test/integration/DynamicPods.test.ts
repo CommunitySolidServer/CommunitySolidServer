@@ -13,10 +13,10 @@ const podConfigJson = joinFilePath(rootFilePath, 'config-pod.json');
 
 const configs: [string, any][] = [
   [ 'memory.json', {
-    teardown: (): void => removeFolder(rootFilePath),
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
   [ 'filesystem.json', {
-    teardown: (): void => removeFolder(rootFilePath),
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
 
