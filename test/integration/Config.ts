@@ -1,6 +1,6 @@
 import type { IModuleState } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
-import * as rimraf from 'rimraf';
+import { remove } from 'fs-extra';
 import { joinFilePath } from '../../src/util/PathUtil';
 
 let cachedModuleState: IModuleState;
@@ -38,8 +38,8 @@ export function getTestFolder(name: string): string {
   return joinFilePath(__dirname, '../tmp', name);
 }
 
-export function removeFolder(folder: string): void {
-  rimraf.sync(folder, { glob: false });
+export async function removeFolder(folder: string): Promise<void> {
+  await remove(folder);
 }
 
 export function getDefaultVariables(port: number, baseUrl?: string): Record<string, any> {

@@ -26,7 +26,7 @@ const stores: [string, any][] = [
   }],
   [ 'on-disk storage', {
     storeConfig: 'storage/backend/file.json',
-    teardown: (): void => removeFolder(rootFilePath),
+    teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
 ];
 
