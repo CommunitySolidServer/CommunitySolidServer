@@ -5,13 +5,12 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
-import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-import type { InteractionResponseResult } from './InteractionHandler';
+import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
 import { InteractionHandler } from './InteractionHandler';
 
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/u;
@@ -103,7 +102,7 @@ export class RegistrationHandler extends InteractionHandler {
     this.podManager = args.podManager;
   }
 
-  public async handle({ request }: HttpHandlerInput): Promise<InteractionResponseResult<RegistrationResponse>> {
+  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult<RegistrationResponse>> {
     const result = await this.parseInput(request);
 
     try {

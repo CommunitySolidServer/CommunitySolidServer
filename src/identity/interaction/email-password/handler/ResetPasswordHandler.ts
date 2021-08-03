@@ -1,10 +1,9 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-import type { InteractionResponseResult } from './InteractionHandler';
+import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
 import { InteractionHandler } from './InteractionHandler';
 
 /**
@@ -21,12 +20,12 @@ export class ResetPasswordHandler extends InteractionHandler {
     this.accountStore = accountStore;
   }
 
-  public async handle(input: HttpHandlerInput): Promise<InteractionResponseResult> {
+  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult> {
     try {
       // Extract record ID from request URL
-      const recordId = /\/([^/]+)$/u.exec(input.request.url!)?.[1];
+      const recordId = /\/([^/]+)$/u.exec(request.url!)?.[1];
       // Validate input data
-      const { password, confirmPassword } = await getFormDataRequestBody(input.request);
+      const { password, confirmPassword } = await getFormDataRequestBody(request);
       assert(
         typeof recordId === 'string' && recordId.length > 0,
         'Invalid request. Open the link from your email again',
