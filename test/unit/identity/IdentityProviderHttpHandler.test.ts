@@ -93,7 +93,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.method = 'POST';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, response });
+    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request });
     expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
       { response, templateFile: routes.response.responseTemplate, contents: { key: 'val' }},
@@ -106,7 +106,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     (routes.response.handler as jest.Mocked<InteractionHandler>).handleSafe.mockResolvedValueOnce({ type: 'response' });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, response });
+    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request });
     expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
       { response, templateFile: routes.response.responseTemplate, contents: {}},
@@ -118,7 +118,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.method = 'POST';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request, response });
+    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request });
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
     expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, response, webId: 'webId' });
   });
@@ -126,18 +126,22 @@ describe('An IdentityProviderHttpHandler', (): void => {
   it('matches paths based on prompt for requests to the root IDP.', async(): Promise<void> => {
     request.url = '/idp';
     request.method = 'POST';
-    provider.interactionDetails.mockResolvedValueOnce({ prompt: { name: 'other' }} as any);
+    const oidcInteraction = { prompt: { name: 'other' }};
+    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(0);
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
   });
 
   it('uses the default route for requests to the root IDP without (matching) prompt.', async(): Promise<void> => {
     request.url = '/idp';
     request.method = 'POST';
-    provider.interactionDetails.mockResolvedValueOnce({ prompt: { name: 'notSupported' }} as any);
+    const oidcInteraction = { prompt: { name: 'notSupported' }};
+    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(0);
   });
 

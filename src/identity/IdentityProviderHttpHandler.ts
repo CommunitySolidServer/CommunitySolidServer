@@ -11,9 +11,11 @@ import { assertError, createErrorMessage } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { trimTrailingSlashes } from '../util/PathUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
-import type { InteractionHandler,
-  InteractionHandlerResult } from './interaction/email-password/handler/InteractionHandler';
-
+import type {
+  Interaction,
+  InteractionHandler,
+  InteractionHandlerResult,
+} from './interaction/email-password/handler/InteractionHandler';
 import { IdpInteractionError } from './interaction/util/IdpInteractionError';
 import type { InteractionCompleter } from './interaction/util/InteractionCompleter';
 
@@ -118,33 +120,40 @@ export class IdentityProviderHttpHandler extends HttpHandler {
    * Finds the matching route and resolves the request.
    */
   private async handleRequest(request: HttpRequest, response: HttpResponse): Promise<void> {
+    // This being defined means we're in an OIDC session
+    let oidcInteraction: Interaction | undefined;
+    try {
+      const provider = await this.providerFactory.getProvider();
+      oidcInteraction = await provider.interactionDetails(request, response);
+    } catch {
+      // Just a regular request
+    }
+
     // If our own interaction handler does not support the input, it is either invalid or a request for the OIDC library
-    const route = await this.findRoute(request, response);
+    const route = await this.findRoute(request, oidcInteraction);
     if (!route) {
       const provider = await this.providerFactory.getProvider();
       this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
       return provider.callback(request, response);
     }
 
-    await this.resolveRoute(request, response, route);
+    await this.resolveRoute(request, response, route, oidcInteraction);
   }
 
   /**
    * Finds a route that supports the given request.
    */
-  private async findRoute(request: HttpRequest, response: HttpResponse): Promise<InteractionRoute | undefined> {
+  private async findRoute(request: HttpRequest, oidcInteraction?: Interaction): Promise<InteractionRoute | undefined> {
     if (!request.url || !request.url.startsWith(this.idpPath)) {
       // This is either an invalid request or a call to the .well-known configuration
       return;
     }
-    const url = request.url.slice(this.idpPath.length);
-    let route = this.getRouteMatch(url);
+    const pathName = request.url.slice(this.idpPath.length);
+    let route = this.getRouteMatch(pathName);
 
     // In case the request targets the IDP entry point the prompt determines where to go
-    if (!route && (url === '/' || url === '')) {
-      const provider = await this.providerFactory.getProvider();
-      const interactionDetails = await provider.interactionDetails(request, response);
-      route = this.getPromptMatch(interactionDetails.prompt.name);
+    if (!route && oidcInteraction && trimTrailingSlashes(pathName).length === 0) {
+      route = this.getPromptMatch(oidcInteraction.prompt.name);
     }
     return route;
   }
@@ -155,7 +164,8 @@ export class IdentityProviderHttpHandler extends HttpHandler {
    *
    * GET requests go to the templateHandler, POST requests to the specific InteractionHandler of the route.
    */
-  private async resolveRoute(request: HttpRequest, response: HttpResponse, route: InteractionRoute): Promise<void> {
+  private async resolveRoute(request: HttpRequest, response: HttpResponse, route: InteractionRoute,
+    oidcInteraction?: Interaction): Promise<void> {
     if (request.method === 'GET') {
       // .ejs templates errors on undefined variables
       return await this.handleTemplateResponse(response, route.viewTemplate, { errorMessage: '', prefilled: {}});
@@ -164,7 +174,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     if (request.method === 'POST') {
       let result: InteractionHandlerResult;
       try {
-        result = await route.handler.handleSafe({ request, response });
+        result = await route.handler.handleSafe({ request, oidcInteraction });
       } catch (error: unknown) {
         // Render error in the view
         const prefilled = IdpInteractionError.isInstance(error) ? error.prefilled : {};

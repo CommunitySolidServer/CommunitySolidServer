@@ -8,10 +8,7 @@
       "route": "^/confirm/?$",
       "prompt": "consent",
       "viewTemplate": "@css:templates/identity/email-password/confirm.html.ejs",
-      "handler": {
-        "@type": "SessionHttpHandler",
-        "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
-      }
+      "handler": { "@type": "SessionHttpHandler" }
     }
   ]
 }

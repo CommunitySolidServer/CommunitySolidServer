@@ -1,12 +1,11 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import type { HttpRequest } from '../../../../server/HttpRequest';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
-import type { InteractionCompleteResult } from './InteractionHandler';
+import type { InteractionCompleteResult, InteractionHandlerInput } from './InteractionHandler';
 
 /**
  * Handles the submission of the Login Form and logs the user in.
@@ -21,8 +20,8 @@ export class LoginHandler extends InteractionHandler {
     this.accountStore = accountStore;
   }
 
-  public async handle(input: HttpHandlerInput): Promise<InteractionCompleteResult> {
-    const { email, password, remember } = await this.parseInput(input.request);
+  public async handle({ request }: InteractionHandlerInput): Promise<InteractionCompleteResult> {
+    const { email, password, remember } = await this.parseInput(request);
     try {
       // Try to log in, will error if email/password combination is invalid
       const webId = await this.accountStore.authenticate(email, password);

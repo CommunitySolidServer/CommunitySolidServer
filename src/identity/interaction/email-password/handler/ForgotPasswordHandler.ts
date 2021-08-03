@@ -1,7 +1,6 @@
 import assert from 'assert';
 import urljoin from 'url-join';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpHandlerInput } from '../../../../server/HttpHandler';
 import { ensureTrailingSlash } from '../../../../util/PathUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { EmailSender } from '../../util/EmailSender';
@@ -9,7 +8,7 @@ import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
-import type { InteractionResponseResult } from './InteractionHandler';
+import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
 
 export interface ForgotPasswordHandlerArgs {
   accountStore: AccountStore;
@@ -40,10 +39,10 @@ export class ForgotPasswordHandler extends InteractionHandler {
     this.emailSender = args.emailSender;
   }
 
-  public async handle(input: HttpHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
+  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
     try {
       // Validate incoming data
-      const { email } = await getFormDataRequestBody(input.request);
+      const { email } = await getFormDataRequestBody(request);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
 
       await this.resetPassword(email);

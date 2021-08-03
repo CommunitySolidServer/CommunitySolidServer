@@ -1,12 +1,14 @@
+import type {
+  InteractionHandlerInput,
+} from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
 import { LoginHandler } from '../../../../../../src/identity/interaction/email-password/handler/LoginHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import type { HttpHandlerInput } from '../../../../../../src/server/HttpHandler';
 import { createPostFormRequest } from './Util';
 
 describe('A LoginHandler', (): void => {
   const webId = 'http://alice.test.com/card#me';
   const email = 'alice@test.email';
-  let input: HttpHandlerInput;
+  let input: InteractionHandlerInput;
   let storageAdapter: AccountStore;
   let handler: LoginHandler;
 

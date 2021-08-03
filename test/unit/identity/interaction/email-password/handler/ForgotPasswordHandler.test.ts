@@ -4,13 +4,11 @@ import {
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { EmailSender } from '../../../../../../src/identity/interaction/util/EmailSender';
 import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
-import type { HttpResponse } from '../../../../../../src/server/HttpResponse';
 import type { TemplateEngine } from '../../../../../../src/util/templates/TemplateEngine';
 import { createPostFormRequest } from './Util';
 
 describe('A ForgotPasswordHandler', (): void => {
   let request: HttpRequest;
-  const response: HttpResponse = {} as any;
   const email = 'test@test.email';
   const recordId = '123456';
   const html = `<a href="/base/idp/resetpassword/${recordId}">Reset Password</a>`;
@@ -47,20 +45,20 @@ describe('A ForgotPasswordHandler', (): void => {
 
   it('errors on non-string emails.', async(): Promise<void> => {
     request = createPostFormRequest({});
-    await expect(handler.handle({ request, response })).rejects.toThrow('Email required');
+    await expect(handler.handle({ request })).rejects.toThrow('Email required');
     request = createPostFormRequest({ email: [ 'email', 'email2' ]});
-    await expect(handler.handle({ request, response })).rejects.toThrow('Email required');
+    await expect(handler.handle({ request })).rejects.toThrow('Email required');
   });
 
   it('does not send a mail if a ForgotPassword record could not be generated.', async(): Promise<void> => {
     (accountStore.generateForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('error');
-    await expect(handler.handle({ request, response })).resolves
+    await expect(handler.handle({ request })).resolves
       .toEqual({ type: 'response', details: { email }});
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('sends a mail if a ForgotPassword record could be generated.', async(): Promise<void> => {
-    await expect(handler.handle({ request, response })).resolves
+    await expect(handler.handle({ request })).resolves
       .toEqual({ type: 'response', details: { email }});
     expect(emailSender.handleSafe).toHaveBeenCalledTimes(1);
     expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
