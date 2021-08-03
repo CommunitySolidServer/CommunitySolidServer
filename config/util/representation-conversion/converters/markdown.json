@@ -12,7 +12,7 @@
       "@type": "MarkdownToHtmlConverter",
       "templateEngine": {
         "@type": "EjsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/main.html.ejs"
+        "template": "@css:templates/main.html.ejs"
       }
     },
     {
@@ -21,7 +21,7 @@
       "@type": "ContainerToTemplateConverter",
       "templateEngine": {
         "@type": "HandlebarsTemplateEngine",
-        "template": "$PACKAGE_ROOT/templates/container.md.hbs"
+        "template": "@css:templates/container.md.hbs"
       },
       "contentType": "text/markdown",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }

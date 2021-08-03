@@ -5,6 +5,7 @@ import type { Representation } from '../../ldp/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import { modulePathPlaceholder } from '../../util/PathUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -18,8 +19,8 @@ export interface TemplateOptions {
 }
 
 const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
-  mainTemplatePath: '$PACKAGE_ROOT/templates/error/main.md.hbs',
-  codeTemplatesPath: '$PACKAGE_ROOT/templates/error/descriptions/',
+  mainTemplatePath: `${modulePathPlaceholder}templates/error/main.md.hbs`,
+  codeTemplatesPath: `${modulePathPlaceholder}templates/error/descriptions/`,
   extension: '.md.hbs',
   contentType: 'text/markdown',
 };

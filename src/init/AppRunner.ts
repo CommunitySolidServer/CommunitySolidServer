@@ -5,8 +5,10 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { ensureTrailingSlash, resolveAssetPath } from '../util/PathUtil';
+import { ensureTrailingSlash, resolveAssetPath, modulePathPlaceholder } from '../util/PathUtil';
 import type { App } from './App';
+
+const defaultConfig = `${modulePathPlaceholder}config/default.json`;
 
 export interface CliParams {
   loggingLevel: string;
@@ -72,7 +74,7 @@ export class AppRunner {
       })
       .options({
         baseUrl: { type: 'string', alias: 'b', requiresArg: true },
-        config: { type: 'string', alias: 'c', requiresArg: true },
+        config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
         loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true },
         mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
         port: { type: 'number', alias: 'p', default: 3000, requiresArg: true },
@@ -89,7 +91,7 @@ export class AppRunner {
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
-    const configFile = resolveAssetPath(params.config ?? '$PACKAGE_ROOT/config/default.json');
+    const configFile = resolveAssetPath(params.config);
 
     // Create and execute the app
     this.createApp(loaderProperties, configFile, params)

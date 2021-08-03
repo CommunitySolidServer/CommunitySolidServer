@@ -5,7 +5,7 @@
       "comment": "Generates resources based on the templates stored in the template folder.",
       "@id": "urn:solid-server:default:ResourcesGenerator",
       "@type": "TemplatedResourcesGenerator",
-      "templateFolder": "$PACKAGE_ROOT/templates/pod",
+      "templateFolder": "@css:templates/pod",
       "factory": {
         "@type": "ExtensionBasedMapperFactory"
       },

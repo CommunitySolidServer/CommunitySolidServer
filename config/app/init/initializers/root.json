@@ -9,7 +9,7 @@
       "store": { "@id": "urn:solid-server:default:ResourceStore" },
       "generator": {
         "@type": "TemplatedResourcesGenerator",
-        "templateFolder": "$PACKAGE_ROOT/templates/root",
+        "templateFolder": "@css:templates/root",
         "factory": { "@type": "ExtensionBasedMapperFactory" },
         "templateEngine": { "@type": "HandlebarsTemplateEngine" }
       }

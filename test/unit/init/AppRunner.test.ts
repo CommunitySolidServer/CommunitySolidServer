@@ -211,7 +211,7 @@ describe('AppRunner', (): void => {
       new AppRunner().runCli({
         argv: [
           'node', 'script',
-          '--config', '$PACKAGE_ROOT/config/file.json',
+          '--config', '@css:config/file.json',
         ],
       });
       await new Promise(setImmediate);

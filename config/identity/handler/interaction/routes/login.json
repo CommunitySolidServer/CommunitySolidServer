@@ -7,7 +7,7 @@
       "@type": "InteractionRoute",
       "route": "^/login/?$",
       "prompt": "default",
-      "viewTemplate": "$PACKAGE_ROOT/templates/identity/email-password/login.html.ejs",
+      "viewTemplate": "@css:templates/identity/email-password/login.html.ejs",
       "handler": {
         "@type": "LoginHandler",
         "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" }

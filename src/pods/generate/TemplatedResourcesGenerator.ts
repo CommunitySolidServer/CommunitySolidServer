@@ -29,7 +29,7 @@ interface TemplateResourceLink extends ResourceLink {
  * A FileIdentifierMapper will be used to generate identifiers that correspond to the relative structure.
  *
  * A relative `templateFolder` is resolved relative to cwd,
- * unless it's preceded by $PACKAGE_ROOT/, e.g. $PACKAGE_ROOT/foo/bar.
+ * unless it's preceded by `@css:`, e.g. `@css:foo/bar`.
  */
 export class TemplatedResourcesGenerator implements ResourcesGenerator {
   private readonly templateFolder: string;

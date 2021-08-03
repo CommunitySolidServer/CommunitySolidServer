@@ -9,19 +9,19 @@
       "assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/images/favicon.ico"
+          "StaticAssetHandler:_assets_value": "@css:templates/images/favicon.ico"
         },
         {
           "StaticAssetHandler:_assets_key": "/.well_known/css/styles/",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/styles/"
+          "StaticAssetHandler:_assets_value": "@css:templates/styles/"
         },
         {
           "StaticAssetHandler:_assets_key": "/.well_known/css/fonts/",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/fonts/"
+          "StaticAssetHandler:_assets_value": "@css:templates/fonts/"
         },
         {
           "StaticAssetHandler:_assets_key": "/.well_known/css/images/",
-          "StaticAssetHandler:_assets_value": "$PACKAGE_ROOT/templates/images/"
+          "StaticAssetHandler:_assets_value": "@css:templates/images/"
         }
       ]
     }

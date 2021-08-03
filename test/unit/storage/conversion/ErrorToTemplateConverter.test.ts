@@ -164,9 +164,9 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(templateEngine.render).toHaveBeenCalledTimes(2);
     expect(templateEngine.render).toHaveBeenNthCalledWith(1,
       { key: 'val' },
-      { templatePath: '$PACKAGE_ROOT/templates/error/descriptions/', templateFile: 'E0001.md.hbs' });
+      { templatePath: '@css:templates/error/descriptions/', templateFile: 'E0001.md.hbs' });
     expect(templateEngine.render).toHaveBeenNthCalledWith(2,
       { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-      { templateFile: '$PACKAGE_ROOT/templates/error/main.md.hbs' });
+      { templateFile: '@css:templates/error/main.md.hbs' });
   });
 });

@@ -36,13 +36,21 @@ you can run a [Docker](https://www.docker.com/) version instead.
 
 ### 💻 Installing and running locally
 After installing Node.js,
-you can install and run the latest published version
-from the [npm package repository](https://www.npmjs.com/)
-like this:
+install the latest server version
+from the [npm package repository](https://www.npmjs.com/):
 
 ```shell
 npm install -g @solid/community-server
+```
+
+To run the server with in-memory storage, use:
+```shell
 community-solid-server # add parameters if needed
+```
+
+To run the server with your current folder as storage, use:
+```shell
+community-solid-server -c @css:config/file.json
 ```
 
 ### 📃 Installing and running from source
@@ -84,17 +92,17 @@ by passing parameters to the server command.
 These parameters give you direct access
 to some commonly used settings:
 
-| parameter name         | default value             | description                                                                                                                     |
-| ---------              | -------                   | -----------                                                                                                                     |
-| `--port, -p`           | `3000`                    | The TCP port on which the server runs.                                                                                          |
-| `--baseUrl. -b`        | `http://localhost:$PORT/` | The public URL of your server.                                                                                                  |
-| `--loggingLevel, -l`   | `info`                    | The detail level of logging; useful for debugging problems.                                                                     |
-| `--config, -c`         | `config/default.json`     | The configuration for the server. The default only stores data in memory; to persist to your filesystem, try `config/file.json` |
-| `--rootFilePath, -f`   | `./`                      | Root folder of the server, when using a file-based configuration.                                                               |
-| `--sparqlEndpoint, -s` |                           | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                         |
-| `--showStackTrace, -t` | false                     | Enables detailed logging on error pages.                                                                                        |
-| `--podConfigJson`      | `./pod-config.json`       | Path to the file that keeps track of dynamic Pod configurations.                                                                |
-| `--mainModulePath, -m` |                           | Path from where Components.js will start its lookup when initializing configurations.
+| parameter name         | default value              | description                                                                                                                          |
+| --------------         | -------------              | -----------                                                                                                                          |
+| `--port, -p`           | `3000`                     | The TCP port on which the server runs.                                                                                               |
+| `--baseUrl. -b`        | `http://localhost:$PORT/`  | The public URL of your server.                                                                                                       |
+| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems.                                                                          |
+| `--config, -c`         | `@css:config/default.json` | The configuration for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json` |
+| `--rootFilePath, -f`   | `./`                       | Root folder of the server, when using a file-based configuration.                                                                    |
+| `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
+| `--showStackTrace, -t` | false                      | Enables detailed logging on error pages.                                                                                             |
+| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations.                                                                     |
+| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.
 
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved

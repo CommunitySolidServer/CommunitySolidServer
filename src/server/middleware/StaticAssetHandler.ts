@@ -14,7 +14,7 @@ import type { HttpRequest } from '../HttpRequest';
 /**
  * Handler that serves static resources on specific paths.
  * Relative file paths are assumed to be relative to cwd.
- * Relative file paths can be preceded by $PACKAGE_ROOT/, e.g. $PACKAGE_ROOT/foo/bar,
+ * Relative file paths can be preceded by `@css:`, e.g. `@css:foo/bar`,
  * in case they need to be relative to the module root.
  */
 export class StaticAssetHandler extends HttpHandler {

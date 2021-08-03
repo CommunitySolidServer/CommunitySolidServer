@@ -16,7 +16,7 @@ describe('A StaticAssetHandler', (): void => {
     '/foo/bar/main': '/assets/scripts/bar.js',
     '/foo/bar/unknown': '/assets/bar.unknown',
     '/foo/bar/cwd': 'paths/cwd.txt',
-    '/foo/bar/module': '$PACKAGE_ROOT/paths/module.txt',
+    '/foo/bar/module': '@css:paths/module.txt',
     '/foo/bar/folder1/': '/assets/folders/1/',
     '/foo/bar/folder2/': '/assets/folders/2',
     '/foo/bar/folder2/subfolder/': '/assets/folders/3',

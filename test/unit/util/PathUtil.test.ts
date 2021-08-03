@@ -141,12 +141,12 @@ describe('PathUtil', (): void => {
   });
 
   describe('#resolvePathInput', (): void => {
-    it('interprets paths relative to the module root when starting with $PACKAGE_ROOT/.', async(): Promise<void> => {
-      expect(resolveAssetPath('$PACKAGE_ROOT/foo/bar')).toBe(joinFilePath(getModuleRoot(), '/foo/bar'));
+    it('interprets paths relative to the module root when starting with @css:.', async(): Promise<void> => {
+      expect(resolveAssetPath('@css:foo/bar')).toBe(joinFilePath(getModuleRoot(), '/foo/bar'));
     });
 
-    it('handles ../ paths with $PACKAGE_ROOT/.', async(): Promise<void> => {
-      expect(resolveAssetPath('$PACKAGE_ROOT/foo/bar/../baz')).toBe(joinFilePath(getModuleRoot(), '/foo/baz'));
+    it('handles ../ paths with @css:.', async(): Promise<void> => {
+      expect(resolveAssetPath('@css:foo/bar/../baz')).toBe(joinFilePath(getModuleRoot(), '/foo/baz'));
     });
 
     it('leaves absolute paths as they are.', async(): Promise<void> => {
