@@ -173,13 +173,14 @@ export function getModuleRoot(): string {
   return joinFilePath(__dirname, '../../');
 }
 
+const modulePath = '$PACKAGE_ROOT/';
+
 /**
  * Converts file path inputs into absolute paths.
  * Works similar to `absoluteFilePath` but paths that start with '$PACKAGE_ROOT/'
  * will be relative to the module directory instead of the cwd.
  */
-export function resolveAssetPath(path: string): string {
-  const modulePath = '$PACKAGE_ROOT/';
+export function resolveAssetPath(path: string = modulePath): string {
   if (path.startsWith(modulePath)) {
     return joinFilePath(getModuleRoot(), path.slice(modulePath.length));
   }

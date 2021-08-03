@@ -207,6 +207,21 @@ describe('AppRunner', (): void => {
       );
     });
 
+    it('accepts asset paths for the config flag.', async(): Promise<void> => {
+      new AppRunner().runCli({
+        argv: [
+          'node', 'script',
+          '--config', '$PACKAGE_ROOT/config/file.json',
+        ],
+      });
+      await new Promise(setImmediate);
+
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register).toHaveBeenCalledWith(
+        joinFilePath(__dirname, '../../../config/file.json'),
+      );
+    });
+
     it('uses the default process.argv in case none are provided.', async(): Promise<void> => {
       const { argv } = process;
       process.argv = [

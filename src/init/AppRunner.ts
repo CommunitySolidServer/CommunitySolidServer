@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { absoluteFilePath, ensureTrailingSlash, joinFilePath } from '../util/PathUtil';
+import { ensureTrailingSlash, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
 
 export interface CliParams {
@@ -85,11 +85,11 @@ export class AppRunner {
 
     // Gather settings for instantiating the server
     const loaderProperties: IComponentsManagerBuilderOptions<App> = {
-      mainModulePath: this.resolveFilePath(params.mainModulePath),
+      mainModulePath: resolveAssetPath(params.mainModulePath),
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
-    const configFile = this.resolveFilePath(params.config, 'config/default.json');
+    const configFile = resolveAssetPath(params.config ?? '$PACKAGE_ROOT/config/default.json');
 
     // Create and execute the app
     this.createApp(loaderProperties, configFile, params)
@@ -141,22 +141,10 @@ export class AppRunner {
         params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
       'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
       'urn:solid-server:default:variable:port': params.port,
-      'urn:solid-server:default:variable:rootFilePath':
-        this.resolveFilePath(params.rootFilePath),
+      'urn:solid-server:default:variable:rootFilePath': resolveAssetPath(params.rootFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:showStackTrace': params.showStackTrace,
-      'urn:solid-server:default:variable:podConfigJson':
-        this.resolveFilePath(params.podConfigJson),
+      'urn:solid-server:default:variable:podConfigJson': resolveAssetPath(params.podConfigJson),
     };
-  }
-
-  /**
-   * Resolves a path relative to the current working directory,
-   * falling back to a path relative to this module.
-   */
-  protected resolveFilePath(cwdPath?: string | null, modulePath = ''): string {
-    return typeof cwdPath === 'string' ?
-      absoluteFilePath(cwdPath) :
-      joinFilePath(__dirname, '../../', modulePath);
   }
 }
