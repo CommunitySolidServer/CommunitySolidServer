@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v1.0.0-beta.2</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.2">
+	<title>Community Solid Server - v1.0.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
 	<script async src="assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">Community Solid Server - v1.0.0-beta.2</a>
+					<a href="index.html" class="title">Community Solid Server - v1.0.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -50,7 +50,7 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<h1>Community Solid Server - v1.0.0-beta.2</h1>
+			<h1>Community Solid Server - v1.0.0</h1>
 		</div>
 	</div>
 </header>
@@ -95,11 +95,15 @@
 					<h3>💻 Installing and running locally</h3>
 				</a>
 				<p>After installing Node.js,
-					you can install and run the latest published version
-					from the <a href="https://www.npmjs.com/">npm package repository</a>
-				like this:</p>
+					install the latest server version
+				from the <a href="https://www.npmjs.com/">npm package repository</a>:</p>
 				<pre><code class="language-shell"><span style="color: #000000">npm install -g @solid/community-server</span>
-<span style="color: #000000">community-solid-server </span><span style="color: #008000"># add parameters if needed</span>
+</code></pre>
+				<p>To run the server with in-memory storage, use:</p>
+				<pre><code class="language-shell"><span style="color: #000000">community-solid-server </span><span style="color: #008000"># add parameters if needed</span>
+</code></pre>
+				<p>To run the server with your current folder as storage, use:</p>
+				<pre><code class="language-shell"><span style="color: #000000">community-solid-server -c @css:config/file.json</span>
 </code></pre>
 				<a href="#📃-installing-and-running-from-source" id="📃-installing-and-running-from-source" style="color: inherit; text-decoration: none;">
 					<h3>📃 Installing and running from source</h3>
@@ -166,8 +170,8 @@
 						</tr>
 						<tr>
 							<td><code>--config, -c</code></td>
-							<td><code>config/default.json</code></td>
-							<td>The configuration for the server. The default only stores data in memory; to persist to your filesystem, try <code>config/file.json</code></td>
+							<td><code>@css:config/default.json</code></td>
+							<td>The configuration for the server. The default only stores data in memory; to persist to your filesystem, use <code>@css:config/file.json</code></td>
 						</tr>
 						<tr>
 							<td><code>--rootFilePath, -f</code></td>
@@ -298,9 +302,6 @@
 						<a href="modules/identity_configuration_providerfactory.html">identity/configuration/<wbr>Provider<wbr>Factory</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_interactionhttphandler.html">identity/interaction/<wbr>Interaction<wbr>Http<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_sessionhttphandler.html">identity/interaction/<wbr>Session<wbr>Http<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -308,6 +309,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_email_password_handler_forgotpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Forgot<wbr>Password<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/identity_interaction_email_password_handler_interactionhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Interaction<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_email_password_handler_loginhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Login<wbr>Handler</a>
@@ -335,15 +339,6 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_util_idpinteractionerror.html">identity/interaction/util/<wbr>Idp<wbr>Interaction<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_idprenderhandler.html">identity/interaction/util/<wbr>Idp<wbr>Render<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_idproutecontroller.html">identity/interaction/util/<wbr>Idp<wbr>Route<wbr>Controller</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_initialinteractionhandler.html">identity/interaction/util/<wbr>Initial<wbr>Interaction<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/identity_interaction_util_interactioncompleter.html">identity/interaction/util/<wbr>Interaction<wbr>Completer</a>
@@ -971,6 +966,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_locking_wrappedexpiringreadwritelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util_templates_chainedtemplateengine.html">util/templates/<wbr>Chained<wbr>Template<wbr>Engine</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/util_templates_ejstemplateengine.html">util/templates/<wbr>Ejs<wbr>Template<wbr>Engine</a>

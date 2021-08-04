@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TokenOwnershipValidator | Community Solid Server - v1.0.0-beta.2</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.0.0-beta.2">
+	<title>TokenOwnershipValidator | Community Solid Server - v1.0.0</title>
+	<meta name="description" content="Documentation for Community Solid Server - v1.0.0">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 	<script async src="../assets/js/search.js" id="search-script"></script>
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Community Solid Server - v1.0.0-beta.2</a>
+					<a href="../index.html" class="title">Community Solid Server - v1.0.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -52,7 +52,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Community Solid Server - v1.0.0-beta.2</a>
+					<a href="../modules.html">Community Solid Server - v1.0.0</a>
 				</li>
 				<li>
 					<a href="../modules/identity_ownership_tokenownershipvalidator.html">identity/ownership/TokenOwnershipValidator</a>
@@ -102,6 +102,7 @@
 						<section class="tsd-index-section tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#converter" class="tsd-kind-icon">converter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#expiration" class="tsd-kind-icon">expiration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#storage" class="tsd-kind-icon">storage</a></li>
@@ -115,6 +116,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#gettokenkey" class="tsd-kind-icon">get<wbr>Token<wbr>Key</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#handle" class="tsd-kind-icon">handle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#hastoken" class="tsd-kind-icon">has<wbr>Token</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#throwerror" class="tsd-kind-icon">throw<wbr>Error</a></li>
 							</ul>
 						</section>
@@ -127,18 +129,21 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Token<wbr>Ownership<wbr>Validator<span class="tsd-signature-symbol">(</span>storage<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_keyvalue_expiringstorage.expiringstorage.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, expiration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">TokenOwnershipValidator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Token<wbr>Ownership<wbr>Validator<span class="tsd-signature-symbol">(</span>converter<span class="tsd-signature-symbol">: </span><a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a>, storage<span class="tsd-signature-symbol">: </span><a href="../interfaces/storage_keyvalue_expiringstorage.expiringstorage.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, expiration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html" class="tsd-signature-type" data-tsd-kind="Class">TokenOwnershipValidator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html">OwnershipValidator</a>.<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L19">src/identity/ownership/TokenOwnershipValidator.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L22">src/identity/ownership/TokenOwnershipValidator.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
+								<li>
+									<h5>converter: <a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a></h5>
+								</li>
 								<li>
 									<h5>storage: <a href="../interfaces/storage_keyvalue_expiringstorage.expiringstorage.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
@@ -154,12 +159,22 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="converter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> converter</h3>
+					<div class="tsd-signature tsd-kind-icon">converter<span class="tsd-signature-symbol">:</span> <a href="storage_conversion_representationconverter.representationconverter.html" class="tsd-signature-type" data-tsd-kind="Class">RepresentationConverter</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L20">src/identity/ownership/TokenOwnershipValidator.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="expiration" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> expiration</h3>
 					<div class="tsd-signature tsd-kind-icon">expiration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L19">src/identity/ownership/TokenOwnershipValidator.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L22">src/identity/ownership/TokenOwnershipValidator.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -169,7 +184,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="logging_logger.logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L16">src/identity/ownership/TokenOwnershipValidator.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L18">src/identity/ownership/TokenOwnershipValidator.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -179,7 +194,7 @@
 					<div class="tsd-signature tsd-kind-icon">storage<span class="tsd-signature-symbol">:</span> <a href="../interfaces/storage_keyvalue_expiringstorage.expiringstorage.html" class="tsd-signature-type" data-tsd-kind="Interface">ExpiringStorage</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L18">src/identity/ownership/TokenOwnershipValidator.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L21">src/identity/ownership/TokenOwnershipValidator.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -197,7 +212,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html">OwnershipValidator</a>.<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#canhandle">canHandle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/util/handlers/AsyncHandler.ts#L13">src/util/handlers/AsyncHandler.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/util/handlers/AsyncHandler.ts#L13">src/util/handlers/AsyncHandler.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -235,7 +250,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L59">src/identity/ownership/TokenOwnershipValidator.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L61">src/identity/ownership/TokenOwnershipValidator.ts:61</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -257,7 +272,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L52">src/identity/ownership/TokenOwnershipValidator.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L54">src/identity/ownership/TokenOwnershipValidator.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -286,7 +301,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html">OwnershipValidator</a>.<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handle">handle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L28">src/identity/ownership/TokenOwnershipValidator.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L32">src/identity/ownership/TokenOwnershipValidator.ts:32</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -322,7 +337,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="identity_ownership_ownershipvalidator.ownershipvalidator.html">OwnershipValidator</a>.<a href="identity_ownership_ownershipvalidator.ownershipvalidator.html#handlesafe">handleSafe</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/util/handlers/AsyncHandler.ts#L35">src/util/handlers/AsyncHandler.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -353,6 +368,37 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="hastoken" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> has<wbr>Token</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Token<span class="tsd-signature-symbol">(</span>webId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L68">src/identity/ownership/TokenOwnershipValidator.ts:68</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Fetches data from the WebID to determine if the token is present.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>webId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>token: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="throwerror" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> throw<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -362,7 +408,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/solid/community-server/blob/fdd1a37/src/identity/ownership/TokenOwnershipValidator.ts#L66">src/identity/ownership/TokenOwnershipValidator.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/solid/community-server/blob/ce27b55/src/identity/ownership/TokenOwnershipValidator.ts#L84">src/identity/ownership/TokenOwnershipValidator.ts:84</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -407,6 +453,9 @@
 								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#converter" class="tsd-kind-icon">converter</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#expiration" class="tsd-kind-icon">expiration</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
@@ -429,6 +478,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#handlesafe" class="tsd-kind-icon">handle<wbr>Safe</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#hastoken" class="tsd-kind-icon">has<wbr>Token</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="identity_ownership_tokenownershipvalidator.tokenownershipvalidator.html#throwerror" class="tsd-kind-icon">throw<wbr>Error</a>
