@@ -154,7 +154,9 @@ export * from './logging/Logger';
 export * from './logging/LoggerFactory';
 export * from './logging/LogLevel';
 export * from './logging/LogUtil';
+export * from './logging/VoidLogger';
 export * from './logging/VoidLoggerFactory';
+export * from './logging/WinstonLogger';
 export * from './logging/WinstonLoggerFactory';
 
 // Pods/Generate/Variables
@@ -270,6 +272,7 @@ export * from './storage/RoutingResourceStore';
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';
 export * from './util/errors/ConflictHttpError';
+export * from './util/errors/ErrorUtil';
 export * from './util/errors/ForbiddenHttpError';
 export * from './util/errors/HttpError';
 export * from './util/errors/InternalServerError';
@@ -311,11 +314,13 @@ export * from './util/templates/TemplateEngine';
 
 // Util
 export * from './util/ContentTypes';
+export * from './util/FetchUtil';
 export * from './util/GuardedStream';
 export * from './util/HeaderUtil';
 export * from './util/PathUtil';
 export * from './util/QuadUtil';
 export * from './util/RecordObject';
+export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
 export * from './util/Vocabularies';

@@ -6,5 +6,6 @@
   "HttpErrorOptions",
   "Template",
   "TemplateEngine",
-  "ValuePreferencesArg"
+  "ValuePreferencesArg",
+  "WinstonLogger"
 ]
