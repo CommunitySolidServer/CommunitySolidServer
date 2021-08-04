@@ -91,7 +91,6 @@
     "@types/nodemailer": "^6.4.2",
     "@types/pump": "^1.1.1",
     "@types/punycode": "^2.1.0",
-    "@types/rdf-js": "^4.0.2",
     "@types/redis": "^2.8.30",
     "@types/redlock": "^4.0.1",
     "@types/sparqljs": "^3.1.2",
