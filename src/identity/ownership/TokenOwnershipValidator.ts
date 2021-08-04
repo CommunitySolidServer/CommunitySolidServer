@@ -82,11 +82,15 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    * Throws an error containing the description of which triple is needed for verification.
    */
   private throwError(webId: string, token: string): never {
-    this.logger.debug(`Missing verification token at ${webId}`);
+    this.logger.debug(`No verification token found for ${webId}`);
     const errorMessage = [
-      `<${webId}> <${SOLID.terms.oidcIssuerRegistrationToken.value}> "${token}" .`,
-      'Must be added to the WebId. This can be removed after registration.',
-    ].join('\n');
+      'Verification token not found.',
+      'Please add the RDF triple',
+      `<${webId}> <${SOLID.oidcIssuerRegistrationToken}> "${token}".`,
+      `to the WebID document at ${webId.replace(/#.*/u, '')}`,
+      'to prove it belongs to you.',
+      'You can remove this triple again after validation.',
+    ].join(' ');
     throw new BadRequestHttpError(errorMessage);
   }
 }

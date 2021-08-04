@@ -24,7 +24,7 @@ describe('A TokenOwnershipValidator', (): void => {
   const webId = 'http://alice.test.com/#me';
   const token = 'randomlyGeneratedToken';
   const tokenTriple = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
-  const tokenString = `${quadToString(tokenTriple)} .`;
+  const tokenString = `${quadToString(tokenTriple)}.`;
   const converter = new RdfToQuadConverter();
   let storage: ExpiringStorage<string, string>;
   let validator: TokenOwnershipValidator;

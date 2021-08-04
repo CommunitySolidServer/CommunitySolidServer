@@ -34,16 +34,13 @@ async function postForm(url: string, formBody: string): Promise<Response> {
  * Extracts the registration triple from the registration form body.
  */
 function extractRegistrationTriple(body: string, webId: string): string {
-  const error = load(body)('p.error').first().text().trim()
-    .split('\n')[0];
+  const error = load(body)('p.error').first().text();
   const regex = new RegExp(
-    `(<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken> "[^"]+"\\s*\\.\\s*)$`, 'u',
+    `<${webId}>\\s+<http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken>\\s+"[^"]+"\\s*\\.`, 'u',
   );
   const match = regex.exec(error);
-  expect(match).toHaveLength(2);
-  const registrationTriple = match![1];
-  expect(registrationTriple).not.toHaveLength(0);
-  return registrationTriple;
+  expect(match).toHaveLength(1);
+  return match![0];
 }
 
 // No way around the cookies https://github.com/panva/node-oidc-provider/issues/552 .
