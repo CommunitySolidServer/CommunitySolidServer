@@ -39,10 +39,10 @@ export class ForgotPasswordHandler extends InteractionHandler {
     this.emailSender = args.emailSender;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
+  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
     try {
       // Validate incoming data
-      const { email } = await getFormDataRequestBody(request);
+      const { email } = await getFormDataRequestBody(operation);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
 
       await this.resetPassword(email);

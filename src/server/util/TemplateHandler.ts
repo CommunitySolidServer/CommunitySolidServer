@@ -1,4 +1,8 @@
+import type { ResponseDescription } from '../../ldp/http/response/ResponseDescription';
+import type { ResponseWriter } from '../../ldp/http/ResponseWriter';
+import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
+import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { HttpResponse } from '../HttpResponse';
 import Dict = NodeJS.Dict;
@@ -8,11 +12,13 @@ import Dict = NodeJS.Dict;
  */
 export class TemplateHandler<T extends Dict<any> = Dict<any>>
   extends AsyncHandler<{ response: HttpResponse; templateFile: string; contents: T }> {
+  private readonly responseWriter: ResponseWriter;
   private readonly templateEngine: TemplateEngine;
   private readonly contentType: string;
 
-  public constructor(templateEngine: TemplateEngine, contentType = 'text/html') {
+  public constructor(responseWriter: ResponseWriter, templateEngine: TemplateEngine, contentType = 'text/html') {
     super();
+    this.responseWriter = responseWriter;
     this.templateEngine = templateEngine;
     this.contentType = contentType;
   }
@@ -20,8 +26,11 @@ export class TemplateHandler<T extends Dict<any> = Dict<any>>
   public async handle({ response, templateFile, contents }:
   { response: HttpResponse; templateFile: string; contents: T }): Promise<void> {
     const rendered = await this.templateEngine.render(contents, { templateFile });
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    response.writeHead(200, { 'Content-Type': this.contentType });
-    response.end(rendered);
+    const result: ResponseDescription = {
+      statusCode: 200,
+      data: guardedStreamFrom(rendered),
+      metadata: new RepresentationMetadata(this.contentType),
+    };
+    await this.responseWriter.handleSafe({ response, result });
   }
 }

@@ -1,5 +1,5 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
-import type { HttpRequest } from '../../../../server/HttpRequest';
+import type { Operation } from '../../../../ldp/operations/Operation';
 import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
 import type { InteractionCompleterParams } from '../../util/InteractionCompleter';
 
@@ -8,9 +8,9 @@ export type Interaction = KoaContextWithOIDC['oidc']['entities']['Interaction'];
 
 export interface InteractionHandlerInput {
   /**
-   * The request being made.
+   * The operation to execute
    */
-  request: HttpRequest;
+  operation: Operation;
   /**
    * Will be defined if the OIDC library expects us to resolve an interaction it can't handle itself,
    * such as logging a user in.
