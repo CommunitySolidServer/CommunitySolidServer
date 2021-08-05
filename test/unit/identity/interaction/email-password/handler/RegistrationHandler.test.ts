@@ -5,12 +5,12 @@ import {
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import { IdpInteractionError } from '../../../../../../src/identity/interaction/util/IdpInteractionError';
 import type { OwnershipValidator } from '../../../../../../src/identity/ownership/OwnershipValidator';
+import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
 import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { PodSettings } from '../../../../../../src/pods/settings/PodSettings';
-import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
-import { createPostFormRequest } from './Util';
+import { createPostFormOperation } from './Util';
 
 describe('A RegistrationHandler', (): void => {
   // "Correct" values for easy object creation
@@ -25,7 +25,7 @@ describe('A RegistrationHandler', (): void => {
   const register = 'true';
   const createPod = 'true';
 
-  let request: HttpRequest;
+  let operation: Operation;
 
   const baseUrl = 'http://test.com/';
   const webIdSuffix = '/profile/card';
@@ -69,80 +69,80 @@ describe('A RegistrationHandler', (): void => {
 
   describe('validating data', (): void => {
     it('rejects array inputs.', async(): Promise<void> => {
-      request = createPostFormRequest({ mydata: [ 'a', 'b' ]});
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ mydata: [ 'a', 'b' ]});
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Unexpected multiple values for mydata.');
     });
 
     it('errors on invalid emails.', async(): Promise<void> => {
-      request = createPostFormRequest({ email: undefined });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email: undefined });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a valid e-mail address.');
 
-      request = createPostFormRequest({ email: '' });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email: '' });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a valid e-mail address.');
 
-      request = createPostFormRequest({ email: 'invalidEmail' });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email: 'invalidEmail' });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a valid e-mail address.');
     });
 
     it('errors when a required WebID is not valid.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, register, webId: undefined });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, register, webId: undefined });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a valid WebID.');
 
-      request = createPostFormRequest({ email, register, webId: '' });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, register, webId: '' });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a valid WebID.');
     });
 
     it('errors on invalid passwords when registering.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, password, confirmPassword: 'bad', register });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, webId, password, confirmPassword: 'bad', register });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Your password and confirmation did not match.');
     });
 
     it('errors on invalid pod names when required.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, createPod, podName: undefined });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, webId, createPod, podName: undefined });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please specify a Pod name.');
 
-      request = createPostFormRequest({ email, webId, createPod, podName: ' ' });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, webId, createPod, podName: ' ' });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please specify a Pod name.');
 
-      request = createPostFormRequest({ email, webId, createWebId });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, webId, createWebId });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please specify a Pod name.');
     });
 
     it('errors when trying to create a WebID without registering or creating a pod.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, podName, createWebId });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, podName, createWebId });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a password.');
 
-      request = createPostFormRequest({ email, podName, createWebId, createPod });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, podName, createWebId, createPod });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a password.');
 
-      request = createPostFormRequest({ email, podName, createWebId, createPod, register });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, podName, createWebId, createPod, register });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please enter a password.');
     });
 
     it('errors when no option is chosen.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId });
-      await expect(handler.handle({ request }))
+      operation = createPostFormOperation({ email, webId });
+      await expect(handler.handle({ operation }))
         .rejects.toThrow('Please register for a WebID or create a Pod.');
     });
   });
 
   describe('handling data', (): void => {
     it('can register a user.', async(): Promise<void> => {
-      request = createPostFormRequest({ email, webId, password, confirmPassword, register });
-      await expect(handler.handle({ request })).resolves.toEqual({
+      operation = createPostFormOperation({ email, webId, password, confirmPassword, register });
+      await expect(handler.handle({ operation })).resolves.toEqual({
         details: {
           email,
           webId,
@@ -168,8 +168,8 @@ describe('A RegistrationHandler', (): void => {
 
     it('can create a pod.', async(): Promise<void> => {
       const params = { email, webId, podName, createPod };
-      request = createPostFormRequest(params);
-      await expect(handler.handle({ request })).resolves.toEqual({
+      operation = createPostFormOperation(params);
+      await expect(handler.handle({ operation })).resolves.toEqual({
         details: {
           email,
           webId,
@@ -197,8 +197,8 @@ describe('A RegistrationHandler', (): void => {
     it('adds an oidcIssuer to the data when doing both IDP registration and pod creation.', async(): Promise<void> => {
       const params = { email, webId, password, confirmPassword, podName, register, createPod };
       podSettings.oidcIssuer = baseUrl;
-      request = createPostFormRequest(params);
-      await expect(handler.handle({ request })).resolves.toEqual({
+      operation = createPostFormOperation(params);
+      await expect(handler.handle({ operation })).resolves.toEqual({
         details: {
           email,
           webId,
@@ -228,9 +228,9 @@ describe('A RegistrationHandler', (): void => {
     it('deletes the created account if pod generation fails.', async(): Promise<void> => {
       const params = { email, webId, password, confirmPassword, podName, register, createPod };
       podSettings.oidcIssuer = baseUrl;
-      request = createPostFormRequest(params);
+      operation = createPostFormOperation(params);
       (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
-      await expect(handler.handle({ request })).rejects.toThrow('pod error');
+      await expect(handler.handle({ operation })).rejects.toThrow('pod error');
 
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
@@ -252,8 +252,8 @@ describe('A RegistrationHandler', (): void => {
       podSettings.webId = generatedWebID;
       podSettings.oidcIssuer = baseUrl;
 
-      request = createPostFormRequest(params);
-      await expect(handler.handle({ request })).resolves.toEqual({
+      operation = createPostFormOperation(params);
+      await expect(handler.handle({ operation })).resolves.toEqual({
         details: {
           email,
           webId: generatedWebID,
@@ -281,9 +281,9 @@ describe('A RegistrationHandler', (): void => {
 
     it('throws an IdpInteractionError with all data prefilled if something goes wrong.', async(): Promise<void> => {
       const params = { email, webId, podName, createPod };
-      request = createPostFormRequest(params);
+      operation = createPostFormOperation(params);
       (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
-      const prom = handler.handle({ request });
+      const prom = handler.handle({ operation });
       await expect(prom).rejects.toThrow('pod error');
       await expect(prom).rejects.toThrow(IdpInteractionError);
       // Using the cleaned input for prefilled

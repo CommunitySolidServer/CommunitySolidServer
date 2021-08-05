@@ -1,6 +1,6 @@
 import assert from 'assert';
+import type { Operation } from '../../../../ldp/operations/Operation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import type { HttpRequest } from '../../../../server/HttpRequest';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
@@ -20,8 +20,8 @@ export class LoginHandler extends InteractionHandler {
     this.accountStore = accountStore;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionCompleteResult> {
-    const { email, password, remember } = await this.parseInput(request);
+  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionCompleteResult> {
+    const { email, password, remember } = await this.parseInput(operation);
     try {
       // Try to log in, will error if email/password combination is invalid
       const webId = await this.accountStore.authenticate(email, password);
@@ -40,10 +40,10 @@ export class LoginHandler extends InteractionHandler {
    * Will throw an {@link IdpInteractionError} in case something is wrong.
    * All relevant data that was correct up to that point will be prefilled.
    */
-  private async parseInput(request: HttpRequest): Promise<{ email: string; password: string; remember: boolean }> {
+  private async parseInput(operation: Operation): Promise<{ email: string; password: string; remember: boolean }> {
     const prefilled: Record<string, string> = {};
     try {
-      const { email, password, remember } = await getFormDataRequestBody(request);
+      const { email, password, remember } = await getFormDataRequestBody(operation);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
       prefilled.email = email;
       assert(typeof password === 'string' && password.length > 0, 'Password required');

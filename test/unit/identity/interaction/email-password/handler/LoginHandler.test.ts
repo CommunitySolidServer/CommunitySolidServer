@@ -3,7 +3,7 @@ import type {
 } from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
 import { LoginHandler } from '../../../../../../src/identity/interaction/email-password/handler/LoginHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import { createPostFormRequest } from './Util';
+import { createPostFormOperation } from './Util';
 
 describe('A LoginHandler', (): void => {
   const webId = 'http://alice.test.com/card#me';
@@ -23,29 +23,29 @@ describe('A LoginHandler', (): void => {
   });
 
   it('errors on invalid emails.', async(): Promise<void> => {
-    input.request = createPostFormRequest({});
+    input.operation = createPostFormOperation({});
     let prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Email required');
     await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: {}}));
-    input.request = createPostFormRequest({ email: [ 'a', 'b' ]});
+    input.operation = createPostFormOperation({ email: [ 'a', 'b' ]});
     prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Email required');
     await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { }}));
   });
 
   it('errors on invalid passwords.', async(): Promise<void> => {
-    input.request = createPostFormRequest({ email });
+    input.operation = createPostFormOperation({ email });
     let prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Password required');
     await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
-    input.request = createPostFormRequest({ email, password: [ 'a', 'b' ]});
+    input.operation = createPostFormOperation({ email, password: [ 'a', 'b' ]});
     prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Password required');
     await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
   });
 
   it('throws an IdpInteractionError if there is a problem.', async(): Promise<void> => {
-    input.request = createPostFormRequest({ email, password: 'password!' });
+    input.operation = createPostFormOperation({ email, password: 'password!' });
     (storageAdapter.authenticate as jest.Mock).mockRejectedValueOnce(new Error('auth failed!'));
     const prom = handler.handle(input);
     await expect(prom).rejects.toThrow('auth failed!');
@@ -53,7 +53,7 @@ describe('A LoginHandler', (): void => {
   });
 
   it('returns an InteractionCompleteResult when done.', async(): Promise<void> => {
-    input.request = createPostFormRequest({ email, password: 'password!' });
+    input.operation = createPostFormOperation({ email, password: 'password!' });
     await expect(handler.handle(input)).resolves.toEqual({
       type: 'complete',
       details: { webId, shouldRemember: false },

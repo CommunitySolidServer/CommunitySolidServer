@@ -20,12 +20,12 @@ export class ResetPasswordHandler extends InteractionHandler {
     this.accountStore = accountStore;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult> {
+  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult> {
     try {
       // Extract record ID from request URL
-      const recordId = /\/([^/]+)$/u.exec(request.url!)?.[1];
+      const recordId = /\/([^/]+)$/u.exec(operation.target.path)?.[1];
       // Validate input data
-      const { password, confirmPassword } = await getFormDataRequestBody(request);
+      const { password, confirmPassword } = await getFormDataRequestBody(operation);
       assert(
         typeof recordId === 'string' && recordId.length > 0,
         'Invalid request. Open the link from your email again',

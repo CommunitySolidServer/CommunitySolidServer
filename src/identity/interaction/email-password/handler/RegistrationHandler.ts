@@ -1,11 +1,11 @@
 import assert from 'assert';
 import urljoin from 'url-join';
+import type { Operation } from '../../../../ldp/operations/Operation';
 import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
-import type { HttpRequest } from '../../../../server/HttpRequest';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
@@ -102,8 +102,9 @@ export class RegistrationHandler extends InteractionHandler {
     this.podManager = args.podManager;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult<RegistrationResponse>> {
-    const result = await this.parseInput(request);
+  public async handle({ operation }: InteractionHandlerInput):
+  Promise<InteractionResponseResult<RegistrationResponse>> {
+    const result = await this.parseInput(operation);
 
     try {
       const details = await this.register(result);
@@ -184,8 +185,8 @@ export class RegistrationHandler extends InteractionHandler {
   /**
    * Parses the input request into a `ParseResult`.
    */
-  private async parseInput(request: HttpRequest): Promise<ParsedInput> {
-    const parsed = await getFormDataRequestBody(request);
+  private async parseInput(operation: Operation): Promise<ParsedInput> {
+    const parsed = await getFormDataRequestBody(operation);
     const prefilled: Record<string, string> = {};
     try {
       for (const [ key, value ] of Object.entries(parsed)) {
