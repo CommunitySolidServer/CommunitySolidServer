@@ -15,6 +15,7 @@ import type { HttpResponse } from '../../../src/server/HttpResponse';
 import type { TemplateHandler } from '../../../src/server/util/TemplateHandler';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
+import { SOLID_HTTP } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
   const baseUrl = 'http://test.com/';
@@ -64,7 +65,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     templateHandler = { handleSafe: jest.fn() } as any;
 
-    interactionCompleter = { handleSafe: jest.fn() } as any;
+    interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
 
     errorHandler = { handleSafe: jest.fn() } as any;
 
@@ -147,7 +148,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 400 }});
   });
 
-  it('calls the interactionCompleter for InteractionCompleteResults.', async(): Promise<void> => {
+  it('calls the interactionCompleter for InteractionCompleteResults and redirects.', async(): Promise<void> => {
     request.url = '/idp/routeComplete';
     request.method = 'POST';
     const oidcInteraction = { session: { accountId: 'account' }} as any;
@@ -157,7 +158,13 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, response, webId: 'webId' });
+    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, webId: 'webId' });
+    const location = await interactionCompleter.handleSafe.mock.results[0].value;
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const args = responseWriter.handleSafe.mock.calls[0][0];
+    expect(args.response).toBe(response);
+    expect(args.result.statusCode).toBe(302);
+    expect(args.result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(location);
   });
 
   it('matches paths based on prompt for requests to the root IDP.', async(): Promise<void> => {

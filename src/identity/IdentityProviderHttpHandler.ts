@@ -1,6 +1,7 @@
 import urljoin from 'url-join';
 import type { ErrorHandler } from '../ldp/http/ErrorHandler';
 import type { RequestParser } from '../ldp/http/RequestParser';
+import { RedirectResponseDescription } from '../ldp/http/response/RedirectResponseDescription';
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import type { Operation } from '../ldp/operations/Operation';
 import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
@@ -15,11 +16,9 @@ import { assertError, createErrorMessage } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { trimTrailingSlashes } from '../util/PathUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
-import type {
-  Interaction,
+import type { Interaction,
   InteractionHandler,
-  InteractionHandlerResult,
-} from './interaction/email-password/handler/InteractionHandler';
+  InteractionHandlerResult } from './interaction/email-password/handler/InteractionHandler';
 import { IdpInteractionError } from './interaction/util/IdpInteractionError';
 import type { InteractionCompleter } from './interaction/util/InteractionCompleter';
 
@@ -159,7 +158,8 @@ export class IdentityProviderHttpHandler extends HttpHandler {
         );
       }
       // We need the original request object for the OIDC library
-      return await this.interactionCompleter.handleSafe({ ...result.details, request, response });
+      const location = await this.interactionCompleter.handleSafe({ ...result.details, request });
+      return await this.responseWriter.handleSafe({ response, result: new RedirectResponseDescription(location) });
     }
     if (result.type === 'response' && templateFile) {
       return await this.handleTemplateResponse(response, templateFile, result.details, oidcInteraction);
