@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../../representation/ResourceIdentifier
 import { ResponseDescription } from './ResponseDescription';
 
 /**
- * Corresponds to a 201 response, containing the relevant link metadata.
+ * Corresponds to a 201 response, containing the relevant location metadata.
  */
 export class CreatedResponseDescription extends ResponseDescription {
   public constructor(location: ResourceIdentifier) {
