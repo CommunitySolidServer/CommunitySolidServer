@@ -6,8 +6,14 @@
       "@id": "urn:solid-server:auth:password:RegistrationRoute",
       "@type": "InteractionRoute",
       "route": "^/register/?$",
-      "viewTemplate": "@css:templates/identity/email-password/register.html.ejs",
-      "responseTemplate": "@css:templates/identity/email-password/register-response.html.ejs",
+      "viewTemplates": {
+        "InteractionRoute:_viewTemplates_key": "text/html",
+        "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"
+      },
+      "responseTemplates": {
+        "InteractionRoute:_responseTemplates_key": "text/html",
+        "InteractionRoute:_responseTemplates_value": "@css:templates/identity/email-password/register-response.html.ejs"
+      },
       "handler": {
         "@type": "RegistrationHandler",
         "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },

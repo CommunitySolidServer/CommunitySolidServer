@@ -7,7 +7,10 @@
       "@type": "InteractionRoute",
       "route": "^/confirm/?$",
       "prompt": "consent",
-      "viewTemplate": "@css:templates/identity/email-password/confirm.html.ejs",
+      "viewTemplates": {
+        "InteractionRoute:_viewTemplates_key": "text/html",
+        "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/confirm.html.ejs"
+      },
       "handler": { "@type": "SessionHttpHandler" }
     }
   ]

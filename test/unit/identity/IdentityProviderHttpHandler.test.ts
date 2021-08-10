@@ -10,14 +10,20 @@ import type { RequestParser } from '../../../src/ldp/http/RequestParser';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { Operation } from '../../../src/ldp/operations/Operation';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
+import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
-import type { TemplateHandler } from '../../../src/server/util/TemplateHandler';
+import type {
+  RepresentationConverter,
+  RepresentationConverterArgs,
+} from '../../../src/storage/conversion/RepresentationConverter';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
-import { SOLID_HTTP } from '../../../src/util/Vocabularies';
+import { readableToString } from '../../../src/util/StreamUtil';
+import { SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
+  const apiVersion = '0.1';
   const baseUrl = 'http://test.com/';
   const idpPath = '/idp';
   let request: HttpRequest;
@@ -26,7 +32,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
   let providerFactory: jest.Mocked<ProviderFactory>;
   let routes: { response: InteractionRoute; complete: InteractionRoute };
   let interactionCompleter: jest.Mocked<InteractionCompleter>;
-  let templateHandler: jest.Mocked<TemplateHandler>;
+  let converter: jest.Mocked<RepresentationConverter>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let provider: jest.Mocked<Provider>;
@@ -59,11 +65,20 @@ describe('An IdentityProviderHttpHandler', (): void => {
     ];
 
     routes = {
-      response: new InteractionRoute('/routeResponse', '/view1', handlers[0], 'default', '/response1'),
-      complete: new InteractionRoute('/routeComplete', '/view2', handlers[1], 'other', '/response2'),
+      response: new InteractionRoute('/routeResponse',
+        { 'text/html': '/view1' },
+        handlers[0],
+        'default',
+        { 'text/html': '/response1' }),
+      complete: new InteractionRoute('/routeComplete',
+        { 'text/html': '/view2' },
+        handlers[1],
+        'other'),
     };
 
-    templateHandler = { handleSafe: jest.fn() } as any;
+    converter = {
+      handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => input.representation),
+    } as any;
 
     interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
 
@@ -77,7 +92,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
       requestParser,
       providerFactory,
       Object.values(routes),
-      templateHandler,
+      converter,
       interactionCompleter,
       errorHandler,
       responseWriter,
@@ -91,26 +106,35 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(provider.callback).toHaveBeenLastCalledWith(request, response);
   });
 
-  it('calls the templateHandler for matching GET requests.', async(): Promise<void> => {
+  it('creates default Representations for GET requests.', async(): Promise<void> => {
     request.url = '/idp/routeResponse';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({ response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: '', prefilled: {}, authenticating: false }});
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, errorMessage: '', prefilled: {}, authenticating: false });
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
   });
 
-  it('calls the templateHandler for InteractionResponseResults.', async(): Promise<void> => {
+  it('creates Representations for InteractionResponseResults.', async(): Promise<void> => {
     request.url = '/idp/routeResponse';
     request.method = 'POST';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     const operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ operation });
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: { key: 'val', authenticating: false }},
-    );
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, key: 'val', authenticating: false });
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.responseTemplates['text/html']);
   });
 
   it('indicates to the templates if the request is part of an auth flow.', async(): Promise<void> => {
@@ -120,13 +144,10 @@ describe('An IdentityProviderHttpHandler', (): void => {
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
     (routes.response.handler as jest.Mocked<InteractionHandler>).handleSafe.mockResolvedValueOnce({ type: 'response' });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
-    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: { authenticating: true }},
-    );
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, authenticating: true });
   });
 
   it('errors for InteractionCompleteResults if no oidcInteraction is defined.', async(): Promise<void> => {
@@ -191,19 +212,21 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(0);
   });
 
-  it('displays the viewTemplate again in case of POST errors.', async(): Promise<void> => {
+  it('displays a viewTemplate again in case of POST errors.', async(): Promise<void> => {
     request.url = '/idp/routeResponse';
     request.method = 'POST';
     (routes.response.handler.handleSafe as any)
       .mockRejectedValueOnce(new IdpInteractionError(500, 'handle error', { name: 'name' }));
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
-      response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false },
 
-    });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false });
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
   });
 
   it('defaults to an empty prefilled object in case of POST errors.', async(): Promise<void> => {
@@ -211,19 +234,19 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.method = 'POST';
     (routes.response.handler.handleSafe as any).mockRejectedValueOnce(new Error('handle error'));
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
-      response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: {}, authenticating: false },
-    });
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: {}, authenticating: false });
   });
 
   it('calls the errorHandler if there is a problem resolving the request.', async(): Promise<void> => {
     request.url = '/idp/routeResponse';
     request.method = 'GET';
     const error = new Error('bad template');
-    templateHandler.handleSafe.mockRejectedValueOnce(error);
+    converter.handleSafe.mockRejectedValueOnce(error);
     errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
@@ -244,19 +267,6 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
   });
 
-  it('can only resolve InteractionResponseResult responses if a responseTemplate is set.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    (routes.response as any).responseTemplate = undefined;
-    const error = new BadRequestHttpError('Unsupported request: POST http://test.com/idp/routeResponse');
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/html': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
-  });
-
   it('errors if no route is configured for the default prompt.', async(): Promise<void> => {
     handler = new IdentityProviderHttpHandler(
       baseUrl,
@@ -264,7 +274,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
       requestParser,
       providerFactory,
       [],
-      templateHandler,
+      converter,
       interactionCompleter,
       errorHandler,
       responseWriter,

@@ -23,26 +23,7 @@
       "idpPath": "/idp",
       "requestParser": { "@id": "urn:solid-server:default:RequestParser" },
       "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
-      "templateHandler": {
-        "@type": "TemplateHandler",
-        "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
-        "templateEngine": {
-          "comment": "Renders the specific page and embeds it into the main HTML body.",
-          "@type": "ChainedTemplateEngine",
-          "renderedName": "htmlBody",
-          "engines": [
-            {
-              "comment": "Will be called with specific interaction templates to generate HTML snippets.",
-              "@type": "EjsTemplateEngine"
-            },
-            {
-              "comment": "Will embed the result of the first engine into the main HTML template.",
-              "@type": "EjsTemplateEngine",
-              "template": "@css:templates/main.html.ejs"
-            }
-          ]
-        }
-      },
+      "converter": { "@id":  "urn:solid-server:default:RepresentationConverter" },
       "interactionCompleter": {
         "comment": "Responsible for finishing OIDC interactions.",
         "@type": "InteractionCompleter",
