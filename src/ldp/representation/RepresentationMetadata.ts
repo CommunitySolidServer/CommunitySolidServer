@@ -112,10 +112,10 @@ export class RepresentationMetadata {
    * @returns All matching metadata quads.
    */
   public quads(
-    subject: Term | null = null,
-    predicate: Term | null = null,
-    object: Term | null = null,
-    graph: Term | null = null,
+    subject: NamedNode | BlankNode | string | null = null,
+    predicate: NamedNode | string | null = null,
+    object: NamedNode | BlankNode | Literal | string | null = null,
+    graph: MetadataGraph | null = null,
   ): Quad[] {
     return this.store.getQuads(subject, predicate, object, graph);
   }

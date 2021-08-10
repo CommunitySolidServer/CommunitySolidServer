@@ -4,9 +4,14 @@ import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
 import { guardedStreamFrom } from './StreamUtil';
+<<<<<<< Updated upstream
 import { toLiteral } from './TermUtil';
-import { CONTENT_TYPE_TERM, DC, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
+
+import { DC, LDP, RDF, XSD } from './Vocabularies';
+=======
+import { CONTENT_TYPE_TERM, LDP, RDF, SOLID_META } from './Vocabularies';
 import namedNode = DataFactory.namedNode;
+>>>>>>> Stashed changes
 
 /**
  * Helper function to generate type quads for a Container or Resource.
@@ -24,6 +29,7 @@ export function addResourceMetadata(metadata: RepresentationMetadata, isContaine
 }
 
 /**
+<<<<<<< Updated upstream
  * Updates the dc:modified time to the given time.
  * @param metadata - Metadata to update.
  * @param date - Last modified date. Defaults to current time.
@@ -33,9 +39,7 @@ export function updateModifiedDate(metadata: RepresentationMetadata, date = new 
   const lastModified = new Date(date);
   lastModified.setMilliseconds(0);
   metadata.set(DC.terms.modified, toLiteral(lastModified.toISOString(), XSD.terms.dateTime));
-}
-
-/**
+=======
  * Links a template file with a given content-type to the metadata using the SOLID_META.template predicate.
  * @param metadata - Metadata to update.
  * @param templateFile - Path to the template.
@@ -46,6 +50,7 @@ void {
   const templateNode = namedNode(templateFile);
   metadata.add(SOLID_META.terms.template, templateNode);
   metadata.addQuad(templateNode, CONTENT_TYPE_TERM, contentType);
+>>>>>>> Stashed changes
 }
 
 /**

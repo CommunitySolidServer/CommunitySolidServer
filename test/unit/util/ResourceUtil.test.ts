@@ -1,10 +1,10 @@
 import 'jest-rdf';
-import type { Literal } from 'n3';
+import type { NamedNode, Literal } from 'n3';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import { cloneRepresentation, updateModifiedDate } from '../../../src/util/ResourceUtil';
-import { DC, XSD } from '../../../src/util/Vocabularies';
+import { addTemplateMetadata, cloneRepresentation, updateModifiedDate } from '../../../src/util/ResourceUtil';
+import { CONTENT_TYPE_TERM, DC, SOLID_META, XSD } from '../../../src/util/Vocabularies';
 
 describe('ResourceUtil', (): void => {
   let representation: Representation;
@@ -27,6 +27,21 @@ describe('ResourceUtil', (): void => {
       date.setMilliseconds(0);
       expect(lastModified?.value).toBe(date.toISOString());
       expect((lastModified as Literal).datatype).toEqualRdfTerm(XSD.terms.dateTime);
+    });
+  });
+
+  describe('#addTemplateMetadata', (): void => {
+    const filePath = '/templates/template.html.ejs';
+    const contentType = 'text/html';
+
+    it('stores the template metadata.', (): void => {
+      const metadata = new RepresentationMetadata();
+      addTemplateMetadata(metadata, filePath, contentType);
+      const templateNode = metadata.get(SOLID_META.terms.template);
+      expect(templateNode?.value).toBe(filePath);
+      const quads = metadata.quads(templateNode as NamedNode, CONTENT_TYPE_TERM);
+      expect(quads).toHaveLength(1);
+      expect(quads[0].object.value).toBe(contentType);
     });
   });
 

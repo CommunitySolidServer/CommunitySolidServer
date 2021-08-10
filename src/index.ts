@@ -208,7 +208,6 @@ export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
 export * from './server/util/RouterHandler';
-export * from './server/util/TemplateHandler';
 
 // Storage/Accessors
 export * from './storage/accessors/DataAccessor';
@@ -222,6 +221,7 @@ export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContainerToTemplateConverter';
 export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/ConversionUtil';
+export * from './storage/conversion/DynamicJsonToTemplateConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/IfNeededConverter';

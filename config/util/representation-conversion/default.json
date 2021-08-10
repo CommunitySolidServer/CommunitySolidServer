@@ -2,6 +2,7 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
+    "files-scs:config/util/representation-conversion/converters/dynamic-json-template.json",
     "files-scs:config/util/representation-conversion/converters/errors.json",
     "files-scs:config/util/representation-conversion/converters/markdown.json",
     "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
@@ -15,6 +16,7 @@
       "handlers": [
         { "@id": "urn:solid-server:default:DefaultUiConverter" },
         { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
+        { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
         {
           "@type": "IfNeededConverter",
           "comment": "Only continue converting if the requester cannot accept the available content type"

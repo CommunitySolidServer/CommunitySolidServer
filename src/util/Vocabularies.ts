@@ -135,6 +135,8 @@ export const SOLID_HTTP = createUriAndTermNamespace('urn:npm:solid:community-ser
 export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-server:meta:',
   // This identifier is used as graph for all metadata that is generated on the fly and should not be stored
   'ResponseMetadata',
+  // This is used to identify templates that can be used for the representation of a resource
+  'template',
 );
 
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
