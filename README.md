@@ -2,9 +2,13 @@
 
 <img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
 
+[![MIT license](https://img.shields.io/npm/l/@solid/community-server)](https://github.com/solid/community-server/blob/main/LICENSE.md)
+[![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
+[![Node.js version](https://img.shields.io/node/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
 [![Build Status](https://github.com/solid/community-server/workflows/CI/badge.svg)](https://github.com/solid/community-server/actions)
 [![Coverage Status](https://coveralls.io/repos/github/solid/community-server/badge.svg)](https://coveralls.io/github/solid/community-server)
-[![npm version](https://img.shields.io/npm/v/@solid/community-server)](https://www.npmjs.com/package/@solid/community-server)
+[![GitHub discussions](https://img.shields.io/github/discussions/solid/community-server)](https://github.com/solid/community-server/discussions)
+[![Chat on Gitter](https://badges.gitter.im/solid/community-server.svg)](https://gitter.im/solid/community-server)
 
 **The Community Solid Server is open software
 that provides you with a [Solid](https://solidproject.org/) Pod and identity.
