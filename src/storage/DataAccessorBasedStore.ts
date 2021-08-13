@@ -25,7 +25,7 @@ import {
   toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
-import { addResourceMetadata } from '../util/ResourceUtil';
+import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
   CONTENT_TYPE,
   DC,
@@ -164,7 +164,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const newID = await this.createSafeUri(container, representation.metadata);
 
     // Write the data. New containers should never be made for a POST request.
-    await this.writeData(newID, representation, isContainerIdentifier(newID), false);
+    await this.writeData(newID, representation, isContainerIdentifier(newID), false, false);
 
     return newID;
   }
@@ -197,7 +197,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Potentially have to create containers if it didn't exist yet
-    return this.writeData(identifier, representation, isContainer, !oldMetadata);
+    return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
   public async modifyResource(): Promise<ResourceIdentifier[]> {
@@ -237,6 +237,17 @@ export class DataAccessorBasedStore implements ResourceStore {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
     }
+
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const container = this.identifierStrategy.getParentContainer(identifier);
+      deleted.push(container);
+
+      // Update modified date of parent
+      const parentMetadata = await this.accessor.getMetadata(container);
+      updateModifiedDate(parentMetadata);
+      await this.accessor.writeContainer(container, parentMetadata);
+    }
+
     await this.accessor.deleteResource(identifier);
     return deleted;
   }
@@ -300,11 +311,12 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param representation - Corresponding Representation.
    * @param isContainer - Is the incoming resource a container?
    * @param createContainers - Should parent containers (potentially) be created?
+   * @param exists - If the resource already exists.
    *
    * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers?: boolean): Promise<ResourceIdentifier[]> {
+    createContainers: boolean, exists: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
@@ -320,12 +332,15 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.auxiliaryStrategy.validate(representation);
     }
 
+    // Add date modified metadata
+    updateModifiedDate(representation.metadata);
+
     // Root container should not have a parent container
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
     const modified = [];
-    if (!this.identifierStrategy.isRootContainer(identifier)) {
+    if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const container = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
         modified.push(container);
@@ -333,6 +348,11 @@ export class DataAccessorBasedStore implements ResourceStore {
         const created = await this.createRecursiveContainers(container);
         modified.push(...created.length === 0 ? [ container ] : created);
       }
+
+      // Parent container is also modified
+      const parentMetadata = await this.accessor.getMetadata(container);
+      updateModifiedDate(parentMetadata);
+      await this.accessor.writeContainer(container, parentMetadata);
     }
 
     // Remove all generated metadata to prevent it from being stored permanently
@@ -534,7 +554,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const ancestors = this.identifierStrategy.isRootContainer(container) ?
       [] :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-    await this.writeData(container, new BasicRepresentation([], container), true);
+    await this.writeData(container, new BasicRepresentation([], container), true, false, false);
     return [ ...ancestors, container ];
   }
 }
