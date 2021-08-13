@@ -113,12 +113,32 @@ describe('An IdentityProviderHttpHandler', (): void => {
     );
   });
 
-  it('calls the interactionCompleter for InteractionCompleteResults.', async(): Promise<void> => {
+  it('errors for InteractionCompleteResults if no oidcInteraction is defined.', async(): Promise<void> => {
     request.url = '/idp/routeComplete';
     request.method = 'POST';
+    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 400 });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request });
+    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(0);
+
+    const error = new BadRequestHttpError(
+      'This action can only be executed as part of an authentication flow. It should not be used directly.',
+    );
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 400 }});
+  });
+
+  it('calls the interactionCompleter for InteractionCompleteResults.', async(): Promise<void> => {
+    request.url = '/idp/routeComplete';
+    request.method = 'POST';
+    const oidcInteraction = { session: { accountId: 'account' }} as any;
+    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
     expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, response, webId: 'webId' });
   });
