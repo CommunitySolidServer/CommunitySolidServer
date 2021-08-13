@@ -21,7 +21,7 @@ import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META } from '../../../src/util/Vocabularies';
+import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC } from '../../../src/util/Vocabularies';
 const { namedNode, quad } = DataFactory;
 
 class SimpleDataAccessor implements DataAccessor {
@@ -117,6 +117,9 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
 }
 
 describe('A DataAccessorBasedStore', (): void => {
+  const now = new Date(1234567489);
+  const later = new Date(987654321);
+  let mockDate: jest.SpyInstance;
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
   const root = 'http://test.com/';
@@ -127,6 +130,8 @@ describe('A DataAccessorBasedStore', (): void => {
   const resourceData = 'text';
 
   beforeEach(async(): Promise<void> => {
+    mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
+
     accessor = new SimpleDataAccessor();
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
@@ -242,6 +247,7 @@ describe('A DataAccessorBasedStore', (): void => {
         path: expect.stringMatching(new RegExp(`^${root}[^/]+$`, 'u')),
       });
       await expect(arrayifyStream(accessor.data[result.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[result.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -256,8 +262,9 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[result.path]).toBeTruthy();
       expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
 
-      const { data } = await store.getRepresentation(result);
+      const { data, metadata } = await store.getRepresentation(result);
       const quads: Quad[] = await arrayifyStream(data);
+      expect(metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(quads.some((entry): boolean => entry.subject.value === result.path &&
         entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
     });
@@ -345,7 +352,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}` };
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${`${root}`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
       await expect(store.setRepresentation(resourceID, representation)).resolves
         .toEqual([{ path: `${root}` }]);
@@ -382,6 +389,8 @@ describe('A DataAccessorBasedStore', (): void => {
         { path: `${root}resource` },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -390,13 +399,37 @@ describe('A DataAccessorBasedStore', (): void => {
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: root },
         { path: `${root}container/` },
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+    });
+
+    it('can overwrite resources which does not update parent metadata.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: root },
+        { path: `${root}resource` },
+      ]);
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+
+      // Parent metadata does not get updated if the resource already exists
+      representation = new BasicRepresentation('updatedText', 'text/plain');
+      mockDate.mockReturnValue(later);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}resource` },
+      ]);
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ 'updatedText' ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(later.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      mockDate.mockReturnValue(now);
     });
 
     it('does not write generated metadata.', async(): Promise<void> => {
@@ -446,7 +479,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
       representation.data = guardedStreamFrom(
-        [ `<${`${root}resource/`}> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
+        [ `<${root}resource/> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
       );
       const result = store.setRepresentation(resourceID, representation);
       await expect(result).rejects.toThrow(ConflictHttpError);
@@ -540,8 +573,18 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}resource`] = representation;
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
         { path: `${root}resource` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+    });
+
+    it('will delete root non-storage containers.', async(): Promise<void> => {
+      accessor.data[root] = new BasicRepresentation(representation.data, containerMetadata);
+      await expect(store.deleteResource({ path: root })).resolves.toEqual([
+        { path: root },
+      ]);
+      expect(accessor.data[root]).toBeUndefined();
     });
 
     it('will delete a root storage auxiliary resource of a non-root container.', async(): Promise<void> => {
@@ -551,6 +594,7 @@ describe('A DataAccessorBasedStore', (): void => {
       auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
       await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
         { path: `${root}container/.dummy` },
+        { path: `${root}container/` },
       ]);
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
     });
@@ -561,6 +605,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(store.deleteResource({ path: `${root}container/` })).resolves.toEqual([
         { path: `${root}container/` },
         { path: `${root}container/.dummy` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}container/`]).toBeUndefined();
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
@@ -580,35 +625,13 @@ describe('A DataAccessorBasedStore', (): void => {
       logger.error = jest.fn();
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
         { path: `${root}resource` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(
         'Error deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
-      );
-    });
-
-    it('can also handle auxiliary deletion to throw non-native errors.', async(): Promise<void> => {
-      accessor.data[`${root}resource`] = representation;
-      accessor.data[`${root}resource.dummy`] = representation;
-      const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-          throw 'auxiliary error!';
-        }
-        await deleteFn.call(accessor, identifier);
-      });
-      const { logger } = store as any;
-      logger.error = jest.fn();
-      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
-        { path: `${root}resource` },
-      ]);
-      expect(accessor.data[`${root}resource`]).toBeUndefined();
-      expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenLastCalledWith(
-        'Error deleting auxiliary resource http://test.com/resource.dummy: Unknown error: auxiliary error!',
       );
     });
   });
