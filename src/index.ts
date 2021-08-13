@@ -91,6 +91,7 @@ export * from './ldp/http/metadata/LinkTypeParser';
 export * from './ldp/http/metadata/MappedMetadataWriter';
 export * from './ldp/http/metadata/MetadataParser';
 export * from './ldp/http/metadata/MetadataWriter';
+export * from './ldp/http/metadata/ModifiedMetadataWriter';
 export * from './ldp/http/metadata/SlugParser';
 export * from './ldp/http/metadata/WacAllowMetadataWriter';
 export * from './ldp/http/metadata/WwwAuthMetadataWriter';

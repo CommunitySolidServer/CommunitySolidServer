@@ -17,6 +17,8 @@
       "options_credentials": true,
       "options_exposedHeaders": [
         "Accept-Patch",
+        "ETag",
+        "Last-Modified",
         "Link",
         "Location",
         "MS-Author-Via",
