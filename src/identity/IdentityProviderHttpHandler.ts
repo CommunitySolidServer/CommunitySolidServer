@@ -167,8 +167,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   private async resolveRoute(request: HttpRequest, response: HttpResponse, route: InteractionRoute,
     oidcInteraction?: Interaction): Promise<void> {
     if (request.method === 'GET') {
-      // .ejs templates errors on undefined variables
-      return await this.handleTemplateResponse(response, route.viewTemplate, { errorMessage: '', prefilled: {}});
+      return await this.handleTemplateResponse(
+        response, route.viewTemplate, { errorMessage: '', prefilled: {}}, oidcInteraction,
+      );
     }
 
     if (request.method === 'POST') {
@@ -179,7 +180,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
         // Render error in the view
         const prefilled = IdpInteractionError.isInstance(error) ? error.prefilled : {};
         const errorMessage = createErrorMessage(error);
-        return await this.handleTemplateResponse(response, route.viewTemplate, { errorMessage, prefilled });
+        return await this.handleTemplateResponse(
+          response, route.viewTemplate, { errorMessage, prefilled }, oidcInteraction,
+        );
       }
 
       if (result.type === 'complete') {
@@ -193,15 +196,17 @@ export class IdentityProviderHttpHandler extends HttpHandler {
         return await this.interactionCompleter.handleSafe({ ...result.details, request, response });
       }
       if (result.type === 'response' && route.responseTemplate) {
-        return await this.handleTemplateResponse(response, route.responseTemplate, result.details);
+        return await this.handleTemplateResponse(response, route.responseTemplate, result.details, oidcInteraction);
       }
     }
     throw new BadRequestHttpError(`Unsupported request: ${request.method} ${request.url}`);
   }
 
-  private async handleTemplateResponse(response: HttpResponse, templateFile: string, contents?: NodeJS.Dict<any>):
-  Promise<void> {
-    await this.templateHandler.handleSafe({ response, templateFile, contents: contents ?? {}});
+  private async handleTemplateResponse(response: HttpResponse, templateFile: string, data?: NodeJS.Dict<any>,
+    oidcInteraction?: Interaction): Promise<void> {
+    const contents = data ?? {};
+    contents.authenticating = Boolean(oidcInteraction);
+    await this.templateHandler.handleSafe({ response, templateFile, contents });
   }
 
   /**

@@ -83,9 +83,9 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.url = '/idp/routeResponse';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.viewTemplate, contents: { errorMessage: '', prefilled: {}}},
-    );
+    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({ response,
+      templateFile: routes.response.viewTemplate,
+      contents: { errorMessage: '', prefilled: {}, authenticating: false }});
   });
 
   it('calls the templateHandler for InteractionResponseResults.', async(): Promise<void> => {
@@ -96,20 +96,22 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request });
     expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: { key: 'val' }},
+      { response, templateFile: routes.response.responseTemplate, contents: { key: 'val', authenticating: false }},
     );
   });
 
-  it('supports InteractionResponseResults without details.', async(): Promise<void> => {
+  it('indicates to the templates if the request is part of an auth flow.', async(): Promise<void> => {
     request.url = '/idp/routeResponse';
     request.method = 'POST';
+    const oidcInteraction = { session: { accountId: 'account' }} as any;
+    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
     (routes.response.handler as jest.Mocked<InteractionHandler>).handleSafe.mockResolvedValueOnce({ type: 'response' });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request });
+    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
     expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: {}},
+      { response, templateFile: routes.response.responseTemplate, contents: { authenticating: true }},
     );
   });
 
@@ -175,7 +177,8 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
       templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: { name: 'name' }},
+      contents: { errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false },
+
     });
   });
 
@@ -188,7 +191,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
       response,
       templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: { }},
+      contents: { errorMessage: 'handle error', prefilled: {}, authenticating: false },
     });
   });
 
