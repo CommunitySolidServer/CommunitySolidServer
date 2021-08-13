@@ -183,6 +183,13 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       }
 
       if (result.type === 'complete') {
+        if (!oidcInteraction) {
+          // Once https://github.com/solid/community-server/pull/898 is merged
+          // we want to assign an error code here to have a more thorough explanation
+          throw new BadRequestHttpError(
+            'This action can only be executed as part of an authentication flow. It should not be used directly.',
+          );
+        }
         return await this.interactionCompleter.handleSafe({ ...result.details, request, response });
       }
       if (result.type === 'response' && route.responseTemplate) {
