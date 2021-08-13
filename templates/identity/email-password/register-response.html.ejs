@@ -26,7 +26,11 @@
   <h2>Your new account</h2>
   <p>
     Via your email address <em><%= email %></em>,
-    this server lets you <a href="./login">log in</a> to Solid apps
+    <% if (authenticating) { %>
+      you can now <a href="./login">log in</a>
+    <% } else { %>
+      this server lets you log in to Solid apps
+    <% } %>
     with your WebID <a href="<%= webId %>" class="link"><%= webId %></a>
   </p>
   <% if (!createWebId) { %>
