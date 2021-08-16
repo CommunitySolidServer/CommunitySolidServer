@@ -15,6 +15,7 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import { readableToQuads } from '../util/StreamUtil';
 import { ACL, FOAF } from '../util/Vocabularies';
 import type { AuthorizerArgs } from './Authorizer';
 import { Authorizer } from './Authorizer';
@@ -254,12 +255,7 @@ export class WebAclAuthorizer extends Authorizer {
    */
   private async filterData(data: Representation, predicate: string, object: string): Promise<Store> {
     // Import all triples from the representation into a queryable store
-    const quads = new Store();
-    const importer = quads.import(data.data);
-    await new Promise((resolve, reject): void => {
-      importer.on('end', resolve);
-      importer.on('error', reject);
-    });
+    const quads = await readableToQuads(data.data);
 
     // Find subjects that occur with a given predicate/object, and collect all their triples
     const subjectData = new Store();

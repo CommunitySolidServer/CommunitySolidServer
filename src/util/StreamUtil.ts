@@ -3,6 +3,7 @@ import { Readable, Transform } from 'stream';
 import { promisify } from 'util';
 import arrayifyStream from 'arrayify-stream';
 import eos from 'end-of-stream';
+import { Store } from 'n3';
 import pump from 'pump';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isHttpRequest } from '../server/HttpRequest';
@@ -21,6 +22,19 @@ const logger = getLoggerFor('StreamUtil');
  */
 export async function readableToString(stream: Readable): Promise<string> {
   return (await arrayifyStream(stream)).join('');
+}
+
+/**
+ * Imports quads from a stream into a Store.
+ * @param stream - Stream of quads.
+ *
+ * @returns A Store containing all the quads.
+ */
+export async function readableToQuads(stream: Readable): Promise<Store> {
+  const quads = new Store();
+  quads.import(stream);
+  await endOfStream(stream);
+  return quads;
 }
 
 // These error messages usually indicate expected behaviour so should not give a warning.
