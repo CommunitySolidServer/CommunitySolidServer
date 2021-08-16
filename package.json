@@ -138,7 +138,7 @@
     "@types/cheerio": "^0.22.29",
     "@types/ejs": "^3.0.6",
     "@types/fs-extra": "^9.0.12",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.0.0",
     "@types/set-cookie-parser": "^2.4.0",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
