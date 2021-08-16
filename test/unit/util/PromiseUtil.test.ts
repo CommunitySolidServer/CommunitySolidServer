@@ -1,0 +1,31 @@
+import { promiseSome } from '../../../src/util/PromiseUtil';
+
+describe('PromiseUtil', (): void => {
+  describe('#promiseSome', (): void => {
+    const resultTrue = Promise.resolve(true);
+    const resultFalse = Promise.resolve(false);
+    const resultError = Promise.reject(new Error('generic error'));
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const resultInfinite = new Promise<boolean>((): void => {});
+
+    it('returns false if no promise is provided.', async(): Promise<void> => {
+      await expect(promiseSome([])).resolves.toEqual(false);
+    });
+
+    it('returns false if no promise returns true.', async(): Promise<void> => {
+      await expect(promiseSome([ resultFalse, resultFalse, resultFalse ])).resolves.toEqual(false);
+    });
+
+    it('returns true if at least a promise returns true.', async(): Promise<void> => {
+      await expect(promiseSome([ resultFalse, resultTrue, resultFalse ])).resolves.toEqual(true);
+    });
+
+    it('does not propagate errors.', async(): Promise<void> => {
+      await expect(promiseSome([ resultError, resultFalse, resultFalse ])).resolves.toEqual(false);
+    });
+
+    it('works with a combination of promises.', async(): Promise<void> => {
+      await expect(promiseSome([ resultError, resultTrue, resultInfinite ])).resolves.toEqual(true);
+    });
+  });
+});
