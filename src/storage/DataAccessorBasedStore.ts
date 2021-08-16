@@ -3,6 +3,7 @@ import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { AuxiliaryStrategy } from '../ldp/auxiliary/AuxiliaryStrategy';
+import type { Patch } from '../ldp/http/Patch';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
@@ -16,6 +17,7 @@ import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { PreconditionFailedHttpError } from '../util/errors/PreconditionFailedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import {
   ensureTrailingSlash,
@@ -39,6 +41,7 @@ import {
   PREFERRED_PREFIX_TERM,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
+import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
 /**
@@ -134,7 +137,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     return representation;
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
+  public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
+  Promise<ResourceIdentifier> {
     this.validateIdentifier(container);
 
     // Ensure the representation is supported by the accessor
@@ -153,9 +157,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5: "Servers MUST respond with the 405 status code to requests using HTTP methods
     // that are not supported by the target resource."
     // https://solid.github.io/specification/protocol#reading-writing-resources
-    if (parentMetadata && !isContainerPath(parentMetadata.identifier.value)) {
+    if (!isContainerPath(parentMetadata.identifier.value)) {
       throw new MethodNotAllowedHttpError('The given path is not a container.');
     }
+
+    this.validateConditions(conditions, parentMetadata);
 
     // Solid, §5.1: "Servers MAY allow clients to suggest the URI of a resource created through POST,
     // using the HTTP Slug header as defined in [RFC5023].
@@ -169,8 +175,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     return newID;
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation):
-  Promise<ResourceIdentifier[]> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
 
     // Ensure the representation is supported by the accessor
@@ -196,15 +202,31 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
+    this.validateConditions(conditions, oldMetadata);
+
     // Potentially have to create containers if it didn't exist yet
     return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
-  public async modifyResource(): Promise<ResourceIdentifier[]> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    if (conditions) {
+      let metadata: RepresentationMetadata | undefined;
+      try {
+        metadata = await this.accessor.getMetadata(identifier);
+      } catch (error: unknown) {
+        if (!NotFoundHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
+
+      this.validateConditions(conditions, metadata);
+    }
+
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -229,8 +251,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (isContainerIdentifier(identifier) && await this.hasProperChildren(identifier)) {
       throw new ConflictHttpError('Can only delete empty containers.');
     }
-    // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
-    // resources"
+
+    this.validateConditions(conditions, metadata);
+
+    // Solid, §5.4: "When a contained resource is deleted,
+    // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
     const deleted = [ identifier ];
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
@@ -258,6 +283,17 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected validateIdentifier(identifier: ResourceIdentifier): void {
     if (!this.identifierStrategy.supportsIdentifier(identifier)) {
       throw new NotFoundHttpError();
+    }
+  }
+
+  /**
+   * Verify if the given metadata matches the conditions.
+   */
+  protected validateConditions(conditions?: Conditions, metadata?: RepresentationMetadata): void {
+    // The 412 (Precondition Failed) status code indicates
+    // that one or more conditions given in the request header fields evaluated to false when tested on the server.
+    if (conditions && !conditions.matchesMetadata(metadata)) {
+      throw new PreconditionFailedHttpError();
     }
   }
 

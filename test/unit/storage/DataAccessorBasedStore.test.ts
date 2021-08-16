@@ -9,6 +9,7 @@ import type { Representation } from '../../../src/ldp/representation/Representat
 import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
+import { BasicConditions } from '../../../src/storage/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
@@ -17,6 +18,7 @@ import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError'
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
+import { PreconditionFailedHttpError } from '../../../src/util/errors/PreconditionFailedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
@@ -117,8 +119,8 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
 }
 
 describe('A DataAccessorBasedStore', (): void => {
-  const now = new Date(1234567489);
-  const later = new Date(987654321);
+  const now = new Date(2020, 5, 12);
+  const later = new Date(2021, 6, 13);
   let mockDate: jest.SpyInstance;
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
@@ -233,6 +235,13 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(result).rejects.toThrow('The given path is not a container.');
     });
 
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.addResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
@@ -339,6 +348,13 @@ describe('A DataAccessorBasedStore', (): void => {
       const prom = store.setRepresentation(resourceID, representation);
       await expect(prom).rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
       await expect(prom).rejects.toThrow(ForbiddenHttpError);
+    });
+
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.setRepresentation(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
     });
 
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
@@ -527,8 +543,33 @@ describe('A DataAccessorBasedStore', (): void => {
   });
 
   describe('modifying a Representation', (): void => {
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
+    it('throws a 412 if the conditions are not matched on resources that do not exist.', async(): Promise<void> => {
+      const resourceID = { path: `${root}notHere` };
+      const conditions = new BasicConditions({ matchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
+    it('re-throws the error if something goes wrong accessing the metadata.', async(): Promise<void> => {
+      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+        throw new Error('error');
+      });
+
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow('error');
+    });
+
     it('is not supported.', async(): Promise<void> => {
-      const result = store.modifyResource();
+      const result = store.modifyResource({ path: root }, representation);
       await expect(result).rejects.toThrow(NotImplementedHttpError);
       await expect(result).rejects.toThrow('Patches are not supported by the default store.');
     });
@@ -567,6 +608,13 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = store.deleteResource({ path: `${root}container/` });
       await expect(result).rejects.toThrow(ConflictHttpError);
       await expect(result).rejects.toThrow('Can only delete empty containers.');
+    });
+
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.deleteResource(resourceID, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
     });
 
     it('will delete resources.', async(): Promise<void> => {

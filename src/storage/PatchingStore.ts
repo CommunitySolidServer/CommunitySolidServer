@@ -1,5 +1,6 @@
 import type { Patch } from '../ldp/http/Patch';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';
 import type { PatchHandler } from './patch/PatchHandler';
@@ -22,8 +23,11 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
     try {
       return await this.source.modifyResource(identifier, patch, conditions);
-    } catch {
-      return this.patcher.handleSafe({ source: this.source, identifier, patch });
+    } catch (error: unknown) {
+      if (NotImplementedHttpError.isInstance(error)) {
+        return this.patcher.handleSafe({ source: this.source, identifier, patch });
+      }
+      throw error;
     }
   }
 }
