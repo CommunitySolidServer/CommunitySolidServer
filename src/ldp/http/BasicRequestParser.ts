@@ -3,6 +3,7 @@ import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { Operation } from '../operations/Operation';
 import { RepresentationMetadata } from '../representation/RepresentationMetadata';
 import type { BodyParser } from './BodyParser';
+import type { ConditionsParser } from './conditions/ConditionsParser';
 import type { MetadataParser } from './metadata/MetadataParser';
 import type { PreferenceParser } from './PreferenceParser';
 import { RequestParser } from './RequestParser';
@@ -15,17 +16,20 @@ export interface BasicRequestParserArgs {
   targetExtractor: TargetExtractor;
   preferenceParser: PreferenceParser;
   metadataParser: MetadataParser;
+  conditionsParser: ConditionsParser;
   bodyParser: BodyParser;
 }
 
 /**
  * Creates an {@link Operation} from an incoming {@link HttpRequest} by aggregating the results
- * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataParser}, and {@link BodyParser}.
+ * of a {@link TargetExtractor}, {@link PreferenceParser}, {@link MetadataParser},
+ * {@link ConditionsParser} and {@link BodyParser}.
  */
 export class BasicRequestParser extends RequestParser {
   private readonly targetExtractor!: TargetExtractor;
   private readonly preferenceParser!: PreferenceParser;
   private readonly metadataParser!: MetadataParser;
+  private readonly conditionsParser!: ConditionsParser;
   private readonly bodyParser!: BodyParser;
 
   public constructor(args: BasicRequestParserArgs) {
@@ -42,8 +46,9 @@ export class BasicRequestParser extends RequestParser {
     const preferences = await this.preferenceParser.handleSafe({ request });
     const metadata = new RepresentationMetadata(target);
     await this.metadataParser.handleSafe({ request, metadata });
+    const conditions = await this.conditionsParser.handleSafe(request);
     const body = await this.bodyParser.handleSafe({ request, metadata });
 
-    return { method, target, preferences, body };
+    return { method, target, preferences, conditions, body };
   }
 }

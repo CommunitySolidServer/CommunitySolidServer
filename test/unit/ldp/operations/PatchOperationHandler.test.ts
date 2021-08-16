@@ -1,11 +1,13 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PatchOperationHandler } from '../../../../src/ldp/operations/PatchOperationHandler';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PatchOperationHandler', (): void => {
+  const conditions = new BasicConditions({});
   const store = {} as unknown as ResourceStore;
   const handler = new PatchOperationHandler(store);
   beforeEach(async(): Promise<void> => {
@@ -25,9 +27,9 @@ describe('A PatchOperationHandler', (): void => {
 
   it('deletes the resource from the store and returns the correct response.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
-    const result = await handler.handle({ target: { path: 'url' }, body: { metadata }} as Operation);
+    const result = await handler.handle({ target: { path: 'url' }, body: { metadata }, conditions } as Operation);
     expect(store.modifyResource).toHaveBeenCalledTimes(1);
-    expect(store.modifyResource).toHaveBeenLastCalledWith({ path: 'url' }, { metadata });
+    expect(store.modifyResource).toHaveBeenLastCalledWith({ path: 'url' }, { metadata }, conditions);
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();

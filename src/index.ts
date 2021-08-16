@@ -83,6 +83,10 @@ export * from './ldp/auxiliary/RoutingAuxiliaryStrategy';
 export * from './ldp/auxiliary/SuffixAuxiliaryIdentifierStrategy';
 export * from './ldp/auxiliary/Validator';
 
+// LDP/HTTP/Conditions
+export * from './ldp/http/conditions/BasicConditionsParser';
+export * from './ldp/http/conditions/ConditionsParser';
+
 // LDP/HTTP/Metadata
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
@@ -258,6 +262,7 @@ export * from './storage/routing/RouterRule';
 // Storage
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
+export * from './storage/BasicConditions';
 export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';

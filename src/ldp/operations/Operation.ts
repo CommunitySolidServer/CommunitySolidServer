@@ -1,4 +1,5 @@
 import type { Authorization } from '../../authorization/Authorization';
+import type { Conditions } from '../../storage/Conditions';
 import type { Representation } from '../representation/Representation';
 import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -19,6 +20,10 @@ export interface Operation {
    * Representation preferences of the response. Will be empty if there are none.
    */
   preferences: RepresentationPreferences;
+  /**
+   * Conditions the resource must fulfill for a valid operation.
+   */
+  conditions?: Conditions;
   /**
    * This value will be set if the Operation was authorized by an Authorizer.
    */

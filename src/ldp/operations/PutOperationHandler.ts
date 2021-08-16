@@ -35,7 +35,7 @@ export class PutOperationHandler extends OperationHandler {
       this.logger.warn('No Content-Type header specified on PUT request');
       throw new BadRequestHttpError('No Content-Type header specified on PUT request');
     }
-    await this.store.setRepresentation(input.target, input.body);
+    await this.store.setRepresentation(input.target, input.body, input.conditions);
     return new ResetResponseDescription();
   }
 }

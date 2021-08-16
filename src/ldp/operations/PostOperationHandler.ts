@@ -35,7 +35,7 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('No Content-Type header specified on POST request');
       throw new BadRequestHttpError('No Content-Type header specified on POST request');
     }
-    const identifier = await this.store.addResource(input.target, input.body);
+    const identifier = await this.store.addResource(input.target, input.body, input.conditions);
     return new CreatedResponseDescription(identifier);
   }
 }
