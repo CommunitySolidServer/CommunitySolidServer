@@ -285,6 +285,7 @@ export * from './util/errors/InternalServerError';
 export * from './util/errors/MethodNotAllowedHttpError';
 export * from './util/errors/NotFoundHttpError';
 export * from './util/errors/NotImplementedHttpError';
+export * from './util/errors/PreconditionFailedHttpError';
 export * from './util/errors/SystemError';
 export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';
