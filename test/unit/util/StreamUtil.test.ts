@@ -1,9 +1,11 @@
 import { PassThrough, Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
+import { Quad, NamedNode, Literal, BlankNode, Store } from 'n3';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
-import { guardedStreamFrom, pipeSafely, transformSafely, readableToString } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom, pipeSafely, transformSafely,
+  readableToString, readableToQuads } from '../../../src/util/StreamUtil';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
@@ -20,6 +22,28 @@ describe('StreamUtil', (): void => {
     it('concatenates all elements of a Readable.', async(): Promise<void> => {
       const stream = Readable.from([ 'a', 'b', 'c' ]);
       await expect(readableToString(stream)).resolves.toEqual('abc');
+    });
+  });
+
+  describe('#readableToQuads', (): void => {
+    it('imports all quads from a Readable.', async(): Promise<void> => {
+      const subject = new NamedNode('#subject');
+      const property = new NamedNode('#property');
+      const object = new NamedNode('#object');
+      const literal = new Literal('abcde');
+      const blankNode = new BlankNode('_1');
+      const graph = new NamedNode('#graph');
+
+      const quad1 = new Quad(subject, property, object, graph);
+      const quad2 = new Quad(subject, property, literal, graph);
+      const quad3 = new Quad(subject, property, blankNode, graph);
+      const quads = new Store();
+      quads.add(quad1);
+      quads.add(quad2);
+      quads.add(quad3);
+
+      const stream = Readable.from([ quad1, quad2, quad3 ]);
+      await expect(readableToQuads(stream)).resolves.toEqual(quads);
     });
   });
 
