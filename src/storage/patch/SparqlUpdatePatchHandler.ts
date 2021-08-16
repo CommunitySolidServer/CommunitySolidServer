@@ -15,7 +15,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { readableToString } from '../../util/StreamUtil';
+import { readableToQuads, readableToString } from '../../util/StreamUtil';
 import type { RepresentationConverter } from '../conversion/RepresentationConverter';
 import { ConvertingPatchHandler } from './ConvertingPatchHandler';
 import type { PatchHandlerArgs } from './PatchHandler';
@@ -119,19 +119,16 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
    */
   protected async patch(input: PatchHandlerArgs, representation?: Representation): Promise<Representation> {
     const { identifier, patch } = input;
-    const result = new Store<BaseQuad>();
+    let result: Store<BaseQuad>;
     let metadata: RepresentationMetadata;
 
     if (representation) {
       ({ metadata } = representation);
-      const importEmitter = result.import(representation.data);
-      await new Promise((resolve, reject): void => {
-        importEmitter.on('end', resolve);
-        importEmitter.on('error', reject);
-      });
+      result = await readableToQuads(representation.data);
       this.logger.debug(`${result.size} quads in ${identifier.path}.`);
     } else {
       metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
+      result = new Store<BaseQuad>();
     }
 
     // Run the query through Comunica
