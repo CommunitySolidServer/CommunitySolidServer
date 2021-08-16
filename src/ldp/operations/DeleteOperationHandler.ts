@@ -24,7 +24,7 @@ export class DeleteOperationHandler extends OperationHandler {
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    await this.store.deleteResource(input.target);
+    await this.store.deleteResource(input.target, input.conditions);
     return new ResetResponseDescription();
   }
 }

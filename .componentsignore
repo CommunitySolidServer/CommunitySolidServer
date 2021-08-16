@@ -1,5 +1,6 @@
 [
   "Adapter",
+  "BasicConditions",
   "BasicRepresentation",
   "Error",
   "EventEmitter",

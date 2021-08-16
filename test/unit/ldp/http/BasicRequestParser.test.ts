@@ -1,5 +1,6 @@
 import { BasicRequestParser } from '../../../../src/ldp/http/BasicRequestParser';
 import type { BodyParser } from '../../../../src/ldp/http/BodyParser';
+import type { ConditionsParser } from '../../../../src/ldp/http/conditions/ConditionsParser';
 import type { MetadataParser } from '../../../../src/ldp/http/metadata/MetadataParser';
 import type { PreferenceParser } from '../../../../src/ldp/http/PreferenceParser';
 import type { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
@@ -10,6 +11,7 @@ describe('A BasicRequestParser', (): void => {
   let targetExtractor: TargetExtractor;
   let preferenceParser: PreferenceParser;
   let metadataParser: MetadataParser;
+  let conditionsParser: ConditionsParser;
   let bodyParser: BodyParser;
   let requestParser: BasicRequestParser;
 
@@ -17,8 +19,11 @@ describe('A BasicRequestParser', (): void => {
     targetExtractor = new StaticAsyncHandler(true, 'target' as any);
     preferenceParser = new StaticAsyncHandler(true, 'preference' as any);
     metadataParser = new StaticAsyncHandler(true, undefined);
+    conditionsParser = new StaticAsyncHandler(true, 'conditions' as any);
     bodyParser = new StaticAsyncHandler(true, 'body' as any);
-    requestParser = new BasicRequestParser({ targetExtractor, preferenceParser, metadataParser, bodyParser });
+    requestParser = new BasicRequestParser(
+      { targetExtractor, preferenceParser, metadataParser, conditionsParser, bodyParser },
+    );
   });
 
   it('can handle any input.', async(): Promise<void> => {
@@ -36,6 +41,7 @@ describe('A BasicRequestParser', (): void => {
       method: 'GET',
       target: 'target',
       preferences: 'preference',
+      conditions: 'conditions',
       body: { data: 'body', metadata: new RepresentationMetadata('target') },
     });
   });

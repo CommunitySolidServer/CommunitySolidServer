@@ -24,7 +24,7 @@ export class HeadOperationHandler extends OperationHandler {
   }
 
   public async handle(input: Operation): Promise<ResponseDescription> {
-    const body = await this.store.getRepresentation(input.target, input.preferences);
+    const body = await this.store.getRepresentation(input.target, input.preferences, input.conditions);
 
     // Close the Readable as we will not return it.
     body.data.destroy();

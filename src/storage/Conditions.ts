@@ -24,11 +24,13 @@ export interface Conditions {
 
   /**
    * Checks validity based on the given metadata.
-   * @param metadata - Metadata of the representation.
+   * @param metadata - Metadata of the representation. Undefined if the resource does not exist.
    */
-  matchesMetadata: (metadata: RepresentationMetadata) => boolean;
+  matchesMetadata: (metadata?: RepresentationMetadata) => boolean;
   /**
    * Checks validity based on the given ETag and/or date.
+   * This function assumes the resource being checked exists.
+   * If not, the `matchesMetadata` function should be used.
    * @param eTag - Condition based on ETag.
    * @param lastModified - Condition based on last modified date.
    */

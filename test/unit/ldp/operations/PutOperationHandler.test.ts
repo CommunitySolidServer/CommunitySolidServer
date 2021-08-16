@@ -1,11 +1,13 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PutOperationHandler } from '../../../../src/ldp/operations/PutOperationHandler';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PutOperationHandler', (): void => {
+  const conditions = new BasicConditions({});
   const store = {} as unknown as ResourceStore;
   const handler = new PutOperationHandler(store);
   beforeEach(async(): Promise<void> => {
@@ -26,9 +28,9 @@ describe('A PutOperationHandler', (): void => {
 
   it('sets the representation in the store and returns the correct response.', async(): Promise<void> => {
     const metadata = new RepresentationMetadata('text/turtle');
-    const result = await handler.handle({ target: { path: 'url' }, body: { metadata }} as Operation);
+    const result = await handler.handle({ target: { path: 'url' }, body: { metadata }, conditions } as Operation);
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, { metadata });
+    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, { metadata }, conditions);
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();

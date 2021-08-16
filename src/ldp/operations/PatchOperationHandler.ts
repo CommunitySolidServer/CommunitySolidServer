@@ -36,7 +36,7 @@ export class PatchOperationHandler extends OperationHandler {
       this.logger.warn('No Content-Type header specified on PATCH request');
       throw new BadRequestHttpError('No Content-Type header specified on PATCH request');
     }
-    await this.store.modifyResource(input.target, input.body as Patch);
+    await this.store.modifyResource(input.target, input.body as Patch, input.conditions);
     return new ResetResponseDescription();
   }
 }
