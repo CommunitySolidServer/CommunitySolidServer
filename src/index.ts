@@ -21,6 +21,7 @@ export * from './authorization/WebAclAuthorizer';
 export * from './authorization/access-checkers/AccessChecker';
 export * from './authorization/access-checkers/AgentAccessChecker';
 export * from './authorization/access-checkers/AgentClassAccessChecker';
+export * from './authorization/access-checkers/AgentGroupAccessChecker';
 
 // Identity/Configuration
 export * from './identity/configuration/IdentityProviderFactory';
