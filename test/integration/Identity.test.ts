@@ -168,11 +168,10 @@ describe('A Solid server with IDP', (): void => {
     it('can log in again.', async(): Promise<void> => {
       const url = await state.startSession();
 
-      // For the following part it is debatable if this is correct but this might be a consequence of the authn client
       const form = await state.extractFormUrl(url);
       expect(form.url.endsWith('/confirm')).toBe(true);
 
-      const res = await state.fetchIdp(form.url, 'POST');
+      const res = await state.fetchIdp(form.url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
       const nextUrl = res.headers.get('location');
       expect(typeof nextUrl).toBe('string');
 

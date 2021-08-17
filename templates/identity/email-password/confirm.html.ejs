@@ -1,4 +1,17 @@
 <h1>Authorize</h1>
+<p>You are authorizing an application to access your Pod.</p>
 <form action="/idp/confirm" method="post">
-  <p class="actions"><button autofocus type="submit" name="submit" class="ids-link-filled">Continue</button></p>
+  <% if (errorMessage) { %>
+    <p class="error"><%= errorMessage %></p>
+  <% } %>
+
+  <fieldset>
+    <ol>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="yes" checked>Stay logged in</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button autofocus type="submit" name="submit">Continue</button></p>
 </form>
