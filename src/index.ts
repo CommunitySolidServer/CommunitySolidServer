@@ -285,6 +285,7 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 
 // Util/Handlers
 export * from './util/handlers/AsyncHandler';
+export * from './util/handlers/BooleanHandler';
 export * from './util/handlers/ParallelHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/UnsupportedAsyncHandler';
