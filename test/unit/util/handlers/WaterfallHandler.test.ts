@@ -1,5 +1,3 @@
-import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { HttpError } from '../../../../src/util/errors/HttpError';
 import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 import { WaterfallHandler } from '../../../../src/util/handlers/WaterfallHandler';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
@@ -82,45 +80,6 @@ describe('A WaterfallHandler', (): void => {
       const handler = new WaterfallHandler([ handlerFalse, handlerFalse ]);
 
       await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
-    });
-
-    it('throws an error with matching status code if all handlers threw the same.', async(): Promise<void> => {
-      handlerTrue.canHandle = async(): Promise<void> => {
-        throw new HttpError(401, 'UnauthorizedHttpError');
-      };
-      const handler = new WaterfallHandler([ handlerTrue, handlerTrue ]);
-
-      await expect(handler.canHandle(null)).rejects.toMatchObject({
-        statusCode: 401,
-        name: 'UnauthorizedHttpError',
-      });
-    });
-
-    it('throws an internal server error if one of the handlers threw one.', async(): Promise<void> => {
-      handlerTrue.canHandle = async(): Promise<void> => {
-        throw new HttpError(401, 'UnauthorizedHttpError');
-      };
-      handlerFalse.canHandle = async(): Promise<void> => {
-        throw new Error('Server is crashing!');
-      };
-      const handler = new WaterfallHandler([ handlerTrue, handlerFalse ]);
-
-      await expect(handler.canHandle(null)).rejects.toMatchObject({
-        statusCode: 500,
-        name: 'InternalServerError',
-      });
-    });
-
-    it('throws an BadRequestHttpError if handlers throw different errors.', async(): Promise<void> => {
-      handlerTrue.canHandle = async(): Promise<void> => {
-        throw new HttpError(401, 'UnauthorizedHttpError');
-      };
-      handlerFalse.canHandle = async(): Promise<void> => {
-        throw new HttpError(415, 'UnsupportedMediaTypeHttpError');
-      };
-      const handler = new WaterfallHandler([ handlerTrue, handlerFalse ]);
-
-      await expect(handler.canHandle(null)).rejects.toThrow(BadRequestHttpError);
     });
   });
 });
