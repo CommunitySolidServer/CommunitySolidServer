@@ -1,5 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent.json",
+    "files-scs:config/ldp/authorization/authorizers/access-checkers/agentClass.json"
+  ],
   "@graph": [
     {
       "@id": "urn:solid-server:default:WebAclAuthorizer",
@@ -12,6 +16,13 @@
       },
       "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
+      },
+      "accessChecker": {
+        "@type": "BooleanHandler",
+        "handlers": [
+          { "@id": "urn:solid-server:default:AgentAccessChecker" },
+          { "@id": "urn:solid-server:default:AgentClassAccessChecker" }
+        ]
       }
     }
   ]

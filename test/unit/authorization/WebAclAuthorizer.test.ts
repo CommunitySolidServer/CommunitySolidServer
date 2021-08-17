@@ -1,5 +1,7 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import type { Credentials } from '../../../src/authentication/Credentials';
+import { AgentAccessChecker } from '../../../src/authorization/access-checkers/AgentAccessChecker';
+import { AgentClassAccessChecker } from '../../../src/authorization/access-checkers/AgentClassAccessChecker';
 import { WebAclAuthorization } from '../../../src/authorization/WebAclAuthorization';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
@@ -12,12 +14,14 @@ import { InternalServerError } from '../../../src/util/errors/InternalServerErro
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
+import { BooleanHandler } from '../../../src/util/handlers/BooleanHandler';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 
 const nn = namedNode;
 
 const acl = 'http://www.w3.org/ns/auth/acl#';
+const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 
 describe('A WebAclAuthorizer', (): void => {
   let authorizer: WebAclAuthorizer;
@@ -32,6 +36,10 @@ describe('A WebAclAuthorizer', (): void => {
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
   let authorization: WebAclAuthorization;
+  const accessChecker = new BooleanHandler([
+    new AgentAccessChecker(),
+    new AgentClassAccessChecker(),
+  ]);
 
   beforeEach(async(): Promise<void> => {
     permissions = {
@@ -60,18 +68,42 @@ describe('A WebAclAuthorizer', (): void => {
     store = {
       getRepresentation: jest.fn(),
     } as any;
-    authorizer = new WebAclAuthorizer(aclStrategy, store, identifierStrategy);
+    authorizer = new WebAclAuthorizer(aclStrategy, store, identifierStrategy, accessChecker);
   });
 
   it('handles all non-acl inputs.', async(): Promise<void> => {
-    authorizer = new WebAclAuthorizer(aclStrategy, null as any, identifierStrategy);
+    authorizer = new WebAclAuthorizer(aclStrategy, null as any, identifierStrategy, accessChecker);
     await expect(authorizer.canHandle({ identifier } as any)).resolves.toBeUndefined();
     await expect(authorizer.canHandle({ identifier: aclStrategy.getAuxiliaryIdentifier(identifier) } as any))
       .rejects.toThrow(NotImplementedHttpError);
   });
 
+  it('handles all valid modes and ignores other ones.', async(): Promise<void> => {
+    credentials.webId = 'http://test.com/user';
+    store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('pubAuth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('pubAuth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
+      quad(nn('pubAuth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('pubAuth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+      quad(nn('pubAuth'), nn(`${acl}mode`), nn(`${acl}fakeMode1`)),
+      quad(nn('pubAuth'), nn(`${acl}mode`), nn(`${acl}Append`)),
+
+      quad(nn('agentAuth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('agentAuth'), nn(`${acl}agent`), nn(credentials.webId!)),
+      quad(nn('agentAuth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('agentAuth'), nn(`${acl}mode`), nn(`${acl}fakeMode2`)),
+      quad(nn('agentAuth'), nn(`${acl}mode`), nn(`${acl}Write`)),
+      quad(nn('agentAuth'), nn(`${acl}mode`), nn(`${acl}fakeMode3`)),
+      quad(nn('agentAuth'), nn(`${acl}mode`), nn(`${acl}Control`)),
+    ]) } as Representation);
+    Object.assign(authorization.everyone, { read: true, write: false, append: true, control: false });
+    Object.assign(authorization.user, { read: true, write: true, append: true, control: true });
+    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
+  });
+
   it('allows access if the acl file allows all agents.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -89,6 +121,7 @@ describe('A WebAclAuthorizer', (): void => {
       }
       return {
         data: guardedStreamFrom([
+          quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
           quad(nn('auth'), nn(`${acl}agentClass`), nn('http://xmlns.com/foaf/0.1/Agent')),
           quad(nn('auth'), nn(`${acl}default`), nn(identifierStrategy.getParentContainer(identifier).path)),
           quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -103,6 +136,7 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('allows access to authorized agents if the acl files allows all authorized users.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -115,6 +149,7 @@ describe('A WebAclAuthorizer', (): void => {
 
   it('errors if authorization is required but the agent is not authorized.', async(): Promise<void> => {
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agentClass`), nn(`${acl}AuthenticatedAgent`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -126,6 +161,7 @@ describe('A WebAclAuthorizer', (): void => {
   it('allows access to specific agents if the acl files identifies them.', async(): Promise<void> => {
     credentials.webId = 'http://test.com/user';
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -138,6 +174,7 @@ describe('A WebAclAuthorizer', (): void => {
   it('errors if a specific agents wants to access files not assigned to them.', async(): Promise<void> => {
     credentials.webId = 'http://test.com/user';
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agent`), nn('http://test.com/differentUser')),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
@@ -174,6 +211,7 @@ describe('A WebAclAuthorizer', (): void => {
       control: false,
     };
     store.getRepresentation = async(): Promise<Representation> => ({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}agent`), nn(credentials.webId!)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
