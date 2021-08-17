@@ -2,7 +2,8 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/ldp/authorization/authorizers/access-checkers/agent.json",
-    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent-class.json"
+    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent-class.json",
+    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent-group.json"
   ],
   "@graph": [
     {
@@ -21,7 +22,8 @@
         "@type": "BooleanHandler",
         "handlers": [
           { "@id": "urn:solid-server:default:AgentAccessChecker" },
-          { "@id": "urn:solid-server:default:AgentClassAccessChecker" }
+          { "@id": "urn:solid-server:default:AgentClassAccessChecker" },
+          { "@id": "urn:solid-server:default:AgentGroupAccessChecker" }
         ]
       }
     }
