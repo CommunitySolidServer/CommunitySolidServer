@@ -24,8 +24,9 @@ import { WebAclAuthorization } from './WebAclAuthorization';
 
 /**
  * Handles most web access control predicates such as
- * `acl:mode`, `acl:agentClass`, `acl:agent`, `acl:default` and `acl:accessTo`.
- * Does not support `acl:agentGroup`, `acl:origin` and `acl:trustedApp` yet.
+ * `acl:mode`, `acl:agentClass`, `acl:agent`, `acl:default`,
+ * `acl:accessTo` and `acl:agentGroup`.
+ * Does not support `acl:origin` and `acl:trustedApp` yet.
  */
 export class WebAclAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);

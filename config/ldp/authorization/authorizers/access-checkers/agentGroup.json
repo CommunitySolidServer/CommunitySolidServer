@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:AgentGroupAccessChecker",
+      "@type": "AgentGroupAccessChecker",
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+    }
+  ]
+}

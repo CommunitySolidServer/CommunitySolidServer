@@ -59,6 +59,7 @@ export const ACL = createUriAndTermNamespace('http://www.w3.org/ns/auth/acl#',
   'accessTo',
   'agent',
   'agentClass',
+  'agentGroup',
   'AuthenticatedAgent',
   'Authorization',
   'default',
@@ -140,6 +141,10 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
 
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
   'preferredNamespacePrefix',
+);
+
+export const VCARD = createUriAndTermNamespace('http://www.w3.org/2006/vcard/ns#',
+  'hasMember',
 );
 
 export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#',
