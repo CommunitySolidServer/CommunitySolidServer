@@ -17,6 +17,11 @@ export * from './authorization/PathBasedAuthorizer';
 export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclAuthorizer';
 
+// Authorization/access-checkers
+export * from './authorization/access-checkers/AccessChecker';
+export * from './authorization/access-checkers/AgentAccessChecker';
+export * from './authorization/access-checkers/AgentClassAccessChecker';
+
 // Identity/Configuration
 export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
