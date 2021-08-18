@@ -1,4 +1,3 @@
-import urljoin from 'url-join';
 import type { ErrorHandler } from '../ldp/http/ErrorHandler';
 import type { RequestParser } from '../ldp/http/RequestParser';
 import { OkResponseDescription } from '../ldp/http/response/OkResponseDescription';
@@ -18,7 +17,7 @@ import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { assertError, createErrorMessage } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
-import { trimTrailingSlashes } from '../util/PathUtil';
+import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata } from '../util/ResourceUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
 import type {
@@ -113,7 +112,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
   ) {
     super();
     // Trimming trailing slashes so the relative URL starts with a slash after slicing this off
-    this.baseUrl = trimTrailingSlashes(urljoin(baseUrl, idpPath));
+    this.baseUrl = trimTrailingSlashes(joinUrl(baseUrl, idpPath));
     this.requestParser = requestParser;
     this.providerFactory = providerFactory;
     this.interactionRoutes = interactionRoutes;

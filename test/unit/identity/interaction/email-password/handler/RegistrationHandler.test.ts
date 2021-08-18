@@ -1,4 +1,3 @@
-import urljoin from 'url-join';
 import {
   RegistrationHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/RegistrationHandler';
@@ -10,6 +9,7 @@ import type { ResourceIdentifier } from '../../../../../../src/ldp/representatio
 import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { PodSettings } from '../../../../../../src/pods/settings/PodSettings';
+import { joinUrl } from '../../../../../../src/util/PathUtil';
 import { createPostFormOperation } from './Util';
 
 describe('A RegistrationHandler', (): void => {
@@ -248,7 +248,7 @@ describe('A RegistrationHandler', (): void => {
 
     it('can create a WebID with an account and pod.', async(): Promise<void> => {
       const params = { email, password, confirmPassword, podName, createWebId, register, createPod };
-      const generatedWebID = urljoin(baseUrl, podName, webIdSuffix);
+      const generatedWebID = joinUrl(baseUrl, podName, webIdSuffix);
       podSettings.webId = generatedWebID;
       podSettings.oidcIssuer = baseUrl;
 
