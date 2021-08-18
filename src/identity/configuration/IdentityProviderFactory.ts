@@ -12,11 +12,10 @@ import type { AnyObject,
   Account,
   ErrorOut, Adapter } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
-import urljoin from 'url-join';
 import type { ErrorHandler } from '../../ldp/http/ErrorHandler';
 import type { ResponseWriter } from '../../ldp/http/ResponseWriter';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
-import { ensureTrailingSlash } from '../../util/PathUtil';
+import { ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { ProviderFactory } from './ProviderFactory';
 
@@ -213,7 +212,7 @@ export class IdentityProviderFactory implements ProviderFactory {
    * this would result in `/foo/idp/device/auth`.
    */
   private createRoute(relative: string): string {
-    return new URL(urljoin(this.baseUrl, this.idpPath, relative)).pathname;
+    return new URL(joinUrl(this.baseUrl, this.idpPath, relative)).pathname;
   }
 
   /**

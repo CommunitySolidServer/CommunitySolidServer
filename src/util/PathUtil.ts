@@ -1,4 +1,5 @@
 import { posix, win32 } from 'path';
+import urljoin from 'url-join';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 
 /**
@@ -190,3 +191,9 @@ export function resolveAssetPath(path: string = modulePathPlaceholder): string {
   }
   return absoluteFilePath(path);
 }
+
+/**
+ * Concatenates all the given strings into a normalized URL.
+ * Will place slashes between input strings if necessary.
+ */
+export const joinUrl = urljoin;

@@ -1,11 +1,11 @@
 import assert from 'assert';
-import urljoin from 'url-join';
 import type { Operation } from '../../../../ldp/operations/Operation';
 import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
+import { joinUrl } from '../../../../util/PathUtil';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
@@ -129,7 +129,7 @@ export class RegistrationHandler extends InteractionHandler {
 
     // Create or verify the WebID
     if (result.createWebId) {
-      result.webId = urljoin(podBaseUrl!.path, this.webIdSuffix);
+      result.webId = joinUrl(podBaseUrl!.path, this.webIdSuffix);
     } else {
       await this.ownershipValidator.handleSafe({ webId: result.webId! });
     }

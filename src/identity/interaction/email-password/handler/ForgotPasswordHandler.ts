@@ -1,7 +1,6 @@
 import assert from 'assert';
-import urljoin from 'url-join';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import { ensureTrailingSlash } from '../../../../util/PathUtil';
+import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { EmailSender } from '../../util/EmailSender';
 import { getFormDataRequestBody } from '../../util/FormDataUtil';
@@ -74,7 +73,7 @@ export class ForgotPasswordHandler extends InteractionHandler {
    */
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
-    const resetLink = urljoin(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
+    const resetLink = joinUrl(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
     const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,

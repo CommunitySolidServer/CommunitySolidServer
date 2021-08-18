@@ -1,5 +1,4 @@
 import type { Provider } from 'oidc-provider';
-import urljoin from 'url-join';
 import type { ProviderFactory } from '../../../src/identity/configuration/ProviderFactory';
 import { InteractionRoute, IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
 import type { InteractionHandler } from '../../../src/identity/interaction/email-password/handler/InteractionHandler';
@@ -19,6 +18,7 @@ import type {
 } from '../../../src/storage/conversion/RepresentationConverter';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
+import { joinUrl } from '../../../src/util/PathUtil';
 import { readableToString } from '../../../src/util/StreamUtil';
 import { SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
@@ -43,7 +43,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     requestParser = {
       handleSafe: jest.fn(async(req: HttpRequest): Promise<Operation> => ({
-        target: { path: urljoin(baseUrl, req.url!) },
+        target: { path: joinUrl(baseUrl, req.url!) },
         method: req.method!,
         body: new BasicRepresentation('', req.headers['content-type'] ?? 'text/plain'),
         preferences: { type: { 'text/html': 1 }},
