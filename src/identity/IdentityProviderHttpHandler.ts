@@ -227,10 +227,9 @@ export class IdentityProviderHttpHandler extends HttpHandler {
 
     if (result.type === 'complete') {
       if (!oidcInteraction) {
-        // Once https://github.com/solid/community-server/pull/898 is merged
-        // we want to assign an error code here to have a more thorough explanation
         throw new BadRequestHttpError(
-          'This action can only be executed as part of an authentication flow. It should not be used directly.',
+          'This action can only be performed as part of an OIDC authentication flow.',
+          { errorCode: 'E0002' },
         );
       }
       // Create a redirect URL with the OIDC library

@@ -160,9 +160,10 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ operation });
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(0);
 
-    const error = new BadRequestHttpError(
-      'This action can only be executed as part of an authentication flow. It should not be used directly.',
-    );
+    const error = expect.objectContaining({
+      message: 'This action can only be performed as part of an OIDC authentication flow.',
+      errorCode: 'E0002',
+    });
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/html': 1 }}});
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
