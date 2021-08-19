@@ -43,13 +43,13 @@ export class ExpiringAdapter implements Adapter {
 
   public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
     // Despite what the typings say, `expiresIn` can be undefined
-    const expires = expiresIn ? new Date(Date.now() + (expiresIn * 1000)) : undefined;
+    const expiration = expiresIn ? expiresIn * 1000 : undefined;
     const key = this.keyFor(id);
 
     this.logger.debug(`Storing payload data for ${id}`);
 
     const storagePromises: Promise<unknown>[] = [
-      this.storage.set(key, payload, expires),
+      this.storage.set(key, payload, expiration),
     ];
     if (payload.grantId) {
       storagePromises.push(
@@ -57,15 +57,15 @@ export class ExpiringAdapter implements Adapter {
           const grantKey = this.grantKeyFor(payload.grantId!);
           const grants = (await this.storage.get(grantKey) || []) as string[];
           grants.push(key);
-          await this.storage.set(grantKey, grants, expires);
+          await this.storage.set(grantKey, grants, expiration);
         })(),
       );
     }
     if (payload.userCode) {
-      storagePromises.push(this.storage.set(this.userCodeKeyFor(payload.userCode), id, expires));
+      storagePromises.push(this.storage.set(this.userCodeKeyFor(payload.userCode), id, expiration));
     }
     if (payload.uid) {
-      storagePromises.push(this.storage.set(this.uidKeyFor(payload.uid), id, expires));
+      storagePromises.push(this.storage.set(this.uidKeyFor(payload.uid), id, expiration));
     }
     await Promise.all(storagePromises);
   }
