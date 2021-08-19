@@ -4,6 +4,7 @@ import { AgentGroupAccessChecker } from '../../../../src/authorization/access-ch
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
+import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import * as fetchUtil from '../../../../src/util/FetchUtil';
 import { ACL, VCARD } from '../../../../src/util/Vocabularies';
@@ -18,6 +19,7 @@ describe('An AgentGroupAccessChecker', (): void => {
   let fetchMock: jest.SpyInstance;
   let representation: Representation;
   const converter: RepresentationConverter = {} as any;
+  let cache: ExpiringStorage<string, Promise<Store>>;
   let checker: AgentGroupAccessChecker;
 
   beforeEach(async(): Promise<void> => {
@@ -25,8 +27,11 @@ describe('An AgentGroupAccessChecker', (): void => {
     representation = new BasicRepresentation(groupQuads, INTERNAL_QUADS, false);
     fetchMock = jest.spyOn(fetchUtil, 'fetchDataset');
     fetchMock.mockResolvedValue(representation);
+    fetchMock.mockClear();
 
-    checker = new AgentGroupAccessChecker(converter);
+    cache = new Map() as any;
+
+    checker = new AgentGroupAccessChecker(converter, cache);
   });
 
   it('can handle all requests.', async(): Promise<void> => {
@@ -46,5 +51,12 @@ describe('An AgentGroupAccessChecker', (): void => {
   it('returns false if there are no WebID credentials.', async(): Promise<void> => {
     const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
+  });
+
+  it('caches fetched results.', async(): Promise<void> => {
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: { webId }};
+    await expect(checker.handle(input)).resolves.toBe(true);
+    await expect(checker.handle(input)).resolves.toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

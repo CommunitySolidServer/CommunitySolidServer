@@ -36,7 +36,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     // No reason to fetch the WebId if we don't have a token yet
     if (!token) {
       token = this.generateToken();
-      await this.storage.set(key, token, new Date(Date.now() + this.expiration));
+      await this.storage.set(key, token, this.expiration);
       this.throwError(webId, token);
     }
 
