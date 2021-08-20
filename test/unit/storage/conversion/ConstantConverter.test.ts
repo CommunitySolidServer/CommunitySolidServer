@@ -3,6 +3,7 @@ import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 const createReadStream = jest.spyOn(fs, 'createReadStream').mockReturnValue('file contents' as any);
 
@@ -12,7 +13,7 @@ describe('A ConstantConverter', (): void => {
   let converter: ConstantConverter;
 
   beforeEach(async(): Promise<void> => {
-    options = { container: true, document: true, minQuality: 1 };
+    options = { container: true, document: true, minQuality: 1, enabledMediaRanges: [ '*/*' ], disabledMediaRanges: []};
     converter = new ConstantConverter('abc/def/index.html', 'text/html', options);
   });
 
@@ -67,6 +68,26 @@ describe('A ConstantConverter', (): void => {
     const args = { identifier, representation, preferences };
 
     await expect(converter.canHandle(args)).rejects.toThrow('Representation is already text/html');
+  });
+
+  it('does not support representations if their content-type is not enabled.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 1 }};
+    const representation = { metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }) } as any;
+    const args = { identifier: { path: 'container/' }, representation, preferences };
+
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', { enabledMediaRanges: [ 'text/turtle' ]});
+
+    await expect(converter.canHandle(args)).rejects.toThrow('text/plain is not one of the enabled media types.');
+  });
+
+  it('does not support representations if their content-type is disabled.', async(): Promise<void> => {
+    const preferences = { type: { 'text/html': 1 }};
+    const representation = { metadata: new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' }) } as any;
+    const args = { identifier: { path: 'container/' }, representation, preferences };
+
+    converter = new ConstantConverter('abc/def/index.html', 'text/html', { disabledMediaRanges: [ 'text/*' ]});
+
+    await expect(converter.canHandle(args)).rejects.toThrow('text/plain is one of the disabled media types.');
   });
 
   it('supports representations with an unknown content type.', async(): Promise<void> => {
