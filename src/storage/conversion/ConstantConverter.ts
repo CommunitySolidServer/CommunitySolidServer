@@ -23,6 +23,14 @@ export interface ConstantConverterOptions {
    * The minimum requested quality/preference before this should trigger.
    */
   minQuality?: number;
+  /**
+   * Media ranges for which the conversion should happen.
+   */
+  enabledMediaRanges?: string[];
+  /**
+   * Media ranges for which the conversion should not happen.
+   */
+  disabledMediaRanges?: string[];
 }
 
 /**
@@ -57,6 +65,8 @@ export class ConstantConverter extends RepresentationConverter {
       container: options.container ?? true,
       document: options.document ?? true,
       minQuality: options.minQuality ?? 0,
+      enabledMediaRanges: options.enabledMediaRanges ?? [ '*/*' ],
+      disabledMediaRanges: options.disabledMediaRanges ?? [],
     };
   }
 
@@ -83,9 +93,18 @@ export class ConstantConverter extends RepresentationConverter {
       throw new NotImplementedHttpError(`Preference is lower than the specified minimum quality`);
     }
 
+    const sourceContentType = representation.metadata.contentType ?? '';
     // Do not replace the representation if it already has our content type
-    if (matchesMediaType(representation.metadata.contentType ?? '', this.contentType)) {
+    if (matchesMediaType(sourceContentType, this.contentType)) {
       throw new NotImplementedHttpError(`Representation is already ${this.contentType}`);
+    }
+
+    // Only replace the representation if it matches the media range settings
+    if (!this.options.enabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
+      throw new NotImplementedHttpError(`${sourceContentType} is not one of the enabled media types.`);
+    }
+    if (this.options.disabledMediaRanges.some((type): boolean => matchesMediaType(sourceContentType, type))) {
+      throw new NotImplementedHttpError(`${sourceContentType} is one of the disabled media types.`);
     }
   }
 
