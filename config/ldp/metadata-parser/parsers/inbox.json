@@ -1,0 +1,12 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts link headers with rel='http://www.w3.org/ns/ldp#inbox' to RDF metadata.",
+      "@id": "urn:solid-server:default:InboxLinkParser",
+      "@type": "LinkParser",
+      "value": "http://www.w3.org/ns/ldp#inbox",
+      "predicate": "http://www.w3.org/ns/ldp#inbox"
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/ldp/metadata-parser/parsers/inbox.json",
+    "files-scs:config/ldp/metadata-parser/parsers/type.json"
+  ],
   "@graph": [
     {
       "comment": "Converts request metadata (e.g. headers) to RDF metadata.",
@@ -8,18 +12,8 @@
       "handlers": [
         { "@type": "ContentTypeParser" },
         { "@type": "SlugParser" },
-        {
-          "@id": "urn:solid-server:default:TypeLinkParser",
-          "@type": "LinkParser",
-          "value": "type",
-          "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        },
-        {
-          "@id": "urn:solid-server:default:InboxLinkParser",
-          "@type": "LinkParser",
-          "value": "http://www.w3.org/ns/ldp#inbox",
-          "predicate": "http://www.w3.org/ns/ldp#inbox"
-        }
+        { "@id": "urn:solid-server:default:TypeLinkParser" },
+        { "@id": "urn:solid-server:default:InboxLinkParser" }
       ]
     }
   ]
