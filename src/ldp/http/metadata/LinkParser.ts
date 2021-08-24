@@ -1,3 +1,4 @@
+import type { NamedNode } from '@rdfjs/types';
 import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
@@ -6,17 +7,17 @@ import type { RepresentationMetadata } from '../../representation/Representation
 import { MetadataParser } from './MetadataParser';
 
 /**
- * Parses Link headers.
+ * Parses Link headers and adds them as metadata with the given predicate.
  */
 export class LinkParser extends MetadataParser {
   protected readonly logger = getLoggerFor(this);
 
   private readonly value: string;
-  private readonly predicate: string;
+  private readonly predicateNode: NamedNode;
 
   public constructor(value: string, predicate: string) {
     super();
-    this.predicate = predicate;
+    this.predicateNode = DataFactory.namedNode(predicate);
     this.value = value;
   }
 
@@ -38,7 +39,7 @@ export class LinkParser extends MetadataParser {
       }
       for (const { name, value } of parseParameters(parameters, replacements)) {
         if (name === 'rel' && value === this.value) {
-          metadata.add(this.predicate, DataFactory.namedNode(link.slice(1, -1)));
+          metadata.add(this.predicateNode, DataFactory.namedNode(link.slice(1, -1)));
         }
       }
     }
