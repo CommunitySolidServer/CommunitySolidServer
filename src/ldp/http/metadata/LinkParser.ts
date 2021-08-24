@@ -12,13 +12,14 @@ import { MetadataParser } from './MetadataParser';
 export class LinkParser extends MetadataParser {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly value: string;
-  private readonly predicateNode: NamedNode;
+  private readonly linkMap: Record<string, NamedNode>;
 
-  public constructor(value: string, predicate: string) {
+  public constructor(linkMap: Record<string, string>) {
     super();
-    this.predicateNode = DataFactory.namedNode(predicate);
-    this.value = value;
+    this.linkMap = {};
+    Object.keys(linkMap).forEach((key: string): void => {
+      this.linkMap[key] = DataFactory.namedNode(linkMap[key]);
+    });
   }
 
   public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
@@ -38,8 +39,8 @@ export class LinkParser extends MetadataParser {
         continue;
       }
       for (const { name, value } of parseParameters(parameters, replacements)) {
-        if (name === 'rel' && value === this.value) {
-          metadata.add(this.predicateNode, DataFactory.namedNode(link.slice(1, -1)));
+        if (name === 'rel' && this.linkMap[value]) {
+          metadata.add(this.linkMap[value], DataFactory.namedNode(link.slice(1, -1)));
         }
       }
     }
