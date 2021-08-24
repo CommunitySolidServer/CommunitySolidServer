@@ -1,5 +1,7 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
 import type { Operation } from '../../../../ldp/operations/Operation';
+import { APPLICATION_JSON } from '../../../../util/ContentTypes';
+import { NotImplementedHttpError } from '../../../../util/errors/NotImplementedHttpError';
 import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
 import type { InteractionCompleterParams } from '../../util/InteractionCompleter';
 
@@ -32,5 +34,12 @@ export interface InteractionCompleteResult {
 
 /**
  * Handler used for IDP interactions.
+ * Only supports JSON data.
  */
-export abstract class InteractionHandler extends AsyncHandler<InteractionHandlerInput, InteractionHandlerResult> {}
+export abstract class InteractionHandler extends AsyncHandler<InteractionHandlerInput, InteractionHandlerResult> {
+  public async canHandle({ operation }: InteractionHandlerInput): Promise<void> {
+    if (operation.body?.metadata.contentType !== APPLICATION_JSON) {
+      throw new NotImplementedHttpError('Only application/json data is supported.');
+    }
+  }
+}

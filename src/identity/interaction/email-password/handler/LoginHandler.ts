@@ -1,7 +1,7 @@
 import assert from 'assert';
 import type { Operation } from '../../../../ldp/operations/Operation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import { getFormDataRequestBody } from '../../util/FormDataUtil';
+import { readJsonStream } from '../../../../util/StreamUtil';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
@@ -28,7 +28,7 @@ export class LoginHandler extends InteractionHandler {
       this.logger.debug(`Logging in user ${email}`);
       return {
         type: 'complete',
-        details: { webId, shouldRemember: Boolean(remember) },
+        details: { webId, shouldRemember: remember },
       };
     } catch (err: unknown) {
       throwIdpInteractionError(err, { email });
@@ -43,7 +43,7 @@ export class LoginHandler extends InteractionHandler {
   private async parseInput(operation: Operation): Promise<{ email: string; password: string; remember: boolean }> {
     const prefilled: Record<string, string> = {};
     try {
-      const { email, password, remember } = await getFormDataRequestBody(operation);
+      const { email, password, remember } = await readJsonStream(operation.body!.data);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
       prefilled.email = email;
       assert(typeof password === 'string' && password.length > 0, 'Password required');

@@ -5,7 +5,7 @@ import type { AccountStore } from '../../../../../../src/identity/interaction/em
 import type { EmailSender } from '../../../../../../src/identity/interaction/util/EmailSender';
 import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import type { TemplateEngine } from '../../../../../../src/util/templates/TemplateEngine';
-import { createPostFormOperation } from './Util';
+import { createPostJsonOperation } from './Util';
 
 describe('A ForgotPasswordHandler', (): void => {
   let operation: Operation;
@@ -20,7 +20,7 @@ describe('A ForgotPasswordHandler', (): void => {
   let handler: ForgotPasswordHandler;
 
   beforeEach(async(): Promise<void> => {
-    operation = createPostFormOperation({ email });
+    operation = createPostJsonOperation({ email });
 
     accountStore = {
       generateForgotPasswordRecord: jest.fn().mockResolvedValue(recordId),
@@ -44,9 +44,9 @@ describe('A ForgotPasswordHandler', (): void => {
   });
 
   it('errors on non-string emails.', async(): Promise<void> => {
-    operation = createPostFormOperation({});
+    operation = createPostJsonOperation({});
     await expect(handler.handle({ operation })).rejects.toThrow('Email required');
-    operation = createPostFormOperation({ email: [ 'email', 'email2' ]});
+    operation = createPostJsonOperation({ email: [ 'email', 'email2' ]});
     await expect(handler.handle({ operation })).rejects.toThrow('Email required');
   });
 

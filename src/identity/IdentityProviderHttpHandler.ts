@@ -158,6 +158,16 @@ export class IdentityProviderHttpHandler extends HttpHandler {
       return provider.callback(request, response);
     }
 
+    // IDP handlers expect JSON data
+    if (operation.body) {
+      const args = {
+        representation: operation.body,
+        preferences: { type: { [APPLICATION_JSON]: 1 }},
+        identifier: operation.target,
+      };
+      operation.body = await this.converter.handleSafe(args);
+    }
+
     const { result, templateFiles } = await this.resolveRoute(operation, route, oidcInteraction);
     const responseDescription =
       await this.handleInteractionResult(operation, request, result, templateFiles, oidcInteraction);

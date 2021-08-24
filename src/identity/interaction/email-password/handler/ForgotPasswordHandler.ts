@@ -1,9 +1,9 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
+import { readJsonStream } from '../../../../util/StreamUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { EmailSender } from '../../util/EmailSender';
-import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
@@ -41,7 +41,7 @@ export class ForgotPasswordHandler extends InteractionHandler {
   public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
     try {
       // Validate incoming data
-      const { email } = await getFormDataRequestBody(operation);
+      const { email } = await readJsonStream(operation.body!.data);
       assert(typeof email === 'string' && email.length > 0, 'Email required');
 
       await this.resetPassword(email);
