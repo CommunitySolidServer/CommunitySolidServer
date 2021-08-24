@@ -1,6 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/ldp/metadata-parser/parsers/content-type.json",
+    "files-scs:config/ldp/metadata-parser/parsers/slug.json",
     "files-scs:config/ldp/metadata-parser/parsers/inbox.json",
     "files-scs:config/ldp/metadata-parser/parsers/type.json"
   ],
@@ -10,8 +12,8 @@
       "@id": "urn:solid-server:default:MetadataParser",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@type": "ContentTypeParser" },
-        { "@type": "SlugParser" },
+        { "@id": "urn:solid-server:default:ContentTypeParser" },
+        { "@id": "urn:solid-server:default:SlugParser" },
         { "@id": "urn:solid-server:default:TypeLinkParser" },
         { "@id": "urn:solid-server:default:InboxLinkParser" }
       ]
