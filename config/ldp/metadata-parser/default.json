@@ -7,8 +7,19 @@
       "@type": "ParallelHandler",
       "handlers": [
         { "@type": "ContentTypeParser" },
-        { "@type": "LinkTypeParser" },
-        { "@type": "SlugParser" }
+        { "@type": "SlugParser" },
+        {
+          "@id": "urn:solid-server:default:TypeLinkParser",
+          "@type": "LinkParser",
+          "value": "type",
+          "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        },
+        {
+          "@id": "urn:solid-server:default:InboxLinkParser",
+          "@type": "LinkParser",
+          "value": "http://www.w3.org/ns/ldp#inbox",
+          "predicate": "http://www.w3.org/ns/ldp#inbox"
+        }
       ]
     }
   ]

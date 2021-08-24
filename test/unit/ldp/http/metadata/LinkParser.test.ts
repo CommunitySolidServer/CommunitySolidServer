@@ -1,10 +1,10 @@
-import { LinkTypeParser } from '../../../../../src/ldp/http/metadata/LinkTypeParser';
+import { LinkParser } from '../../../../../src/ldp/http/metadata/LinkParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { RDF } from '../../../../../src/util/Vocabularies';
 
-describe('A LinkTypeParser', (): void => {
-  const parser = new LinkTypeParser();
+describe('A LinkParser', (): void => {
+  const parser = new LinkParser('type', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
   let request: HttpRequest;
   let metadata: RepresentationMetadata;
 
@@ -18,7 +18,7 @@ describe('A LinkTypeParser', (): void => {
     expect(metadata.quads()).toHaveLength(0);
   });
 
-  it('stores link headers with rel = type as metadata.', async(): Promise<void> => {
+  it('stores link headers with rel matching the given value as metadata.', async(): Promise<void> => {
     request.headers.link = '<http://test.com/type>;rel="type"';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
