@@ -37,6 +37,17 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
   return quads;
 }
 
+/**
+ * Interprets the stream as JSON and converts it to a Dict.
+ * @param stream - Stream of JSON data.
+ *
+ * @returns The parsed object.
+ */
+export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
+  const body = await readableToString(stream);
+  return JSON.parse(body);
+}
+
 // These error messages usually indicate expected behaviour so should not give a warning.
 // We compare against the error message instead of the code
 // since the second one is from an external library that does not assign an error code.

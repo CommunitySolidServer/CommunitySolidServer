@@ -3,7 +3,7 @@ import {
 } from '../../../../../../src/identity/interaction/email-password/handler/ResetPasswordHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { Operation } from '../../../../../../src/ldp/operations/Operation';
-import { createPostFormOperation } from './Util';
+import { createPostJsonOperation } from './Util';
 
 describe('A ResetPasswordHandler', (): void => {
   let operation: Operation;
@@ -25,27 +25,27 @@ describe('A ResetPasswordHandler', (): void => {
 
   it('errors for non-string recordIds.', async(): Promise<void> => {
     const errorMessage = 'Invalid request. Open the link from your email again';
-    operation = createPostFormOperation({});
+    operation = createPostJsonOperation({});
     await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
-    operation = createPostFormOperation({}, '');
+    operation = createPostJsonOperation({}, '');
     await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
   });
 
   it('errors for invalid passwords.', async(): Promise<void> => {
     const errorMessage = 'Your password and confirmation did not match.';
-    operation = createPostFormOperation({ password: 'password!', confirmPassword: 'otherPassword!' }, url);
+    operation = createPostJsonOperation({ password: 'password!', confirmPassword: 'otherPassword!' }, url);
     await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
   });
 
   it('errors for invalid emails.', async(): Promise<void> => {
     const errorMessage = 'This reset password link is no longer valid.';
-    operation = createPostFormOperation({ password: 'password!', confirmPassword: 'password!' }, url);
+    operation = createPostJsonOperation({ password: 'password!', confirmPassword: 'password!' }, url);
     (accountStore.getForgotPasswordRecord as jest.Mock).mockResolvedValueOnce(undefined);
     await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
   });
 
   it('renders a message on success.', async(): Promise<void> => {
-    operation = createPostFormOperation({ password: 'password!', confirmPassword: 'password!' }, url);
+    operation = createPostJsonOperation({ password: 'password!', confirmPassword: 'password!' }, url);
     await expect(handler.handle({ operation })).resolves.toEqual({ type: 'response' });
     expect(accountStore.getForgotPasswordRecord).toHaveBeenCalledTimes(1);
     expect(accountStore.getForgotPasswordRecord).toHaveBeenLastCalledWith(recordId);
@@ -57,7 +57,7 @@ describe('A ResetPasswordHandler', (): void => {
 
   it('has a default error for non-native errors.', async(): Promise<void> => {
     const errorMessage = 'Unknown error: not native';
-    operation = createPostFormOperation({ password: 'password!', confirmPassword: 'password!' }, url);
+    operation = createPostJsonOperation({ password: 'password!', confirmPassword: 'password!' }, url);
     (accountStore.getForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('not native');
     await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
   });

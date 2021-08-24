@@ -10,8 +10,10 @@ import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { Operation } from '../../../src/ldp/operations/Operation';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../src/ldp/representation/Representation';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
+import { getBestPreference } from '../../../src/storage/conversion/ConversionUtil';
 import type {
   RepresentationConverter,
   RepresentationConverterArgs,
@@ -20,7 +22,7 @@ import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpErro
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { joinUrl } from '../../../src/util/PathUtil';
 import { readableToString } from '../../../src/util/StreamUtil';
-import { SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
+import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
   const apiVersion = '0.1';
@@ -45,7 +47,9 @@ describe('An IdentityProviderHttpHandler', (): void => {
       handleSafe: jest.fn(async(req: HttpRequest): Promise<Operation> => ({
         target: { path: joinUrl(baseUrl, req.url!) },
         method: req.method!,
-        body: new BasicRepresentation('', req.headers['content-type'] ?? 'text/plain'),
+        body: req.method === 'GET' ?
+          undefined :
+          new BasicRepresentation('', req.headers['content-type'] ?? 'text/plain'),
         preferences: { type: { 'text/html': 1 }},
       })),
     } as any;
@@ -77,7 +81,12 @@ describe('An IdentityProviderHttpHandler', (): void => {
     };
 
     converter = {
-      handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => input.representation),
+      handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => {
+        // Just find the best match;
+        const type = getBestPreference(input.preferences.type!, { '*/*': 1 })!;
+        const metadata = new RepresentationMetadata(input.representation.metadata, { [CONTENT_TYPE]: type.value });
+        return new BasicRepresentation(input.representation.data, metadata);
+      }),
     } as any;
 
     interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
@@ -116,7 +125,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(JSON.parse(await readableToString(result.data!)))
       .toEqual({ apiVersion, errorMessage: '', prefilled: {}, authenticating: false });
     expect(result.statusCode).toBe(200);
-    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
   });
 
@@ -124,16 +133,17 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.url = '/idp/routeResponse';
     request.method = 'POST';
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ operation });
+    expect(operation.body?.metadata.contentType).toBe('application/json');
 
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
     expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, key: 'val', authenticating: false });
     expect(result.statusCode).toBe(200);
-    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.responseTemplates['text/html']);
   });
 
@@ -155,10 +165,11 @@ describe('An IdentityProviderHttpHandler', (): void => {
     request.method = 'POST';
     errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 400 });
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ operation });
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(0);
+    expect(operation.body?.metadata.contentType).toBe('application/json');
 
     const error = expect.objectContaining({
       message: 'This action can only be performed as part of an OIDC authentication flow.',
@@ -176,9 +187,11 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const oidcInteraction = { session: { accountId: 'account' }} as any;
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
+    expect(operation.body?.metadata.contentType).toBe('application/json');
+
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
     expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, webId: 'webId' });
     const location = await interactionCompleter.handleSafe.mock.results[0].value;
@@ -195,10 +208,11 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const oidcInteraction = { prompt: { name: 'other' }};
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(0);
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
+    expect(operation.body?.metadata.contentType).toBe('application/json');
   });
 
   it('uses the default route for requests to the root IDP without (matching) prompt.', async(): Promise<void> => {
@@ -207,9 +221,10 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const oidcInteraction = { prompt: { name: 'notSupported' }};
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    const operation = await requestParser.handleSafe.mock.results[0].value;
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
     expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
     expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
+    expect(operation.body?.metadata.contentType).toBe('application/json');
     expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(0);
   });
 
@@ -226,7 +241,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(JSON.parse(await readableToString(result.data!)))
       .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false });
     expect(result.statusCode).toBe(200);
-    expect(result.metadata?.contentType).toBe('application/json');
+    expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
   });
 

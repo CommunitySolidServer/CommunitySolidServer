@@ -44,7 +44,6 @@ export * from './identity/interaction/email-password/EmailPasswordUtil';
 // Identity/Interaction/Util
 export * from './identity/interaction/util/BaseEmailSender';
 export * from './identity/interaction/util/EmailSender';
-export * from './identity/interaction/util/FormDataUtil';
 export * from './identity/interaction/util/IdpInteractionError';
 export * from './identity/interaction/util/InteractionCompleter';
 
@@ -230,6 +229,7 @@ export * from './storage/conversion/ConversionUtil';
 export * from './storage/conversion/DynamicJsonToTemplateConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
+export * from './storage/conversion/FormToJsonConverter';
 export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';

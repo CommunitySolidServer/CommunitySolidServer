@@ -4,8 +4,10 @@ import { Quad, NamedNode, Literal, BlankNode, Store } from 'n3';
 import type { Logger } from '../../../src/logging/Logger';
 import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
-import { guardedStreamFrom, pipeSafely, transformSafely,
-  readableToString, readableToQuads } from '../../../src/util/StreamUtil';
+import {
+  guardedStreamFrom, pipeSafely, transformSafely,
+  readableToString, readableToQuads, readJsonStream,
+} from '../../../src/util/StreamUtil';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
@@ -44,6 +46,13 @@ describe('StreamUtil', (): void => {
 
       const stream = Readable.from([ quad1, quad2, quad3 ]);
       await expect(readableToQuads(stream)).resolves.toEqual(quads);
+    });
+  });
+
+  describe('#readJsonStream', (): void => {
+    it('parses the stream as JSON.', async(): Promise<void> => {
+      const stream = Readable.from('{ "key": "value" }');
+      await expect(readJsonStream(stream)).resolves.toEqual({ key: 'value' });
     });
   });
 

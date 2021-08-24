@@ -4,6 +4,7 @@
     "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
     "files-scs:config/util/representation-conversion/converters/dynamic-json-template.json",
     "files-scs:config/util/representation-conversion/converters/errors.json",
+    "files-scs:config/util/representation-conversion/converters/form-to-json.json",
     "files-scs:config/util/representation-conversion/converters/markdown.json",
     "files-scs:config/util/representation-conversion/converters/quad-to-rdf.json",
     "files-scs:config/util/representation-conversion/converters/rdf-to-quad.json"
@@ -32,7 +33,8 @@
             { "@id": "urn:solid-server:default:ContainerToTemplateConverter" },
             { "@id": "urn:solid-server:default:ErrorToQuadConverter" },
             { "@id": "urn:solid-server:default:ErrorToTemplateConverter" },
-            { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" }
+            { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
+            { "@id": "urn:solid-server:default:FormToJsonConverter" }
           ]
         }
       ]

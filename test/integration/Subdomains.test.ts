@@ -1,4 +1,3 @@
-import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
@@ -85,8 +84,8 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
     it('creates pods in a subdomain.', async(): Promise<void> => {
       const res = await fetch(`${baseUrl}idp/register`, {
         method: 'POST',
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        body: stringify(settings),
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(settings),
       });
       expect(res.status).toBe(200);
       await expect(res.text()).resolves.toContain(podUrl);
@@ -145,8 +144,8 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
     it('should not be able to create a pod with the same name.', async(): Promise<void> => {
       const res = await fetch(`${baseUrl}idp/register`, {
         method: 'POST',
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        body: stringify(settings),
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(settings),
       });
       // 200 due to there only being a HTML solution right now that only returns 200
       expect(res.status).toBe(200);

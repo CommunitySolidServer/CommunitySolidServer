@@ -6,8 +6,8 @@ import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGe
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
 import { joinUrl } from '../../../../util/PathUtil';
+import { readJsonStream } from '../../../../util/StreamUtil';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
-import { getFormDataRequestBody } from '../../util/FormDataUtil';
 import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
@@ -186,12 +186,12 @@ export class RegistrationHandler extends InteractionHandler {
    * Parses the input request into a `ParseResult`.
    */
   private async parseInput(operation: Operation): Promise<ParsedInput> {
-    const parsed = await getFormDataRequestBody(operation);
+    const parsed = await readJsonStream(operation.body!.data);
     const prefilled: Record<string, string> = {};
     try {
       for (const [ key, value ] of Object.entries(parsed)) {
         assert(!Array.isArray(value), `Unexpected multiple values for ${key}.`);
-        prefilled[key] = value ? value.trim() : '';
+        prefilled[key] = typeof value === 'string' ? value.trim() : value;
       }
       return this.validateInput(prefilled);
     } catch (err: unknown) {
