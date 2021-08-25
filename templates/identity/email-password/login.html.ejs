@@ -1,6 +1,8 @@
 <h1>Log in</h1>
 <form method="post">
-  <% if (errorMessage) { %>
+  <% const safePrefilled = locals.prefilled || {}; %>
+
+  <% if (locals.errorMessage) { %>
     <p class="error"><%= errorMessage %></p>
   <% } %>
 
@@ -9,7 +11,7 @@
     <ol>
       <li>
         <label for="email">Email</label>
-        <input id="email" type="email" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
+        <input id="email" type="email" name="email" autofocus value="<%= safePrefilled.email || '' %>">
       </li>
       <li>
         <label for="password">Password</label>
