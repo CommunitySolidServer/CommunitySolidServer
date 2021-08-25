@@ -254,6 +254,10 @@ export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
 
+// Storage/size-reporter
+export * from './storage/size-reporter/SizeReporter';
+export * from './storage/size-reporter/FileSizeReporter';
+
 // Storage
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
