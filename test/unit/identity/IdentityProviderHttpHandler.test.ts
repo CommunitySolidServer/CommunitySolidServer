@@ -132,7 +132,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
     expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, errorMessage: '', prefilled: {}, authenticating: false, controls });
+      .toEqual({ apiVersion, authenticating: false, controls });
     expect(result.statusCode).toBe(200);
     expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
@@ -253,7 +253,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
     expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: {}, authenticating: false, controls });
+      .toEqual({ apiVersion, errorMessage: 'handle error', authenticating: false, controls });
   });
 
   it('calls the errorHandler if there is a problem resolving the request.', async(): Promise<void> => {

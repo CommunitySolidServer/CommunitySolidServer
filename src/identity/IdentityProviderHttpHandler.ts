@@ -213,11 +213,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
   private async resolveRoute(operation: Operation, route: InteractionRoute, oidcInteraction?: Interaction):
   Promise<{ result: InteractionHandlerResult; templateFiles: Record<string, string> }> {
     if (operation.method === 'GET') {
-      // .ejs templates errors on undefined variables
-      return {
-        result: { type: 'response', details: { errorMessage: '', prefilled: {}}},
-        templateFiles: route.viewTemplates,
-      };
+      return { result: { type: 'response' }, templateFiles: route.viewTemplates };
     }
 
     if (operation.method === 'POST') {
@@ -226,12 +222,12 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
         return { result, templateFiles: route.responseTemplates };
       } catch (error: unknown) {
         // Render error in the view
-        const prefilled = IdpInteractionError.isInstance(error) ? error.prefilled : {};
         const errorMessage = createErrorMessage(error);
-        return {
-          result: { type: 'response', details: { errorMessage, prefilled }},
-          templateFiles: route.viewTemplates,
-        };
+        const result: InteractionResponseResult = { type: 'response', details: { errorMessage }};
+        if (IdpInteractionError.isInstance(error)) {
+          result.details!.prefilled = error.prefilled;
+        }
+        return { result, templateFiles: route.viewTemplates };
       }
     }
 

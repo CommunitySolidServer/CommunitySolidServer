@@ -1,7 +1,7 @@
 <h1>Authorize</h1>
 <p>You are authorizing an application to access your Pod.</p>
 <form method="post">
-  <% if (errorMessage) { %>
+  <% if (locals.errorMessage) { %>
     <p class="error"><%= errorMessage %></p>
   <% } %>
 
