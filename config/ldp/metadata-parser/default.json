@@ -1,14 +1,19 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/ldp/metadata-parser/parsers/content-type.json",
+    "files-scs:config/ldp/metadata-parser/parsers/slug.json",
+    "files-scs:config/ldp/metadata-parser/parsers/link.json"
+  ],
   "@graph": [
     {
       "comment": "Converts request metadata (e.g. headers) to RDF metadata.",
       "@id": "urn:solid-server:default:MetadataParser",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@type": "ContentTypeParser" },
-        { "@type": "LinkTypeParser" },
-        { "@type": "SlugParser" }
+        { "@id": "urn:solid-server:default:ContentTypeParser" },
+        { "@id": "urn:solid-server:default:SlugParser" },
+        { "@id": "urn:solid-server:default:LinkRelParser" }
       ]
     }
   ]

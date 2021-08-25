@@ -1,16 +1,26 @@
+import type { NamedNode } from '@rdfjs/types';
 import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseParameters, splitAndClean, transformQuotedStrings } from '../../../util/HeaderUtil';
-import { RDF } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
+import namedNode = DataFactory.namedNode;
 
 /**
- * Parses Link headers with "rel=type" parameters and adds them as RDF.type metadata.
+ * Parses Link headers with a specific `rel` value and adds them as metadata with the given predicate.
  */
-export class LinkTypeParser extends MetadataParser {
+export class LinkRelParser extends MetadataParser {
   protected readonly logger = getLoggerFor(this);
+
+  private readonly linkRelMap: Record<string, NamedNode>;
+
+  public constructor(linkRelMap: Record<string, string>) {
+    super();
+    this.linkRelMap = Object.fromEntries(
+      Object.entries(linkRelMap).map(([ header, uri ]): [string, NamedNode] => [ header, namedNode(uri) ]),
+    );
+  }
 
   public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
     const link = input.request.headers.link ?? [];
@@ -29,8 +39,8 @@ export class LinkTypeParser extends MetadataParser {
         continue;
       }
       for (const { name, value } of parseParameters(parameters, replacements)) {
-        if (name === 'rel' && value === 'type') {
-          metadata.add(RDF.type, DataFactory.namedNode(link.slice(1, -1)));
+        if (name === 'rel' && this.linkRelMap[value]) {
+          metadata.add(this.linkRelMap[value], namedNode(link.slice(1, -1)));
         }
       }
     }

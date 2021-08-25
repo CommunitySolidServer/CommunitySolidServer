@@ -97,7 +97,7 @@ export * from './ldp/http/conditions/ConditionsParser';
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
 export * from './ldp/http/metadata/LinkRelMetadataWriter';
-export * from './ldp/http/metadata/LinkTypeParser';
+export * from './ldp/http/metadata/LinkRelParser';
 export * from './ldp/http/metadata/MappedMetadataWriter';
 export * from './ldp/http/metadata/MetadataParser';
 export * from './ldp/http/metadata/MetadataWriter';

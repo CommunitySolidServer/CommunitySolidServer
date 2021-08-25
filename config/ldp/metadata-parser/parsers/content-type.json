@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts content-type headers into RDF metadata.",
+      "@id": "urn:solid-server:default:ContentTypeParser",
+      "@type": "ContentTypeParser"
+    }
+  ]
+}
