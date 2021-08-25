@@ -27,7 +27,8 @@ import type {
 import { IdpInteractionError } from './interaction/util/IdpInteractionError';
 import type { InteractionCompleter } from './interaction/util/InteractionCompleter';
 
-const API_VERSION = '0.1';
+// Registration is not standardized within Solid yet, so we use a custom versioned API for now
+const API_VERSION = '0.2';
 
 /**
  * All the information that is required to handle a request to a custom IDP path.
@@ -38,6 +39,7 @@ export class InteractionRoute {
   public readonly viewTemplates: Record<string, string>;
   public readonly prompt?: string;
   public readonly responseTemplates: Record<string, string>;
+  public readonly controls: Record<string, string>;
 
   /**
    * @param route - Regex to match this route.
@@ -47,17 +49,21 @@ export class InteractionRoute {
    * @param prompt - In case of requests to the IDP entry point, the session prompt will be compared to this.
    * @param responseTemplates - Templates to render as a response to POST requests when required.
    *                            Keys are content-types, values paths to a template.
+   * @param controls - Controls to add to the response JSON.
+   *                   The keys will be copied and the values will be converted to full URLs.
    */
   public constructor(route: string,
     viewTemplates: Record<string, string>,
     handler: InteractionHandler,
     prompt?: string,
-    responseTemplates: Record<string, string> = {}) {
+    responseTemplates: Record<string, string> = {},
+    controls: Record<string, string> = {}) {
     this.route = new RegExp(route, 'u');
     this.viewTemplates = viewTemplates;
     this.handler = handler;
     this.prompt = prompt;
     this.responseTemplates = responseTemplates;
+    this.controls = controls;
   }
 }
 
@@ -113,6 +119,8 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
   private readonly converter: RepresentationConverter;
   private readonly interactionCompleter: InteractionCompleter;
 
+  private readonly controls: Record<string, string>;
+
   public constructor(args: IdentityProviderHttpHandlerArgs) {
     // It is important that the RequestParser does not read out the Request body stream.
     // Otherwise we can't pass it anymore to the OIDC library when needed.
@@ -123,6 +131,11 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     this.interactionRoutes = args.interactionRoutes;
     this.converter = args.converter;
     this.interactionCompleter = args.interactionCompleter;
+
+    this.controls = Object.assign(
+      {},
+      ...this.interactionRoutes.map((route): Record<string, string> => this.getRouteControls(route)),
+    );
   }
 
   /**
@@ -258,7 +271,12 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
   private async handleResponseResult(result: InteractionResponseResult, templateFiles: Record<string, string>,
     operation: Operation, oidcInteraction?: Interaction): Promise<ResponseDescription> {
     // Convert the object to a valid JSON representation
-    const json = { ...result.details, authenticating: Boolean(oidcInteraction), apiVersion: API_VERSION };
+    const json = {
+      apiVersion: API_VERSION,
+      ...result.details,
+      authenticating: Boolean(oidcInteraction),
+      controls: this.controls,
+    };
     const representation = new BasicRepresentation(JSON.stringify(json), operation.target, APPLICATION_JSON);
 
     // Template metadata is required for conversion
@@ -271,5 +289,14 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     const converted = await this.converter.handleSafe(args);
 
     return new OkResponseDescription(converted.metadata, converted.data);
+  }
+
+  /**
+   * Converts the controls object of a route to one with full URLs.
+   */
+  private getRouteControls(route: InteractionRoute): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(route.controls).map(([ name, path ]): [ string, string ] => [ name, joinUrl(this.baseUrl, path) ]),
+    );
   }
 }

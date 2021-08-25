@@ -1,5 +1,5 @@
 <h1>Log in</h1>
-<form action="/idp/login" method="post">
+<form method="post">
   <% if (errorMessage) { %>
     <p class="error"><%= errorMessage %></p>
   <% } %>
@@ -24,7 +24,7 @@
   <p class="actions"><button type="submit" name="submit">Log in</button></p>
 
   <ul class="actions">
-    <li><a href="/idp/register" class="link">Sign up</a></li>
-    <li><a href="/idp/forgotpassword" class="link">Forgot password</a></li>
+    <li><a href="<%= controls.register %>" class="link">Sign up</a></li>
+    <li><a href="<%= controls.forgotPassword %>" class="link">Forgot password</a></li>
   </ul>
 </form>

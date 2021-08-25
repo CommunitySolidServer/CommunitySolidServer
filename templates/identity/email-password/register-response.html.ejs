@@ -27,7 +27,7 @@
   <p>
     Via your email address <em><%= email %></em>,
     <% if (authenticating) { %>
-      you can now <a href="./login">log in</a>
+      you can now <a href="<%= controls.login %>">log in</a>
     <% } else { %>
       this server lets you log in to Solid apps
     <% } %>

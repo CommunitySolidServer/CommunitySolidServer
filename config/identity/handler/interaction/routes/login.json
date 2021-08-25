@@ -11,6 +11,10 @@
         "InteractionRoute:_viewTemplates_key": "text/html",
         "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/login.html.ejs"
       },
+      "controls": {
+        "InteractionRoute:_controls_key": "login",
+        "InteractionRoute:_controls_value": "/login"
+      },
       "handler": {
         "@type": "LoginHandler",
         "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" }
