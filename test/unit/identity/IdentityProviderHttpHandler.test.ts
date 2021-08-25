@@ -30,7 +30,7 @@ import { readableToString } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
-  const apiVersion = '0.1';
+  const apiVersion = '0.2';
   const baseUrl = 'http://test.com/';
   const idpPath = '/idp';
   let request: HttpRequest;
@@ -38,6 +38,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
   let requestParser: jest.Mocked<RequestParser>;
   let providerFactory: jest.Mocked<ProviderFactory>;
   let routes: { response: InteractionRoute; complete: InteractionRoute };
+  let controls: Record<string, string>;
   let interactionCompleter: jest.Mocked<InteractionCompleter>;
   let converter: jest.Mocked<RepresentationConverter>;
   let errorHandler: jest.Mocked<ErrorHandler>;
@@ -74,16 +75,18 @@ describe('An IdentityProviderHttpHandler', (): void => {
     ];
 
     routes = {
-      response: new InteractionRoute('/routeResponse',
+      response: new InteractionRoute('^/routeResponse$',
         { 'text/html': '/view1' },
         handlers[0],
         'login',
-        { 'text/html': '/response1' }),
-      complete: new InteractionRoute('/routeComplete',
+        { 'text/html': '/response1' },
+        { response: '/routeResponse' }),
+      complete: new InteractionRoute('^/routeComplete$',
         { 'text/html': '/view2' },
         handlers[1],
         'other'),
     };
+    controls = { response: 'http://test.com/idp/routeResponse' };
 
     converter = {
       handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => {
@@ -129,7 +132,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
     expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, errorMessage: '', prefilled: {}, authenticating: false });
+      .toEqual({ apiVersion, errorMessage: '', prefilled: {}, authenticating: false, controls });
     expect(result.statusCode).toBe(200);
     expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
@@ -147,7 +150,8 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
-    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, key: 'val', authenticating: false });
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, key: 'val', authenticating: false, controls });
     expect(result.statusCode).toBe(200);
     expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.responseTemplates['text/html']);
@@ -163,7 +167,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     const { result } = responseWriter.handleSafe.mock.calls[0][0];
-    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, authenticating: true });
+    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, authenticating: true, controls });
   });
 
   it('errors for InteractionCompleteResults if no oidcInteraction is defined.', async(): Promise<void> => {
@@ -231,8 +235,9 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
-    expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false });
+    expect(JSON.parse(await readableToString(result.data!))).toEqual(
+      { apiVersion, errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false, controls },
+    );
     expect(result.statusCode).toBe(200);
     expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe(routes.response.viewTemplates['text/html']);
@@ -248,7 +253,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
     const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
     expect(mockResponse).toBe(response);
     expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: {}, authenticating: false });
+      .toEqual({ apiVersion, errorMessage: 'handle error', prefilled: {}, authenticating: false, controls });
   });
 
   it('calls the errorHandler if there is a problem resolving the request.', async(): Promise<void> => {

@@ -145,9 +145,8 @@ describe('A Solid server with IDP', (): void => {
 
     it('initializes the session and logs in.', async(): Promise<void> => {
       const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      await state.login(login, email, password);
+      await state.parseLoginPage(url);
+      await state.login(url, email, password);
       expect(state.session.info?.webId).toBe(webId);
     });
 
@@ -168,10 +167,10 @@ describe('A Solid server with IDP', (): void => {
     it('can log in again.', async(): Promise<void> => {
       const url = await state.startSession();
 
-      const form = await state.extractFormUrl(url);
-      expect(form.url.endsWith('/confirm')).toBe(true);
+      let res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
 
-      const res = await state.fetchIdp(form.url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
+      res = await state.fetchIdp(url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
       const nextUrl = res.headers.get('location');
       expect(typeof nextUrl).toBe('string');
 
@@ -226,16 +225,12 @@ describe('A Solid server with IDP', (): void => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
     });
 
-    it('initializes the session.', async(): Promise<void> => {
-      const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      nextUrl = login;
-    });
-
     it('can not log in with the old password anymore.', async(): Promise<void> => {
+      const url = await state.startSession();
+      nextUrl = url;
+      await state.parseLoginPage(url);
       const formData = stringify({ email, password });
-      const res = await state.fetchIdp(nextUrl, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
+      const res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
       expect(res.status).toBe(200);
       expect(await res.text()).toContain('Incorrect password');
     });
@@ -307,9 +302,8 @@ describe('A Solid server with IDP', (): void => {
     it('initializes the session and logs in.', async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
       const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      await state.login(login, newMail, password);
+      await state.parseLoginPage(url);
+      await state.login(url, newMail, password);
       expect(state.session.info?.webId).toBe(newWebId);
     });
 
