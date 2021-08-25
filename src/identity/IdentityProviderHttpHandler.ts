@@ -15,7 +15,6 @@ import type { RepresentationConverter } from '../storage/conversion/Representati
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
-import { InternalServerError } from '../util/errors/InternalServerError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata } from '../util/ResourceUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
@@ -46,7 +45,6 @@ export class InteractionRoute {
    *                        Keys are content-types, values paths to a template.
    * @param handler - Handler to call on POST requests.
    * @param prompt - In case of requests to the IDP entry point, the session prompt will be compared to this.
-   *                 One entry should have a value of "default" here in case there are no prompt matches.
    * @param responseTemplates - Templates to render as a response to POST requests when required.
    *                            Keys are content-types, values paths to a template.
    */
@@ -143,6 +141,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
 
     // If our own interaction handler does not support the input, it is either invalid or a request for the OIDC library
     const route = await this.findRoute(operation, oidcInteraction);
+
     if (!route) {
       const provider = await this.providerFactory.getProvider();
       this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
@@ -176,13 +175,19 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
       return;
     }
     const pathName = operation.target.path.slice(this.baseUrl.length);
-    let route = this.getRouteMatch(pathName);
 
     // In case the request targets the IDP entry point the prompt determines where to go
-    if (!route && oidcInteraction && trimTrailingSlashes(pathName).length === 0) {
-      route = this.getPromptMatch(oidcInteraction.prompt.name);
+    const checkPrompt = oidcInteraction && trimTrailingSlashes(pathName).length === 0;
+
+    for (const route of this.interactionRoutes) {
+      if (checkPrompt) {
+        if (route.prompt === oidcInteraction!.prompt.name) {
+          return route;
+        }
+      } else if (route.route.test(pathName)) {
+        return route;
+      }
     }
-    return route;
   }
 
   /**
@@ -266,36 +271,5 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     const converted = await this.converter.handleSafe(args);
 
     return new OkResponseDescription(converted.metadata, converted.data);
-  }
-
-  /**
-   * Find a route by matching the URL.
-   */
-  private getRouteMatch(url: string): InteractionRoute | undefined {
-    for (const route of this.interactionRoutes) {
-      if (route.route.test(url)) {
-        return route;
-      }
-    }
-  }
-
-  /**
-   * Find a route by matching the prompt.
-   */
-  private getPromptMatch(prompt: string): InteractionRoute {
-    let def: InteractionRoute | undefined;
-    for (const route of this.interactionRoutes) {
-      if (route.prompt === prompt) {
-        return route;
-      }
-      if (route.prompt === 'default') {
-        def = route;
-      }
-    }
-    if (!def) {
-      throw new InternalServerError('No handler for the default session prompt has been configured.');
-    }
-
-    return def;
   }
 }
