@@ -1,10 +1,10 @@
-import { LinkParser } from '../../../../../src/ldp/http/metadata/LinkParser';
+import { LinkRelParser } from '../../../../../src/ldp/http/metadata/LinkRelParser';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
 import { RDF } from '../../../../../src/util/Vocabularies';
 
 describe('A LinkParser', (): void => {
-  const parser = new LinkParser({ type: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' });
+  const parser = new LinkRelParser({ type: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' });
   let request: HttpRequest;
   let metadata: RepresentationMetadata;
 

@@ -5,21 +5,21 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import { parseParameters, splitAndClean, transformQuotedStrings } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
+import namedNode = DataFactory.namedNode;
 
 /**
- * Parses Link headers and adds them as metadata with the given predicate.
+ * Parses Link headers with a specific `rel` value and adds them as metadata with the given predicate.
  */
-export class LinkParser extends MetadataParser {
+export class LinkRelParser extends MetadataParser {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly linkMap: Record<string, NamedNode>;
+  private readonly linkRelMap: Record<string, NamedNode>;
 
-  public constructor(linkMap: Record<string, string>) {
+  public constructor(linkRelMap: Record<string, string>) {
     super();
-    this.linkMap = {};
-    Object.keys(linkMap).forEach((key: string): void => {
-      this.linkMap[key] = DataFactory.namedNode(linkMap[key]);
-    });
+    this.linkRelMap = Object.fromEntries(
+      Object.entries(linkRelMap).map(([ header, uri ]): [string, NamedNode] => [ header, namedNode(uri) ]),
+    );
   }
 
   public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
@@ -39,8 +39,8 @@ export class LinkParser extends MetadataParser {
         continue;
       }
       for (const { name, value } of parseParameters(parameters, replacements)) {
-        if (name === 'rel' && this.linkMap[value]) {
-          metadata.add(this.linkMap[value], DataFactory.namedNode(link.slice(1, -1)));
+        if (name === 'rel' && this.linkRelMap[value]) {
+          metadata.add(this.linkRelMap[value], namedNode(link.slice(1, -1)));
         }
       }
     }
