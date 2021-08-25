@@ -1,6 +1,12 @@
 import type { Provider } from 'oidc-provider';
 import type { ProviderFactory } from '../../../src/identity/configuration/ProviderFactory';
-import { InteractionRoute, IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
+import type {
+  IdentityProviderHttpHandlerArgs,
+} from '../../../src/identity/IdentityProviderHttpHandler';
+import {
+  InteractionRoute,
+  IdentityProviderHttpHandler,
+} from '../../../src/identity/IdentityProviderHttpHandler';
 import type { InteractionHandler } from '../../../src/identity/interaction/email-password/handler/InteractionHandler';
 import { IdpInteractionError } from '../../../src/identity/interaction/util/IdpInteractionError';
 import type { InteractionCompleter } from '../../../src/identity/interaction/util/InteractionCompleter';
@@ -95,17 +101,18 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     responseWriter = { handleSafe: jest.fn() } as any;
 
-    handler = new IdentityProviderHttpHandler(
+    const args: IdentityProviderHttpHandlerArgs = {
       baseUrl,
       idpPath,
       requestParser,
       providerFactory,
-      Object.values(routes),
+      interactionRoutes: Object.values(routes),
       converter,
       interactionCompleter,
       errorHandler,
       responseWriter,
-    );
+    };
+    handler = new IdentityProviderHttpHandler(args);
   });
 
   it('calls the provider if there is no matching route.', async(): Promise<void> => {
@@ -284,17 +291,18 @@ describe('An IdentityProviderHttpHandler', (): void => {
   });
 
   it('errors if no route is configured for the default prompt.', async(): Promise<void> => {
-    handler = new IdentityProviderHttpHandler(
+    const args: IdentityProviderHttpHandlerArgs = {
       baseUrl,
       idpPath,
       requestParser,
       providerFactory,
-      [],
+      interactionRoutes: [],
       converter,
       interactionCompleter,
       errorHandler,
       responseWriter,
-    );
+    };
+    handler = new IdentityProviderHttpHandler(args);
     request.url = '/idp';
     provider.interactionDetails.mockResolvedValueOnce({ prompt: { name: 'other' }} as any);
     const error = new InternalServerError('No handler for the default session prompt has been configured.');

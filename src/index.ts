@@ -197,6 +197,7 @@ export * from './pods/GeneratedPodManager';
 export * from './pods/PodManager';
 
 // Server
+export * from './server/BaseHttpHandler';
 export * from './server/BaseHttpServerFactory';
 export * from './server/HttpHandler';
 export * from './server/HttpRequest';
