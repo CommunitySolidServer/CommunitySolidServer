@@ -6,16 +6,15 @@ import type { ResponseDescription } from '../ldp/http/response/ResponseDescripti
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import type { Operation } from '../ldp/operations/Operation';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
 import { getLoggerFor } from '../logging/LogUtil';
-import type { HttpHandlerInput } from '../server/HttpHandler';
-import { HttpHandler } from '../server/HttpHandler';
+import { BaseHttpHandler } from '../server/BaseHttpHandler';
+import type { BaseHttpHandlerArgs } from '../server/BaseHttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { HttpResponse } from '../server/HttpResponse';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
-import { assertError, createErrorMessage } from '../util/errors/ErrorUtil';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { InternalServerError } from '../util/errors/InternalServerError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata } from '../util/ResourceUtil';
@@ -64,6 +63,37 @@ export class InteractionRoute {
   }
 }
 
+export interface IdentityProviderHttpHandlerArgs extends BaseHttpHandlerArgs {
+  // Workaround for https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/73
+  requestParser: RequestParser;
+  errorHandler: ErrorHandler;
+  responseWriter: ResponseWriter;
+  /**
+   * Base URL of the server.
+   */
+  baseUrl: string;
+  /**
+   * Relative path of the IDP entry point.
+   */
+  idpPath: string;
+  /**
+   * Used to generate the OIDC provider.
+   */
+  providerFactory: ProviderFactory;
+  /**
+   * All routes handling the custom IDP behaviour.
+   */
+  interactionRoutes: InteractionRoute[];
+  /**
+   * Used for content negotiation.
+   */
+  converter: RepresentationConverter;
+  /**
+   * Used for POST requests that need to be handled by the OIDC library.
+   */
+  interactionCompleter: InteractionCompleter;
+}
+
 /**
  * Handles all requests relevant for the entire IDP interaction,
  * by sending them to either a matching {@link InteractionRoute},
@@ -76,71 +106,32 @@ export class InteractionRoute {
  * This handler handles all requests since it assumes all those requests are relevant for the IDP interaction.
  * A {@link RouterHandler} should be used to filter out other requests.
  */
-export class IdentityProviderHttpHandler extends HttpHandler {
+export class IdentityProviderHttpHandler extends BaseHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly baseUrl: string;
-  private readonly requestParser: RequestParser;
   private readonly providerFactory: ProviderFactory;
   private readonly interactionRoutes: InteractionRoute[];
   private readonly converter: RepresentationConverter;
   private readonly interactionCompleter: InteractionCompleter;
-  private readonly errorHandler: ErrorHandler;
-  private readonly responseWriter: ResponseWriter;
 
-  /**
-   * @param baseUrl - Base URL of the server.
-   * @param idpPath - Relative path of the IDP entry point.
-   * @param requestParser - Used for parsing requests.
-   * @param providerFactory - Used to generate the OIDC provider.
-   * @param interactionRoutes - All routes handling the custom IDP behaviour.
-   * @param converter - Used for content negotiation..
-   * @param interactionCompleter - Used for POST requests that need to be handled by the OIDC library.
-   * @param errorHandler - Converts errors to responses.
-   * @param responseWriter - Renders error responses.
-   */
-  public constructor(
-    baseUrl: string,
-    idpPath: string,
-    requestParser: RequestParser,
-    providerFactory: ProviderFactory,
-    interactionRoutes: InteractionRoute[],
-    converter: RepresentationConverter,
-    interactionCompleter: InteractionCompleter,
-    errorHandler: ErrorHandler,
-    responseWriter: ResponseWriter,
-  ) {
-    super();
+  public constructor(args: IdentityProviderHttpHandlerArgs) {
+    // It is important that the RequestParser does not read out the Request body stream.
+    // Otherwise we can't pass it anymore to the OIDC library when needed.
+    super(args);
     // Trimming trailing slashes so the relative URL starts with a slash after slicing this off
-    this.baseUrl = trimTrailingSlashes(joinUrl(baseUrl, idpPath));
-    this.requestParser = requestParser;
-    this.providerFactory = providerFactory;
-    this.interactionRoutes = interactionRoutes;
-    this.converter = converter;
-    this.interactionCompleter = interactionCompleter;
-    this.errorHandler = errorHandler;
-    this.responseWriter = responseWriter;
-  }
-
-  public async handle({ request, response }: HttpHandlerInput): Promise<void> {
-    let preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
-    try {
-      // It is important that this RequestParser does not read out the Request body stream.
-      // Otherwise we can't pass it anymore to the OIDC library when needed.
-      const operation = await this.requestParser.handleSafe(request);
-      ({ preferences } = operation);
-      await this.handleOperation(operation, request, response);
-    } catch (error: unknown) {
-      assertError(error);
-      const result = await this.errorHandler.handleSafe({ error, preferences });
-      await this.responseWriter.handleSafe({ response, result });
-    }
+    this.baseUrl = trimTrailingSlashes(joinUrl(args.baseUrl, args.idpPath));
+    this.providerFactory = args.providerFactory;
+    this.interactionRoutes = args.interactionRoutes;
+    this.converter = args.converter;
+    this.interactionCompleter = args.interactionCompleter;
   }
 
   /**
    * Finds the matching route and resolves the operation.
    */
-  private async handleOperation(operation: Operation, request: HttpRequest, response: HttpResponse): Promise<void> {
+  protected async handleOperation(operation: Operation, request: HttpRequest, response: HttpResponse):
+  Promise<ResponseDescription | undefined> {
     // This being defined means we're in an OIDC session
     let oidcInteraction: Interaction | undefined;
     try {
@@ -155,7 +146,11 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     if (!route) {
       const provider = await this.providerFactory.getProvider();
       this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
-      return provider.callback(request, response);
+      // Even though the typings do not indicate this, this is a Promise that needs to be awaited.
+      // Otherwise the `BaseHttpServerFactory` will write a 404 before the OIDC library could handle the response.
+      // eslint-disable-next-line @typescript-eslint/await-thenable
+      await provider.callback(request, response);
+      return;
     }
 
     // IDP handlers expect JSON data
@@ -169,9 +164,7 @@ export class IdentityProviderHttpHandler extends HttpHandler {
     }
 
     const { result, templateFiles } = await this.resolveRoute(operation, route, oidcInteraction);
-    const responseDescription =
-      await this.handleInteractionResult(operation, request, result, templateFiles, oidcInteraction);
-    await this.responseWriter.handleSafe({ response, result: responseDescription });
+    return this.handleInteractionResult(operation, request, result, templateFiles, oidcInteraction);
   }
 
   /**

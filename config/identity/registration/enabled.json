@@ -7,7 +7,7 @@
     {
       "comment": "Enable registration by adding a registration handler to the list of interaction routes.",
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
-      "IdentityProviderHttpHandler:_interactionRoutes": [
+      "IdentityProviderHttpHandler:_args_interactionRoutes": [
         { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
       ]
     }

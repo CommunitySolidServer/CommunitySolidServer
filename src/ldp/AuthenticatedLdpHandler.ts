@@ -1,12 +1,10 @@
 import type { Credentials } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
-import { getLoggerFor } from '../logging/LogUtil';
+import { BaseHttpHandler } from '../server/BaseHttpHandler';
+import type { BaseHttpHandlerArgs } from '../server/BaseHttpHandler';
 import type { HttpHandlerInput } from '../server/HttpHandler';
-import { HttpHandler } from '../server/HttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
-import type { HttpResponse } from '../server/HttpResponse';
-import { assertError } from '../util/errors/ErrorUtil';
 import type { ErrorHandler } from './http/ErrorHandler';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
@@ -15,16 +13,12 @@ import type { Operation } from './operations/Operation';
 import type { OperationHandler } from './operations/OperationHandler';
 import type { PermissionSet } from './permissions/PermissionSet';
 import type { PermissionsExtractor } from './permissions/PermissionsExtractor';
-import type { RepresentationPreferences } from './representation/RepresentationPreferences';
 
-/**
- * Collection of handlers needed for {@link AuthenticatedLdpHandler} to function.
- */
-export interface AuthenticatedLdpHandlerArgs {
-  /**
-   * Parses the incoming requests.
-   */
+export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
+  // Workaround for https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/73
   requestParser: RequestParser;
+  errorHandler: ErrorHandler;
+  responseWriter: ResponseWriter;
   /**
    * Extracts the credentials from the incoming request.
    */
@@ -41,36 +35,27 @@ export interface AuthenticatedLdpHandlerArgs {
    * Executed the operation.
    */
   operationHandler: OperationHandler;
-  /**
-   * Converts errors to a serializable format.
-   */
-  errorHandler: ErrorHandler;
-  /**
-   * Writes out the response of the operation.
-   */
-  responseWriter: ResponseWriter;
 }
 
 /**
  * The central manager that connects all the necessary handlers to go from an incoming request to an executed operation.
  */
-export class AuthenticatedLdpHandler extends HttpHandler {
-  private readonly requestParser!: RequestParser;
-  private readonly credentialsExtractor!: CredentialsExtractor;
-  private readonly permissionsExtractor!: PermissionsExtractor;
-  private readonly authorizer!: Authorizer;
-  private readonly operationHandler!: OperationHandler;
-  private readonly errorHandler!: ErrorHandler;
-  private readonly responseWriter!: ResponseWriter;
-  private readonly logger = getLoggerFor(this);
+export class AuthenticatedLdpHandler extends BaseHttpHandler {
+  private readonly credentialsExtractor: CredentialsExtractor;
+  private readonly permissionsExtractor: PermissionsExtractor;
+  private readonly authorizer: Authorizer;
+  private readonly operationHandler: OperationHandler;
 
   /**
    * Creates the handler.
    * @param args - The handlers required. None of them are optional.
    */
   public constructor(args: AuthenticatedLdpHandlerArgs) {
-    super();
-    Object.assign(this, args);
+    super(args);
+    this.credentialsExtractor = args.credentialsExtractor;
+    this.permissionsExtractor = args.permissionsExtractor;
+    this.authorizer = args.authorizer;
+    this.operationHandler = args.operationHandler;
   }
 
   /**
@@ -85,61 +70,14 @@ export class AuthenticatedLdpHandler extends HttpHandler {
   }
 
   /**
-   * Handles the incoming request and writes out the response.
+   * Handles the incoming operation and generates a response.
    * This includes the following steps:
-   *  - Parsing the request to an Operation.
    *  - Extracting credentials from the request.
    *  - Extracting the required permissions.
    *  - Validating if this operation is allowed.
    *  - Executing the operation.
-   *  - Writing out the response.
-   * @param input - The incoming request and response object to write to.
-   *
-   * @returns A promise resolving when the handling is finished.
    */
-  public async handle(input: HttpHandlerInput): Promise<void> {
-    let writeData: { response: HttpResponse; result: ResponseDescription };
-
-    try {
-      writeData = { response: input.response, result: await this.runHandlers(input.request) };
-    } catch (error: unknown) {
-      assertError(error);
-      // We don't know the preferences yet at this point
-      const preferences: RepresentationPreferences = { type: { 'text/plain': 1 }};
-      const result = await this.errorHandler.handleSafe({ error, preferences });
-      writeData = { response: input.response, result };
-    }
-
-    await this.responseWriter.handleSafe(writeData);
-  }
-
-  /**
-   * Runs all handlers except writing the output to the response.
-   * This because any errors thrown here have an impact on the response.
-   * @param request - Incoming request.
-   *
-   * @returns A promise resolving to the generated Operation.
-   */
-  private async runHandlers(request: HttpRequest): Promise<ResponseDescription> {
-    this.logger.verbose(`Handling LDP request for ${request.url}`);
-
-    const operation: Operation = await this.requestParser.handleSafe(request);
-    this.logger.verbose(`Parsed ${operation.method} operation on ${operation.target.path}`);
-
-    try {
-      return await this.handleOperation(request, operation);
-    } catch (error: unknown) {
-      assertError(error);
-      return await this.errorHandler.handleSafe({ error, preferences: operation.preferences });
-    }
-  }
-
-  /**
-   * Handles the operation object.
-   * Runs all non-RequestParser handlers.
-   * This way the preferences can be used in case an error needs to be written.
-   */
-  private async handleOperation(request: HttpRequest, operation: Operation): Promise<ResponseDescription> {
+  protected async handleOperation(operation: Operation, request: HttpRequest): Promise<ResponseDescription> {
     const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
     this.logger.verbose(`Extracted credentials: ${credentials.webId}`);
 
