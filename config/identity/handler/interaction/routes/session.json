@@ -4,12 +4,12 @@
     {
       "comment": "Handles confirm requests",
       "@id": "urn:solid-server:auth:password:SessionRoute",
-      "@type": "InteractionRoute",
+      "@type": "BasicInteractionRoute",
       "route": "^/confirm/?$",
       "prompt": "consent",
       "viewTemplates": {
-        "InteractionRoute:_viewTemplates_key": "text/html",
-        "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/confirm.html.ejs"
+        "BasicInteractionRoute:_viewTemplates_key": "text/html",
+        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/confirm.html.ejs"
       },
       "handler": { "@type": "SessionHttpHandler" }
     }

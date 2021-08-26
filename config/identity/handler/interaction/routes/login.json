@@ -4,16 +4,16 @@
     {
       "comment": "Handles all functionality on the Login Page",
       "@id": "urn:solid-server:auth:password:LoginRoute",
-      "@type": "InteractionRoute",
+      "@type": "BasicInteractionRoute",
       "route": "^/login/?$",
       "prompt": "login",
       "viewTemplates": {
-        "InteractionRoute:_viewTemplates_key": "text/html",
-        "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/login.html.ejs"
+        "BasicInteractionRoute:_viewTemplates_key": "text/html",
+        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/login.html.ejs"
       },
       "controls": {
-        "InteractionRoute:_controls_key": "login",
-        "InteractionRoute:_controls_value": "/login"
+        "BasicInteractionRoute:_controls_key": "login",
+        "BasicInteractionRoute:_controls_value": "/login"
       },
       "handler": {
         "@type": "LoginHandler",
