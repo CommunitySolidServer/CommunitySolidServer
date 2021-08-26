@@ -14,58 +14,15 @@ import type { HttpResponse } from '../server/HttpResponse';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
-import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata } from '../util/ResourceUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
-import type {
-  Interaction,
-  InteractionHandler,
-  InteractionHandlerResult,
-  InteractionResponseResult,
-} from './interaction/email-password/handler/InteractionHandler';
-import { IdpInteractionError } from './interaction/util/IdpInteractionError';
+import type { Interaction } from './interaction/email-password/handler/InteractionHandler';
+import type { InteractionRoute, TemplatedInteractionResult } from './interaction/routing/InteractionRoute';
 import type { InteractionCompleter } from './interaction/util/InteractionCompleter';
 
 // Registration is not standardized within Solid yet, so we use a custom versioned API for now
 const API_VERSION = '0.2';
-
-/**
- * All the information that is required to handle a request to a custom IDP path.
- */
-export class InteractionRoute {
-  public readonly route: RegExp;
-  public readonly handler: InteractionHandler;
-  public readonly viewTemplates: Record<string, string>;
-  public readonly prompt?: string;
-  public readonly responseTemplates: Record<string, string>;
-  public readonly controls: Record<string, string>;
-
-  /**
-   * @param route - Regex to match this route.
-   * @param viewTemplates - Templates to render on GET requests.
-   *                        Keys are content-types, values paths to a template.
-   * @param handler - Handler to call on POST requests.
-   * @param prompt - In case of requests to the IDP entry point, the session prompt will be compared to this.
-   * @param responseTemplates - Templates to render as a response to POST requests when required.
-   *                            Keys are content-types, values paths to a template.
-   * @param controls - Controls to add to the response JSON.
-   *                   The keys will be copied and the values will be converted to full URLs.
-   */
-  public constructor(route: string,
-    viewTemplates: Record<string, string>,
-    handler: InteractionHandler,
-    prompt?: string,
-    responseTemplates: Record<string, string> = {},
-    controls: Record<string, string> = {}) {
-    this.route = new RegExp(route, 'u');
-    this.viewTemplates = viewTemplates;
-    this.handler = handler;
-    this.prompt = prompt;
-    this.responseTemplates = responseTemplates;
-    this.controls = controls;
-  }
-}
 
 export interface IdentityProviderHttpHandlerArgs extends BaseHttpHandlerArgs {
   // Workaround for https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/73
@@ -147,6 +104,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     let oidcInteraction: Interaction | undefined;
     try {
       const provider = await this.providerFactory.getProvider();
+      // This being defined means we're in an OIDC session
       oidcInteraction = await provider.interactionDetails(request, response);
     } catch {
       // Just a regular request
@@ -175,8 +133,8 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
       operation.body = await this.converter.handleSafe(args);
     }
 
-    const { result, templateFiles } = await this.resolveRoute(operation, route, oidcInteraction);
-    return this.handleInteractionResult(operation, request, result, templateFiles, oidcInteraction);
+    const result = await route.handleOperation(operation, oidcInteraction);
+    return this.handleInteractionResult(operation, request, result, oidcInteraction);
   }
 
   /**
@@ -189,57 +147,19 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     }
     const pathName = operation.target.path.slice(this.baseUrl.length);
 
-    // In case the request targets the IDP entry point the prompt determines where to go
-    const checkPrompt = oidcInteraction && trimTrailingSlashes(pathName).length === 0;
-
     for (const route of this.interactionRoutes) {
-      if (checkPrompt) {
-        if (route.prompt === oidcInteraction!.prompt.name) {
-          return route;
-        }
-      } else if (route.route.test(pathName)) {
+      if (route.supportsPath(pathName, oidcInteraction?.prompt.name)) {
         return route;
       }
     }
   }
 
   /**
-   * Handles the behaviour of an InteractionRoute.
-   * Will error if the route does not support the given request.
-   *
-   * GET requests return a default response result,
-   * POST requests to the specific InteractionHandler of the route.
-   */
-  private async resolveRoute(operation: Operation, route: InteractionRoute, oidcInteraction?: Interaction):
-  Promise<{ result: InteractionHandlerResult; templateFiles: Record<string, string> }> {
-    if (operation.method === 'GET') {
-      return { result: { type: 'response' }, templateFiles: route.viewTemplates };
-    }
-
-    if (operation.method === 'POST') {
-      try {
-        const result = await route.handler.handleSafe({ operation, oidcInteraction });
-        return { result, templateFiles: route.responseTemplates };
-      } catch (error: unknown) {
-        // Render error in the view
-        const errorMessage = createErrorMessage(error);
-        const result: InteractionResponseResult = { type: 'response', details: { errorMessage }};
-        if (IdpInteractionError.isInstance(error)) {
-          result.details!.prefilled = error.prefilled;
-        }
-        return { result, templateFiles: route.viewTemplates };
-      }
-    }
-
-    throw new BadRequestHttpError(`Unsupported request: ${operation.method} ${operation.target.path}`);
-  }
-
-  /**
    * Creates a ResponseDescription based on the InteractionHandlerResult.
    * This will either be a redirect if type is "complete" or a data stream if the type is "response".
    */
-  private async handleInteractionResult(operation: Operation, request: HttpRequest, result: InteractionHandlerResult,
-    templateFiles: Record<string, string>, oidcInteraction?: Interaction): Promise<ResponseDescription> {
+  private async handleInteractionResult(operation: Operation, request: HttpRequest,
+    result: TemplatedInteractionResult, oidcInteraction?: Interaction): Promise<ResponseDescription> {
     let responseDescription: ResponseDescription | undefined;
 
     if (result.type === 'complete') {
@@ -254,7 +174,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
       responseDescription = new RedirectResponseDescription(location);
     } else {
       // Convert the response object to a data stream
-      responseDescription = await this.handleResponseResult(result, templateFiles, operation, oidcInteraction);
+      responseDescription = await this.handleResponseResult(result, operation, oidcInteraction);
     }
 
     return responseDescription;
@@ -264,8 +184,8 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
    * Converts an InteractionResponseResult to a ResponseDescription by first converting to a Representation
    * and applying necessary conversions.
    */
-  private async handleResponseResult(result: InteractionResponseResult, templateFiles: Record<string, string>,
-    operation: Operation, oidcInteraction?: Interaction): Promise<ResponseDescription> {
+  private async handleResponseResult(result: TemplatedInteractionResult, operation: Operation,
+    oidcInteraction?: Interaction): Promise<ResponseDescription> {
     // Convert the object to a valid JSON representation
     const json = {
       apiVersion: API_VERSION,
@@ -276,7 +196,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     const representation = new BasicRepresentation(JSON.stringify(json), operation.target, APPLICATION_JSON);
 
     // Template metadata is required for conversion
-    for (const [ type, templateFile ] of Object.entries(templateFiles)) {
+    for (const [ type, templateFile ] of Object.entries(result.templateFiles)) {
       addTemplateMetadata(representation.metadata, templateFile, type);
     }
 
@@ -291,8 +211,8 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
    * Converts the controls object of a route to one with full URLs.
    */
   private getRouteControls(route: InteractionRoute): Record<string, string> {
-    return Object.fromEntries(
-      Object.entries(route.controls).map(([ name, path ]): [ string, string ] => [ name, joinUrl(this.baseUrl, path) ]),
-    );
+    const entries = Object.entries(route.getControls())
+      .map(([ name, path ]): [ string, string ] => [ name, joinUrl(this.baseUrl, path) ]);
+    return Object.fromEntries(entries);
   }
 }

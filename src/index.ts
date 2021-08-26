@@ -41,6 +41,10 @@ export * from './identity/interaction/email-password/storage/BaseAccountStore';
 // Identity/Interaction/Email-Password
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
+// Identity/Interaction/Routing
+export * from './identity/interaction/routing/BasicInteractionRoute';
+export * from './identity/interaction/routing/InteractionRoute';
+
 // Identity/Interaction/Util
 export * from './identity/interaction/util/BaseEmailSender';
 export * from './identity/interaction/util/EmailSender';

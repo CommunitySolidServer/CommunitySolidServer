@@ -4,19 +4,19 @@
     {
       "comment": "Handles all functionality on the register page",
       "@id": "urn:solid-server:auth:password:RegistrationRoute",
-      "@type": "InteractionRoute",
+      "@type": "BasicInteractionRoute",
       "route": "^/register/?$",
       "viewTemplates": {
-        "InteractionRoute:_viewTemplates_key": "text/html",
-        "InteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"
+        "BasicInteractionRoute:_viewTemplates_key": "text/html",
+        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"
       },
       "responseTemplates": {
-        "InteractionRoute:_responseTemplates_key": "text/html",
-        "InteractionRoute:_responseTemplates_value": "@css:templates/identity/email-password/register-response.html.ejs"
+        "BasicInteractionRoute:_responseTemplates_key": "text/html",
+        "BasicInteractionRoute:_responseTemplates_value": "@css:templates/identity/email-password/register-response.html.ejs"
       },
       "controls": {
-        "InteractionRoute:_controls_key": "register",
-        "InteractionRoute:_controls_value": "/register"
+        "BasicInteractionRoute:_controls_key": "register",
+        "BasicInteractionRoute:_controls_value": "/register"
       },
       "handler": {
         "@type": "RegistrationHandler",
