@@ -54,11 +54,4 @@ describe('A ResetPasswordHandler', (): void => {
     expect(accountStore.changePassword).toHaveBeenCalledTimes(1);
     expect(accountStore.changePassword).toHaveBeenLastCalledWith(email, 'password!');
   });
-
-  it('has a default error for non-native errors.', async(): Promise<void> => {
-    const errorMessage = 'Unknown error: not native';
-    operation = createPostJsonOperation({ password: 'password!', confirmPassword: 'password!' }, url);
-    (accountStore.getForgotPasswordRecord as jest.Mock).mockRejectedValueOnce('not native');
-    await expect(handler.handle({ operation })).rejects.toThrow(errorMessage);
-  });
 });

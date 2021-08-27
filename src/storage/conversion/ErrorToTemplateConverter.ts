@@ -1,11 +1,10 @@
 import assert from 'assert';
-import arrayifyStream from 'arrayify-stream';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
-import { InternalServerError } from '../../util/errors/InternalServerError';
 import { modulePathPlaceholder } from '../../util/PathUtil';
+import { getSingleItem } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -57,12 +56,7 @@ export class ErrorToTemplateConverter extends TypedRepresentationConverter {
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
-    // Obtain the error from the representation stream
-    const errors = await arrayifyStream(representation.data);
-    if (errors.length !== 1) {
-      throw new InternalServerError('Only single errors are supported.');
-    }
-    const error = errors[0] as Error;
+    const error = await getSingleItem(representation.data) as Error;
 
     // Render the error description using an error-specific template
     let description: string | undefined;

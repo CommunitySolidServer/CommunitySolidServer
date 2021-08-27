@@ -114,8 +114,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(settings),
     });
-    // 200 due to there only being a HTML solution right now that only returns 200
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(409);
     await expect(res.text()).resolves.toContain(`There already is a pod at ${podUrl}`);
   });
 });

@@ -20,7 +20,7 @@ export interface InteractionHandlerInput {
   oidcInteraction?: Interaction;
 }
 
-export type InteractionHandlerResult = InteractionResponseResult | InteractionCompleteResult;
+export type InteractionHandlerResult = InteractionResponseResult | InteractionCompleteResult | InteractionErrorResult;
 
 export interface InteractionResponseResult<T = NodeJS.Dict<any>> {
   type: 'response';
@@ -30,6 +30,11 @@ export interface InteractionResponseResult<T = NodeJS.Dict<any>> {
 export interface InteractionCompleteResult {
   type: 'complete';
   details: InteractionCompleterParams;
+}
+
+export interface InteractionErrorResult {
+  type: 'error';
+  error: Error;
 }
 
 /**

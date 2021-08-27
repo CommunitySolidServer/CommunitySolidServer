@@ -2,7 +2,6 @@ import {
   RegistrationHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/RegistrationHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import { IdpInteractionError } from '../../../../../../src/identity/interaction/util/IdpInteractionError';
 import type { OwnershipValidator } from '../../../../../../src/identity/ownership/OwnershipValidator';
 import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
@@ -278,20 +277,12 @@ describe('A RegistrationHandler', (): void => {
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
     });
 
-    it('throws an IdpInteractionError with all data prefilled if something goes wrong.', async(): Promise<void> => {
+    it('throws an error if something goes wrong.', async(): Promise<void> => {
       const params = { email, webId, podName, createPod };
       operation = createPostJsonOperation(params);
       (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
       const prom = handler.handle({ operation });
       await expect(prom).rejects.toThrow('pod error');
-      await expect(prom).rejects.toThrow(IdpInteractionError);
-      // Using the cleaned input for prefilled
-      await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: {
-        ...params,
-        createWebId: false,
-        register: false,
-        createPod: true,
-      }}));
     });
   });
 });

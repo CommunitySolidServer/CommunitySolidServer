@@ -1,10 +1,10 @@
 <h1>Sign up</h1>
 <form method="post" id="mainForm">
   <% const isBlankForm = !('prefilled' in locals); %>
-  <% const safePrefilled = locals.prefilled || {}; %>
+  <% prefilled = locals.prefilled || {}; %>
 
-  <% if (locals.errorMessage) { %>
-    <p class="error">Error: <%= errorMessage %></p>
+  <% if (locals.message) { %>
+    <p class="error">Error: <%= message %></p>
   <% } %>
 
   <fieldset>
@@ -20,7 +20,7 @@
       <li class="radio">
         <label>
           <input type="radio" id="createWebIdOn" name="createWebId" value="on"<%
-            if (isBlankForm || safePrefilled.createWebId) { %> checked<% } %>>
+            if (isBlankForm || prefilled.createWebId) { %> checked<% } %>>
           Create a new WebID for my Pod.
         </label>
         <p id="createWebIdForm">
@@ -36,7 +36,7 @@
         <ol id="existingWebIdForm">
           <li>
             <label for="webId">Existing WebID:</label>
-            <input id="webId" type="text" name="webId" value="<%= safePrefilled.webId || '' %>">
+            <input id="webId" type="text" name="webId" value="<%= prefilled.webId || '' %>">
           </li>
           <li class="checkbox">
             <label>
@@ -67,7 +67,7 @@
         <ol id="createPodForm">
           <li>
             <label for="podName">Pod name:</label>
-            <input id="podName" type="text" name="podName" value="<%= safePrefilled.podName || '' %>">
+            <input id="podName" type="text" name="podName" value="<%= prefilled.podName || '' %>">
           </li>
         </ol>
       </li>
@@ -83,7 +83,7 @@
       <ol>
         <li>
           <label for="email">Email:</label>
-          <input id="email" type="text" name="email" value="<%= safePrefilled.email || '' %>" >
+          <input id="email" type="text" name="email" value="<%= prefilled.email || '' %>" >
         </li>
       </ol>
       <ol id="passwordForm">

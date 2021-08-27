@@ -7,6 +7,7 @@ import { Store } from 'n3';
 import pump from 'pump';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isHttpRequest } from '../server/HttpRequest';
+import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
 
@@ -46,6 +47,20 @@ export async function readableToQuads(stream: Readable): Promise<Store> {
 export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
   const body = await readableToString(stream);
   return JSON.parse(body);
+}
+
+/**
+ * Converts the stream to a single object.
+ * This assumes the stream is in object mode and only contains a single element,
+ * otherwise an error will be thrown.
+ * @param stream - Object stream with single entry.
+ */
+export async function getSingleItem(stream: Readable): Promise<unknown> {
+  const items = await arrayifyStream(stream);
+  if (items.length !== 1) {
+    throw new InternalServerError('Expected a stream with a single object.');
+  }
+  return items[0];
 }
 
 // These error messages usually indicate expected behaviour so should not give a warning.

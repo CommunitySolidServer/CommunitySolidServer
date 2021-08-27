@@ -1,13 +1,12 @@
 import type { Operation } from '../../../ldp/operations/Operation';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { createErrorMessage } from '../../../util/errors/ErrorUtil';
+import { createErrorMessage, isError } from '../../../util/errors/ErrorUtil';
+import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { trimTrailingSlashes } from '../../../util/PathUtil';
 import type {
-  InteractionResponseResult,
   InteractionHandler,
   Interaction,
 } from '../email-password/handler/InteractionHandler';
-import { IdpInteractionError } from '../util/IdpInteractionError';
 import type { InteractionRoute, TemplatedInteractionResult } from './InteractionRoute';
 
 /**
@@ -84,14 +83,10 @@ export class BasicInteractionRoute implements InteractionRoute {
         try {
           const result = await this.handler.handleSafe({ operation, oidcInteraction });
           return { ...result, templateFiles: this.responseTemplates };
-        } catch (error: unknown) {
-          // Render error in the view
-          const errorMessage = createErrorMessage(error);
-          const result: InteractionResponseResult = { type: 'response', details: { errorMessage }};
-          if (IdpInteractionError.isInstance(error)) {
-            result.details!.prefilled = error.prefilled;
-          }
-          return { ...result, templateFiles: this.viewTemplates };
+        } catch (err: unknown) {
+          const error = isError(err) ? err : new InternalServerError(createErrorMessage(err));
+          // Potentially render the error in the view
+          return { type: 'error', error, templateFiles: this.viewTemplates };
         }
       default:
         throw new BadRequestHttpError(`Unsupported request: ${operation.method} ${operation.target.path}`);

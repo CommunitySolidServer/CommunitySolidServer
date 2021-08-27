@@ -48,7 +48,6 @@ export * from './identity/interaction/routing/InteractionRoute';
 // Identity/Interaction/Util
 export * from './identity/interaction/util/BaseEmailSender';
 export * from './identity/interaction/util/EmailSender';
-export * from './identity/interaction/util/IdpInteractionError';
 export * from './identity/interaction/util/InteractionCompleter';
 
 // Identity/Interaction
@@ -232,6 +231,7 @@ export * from './storage/conversion/ContainerToTemplateConverter';
 export * from './storage/conversion/ContentTypeReplacer';
 export * from './storage/conversion/ConversionUtil';
 export * from './storage/conversion/DynamicJsonToTemplateConverter';
+export * from './storage/conversion/ErrorToJsonConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/FormToJsonConverter';

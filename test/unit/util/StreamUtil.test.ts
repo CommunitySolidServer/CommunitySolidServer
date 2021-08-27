@@ -6,7 +6,7 @@ import { getLoggerFor } from '../../../src/logging/LogUtil';
 import { isHttpRequest } from '../../../src/server/HttpRequest';
 import {
   guardedStreamFrom, pipeSafely, transformSafely,
-  readableToString, readableToQuads, readJsonStream,
+  readableToString, readableToQuads, readJsonStream, getSingleItem,
 } from '../../../src/util/StreamUtil';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
@@ -53,6 +53,18 @@ describe('StreamUtil', (): void => {
     it('parses the stream as JSON.', async(): Promise<void> => {
       const stream = Readable.from('{ "key": "value" }');
       await expect(readJsonStream(stream)).resolves.toEqual({ key: 'value' });
+    });
+  });
+
+  describe('#getSingleItem', (): void => {
+    it('extracts a single item from the stream.', async(): Promise<void> => {
+      const stream = Readable.from([ 5 ]);
+      await expect(getSingleItem(stream)).resolves.toBe(5);
+    });
+
+    it('errors if there are multiple items.', async(): Promise<void> => {
+      const stream = Readable.from([ 5, 5 ]);
+      await expect(getSingleItem(stream)).rejects.toThrow('Expected a stream with a single object.');
     });
   });
 
