@@ -4,8 +4,9 @@ import type { IdentityProviderHttpHandlerArgs } from '../../../src/identity/Iden
 import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
 import type { InteractionRoute } from '../../../src/identity/interaction/routing/InteractionRoute';
 import type { InteractionCompleter } from '../../../src/identity/interaction/util/InteractionCompleter';
-import type { ErrorHandler } from '../../../src/ldp/http/ErrorHandler';
+import type { ErrorHandler, ErrorHandlerArgs } from '../../../src/ldp/http/ErrorHandler';
 import type { RequestParser } from '../../../src/ldp/http/RequestParser';
+import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { Operation } from '../../../src/ldp/operations/Operation';
 import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
@@ -19,7 +20,7 @@ import type {
   RepresentationConverterArgs,
 } from '../../../src/storage/conversion/RepresentationConverter';
 import { joinUrl } from '../../../src/util/PathUtil';
-import { readableToString } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
@@ -30,7 +31,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
   const response: HttpResponse = {} as any;
   let requestParser: jest.Mocked<RequestParser>;
   let providerFactory: jest.Mocked<ProviderFactory>;
-  let routes: { response: jest.Mocked<InteractionRoute>; complete: jest.Mocked<InteractionRoute> };
+  let routes: Record<'response' | 'complete' | 'error', jest.Mocked<InteractionRoute>>;
   let controls: Record<string, string>;
   let interactionCompleter: jest.Mocked<InteractionCompleter>;
   let converter: jest.Mocked<RepresentationConverter>;
@@ -48,7 +49,7 @@ describe('An IdentityProviderHttpHandler', (): void => {
         method: req.method!,
         body: req.method === 'GET' ?
           undefined :
-          new BasicRepresentation('', req.headers['content-type'] ?? 'text/plain'),
+          new BasicRepresentation('{}', req.headers['content-type'] ?? 'text/plain'),
         preferences: { type: { 'text/html': 1 }},
       })),
     } as any;
@@ -81,6 +82,15 @@ describe('An IdentityProviderHttpHandler', (): void => {
           templateFiles: {},
         }),
       },
+      error: {
+        getControls: jest.fn().mockReturnValue({}),
+        supportsPath: jest.fn((path: string): boolean => /^\/routeError$/u.test(path)),
+        handleOperation: jest.fn().mockResolvedValue({
+          type: 'error',
+          error: new Error('test error'),
+          templateFiles: { 'text/html': '/response' },
+        }),
+      },
     };
     controls = { response: 'http://test.com/idp/routeResponse' };
 
@@ -95,7 +105,10 @@ describe('An IdentityProviderHttpHandler', (): void => {
 
     interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
 
-    errorHandler = { handleSafe: jest.fn() } as any;
+    errorHandler = { handleSafe: jest.fn(({ error }: ErrorHandlerArgs): ResponseDescription => ({
+      statusCode: 400,
+      data: guardedStreamFrom(`{ "name": "${error.name}", "message": "${error.message}" }`),
+    })) } as any;
 
     responseWriter = { handleSafe: jest.fn() } as any;
 
@@ -135,6 +148,53 @@ describe('An IdentityProviderHttpHandler', (): void => {
     expect(JSON.parse(await readableToString(result.data!)))
       .toEqual({ apiVersion, key: 'val', authenticating: false, controls });
     expect(result.statusCode).toBe(200);
+    expect(result.metadata?.contentType).toBe('text/html');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
+  });
+
+  it('creates Representations for InteractionErrorResults.', async(): Promise<void> => {
+    requestParser.handleSafe.mockResolvedValueOnce({
+      target: { path: joinUrl(baseUrl, '/idp/routeError') },
+      method: 'POST',
+      preferences: { type: { 'text/html': 1 }},
+    });
+
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
+    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, name: 'Error', message: 'test error', authenticating: false, controls });
+    expect(result.statusCode).toBe(400);
+    expect(result.metadata?.contentType).toBe('text/html');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
+  });
+
+  it('adds a prefilled field in case error requests had a body.', async(): Promise<void> => {
+    requestParser.handleSafe.mockResolvedValueOnce({
+      target: { path: joinUrl(baseUrl, '/idp/routeError') },
+      method: 'POST',
+      body: new BasicRepresentation('{ "key": "val" }', 'application/json'),
+      preferences: { type: { 'text/html': 1 }},
+    });
+
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    const operation: Operation = await requestParser.handleSafe.mock.results[0].value;
+    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
+    expect(operation.body?.metadata.contentType).toBe('application/json');
+
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
+    expect(mockResponse).toBe(response);
+    expect(JSON.parse(await readableToString(result.data!))).toEqual(
+      { apiVersion, name: 'Error', message: 'test error', authenticating: false, controls, prefilled: { key: 'val' }},
+    );
+    expect(result.statusCode).toBe(400);
     expect(result.metadata?.contentType).toBe('text/html');
     expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
   });

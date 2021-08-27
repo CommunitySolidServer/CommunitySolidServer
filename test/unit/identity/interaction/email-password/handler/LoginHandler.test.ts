@@ -26,30 +26,25 @@ describe('A LoginHandler', (): void => {
     input.operation = createPostJsonOperation({});
     let prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Email required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: {}}));
     input.operation = createPostJsonOperation({ email: [ 'a', 'b' ]});
     prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Email required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { }}));
   });
 
   it('errors on invalid passwords.', async(): Promise<void> => {
     input.operation = createPostJsonOperation({ email });
     let prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Password required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
     input.operation = createPostJsonOperation({ email, password: [ 'a', 'b' ]});
     prom = handler.handle(input);
     await expect(prom).rejects.toThrow('Password required');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
   });
 
-  it('throws an IdpInteractionError if there is a problem.', async(): Promise<void> => {
+  it('throws an error if there is a problem.', async(): Promise<void> => {
     input.operation = createPostJsonOperation({ email, password: 'password!' });
     (storageAdapter.authenticate as jest.Mock).mockRejectedValueOnce(new Error('auth failed!'));
     const prom = handler.handle(input);
     await expect(prom).rejects.toThrow('auth failed!');
-    await expect(prom).rejects.toThrow(expect.objectContaining({ prefilled: { email }}));
   });
 
   it('returns an InteractionCompleteResult when done.', async(): Promise<void> => {

@@ -1,9 +1,8 @@
-import arrayifyStream from 'arrayify-stream';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import { INTERNAL_ERROR, INTERNAL_QUADS } from '../../util/ContentTypes';
-import { InternalServerError } from '../../util/errors/InternalServerError';
+import { getSingleItem } from '../../util/StreamUtil';
 import { DC, SOLID_ERROR } from '../../util/Vocabularies';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { TypedRepresentationConverter } from './TypedRepresentationConverter';
@@ -17,11 +16,7 @@ export class ErrorToQuadConverter extends TypedRepresentationConverter {
   }
 
   public async handle({ identifier, representation }: RepresentationConverterArgs): Promise<Representation> {
-    const errors = await arrayifyStream(representation.data);
-    if (errors.length !== 1) {
-      throw new InternalServerError('Only single errors are supported.');
-    }
-    const error = errors[0] as Error;
+    const error = await getSingleItem(representation.data) as Error;
 
     // A metadata object makes it easier to add triples due to the utility functions
     const data = new RepresentationMetadata(identifier);

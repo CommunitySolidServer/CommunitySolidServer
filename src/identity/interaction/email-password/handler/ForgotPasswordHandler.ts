@@ -4,7 +4,6 @@ import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
 import { readJsonStream } from '../../../../util/StreamUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { EmailSender } from '../../util/EmailSender';
-import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
 import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
@@ -39,16 +38,12 @@ export class ForgotPasswordHandler extends InteractionHandler {
   }
 
   public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
-    try {
-      // Validate incoming data
-      const { email } = await readJsonStream(operation.body!.data);
-      assert(typeof email === 'string' && email.length > 0, 'Email required');
+    // Validate incoming data
+    const { email } = await readJsonStream(operation.body!.data);
+    assert(typeof email === 'string' && email.length > 0, 'Email required');
 
-      await this.resetPassword(email);
-      return { type: 'response', details: { email }};
-    } catch (err: unknown) {
-      throwIdpInteractionError(err, {});
-    }
+    await this.resetPassword(email);
+    return { type: 'response', details: { email }};
   }
 
   /**

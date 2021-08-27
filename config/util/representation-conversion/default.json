@@ -31,6 +31,7 @@
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
             { "@id": "urn:solid-server:default:ContainerToTemplateConverter" },
+            { "@id": "urn:solid-server:default:ErrorToJsonConverter" },
             { "@id": "urn:solid-server:default:ErrorToQuadConverter" },
             { "@id": "urn:solid-server:default:ErrorToTemplateConverter" },
             { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },

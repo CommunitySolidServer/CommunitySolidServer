@@ -1,7 +1,7 @@
 import type { Operation } from '../../../ldp/operations/Operation';
 import type { Interaction, InteractionHandlerResult } from '../email-password/handler/InteractionHandler';
 
-export type TemplatedInteractionResult = InteractionHandlerResult & {
+export type TemplatedInteractionResult<T extends InteractionHandlerResult = InteractionHandlerResult> = T & {
   templateFiles: Record<string, string>;
 };
 

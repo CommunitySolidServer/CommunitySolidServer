@@ -96,7 +96,7 @@ describe('A Solid server with IDP', (): void => {
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(400);
       registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
 
@@ -231,7 +231,7 @@ describe('A Solid server with IDP', (): void => {
       await state.parseLoginPage(url);
       const formData = stringify({ email, password });
       const res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(500);
       expect(await res.text()).toContain('Incorrect password');
     });
 
@@ -253,7 +253,7 @@ describe('A Solid server with IDP', (): void => {
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(400);
       registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
 

@@ -2,8 +2,8 @@ import type {
   InteractionHandler,
 } from '../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
 import { BasicInteractionRoute } from '../../../../../src/identity/interaction/routing/BasicInteractionRoute';
-import { IdpInteractionError } from '../../../../../src/identity/interaction/util/IdpInteractionError';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
+import { InternalServerError } from '../../../../../src/util/errors/InternalServerError';
 
 describe('A BasicInteractionRoute', (): void => {
   const path = '^/route$';
@@ -50,19 +50,18 @@ describe('A BasicInteractionRoute', (): void => {
     expect(handler.handleSafe).toHaveBeenLastCalledWith({ operation: { method: 'POST' }});
   });
 
-  it('creates a response result in case the InteractionHandler errors.', async(): Promise<void> => {
+  it('creates an error result in case the InteractionHandler errors.', async(): Promise<void> => {
     const error = new Error('bad data');
     handler.handleSafe.mockRejectedValueOnce(error);
     await expect(route.handleOperation({ method: 'POST' } as any))
-      .resolves.toEqual({ type: 'response', details: { errorMessage: 'bad data' }, templateFiles: viewTemplates });
+      .resolves.toEqual({ type: 'error', error, templateFiles: viewTemplates });
   });
 
-  it('adds prefilled data in case the error is an IdpInteractionError.', async(): Promise<void> => {
-    const error = new IdpInteractionError(400, 'bad data', { name: 'Alice' });
-    handler.handleSafe.mockRejectedValueOnce(error);
+  it('creates an internal error in case of non-native errors.', async(): Promise<void> => {
+    handler.handleSafe.mockRejectedValueOnce('notAnError');
     await expect(route.handleOperation({ method: 'POST' } as any)).resolves.toEqual({
-      type: 'response',
-      details: { errorMessage: 'bad data', prefilled: { name: 'Alice' }},
+      type: 'error',
+      error: new InternalServerError('Unknown error: notAnError'),
       templateFiles: viewTemplates,
     });
   });

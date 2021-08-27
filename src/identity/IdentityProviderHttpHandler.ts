@@ -1,11 +1,11 @@
 import type { ErrorHandler } from '../ldp/http/ErrorHandler';
 import type { RequestParser } from '../ldp/http/RequestParser';
-import { OkResponseDescription } from '../ldp/http/response/OkResponseDescription';
 import { RedirectResponseDescription } from '../ldp/http/response/RedirectResponseDescription';
-import type { ResponseDescription } from '../ldp/http/response/ResponseDescription';
+import { ResponseDescription } from '../ldp/http/response/ResponseDescription';
 import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import type { Operation } from '../ldp/operations/Operation';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
+import type { Representation } from '../ldp/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
 import { BaseHttpHandler } from '../server/BaseHttpHandler';
 import type { BaseHttpHandlerArgs } from '../server/BaseHttpHandler';
@@ -15,7 +15,8 @@ import type { RepresentationConverter } from '../storage/conversion/Representati
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
-import { addTemplateMetadata } from '../util/ResourceUtil';
+import { addTemplateMetadata, cloneRepresentation } from '../util/ResourceUtil';
+import { readJsonStream } from '../util/StreamUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
 import type { Interaction } from './interaction/email-password/handler/InteractionHandler';
 import type { InteractionRoute, TemplatedInteractionResult } from './interaction/routing/InteractionRoute';
@@ -123,6 +124,9 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
       return;
     }
 
+    // Cloning input data so it can be sent back in case of errors
+    let clone: Representation | undefined;
+
     // IDP handlers expect JSON data
     if (operation.body) {
       const args = {
@@ -131,9 +135,14 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
         identifier: operation.target,
       };
       operation.body = await this.converter.handleSafe(args);
+      clone = await cloneRepresentation(operation.body);
     }
 
     const result = await route.handleOperation(operation, oidcInteraction);
+
+    // Reset the body so it can be reused when needed for output
+    operation.body = clone;
+
     return this.handleInteractionResult(operation, request, result, oidcInteraction);
   }
 
@@ -172,9 +181,27 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
       // Create a redirect URL with the OIDC library
       const location = await this.interactionCompleter.handleSafe({ ...result.details, request });
       responseDescription = new RedirectResponseDescription(location);
+    } else if (result.type === 'error') {
+      // We want to show the errors on the original page in case of html interactions, so we can't just throw them here
+      const preferences = { type: { [APPLICATION_JSON]: 1 }};
+      const response = await this.errorHandler.handleSafe({ error: result.error, preferences });
+      const details = await readJsonStream(response.data!);
+
+      // Add the input data to the JSON response;
+      if (operation.body) {
+        details.prefilled = await readJsonStream(operation.body.data);
+
+        // Don't send passwords back
+        delete details.prefilled.password;
+        delete details.prefilled.confirmPassword;
+      }
+
+      responseDescription =
+        await this.handleResponseResult(details, operation, result.templateFiles, oidcInteraction, response.statusCode);
     } else {
       // Convert the response object to a data stream
-      responseDescription = await this.handleResponseResult(result, operation, oidcInteraction);
+      responseDescription =
+        await this.handleResponseResult(result.details ?? {}, operation, result.templateFiles, oidcInteraction);
     }
 
     return responseDescription;
@@ -184,19 +211,19 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
    * Converts an InteractionResponseResult to a ResponseDescription by first converting to a Representation
    * and applying necessary conversions.
    */
-  private async handleResponseResult(result: TemplatedInteractionResult, operation: Operation,
-    oidcInteraction?: Interaction): Promise<ResponseDescription> {
-    // Convert the object to a valid JSON representation
+  private async handleResponseResult(details: Record<string, any>, operation: Operation,
+    templateFiles: Record<string, string>, oidcInteraction?: Interaction, statusCode = 200):
+    Promise<ResponseDescription> {
     const json = {
+      ...details,
       apiVersion: API_VERSION,
-      ...result.details,
       authenticating: Boolean(oidcInteraction),
       controls: this.controls,
     };
     const representation = new BasicRepresentation(JSON.stringify(json), operation.target, APPLICATION_JSON);
 
     // Template metadata is required for conversion
-    for (const [ type, templateFile ] of Object.entries(result.templateFiles)) {
+    for (const [ type, templateFile ] of Object.entries(templateFiles)) {
       addTemplateMetadata(representation.metadata, templateFile, type);
     }
 
@@ -204,7 +231,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
     const args = { representation, preferences: operation.preferences, identifier: operation.target };
     const converted = await this.converter.handleSafe(args);
 
-    return new OkResponseDescription(converted.metadata, converted.data);
+    return new ResponseDescription(statusCode, converted.metadata, converted.data);
   }
 
   /**
