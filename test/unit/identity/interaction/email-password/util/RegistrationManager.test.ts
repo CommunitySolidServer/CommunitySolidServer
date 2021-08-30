@@ -74,70 +74,72 @@ describe('A RegistrationManager', (): void => {
       expect((): any => manager.validateInput(input)).toThrow('Please enter a valid e-mail address.');
     });
 
+    it('errors on invalid passwords.', async(): Promise<void> => {
+      const input: any = { email, webId, password, confirmPassword: 'bad' };
+      expect((): any => manager.validateInput(input)).toThrow('Your password and confirmation did not match.');
+    });
+
+    it('errors on missing passwords.', async(): Promise<void> => {
+      const input: any = { email, webId };
+      expect((): any => manager.validateInput(input)).toThrow('Please enter a password.');
+    });
+
     it('errors when setting rootPod to true when not allowed.', async(): Promise<void> => {
-      const input = { email, createWebId, rootPod };
+      const input = { email, password, confirmPassword, createWebId, rootPod };
       expect((): any => manager.validateInput(input)).toThrow('Creating a root pod is not supported.');
     });
 
     it('errors when a required WebID is not valid.', async(): Promise<void> => {
-      let input: any = { email, register, webId: undefined };
+      let input: any = { email, password, confirmPassword, register, webId: undefined };
       expect((): any => manager.validateInput(input)).toThrow('Please enter a valid WebID.');
 
-      input = { email, register, webId: '' };
+      input = { email, password, confirmPassword, register, webId: '' };
       expect((): any => manager.validateInput(input)).toThrow('Please enter a valid WebID.');
-    });
-
-    it('errors on invalid passwords when registering.', async(): Promise<void> => {
-      const input: any = { email, webId, password, confirmPassword: 'bad', register };
-      expect((): any => manager.validateInput(input)).toThrow('Your password and confirmation did not match.');
     });
 
     it('errors on invalid pod names when required.', async(): Promise<void> => {
-      let input: any = { email, webId, createPod, podName: undefined };
+      let input: any = { email, webId, password, confirmPassword, createPod, podName: undefined };
       expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
 
-      input = { email, webId, createPod, podName: ' ' };
+      input = { email, webId, password, confirmPassword, createPod, podName: ' ' };
       expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
 
-      input = { email, webId, createWebId };
+      input = { email, webId, password, confirmPassword, createWebId };
       expect((): any => manager.validateInput(input)).toThrow('Please specify a Pod name.');
-    });
-
-    it('errors when trying to create a WebID without registering or creating a pod.', async(): Promise<void> => {
-      let input: any = { email, podName, createWebId };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a password.');
-
-      input = { email, podName, createWebId, createPod };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a password.');
-
-      input = { email, podName, createWebId, createPod, register };
-      expect((): any => manager.validateInput(input)).toThrow('Please enter a password.');
     });
 
     it('errors when no option is chosen.', async(): Promise<void> => {
-      const input = { email, webId };
+      const input = { email, webId, password, confirmPassword };
       expect((): any => manager.validateInput(input)).toThrow('Please register for a WebID or create a Pod.');
     });
 
     it('adds the template parameter if there is one.', async(): Promise<void> => {
-      const input = { email, webId, podName, template: 'template', createPod };
+      const input = { email, webId, password, confirmPassword, podName, template: 'template', createPod };
       expect(manager.validateInput(input)).toEqual({
-        email, webId, podName, template: 'template', createWebId: false, register: false, createPod, rootPod: false,
+        email,
+        webId,
+        password,
+        podName,
+        template: 'template',
+        createWebId: false,
+        register: false,
+        createPod,
+        rootPod: false,
       });
     });
 
     it('does not require a pod name when creating a root pod.', async(): Promise<void> => {
-      const input = { email, webId, createPod, rootPod };
+      const input = { email, password, confirmPassword, webId, createPod, rootPod };
       expect(manager.validateInput(input, true)).toEqual({
-        email, webId, createWebId: false, register: false, createPod, rootPod,
+        email, password, webId, createWebId: false, register: false, createPod, rootPod,
       });
     });
 
-    it('trims input parameters.', async(): Promise<void> => {
+    it('trims non-password input parameters.', async(): Promise<void> => {
       let input: any = {
         email: ` ${email} `,
-        password: ` ${password} `,
-        confirmPassword: ` ${password} `,
+        password: ' a ',
+        confirmPassword: ' a ',
         podName: ` ${podName} `,
         template: ' template ',
         createWebId,
@@ -145,19 +147,19 @@ describe('A RegistrationManager', (): void => {
         createPod,
       };
       expect(manager.validateInput(input)).toEqual({
-        email, password, podName, template: 'template', createWebId, register, createPod, rootPod: false,
+        email, password: ' a ', podName, template: 'template', createWebId, register, createPod, rootPod: false,
       });
 
-      input = { email, webId: ` ${webId} `, password, confirmPassword, register: true };
+      input = { email, webId: ` ${webId} `, password: ' a ', confirmPassword: ' a ', register: true };
       expect(manager.validateInput(input)).toEqual({
-        email, webId, password, createWebId: false, register, createPod: false, rootPod: false,
+        email, webId, password: ' a ', createWebId: false, register, createPod: false, rootPod: false,
       });
     });
   });
 
   describe('handling data', (): void => {
     it('can register a user.', async(): Promise<void> => {
-      const params: any = { email, webId, password, confirmPassword, register, createPod: false, createWebId: false };
+      const params: any = { email, webId, password, register, createPod: false, createWebId: false };
       await expect(manager.register(params)).resolves.toEqual({
         email,
         webId,
@@ -170,7 +172,7 @@ describe('A RegistrationManager', (): void => {
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
       expect(accountStore.create).toHaveBeenCalledTimes(1);
-      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password, { useIdp: true });
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
 
@@ -180,7 +182,7 @@ describe('A RegistrationManager', (): void => {
     });
 
     it('can create a pod.', async(): Promise<void> => {
-      const params: any = { email, webId, podName, createPod, createWebId: false, register: false };
+      const params: any = { email, webId, password, podName, createPod, createWebId: false, register: false };
       await expect(manager.register(params)).resolves.toEqual({
         email,
         webId,
@@ -197,9 +199,10 @@ describe('A RegistrationManager', (): void => {
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
       expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings, false);
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password, { useIdp: false });
+      expect(accountStore.verify).toHaveBeenCalledTimes(1);
 
-      expect(accountStore.create).toHaveBeenCalledTimes(0);
-      expect(accountStore.verify).toHaveBeenCalledTimes(0);
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
     });
 
@@ -219,7 +222,7 @@ describe('A RegistrationManager', (): void => {
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
       expect(accountStore.create).toHaveBeenCalledTimes(1);
-      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password, { useIdp: true });
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
@@ -239,7 +242,7 @@ describe('A RegistrationManager', (): void => {
       expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
       expect(accountStore.create).toHaveBeenCalledTimes(1);
-      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password, { useIdp: true });
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
@@ -247,23 +250,6 @@ describe('A RegistrationManager', (): void => {
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(1);
       expect(accountStore.deleteAccount).toHaveBeenLastCalledWith(email);
 
-      expect(accountStore.verify).toHaveBeenCalledTimes(0);
-    });
-
-    it('does not try to delete an account on failure if there was no registration.', async(): Promise<void> => {
-      const params: any = { email, webId, podName, createPod };
-      (podManager.createPod as jest.Mock).mockRejectedValueOnce(new Error('pod error'));
-      await expect(manager.register(params)).rejects.toThrow('pod error');
-
-      expect(ownershipValidator.handleSafe).toHaveBeenCalledTimes(1);
-      expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
-      expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
-      expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
-      expect(podManager.createPod).toHaveBeenCalledTimes(1);
-      expect(podManager.createPod).toHaveBeenLastCalledWith({ path: `${baseUrl}${podName}/` }, podSettings, false);
-
-      expect(accountStore.create).toHaveBeenCalledTimes(0);
-      expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
       expect(accountStore.verify).toHaveBeenCalledTimes(0);
     });
 
@@ -286,7 +272,7 @@ describe('A RegistrationManager', (): void => {
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(1);
       expect(identifierGenerator.generate).toHaveBeenLastCalledWith(podName);
       expect(accountStore.create).toHaveBeenCalledTimes(1);
-      expect(accountStore.create).toHaveBeenLastCalledWith(email, generatedWebID, password);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, generatedWebID, password, { useIdp: true });
       expect(accountStore.verify).toHaveBeenCalledTimes(1);
       expect(accountStore.verify).toHaveBeenLastCalledWith(email);
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
@@ -297,7 +283,7 @@ describe('A RegistrationManager', (): void => {
     });
 
     it('can create a root pod.', async(): Promise<void> => {
-      const params: any = { email, webId, createPod, rootPod, createWebId: false, register: false };
+      const params: any = { email, webId, password, createPod, rootPod, createWebId: false, register: false };
       podSettings.podBaseUrl = baseUrl;
       await expect(manager.register(params, true)).resolves.toEqual({
         email,
@@ -313,10 +299,11 @@ describe('A RegistrationManager', (): void => {
       expect(ownershipValidator.handleSafe).toHaveBeenLastCalledWith({ webId });
       expect(podManager.createPod).toHaveBeenCalledTimes(1);
       expect(podManager.createPod).toHaveBeenLastCalledWith({ path: baseUrl }, podSettings, true);
+      expect(accountStore.create).toHaveBeenCalledTimes(1);
+      expect(accountStore.create).toHaveBeenLastCalledWith(email, webId, password, { useIdp: false });
+      expect(accountStore.verify).toHaveBeenCalledTimes(1);
 
       expect(identifierGenerator.generate).toHaveBeenCalledTimes(0);
-      expect(accountStore.create).toHaveBeenCalledTimes(0);
-      expect(accountStore.verify).toHaveBeenCalledTimes(0);
       expect(accountStore.deleteAccount).toHaveBeenCalledTimes(0);
     });
   });

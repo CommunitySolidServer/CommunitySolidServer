@@ -53,6 +53,7 @@ describe('A Solid server with IDP', (): void => {
   const oidcIssuer = baseUrl;
   const card = joinUrl(baseUrl, 'profile/card');
   const webId = `${card}#me`;
+  const webId2 = `${card}#someoneElse`;
   const email = 'test@test.com';
   const password = 'password!';
   const password2 = 'password2!';
@@ -241,25 +242,32 @@ describe('A Solid server with IDP', (): void => {
     });
   });
 
-  describe('creating pods without registering', (): void => {
+  describe('creating pods without registering with the IDP', (): void => {
     let formBody: string;
     let registrationTriple: string;
     const podName = 'myPod';
 
     beforeAll(async(): Promise<void> => {
       // We will need this twice
-      formBody = stringify({ email, webId, podName, createPod: 'ok' });
+      formBody = stringify({
+        email: 'bob@test.email',
+        webId: webId2,
+        password,
+        confirmPassword: password,
+        podName,
+        createPod: 'ok',
+      });
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register`, formBody);
       expect(res.status).toBe(400);
-      registrationTriple = extractRegistrationTriple(await res.text(), webId);
+      registrationTriple = extractRegistrationTriple(await res.text(), webId2);
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
       const patchBody = `INSERT DATA { ${registrationTriple} }`;
-      const res = await fetch(webId, {
+      const res = await fetch(webId2, {
         method: 'PATCH',
         headers: { 'content-type': 'application/sparql-update' },
         body: patchBody,

@@ -107,13 +107,6 @@
       </li>
     </ol>
   </div>
-  <div id="noPasswordForm" class="hidden">
-    <p>
-      Since you will be using your existing WebID setup to access your pod,
-      <br>
-      you do <em>not</em> need to set a password.
-    </p>
-  </div>
 </fieldset>
 
 <!-- Assist the user with filling out the form by hiding irrelevant fields -->
@@ -132,7 +125,7 @@
     'mainForm',
     'createWebIdOn', 'createWebIdOff', 'createWebIdForm', 'existingWebIdForm', 'webId',
     'createPod', 'createPodForm', 'rootPodOn', 'rootPodOff', 'podNameForm', 'podName',
-    'register', 'passwordForm', 'noPasswordForm',
+    'register', 'passwordForm',
   ].forEach(registerElement);
 
   // Conditions under which elements should be visible
@@ -141,8 +134,6 @@
     existingWebIdForm: () => elements.createWebIdOff.checked,
     createPodForm: () => elements.createPod.checked,
     podNameForm: () => !elements.rootPodOn.checked,
-    passwordForm: () => elements.createWebIdOn.checked || elements.register.checked,
-    noPasswordForm: () => !isVisible('passwordForm'),
   };
 
   // Ensures that the only relevant input fields are visible and enabled
