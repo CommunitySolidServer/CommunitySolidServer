@@ -7,7 +7,7 @@ import type { PodSettings } from '../../../../pods/settings/PodSettings';
 import { joinUrl } from '../../../../util/PathUtil';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { assertPassword } from '../EmailPasswordUtil';
-import type { AccountStore } from '../storage/AccountStore';
+import type { AccountSettings, AccountStore } from '../storage/AccountStore';
 
 export interface RegistrationManagerArgs {
   /**
@@ -42,7 +42,7 @@ export interface RegistrationManagerArgs {
 export interface RegistrationParams {
   email: string;
   webId?: string;
-  password?: string;
+  password: string;
   podName?: string;
   template?: string;
   createWebId: boolean;
@@ -123,8 +123,11 @@ export class RegistrationManager {
     const trimmedEmail = this.trimString(email);
     assert(trimmedEmail && emailRegex.test(trimmedEmail), 'Please enter a valid e-mail address.');
 
+    assertPassword(password, confirmPassword);
+
     const validated: RegistrationParams = {
       email: trimmedEmail,
+      password,
       register: Boolean(register) || Boolean(createWebId),
       createPod: Boolean(createPod) || Boolean(createWebId),
       createWebId: Boolean(createWebId),
@@ -145,14 +148,6 @@ export class RegistrationManager {
       const trimmedPodName = this.trimString(podName);
       assert(trimmedPodName && trimmedPodName.length > 0, 'Please specify a Pod name.');
       validated.podName = trimmedPodName;
-    }
-
-    // Parse account
-    if (validated.register) {
-      const trimmedPassword = this.trimString(password);
-      const trimmedConfirmPassword = this.trimString(confirmPassword);
-      assertPassword(trimmedPassword, trimmedConfirmPassword);
-      validated.password = trimmedPassword;
     }
 
     // Parse template if there is one
@@ -194,9 +189,10 @@ export class RegistrationManager {
     }
 
     // Register the account
-    if (input.register) {
-      await this.accountStore.create(input.email, input.webId!, input.password!);
-    }
+    const settings: AccountSettings = {
+      useIdp: input.register,
+    };
+    await this.accountStore.create(input.email, input.webId!, input.password, settings);
 
     // Create the pod
     if (input.createPod) {
@@ -216,20 +212,15 @@ export class RegistrationManager {
         // Only allow overwrite for root pods
         await this.podManager.createPod(podBaseUrl!, podSettings, allowRoot);
       } catch (error: unknown) {
-        // In case pod creation errors we don't want to keep the account
-        if (input.register) {
-          await this.accountStore.deleteAccount(input.email);
-        }
+        await this.accountStore.deleteAccount(input.email);
         throw error;
       }
     }
 
     // Verify the account
-    if (input.register) {
-      // This prevents there being a small timeframe where the account can be used before the pod creation is finished.
-      // That timeframe could potentially be used by malicious users.
-      await this.accountStore.verify(input.email);
-    }
+    // This prevents there being a small timeframe where the account can be used before the pod creation is finished.
+    // That timeframe could potentially be used by malicious users.
+    await this.accountStore.verify(input.email);
 
     return {
       webId: input.webId,
