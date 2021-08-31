@@ -6,6 +6,10 @@ export interface AccountSettings {
    * If this account can be used to identify as the corresponding WebID in the IDP.
    */
   useIdp: boolean;
+  /**
+   * The base URL of the pod associated with this account, if there is one.
+   */
+  podBaseUrl?: string;
 }
 
 /**

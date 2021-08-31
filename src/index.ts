@@ -15,6 +15,7 @@ export * from './authorization/access-checkers/AgentClassAccessChecker';
 export * from './authorization/access-checkers/AgentGroupAccessChecker';
 
 // Authorization
+export * from './authorization/OwnerPermissionReader';
 export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
