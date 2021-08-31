@@ -158,7 +158,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(result1.config.jwks).toEqual(result2.config.jwks);
     expect(storage.get).toHaveBeenCalledTimes(4);
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith('/idp/jwks', result1.config.jwks);
-    expect(storage.set).toHaveBeenCalledWith('/idp/cookie-secret', result1.config.cookies?.keys);
+    expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
+    expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
   });
 });

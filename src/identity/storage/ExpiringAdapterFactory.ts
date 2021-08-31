@@ -3,11 +3,6 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import type { AdapterFactory } from './AdapterFactory';
 
-export interface ExpiringAdapterArgs {
-  storageName: string;
-  storage: ExpiringStorage<string, unknown>;
-}
-
 /**
  * An IDP storage adapter that uses an ExpiringStorage
  * to persist data.
@@ -15,30 +10,28 @@ export interface ExpiringAdapterArgs {
 export class ExpiringAdapter implements Adapter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storageName: string;
   private readonly name: string;
   private readonly storage: ExpiringStorage<string, unknown>;
 
-  public constructor(name: string, args: ExpiringAdapterArgs) {
+  public constructor(name: string, storage: ExpiringStorage<string, unknown>) {
     this.name = name;
-    this.storageName = args.storageName;
-    this.storage = args.storage;
+    this.storage = storage;
   }
 
   private grantKeyFor(id: string): string {
-    return `${this.storageName}/grant/${encodeURIComponent(id)}`;
+    return `grant/${encodeURIComponent(id)}`;
   }
 
   private userCodeKeyFor(userCode: string): string {
-    return `${this.storageName}/user_code/${encodeURIComponent(userCode)}`;
+    return `user_code/${encodeURIComponent(userCode)}`;
   }
 
   private uidKeyFor(uid: string): string {
-    return `${this.storageName}/uid/${encodeURIComponent(uid)}`;
+    return `uid/${encodeURIComponent(uid)}`;
   }
 
   private keyFor(id: string): string {
-    return `${this.storageName}/${this.name}/${encodeURIComponent(id)}`;
+    return `${this.name}/${encodeURIComponent(id)}`;
   }
 
   public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
@@ -117,13 +110,13 @@ export class ExpiringAdapter implements Adapter {
  * The factory for a ExpiringStorageAdapter
  */
 export class ExpiringAdapterFactory implements AdapterFactory {
-  private readonly args: ExpiringAdapterArgs;
+  private readonly storage: ExpiringStorage<string, unknown>;
 
-  public constructor(args: ExpiringAdapterArgs) {
-    this.args = args;
+  public constructor(storage: ExpiringStorage<string, unknown>) {
+    this.storage = storage;
   }
 
   public createStorageAdapter(name: string): ExpiringAdapter {
-    return new ExpiringAdapter(name, this.args);
+    return new ExpiringAdapter(name, this.storage);
   }
 }

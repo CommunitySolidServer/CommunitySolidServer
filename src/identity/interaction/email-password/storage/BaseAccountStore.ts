@@ -25,39 +25,31 @@ export interface ForgotPasswordPayload {
 
 export type EmailPasswordData = AccountPayload | ForgotPasswordPayload;
 
-export interface BaseAccountStoreArgs {
-  storageName: string;
-  storage: KeyValueStorage<string, EmailPasswordData>;
-  saltRounds: number;
-}
-
 /**
  * A EmailPasswordStore that uses a KeyValueStorage
  * to persist its information.
  */
 export class BaseAccountStore implements AccountStore {
-  private readonly storageName: string;
   private readonly storage: KeyValueStorage<string, EmailPasswordData>;
   private readonly saltRounds: number;
 
-  public constructor(args: BaseAccountStoreArgs) {
-    this.storageName = args.storageName;
-    this.storage = args.storage;
-    this.saltRounds = args.saltRounds;
+  public constructor(storage: KeyValueStorage<string, EmailPasswordData>, saltRounds: number) {
+    this.storage = storage;
+    this.saltRounds = saltRounds;
   }
 
   /**
    * Generates a ResourceIdentifier to store data for the given email.
    */
   private getAccountResourceIdentifier(email: string): string {
-    return `${this.storageName}/account/${encodeURIComponent(email)}`;
+    return `account/${encodeURIComponent(email)}`;
   }
 
   /**
    * Generates a ResourceIdentifier to store data for the given recordId.
    */
   private getForgotPasswordRecordResourceIdentifier(recordId: string): string {
-    return `${this.storageName}/forgot-password-resource-identifier/${encodeURIComponent(recordId)}`;
+    return `forgot-password-resource-identifier/${encodeURIComponent(recordId)}`;
   }
 
   /**

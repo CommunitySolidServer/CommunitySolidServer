@@ -5,7 +5,6 @@ import { BaseAccountStore } from '../../../../../../src/identity/interaction/ema
 import type { KeyValueStorage } from '../../../../../../src/storage/keyvalue/KeyValueStorage';
 
 describe('A BaseAccountStore', (): void => {
-  const storageName = '/mail/storage';
   let storage: KeyValueStorage<string, EmailPasswordData>;
   const saltRounds = 11;
   let store: BaseAccountStore;
@@ -21,7 +20,7 @@ describe('A BaseAccountStore', (): void => {
       delete: jest.fn((id: string): any => map.delete(id)),
     } as any;
 
-    store = new BaseAccountStore({ storageName, storage, saltRounds });
+    store = new BaseAccountStore(storage, saltRounds);
   });
 
   it('can create accounts.', async(): Promise<void> => {
