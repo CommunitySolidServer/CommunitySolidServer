@@ -1,7 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/authorization/readers/acl.json"
+    "files-scs:config/ldp/authorization/readers/acl.json",
+    "files-scs:config/ldp/authorization/readers/ownership.json"
   ],
   "@graph": [
     {
@@ -15,6 +16,7 @@
           "@type": "PathBasedReader",
           "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
         },
+        { "@id": "urn:solid-server:default:OwnerPermissionReader" },
         {
           "comment": "This PermissionReader makes sure that for auxiliary resources, the main reader gets called with the associated identifier.",
           "@type": "AuxiliaryReader",
