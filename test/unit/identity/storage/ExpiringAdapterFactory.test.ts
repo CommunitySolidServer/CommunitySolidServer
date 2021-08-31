@@ -7,7 +7,6 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 jest.useFakeTimers();
 
 describe('An ExpiringAdapterFactory', (): void => {
-  const storageName = '/storage';
   const name = 'nnaammee';
   const id = 'http://alice.test.com/card#me';
   const grantId = 'grant123456';
@@ -27,7 +26,7 @@ describe('An ExpiringAdapterFactory', (): void => {
       delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
     } as any;
 
-    factory = new ExpiringAdapterFactory({ storageName, storage });
+    factory = new ExpiringAdapterFactory(storage);
     adapter = factory.createStorageAdapter(name);
   });
 

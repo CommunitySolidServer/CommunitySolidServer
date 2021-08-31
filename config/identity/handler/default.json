@@ -4,7 +4,6 @@
     "files-scs:config/identity/handler/account-store/default.json",
     "files-scs:config/identity/handler/adapter-factory/webid.json",
     "files-scs:config/identity/handler/interaction/routes.json",
-    "files-scs:config/identity/handler/key-value/storage.json",
     "files-scs:config/identity/handler/provider-factory/identity.json"
   ],
   "@graph": [

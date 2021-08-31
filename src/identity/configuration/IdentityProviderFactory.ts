@@ -47,6 +47,9 @@ export interface IdentityProviderFactoryArgs {
   responseWriter: ResponseWriter;
 }
 
+const JWKS_KEY = 'jwks';
+const COOKIES_KEY = 'cookie-secret';
+
 /**
  * Creates an OIDC Provider based on the provided configuration and parameters.
  * The provider will be cached and returned on subsequent calls.
@@ -138,8 +141,7 @@ export class IdentityProviderFactory implements ProviderFactory {
    */
   private async generateJwks(): Promise<{ keys: JWK[] }> {
     // Check to see if the keys are already saved
-    const key = `${this.idpPath}/jwks`;
-    const jwks = await this.storage.get(key) as { keys: JWK[] } | undefined;
+    const jwks = await this.storage.get(JWKS_KEY) as { keys: JWK[] } | undefined;
     if (jwks) {
       return jwks;
     }
@@ -152,7 +154,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // which is why we convert it into a plain object here.
     // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
     const newJwks = { keys: [{ ...jwk }]};
-    await this.storage.set(key, newJwks);
+    await this.storage.set(JWKS_KEY, newJwks);
     return newJwks;
   }
 
@@ -162,14 +164,13 @@ export class IdentityProviderFactory implements ProviderFactory {
    */
   private async generateCookieKeys(): Promise<string[]> {
     // Check to see if the keys are already saved
-    const key = `${this.idpPath}/cookie-secret`;
-    const cookieSecret = await this.storage.get(key);
+    const cookieSecret = await this.storage.get(COOKIES_KEY);
     if (Array.isArray(cookieSecret)) {
       return cookieSecret;
     }
     // If they are not, generate and save them
     const newCookieSecret = [ randomBytes(64).toString('hex') ];
-    await this.storage.set(key, newCookieSecret);
+    await this.storage.set(COOKIES_KEY, newCookieSecret);
     return newCookieSecret;
   }
 
