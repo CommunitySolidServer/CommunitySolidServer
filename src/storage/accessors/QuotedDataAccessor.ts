@@ -15,8 +15,6 @@ export class QuotedDataAccessor implements DataAccessor {
     this.strategy = strategy;
   }
 
-  // Size of the metadata is not taken into account yet, i think
-
   public async writeDocument(
     identifier: ResourceIdentifier,
     data: Guarded<Readable>,
@@ -27,11 +25,9 @@ export class QuotedDataAccessor implements DataAccessor {
     return this.accessor.writeDocument(identifier, data, metadata);
   }
 
-  public async writeContainer(
-    identifier: ResourceIdentifier,
-    metadata: RepresentationMetadata,
-  ): Promise<void> {
-    // Some kind of checking should be done here as well
+  public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    // Containers are not big, made the choice to not take them
+    // into account for now
     return this.accessor.writeContainer(identifier, metadata);
   }
 
