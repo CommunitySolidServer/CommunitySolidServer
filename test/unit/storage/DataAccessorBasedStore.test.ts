@@ -26,6 +26,8 @@ import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC } from '../../../src/util/Vocabularies';
 const { namedNode, quad } = DataFactory;
 
+const GENERATED_PREDICATE = namedNode('generated');
+
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
 
@@ -54,7 +56,9 @@ class SimpleDataAccessor implements DataAccessor {
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     this.checkExists(identifier);
-    return this.data[identifier.path].metadata;
+    const metadata = new RepresentationMetadata(this.data[identifier.path].metadata);
+    metadata.add(GENERATED_PREDICATE, 'data', SOLID_META.terms.ResponseMetadata);
+    return metadata;
   }
 
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
@@ -180,6 +184,8 @@ describe('A DataAccessorBasedStore', (): void => {
       containerMetadata.identifier = namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaMirror = new RepresentationMetadata(containerMetadata);
+      // Generated metadata will have its graph removed
+      metaMirror.add(GENERATED_PREDICATE, 'data');
       await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
@@ -407,6 +413,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -424,6 +431,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
     });
 
     it('can overwrite resources which does not update parent metadata.', async(): Promise<void> => {
@@ -625,6 +633,7 @@ describe('A DataAccessorBasedStore', (): void => {
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
     });
 
     it('will delete root non-storage containers.', async(): Promise<void> => {

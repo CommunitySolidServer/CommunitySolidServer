@@ -268,9 +268,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       deleted.push(container);
 
       // Update modified date of parent
-      const parentMetadata = await this.accessor.getMetadata(container);
-      updateModifiedDate(parentMetadata);
-      await this.accessor.writeContainer(container, parentMetadata);
+      await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
@@ -386,15 +384,11 @@ export class DataAccessorBasedStore implements ResourceStore {
       }
 
       // Parent container is also modified
-      const parentMetadata = await this.accessor.getMetadata(container);
-      updateModifiedDate(parentMetadata);
-      await this.accessor.writeContainer(container, parentMetadata);
+      await this.updateContainerModifiedDate(container);
     }
 
     // Remove all generated metadata to prevent it from being stored permanently
-    representation.metadata.removeQuads(
-      representation.metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata),
-    );
+    this.removeResponseMetadata(representation.metadata);
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
@@ -436,6 +430,25 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Container data is stored in the metadata
     representation.metadata.addQuads(quads);
+  }
+
+  /**
+   * Removes all generated data from metadata to prevent it from being stored permanently.
+   */
+  protected removeResponseMetadata(metadata: RepresentationMetadata): void {
+    metadata.removeQuads(
+      metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata),
+    );
+  }
+
+  /**
+   * Updates the last modified date of the given container
+   */
+  protected async updateContainerModifiedDate(container: ResourceIdentifier): Promise<void> {
+    const parentMetadata = await this.accessor.getMetadata(container);
+    updateModifiedDate(parentMetadata);
+    this.removeResponseMetadata(parentMetadata);
+    await this.accessor.writeContainer(container, parentMetadata);
   }
 
   /**
