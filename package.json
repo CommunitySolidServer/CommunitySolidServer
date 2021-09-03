@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
@@ -77,14 +77,14 @@
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.21.3",
     "@rdfjs/data-model": "^1.2.0",
-    "@solid/access-token-verifier": "^0.11.0",
+    "@solid/access-token-verifier": "^0.12.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.10",
     "@types/end-of-stream": "^1.4.0",
     "@types/lodash.orderby": "^4.6.6",
-    "@types/marked": "^2.0.3",
+    "@types/marked": "^3.0.0",
     "@types/mime-types": "^2.1.0",
     "@types/n3": "^1.10.0",
     "@types/node": "^15.12.5",
@@ -111,7 +111,7 @@
     "handlebars": "^4.7.7",
     "jose": "^3.11.6",
     "lodash.orderby": "^4.6.0",
-    "marked": "^2.1.3",
+    "marked": "^3.0.0",
     "mime-types": "^2.1.32",
     "n3": "^1.10.0",
     "nodemailer": "^6.6.2",

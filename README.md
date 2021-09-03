@@ -71,6 +71,8 @@ npm start -- # add parameters if needed
 ### 📦 Running via Docker
 Docker allows you to run the server without having Node.js installed:
 ```shell
+git clone https://github.com/solid/community-server.git
+cd community-server
 # Build the Docker image
 docker build --rm -f Dockerfile -t css:latest .
 # Run the image, serving your `~/Solid` directory on `http://localhost:3000`
