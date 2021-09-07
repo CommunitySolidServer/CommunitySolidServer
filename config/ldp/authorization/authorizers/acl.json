@@ -12,7 +12,7 @@
       "aclStrategy": {
         "@id": "urn:solid-server:default:AclStrategy"
       },
-      "resourceStore": {
+      "aclStore": {
         "@id": "urn:solid-server:default:ResourceStore"
       },
       "identifierStrategy": {

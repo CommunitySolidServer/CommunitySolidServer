@@ -37,15 +37,15 @@ export class WebAclAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
   private readonly aclStrategy: AuxiliaryIdentifierStrategy;
-  private readonly resourceStore: ResourceStore;
+  private readonly aclStore: ResourceStore;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessChecker: AccessChecker;
 
-  public constructor(aclStrategy: AuxiliaryIdentifierStrategy, resourceStore: ResourceStore,
+  public constructor(aclStrategy: AuxiliaryIdentifierStrategy, aclStore: ResourceStore,
     identifierStrategy: IdentifierStrategy, accessChecker: AccessChecker) {
     super();
     this.aclStrategy = aclStrategy;
-    this.resourceStore = resourceStore;
+    this.aclStore = aclStore;
     this.identifierStrategy = identifierStrategy;
     this.accessChecker = accessChecker;
   }
@@ -172,7 +172,7 @@ export class WebAclAuthorizer extends Authorizer {
     try {
       const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
-      const data = await this.resourceStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
+      const data = await this.aclStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
       return await this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
