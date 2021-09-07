@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.1.0"></a>
+## [v1.1.0](https://github.com/solid/community-server/compare/v1.0.0...v1.1.0) - 2021-09-03
+
+## Added
+* [feat: Throw error when trying to complete interaction out of session](https://github.com/solid/community-server/commit/cb227d6431e8fe891752c7a52d216a0877f9d38e)
+* [feat: Indicate to templates if this is part of an auth request](https://github.com/solid/community-server/commit/f71f8683fc0f4e40de2e1c64547397f32c0b6472)
+* [feat: Allow filtering in ConstantConverter based on type](https://github.com/solid/community-server/commit/ab06dd30f3f8b0538b693fe50dd3d1f70c035b25)
+
+## Fixed
+* [fix: Allow clients to be remembered in the SessionHttpHandler](https://github.com/solid/community-server/commit/47b3a2d77f4a5b3fa5bab364ac19dc32d79a89c1)
+* [fix: Convert data to SparqlDataAccessor in regex config](https://github.com/solid/community-server/commit/f34e124e1b88c59b4e456b3f69d9373e61550bd1)
+* [fix(deps): update dependency @solid/access-token-verifier to ^0.12.0](https://github.com/solid/community-server/commit/7928f43f443f914c7850a968912f19a78212d266)
+
+
 <a name="v1.0.0"></a>
 ## [v1.0.0](https://github.com/solid/community-server/compare/v1.0.0-beta.2...v1.0.0) - 2021-08-04
 

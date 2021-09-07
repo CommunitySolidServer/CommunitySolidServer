@@ -56,11 +56,17 @@
       "accessor": { "@id": "urn:solid-server:default:MemoryDataAccessor" }
     },
     {
+      "comment": "SparqlDataAccessor only accepts quad objects so data to that route needs to be converted",
       "@id": "urn:solid-server:default:SparqlResourceStore",
-      "@type": "DataAccessorBasedStore",
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+      "@type": "RepresentationConvertingStore",
+      "options_inConverter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "options_inType": "internal/quads",
+      "source": {
+        "@type": "DataAccessorBasedStore",
+        "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+      }
     }
   ]
 }

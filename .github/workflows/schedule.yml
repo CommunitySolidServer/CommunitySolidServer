@@ -35,5 +35,7 @@ jobs:
           docker run -i --rm
           -v "$(pwd)"/reports/css:/reports
           --env-file=./test/deploy/conformance.env
-          --network="host" solidconformancetestbeta/conformance-test-harness
-          --output=/reports --target=css
+          --network="host"
+          solidconformancetestbeta/conformance-test-harness
+          --output=/reports
+          --target=https://github.com/solid/conformance-test-harness/css
