@@ -1,6 +1,7 @@
 import { EjsTemplateEngine } from '../../../../src/util/templates/EjsTemplateEngine';
 
 jest.mock('../../../../src/util/templates/TemplateEngine', (): any => ({
+  getTemplateFilePath: jest.fn((): string => `filename`),
   readTemplate: jest.fn(async({ templateString }): Promise<string> => `${templateString}: <%= detail %>`),
 }));
 
