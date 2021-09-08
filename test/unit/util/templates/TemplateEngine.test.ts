@@ -1,40 +1,77 @@
 import { resolveAssetPath } from '../../../../src/util/PathUtil';
-import { readTemplate } from '../../../../src/util/templates/TemplateEngine';
+import { getTemplateFilePath, readTemplate } from '../../../../src/util/templates/TemplateEngine';
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
 
-describe('readTemplate', (): void => {
-  const templateFile = 'template.xyz';
-  const templatePath = 'other';
+describe('TemplateEngine', (): void => {
+  describe('#getTemplateFilePath', (): void => {
+    const templateFile = 'template.xyz';
+    const templatePath = 'other';
 
-  beforeEach(async(): Promise<void> => {
-    const { data } = mockFs(resolveAssetPath(''));
-    Object.assign(data, {
-      'template.xyz': '{{template}}',
-      other: {
-        'template.xyz': '{{other}}',
-      },
+    beforeEach(async(): Promise<void> => {
+      const { data } = mockFs(resolveAssetPath(''));
+      Object.assign(data, {
+        'template.xyz': '{{template}}',
+        other: {
+          'template.xyz': '{{other}}',
+        },
+      });
+    });
+
+    it('returns the undefined when no template is provided.', async(): Promise<void> => {
+      expect(getTemplateFilePath()).toBeUndefined();
+    });
+
+    it('returns the input if it was a filename.', async(): Promise<void> => {
+      expect(getTemplateFilePath(templateFile)).toBe(resolveAssetPath(templateFile));
+    });
+
+    it('returns undefined for options with a string template.', async(): Promise<void> => {
+      expect(getTemplateFilePath({ templateString: 'abc' })).toBeUndefined();
+    });
+
+    it('accepts options with a filename.', async(): Promise<void> => {
+      expect(getTemplateFilePath({ templateFile })).toBe(resolveAssetPath(templateFile));
+    });
+
+    it('accepts options with a filename and a path.', async(): Promise<void> => {
+      expect(getTemplateFilePath({ templateFile, templatePath })).toBe(resolveAssetPath('other/template.xyz'));
     });
   });
 
-  it('returns the empty string when no template is provided.', async(): Promise<void> => {
-    await expect(readTemplate()).resolves.toBe('');
-  });
+  describe('#readTemplate', (): void => {
+    const templateFile = 'template.xyz';
+    const templatePath = 'other';
 
-  it('accepts a filename.', async(): Promise<void> => {
-    await expect(readTemplate(templateFile)).resolves.toBe('{{template}}');
-  });
+    beforeEach(async(): Promise<void> => {
+      const { data } = mockFs(resolveAssetPath(''));
+      Object.assign(data, {
+        'template.xyz': '{{template}}',
+        other: {
+          'template.xyz': '{{other}}',
+        },
+      });
+    });
 
-  it('accepts options with a string template.', async(): Promise<void> => {
-    await expect(readTemplate({ templateString: 'abc' })).resolves.toBe('abc');
-  });
+    it('returns the empty string when no template is provided.', async(): Promise<void> => {
+      await expect(readTemplate()).resolves.toBe('');
+    });
 
-  it('accepts options with a filename.', async(): Promise<void> => {
-    await expect(readTemplate({ templateFile })).resolves.toBe('{{template}}');
-  });
+    it('accepts a filename.', async(): Promise<void> => {
+      await expect(readTemplate(templateFile)).resolves.toBe('{{template}}');
+    });
 
-  it('accepts options with a filename and a path.', async(): Promise<void> => {
-    await expect(readTemplate({ templateFile, templatePath })).resolves.toBe('{{other}}');
+    it('accepts options with a string template.', async(): Promise<void> => {
+      await expect(readTemplate({ templateString: 'abc' })).resolves.toBe('abc');
+    });
+
+    it('accepts options with a filename.', async(): Promise<void> => {
+      await expect(readTemplate({ templateFile })).resolves.toBe('{{template}}');
+    });
+
+    it('accepts options with a filename and a path.', async(): Promise<void> => {
+      await expect(readTemplate({ templateFile, templatePath })).resolves.toBe('{{other}}');
+    });
   });
 });
