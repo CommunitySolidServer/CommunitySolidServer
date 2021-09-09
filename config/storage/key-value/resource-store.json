@@ -56,6 +56,19 @@
           "PathBasedAuthorizer:_paths_value": { "@type": "DenyAllAuthorizer" }
         }
       ]
+    },
+    {
+      "comment": "Marks the /.internal/ storage container as an auxiliary resource, thereby hiding it from container representations.",
+      "@id": "urn:solid-server:default:AuxiliaryStrategy",
+      "RoutingAuxiliaryStrategy:_sources": [
+        {
+          "@type": "ComposedAuxiliaryStrategy",
+          "identifierStrategy": {
+            "@type": "SuffixAuxiliaryIdentifierStrategy",
+            "suffix": "/.internal/"
+          }
+        }
+      ]
     }
   ]
 }

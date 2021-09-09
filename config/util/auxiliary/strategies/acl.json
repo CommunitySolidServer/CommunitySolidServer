@@ -15,7 +15,7 @@
         "@type": "RdfValidator",
         "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
       },
-      "isRootRequired": true
+      "requiredInRoot": true
     },
     {
       "@id": "urn:solid-server:default:AclIdentifierStrategy",

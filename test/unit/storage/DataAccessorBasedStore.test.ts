@@ -107,7 +107,7 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
 
-  public isRootRequired(): boolean {
+  public isRequiredInRoot(): boolean {
     return false;
   }
 
@@ -602,7 +602,7 @@ describe('A DataAccessorBasedStore', (): void => {
       storageMetadata.add(RDF.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       const result = store.deleteResource({ path: `${root}container/.dummy` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow(
@@ -648,7 +648,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
         { path: `${root}container/.dummy` },
         { path: `${root}container/` },

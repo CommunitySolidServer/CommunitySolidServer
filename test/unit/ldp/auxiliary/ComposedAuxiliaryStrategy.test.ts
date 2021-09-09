@@ -45,8 +45,8 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     expect(identifierStrategy.isAuxiliaryIdentifier).toHaveBeenLastCalledWith(identifier);
   });
 
-  it('returns the injected value for isRootRequired.', async(): Promise<void> => {
-    expect(strategy.isRootRequired()).toBe(true);
+  it('returns the injected value for isRequiredInRoot.', async(): Promise<void> => {
+    expect(strategy.isRequiredInRoot()).toBe(true);
   });
 
   it('adds metadata through the MetadataGenerator.', async(): Promise<void> => {
@@ -63,9 +63,9 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     expect(validator.handleSafe).toHaveBeenLastCalledWith(representation);
   });
 
-  it('defaults isRootRequired to false.', async(): Promise<void> => {
+  it('defaults isRequiredInRoot to false.', async(): Promise<void> => {
     strategy = new ComposedAuxiliaryStrategy(identifierStrategy, metadataGenerator, validator);
-    expect(strategy.isRootRequired()).toBe(false);
+    expect(strategy.isRequiredInRoot()).toBe(false);
   });
 
   it('does not add metadata or validate if the corresponding classes are not injected.', async(): Promise<void> => {
