@@ -10,11 +10,11 @@ import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy'
  */
 export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
-   * Whether this auxiliary resource in a root storage container.
+   * Whether the root storage container requires this auxiliary resource to be present.
    * If yes, this means they can't be deleted individually from such a container.
    * @param identifier - Identifier of the auxiliary resource.
    */
-  isRootRequired: (identifier: ResourceIdentifier) => boolean;
+  isRequiredInRoot: (identifier: ResourceIdentifier) => boolean;
 
   /**
    * Adds metadata related to this auxiliary resource,

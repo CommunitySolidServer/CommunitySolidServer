@@ -1,6 +1,6 @@
 import { createReadStream } from 'fs';
 import fetch from 'cross-fetch';
-import { DataFactory, Parser } from 'n3';
+import { DataFactory, Parser, Store } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
@@ -90,9 +90,11 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     const parser = new Parser({ baseIRI: baseUrl });
     const quads = parser.parse(await response.text());
-    expect(quads.some((entry): boolean => entry.equals(
-      quad(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container),
-    ))).toBe(true);
+    const store = new Store(quads);
+    expect(store.countQuads(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container, null)).toBe(1);
+    const contains = store.getObjects(namedNode(baseUrl), LDP.terms.contains, null);
+    expect(contains).toHaveLength(1);
+    expect(contains[0].value).toBe(`${baseUrl}index.html`);
   });
 
   it('can add a document to the store, read it and delete it.', async(): Promise<void> => {
