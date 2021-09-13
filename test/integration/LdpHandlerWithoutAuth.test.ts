@@ -358,4 +358,40 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();
   });
+
+  it('can handle simple SPARQL updates on containers.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body, isContainer: true });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+      'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query);
+
+    // GET
+    response = await getResource(documentUrl);
+    const parser = new Parser({ baseIRI: baseUrl });
+    const quads = parser.parse(await response.text());
+    const store = new Store(quads);
+    expect(store.countQuads(
+      namedNode('http://test.com/s3'),
+      namedNode('http://test.com/p3'),
+      namedNode('http://test.com/o3'),
+      null,
+    )).toBe(1);
+    expect(store.countQuads(
+      namedNode('http://test.com/s1'),
+      namedNode('http://test.com/p1'),
+      namedNode('http://test.com/o1'),
+      null,
+    )).toBe(0);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
 });

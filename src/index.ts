@@ -259,9 +259,12 @@ export * from './storage/mapping/FixedContentTypeMapper';
 export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
-export * from './storage/patch/ConvertingPatchHandler';
+export * from './storage/patch/ContainerPatcher';
+export * from './storage/patch/ConvertingPatcher';
 export * from './storage/patch/PatchHandler';
-export * from './storage/patch/SparqlUpdatePatchHandler';
+export * from './storage/patch/RepresentationPatcher';
+export * from './storage/patch/RepresentationPatchHandler';
+export * from './storage/patch/SparqlUpdatePatcher';
 
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';

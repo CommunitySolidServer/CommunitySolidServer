@@ -174,4 +174,23 @@ describe('A Solid server', (): void => {
     });
     expect(res.status).toBe(205);
   });
+
+  it('can PATCH containers.', async(): Promise<void> => {
+    const url = `${baseUrl}containerPATCH/`;
+    await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+      body: '<a:b> <a:b> <a:b>.',
+    });
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update',
+      },
+      body: 'INSERT DATA { <b:b> <b:b> <b:b>. }',
+    });
+    expect(res.status).toBe(205);
+  });
 });

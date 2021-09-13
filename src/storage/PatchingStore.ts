@@ -12,11 +12,11 @@ import type { ResourceStore } from './ResourceStore';
  * otherwise the {@link PatchHandler} will be called instead.
  */
 export class PatchingStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
-  private readonly patcher: PatchHandler;
+  private readonly patchHandler: PatchHandler;
 
-  public constructor(source: T, patcher: PatchHandler) {
+  public constructor(source: T, patchHandler: PatchHandler) {
     super(source);
-    this.patcher = patcher;
+    this.patchHandler = patchHandler;
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
@@ -25,7 +25,7 @@ export class PatchingStore<T extends ResourceStore = ResourceStore> extends Pass
       return await this.source.modifyResource(identifier, patch, conditions);
     } catch (error: unknown) {
       if (NotImplementedHttpError.isInstance(error)) {
-        return this.patcher.handleSafe({ source: this.source, identifier, patch });
+        return this.patchHandler.handleSafe({ source: this.source, identifier, patch });
       }
       throw error;
     }

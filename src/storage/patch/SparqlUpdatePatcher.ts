@@ -11,50 +11,48 @@ import type { SparqlUpdatePatch } from '../../ldp/http/SparqlUpdatePatch';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import type { Representation } from '../../ldp/representation/Representation';
 import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
+import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { readableToQuads, readableToString } from '../../util/StreamUtil';
-import type { RepresentationConverter } from '../conversion/RepresentationConverter';
-import { ConvertingPatchHandler } from './ConvertingPatchHandler';
-import type { PatchHandlerArgs } from './PatchHandler';
+import { RepresentationPatcher } from './RepresentationPatcher';
+import type { RepresentationPatcherInput } from './RepresentationPatcher';
 
 /**
  * Supports application/sparql-update PATCH requests on RDF resources.
  *
  * Only DELETE/INSERT updates without variables are supported.
  */
-export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
+export class SparqlUpdatePatcher extends RepresentationPatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly engine: ActorInitSparql;
 
-  public constructor(converter: RepresentationConverter, defaultType = 'text/turtle') {
-    super(converter, INTERNAL_QUADS, defaultType);
+  public constructor() {
+    super();
     this.engine = newEngine();
   }
 
-  public async canHandle({ patch }: PatchHandlerArgs): Promise<void> {
+  public async canHandle({ patch }: RepresentationPatcherInput): Promise<void> {
     if (!this.isSparqlUpdate(patch)) {
       throw new NotImplementedHttpError('Only SPARQL update patches are supported');
     }
   }
 
-  public async handle(input: PatchHandlerArgs): Promise<ResourceIdentifier[]> {
+  public async handle(input: RepresentationPatcherInput): Promise<Representation> {
     // Verify the patch
-    const { patch } = input;
+    const { patch, representation, identifier } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
-      return [];
+      return representation ?? new BasicRepresentation([], identifier, INTERNAL_QUADS, false);
     }
 
     this.validateUpdate(op);
 
-    // Only start conversion if we know the operation is valid
-    return super.handle(input);
+    return this.patch(input);
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {
@@ -117,13 +115,15 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
   /**
    * Apply the given algebra operation to the given identifier.
    */
-  protected async patch(input: PatchHandlerArgs, representation?: Representation): Promise<Representation> {
-    const { identifier, patch } = input;
+  private async patch({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
     let result: Store<BaseQuad>;
     let metadata: RepresentationMetadata;
 
     if (representation) {
       ({ metadata } = representation);
+      if (metadata.contentType !== INTERNAL_QUADS) {
+        throw new InternalServerError('Quad stream was expected for patching.');
+      }
       result = await readableToQuads(representation.data);
       this.logger.debug(`${result.size} quads in ${identifier.path}.`);
     } else {
@@ -139,6 +139,6 @@ export class SparqlUpdatePatchHandler extends ConvertingPatchHandler {
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    return new BasicRepresentation(result.match() as unknown as Readable, metadata);
+    return new BasicRepresentation(result.match() as unknown as Readable, metadata, false);
   }
 }
