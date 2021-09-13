@@ -214,12 +214,6 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(NotFoundHttpError);
     });
 
-    it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-      representation.binary = false;
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
-    });
-
     it('will 404 if the target does not exist.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(NotFoundHttpError);
@@ -239,6 +233,12 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow('The given path is not a container.');
+    });
+
+    it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.binary = false;
+      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
