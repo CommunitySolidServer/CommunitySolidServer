@@ -141,9 +141,6 @@ export class DataAccessorBasedStore implements ResourceStore {
   Promise<ResourceIdentifier> {
     this.validateIdentifier(container);
 
-    // Ensure the representation is supported by the accessor
-    await this.accessor.canHandle(representation);
-
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
 
     // Solid, §5.3: "When a POST method request targets a resource without an existing representation,
@@ -168,9 +165,16 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Clients who want the server to assign a URI of a resource, MUST use the POST request."
     // https://solid.github.io/specification/protocol#resource-type-heuristics
     const newID = await this.createSafeUri(container, representation.metadata);
+    const isContainer = isContainerIdentifier(newID);
+
+    // Ensure the representation is supported by the accessor
+    // Containers are not checked because uploaded representations are treated as metadata
+    if (!isContainer) {
+      await this.accessor.canHandle(representation);
+    }
 
     // Write the data. New containers should never be made for a POST request.
-    await this.writeData(newID, representation, isContainerIdentifier(newID), false, false);
+    await this.writeData(newID, representation, isContainer, false, false);
 
     return newID;
   }
@@ -178,9 +182,6 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
-
-    // Ensure the representation is supported by the accessor
-    await this.accessor.canHandle(representation);
 
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
@@ -200,6 +201,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://solid.github.io/specification/protocol#uri-slash-semantics
     if (isContainer !== isContainerIdentifier(identifier)) {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
+    }
+
+    // Ensure the representation is supported by the accessor
+    // Containers are not checked because uploaded representations are treated as metadata
+    if (!isContainer) {
+      await this.accessor.canHandle(representation);
     }
 
     this.validateConditions(conditions, oldMetadata);
