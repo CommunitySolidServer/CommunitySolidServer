@@ -1,4 +1,5 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Size } from './size.model';
 
 /**
  * A SizeReporter's only purpose (at the moment) is to calculate the size
@@ -17,5 +18,5 @@ export interface SizeReporter {
    * @param identifier - the resource of which you want the size
    * @returns The size of the resource as a number
    */
-  getSize: (identifier: ResourceIdentifier) => number;
+  getSize: (identifier: ResourceIdentifier) => Size;
 }

@@ -1,18 +1,19 @@
 import type { Readable } from 'stream';
-import type { QuotaStrategy } from 'somewhere';
 import type { Representation } from '../../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
+import type { DataValidator } from '../validators/DataValidator';
+import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
-export class QuotedDataAccessor implements DataAccessor {
-  private readonly accessor: DataAccessor;
-  private readonly strategy: QuotaStrategy;
+export class ValidatingDataAccessor implements DataAccessor {
+  private readonly accessor: AtomicDataAccessor;
+  private readonly validator: DataValidator;
 
-  public constructor(accessor: DataAccessor, strategy: QuotaStrategy) {
+  public constructor(accessor: DataAccessor, validator: DataValidator) {
     this.accessor = accessor;
-    this.strategy = strategy;
+    this.validator = validator;
   }
 
   public async writeDocument(
@@ -20,14 +21,12 @@ export class QuotedDataAccessor implements DataAccessor {
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    // Use this value in the return call:
-    // const pipedData = this.strategy.limitStream(identifier, data, metadata);
-    return this.accessor.writeDocument(identifier, data, metadata);
+    const pipedData = await this.validator.validateRepresentation(identifier, data, metadata);
+    return this.accessor.writeDocument(identifier, pipedData, metadata);
   }
 
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    // Containers are not big, made the choice to not take them
-    // into account for now
+    // - TODO what do we do here ?
     return this.accessor.writeContainer(identifier, metadata);
   }
 

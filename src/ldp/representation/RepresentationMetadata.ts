@@ -3,7 +3,7 @@ import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rd
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
+import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -315,5 +315,16 @@ export class RepresentationMetadata {
 
   public set contentType(input) {
     this.set(CONTENT_TYPE_TERM, input);
+  }
+
+  /**
+  * Shorthand for the CONTENT_LENGTH predicate.
+  */
+  public get contentLength(): string | undefined {
+    return this.get(CONTENT_LENGTH_TERM)?.value;
+  }
+
+  public set contentLength(input) {
+    this.set(CONTENT_LENGTH_TERM, input);
   }
 }

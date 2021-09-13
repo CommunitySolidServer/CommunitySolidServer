@@ -86,6 +86,7 @@ export * from './ldp/auxiliary/Validator';
 // LDP/HTTP/Metadata
 export * from './ldp/http/metadata/ConstantMetadataWriter';
 export * from './ldp/http/metadata/ContentTypeParser';
+export * from './ldp/http/metadata/ContentLengthParser';
 export * from './ldp/http/metadata/LinkRelMetadataWriter';
 export * from './ldp/http/metadata/LinkTypeParser';
 export * from './ldp/http/metadata/MappedMetadataWriter';
@@ -210,6 +211,8 @@ export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
+export * from './storage/accessors/AtomicDataAccessor';
+export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conversion
 export * from './storage/conversion/ChainedConverter';
@@ -247,6 +250,10 @@ export * from './storage/patch/ConvertingPatchHandler';
 export * from './storage/patch/PatchHandler';
 export * from './storage/patch/SparqlUpdatePatchHandler';
 
+// Storage/Quota-Strategy
+export * from './storage/quota-strategy/QuotaStrategy';
+export * from './storage/quota-strategy/GlobalQuotaStrategy';
+
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';
 export * from './storage/routing/ConvertingRouterRule';
@@ -257,6 +264,10 @@ export * from './storage/routing/RouterRule';
 // Storage/size-reporter
 export * from './storage/size-reporter/SizeReporter';
 export * from './storage/size-reporter/FileSizeReporter';
+
+// Storage/validators
+export * from './storage/validators/DataValidator';
+export * from './storage/validators/QuotaDataValidator';
 
 // Storage
 export * from './storage/AtomicResourceStore';

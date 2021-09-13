@@ -1,5 +1,6 @@
 import { statSync } from 'fs';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Size } from './size.model';
 import type { SizeReporter } from './SizeReporter';
 
 /**
@@ -12,7 +13,7 @@ export class FileSizeReporter implements SizeReporter {
   /**
    * Returns the size of the given resource in bytes
    */
-  public getSize(identifier: ResourceIdentifier): number {
-    return statSync(identifier.path).size;
+  public getSize(identifier: ResourceIdentifier): Size {
+    return { unit: this.unit, amount: statSync(identifier.path).size };
   }
 }
