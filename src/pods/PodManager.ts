@@ -10,6 +10,7 @@ export interface PodManager {
    * Creates a pod for the given settings.
    * @param identifier - Root identifier indicating where the pod should be created.
    * @param settings - Settings describing the pod.
+   * @param overwrite - If the creation should proceed if there already is a resource there.
    */
-  createPod: (identifier: ResourceIdentifier, settings: PodSettings) => Promise<void>;
+  createPod: (identifier: ResourceIdentifier, settings: PodSettings, overwrite: boolean) => Promise<void>;
 }

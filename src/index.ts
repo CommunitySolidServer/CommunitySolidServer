@@ -38,6 +38,9 @@ export * from './identity/interaction/email-password/handler/ResetPasswordHandle
 export * from './identity/interaction/email-password/storage/AccountStore';
 export * from './identity/interaction/email-password/storage/BaseAccountStore';
 
+// Identity/Interaction/Email-Password/Util
+export * from './identity/interaction/email-password/util/RegistrationManager';
+
 // Identity/Interaction/Email-Password
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
@@ -69,6 +72,9 @@ export * from './identity/IdentityProviderHttpHandler';
 // Init/Final
 export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
+
+// Init/Setup
+export * from './init/setup/SetupHttpHandler';
 
 // Init
 export * from './init/App';

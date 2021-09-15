@@ -26,9 +26,9 @@ export class GeneratedPodManager implements PodManager {
    * Creates a new pod, pre-populating it with the resources created by the data generator.
    * Will throw an error if the given identifier already has a resource.
    */
-  public async createPod(identifier: ResourceIdentifier, settings: PodSettings): Promise<void> {
+  public async createPod(identifier: ResourceIdentifier, settings: PodSettings, overwrite: boolean): Promise<void> {
     this.logger.info(`Creating pod ${identifier.path}`);
-    if (await this.store.resourceExists(identifier)) {
+    if (!overwrite && await this.store.resourceExists(identifier)) {
       throw new ConflictHttpError(`There already is a resource at ${identifier.path}`);
     }
 
