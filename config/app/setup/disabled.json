@@ -1,0 +1,13 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/app/init/initializers/root.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Completely disables the setup page.",
+      "@id": "urn:solid-server:default:SetupHandler",
+      "@type": "UnsupportedAsyncHandler"
+    }
+  ]
+}

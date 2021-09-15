@@ -1,0 +1,7 @@
+@prefix pim: <http://www.w3.org/ns/pim/space#>.
+
+# It is imperative the root container is marked as a pim:Storage :
+# Solid, §4.1: "Servers exposing the storage resource MUST advertise by including the HTTP Link header
+# with rel="type" targeting http://www.w3.org/ns/pim/space#Storage when responding to storage’s request URI."
+# https://solid.github.io/specification/protocol#storage
+<> a pim:Storage.

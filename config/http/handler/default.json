@@ -1,5 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/app/init/initializers/root.json"
+  ],
   "@graph": [
     {
       "comment": "These are all the handlers a request will go through until it is handled.",
@@ -11,6 +14,7 @@
           "@type": "WaterfallHandler",
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
+            { "@id": "urn:solid-server:default:SetupHandler" },
             { "@id": "urn:solid-server:default:IdentityProviderHandler" },
             { "@id": "urn:solid-server:default:LdpHandler" }
           ]

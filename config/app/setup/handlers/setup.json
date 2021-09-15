@@ -1,0 +1,34 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/app/init/initializers/root.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Handles everything related to the first-time server setup.",
+      "@id": "urn:solid-server:default:SetupHttpHandler",
+      "@type": "SetupHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_initializer": { "@id": "urn:solid-server:default:RootInitializer" },
+      "args_registrationManager": { "@id": "urn:solid-server:default:SetupRegistrationManager" },
+      "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+      "args_storageKey": "setupCompleted-1.0",
+      "args_storage": { "@id": "urn:solid-server:default:SetupStorage" },
+      "args_viewTemplate": "@css:templates/setup/index.html.ejs",
+      "args_responseTemplate": "@css:templates/setup/response.html.ejs"
+    },
+    {
+      "comment": "Separate manager from the RegistrationHandler in case registration is disabled.",
+      "@id": "urn:solid-server:default:SetupRegistrationManager",
+      "@type": "RegistrationManager",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_webIdSuffix": "/profile/card#me",
+      "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+      "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
+      "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+      "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+    }
+  ]
+}

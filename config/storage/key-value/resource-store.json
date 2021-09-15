@@ -48,6 +48,14 @@
       "container": "/.internal/accounts/"
     },
     {
+      "comment": "Storage used by setup components.",
+      "@id": "urn:solid-server:default:SetupStorage",
+      "@type": "JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/setup/"
+    },
+    {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",
       "@id": "urn:solid-server:default:PathBasedAuthorizer",
       "PathBasedAuthorizer:_paths": [
