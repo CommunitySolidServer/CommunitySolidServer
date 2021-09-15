@@ -216,6 +216,7 @@ export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
+export * from './server/util/RedirectAllHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors
