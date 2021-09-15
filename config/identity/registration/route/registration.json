@@ -20,12 +20,15 @@
       },
       "handler": {
         "@type": "RegistrationHandler",
-        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-        "args_webIdSuffix": "/profile/card#me",
-        "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
-        "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
-        "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-        "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+        "registrationManager": {
+          "@type": "RegistrationManager",
+          "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "args_webIdSuffix": "/profile/card#me",
+          "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+          "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
+          "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+          "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+        }
       }
     }
   ]
