@@ -6,6 +6,7 @@
       "@id": "urn:solid-server:default:RequestParser",
       "@type": "BasicRequestParser",
       "args_targetExtractor": {
+        "@id": "urn:solid-server:default:TargetExtractor",
         "@type": "OriginalUrlExtractor",
         "options_includeQueryString": false
       },

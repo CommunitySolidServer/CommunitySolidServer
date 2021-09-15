@@ -1,6 +1,9 @@
 import { posix, win32 } from 'path';
 import urljoin from 'url-join';
+import type { TargetExtractor } from '../ldp/http/TargetExtractor';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { HttpRequest } from '../server/HttpRequest';
+import { BadRequestHttpError } from './errors/BadRequestHttpError';
 
 /**
  * Changes a potential Windows path into a POSIX path.
@@ -148,6 +151,24 @@ export function isContainerIdentifier(identifier: ResourceIdentifier): boolean {
 export function extractScheme(url: string): { scheme: string; rest: string } {
   const match = /^([^:]+:\/\/)(.*)$/u.exec(url)!;
   return { scheme: match[1], rest: match[2] };
+}
+
+/**
+ * Creates a relative URL by removing the base URL.
+ * Will throw an error in case the resulting target is not withing the base URL scope.
+ * @param baseUrl - Base URL.
+ * @param request - Incoming request of which the target needs to be extracted.
+ * @param targetExtractor - Will extract the target from the request.
+ */
+export async function getRelativeUrl(baseUrl: string, request: HttpRequest, targetExtractor: TargetExtractor):
+Promise<string> {
+  baseUrl = ensureTrailingSlash(baseUrl);
+  const target = await targetExtractor.handleSafe({ request });
+  if (!target.path.startsWith(baseUrl)) {
+    throw new BadRequestHttpError(`The identifier ${target.path} is outside the configured identifier space.`,
+      { errorCode: 'E0001', details: { path: target.path }});
+  }
+  return target.path.slice(baseUrl.length - 1);
 }
 
 /**

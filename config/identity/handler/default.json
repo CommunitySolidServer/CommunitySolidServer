@@ -11,9 +11,11 @@
       "comment": "Routes all IDP related requests to the relevant handlers.",
       "@id": "urn:solid-server:default:IdentityProviderHandler",
       "@type": "RouterHandler",
-      "allowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
-      "allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
-      "handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "*" ],
+      "args_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
+      "args_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
     },
     {
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",

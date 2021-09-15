@@ -1,12 +1,25 @@
 import { existsSync } from 'fs';
+import type { TargetExtractor } from '../../../src/ldp/http/TargetExtractor';
+import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { HttpRequest } from '../../../src/server/HttpRequest';
 import {
-  absoluteFilePath, createSubdomainRegexp,
+  absoluteFilePath,
+  createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
-  ensureTrailingSlash, extractScheme, getExtension, getModuleRoot, isContainerIdentifier, isContainerPath,
+  ensureTrailingSlash,
+  extractScheme,
+  getExtension,
+  getModuleRoot,
+  getRelativeUrl,
+  isContainerIdentifier,
+  isContainerPath,
   joinFilePath,
-  normalizeFilePath, resolveAssetPath,
-  toCanonicalUriPath, trimTrailingSlashes,
+  joinUrl,
+  normalizeFilePath,
+  resolveAssetPath,
+  toCanonicalUriPath,
+  trimTrailingSlashes,
 } from '../../../src/util/PathUtil';
 
 describe('PathUtil', (): void => {
@@ -116,6 +129,28 @@ describe('PathUtil', (): void => {
   describe('#extractScheme', (): void => {
     it('splits a URL.', async(): Promise<void> => {
       expect(extractScheme('http://test.com/foo')).toEqual({ scheme: 'http://', rest: 'test.com/foo' });
+    });
+  });
+
+  describe('#getRelativeUrl', (): void => {
+    const baseUrl = 'http://test.com/foo/';
+    const request: HttpRequest = { url: '/resource' } as any;
+    let targetExtractor: jest.Mocked<TargetExtractor>;
+
+    beforeEach((): void => {
+      targetExtractor = {
+        handleSafe: jest.fn(({ request: req }): ResourceIdentifier => ({ path: joinUrl(baseUrl, req.url!) })),
+      } as any;
+    });
+
+    it('returns the relative path.', async(): Promise<void> => {
+      await expect(getRelativeUrl(baseUrl, request, targetExtractor)).resolves.toBe('/resource');
+    });
+
+    it('errors if the target is outside of the server scope.', async(): Promise<void> => {
+      targetExtractor.handleSafe.mockResolvedValueOnce({ path: 'http://somewhere.else/resource' });
+      await expect(getRelativeUrl(baseUrl, request, targetExtractor)).rejects
+        .toThrow(expect.objectContaining({ errorCode: 'E0001', details: { path: 'http://somewhere.else/resource' }}));
     });
   });
 

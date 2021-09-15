@@ -1,41 +1,57 @@
-import { parse } from 'url';
+import type { TargetExtractor } from '../../ldp/http/TargetExtractor';
+import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { ensureTrailingSlash, getRelativeUrl } from '../../util/PathUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
+
+export interface RouterHandlerArgs {
+  baseUrl: string;
+  targetExtractor: TargetExtractor;
+  handler: HttpHandler;
+  allowedMethods: string[];
+  allowedPathNames: string[];
+}
 
 /**
  * An HttpHandler that checks if a given method and path are satisfied
  * and allows its handler to be executed if so.
+ *
+ * If `allowedMethods` contains '*' it will match all methods.
  */
 export class RouterHandler extends HttpHandler {
-  protected readonly handler: HttpHandler;
-  protected readonly allowedMethods: string[];
-  protected readonly allowedPathNamesRegEx: RegExp[];
+  private readonly baseUrl: string;
+  private readonly targetExtractor: TargetExtractor;
+  private readonly handler: HttpHandler;
+  private readonly allowedMethods: string[];
+  private readonly allMethods: boolean;
+  private readonly allowedPathNamesRegEx: RegExp[];
 
-  public constructor(handler: HttpHandler, allowedMethods: string[], allowedPathNames: string[]) {
+  public constructor(args: RouterHandlerArgs) {
     super();
-    this.handler = handler;
-    this.allowedMethods = allowedMethods;
-    this.allowedPathNamesRegEx = allowedPathNames.map((pn): RegExp => new RegExp(pn, 'u'));
+    this.baseUrl = ensureTrailingSlash(args.baseUrl);
+    this.targetExtractor = args.targetExtractor;
+    this.handler = args.handler;
+    this.allowedMethods = args.allowedMethods;
+    this.allMethods = args.allowedMethods.includes('*');
+    this.allowedPathNamesRegEx = args.allowedPathNames.map((pn): RegExp => new RegExp(pn, 'u'));
   }
 
   public async canHandle(input: HttpHandlerInput): Promise<void> {
-    if (!input.request.url) {
-      throw new Error('Cannot handle request without a url');
+    const { request } = input;
+    if (!request.url) {
+      throw new BadRequestHttpError('Cannot handle request without a url');
     }
-    if (!input.request.method) {
-      throw new Error('Cannot handle request without a method');
+    if (!request.method) {
+      throw new BadRequestHttpError('Cannot handle request without a method');
     }
-    if (!this.allowedMethods.includes(input.request.method)) {
-      throw new MethodNotAllowedHttpError(`${input.request.method} is not allowed.`);
+    if (!this.allMethods && !this.allowedMethods.includes(request.method)) {
+      throw new MethodNotAllowedHttpError(`${request.method} is not allowed.`);
     }
-    const { pathname } = parse(input.request.url);
-    if (!pathname) {
-      throw new Error('Cannot handle request without pathname');
-    }
-    if (!this.allowedPathNamesRegEx.some((regex): boolean => regex.test(pathname))) {
-      throw new NotFoundHttpError(`Cannot handle route ${pathname}`);
+    const pathName = await getRelativeUrl(this.baseUrl, request, this.targetExtractor);
+    if (!this.allowedPathNamesRegEx.some((regex): boolean => regex.test(pathName))) {
+      throw new NotFoundHttpError(`Cannot handle route ${pathName}`);
     }
     await this.handler.canHandle(input);
   }
