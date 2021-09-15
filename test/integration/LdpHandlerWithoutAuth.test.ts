@@ -72,13 +72,6 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
-  it('can read the root container index page when asking for HTML.', async(): Promise<void> => {
-    const response = await getResource(baseUrl, { accept: 'text/html' }, { contentType: 'text/html' });
-
-    await expect(response.text()).resolves.toContain('Welcome to Solid');
-    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
-  });
-
   it('can read a container listing with a query string.', async(): Promise<void> => {
     // Helper functions would fail due to query params
     const response = await fetch(`${baseUrl}?abc=def&xyz`, { headers: { accept: 'text/turtle' }});
@@ -92,9 +85,6 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     const quads = parser.parse(await response.text());
     const store = new Store(quads);
     expect(store.countQuads(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container, null)).toBe(1);
-    const contains = store.getObjects(namedNode(baseUrl), LDP.terms.contains, null);
-    expect(contains).toHaveLength(1);
-    expect(contains[0].value).toBe(`${baseUrl}index.html`);
   });
 
   it('can add a document to the store, read it and delete it.', async(): Promise<void> => {

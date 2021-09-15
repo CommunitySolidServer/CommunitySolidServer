@@ -1,7 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/init/base/init.json"
+    "files-scs:config/app/init/base/init.json",
+    "files-scs:config/app/init/initializers/prefilled-root.json"
   ],
   "@graph": [
     {
@@ -9,10 +10,7 @@
       "@id": "urn:solid-server:default:ParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
-        {
-          "comment": "This handler is here because having this array empty gives Components.js errors.",
-          "@type": "StaticHandler"
-        }
+        { "@id": "urn:solid-server:default:RootInitializer" }
       ]
     }
   ]

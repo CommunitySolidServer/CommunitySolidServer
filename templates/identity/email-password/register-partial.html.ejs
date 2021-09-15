@@ -1,0 +1,203 @@
+<% const isBlankForm = !('prefilled' in locals); %>
+<% prefilled = locals.prefilled || {}; %>
+
+<fieldset>
+  <legend>Your WebID</legend>
+  <p>
+    A <em>WebID</em> is a unique identifier for you
+    in the form of a URL.
+    <br>
+    You WebID lets you log in to Solid apps
+    and access non-public data in Pods.
+  </p>
+  <ol>
+    <li class="radio">
+      <label>
+        <input type="radio" id="createWebIdOn" name="createWebId" value="on"<%
+        if (isBlankForm || prefilled.createWebId) { %> checked<% } %>>
+        Create a new WebID for my Pod.
+      </label>
+      <p id="createWebIdForm">
+        Please also create a Pod below, since your WebID will be stored there.
+      </p>
+    </li>
+    <li class="radio">
+      <label>
+        <input type="radio" id="createWebIdOff" name="createWebId" value=""<%
+        if (!isBlankForm && !prefilled.createWebId) { %> checked<% } %>>
+        Use my existing WebID to access my Pod.
+      </label>
+      <ol id="existingWebIdForm">
+        <li>
+          <label for="webId">Existing WebID:</label>
+          <input id="webId" type="text" name="webId" value="<%= prefilled.webId || '' %>">
+        </li>
+        <li class="checkbox">
+          <label>
+            <input type="checkbox" id="register" name="register"<%
+            if (isBlankForm || prefilled.register) { %> checked<% } %>>
+            Use my new account to log in with this WebID.
+          </label>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</fieldset>
+
+<fieldset>
+  <legend>Your Pod</legend>
+  <p>
+    A Pod is a place to store your data.
+    <br>
+    If you create a new WebID, you must also create a Pod to store that WebID.
+  </p>
+  <ol>
+    <li class="checkbox">
+      <label>
+        <input type="checkbox" id="createPod" name="createPod"<%
+        if (isBlankForm || prefilled.createPod) { %> checked<% } %>>
+        Create a new Pod with my WebID as owner
+      </label>
+      <ol id="createPodForm">
+        <li class="radio" id="rootPodOnForm">
+          <label>
+            <input type="radio" id="rootPodOn" name="rootPod" value="on"<%
+            if (locals.allowRoot && (isBlankForm || prefilled.rootPod)) { %> checked<% } %>>
+            ... in the root.
+          </label>
+        </li>
+        <li class="radio">
+          <label>
+            <input type="radio" id="rootPodOff" name="rootPod" value=""<%
+            if (!locals.allowRoot || (!isBlankForm && !prefilled.rootPod)) { %> checked<% } %>>
+            ... in its own namespace.
+          </label>
+          <ol id="podNameForm">
+            <li>
+              <label for="podName">Pod name:</label>
+              <input id="podName" type="text" name="podName" value="<%= prefilled.podName || '' %>">
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</fieldset>
+
+<fieldset>
+  <legend>Your account</legend>
+  <div>
+    <p>
+      Choose the credentials you want to use to log in to this server in the future.
+    </p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="text" name="email" value="<%= prefilled.email || '' %>" >
+      </li>
+    </ol>
+    <ol id="passwordForm">
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </div>
+  <div id="noPasswordForm" class="hidden">
+    <p>
+      Since you will be using your existing WebID setup to access your pod,
+      <br>
+      you do <em>not</em> need to set a password.
+    </p>
+  </div>
+</fieldset>
+
+<script>
+// Assist the user with filling out the form by hiding irrelevant fields
+(() => {
+  // Wire up the UI elements
+  const elements = {};
+  [
+    'createWebIdOn', 'createWebIdOff', 'createWebIdForm', 'existingWebIdForm', 'webId',
+    'createPod', 'createPodForm', 'rootPodOnForm', 'rootPodOn', 'rootPodOff', 'podNameForm', 'podName',
+    'register', 'passwordForm', 'noPasswordForm',
+  ].forEach(id => {
+    elements[id] = document.getElementById(id);
+    elements[id].addEventListener('change', updateUI);
+  });
+  elements.mainForm = document.getElementById('<%= formId %>');
+
+  updateUI();
+
+  // Updates the UI when something has changed
+  function updateUI({ srcElement } = {}) {
+    // When Pod creation is required, automatically tick the corresponding checkbox
+    if (elements.createWebIdOn.checked)
+    elements.createPod.checked = true;
+    elements.createPod.disabled = elements.createWebIdOn.checked;
+
+    // Hide irrelevant fields
+    setVisibility('createWebIdForm', elements.createWebIdOn.checked);
+    setVisibility('existingWebIdForm', elements.createWebIdOff.checked);
+    setVisibility('createPodForm', elements.createPod.checked);
+    setVisibility('rootPodOnForm', <%= locals.allowRoot %>);
+    setVisibility('podNameForm', elements.rootPodOff.checked);
+    setVisibility('passwordForm', elements.createWebIdOn.checked || elements.register.checked);
+    setVisibility('noPasswordForm', !isVisible('passwordForm'));
+
+    // If child elements have just been activated, focus on them
+    if (srcElement?.checked) {
+      switch(document.activeElement) {
+        case elements.createWebIdOff:
+          const { webId } = elements;
+          webId.value = webId.value.startsWith('http') ? webId.value : 'https://';
+          webId.focus();
+          break;
+        case elements.createPod:
+          if (elements.rootPodOn.checked) {
+            break;
+          }
+        case elements.rootPodOff:
+          elements.podName.focus();
+          break;
+      }
+    }
+  }
+
+  // Checks whether the given element is visible
+  function isVisible(element) {
+    return !(elements[element] ?? element).classList.contains('hidden');
+  }
+
+  // Sets the visibility of the given element
+  function setVisibility(element, visible) {
+    // Show or hide the element
+    element = elements[element] ?? element;
+    element.classList[visible ? 'remove' : 'add']('hidden');
+
+    // Disable children of hidden elements,
+    // such that the browser does not expect input for them
+    for (const child of getDescendants(element)) {
+    if ('disabled' in child)
+      child.disabled = !visible;
+    }
+  }
+
+  // Obtains all children, grandchildren, etc. of the given element
+  function getDescendants(element) {
+    return [...element.querySelectorAll("*")];
+  }
+
+  // TODO: take form id as input?
+  // Enable all elements on form submission (otherwise their value is not submitted)
+  elements.mainForm.addEventListener('submit', () => {
+    for (const child of getDescendants(elements.mainForm))
+    child.disabled = false;
+  });
+  elements.mainForm.addEventListener('formdata', updateUI);
+})();
+</script>

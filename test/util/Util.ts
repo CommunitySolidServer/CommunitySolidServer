@@ -13,6 +13,7 @@ const portNames = [
   'PodCreation',
   'RedisResourceLocker',
   'ServerFetch',
+  'SetupMemory',
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',

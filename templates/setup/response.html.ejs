@@ -1,0 +1,24 @@
+<h1 id="public">Server successfully set up</h1>
+
+<% if (initialize && !registration) { %>
+<p>
+  You have chosen to allow the root container to be accessible.
+  Prevent public write and control access to the root
+  by modifying <a href=".acl"><code>.acl</code></a>.
+</p>
+<% } %>
+
+<% if (registration) { %>
+<%- include('../identity/email-password/register-response-partial.html.ejs', { authenticating: false }) %>
+<% } %>
+
+<h2>Have a wonderful Solid experience</h2>
+<p>
+  <strong>Learn more about Solid
+    at <a href="https://solidproject.org/">solidproject.org</a>.</strong>
+</p>
+<p>
+  You are warmly invited
+  to <a href="https://github.com/solid/community-server/discussions">share your experiences</a>
+  and to <a href="https://github.com/solid/community-server/issues">report any bugs</a> you encounter.
+</p>

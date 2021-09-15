@@ -317,6 +317,7 @@ export * from './util/handlers/BooleanHandler';
 export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/ParallelHandler';
 export * from './util/handlers/SequenceHandler';
+export * from './util/handlers/StaticHandler';
 export * from './util/handlers/UnsupportedAsyncHandler';
 export * from './util/handlers/WaterfallHandler';
 
