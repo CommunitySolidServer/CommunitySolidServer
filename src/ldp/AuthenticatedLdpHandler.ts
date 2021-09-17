@@ -1,4 +1,4 @@
-import type { Credentials } from '../authentication/Credentials';
+import type { CredentialSet } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
 import { BaseHttpHandler } from '../server/BaseHttpHandler';
@@ -78,8 +78,8 @@ export class AuthenticatedLdpHandler extends BaseHttpHandler {
    *  - Executing the operation.
    */
   protected async handleOperation(operation: Operation, request: HttpRequest): Promise<ResponseDescription> {
-    const credentials: Credentials = await this.credentialsExtractor.handleSafe(request);
-    this.logger.verbose(`Extracted credentials: ${credentials.webId}`);
+    const credentials: CredentialSet = await this.credentialsExtractor.handleSafe(request);
+    this.logger.verbose(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
     const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(operation);
     const { read, write, append } = permissions;

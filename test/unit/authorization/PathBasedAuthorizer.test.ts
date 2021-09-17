@@ -1,10 +1,10 @@
-import type { Authorizer, AuthorizerArgs } from '../../../src/authorization/Authorizer';
+import type { Authorizer, AuthorizerInput } from '../../../src/authorization/Authorizer';
 import { PathBasedAuthorizer } from '../../../src/authorization/PathBasedAuthorizer';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PathBasedAuthorizer', (): void => {
   const baseUrl = 'http://test.com/foo/';
-  let input: AuthorizerArgs;
+  let input: AuthorizerInput;
   let authorizers: jest.Mocked<Authorizer>[];
   let authorizer: PathBasedAuthorizer;
 
@@ -12,7 +12,7 @@ describe('A PathBasedAuthorizer', (): void => {
     input = {
       identifier: { path: `${baseUrl}first` },
       permissions: { read: true, append: false, write: false, control: false },
-      credentials: { webId: 'http://alice.test.com/card#me' },
+      credentials: {},
     };
 
     authorizers = [

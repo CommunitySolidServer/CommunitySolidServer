@@ -1,5 +1,5 @@
 import type { Store, Term } from 'n3';
-import type { Credentials } from '../../authentication/Credentials';
+import type { Credential } from '../../authentication/Credentials';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 /**
@@ -21,5 +21,5 @@ export interface AccessCheckerArgs {
   /**
    * Credentials of the entity that wants to use the resource.
    */
-  credentials: Credentials;
+  credentials: Credential;
 }

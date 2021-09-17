@@ -1,7 +1,7 @@
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/PathUtil';
 import type { Authorization } from './Authorization';
-import type { AuthorizerArgs } from './Authorizer';
+import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
 
 /**
@@ -23,12 +23,12 @@ export class PathBasedAuthorizer extends Authorizer {
     this.paths = new Map(entries);
   }
 
-  public async canHandle(input: AuthorizerArgs): Promise<void> {
+  public async canHandle(input: AuthorizerInput): Promise<void> {
     const authorizer = this.findAuthorizer(input.identifier.path);
     await authorizer.canHandle(input);
   }
 
-  public async handle(input: AuthorizerArgs): Promise<Authorization> {
+  public async handle(input: AuthorizerInput): Promise<Authorization> {
     const authorizer = this.findAuthorizer(input.identifier.path);
     return authorizer.handle(input);
   }

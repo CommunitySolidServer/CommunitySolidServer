@@ -1,5 +1,6 @@
 import { namedNode, quad } from '@rdfjs/data-model';
-import type { Credentials } from '../../../src/authentication/Credentials';
+import { CredentialGroup } from '../../../src/authentication/Credentials';
+import type { CredentialSet } from '../../../src/authentication/Credentials';
 import type { AccessChecker } from '../../../src/authorization/access-checkers/AccessChecker';
 import { WebAclAuthorization } from '../../../src/authorization/WebAclAuthorization';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
@@ -31,7 +32,7 @@ describe('A WebAclAuthorizer', (): void => {
   let store: jest.Mocked<ResourceStore>;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
   let permissions: PermissionSet;
-  let credentials: Credentials;
+  let credentials: CredentialSet;
   let identifier: ResourceIdentifier;
   let authorization: WebAclAuthorization;
   let accessChecker: jest.Mocked<AccessChecker>;
@@ -43,7 +44,7 @@ describe('A WebAclAuthorizer', (): void => {
       write: true,
       control: false,
     };
-    credentials = {};
+    credentials = { [CredentialGroup.public]: {}, [CredentialGroup.agent]: {}};
     identifier = { path: 'http://test.com/foo' };
     authorization = new WebAclAuthorization(
       {
@@ -72,14 +73,13 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('handles all non-acl inputs.', async(): Promise<void> => {
-    authorizer = new WebAclAuthorizer(aclStrategy, null as any, identifierStrategy, accessChecker);
-    await expect(authorizer.canHandle({ identifier } as any)).resolves.toBeUndefined();
+    await expect(authorizer.canHandle({ identifier, credentials, permissions })).resolves.toBeUndefined();
     await expect(authorizer.canHandle({ identifier: aclStrategy.getAuxiliaryIdentifier(identifier) } as any))
       .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('handles all valid modes and ignores other ones.', async(): Promise<void> => {
-    credentials.webId = 'http://test.com/user';
+    credentials.agent = { webId: 'http://test.com/user' };
     store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
@@ -131,11 +131,12 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
     ]) } as Representation);
-    credentials.webId = 'http://test.com/alice/profile/card#me';
+    credentials.agent = { webId: 'http://test.com/alice/profile/card#me' };
     await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
   it('throws an UnauthorizedHttpError if access is not granted there are no credentials.', async(): Promise<void> => {
+    credentials = {};
     accessChecker.handleSafe.mockResolvedValue(false);
     store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),

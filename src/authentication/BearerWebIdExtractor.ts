@@ -4,12 +4,10 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import type { Credentials } from './Credentials';
+import { CredentialGroup } from './Credentials';
+import type { CredentialSet } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
 
-/**
- * Credentials extractor that extracts a WebID from a Bearer access token.
- */
 export class BearerWebIdExtractor extends CredentialsExtractor {
   protected readonly logger = getLoggerFor(this);
   private readonly verify: SolidTokenVerifierFunction;
@@ -26,13 +24,13 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
     }
   }
 
-  public async handle(request: HttpRequest): Promise<Credentials> {
+  public async handle(request: HttpRequest): Promise<CredentialSet> {
     const { headers: { authorization }} = request;
 
     try {
       const { webid: webId } = await this.verify(authorization!);
       this.logger.info(`Verified WebID via Bearer access token: ${webId}`);
-      return { webId };
+      return { [CredentialGroup.agent]: { webId }};
     } catch (error: unknown) {
       const message = `Error verifying WebID via Bearer access token: ${(error as Error).message}`;
       this.logger.warn(message);
