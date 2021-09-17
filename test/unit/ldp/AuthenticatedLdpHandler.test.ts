@@ -1,4 +1,4 @@
-import type { Credentials } from '../../../src/authentication/Credentials';
+import type { CredentialSet } from '../../../src/authentication/Credentials';
 import type { Authorization } from '../../../src/authorization/Authorization';
 import type { AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
 import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandler';
@@ -16,7 +16,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   const response: HttpResponse = {} as any;
   const preferences: RepresentationPreferences = { type: { 'text/turtle': 0.9 }};
   let operation: Operation;
-  const credentials: Credentials = {};
+  const credentials: CredentialSet = {};
   const permissions: PermissionSet = { read: true, write: false, append: false, control: false };
   const authorization: Authorization = { addMetadata: jest.fn() };
   const result: ResponseDescription = new ResetResponseDescription();

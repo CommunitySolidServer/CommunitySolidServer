@@ -1,20 +1,14 @@
-import type { Credentials } from '../authentication/Credentials';
+import type { CredentialSet } from '../authentication/Credentials';
 import type { PermissionSet } from '../ldp/permissions/PermissionSet';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { Authorization } from './Authorization';
 
-/**
- * Verifies if the given credentials have access to the given permissions on the given resource.
- * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
- */
-export abstract class Authorizer extends AsyncHandler<AuthorizerArgs, Authorization> {}
-
-export interface AuthorizerArgs {
+export interface AuthorizerInput {
   /**
    * Credentials of the entity that wants to use the resource.
    */
-  credentials: Credentials;
+  credentials: CredentialSet;
   /**
    * Identifier of the resource that will be read/modified.
    */
@@ -24,3 +18,9 @@ export interface AuthorizerArgs {
    */
   permissions: PermissionSet;
 }
+
+/**
+ * Verifies if the given credentials have access to the given permissions on the given resource.
+ * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
+ */
+export abstract class Authorizer extends AsyncHandler<AuthorizerInput, Authorization> {}

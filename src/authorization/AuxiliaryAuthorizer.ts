@@ -2,7 +2,7 @@ import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIden
 import { getLoggerFor } from '../logging/LogUtil';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Authorization } from './Authorization';
-import type { AuthorizerArgs } from './Authorizer';
+import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
 
 /**
@@ -22,24 +22,24 @@ export class AuxiliaryAuthorizer extends Authorizer {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async canHandle(auxiliaryAuth: AuthorizerArgs): Promise<void> {
+  public async canHandle(auxiliaryAuth: AuthorizerInput): Promise<void> {
     const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
     return this.resourceAuthorizer.canHandle(resourceAuth);
   }
 
-  public async handle(auxiliaryAuth: AuthorizerArgs): Promise<Authorization> {
+  public async handle(auxiliaryAuth: AuthorizerInput): Promise<Authorization> {
     const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
     this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} on ${resourceAuth.identifier.path}`);
     return this.resourceAuthorizer.handle(resourceAuth);
   }
 
-  public async handleSafe(auxiliaryAuth: AuthorizerArgs): Promise<Authorization> {
+  public async handleSafe(auxiliaryAuth: AuthorizerInput): Promise<Authorization> {
     const resourceAuth = this.getRequiredAuthorization(auxiliaryAuth);
     this.logger.debug(`Checking auth request for ${auxiliaryAuth.identifier.path} to ${resourceAuth.identifier.path}`);
     return this.resourceAuthorizer.handleSafe(resourceAuth);
   }
 
-  private getRequiredAuthorization(auxiliaryAuth: AuthorizerArgs): AuthorizerArgs {
+  private getRequiredAuthorization(auxiliaryAuth: AuthorizerInput): AuthorizerInput {
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(auxiliaryAuth.identifier)) {
       throw new NotImplementedHttpError('AuxiliaryAuthorizer only supports auxiliary resources.');
     }

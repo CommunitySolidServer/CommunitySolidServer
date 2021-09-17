@@ -1,5 +1,6 @@
 import { createSolidTokenVerifier } from '@solid/access-token-verifier';
 import { BearerWebIdExtractor } from '../../../src/authentication/BearerWebIdExtractor';
+import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
@@ -57,7 +58,7 @@ describe('A BearerWebIdExtractor', (): void => {
 
     it('returns the extracted WebID.', async(): Promise<void> => {
       const result = webIdExtractor.handleSafe(request);
-      await expect(result).resolves.toEqual({ webId: 'http://alice.example/card#me' });
+      await expect(result).resolves.toEqual({ [CredentialGroup.agent]: { webId: 'http://alice.example/card#me' }});
     });
   });
 
