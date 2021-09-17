@@ -7,8 +7,8 @@
         "Supports authentication headers such as `Authentication: WebID http://test.com/card#me`"
       ],
       "@id": "urn:solid-server:default:CredentialsExtractor",
-      "@type": "WaterfallHandler",
-      "handlers": [
+      "@type": "UnionCredentialsExtractor",
+      "extractors": [
         { "@type": "UnsecureWebIdExtractor" },
         { "@type": "EmptyCredentialsExtractor" }
       ]

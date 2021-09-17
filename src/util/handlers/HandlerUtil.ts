@@ -74,7 +74,7 @@ Promise<AsyncHandler<TIn, TOut>[]> {
     await handler.canHandle(input);
     return handler;
   }));
-  const matches = results.filter((result): boolean => result.status === 'fulfilled')
+  const matches = results.filter(({ status }): boolean => status === 'fulfilled')
     .map((result): AsyncHandler<TIn, TOut> =>
       (result as PromiseFulfilledResult<AsyncHandler<TIn, TOut>>).value);
 
