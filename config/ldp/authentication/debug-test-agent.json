@@ -7,8 +7,14 @@
         "This extractor always sets the credentials to the fixed value."
       ],
       "@id": "urn:solid-server:default:CredentialsExtractor",
-      "@type": "UnsecureConstantCredentialsExtractor",
-      "agent": "http://test.com/card#me"
+      "@type": "UnionCredentialsExtractor",
+      "extractors": [
+        {
+          "@type": "UnsecureConstantCredentialsExtractor",
+          "agent": "http://test.com/card#me"
+        },
+        { "@type": "EmptyCredentialsExtractor" }
+      ]
     }
   ]
 }
