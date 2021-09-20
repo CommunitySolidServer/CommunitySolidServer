@@ -5,7 +5,7 @@ import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandle
 import { ResetResponseDescription } from '../../../src/ldp/http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { Operation } from '../../../src/ldp/operations/Operation';
-import { AccessMode } from '../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../src/ldp/permissions/Permissions';
 import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
 import * as LogUtil from '../../../src/logging/LogUtil';
 import type { HttpRequest } from '../../../src/server/HttpRequest';

@@ -1,27 +1,26 @@
-import type { Authorizer } from '../../../src/authorization/Authorizer';
-import { AuxiliaryAuthorizer } from '../../../src/authorization/AuxiliaryAuthorizer';
+import { CredentialGroup } from '../../../src/authentication/Credentials';
+import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
+import type { PermissionReader } from '../../../src/authorization/PermissionReader';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import { AccessMode } from '../../../src/ldp/permissions/PermissionSet';
+import type { PermissionSet } from '../../../src/ldp/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 
-describe('An AuxiliaryAuthorizer', (): void => {
+describe('An AuxiliaryReader', (): void => {
   const suffix = '.dummy';
   const credentials = {};
   const associatedIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryIdentifier = { path: 'http://test.com/foo.dummy' };
-  let modes: Set<AccessMode>;
-  let source: Authorizer;
+  const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
+  let source: PermissionReader;
   let strategy: AuxiliaryIdentifierStrategy;
-  let authorizer: AuxiliaryAuthorizer;
+  let reader: AuxiliaryReader;
 
   beforeEach(async(): Promise<void> => {
-    modes = new Set([ AccessMode.read, AccessMode.write, AccessMode.append ]);
-
     source = {
       canHandle: jest.fn(),
-      handle: jest.fn(),
-      handleSafe: jest.fn(),
+      handle: jest.fn().mockResolvedValue(permissionSet),
+      handleSafe: jest.fn().mockResolvedValue(permissionSet),
     };
 
     strategy = {
@@ -29,43 +28,43 @@ describe('An AuxiliaryAuthorizer', (): void => {
       getAssociatedIdentifier: jest.fn((identifier: ResourceIdentifier): ResourceIdentifier =>
         ({ path: identifier.path.slice(0, -suffix.length) })),
     } as any;
-    authorizer = new AuxiliaryAuthorizer(source, strategy);
+    reader = new AuxiliaryReader(source, strategy);
   });
 
   it('can handle auxiliary resources if the source supports the associated resource.', async(): Promise<void> => {
-    await expect(authorizer.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
       .resolves.toBeUndefined();
     expect(source.canHandle).toHaveBeenLastCalledWith(
-      { identifier: associatedIdentifier, credentials, modes },
+      { identifier: associatedIdentifier, credentials },
     );
-    await expect(authorizer.canHandle({ identifier: associatedIdentifier, credentials, modes }))
+    await expect(reader.canHandle({ identifier: associatedIdentifier, credentials }))
       .rejects.toThrow(NotImplementedHttpError);
     source.canHandle = jest.fn().mockRejectedValue(new Error('no source support'));
-    await expect(authorizer.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
       .rejects.toThrow('no source support');
   });
 
   it('handles resources by sending the updated parameters to the source.', async(): Promise<void> => {
-    await expect(authorizer.handle({ identifier: auxiliaryIdentifier, credentials, modes }))
-      .resolves.toBeUndefined();
+    await expect(reader.handle({ identifier: auxiliaryIdentifier, credentials }))
+      .resolves.toBe(permissionSet);
     expect(source.handle).toHaveBeenLastCalledWith(
-      { identifier: associatedIdentifier, credentials, modes },
+      { identifier: associatedIdentifier, credentials },
     );
     // Safety checks are not present when calling `handle`
-    await expect(authorizer.handle({ identifier: associatedIdentifier, credentials, modes }))
+    await expect(reader.handle({ identifier: associatedIdentifier, credentials }))
       .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('combines both checking and handling when calling handleSafe.', async(): Promise<void> => {
-    await expect(authorizer.handleSafe({ identifier: auxiliaryIdentifier, credentials, modes }))
-      .resolves.toBeUndefined();
+    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials }))
+      .resolves.toBe(permissionSet);
     expect(source.handleSafe).toHaveBeenLastCalledWith(
-      { identifier: associatedIdentifier, credentials, modes },
+      { identifier: associatedIdentifier, credentials },
     );
-    await expect(authorizer.handleSafe({ identifier: associatedIdentifier, credentials, modes }))
+    await expect(reader.handleSafe({ identifier: associatedIdentifier, credentials }))
       .rejects.toThrow(NotImplementedHttpError);
     source.handleSafe = jest.fn().mockRejectedValue(new Error('no source support'));
-    await expect(authorizer.handleSafe({ identifier: auxiliaryIdentifier, credentials, modes }))
+    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials }))
       .rejects.toThrow('no source support');
   });
 });

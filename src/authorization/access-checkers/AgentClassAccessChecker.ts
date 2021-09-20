@@ -6,13 +6,13 @@ import { AccessChecker } from './AccessChecker';
  * Checks access based on the agent class.
  */
 export class AgentClassAccessChecker extends AccessChecker {
-  public async handle({ acl, rule, credentials }: AccessCheckerArgs): Promise<boolean> {
+  public async handle({ acl, rule, credential }: AccessCheckerArgs): Promise<boolean> {
     // Check if unauthenticated agents have access
     if (acl.countQuads(rule, ACL.terms.agentClass, FOAF.terms.Agent, null) !== 0) {
       return true;
     }
     // Check if the agent is authenticated and if authenticated agents have access
-    if (typeof credentials.webId === 'string') {
+    if (typeof credential.webId === 'string') {
       return acl.countQuads(rule, ACL.terms.agentClass, ACL.terms.AuthenticatedAgent, null) !== 0;
     }
     return false;

@@ -2,7 +2,7 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import type { AuxiliaryIdentifierStrategy } from '../auxiliary/AuxiliaryIdentifierStrategy';
 import type { Operation } from '../operations/Operation';
 import { ModesExtractor } from './ModesExtractor';
-import { AccessMode } from './PermissionSet';
+import { AccessMode } from './Permissions';
 
 export class AclModesExtractor extends ModesExtractor {
   private readonly aclStrategy: AuxiliaryIdentifierStrategy;

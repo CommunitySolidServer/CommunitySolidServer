@@ -1,3 +1,5 @@
+import type { CredentialGroup } from '../../authentication/Credentials';
+
 /**
  * Different modes that require permission.
  */
@@ -11,4 +13,6 @@ export enum AccessMode {
 /**
  * A data interface indicating which permissions are required (based on the context).
  */
-export type PermissionSet = Record<AccessMode, boolean>;
+export type Permission = Partial<Record<AccessMode, boolean>>;
+
+export type PermissionSet = Partial<Record<CredentialGroup, Permission>>;

@@ -39,22 +39,22 @@ describe('An AgentGroupAccessChecker', (): void => {
   });
 
   it('returns true if the WebID is a valid group member.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: { webId }};
     await expect(checker.handle(input)).resolves.toBe(true);
   });
 
   it('returns false if the WebID is not a valid group member.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credentials: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credential: { webId }};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 
   it('returns false if there are no WebID credentials.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 
   it('caches fetched results.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credentials: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('groupMatch'), credential: { webId }};
     await expect(checker.handle(input)).resolves.toBe(true);
     await expect(checker.handle(input)).resolves.toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);

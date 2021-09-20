@@ -1,6 +1,6 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { MethodModesExtractor } from '../../../../src/ldp/permissions/MethodModesExtractor';
-import { AccessMode } from '../../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../../src/ldp/permissions/Permissions';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A MethodModesExtractor', (): void => {

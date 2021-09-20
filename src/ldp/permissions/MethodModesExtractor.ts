@@ -1,7 +1,7 @@
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { Operation } from '../operations/Operation';
 import { ModesExtractor } from './ModesExtractor';
-import { AccessMode } from './PermissionSet';
+import { AccessMode } from './Permissions';
 
 const READ_METHODS = new Set([ 'GET', 'HEAD' ]);
 const WRITE_METHODS = new Set([ 'PUT', 'DELETE' ]);

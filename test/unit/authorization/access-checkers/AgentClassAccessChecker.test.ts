@@ -16,22 +16,22 @@ describe('An AgentClassAccessChecker', (): void => {
   });
 
   it('returns true if the rule contains foaf:agent as supported class.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('agentMatch'), credentials: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('agentMatch'), credential: {}};
     await expect(checker.handle(input)).resolves.toBe(true);
   });
 
   it('returns true for authenticated users with an acl:AuthenticatedAgent rule.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('authenticatedMatch'), credentials: { webId }};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('authenticatedMatch'), credential: { webId }};
     await expect(checker.handle(input)).resolves.toBe(true);
   });
 
   it('returns false for unauthenticated users with an acl:AuthenticatedAgent rule.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('authenticatedMatch'), credentials: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('authenticatedMatch'), credential: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 
   it('returns false if no class rule is found.', async(): Promise<void> => {
-    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credentials: {}};
+    const input: AccessCheckerArgs = { acl, rule: namedNode('noMatch'), credential: {}};
     await expect(checker.handle(input)).resolves.toBe(false);
   });
 });

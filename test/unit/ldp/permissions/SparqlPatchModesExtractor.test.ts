@@ -1,7 +1,7 @@
 import { Factory } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../../../src/ldp/http/SparqlUpdatePatch';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
-import { AccessMode } from '../../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../../src/ldp/permissions/Permissions';
 import { SparqlPatchModesExtractor } from '../../../../src/ldp/permissions/SparqlPatchModesExtractor';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 

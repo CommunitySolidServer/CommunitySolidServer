@@ -40,4 +40,15 @@ describe('A WacAllowMetadataWriter', (): void => {
       'wac-allow': 'user="read write"',
     });
   });
+
+  it('applies public modes to user modes.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata({
+      [AUTH.publicMode]: [ ACL.terms.Read, ACL.terms.Write ],
+    });
+    await expect(writer.handle({ response, metadata })).resolves.toBeUndefined();
+
+    expect(response.getHeaders()).toEqual({
+      'wac-allow': 'user="read write",public="read write"',
+    });
+  });
 });

@@ -9,14 +9,16 @@ export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
 // Authorization
-export * from './authorization/AllowAllAuthorizer';
+export * from './authorization/AllStaticReader';
 export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
-export * from './authorization/AuxiliaryAuthorizer';
-export * from './authorization/DenyAllAuthorizer';
-export * from './authorization/PathBasedAuthorizer';
+export * from './authorization/AuxiliaryReader';
+export * from './authorization/PathBasedReader';
+export * from './authorization/PermissionBasedAuthorizer';
+export * from './authorization/PermissionReader';
+export * from './authorization/UnionPermissionReader';
 export * from './authorization/WebAclAuthorization';
-export * from './authorization/WebAclAuthorizer';
+export * from './authorization/WebAclReader';
 
 // Authorization/access-checkers
 export * from './authorization/access-checkers/AccessChecker';
@@ -151,7 +153,7 @@ export * from './ldp/operations/PutOperationHandler';
 
 // LDP/Permissions
 export * from './ldp/permissions/AclModesExtractor';
-export * from './ldp/permissions/PermissionSet';
+export * from './ldp/permissions/Permissions';
 export * from './ldp/permissions/ModesExtractor';
 export * from './ldp/permissions/MethodModesExtractor';
 export * from './ldp/permissions/SparqlPatchModesExtractor';
