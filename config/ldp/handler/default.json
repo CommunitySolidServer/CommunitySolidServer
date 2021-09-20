@@ -1,8 +1,10 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/ldp/handler/components/authorizer.json",
     "files-scs:config/ldp/handler/components/error-handler.json",
     "files-scs:config/ldp/handler/components/operation-handler.json",
+    "files-scs:config/ldp/handler/components/operation-metadata.json",
     "files-scs:config/ldp/handler/components/request-parser.json",
     "files-scs:config/ldp/handler/components/response-writer.json"
   ],
@@ -14,10 +16,12 @@
       "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
       "args_credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
       "args_modesExtractor": { "@id": "urn:solid-server:default:ModesExtractor" },
+      "args_permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
       "args_authorizer": { "@id": "urn:solid-server:default:Authorizer" },
       "args_operationHandler": { "@id": "urn:solid-server:default:OperationHandler" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
-      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationMetadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" }
     }
   ]
 }

@@ -1,11 +1,14 @@
+import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { CredentialSet } from '../../../src/authentication/Credentials';
-import type { Authorization } from '../../../src/authorization/Authorization';
 import type { AuthenticatedLdpHandlerArgs } from '../../../src/ldp/AuthenticatedLdpHandler';
 import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandler';
+import { OkResponseDescription } from '../../../src/ldp/http/response/OkResponseDescription';
 import { ResetResponseDescription } from '../../../src/ldp/http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { Operation } from '../../../src/ldp/operations/Operation';
+import type { PermissionSet } from '../../../src/ldp/permissions/Permissions';
 import { AccessMode } from '../../../src/ldp/permissions/Permissions';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
 import * as LogUtil from '../../../src/logging/LogUtil';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
@@ -18,7 +21,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   let operation: Operation;
   const credentials: CredentialSet = {};
   const modes: Set<AccessMode> = new Set([ AccessMode.read ]);
-  const authorization: Authorization = { addMetadata: jest.fn() };
+  const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
   const result: ResponseDescription = new ResetResponseDescription();
   const errorResult: ResponseDescription = { statusCode: 500 };
   let args: AuthenticatedLdpHandlerArgs;
@@ -33,8 +36,10 @@ describe('An AuthenticatedLdpHandler', (): void => {
       } as any,
       credentialsExtractor: { handleSafe: jest.fn().mockResolvedValue(credentials) } as any,
       modesExtractor: { handleSafe: jest.fn().mockResolvedValue(modes) } as any,
-      authorizer: { handleSafe: jest.fn().mockResolvedValue(authorization) } as any,
+      permissionReader: { handleSafe: jest.fn().mockResolvedValue(permissionSet) } as any,
+      authorizer: { handleSafe: jest.fn() } as any,
       operationHandler: { handleSafe: jest.fn().mockResolvedValue(result) } as any,
+      operationMetadataCollector: { handleSafe: jest.fn() } as any,
       errorHandler: { handleSafe: jest.fn().mockResolvedValue(errorResult) } as any,
       responseWriter: { handleSafe: jest.fn() } as any,
     };
@@ -65,15 +70,26 @@ describe('An AuthenticatedLdpHandler', (): void => {
     expect(args.credentialsExtractor.handleSafe).toHaveBeenLastCalledWith(request);
     expect(args.modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(args.permissionReader.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.permissionReader.handleSafe).toHaveBeenLastCalledWith({ credentials, identifier: operation.target });
     expect(args.authorizer.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.authorizer.handleSafe)
-      .toHaveBeenLastCalledWith({ credentials, identifier: { path: 'identifier' }, modes });
-    expect(operation.authorization).toBe(authorization);
+      .toHaveBeenLastCalledWith({ credentials, identifier: { path: 'identifier' }, modes, permissionSet });
     expect(args.operationHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.operationHandler.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(args.operationMetadataCollector.handleSafe).toHaveBeenCalledTimes(0);
     expect(args.errorHandler.handleSafe).toHaveBeenCalledTimes(0);
     expect(args.responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result });
+  });
+
+  it('calls the operation metadata collector if there is response metadata.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    const okResult = new OkResponseDescription(metadata);
+    (args.operationHandler.handleSafe as jest.Mock).mockResolvedValueOnce(okResult);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(args.operationMetadataCollector.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.operationMetadataCollector.handleSafe).toHaveBeenLastCalledWith({ operation, metadata });
   });
 
   it('sets preferences to text/plain in case of an error during request parsing.', async(): Promise<void> => {

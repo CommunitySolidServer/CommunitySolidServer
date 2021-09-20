@@ -1,4 +1,3 @@
-import type { Authorization } from '../../../../src/authorization/Authorization';
 import { GetOperationHandler } from '../../../../src/ldp/operations/GetOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
@@ -33,17 +32,5 @@ describe('A GetOperationHandler', (): void => {
     expect(result.data).toBe('data');
     expect(store.getRepresentation).toHaveBeenCalledTimes(1);
     expect(store.getRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, preferences, conditions);
-  });
-
-  it('adds authorization metadata in case the operation is an AuthorizedOperation.', async(): Promise<void> => {
-    const authorization: Authorization = { addMetadata: jest.fn() };
-    const result = await handler.handle(
-      { target: { path: 'url' }, preferences, conditions, authorization } as Operation,
-    );
-    expect(result.statusCode).toBe(200);
-    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.getRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, preferences, conditions);
-    expect(authorization.addMetadata).toHaveBeenCalledTimes(1);
-    expect(authorization.addMetadata).toHaveBeenLastCalledWith('metadata');
   });
 });

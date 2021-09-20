@@ -1,5 +1,5 @@
-import type { Authorization } from '../../authorization/Authorization';
 import type { Conditions } from '../../storage/Conditions';
+import type { PermissionSet } from '../permissions/Permissions';
 import type { Representation } from '../representation/Representation';
 import type { RepresentationPreferences } from '../representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
@@ -25,9 +25,9 @@ export interface Operation {
    */
   conditions?: Conditions;
   /**
-   * This value will be set if the Operation was authorized by an Authorizer.
+   * The permissions available for the current operation.
    */
-  authorization?: Authorization;
+  permissionSet?: PermissionSet;
   /**
    * Optional representation of the body.
    */

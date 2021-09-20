@@ -29,8 +29,6 @@ export class HeadOperationHandler extends OperationHandler {
     // Close the Readable as we will not return it.
     body.data.destroy();
 
-    input.authorization?.addMetadata(body.metadata);
-
     return new OkResponseDescription(body.metadata);
   }
 }
