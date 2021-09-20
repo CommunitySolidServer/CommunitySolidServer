@@ -13,14 +13,17 @@ import { MetadataWriter } from './MetadataWriter';
  */
 export class WacAllowMetadataWriter extends MetadataWriter {
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    const userModes = input.metadata.getAll(AUTH.terms.userMode).map(this.aclToPermission);
-    const publicModes = input.metadata.getAll(AUTH.terms.publicMode).map(this.aclToPermission);
+    let userModes = new Set(input.metadata.getAll(AUTH.terms.userMode).map(this.aclToPermission));
+    const publicModes = new Set(input.metadata.getAll(AUTH.terms.publicMode).map(this.aclToPermission));
+
+    // Public access implies user access
+    userModes = new Set([ ...userModes, ...publicModes ]);
 
     const headerStrings: string[] = [];
-    if (userModes.length > 0) {
+    if (userModes.size > 0) {
       headerStrings.push(this.createAccessParam('user', userModes));
     }
-    if (publicModes.length > 0) {
+    if (publicModes.size > 0) {
       headerStrings.push(this.createAccessParam('public', publicModes));
     }
 
@@ -34,7 +37,8 @@ export class WacAllowMetadataWriter extends MetadataWriter {
     return aclTerm.value.slice(ACL.namespace.length).toLowerCase();
   }
 
-  private createAccessParam(name: string, modes: string[]): string {
-    return `${name}="${modes.join(' ')}"`;
+  private createAccessParam(name: string, modes: Set<string>): string {
+    // Sort entries to have consistent output
+    return `${name}="${[ ...modes ].sort((left, right): number => left.localeCompare(right)).join(' ')}"`;
   }
 }

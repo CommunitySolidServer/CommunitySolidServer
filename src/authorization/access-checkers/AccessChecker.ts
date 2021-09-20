@@ -19,7 +19,7 @@ export interface AccessCheckerArgs {
   rule: Term;
 
   /**
-   * Credentials of the entity that wants to use the resource.
+   * Credential of the entity that wants to use the resource.
    */
-  credentials: Credential;
+  credential: Credential;
 }

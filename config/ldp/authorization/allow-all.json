@@ -7,7 +7,11 @@
         "Always allows all operations."
       ],
       "@id": "urn:solid-server:default:Authorizer",
-      "@type": "AllowAllAuthorizer"
+      "@type": "PermissionBasedAuthorizer",
+      "reader": {
+        "@type": "AllStaticReader",
+        "allow": true
+      }
     }
   ]
 }

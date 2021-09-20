@@ -89,7 +89,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
     // GET
     const response = await getResource(document);
     await expect(response.text()).resolves.toBe('TESTDATA');
-    expect(response.headers.get('wac-allow')).toBe('user="read write append",public="read write append"');
+    expect(response.headers.get('wac-allow')).toBe('user="append read write",public="append read write"');
 
     // DELETE
     await deleteResource(document);

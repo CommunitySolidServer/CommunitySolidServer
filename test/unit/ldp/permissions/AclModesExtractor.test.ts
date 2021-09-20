@@ -1,6 +1,6 @@
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import { AclModesExtractor } from '../../../../src/ldp/permissions/AclModesExtractor';
-import { AccessMode } from '../../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../../src/ldp/permissions/Permissions';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('An AclModesExtractor', (): void => {

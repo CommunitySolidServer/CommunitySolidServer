@@ -1,14 +1,14 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent.json",
-    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent-class.json",
-    "files-scs:config/ldp/authorization/authorizers/access-checkers/agent-group.json"
+    "files-scs:config/ldp/authorization/readers/access-checkers/agent.json",
+    "files-scs:config/ldp/authorization/readers/access-checkers/agent-class.json",
+    "files-scs:config/ldp/authorization/readers/access-checkers/agent-group.json"
   ],
   "@graph": [
     {
-      "@id": "urn:solid-server:default:WebAclAuthorizer",
-      "@type": "WebAclAuthorizer",
+      "@id": "urn:solid-server:default:WebAclReader",
+      "@type": "WebAclReader",
       "aclStrategy": {
         "@id": "urn:solid-server:default:AclStrategy"
       },

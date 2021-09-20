@@ -57,11 +57,14 @@
     },
     {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",
-      "@id": "urn:solid-server:default:PathBasedAuthorizer",
-      "PathBasedAuthorizer:_paths": [
+      "@id": "urn:solid-server:default:PathBasedReader",
+      "PathBasedReader:_paths": [
         {
-          "PathBasedAuthorizer:_paths_key": "^/.internal(/.*)?$",
-          "PathBasedAuthorizer:_paths_value": { "@type": "DenyAllAuthorizer" }
+          "PathBasedReader:_paths_key": "^/.internal(/.*)?$",
+          "PathBasedReader:_paths_value": {
+            "@type": "AllStaticReader",
+            "allow": false
+          }
         }
       ]
     },

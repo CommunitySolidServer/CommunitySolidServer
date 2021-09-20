@@ -5,7 +5,7 @@
   "Error",
   "EventEmitter",
   "HttpErrorOptions",
-  "PermissionSet",
+  "Permission",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",

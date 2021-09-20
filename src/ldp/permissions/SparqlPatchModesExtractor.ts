@@ -4,7 +4,7 @@ import type { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
 import type { Operation } from '../operations/Operation';
 import type { Representation } from '../representation/Representation';
 import { ModesExtractor } from './ModesExtractor';
-import { AccessMode } from './PermissionSet';
+import { AccessMode } from './Permissions';
 
 export class SparqlPatchModesExtractor extends ModesExtractor {
   public async canHandle({ method, body }: Operation): Promise<void> {

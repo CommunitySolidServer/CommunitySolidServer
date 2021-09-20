@@ -1,4 +1,4 @@
-import type { ResourceStore, PermissionSet } from '../../src/';
+import type { ResourceStore, Permission } from '../../src/';
 import { BasicRepresentation } from '../../src/';
 
 export class AclHelper {
@@ -11,7 +11,7 @@ export class AclHelper {
   public async setSimpleAcl(
     resource: string,
     options: {
-      permissions: Partial<PermissionSet>;
+      permissions: Partial<Permission>;
       agentClass?: 'agent' | 'authenticated';
       agent?: string;
       accessTo?: boolean;
@@ -32,7 +32,7 @@ export class AclHelper {
     ];
 
     for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
-      if (options.permissions[perm.toLowerCase() as keyof PermissionSet]) {
+      if (options.permissions[perm.toLowerCase() as keyof Permission]) {
         acl.push(`;\n acl:mode acl:${perm}`);
       }
     }

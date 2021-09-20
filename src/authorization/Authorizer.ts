@@ -1,5 +1,5 @@
 import type { CredentialSet } from '../authentication/Credentials';
-import type { AccessMode } from '../ldp/permissions/PermissionSet';
+import type { AccessMode } from '../ldp/permissions/Permissions';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { Authorization } from './Authorization';
@@ -20,7 +20,7 @@ export interface AuthorizerInput {
 }
 
 /**
- * Verifies if the given credentials have access to the given permissions on the given resource.
+ * Verifies if the credentials provide access with the given permissions on the resource.
  * An {@link Error} with the necessary explanation will be thrown when permissions are not granted.
  */
 export abstract class Authorizer extends AsyncHandler<AuthorizerInput, Authorization> {}
