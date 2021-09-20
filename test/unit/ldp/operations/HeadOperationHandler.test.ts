@@ -1,5 +1,4 @@
 import type { Readable } from 'stream';
-import type { Authorization } from '../../../../src/authorization/Authorization';
 import { HeadOperationHandler } from '../../../../src/ldp/operations/HeadOperationHandler';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
@@ -20,6 +19,7 @@ describe('A HeadOperationHandler', (): void => {
       getRepresentation: jest.fn(async(): Promise<Representation> =>
         ({ binary: false, data, metadata: 'metadata' } as any)),
     } as any;
+
     handler = new HeadOperationHandler(store);
   });
 
@@ -37,17 +37,5 @@ describe('A HeadOperationHandler', (): void => {
     expect(data.destroy).toHaveBeenCalledTimes(1);
     expect(store.getRepresentation).toHaveBeenCalledTimes(1);
     expect(store.getRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, preferences, conditions);
-  });
-
-  it('adds authorization metadata in case the operation is an AuthorizedOperation.', async(): Promise<void> => {
-    const authorization: Authorization = { addMetadata: jest.fn() };
-    const result = await handler.handle(
-      { target: { path: 'url' }, preferences, conditions, authorization } as Operation,
-    );
-    expect(result.statusCode).toBe(200);
-    expect(store.getRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.getRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, preferences, conditions);
-    expect(authorization.addMetadata).toHaveBeenCalledTimes(1);
-    expect(authorization.addMetadata).toHaveBeenLastCalledWith('metadata');
   });
 });

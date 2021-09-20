@@ -1,6 +1,7 @@
 import type { CredentialSet } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import type { Authorizer } from '../authorization/Authorizer';
+import type { PermissionReader } from '../authorization/PermissionReader';
 import { BaseHttpHandler } from '../server/BaseHttpHandler';
 import type { BaseHttpHandlerArgs } from '../server/BaseHttpHandler';
 import type { HttpHandlerInput } from '../server/HttpHandler';
@@ -9,6 +10,7 @@ import type { ErrorHandler } from './http/ErrorHandler';
 import type { RequestParser } from './http/RequestParser';
 import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
+import type { OperationMetadataCollector } from './operations/metadata/OperationMetadataCollector';
 import type { Operation } from './operations/Operation';
 import type { OperationHandler } from './operations/OperationHandler';
 import type { ModesExtractor } from './permissions/ModesExtractor';
@@ -27,6 +29,10 @@ export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
    */
   modesExtractor: ModesExtractor;
   /**
+   * Reads the permissions available for the Operation.
+   */
+  permissionReader: PermissionReader;
+  /**
    * Verifies if the requested operation is allowed.
    */
   authorizer: Authorizer;
@@ -34,6 +40,10 @@ export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
    * Executed the operation.
    */
   operationHandler: OperationHandler;
+  /**
+   * Generates generic operation metadata that is required for a response.
+   */
+  operationMetadataCollector: OperationMetadataCollector;
 }
 
 /**
@@ -42,8 +52,10 @@ export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
 export class AuthenticatedLdpHandler extends BaseHttpHandler {
   private readonly credentialsExtractor: CredentialsExtractor;
   private readonly modesExtractor: ModesExtractor;
+  private readonly permissionReader: PermissionReader;
   private readonly authorizer: Authorizer;
   private readonly operationHandler: OperationHandler;
+  private readonly operationMetadataCollector: OperationMetadataCollector;
 
   /**
    * Creates the handler.
@@ -53,8 +65,10 @@ export class AuthenticatedLdpHandler extends BaseHttpHandler {
     super(args);
     this.credentialsExtractor = args.credentialsExtractor;
     this.modesExtractor = args.modesExtractor;
+    this.permissionReader = args.permissionReader;
     this.authorizer = args.authorizer;
     this.operationHandler = args.operationHandler;
+    this.operationMetadataCollector = args.operationMetadataCollector;
   }
 
   /**
@@ -83,16 +97,24 @@ export class AuthenticatedLdpHandler extends BaseHttpHandler {
     const modes = await this.modesExtractor.handleSafe(operation);
     this.logger.verbose(`Required modes are read: ${[ ...modes ].join(',')}`);
 
+    const permissionSet = await this.permissionReader.handleSafe({ credentials, identifier: operation.target });
+    this.logger.verbose(`Available permissions are ${JSON.stringify(permissionSet)}`);
+
     try {
-      const authorization = await this.authorizer
-        .handleSafe({ credentials, identifier: operation.target, modes });
-      operation.authorization = authorization;
+      await this.authorizer.handleSafe({ credentials, identifier: operation.target, modes, permissionSet });
+      operation.permissionSet = permissionSet;
     } catch (error: unknown) {
       this.logger.verbose(`Authorization failed: ${(error as any).message}`);
       throw error;
     }
 
     this.logger.verbose(`Authorization succeeded, performing operation`);
-    return this.operationHandler.handleSafe(operation);
+    const response = await this.operationHandler.handleSafe(operation);
+
+    if (response.metadata) {
+      await this.operationMetadataCollector.handleSafe({ operation, metadata: response.metadata });
+    }
+
+    return response;
   }
 }

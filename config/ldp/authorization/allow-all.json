@@ -6,12 +6,9 @@
         "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
         "Always allows all operations."
       ],
-      "@id": "urn:solid-server:default:Authorizer",
-      "@type": "PermissionBasedAuthorizer",
-      "reader": {
-        "@type": "AllStaticReader",
-        "allow": true
-      }
+      "@id": "urn:solid-server:default:PermissionReader",
+      "@type": "AllStaticReader",
+      "allow": true
     }
   ]
 }

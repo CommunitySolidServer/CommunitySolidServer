@@ -8,23 +8,21 @@ export * from './authentication/UnionCredentialsExtractor';
 export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
+// Authorization/Access-Checkers
+export * from './authorization/access-checkers/AccessChecker';
+export * from './authorization/access-checkers/AgentAccessChecker';
+export * from './authorization/access-checkers/AgentClassAccessChecker';
+export * from './authorization/access-checkers/AgentGroupAccessChecker';
+
 // Authorization
 export * from './authorization/AllStaticReader';
-export * from './authorization/Authorization';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
-export * from './authorization/WebAclAuthorization';
 export * from './authorization/WebAclReader';
-
-// Authorization/access-checkers
-export * from './authorization/access-checkers/AccessChecker';
-export * from './authorization/access-checkers/AgentAccessChecker';
-export * from './authorization/access-checkers/AgentClassAccessChecker';
-export * from './authorization/access-checkers/AgentGroupAccessChecker';
 
 // Identity/Configuration
 export * from './identity/configuration/IdentityProviderFactory';
@@ -140,6 +138,10 @@ export * from './ldp/http/SafeErrorHandler';
 export * from './ldp/http/SparqlUpdateBodyParser';
 export * from './ldp/http/SparqlUpdatePatch';
 export * from './ldp/http/TargetExtractor';
+
+// LDP/Operations/Metadata
+export * from './ldp/operations/metadata/OperationMetadataCollector';
+export * from './ldp/operations/metadata/WebAclMetadataCollector';
 
 // LDP/Operations
 export * from './ldp/operations/DeleteOperationHandler';

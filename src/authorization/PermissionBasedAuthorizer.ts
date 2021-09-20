@@ -1,14 +1,10 @@
 import type { CredentialSet } from '../authentication/Credentials';
 import type { AccessMode, PermissionSet } from '../ldp/permissions/Permissions';
-
 import { getLoggerFor } from '../logging/LogUtil';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
-import type { Authorization } from './Authorization';
 import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
-import type { PermissionReader } from './PermissionReader';
-import { WebAclAuthorization } from './WebAclAuthorization';
 
 /**
  * Authorizer that bases its decision on the output it gets from its PermissionReader.
@@ -19,32 +15,16 @@ import { WebAclAuthorization } from './WebAclAuthorization';
 export class PermissionBasedAuthorizer extends Authorizer {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly reader: PermissionReader;
-
-  public constructor(reader: PermissionReader) {
-    super();
-    this.reader = reader;
-  }
-
-  public async canHandle(input: AuthorizerInput): Promise<void> {
-    return this.reader.canHandle(input);
-  }
-
-  public async handle(input: AuthorizerInput): Promise<Authorization> {
-    const { credentials, modes, identifier } = input;
-
-    // Read out the permissions
-    const permissions = await this.reader.handle(input);
-    const authorization = new WebAclAuthorization(permissions.agent ?? {}, permissions.public ?? {});
+  public async handle(input: AuthorizerInput): Promise<void> {
+    const { credentials, modes, identifier, permissionSet } = input;
 
     const modeString = [ ...modes ].join(',');
     this.logger.debug(`Checking if ${credentials.agent?.webId} has ${modeString} permissions for ${identifier.path}`);
 
     for (const mode of modes) {
-      this.requireModePermission(credentials, permissions, mode);
+      this.requireModePermission(credentials, permissionSet, mode);
     }
     this.logger.debug(`${JSON.stringify(credentials)} has ${modeString} permissions for ${identifier.path}`);
-    return authorization;
   }
 
   /**
