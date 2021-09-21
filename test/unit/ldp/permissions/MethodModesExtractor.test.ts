@@ -29,11 +29,11 @@ describe('A MethodModesExtractor', (): void => {
 
   it('requires write for PUT operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'PUT' } as Operation))
-      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write ]));
+      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
   });
 
   it('requires write for DELETE operations.', async(): Promise<void> => {
     await expect(extractor.handle({ method: 'DELETE' } as Operation))
-      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write ]));
+      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
   });
 });

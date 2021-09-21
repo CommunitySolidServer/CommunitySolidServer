@@ -58,7 +58,8 @@ describe('A SparqlPatchModesExtractor', (): void => {
         factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
       ]) },
     } as unknown as Operation;
-    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append, AccessMode.write ]));
+    await expect(extractor.handle(operation))
+      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
   });
 
   it('requires append for composite operations with an insert.', async(): Promise<void> => {
@@ -81,6 +82,7 @@ describe('A SparqlPatchModesExtractor', (): void => {
         factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
       ]) ]) },
     } as unknown as Operation;
-    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append, AccessMode.write ]));
+    await expect(extractor.handle(operation))
+      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
   });
 });

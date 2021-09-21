@@ -16,7 +16,8 @@ export class AllStaticReader extends PermissionReader {
       read: allow,
       write: allow,
       append: allow,
-      control: allow,
+      create: allow,
+      delete: allow,
     });
   }
 

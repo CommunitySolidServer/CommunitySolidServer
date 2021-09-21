@@ -44,13 +44,13 @@ describe('A UnionPermissionReader', (): void => {
 
   it('merges same fields using false > true > undefined.', async(): Promise<void> => {
     readers[0].handle.mockResolvedValue(
-      { [CredentialGroup.agent]: { read: true, write: false, append: undefined, control: true }},
+      { [CredentialGroup.agent]: { read: true, write: false, append: undefined, create: true, delete: undefined }},
     );
     readers[1].handle.mockResolvedValue(
-      { [CredentialGroup.agent]: { read: false, write: true, append: true, control: true }},
+      { [CredentialGroup.agent]: { read: false, write: true, append: true, create: true, delete: undefined }},
     );
     await expect(unionReader.handle(input)).resolves.toEqual({
-      [CredentialGroup.agent]: { read: false, write: false, append: true, control: true },
+      [CredentialGroup.agent]: { read: false, write: false, append: true, create: true },
     });
   });
 });

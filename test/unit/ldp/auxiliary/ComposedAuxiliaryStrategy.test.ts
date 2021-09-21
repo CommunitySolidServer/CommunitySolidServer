@@ -24,7 +24,7 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     validator = {
       handleSafe: jest.fn(),
     } as any;
-    strategy = new ComposedAuxiliaryStrategy(identifierStrategy, metadataGenerator, validator, true);
+    strategy = new ComposedAuxiliaryStrategy(identifierStrategy, metadataGenerator, validator, false, true);
   });
 
   it('calls the AuxiliaryIdentifierStrategy for related calls.', async(): Promise<void> => {
@@ -43,6 +43,10 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     strategy.isAuxiliaryIdentifier(identifier);
     expect(identifierStrategy.isAuxiliaryIdentifier).toHaveBeenCalledTimes(1);
     expect(identifierStrategy.isAuxiliaryIdentifier).toHaveBeenLastCalledWith(identifier);
+  });
+
+  it('returns the injected value for usesOwnAuthorization.', async(): Promise<void> => {
+    expect(strategy.usesOwnAuthorization()).toBe(false);
   });
 
   it('returns the injected value for isRequiredInRoot.', async(): Promise<void> => {

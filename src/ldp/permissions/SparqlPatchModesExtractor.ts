@@ -31,6 +31,8 @@ export class SparqlPatchModesExtractor extends ModesExtractor {
     if (this.needsWrite(update)) {
       result.add(AccessMode.write);
       result.add(AccessMode.append);
+      result.add(AccessMode.create);
+      result.add(AccessMode.delete);
     } else if (this.needsAppend(update)) {
       result.add(AccessMode.append);
     }

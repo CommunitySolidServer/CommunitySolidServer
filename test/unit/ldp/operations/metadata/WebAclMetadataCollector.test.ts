@@ -2,6 +2,7 @@ import 'jest-rdf';
 import { CredentialGroup } from '../../../../../src/authentication/Credentials';
 import { WebAclMetadataCollector } from '../../../../../src/ldp/operations/metadata/WebAclMetadataCollector';
 import type { Operation } from '../../../../../src/ldp/operations/Operation';
+import type { AclPermission } from '../../../../../src/ldp/permissions/AclPermission';
 import { RepresentationMetadata } from '../../../../../src/ldp/representation/RepresentationMetadata';
 import { ACL, AUTH } from '../../../../../src/util/Vocabularies';
 
@@ -38,12 +39,23 @@ describe('A WebAclMetadataCollector', (): void => {
 
   it('adds corresponding metadata for all permissions present.', async(): Promise<void> => {
     operation.permissionSet = {
-      [CredentialGroup.agent]: { read: true, write: true, control: false },
+      [CredentialGroup.agent]: { read: true, write: true, control: false } as AclPermission,
       [CredentialGroup.public]: { read: true, write: false },
     };
     await expect(writer.handle({ metadata, operation })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(3);
     expect(metadata.getAll(AUTH.terms.userMode)).toEqualRdfTermArray([ ACL.terms.Read, ACL.terms.Write ]);
+    expect(metadata.get(AUTH.terms.publicMode)).toEqualRdfTerm(ACL.terms.Read);
+  });
+
+  it('ignores unknown modes.', async(): Promise<void> => {
+    operation.permissionSet = {
+      [CredentialGroup.agent]: { read: true, create: true },
+      [CredentialGroup.public]: { read: true },
+    };
+    await expect(writer.handle({ metadata, operation })).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(2);
+    expect(metadata.getAll(AUTH.terms.userMode)).toEqualRdfTermArray([ ACL.terms.Read ]);
     expect(metadata.get(AUTH.terms.publicMode)).toEqualRdfTerm(ACL.terms.Read);
   });
 });

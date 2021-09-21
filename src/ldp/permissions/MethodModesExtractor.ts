@@ -27,6 +27,8 @@ export class MethodModesExtractor extends ModesExtractor {
     if (WRITE_METHODS.has(method)) {
       result.add(AccessMode.write);
       result.add(AccessMode.append);
+      result.add(AccessMode.create);
+      result.add(AccessMode.delete);
     } else if (APPEND_METHODS.has(method)) {
       result.add(AccessMode.append);
     }

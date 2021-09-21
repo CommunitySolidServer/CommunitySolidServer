@@ -1,7 +1,7 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
+import type { AuxiliaryStrategy } from '../../../src/ldp/auxiliary/AuxiliaryStrategy';
 import type { PermissionSet } from '../../../src/ldp/permissions/Permissions';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
@@ -12,8 +12,8 @@ describe('An AuxiliaryReader', (): void => {
   const associatedIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryIdentifier = { path: 'http://test.com/foo.dummy' };
   const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
-  let source: PermissionReader;
-  let strategy: AuxiliaryIdentifierStrategy;
+  let source: jest.Mocked<PermissionReader>;
+  let strategy: jest.Mocked<AuxiliaryStrategy>;
   let reader: AuxiliaryReader;
 
   beforeEach(async(): Promise<void> => {
@@ -27,6 +27,7 @@ describe('An AuxiliaryReader', (): void => {
       isAuxiliaryIdentifier: jest.fn((identifier: ResourceIdentifier): boolean => identifier.path.endsWith(suffix)),
       getAssociatedIdentifier: jest.fn((identifier: ResourceIdentifier): ResourceIdentifier =>
         ({ path: identifier.path.slice(0, -suffix.length) })),
+      usesOwnAuthorization: jest.fn().mockReturnValue(false),
     } as any;
     reader = new AuxiliaryReader(source, strategy);
   });
@@ -39,7 +40,12 @@ describe('An AuxiliaryReader', (): void => {
     );
     await expect(reader.canHandle({ identifier: associatedIdentifier, credentials }))
       .rejects.toThrow(NotImplementedHttpError);
-    source.canHandle = jest.fn().mockRejectedValue(new Error('no source support'));
+
+    strategy.usesOwnAuthorization.mockReturnValueOnce(true);
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+      .rejects.toThrow(NotImplementedHttpError);
+
+    source.canHandle.mockRejectedValue(new Error('no source support'));
     await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
       .rejects.toThrow('no source support');
   });
@@ -61,9 +67,15 @@ describe('An AuxiliaryReader', (): void => {
     expect(source.handleSafe).toHaveBeenLastCalledWith(
       { identifier: associatedIdentifier, credentials },
     );
+
     await expect(reader.handleSafe({ identifier: associatedIdentifier, credentials }))
       .rejects.toThrow(NotImplementedHttpError);
-    source.handleSafe = jest.fn().mockRejectedValue(new Error('no source support'));
+
+    strategy.usesOwnAuthorization.mockReturnValueOnce(true);
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+      .rejects.toThrow(NotImplementedHttpError);
+
+    source.handleSafe.mockRejectedValue(new Error('no source support'));
     await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials }))
       .rejects.toThrow('no source support');
   });

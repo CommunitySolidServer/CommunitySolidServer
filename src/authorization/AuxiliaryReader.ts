@@ -1,4 +1,4 @@
-import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
+import type { AuxiliaryStrategy } from '../ldp/auxiliary/AuxiliaryStrategy';
 import type { PermissionSet } from '../ldp/permissions/Permissions';
 import { getLoggerFor } from '../logging/LogUtil';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -15,9 +15,9 @@ export class AuxiliaryReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
   private readonly resourceReader: PermissionReader;
-  private readonly auxiliaryStrategy: AuxiliaryIdentifierStrategy;
+  private readonly auxiliaryStrategy: AuxiliaryStrategy;
 
-  public constructor(resourceReader: PermissionReader, auxiliaryStrategy: AuxiliaryIdentifierStrategy) {
+  public constructor(resourceReader: PermissionReader, auxiliaryStrategy: AuxiliaryStrategy) {
     super();
     this.resourceReader = resourceReader;
     this.auxiliaryStrategy = auxiliaryStrategy;
@@ -44,6 +44,11 @@ export class AuxiliaryReader extends PermissionReader {
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(auxiliaryAuth.identifier)) {
       throw new NotImplementedHttpError('AuxiliaryAuthorizer only supports auxiliary resources.');
     }
+
+    if (this.auxiliaryStrategy.usesOwnAuthorization(auxiliaryAuth.identifier)) {
+      throw new NotImplementedHttpError('Auxiliary resource uses its own permissions.');
+    }
+
     return {
       ...auxiliaryAuth,
       identifier: this.auxiliaryStrategy.getAssociatedIdentifier(auxiliaryAuth.identifier),

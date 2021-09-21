@@ -30,5 +30,4 @@ Contains a list of metadata writers that will be run on outgoing responses.
 ## Modes
 Determines which modes are needed for requests,
 by default this is based on the used HTTP method.
-* *acl*: The default setup with specific support for accessing .acl documents.
-* *no-acl*: Same as above but interprets .acl documents as any other document.
+* *default*: Bases required modes on HTTP method.

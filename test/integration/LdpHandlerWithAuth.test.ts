@@ -177,7 +177,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     const response = await fetch(`${baseUrl}.acl`);
     expect(response.status).toBe(200);
-    expect(response.headers.get('wac-allow')).toBe('user="control",public="control"');
+    expect(response.headers.get('wac-allow'))
+      .toBe('user="append control read write",public="append control read write"');
 
     // Close response
     await response.text();

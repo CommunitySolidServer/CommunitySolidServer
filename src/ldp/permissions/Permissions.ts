@@ -7,7 +7,8 @@ export enum AccessMode {
   read = 'read',
   append = 'append',
   write = 'write',
-  control = 'control',
+  create = 'create',
+  delete = 'delete',
 }
 
 /**
