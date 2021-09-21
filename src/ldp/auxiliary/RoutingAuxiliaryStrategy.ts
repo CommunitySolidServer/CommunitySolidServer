@@ -18,6 +18,11 @@ export class RoutingAuxiliaryStrategy extends RoutingAuxiliaryIdentifierStrategy
     super(sources);
   }
 
+  public usesOwnAuthorization(identifier: ResourceIdentifier): boolean {
+    const source = this.getMatchingSource(identifier);
+    return source.usesOwnAuthorization(identifier);
+  }
+
   public isRequiredInRoot(identifier: ResourceIdentifier): boolean {
     const source = this.getMatchingSource(identifier);
     return source.isRequiredInRoot(identifier);

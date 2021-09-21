@@ -154,7 +154,6 @@ export * from './ldp/operations/PostOperationHandler';
 export * from './ldp/operations/PutOperationHandler';
 
 // LDP/Permissions
-export * from './ldp/permissions/AclModesExtractor';
 export * from './ldp/permissions/Permissions';
 export * from './ldp/permissions/ModesExtractor';
 export * from './ldp/permissions/MethodModesExtractor';

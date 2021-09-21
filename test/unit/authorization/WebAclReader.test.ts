@@ -12,7 +12,6 @@ import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../../src/util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
-import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 
@@ -51,10 +50,8 @@ describe('A WebAclReader', (): void => {
     reader = new WebAclReader(aclStrategy, store, identifierStrategy, accessChecker);
   });
 
-  it('handles all non-acl inputs.', async(): Promise<void> => {
-    await expect(reader.canHandle({ identifier, credentials })).resolves.toBeUndefined();
-    await expect(reader.canHandle({ identifier: aclStrategy.getAuxiliaryIdentifier(identifier) } as any))
-      .rejects.toThrow(NotImplementedHttpError);
+  it('handles all input.', async(): Promise<void> => {
+    await expect(reader.canHandle({ } as any)).resolves.toBeUndefined();
   });
 
   it('returns undefined permissions for undefined credentials.', async(): Promise<void> => {
@@ -137,15 +134,39 @@ describe('A WebAclReader', (): void => {
     await expect(promise).rejects.toThrow(ForbiddenHttpError);
   });
 
-  it('allows an agent to append if they have write access.', async(): Promise<void> => {
+  it('allows an agent to append/create/delete if they have write access.', async(): Promise<void> => {
     store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
     await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
-      [CredentialGroup.public]: { write: true, append: true },
-      [CredentialGroup.agent]: { write: true, append: true },
+      [CredentialGroup.public]: { write: true, append: true, create: true, delete: true },
+      [CredentialGroup.agent]: { write: true, append: true, create: true, delete: true },
+    });
+  });
+
+  it('allows everything on an acl resource if control permissions are granted.', async(): Promise<void> => {
+    store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
+    ]) } as Representation);
+    await expect(reader.handle({ identifier: { path: `${identifier.path}.acl` }, credentials })).resolves.toEqual({
+      [CredentialGroup.public]: { read: true, write: true, append: true, create: true, delete: true, control: true },
+      [CredentialGroup.agent]: { read: true, write: true, append: true, create: true, delete: true, control: true },
+    });
+  });
+
+  it('rejects everything on an acl resource if there are no control permissions.', async(): Promise<void> => {
+    store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
+      quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
+      quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
+      quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
+    ]) } as Representation);
+    await expect(reader.handle({ identifier: { path: `${identifier.path}.acl` }, credentials })).resolves.toEqual({
+      [CredentialGroup.public]: {},
+      [CredentialGroup.agent]: {},
     });
   });
 

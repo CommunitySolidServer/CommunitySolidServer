@@ -11,6 +11,10 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     this.suffix = suffix;
   }
 
+  public usesOwnAuthorization(): boolean {
+    return true;
+  }
+
   public getAuxiliaryIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: `${identifier.path}${this.suffix}` };
   }
@@ -75,6 +79,15 @@ describe('A RoutingAuxiliaryStrategy', (): void => {
     expect(sources[0].addMetadata).toHaveBeenCalledTimes(0);
     expect(sources[1].addMetadata).toHaveBeenCalledTimes(1);
     expect(sources[1].addMetadata).toHaveBeenLastCalledWith(metadata);
+  });
+
+  it('#usesOwnAuthorization returns the result of the correct source.', async(): Promise<void> => {
+    sources[0].usesOwnAuthorization = jest.fn();
+    sources[1].usesOwnAuthorization = jest.fn();
+    strategy.usesOwnAuthorization(dummy2Id);
+    expect(sources[0].usesOwnAuthorization).toHaveBeenCalledTimes(0);
+    expect(sources[1].usesOwnAuthorization).toHaveBeenCalledTimes(1);
+    expect(sources[1].usesOwnAuthorization).toHaveBeenLastCalledWith(dummy2Id);
   });
 
   it('#isRequiredInRoot returns the result of the correct source.', async(): Promise<void> => {

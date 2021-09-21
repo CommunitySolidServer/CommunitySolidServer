@@ -91,6 +91,10 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     this.suffix = suffix;
   }
 
+  public usesOwnAuthorization(): boolean {
+    return true;
+  }
+
   public getAuxiliaryIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: `${identifier.path}${this.suffix}` };
   }

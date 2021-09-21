@@ -14,13 +14,15 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
   private readonly identifierStrategy: AuxiliaryIdentifierStrategy;
   private readonly metadataGenerator?: MetadataGenerator;
   private readonly validator?: Validator;
+  private readonly ownAuthorization: boolean;
   private readonly requiredInRoot: boolean;
 
   public constructor(identifierStrategy: AuxiliaryIdentifierStrategy, metadataGenerator?: MetadataGenerator,
-    validator?: Validator, requiredInRoot = false) {
+    validator?: Validator, ownAuthorization = false, requiredInRoot = false) {
     this.identifierStrategy = identifierStrategy;
     this.metadataGenerator = metadataGenerator;
     this.validator = validator;
+    this.ownAuthorization = ownAuthorization;
     this.requiredInRoot = requiredInRoot;
   }
 
@@ -38,6 +40,10 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
 
   public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return this.identifierStrategy.getAssociatedIdentifier(identifier);
+  }
+
+  public usesOwnAuthorization(): boolean {
+    return this.ownAuthorization;
   }
 
   public isRequiredInRoot(): boolean {
