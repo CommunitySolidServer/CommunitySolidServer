@@ -33,21 +33,21 @@ describe('A Solid server with setup', (): void => {
   it('catches all requests.', async(): Promise<void> => {
     let res = await fetch(baseUrl, { method: 'GET', headers: { accept: 'text/html' }});
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain('Welcome to Solid');
+    await expect(res.text()).resolves.toContain('Set up your Solid server');
 
     res = await fetch(joinUrl(baseUrl, '/random/path/'), { method: 'GET', headers: { accept: 'text/html' }});
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain('Welcome to Solid');
+    await expect(res.text()).resolves.toContain('Set up your Solid server');
 
     res = await fetch(joinUrl(baseUrl, '/random/path/'), { method: 'PUT', headers: { accept: 'text/html' }});
     expect(res.status).toBe(405);
-    await expect(res.text()).resolves.toContain('Welcome to Solid');
+    await expect(res.text()).resolves.toContain('Set up your Solid server');
   });
 
   it('can create a server that disables root but allows registration.', async(): Promise<void> => {
     let res = await fetch(setupUrl, { method: 'POST', headers: { accept: 'text/html' }});
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain('Server successfully set up');
+    await expect(res.text()).resolves.toContain('Server setup complete');
 
     // Root access disabled
     res = await fetch(baseUrl);
@@ -74,7 +74,7 @@ describe('A Solid server with setup', (): void => {
       body: JSON.stringify({ initialize: true }),
     });
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain('Server successfully set up');
+    await expect(res.text()).resolves.toContain('Server setup complete');
 
     // Root access enabled
     res = await fetch(baseUrl);
@@ -99,7 +99,7 @@ describe('A Solid server with setup', (): void => {
       body: JSON.stringify({ registration: true, initialize: true, ...registerParams }),
     });
     expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain('Server successfully set up');
+    await expect(res.text()).resolves.toContain('Server setup complete');
 
     // Root profile created
     res = await fetch(joinUrl(baseUrl, '/profile/card'));

@@ -1,39 +1,7 @@
-<h1>Welcome to Solid</h1>
+<h1>Set up your Solid server</h1>
 <p>
-  This server implements
-  the <a href="https://solid.github.io/specification/protocol">Solid protocol</a>
-  so you can create your own <a href="https://solidproject.org/about">Solid Pod</a>
-  and identity.
-</p>
-
-<h2 id="public">Making this server public</h2>
-<p>
-  Before making this server public,
-  you might want to <strong>disable Pod registration</strong>
-  by <a href="https://github.com/solid/community-server/blob/main/config/identity/README.md">changing
-    the configuration</a>.
-</p>
-
-<h2 id="setup">Setting up the server</h2>
-<p>
-  The <em>default</em> configuration stores data only in memory,
-  so be sure to choose a configuration that saves data to disk.
-  If you are exposing this server publicly,
-  <a href="#public">read the guidelines below</a>.
-</p>
-<p>
-  When using the file-based version of the server,
-  you can easily choose any folder on your disk to use as root.
-  <br>
-  Use the <code>--help</code> switch to learn more.
-</p>
-<p>
-  To make sure the server is set up exactly as you want it,
-  please fill in the form below.
-</p>
-<p>
-  In case you want to automate the server initialization and want to get rid of this setup screen,
-  update your config with new imports from <code>config/app/setup/</code> and possibly <code>config/app/init/</code>.
+  Your Solid server needs a <strong>one-time setup</strong>
+  so it acts exactly the way you want.
 </p>
 
 <form method="post" id="mainForm">
@@ -43,46 +11,62 @@
     <p class="error"><%= message %></p>
   <% } %>
   <fieldset>
-    <legend>Choose options</legend>
+    <legend>Accounts on this server</legend>
     <ol>
       <li class="checkbox">
         <label>
-          <input type="checkbox" id="initialize" name="initialize" checked>
-          Allow access to the root container.
+          <input type="checkbox" checked disabled>
+          Enable account registration.
         </label>
         <p>
-          This defaults to public access for everyone.
-          Disabling this makes it impossible to access the root container and add resources,
-          but new pods can still be created through registration,
-          which is ideal if you only want data to be edited in the pods.
-          This option is irrelevant when creating a root pod with the option below.
+          You can disable account registration
+          by <a href="https://github.com/solid/community-server/blob/main/config/identity/README.md">changing the configuration</a>.
         </p>
       </li>
       <li class="checkbox">
         <label>
-          <input type="checkbox" id="registration" name="registration" checked>
-          Provision a pod, create a WebID, and/or register an identity.
+          <input type="checkbox" id="registration" name="registration">
+          Sign me up for an account.
         </label>
+        <p>
+          Any existing root Pod will be disabled.
+        </p>
+      </li>
+      <li class="checkbox" id="initializeForm">
+        <label>
+          <input type="checkbox" id="initialize" name="initialize">
+          Expose a public root Pod.
+        </label>
+        <p>
+          By default, the public has read and write access to the root Pod.
+          <br>
+          You typically only want to choose this
+          for rapid testing and development.
+        </p>
       </li>
     </ol>
   </fieldset>
 
   <fieldset id="registrationForm">
-    <%- include('../identity/email-password/register-partial.html.ejs', { allowRoot: true, formId: 'mainForm' }) %>
+    <legend>Sign up</legend>
+    <%-
+      include('../identity/email-password/register-partial.html.ejs', {
+        allowRoot: true,
+      })
+    %>
   </fieldset>
 
-  <p class="actions"><button type="submit" name="submit">Submit</button></p>
+  <p class="actions"><button type="submit">Complete setup</button></p>
 </form>
 
+<!-- Show or hide the account creation form when needed -->
 <script>
-  const registrationCheckbox = document.getElementById('registration');
-  registrationCheckbox.addEventListener('change', updateUI);
-  const registrationForm = document.getElementById('registrationForm');
+  [
+    'registration', 'registrationForm', 'initializeForm',
+  ].forEach(registerElement);
 
-  function updateUI() {
-    const visible = registrationCheckbox.checked;
-    registrationForm.classList[visible ? 'remove' : 'add']('hidden');
-  }
-
-  updateUI();
+  Object.assign(visibilityConditions, {
+    registrationForm: () => elements.registration.checked,
+    initializeForm: () => !elements.registration.checked,
+  });
 </script>

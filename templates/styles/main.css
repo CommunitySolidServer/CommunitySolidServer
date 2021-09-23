@@ -151,6 +151,12 @@ fieldset > legend {
 fieldset > legend + p {
   margin: 0 0 .5em .25em;
 }
+fieldset > fieldset > legend {
+  font-size: 1.2em;
+}
+.hidden legend {
+  display: none;
+}
 fieldset ol {
   list-style: none;
   margin: 0;
@@ -170,6 +176,7 @@ fieldset ol ol li:not(.checkbox, .radio) {
 }
 fieldset li label {
   font-weight: 600;
+  cursor: pointer;
 }
 fieldset li li label {
   font-weight: 500;
@@ -220,7 +227,7 @@ form ul.actions > li {
 }
 
 form.loaded * {
-  max-height: 500px;
+  max-height: 1000px;
   transition: max-height .2s;
 }
 form .hidden {
