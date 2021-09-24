@@ -1,16 +1,13 @@
 import type { ErrorHandler } from '../ldp/http/ErrorHandler';
-import type { RequestParser } from '../ldp/http/RequestParser';
 import { RedirectResponseDescription } from '../ldp/http/response/RedirectResponseDescription';
 import { ResponseDescription } from '../ldp/http/response/ResponseDescription';
-import type { ResponseWriter } from '../ldp/http/ResponseWriter';
 import type { Operation } from '../ldp/operations/Operation';
 import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
 import type { Representation } from '../ldp/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
-import { BaseHttpHandler } from '../server/BaseHttpHandler';
-import type { BaseHttpHandlerArgs } from '../server/BaseHttpHandler';
 import type { HttpRequest } from '../server/HttpRequest';
-import type { HttpResponse } from '../server/HttpResponse';
+import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
+import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
@@ -25,11 +22,7 @@ import type { InteractionCompleter } from './interaction/util/InteractionComplet
 // Registration is not standardized within Solid yet, so we use a custom versioned API for now
 const API_VERSION = '0.2';
 
-export interface IdentityProviderHttpHandlerArgs extends BaseHttpHandlerArgs {
-  // Workaround for https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/73
-  requestParser: RequestParser;
-  errorHandler: ErrorHandler;
-  responseWriter: ResponseWriter;
+export interface IdentityProviderHttpHandlerArgs {
   /**
    * Base URL of the server.
    */
@@ -54,6 +47,10 @@ export interface IdentityProviderHttpHandlerArgs extends BaseHttpHandlerArgs {
    * Used for POST requests that need to be handled by the OIDC library.
    */
   interactionCompleter: InteractionCompleter;
+  /**
+   * Used for converting output errors.
+   */
+  errorHandler: ErrorHandler;
 }
 
 /**
@@ -68,7 +65,7 @@ export interface IdentityProviderHttpHandlerArgs extends BaseHttpHandlerArgs {
  * This handler handles all requests since it assumes all those requests are relevant for the IDP interaction.
  * A {@link RouterHandler} should be used to filter out other requests.
  */
-export class IdentityProviderHttpHandler extends BaseHttpHandler {
+export class IdentityProviderHttpHandler extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly baseUrl: string;
@@ -76,19 +73,21 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
   private readonly interactionRoutes: InteractionRoute[];
   private readonly converter: RepresentationConverter;
   private readonly interactionCompleter: InteractionCompleter;
+  private readonly errorHandler: ErrorHandler;
 
   private readonly controls: Record<string, string>;
 
   public constructor(args: IdentityProviderHttpHandlerArgs) {
     // It is important that the RequestParser does not read out the Request body stream.
     // Otherwise we can't pass it anymore to the OIDC library when needed.
-    super(args);
+    super();
     // Trimming trailing slashes so the relative URL starts with a slash after slicing this off
     this.baseUrl = trimTrailingSlashes(joinUrl(args.baseUrl, args.idpPath));
     this.providerFactory = args.providerFactory;
     this.interactionRoutes = args.interactionRoutes;
     this.converter = args.converter;
     this.interactionCompleter = args.interactionCompleter;
+    this.errorHandler = args.errorHandler;
 
     this.controls = Object.assign(
       {},
@@ -99,7 +98,7 @@ export class IdentityProviderHttpHandler extends BaseHttpHandler {
   /**
    * Finds the matching route and resolves the operation.
    */
-  protected async handleOperation(operation: Operation, request: HttpRequest, response: HttpResponse):
+  public async handle({ operation, request, response }: OperationHttpHandlerInput):
   Promise<ResponseDescription | undefined> {
     // This being defined means we're in an OIDC session
     let oidcInteraction: Interaction | undefined;

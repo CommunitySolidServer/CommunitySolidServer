@@ -5,7 +5,7 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import type { Patch } from '../http/Patch';
 import { ResetResponseDescription } from '../http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
-import type { Operation } from './Operation';
+import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
 /**
@@ -22,21 +22,21 @@ export class PatchOperationHandler extends OperationHandler {
     this.store = store;
   }
 
-  public async canHandle(input: Operation): Promise<void> {
-    if (input.method !== 'PATCH') {
+  public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
+    if (operation.method !== 'PATCH') {
       throw new NotImplementedHttpError('This handler only supports PATCH operations.');
     }
   }
 
-  public async handle(input: Operation): Promise<ResponseDescription> {
+  public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
     // Solid, §2.1: "A Solid server MUST reject PUT, POST and PATCH requests
     // without the Content-Type header with a status code of 400."
     // https://solid.github.io/specification/protocol#http-server
-    if (!input.body?.metadata.contentType) {
+    if (!operation.body?.metadata.contentType) {
       this.logger.warn('No Content-Type header specified on PATCH request');
       throw new BadRequestHttpError('No Content-Type header specified on PATCH request');
     }
-    await this.store.modifyResource(input.target, input.body as Patch, input.conditions);
+    await this.store.modifyResource(operation.target, operation.body as Patch, operation.conditions);
     return new ResetResponseDescription();
   }
 }

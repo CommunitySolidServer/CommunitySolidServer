@@ -1,5 +1,7 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PostOperationHandler } from '../../../../src/ldp/operations/PostOperationHandler';
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
@@ -9,11 +11,15 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
+  let operation: Operation;
+  let body: Representation;
   const conditions = new BasicConditions({});
   let store: ResourceStore;
   let handler: PostOperationHandler;
 
   beforeEach(async(): Promise<void> => {
+    body = new BasicRepresentation('', 'text/turtle');
+    operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
       addResource: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'newPath' } as ResourceIdentifier)),
     } as unknown as ResourceStore;
@@ -21,28 +27,25 @@ describe('A PostOperationHandler', (): void => {
   });
 
   it('only supports POST operations.', async(): Promise<void> => {
-    await expect(handler.canHandle({ method: 'POST', body: { }} as Operation))
-      .resolves.toBeUndefined();
-    await expect(handler.canHandle({ method: 'GET', body: { }} as Operation))
-      .rejects.toThrow(NotImplementedHttpError);
+    await expect(handler.canHandle({ operation })).resolves.toBeUndefined();
+    operation.method = 'GET';
+    await expect(handler.canHandle({ operation })).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('errors if there is no body or content-type.', async(): Promise<void> => {
-    await expect(handler.handle({ } as Operation)).rejects.toThrow(BadRequestHttpError);
-    await expect(handler.handle({ body: { metadata: new RepresentationMetadata() }} as Operation))
-      .rejects.toThrow(BadRequestHttpError);
+    operation.body!.metadata.contentType = undefined;
+    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
+    delete operation.body;
+    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
   });
 
   it('adds the given representation to the store and returns the correct response.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata('text/turtle');
-    const result = await handler.handle(
-      { method: 'POST', target: { path: 'url' }, body: { metadata }, conditions } as Operation,
-    );
+    const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
     expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe('newPath');
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
-    expect(store.addResource).toHaveBeenLastCalledWith({ path: 'url' }, { metadata }, conditions);
+    expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
   });
 });

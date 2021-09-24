@@ -1,14 +1,12 @@
 import type { RegistrationParams,
   RegistrationManager } from '../../identity/interaction/email-password/util/RegistrationManager';
 import type { ErrorHandler } from '../../ldp/http/ErrorHandler';
-import type { RequestParser } from '../../ldp/http/RequestParser';
 import { ResponseDescription } from '../../ldp/http/response/ResponseDescription';
-import type { ResponseWriter } from '../../ldp/http/ResponseWriter';
 import type { Operation } from '../../ldp/operations/Operation';
 import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
-import type { BaseHttpHandlerArgs } from '../../server/BaseHttpHandler';
-import { BaseHttpHandler } from '../../server/BaseHttpHandler';
+import type { OperationHttpHandlerInput } from '../../server/OperationHttpHandler';
+import { OperationHttpHandler } from '../../server/OperationHttpHandler';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { APPLICATION_JSON, TEXT_HTML } from '../../util/ContentTypes';
@@ -38,12 +36,7 @@ export interface SetupInput extends Record<string, any>{
   registration?: boolean;
 }
 
-export interface SetupHttpHandlerArgs extends BaseHttpHandlerArgs {
-  // BaseHttpHandler args
-  requestParser: RequestParser;
-  errorHandler: ErrorHandler;
-  responseWriter: ResponseWriter;
-
+export interface SetupHttpHandlerArgs {
   /**
    * Used for registering a pod during setup.
    */
@@ -73,6 +66,10 @@ export interface SetupHttpHandlerArgs extends BaseHttpHandlerArgs {
    * Template to show when setup was completed successfully.
    */
   responseTemplate: string;
+  /**
+   * Used for converting output errors.
+   */
+  errorHandler: ErrorHandler;
 }
 
 /**
@@ -85,7 +82,7 @@ export interface SetupHttpHandlerArgs extends BaseHttpHandlerArgs {
  * After successfully completing a POST request this handler will disable itself and become unreachable.
  * All other methods will be rejected.
  */
-export class SetupHttpHandler extends BaseHttpHandler {
+export class SetupHttpHandler extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly registrationManager?: RegistrationManager;
@@ -95,11 +92,12 @@ export class SetupHttpHandler extends BaseHttpHandler {
   private readonly storage: KeyValueStorage<string, boolean>;
   private readonly viewTemplate: string;
   private readonly responseTemplate: string;
+  private readonly errorHandler: ErrorHandler;
 
   private finished: boolean;
 
   public constructor(args: SetupHttpHandlerArgs) {
-    super(args);
+    super();
     this.finished = false;
 
     this.registrationManager = args.registrationManager;
@@ -109,9 +107,10 @@ export class SetupHttpHandler extends BaseHttpHandler {
     this.storage = args.storage;
     this.viewTemplate = args.viewTemplate;
     this.responseTemplate = args.responseTemplate;
+    this.errorHandler = args.errorHandler;
   }
 
-  public async handleOperation(operation: Operation): Promise<ResponseDescription> {
+  public async handle({ operation }: OperationHttpHandlerInput): Promise<ResponseDescription> {
     let json: Record<string, any>;
     let template: string;
     let success = false;

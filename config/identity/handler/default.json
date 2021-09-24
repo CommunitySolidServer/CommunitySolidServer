@@ -15,23 +15,29 @@
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_allowedMethods": [ "*" ],
       "args_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
-      "args_handler": { "@id": "urn:solid-server:default:IdentityProviderHttpHandler" }
+      "args_handler": { "@id": "urn:solid-server:default:IdentityProviderParsingHandler" }
     },
     {
-      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
-      "@type": "IdentityProviderHttpHandler",
-      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "args_idpPath": "/idp",
+      "@id": "urn:solid-server:default:IdentityProviderParsingHandler",
+      "@type": "ParsingHttpHandler",
       "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
-      "args_providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
-      "args_converter": { "@id":  "urn:solid-server:default:RepresentationConverter" },
-      "args_interactionCompleter": {
-        "comment": "Responsible for finishing OIDC interactions.",
-        "@type": "InteractionCompleter",
-        "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
-      },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
-      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": {
+        "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
+        "@type": "IdentityProviderHttpHandler",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_idpPath": "/idp",
+        "args_providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
+        "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+        "args_interactionCompleter": {
+          "comment": "Responsible for finishing OIDC interactions.",
+          "@type": "InteractionCompleter",
+          "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+        },
+        "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" }
+      }
     }
   ]
 }

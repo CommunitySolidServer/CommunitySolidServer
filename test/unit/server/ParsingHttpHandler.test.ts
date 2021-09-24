@@ -1,65 +1,75 @@
 import type { ErrorHandler } from '../../../src/ldp/http/ErrorHandler';
 import type { RequestParser } from '../../../src/ldp/http/RequestParser';
+import { OkResponseDescription } from '../../../src/ldp/http/response/OkResponseDescription';
 import { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
+import type { OperationMetadataCollector } from '../../../src/ldp/operations/metadata/OperationMetadataCollector';
 import type { Operation } from '../../../src/ldp/operations/Operation';
-import type { BaseHttpHandlerArgs } from '../../../src/server/BaseHttpHandler';
-import { BaseHttpHandler } from '../../../src/server/BaseHttpHandler';
+import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
+import type { OperationHttpHandler } from '../../../src/server/OperationHttpHandler';
+import { ParsingHttpHandler } from '../../../src/server/ParsingHttpHandler';
 
-class DummyHttpHandler extends BaseHttpHandler {
-  public constructor(args: BaseHttpHandlerArgs) {
-    super(args);
-  }
-
-  public async handleOperation(): Promise<ResponseDescription | undefined> {
-    return undefined;
-  }
-}
-
-describe('A BaseHttpHandler', (): void => {
+describe('A ParsingHttpHandler', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
   const preferences = { type: { 'text/html': 1 }};
   const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences };
   const errorResponse = new ResponseDescription(400);
   let requestParser: jest.Mocked<RequestParser>;
+  let metadataCollector: jest.Mocked<OperationMetadataCollector>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
-  let handler: jest.Mocked<DummyHttpHandler>;
+  let source: jest.Mocked<OperationHttpHandler>;
+  let handler: ParsingHttpHandler;
 
   beforeEach(async(): Promise<void> => {
     requestParser = { handleSafe: jest.fn().mockResolvedValue(operation) } as any;
+    metadataCollector = { handleSafe: jest.fn() } as any;
     errorHandler = { handleSafe: jest.fn().mockResolvedValue(errorResponse) } as any;
     responseWriter = { handleSafe: jest.fn() } as any;
 
-    handler = new DummyHttpHandler({ requestParser, errorHandler, responseWriter }) as any;
-    handler.handleOperation = jest.fn();
+    source = {
+      handleSafe: jest.fn(),
+    } as any;
+
+    handler = new ParsingHttpHandler(
+      { requestParser, metadataCollector, errorHandler, responseWriter, operationHandler: source },
+    );
   });
 
-  it('calls the handleOperation function with the generated operation.', async(): Promise<void> => {
+  it('calls the source with the generated operation.', async(): Promise<void> => {
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(handler.handleOperation).toHaveBeenCalledTimes(1);
-    expect(handler.handleOperation).toHaveBeenLastCalledWith(operation, request, response);
+    expect(source.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.handleSafe).toHaveBeenLastCalledWith({ operation, request, response });
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(0);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
   it('calls the responseWriter if there is a response.', async(): Promise<void> => {
     const result = new ResponseDescription(200);
-    handler.handleOperation.mockResolvedValueOnce(result);
+    source.handleSafe.mockResolvedValueOnce(result);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(handler.handleOperation).toHaveBeenCalledTimes(1);
-    expect(handler.handleOperation).toHaveBeenLastCalledWith(operation, request, response);
+    expect(source.handleSafe).toHaveBeenCalledTimes(1);
+    expect(source.handleSafe).toHaveBeenLastCalledWith({ operation, request, response });
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(0);
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result });
   });
 
+  it('calls the operation metadata collector if there is response metadata.', async(): Promise<void> => {
+    const metadata = new RepresentationMetadata();
+    const okResult = new OkResponseDescription(metadata);
+    source.handleSafe.mockResolvedValueOnce(okResult);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(metadataCollector.handleSafe).toHaveBeenCalledTimes(1);
+    expect(metadataCollector.handleSafe).toHaveBeenLastCalledWith({ operation, metadata });
+  });
+
   it('calls the error handler if something goes wrong.', async(): Promise<void> => {
     const error = new Error('bad data');
-    handler.handleOperation.mockRejectedValueOnce(error);
+    source.handleSafe.mockRejectedValueOnce(error);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
