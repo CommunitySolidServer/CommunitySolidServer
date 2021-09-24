@@ -1,12 +1,16 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
+import { guardStream } from '../../util/GuardedStream';
 import { guardedStreamFrom } from '../../util/StreamUtil';
 import type { Size } from '../size-reporter/size.model';
 import type { SizeReporter } from '../size-reporter/SizeReporter';
 import type { QuotaStrategy } from './QuotaStrategy';
 
+/**
+ * The GlobalQuotaStrategy sets a limit on the amount of data stored on the server globally
+ */
 export class GlobalQuotaStrategy implements QuotaStrategy {
   public readonly limit: Size;
   private readonly reporter: SizeReporter;
@@ -24,7 +28,10 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
   }
 
   public estimateSize(metadata: RepresentationMetadata): Size {
-    return { amount: 20, unit: 'placeholder' };
+    return {
+      amount: metadata.contentLength ? Number(metadata.contentLength) : 0,
+      unit: this.limit.unit,
+    };
   }
 
   public trackAvailableSpace(
@@ -35,7 +42,7 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
     const newStream = guardedStreamFrom('');
     data.on('data', (chunk): void => {
       const available = this.getAvailableSpace().amount;
-      const chunkSize: number = chunk;
+      const chunkSize: number = chunk.length;
       newStream.push(available - chunkSize);
     });
     return newStream;

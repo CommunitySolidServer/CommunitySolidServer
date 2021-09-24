@@ -16,7 +16,7 @@ export interface SizeReporter {
    * Get the size of a given resource
    *
    * @param identifier - the resource of which you want the size
-   * @returns The size of the resource as a number
+   * @returns The size of the resource as a Size object
    */
   getSize: (identifier: ResourceIdentifier) => Size;
 }

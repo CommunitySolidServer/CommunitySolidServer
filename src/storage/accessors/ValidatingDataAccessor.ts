@@ -7,6 +7,12 @@ import type { DataValidator } from '../validators/DataValidator';
 import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
+/**
+ * The ValidatingDataAccessor wraps a AtomicDataAccessor and mostly passes on its calls
+ * to that accessor.
+ * For now the only addition to the wrapped DataAccessor is that while writing a
+ * document, validation is added to the stream before actually writing the data.
+ */
 export class ValidatingDataAccessor implements DataAccessor {
   private readonly accessor: AtomicDataAccessor;
   private readonly validator: DataValidator;
