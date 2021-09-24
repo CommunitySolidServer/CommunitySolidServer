@@ -4,9 +4,7 @@ import type { Initializer } from '../../../../src/init/Initializer';
 import type { SetupInput } from '../../../../src/init/setup/SetupHttpHandler';
 import { SetupHttpHandler } from '../../../../src/init/setup/SetupHttpHandler';
 import type { ErrorHandlerArgs, ErrorHandler } from '../../../../src/ldp/http/ErrorHandler';
-import type { RequestParser } from '../../../../src/ldp/http/RequestParser';
 import type { ResponseDescription } from '../../../../src/ldp/http/response/ResponseDescription';
-import type { ResponseWriter } from '../../../../src/ldp/http/ResponseWriter';
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
@@ -22,22 +20,18 @@ import type { HttpError } from '../../../../src/util/errors/HttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { joinUrl } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_META } from '../../../../src/util/Vocabularies';
 
 describe('A SetupHttpHandler', (): void => {
-  const baseUrl = 'http://test.com/';
   let request: HttpRequest;
-  let requestBody: SetupInput;
   const response: HttpResponse = {} as any;
+  let operation: Operation;
   const viewTemplate = '/templates/view';
   const responseTemplate = '/templates/response';
   const storageKey = 'completed';
   let details: RegistrationResponse;
-  let requestParser: jest.Mocked<RequestParser>;
   let errorHandler: jest.Mocked<ErrorHandler>;
-  let responseWriter: jest.Mocked<ResponseWriter>;
   let registrationManager: jest.Mocked<RegistrationManager>;
   let initializer: jest.Mocked<Initializer>;
   let converter: jest.Mocked<RepresentationConverter>;
@@ -45,26 +39,16 @@ describe('A SetupHttpHandler', (): void => {
   let handler: SetupHttpHandler;
 
   beforeEach(async(): Promise<void> => {
-    request = { url: '/setup', method: 'GET', headers: {}} as any;
-    requestBody = {};
-
-    requestParser = {
-      handleSafe: jest.fn(async(req: HttpRequest): Promise<Operation> => ({
-        target: { path: joinUrl(baseUrl, req.url!) },
-        method: req.method!,
-        body: req.method === 'GET' ?
-          undefined :
-          new BasicRepresentation(JSON.stringify(requestBody), req.headers['content-type'] ?? 'text/plain'),
-        preferences: { type: { 'text/html': 1 }},
-      })),
-    } as any;
+    operation = {
+      method: 'GET',
+      target: { path: 'http://test.com/setup' },
+      preferences: { type: { 'text/html': 1 }},
+    };
 
     errorHandler = { handleSafe: jest.fn(({ error }: ErrorHandlerArgs): ResponseDescription => ({
       statusCode: 400,
       data: guardedStreamFrom(`{ "name": "${error.name}", "message": "${error.message}" }`),
     })) } as any;
-
-    responseWriter = { handleSafe: jest.fn() } as any;
 
     initializer = {
       handleSafe: jest.fn(),
@@ -94,9 +78,6 @@ describe('A SetupHttpHandler', (): void => {
     storage = new Map<string, any>() as any;
 
     handler = new SetupHttpHandler({
-      requestParser,
-      errorHandler,
-      responseWriter,
       initializer,
       registrationManager,
       converter,
@@ -104,23 +85,25 @@ describe('A SetupHttpHandler', (): void => {
       storage,
       viewTemplate,
       responseTemplate,
+      errorHandler,
     });
   });
 
   // Since all tests check similar things, the test functionality is generalized in here
   async function testPost(input: SetupInput, error?: HttpError): Promise<void> {
-    request.method = 'POST';
+    operation.method = 'POST';
     const initialize = Boolean(input.initialize);
     const registration = Boolean(input.registration);
-    requestBody = { initialize, registration };
+    const requestBody = { initialize, registration };
+    if (Object.keys(input).length > 0) {
+      operation.body = new BasicRepresentation(JSON.stringify(requestBody), 'application/json');
+    }
 
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    const result = await handler.handle({ operation, request, response });
+    expect(result).toBeDefined();
     expect(initializer.handleSafe).toHaveBeenCalledTimes(!error && initialize ? 1 : 0);
     expect(registrationManager.validateInput).toHaveBeenCalledTimes(!error && registration ? 1 : 0);
     expect(registrationManager.register).toHaveBeenCalledTimes(!error && registration ? 1 : 0);
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
-    expect(mockResponse).toBe(response);
     let expectedResult: any = { initialize, registration };
     if (error) {
       expectedResult = { name: error.name, message: error.message };
@@ -139,10 +122,8 @@ describe('A SetupHttpHandler', (): void => {
   }
 
   it('returns the view template on GET requests.', async(): Promise<void> => {
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
-    expect(mockResponse).toBe(response);
+    const result = await handler.handle({ operation, request, response });
+    expect(result).toBeDefined();
     expect(JSON.parse(await readableToString(result.data!))).toEqual({});
     expect(result.statusCode).toBe(200);
     expect(result.metadata?.contentType).toBe('text/html');
@@ -160,11 +141,6 @@ describe('A SetupHttpHandler', (): void => {
   });
 
   it('defaults to an empty body if there is none.', async(): Promise<void> => {
-    requestParser.handleSafe.mockResolvedValueOnce({
-      target: { path: joinUrl(baseUrl, '/randomPath') },
-      method: 'POST',
-      preferences: { type: { 'text/html': 1 }},
-    });
     await expect(testPost({})).resolves.toBeUndefined();
   });
 
@@ -183,18 +159,18 @@ describe('A SetupHttpHandler', (): void => {
   });
 
   it('errors on non-GET/POST requests.', async(): Promise<void> => {
-    request.method = 'PUT';
-    requestBody = { initialize: true, registration: true };
+    operation.method = 'PUT';
+    const requestBody = { initialize: true, registration: true };
+    operation.body = new BasicRepresentation(JSON.stringify(requestBody), 'application/json');
     const error = new MethodNotAllowedHttpError();
 
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    const result = await handler.handle({ operation, request, response });
+    expect(result).toBeDefined();
     expect(initializer.handleSafe).toHaveBeenCalledTimes(0);
     expect(registrationManager.register).toHaveBeenCalledTimes(0);
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { [APPLICATION_JSON]: 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    const { response: mockResponse, result } = responseWriter.handleSafe.mock.calls[0][0];
-    expect(mockResponse).toBe(response);
+
     expect(JSON.parse(await readableToString(result.data!))).toEqual({ name: error.name, message: error.message });
     expect(result.statusCode).toBe(405);
     expect(result.metadata?.contentType).toBe('text/html');
@@ -206,9 +182,7 @@ describe('A SetupHttpHandler', (): void => {
 
   it('errors when attempting registration when no RegistrationManager is defined.', async(): Promise<void> => {
     handler = new SetupHttpHandler({
-      requestParser,
       errorHandler,
-      responseWriter,
       initializer,
       converter,
       storageKey,
@@ -216,8 +190,9 @@ describe('A SetupHttpHandler', (): void => {
       viewTemplate,
       responseTemplate,
     });
-    request.method = 'POST';
-    requestBody = { initialize: false, registration: true };
+    operation.method = 'POST';
+    const requestBody = { initialize: false, registration: true };
+    operation.body = new BasicRepresentation(JSON.stringify(requestBody), 'application/json');
     const error = new NotImplementedHttpError('This server is not configured to support registration during setup.');
     await expect(testPost({ initialize: false, registration: true }, error)).resolves.toBeUndefined();
 
@@ -227,9 +202,7 @@ describe('A SetupHttpHandler', (): void => {
 
   it('errors when attempting initialization when no Initializer is defined.', async(): Promise<void> => {
     handler = new SetupHttpHandler({
-      requestParser,
       errorHandler,
-      responseWriter,
       registrationManager,
       converter,
       storageKey,
@@ -237,8 +210,9 @@ describe('A SetupHttpHandler', (): void => {
       viewTemplate,
       responseTemplate,
     });
-    request.method = 'POST';
-    requestBody = { initialize: true, registration: false };
+    operation.method = 'POST';
+    const requestBody = { initialize: true, registration: false };
+    operation.body = new BasicRepresentation(JSON.stringify(requestBody), 'application/json');
     const error = new NotImplementedHttpError('This server is not configured with a setup initializer.');
     await expect(testPost({ initialize: true, registration: false }, error)).resolves.toBeUndefined();
 

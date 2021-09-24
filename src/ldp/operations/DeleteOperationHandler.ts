@@ -2,7 +2,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { ResetResponseDescription } from '../http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
-import type { Operation } from './Operation';
+import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
 /**
@@ -17,14 +17,14 @@ export class DeleteOperationHandler extends OperationHandler {
     this.store = store;
   }
 
-  public async canHandle(input: Operation): Promise<void> {
-    if (input.method !== 'DELETE') {
+  public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
+    if (operation.method !== 'DELETE') {
       throw new NotImplementedHttpError('This handler only supports DELETE operations');
     }
   }
 
-  public async handle(input: Operation): Promise<ResponseDescription> {
-    await this.store.deleteResource(input.target, input.conditions);
+  public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
+    await this.store.deleteResource(operation.target, operation.conditions);
     return new ResetResponseDescription();
   }
 }

@@ -2,7 +2,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { OkResponseDescription } from '../http/response/OkResponseDescription';
 import type { ResponseDescription } from '../http/response/ResponseDescription';
-import type { Operation } from './Operation';
+import type { OperationHandlerInput } from './OperationHandler';
 import { OperationHandler } from './OperationHandler';
 
 /**
@@ -17,14 +17,14 @@ export class GetOperationHandler extends OperationHandler {
     this.store = store;
   }
 
-  public async canHandle(input: Operation): Promise<void> {
-    if (input.method !== 'GET') {
+  public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
+    if (operation.method !== 'GET') {
       throw new NotImplementedHttpError('This handler only supports GET operations');
     }
   }
 
-  public async handle(input: Operation): Promise<ResponseDescription> {
-    const body = await this.store.getRepresentation(input.target, input.preferences, input.conditions);
+  public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
+    const body = await this.store.getRepresentation(operation.target, operation.preferences, operation.conditions);
 
     return new OkResponseDescription(body.metadata, body.data);
   }

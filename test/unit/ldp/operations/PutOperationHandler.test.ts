@@ -1,36 +1,42 @@
 import type { Operation } from '../../../../src/ldp/operations/Operation';
 import { PutOperationHandler } from '../../../../src/ldp/operations/PutOperationHandler';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PutOperationHandler', (): void => {
+  let operation: Operation;
+  let body: Representation;
   const conditions = new BasicConditions({});
   const store = {} as unknown as ResourceStore;
   const handler = new PutOperationHandler(store);
   beforeEach(async(): Promise<void> => {
+    body = new BasicRepresentation('', 'text/turtle');
+    operation = { method: 'PUT', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     store.setRepresentation = jest.fn(async(): Promise<any> => {});
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {
-    await expect(handler.canHandle({ method: 'GET' } as Operation)).rejects.toThrow(NotImplementedHttpError);
-    await expect(handler.canHandle({ method: 'PUT' } as Operation)).resolves.toBeUndefined();
+    await expect(handler.canHandle({ operation })).resolves.toBeUndefined();
+    operation.method = 'GET';
+    await expect(handler.canHandle({ operation })).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('errors if there is no body or content-type.', async(): Promise<void> => {
-    await expect(handler.handle({ } as Operation)).rejects.toThrow(BadRequestHttpError);
-    await expect(handler.handle({ body: { metadata: new RepresentationMetadata() }} as Operation))
-      .rejects.toThrow(BadRequestHttpError);
+    operation.body!.metadata.contentType = undefined;
+    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
+    delete operation.body;
+    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
   });
 
   it('sets the representation in the store and returns the correct response.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata('text/turtle');
-    const result = await handler.handle({ target: { path: 'url' }, body: { metadata }, conditions } as Operation);
+    const result = await handler.handle({ operation });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
-    expect(store.setRepresentation).toHaveBeenLastCalledWith({ path: 'url' }, { metadata }, conditions);
+    expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();
