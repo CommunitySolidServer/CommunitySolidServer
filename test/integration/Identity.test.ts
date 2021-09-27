@@ -96,7 +96,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(400);
       registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
@@ -112,7 +112,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
       expect(text).toMatch(new RegExp(`your.WebID.*${webId}`, 'u'));
@@ -184,7 +184,7 @@ describe('A Solid server with IDP', (): void => {
     let nextUrl: string;
 
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/forgotpassword`, stringify({ email }));
+      const res = await postForm(`${baseUrl}idp/forgotpassword/`, stringify({ email }));
       expect(res.status).toBe(200);
       expect(load(await res.text())('form p').first().text().trim())
         .toBe('If your account exists, an email has been sent with a link to reset your password.');
@@ -260,7 +260,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(400);
       registrationTriple = extractRegistrationTriple(await res.text(), webId2);
     });
@@ -276,7 +276,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
       expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
@@ -294,7 +294,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form to create the WebID and register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
 

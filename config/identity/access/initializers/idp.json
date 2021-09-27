@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure the IDP container has the necessary root resources.",
+      "@id": "urn:solid-server:default:IdpContainerInitializer",
+      "@type": "ConditionalHandler",
+      "storageKey": "idpContainerInitialized",
+      "storageValue": true,
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" },
+      "source": {
+        "@type": "ContainerInitializer",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_path": "/idp/",
+        "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
+        "args_generator": {
+          "@type": "TemplatedResourcesGenerator",
+          "templateFolder": "@css:templates/root/empty",
+          "factory": { "@type": "ExtensionBasedMapperFactory" },
+          "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+        },
+        "args_storageKey": "idpContainerInitialized",
+        "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }
+      }
+    }
+  ]
+}

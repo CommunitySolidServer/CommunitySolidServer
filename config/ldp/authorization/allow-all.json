@@ -9,6 +9,11 @@
       "@id": "urn:solid-server:default:PermissionReader",
       "@type": "AllStaticReader",
       "allow": true
+    },
+    {
+      "comment": "Everything is allowed, so there are no auth-specific resources.",
+      "@id": "urn:solid-server:default:AuthResourceHttpHandler",
+      "@type": "UnsupportedAsyncHandler"
     }
   ]
 }

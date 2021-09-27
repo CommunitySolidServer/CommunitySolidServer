@@ -10,7 +10,7 @@
       "@type": "UnionCredentialsExtractor",
       "extractors": [
         { "@type": "UnsecureWebIdExtractor" },
-        { "@type": "EmptyCredentialsExtractor" }
+        { "@type": "PublicCredentialsExtractor" }
       ]
     }
   ]

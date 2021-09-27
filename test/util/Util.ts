@@ -12,6 +12,7 @@ const portNames = [
   'Middleware',
   'PodCreation',
   'RedisResourceLocker',
+  'RestrictedIdentity',
   'ServerFetch',
   'SetupMemory',
   'SparqlStorage',

@@ -2,13 +2,13 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/app/main/default.json",
-    "files-scs:config/app/init/initialize-root.json",
+    "files-scs:config/app/init/default.json",
     "files-scs:config/app/setup/disabled.json",
     "files-scs:config/http/handler/default.json",
     "files-scs:config/http/middleware/websockets.json",
     "files-scs:config/http/server-factory/websockets.json",
     "files-scs:config/http/static/default.json",
-    "files-scs:config/identity/access/public.json",
+    "files-scs:config/identity/access/restricted.json",
     "files-scs:config/identity/email/default.json",
     "files-scs:config/identity/handler/default.json",
     "files-scs:config/identity/ownership/token.json",
@@ -20,8 +20,8 @@
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
     "files-scs:config/ldp/modes/default.json",
-    "files-scs:config/storage/backend/regex.json",
-    "files-scs:config/storage/key-value/memory.json",
+    "files-scs:config/storage/backend/memory.json",
+    "files-scs:config/storage/key-value/resource-store.json",
     "files-scs:config/storage/middleware/default.json",
     "files-scs:config/util/auxiliary/acl.json",
     "files-scs:config/util/identifiers/suffix.json",
@@ -33,9 +33,13 @@
   ],
   "@graph": [
     {
-      "comment": [
-        "A server with dynamic routing: all /file/* requests go to the file store, /memory/* to the memory store and /sparql/* to the sparql endpoint store.",
-        "The root .acl file will be stored in the sparql endpoint store."
+      "@id": "urn:solid-server:test:Instances",
+      "@type": "RecordObject",
+      "RecordObject:_record": [
+        {
+          "RecordObject:_record_key": "app",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
+        }
       ]
     }
   ]

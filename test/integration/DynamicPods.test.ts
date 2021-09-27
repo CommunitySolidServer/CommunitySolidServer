@@ -61,7 +61,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('creates a pod with the given config.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}idp/register`, {
+    const res = await fetch(`${baseUrl}idp/register/`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(settings),
@@ -118,7 +118,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
 
   it('should not be able to create a pod with the same name.', async(): Promise<void> => {
     const newSettings = { ...settings, webId: 'http://test.com/#bob', email: 'bob@test.email' };
-    const res = await fetch(`${baseUrl}idp/register`, {
+    const res = await fetch(`${baseUrl}idp/register/`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(newSettings),

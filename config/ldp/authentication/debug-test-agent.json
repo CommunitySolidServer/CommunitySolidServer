@@ -13,7 +13,7 @@
           "@type": "UnsecureConstantCredentialsExtractor",
           "agent": "http://test.com/card#me"
         },
-        { "@type": "EmptyCredentialsExtractor" }
+        { "@type": "PublicCredentialsExtractor" }
       ]
     }
   ]
