@@ -1,9 +1,14 @@
 /**
+ * Different modes that require permission.
+ */
+export enum AccessMode {
+  read = 'read',
+  append = 'append',
+  write = 'write',
+  control = 'control',
+}
+
+/**
  * A data interface indicating which permissions are required (based on the context).
  */
-export interface PermissionSet {
-  read: boolean;
-  append: boolean;
-  write: boolean;
-  control: boolean;
-}
+export type PermissionSet = Record<AccessMode, boolean>;

@@ -3,15 +3,10 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import type { SparqlUpdatePatch } from '../http/SparqlUpdatePatch';
 import type { Operation } from '../operations/Operation';
 import type { Representation } from '../representation/Representation';
-import type { PermissionSet } from './PermissionSet';
-import { PermissionsExtractor } from './PermissionsExtractor';
+import { ModesExtractor } from './ModesExtractor';
+import { AccessMode } from './PermissionSet';
 
-/**
- * Generates permissions for a SPARQL DELETE/INSERT patch.
- * Updates with only an INSERT can be done with just append permissions,
- * while DELETEs require write permissions as well.
- */
-export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
+export class SparqlPatchModesExtractor extends ModesExtractor {
   public async canHandle({ method, body }: Operation): Promise<void> {
     if (method !== 'PATCH') {
       throw new NotImplementedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
@@ -27,16 +22,19 @@ export class SparqlPatchPermissionsExtractor extends PermissionsExtractor {
     }
   }
 
-  public async handle({ body }: Operation): Promise<PermissionSet> {
+  public async handle({ body }: Operation): Promise<Set<AccessMode>> {
     // Verified in `canHandle` call
     const update = (body as SparqlUpdatePatch).algebra as Algebra.DeleteInsert;
+    const result = new Set<AccessMode>();
 
     // Since `append` is a specific type of write, it is true if `write` is true.
-    const read = false;
-    const write = this.needsWrite(update);
-    const append = write || this.needsAppend(update);
-    const control = false;
-    return { read, write, append, control };
+    if (this.needsWrite(update)) {
+      result.add(AccessMode.write);
+      result.add(AccessMode.append);
+    } else if (this.needsAppend(update)) {
+      result.add(AccessMode.append);
+    }
+    return result;
   }
 
   private isSparql(data: Representation): data is SparqlUpdatePatch {

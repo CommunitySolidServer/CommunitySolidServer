@@ -5,7 +5,7 @@ import type { AccessChecker } from '../../../src/authorization/access-checkers/A
 import { WebAclAuthorization } from '../../../src/authorization/WebAclAuthorization';
 import { WebAclAuthorizer } from '../../../src/authorization/WebAclAuthorizer';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../src/ldp/permissions/PermissionSet';
 import type { Representation } from '../../../src/ldp/representation/Representation';
 import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
@@ -31,19 +31,14 @@ describe('A WebAclAuthorizer', (): void => {
   } as any;
   let store: jest.Mocked<ResourceStore>;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
-  let permissions: PermissionSet;
+  let modes: Set<AccessMode>;
   let credentials: CredentialSet;
   let identifier: ResourceIdentifier;
   let authorization: WebAclAuthorization;
   let accessChecker: jest.Mocked<AccessChecker>;
 
   beforeEach(async(): Promise<void> => {
-    permissions = {
-      read: true,
-      append: false,
-      write: true,
-      control: false,
-    };
+    modes = new Set([ AccessMode.read, AccessMode.write ]);
     credentials = { [CredentialGroup.public]: {}, [CredentialGroup.agent]: {}};
     identifier = { path: 'http://test.com/foo' };
     authorization = new WebAclAuthorization(
@@ -73,7 +68,7 @@ describe('A WebAclAuthorizer', (): void => {
   });
 
   it('handles all non-acl inputs.', async(): Promise<void> => {
-    await expect(authorizer.canHandle({ identifier, credentials, permissions })).resolves.toBeUndefined();
+    await expect(authorizer.canHandle({ identifier, credentials, modes })).resolves.toBeUndefined();
     await expect(authorizer.canHandle({ identifier: aclStrategy.getAuxiliaryIdentifier(identifier) } as any))
       .rejects.toThrow(NotImplementedHttpError);
   });
@@ -89,7 +84,7 @@ describe('A WebAclAuthorizer', (): void => {
     ]) } as Representation);
     Object.assign(authorization.everyone, { read: true, write: true, append: true, control: false });
     Object.assign(authorization.user, { read: true, write: true, append: true, control: false });
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
+    await expect(authorizer.handle({ identifier, modes, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access if the acl file allows all agents.', async(): Promise<void> => {
@@ -102,7 +97,7 @@ describe('A WebAclAuthorizer', (): void => {
     ]) } as Representation);
     Object.assign(authorization.everyone, { read: true, write: true, append: true });
     Object.assign(authorization.user, { read: true, write: true, append: true });
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
+    await expect(authorizer.handle({ identifier, modes, credentials })).resolves.toEqual(authorization);
   });
 
   it('allows access if there is a parent acl file allowing all agents.', async(): Promise<void> => {
@@ -122,7 +117,7 @@ describe('A WebAclAuthorizer', (): void => {
     });
     Object.assign(authorization.everyone, { read: true, write: true, append: true });
     Object.assign(authorization.user, { read: true, write: true, append: true });
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
+    await expect(authorizer.handle({ identifier, modes, credentials })).resolves.toEqual(authorization);
   });
 
   it('throws a ForbiddenHttpError if access is not granted and credentials have a WebID.', async(): Promise<void> => {
@@ -132,7 +127,7 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
     ]) } as Representation);
     credentials.agent = { webId: 'http://test.com/alice/profile/card#me' };
-    await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(ForbiddenHttpError);
+    await expect(authorizer.handle({ identifier, modes, credentials })).rejects.toThrow(ForbiddenHttpError);
   });
 
   it('throws an UnauthorizedHttpError if access is not granted there are no credentials.', async(): Promise<void> => {
@@ -142,30 +137,25 @@ describe('A WebAclAuthorizer', (): void => {
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
     ]) } as Representation);
-    await expect(authorizer.handle({ identifier, permissions, credentials })).rejects.toThrow(UnauthorizedHttpError);
+    await expect(authorizer.handle({ identifier, modes, credentials })).rejects.toThrow(UnauthorizedHttpError);
   });
 
   it('re-throws ResourceStore errors as internal errors.', async(): Promise<void> => {
     store.getRepresentation.mockRejectedValue(new Error('TEST!'));
-    const promise = authorizer.handle({ identifier, permissions, credentials });
+    const promise = authorizer.handle({ identifier, modes, credentials });
     await expect(promise).rejects.toThrow(`Error reading ACL for ${identifier.path}: TEST!`);
     await expect(promise).rejects.toThrow(InternalServerError);
   });
 
   it('errors if the root container has no corresponding acl document.', async(): Promise<void> => {
     store.getRepresentation.mockRejectedValue(new NotFoundHttpError());
-    const promise = authorizer.handle({ identifier, permissions, credentials });
+    const promise = authorizer.handle({ identifier, modes, credentials });
     await expect(promise).rejects.toThrow('No ACL document found for root container');
     await expect(promise).rejects.toThrow(ForbiddenHttpError);
   });
 
   it('allows an agent to append if they have write access.', async(): Promise<void> => {
-    permissions = {
-      read: false,
-      write: false,
-      append: true,
-      control: false,
-    };
+    modes = new Set([ AccessMode.append ]);
     store.getRepresentation.mockResolvedValue({ data: guardedStreamFrom([
       quad(nn('auth'), nn(`${rdf}type`), nn(`${acl}Authorization`)),
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
@@ -173,6 +163,6 @@ describe('A WebAclAuthorizer', (): void => {
     ]) } as Representation);
     Object.assign(authorization.everyone, { write: true, append: true });
     Object.assign(authorization.user, { write: true, append: true });
-    await expect(authorizer.handle({ identifier, permissions, credentials })).resolves.toEqual(authorization);
+    await expect(authorizer.handle({ identifier, modes, credentials })).resolves.toEqual(authorization);
   });
 });

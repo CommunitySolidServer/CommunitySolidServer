@@ -11,8 +11,7 @@ import type { ResponseDescription } from './http/response/ResponseDescription';
 import type { ResponseWriter } from './http/ResponseWriter';
 import type { Operation } from './operations/Operation';
 import type { OperationHandler } from './operations/OperationHandler';
-import type { PermissionSet } from './permissions/PermissionSet';
-import type { PermissionsExtractor } from './permissions/PermissionsExtractor';
+import type { ModesExtractor } from './permissions/ModesExtractor';
 
 export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
   // Workaround for https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/73
@@ -24,9 +23,9 @@ export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
    */
   credentialsExtractor: CredentialsExtractor;
   /**
-   * Extracts the required permissions from the generated Operation.
+   * Extracts the required modes from the generated Operation.
    */
-  permissionsExtractor: PermissionsExtractor;
+  modesExtractor: ModesExtractor;
   /**
    * Verifies if the requested operation is allowed.
    */
@@ -42,7 +41,7 @@ export interface AuthenticatedLdpHandlerArgs extends BaseHttpHandlerArgs {
  */
 export class AuthenticatedLdpHandler extends BaseHttpHandler {
   private readonly credentialsExtractor: CredentialsExtractor;
-  private readonly permissionsExtractor: PermissionsExtractor;
+  private readonly modesExtractor: ModesExtractor;
   private readonly authorizer: Authorizer;
   private readonly operationHandler: OperationHandler;
 
@@ -53,7 +52,7 @@ export class AuthenticatedLdpHandler extends BaseHttpHandler {
   public constructor(args: AuthenticatedLdpHandlerArgs) {
     super(args);
     this.credentialsExtractor = args.credentialsExtractor;
-    this.permissionsExtractor = args.permissionsExtractor;
+    this.modesExtractor = args.modesExtractor;
     this.authorizer = args.authorizer;
     this.operationHandler = args.operationHandler;
   }
@@ -81,13 +80,12 @@ export class AuthenticatedLdpHandler extends BaseHttpHandler {
     const credentials: CredentialSet = await this.credentialsExtractor.handleSafe(request);
     this.logger.verbose(`Extracted credentials: ${JSON.stringify(credentials)}`);
 
-    const permissions: PermissionSet = await this.permissionsExtractor.handleSafe(operation);
-    const { read, write, append } = permissions;
-    this.logger.verbose(`Required permissions are read: ${read}, write: ${write}, append: ${append}`);
+    const modes = await this.modesExtractor.handleSafe(operation);
+    this.logger.verbose(`Required modes are read: ${[ ...modes ].join(',')}`);
 
     try {
       const authorization = await this.authorizer
-        .handleSafe({ credentials, identifier: operation.target, permissions });
+        .handleSafe({ credentials, identifier: operation.target, modes });
       operation.authorization = authorization;
     } catch (error: unknown) {
       this.logger.verbose(`Authorization failed: ${(error as any).message}`);

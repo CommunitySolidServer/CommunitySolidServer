@@ -3,15 +3,15 @@
   "@graph": [
     {
       "comment": "Makes sure acl files require control permissions.",
-      "@id": "urn:solid-server:default:PermissionsExtractor",
+      "@id": "urn:solid-server:default:ModesExtractor",
       "@type": "WaterfallHandler",
       "handlers": [
         {
-          "@type": "AclPermissionsExtractor",
+          "@type": "AclModesExtractor",
           "aclStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
         },
-        { "@type": "MethodPermissionsExtractor" },
-        { "@type": "SparqlPatchPermissionsExtractor" }
+        { "@type": "MethodModesExtractor" },
+        { "@type": "SparqlPatchModesExtractor" }
       ]
     }
   ]
