@@ -3,7 +3,7 @@ export * from './authentication/BearerWebIdExtractor';
 export * from './authentication/Credentials';
 export * from './authentication/CredentialsExtractor';
 export * from './authentication/DPoPWebIdExtractor';
-export * from './authentication/EmptyCredentialsExtractor';
+export * from './authentication/PublicCredentialsExtractor';
 export * from './authentication/UnionCredentialsExtractor';
 export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';

@@ -5,7 +5,7 @@
       "comment": "Handles all functionality on the register page",
       "@id": "urn:solid-server:auth:password:RegistrationRoute",
       "@type": "BasicInteractionRoute",
-      "route": "^/register/?$",
+      "route": "^/register/$",
       "viewTemplates": {
         "BasicInteractionRoute:_viewTemplates_key": "text/html",
         "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"

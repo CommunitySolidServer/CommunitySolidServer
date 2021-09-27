@@ -89,7 +89,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
 
   describe('handling pods', (): void => {
     it('creates pods in a subdomain.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}idp/register`, {
+      const res = await fetch(`${baseUrl}idp/register/`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(settings),
@@ -150,7 +150,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
 
     it('should not be able to create a pod with the same name.', async(): Promise<void> => {
       const newSettings = { ...settings, webId: 'http://test.com/#bob', email: 'bob@test.email' };
-      const res = await fetch(`${baseUrl}idp/register`, {
+      const res = await fetch(`${baseUrl}idp/register/`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(newSettings),

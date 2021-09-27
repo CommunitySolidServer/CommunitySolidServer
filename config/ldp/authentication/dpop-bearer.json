@@ -18,7 +18,7 @@
             { "@type": "BearerWebIdExtractor" }
           ]
         },
-        { "@type": "EmptyCredentialsExtractor" }
+        { "@type": "PublicCredentialsExtractor" }
       ]
     }
   ]

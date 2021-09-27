@@ -55,7 +55,7 @@ describe('A Solid server with setup', (): void => {
 
     // Registration still possible
     const registerParams = { email, podName, password, confirmPassword: password, createWebId: true };
-    res = await fetch(joinUrl(baseUrl, 'idp/register'), {
+    res = await fetch(joinUrl(baseUrl, 'idp/register/'), {
       method: 'POST',
       headers: { accept: 'text/html', 'content-type': 'application/json' },
       body: JSON.stringify(registerParams),
@@ -83,7 +83,7 @@ describe('A Solid server with setup', (): void => {
 
     // Root pod registration is never allowed
     const registerParams = { email, podName, password, confirmPassword: password, createWebId: true, rootPod: true };
-    res = await fetch(joinUrl(baseUrl, 'idp/register'), {
+    res = await fetch(joinUrl(baseUrl, 'idp/register/'), {
       method: 'POST',
       headers: { accept: 'text/html', 'content-type': 'application/json' },
       body: JSON.stringify(registerParams),

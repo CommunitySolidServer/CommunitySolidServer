@@ -15,6 +15,7 @@
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
             { "@id": "urn:solid-server:default:SetupHandler" },
+            { "@id": "urn:solid-server:default:AuthResourceHttpHandler" },
             { "@id": "urn:solid-server:default:IdentityProviderHandler" },
             { "@id": "urn:solid-server:default:LdpHandler" }
           ]
