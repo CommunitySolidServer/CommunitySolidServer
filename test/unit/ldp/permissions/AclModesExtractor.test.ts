@@ -1,15 +1,16 @@
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import { AclPermissionsExtractor } from '../../../../src/ldp/permissions/AclPermissionsExtractor';
+import { AclModesExtractor } from '../../../../src/ldp/permissions/AclModesExtractor';
+import { AccessMode } from '../../../../src/ldp/permissions/PermissionSet';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
-describe('An AclPermissionsExtractor', (): void => {
-  let extractor: AclPermissionsExtractor;
+describe('An AclModesExtractor', (): void => {
+  let extractor: AclModesExtractor;
 
   beforeEach(async(): Promise<void> => {
     const aclStrategy = {
       isAuxiliaryIdentifier: (id): boolean => id.path.endsWith('.acl'),
     } as AuxiliaryIdentifierStrategy;
-    extractor = new AclPermissionsExtractor(aclStrategy);
+    extractor = new AclModesExtractor(aclStrategy);
   });
 
   it('can only handle acl files.', async(): Promise<void> => {
@@ -20,11 +21,6 @@ describe('An AclPermissionsExtractor', (): void => {
   });
 
   it('returns control permissions.', async(): Promise<void> => {
-    await expect(extractor.handle()).resolves.toEqual({
-      read: false,
-      write: false,
-      append: false,
-      control: true,
-    });
+    await expect(extractor.handle()).resolves.toEqual(new Set([ AccessMode.control ]));
   });
 });

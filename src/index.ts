@@ -150,11 +150,11 @@ export * from './ldp/operations/PostOperationHandler';
 export * from './ldp/operations/PutOperationHandler';
 
 // LDP/Permissions
-export * from './ldp/permissions/AclPermissionsExtractor';
+export * from './ldp/permissions/AclModesExtractor';
 export * from './ldp/permissions/PermissionSet';
-export * from './ldp/permissions/PermissionsExtractor';
-export * from './ldp/permissions/MethodPermissionsExtractor';
-export * from './ldp/permissions/SparqlPatchPermissionsExtractor';
+export * from './ldp/permissions/ModesExtractor';
+export * from './ldp/permissions/MethodModesExtractor';
+export * from './ldp/permissions/SparqlPatchModesExtractor';
 
 // LDP/Representation
 export * from './ldp/representation/BasicRepresentation';

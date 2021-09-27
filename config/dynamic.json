@@ -18,7 +18,7 @@
     "files-scs:config/ldp/handler/default.json",
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
-    "files-scs:config/ldp/permissions/acl.json",
+    "files-scs:config/ldp/modes/acl.json",
     "files-scs:config/storage/backend/dynamic.json",
     "files-scs:config/storage/key-value/resource-store.json",
     "files-scs:config/storage/middleware/default.json",

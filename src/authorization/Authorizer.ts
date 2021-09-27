@@ -1,5 +1,5 @@
 import type { CredentialSet } from '../authentication/Credentials';
-import type { PermissionSet } from '../ldp/permissions/PermissionSet';
+import type { AccessMode } from '../ldp/permissions/PermissionSet';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { Authorization } from './Authorization';
@@ -14,9 +14,9 @@ export interface AuthorizerInput {
    */
   identifier: ResourceIdentifier;
   /**
-   * Permissions that are requested on the resource.
+   * Modes that are requested on the resource.
    */
-  permissions: PermissionSet;
+  modes: Set<AccessMode>;
 }
 
 /**

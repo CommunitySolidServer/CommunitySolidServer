@@ -1,12 +1,12 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
-import type { Credentials } from '../../../src/authentication/Credentials';
+import type { CredentialSet } from '../../../src/authentication/Credentials';
 import type { CredentialsExtractor } from '../../../src/authentication/CredentialsExtractor';
 import { UnionCredentialsExtractor } from '../../../src/authentication/UnionCredentialsExtractor';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 
 describe('A UnionCredentialsExtractor', (): void => {
-  const agent: Credentials = { [CredentialGroup.agent]: { webId: 'http://test.com/#me' }};
-  const everyone: Credentials = { [CredentialGroup.public]: {}};
+  const agent: CredentialSet = { [CredentialGroup.agent]: { webId: 'http://test.com/#me' }};
+  const everyone: CredentialSet = { [CredentialGroup.public]: {}};
   const request: HttpRequest = {} as any;
   let extractors: jest.Mocked<CredentialsExtractor>[];
   let extractor: UnionCredentialsExtractor;

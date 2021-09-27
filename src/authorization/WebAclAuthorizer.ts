@@ -3,6 +3,7 @@ import { Store } from 'n3';
 import type { Credential, CredentialSet } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
 import type { PermissionSet } from '../ldp/permissions/PermissionSet';
+import { AccessMode } from '../ldp/permissions/PermissionSet';
 import type { Representation } from '../ldp/representation/Representation';
 import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -22,11 +23,11 @@ import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
 import { WebAclAuthorization } from './WebAclAuthorization';
 
-const modesMap: Record<string, keyof PermissionSet> = {
-  [ACL.Read]: 'read',
-  [ACL.Write]: 'write',
-  [ACL.Append]: 'append',
-  [ACL.Control]: 'control',
+const modesMap: Record<string, AccessMode> = {
+  [ACL.Read]: AccessMode.read,
+  [ACL.Write]: AccessMode.write,
+  [ACL.Append]: AccessMode.append,
+  [ACL.Control]: AccessMode.control,
 } as const;
 
 /**
@@ -61,11 +62,10 @@ export class WebAclAuthorizer extends Authorizer {
    * Will throw an error if this is not the case.
    * @param input - Relevant data needed to check if access can be granted.
    */
-  public async handle({ identifier, permissions, credentials }: AuthorizerInput):
+  public async handle({ identifier, modes, credentials }: AuthorizerInput):
   Promise<WebAclAuthorization> {
-    // Determine the required access modes
-    const modes = (Object.keys(permissions) as (keyof PermissionSet)[]).filter((key): boolean => permissions[key]);
-    this.logger.debug(`Checking if ${credentials.agent?.webId} has ${modes.join()} permissions for ${identifier.path}`);
+    const modeString = [ ...modes ].join(',');
+    this.logger.debug(`Checking if ${credentials.agent?.webId} has ${modeString} permissions for ${identifier.path}`);
 
     // Determine the full authorization for the agent granted by the applicable ACL
     const acl = await this.getAclRecursive(identifier);
@@ -76,7 +76,7 @@ export class WebAclAuthorizer extends Authorizer {
     for (const mode of modes) {
       this.requirePermission(agent, authorization, mode);
     }
-    this.logger.debug(`${agent.webId} has ${modes.join()} permissions for ${identifier.path}`);
+    this.logger.debug(`${agent.webId} has ${modeString} permissions for ${identifier.path}`);
     return authorization;
   }
 

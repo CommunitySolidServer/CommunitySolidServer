@@ -27,8 +27,8 @@ Contains a list of parsers that will be run on incoming requests to generate met
 Contains a list of metadata writers that will be run on outgoing responses.
 * *default*: Contains the default writers. Can be added to when specific parsers are required.
 
-## Permissions
-Determines which permissions are needed for requests,
+## Modes
+Determines which modes are needed for requests,
 by default this is based on the used HTTP method.
 * *acl*: The default setup with specific support for accessing .acl documents.
 * *no-acl*: Same as above but interprets .acl documents as any other document.

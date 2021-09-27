@@ -5,7 +5,7 @@ import { AuthenticatedLdpHandler } from '../../../src/ldp/AuthenticatedLdpHandle
 import { ResetResponseDescription } from '../../../src/ldp/http/response/ResetResponseDescription';
 import type { ResponseDescription } from '../../../src/ldp/http/response/ResponseDescription';
 import type { Operation } from '../../../src/ldp/operations/Operation';
-import type { PermissionSet } from '../../../src/ldp/permissions/PermissionSet';
+import { AccessMode } from '../../../src/ldp/permissions/PermissionSet';
 import type { RepresentationPreferences } from '../../../src/ldp/representation/RepresentationPreferences';
 import * as LogUtil from '../../../src/logging/LogUtil';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
@@ -17,7 +17,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
   const preferences: RepresentationPreferences = { type: { 'text/turtle': 0.9 }};
   let operation: Operation;
   const credentials: CredentialSet = {};
-  const permissions: PermissionSet = { read: true, write: false, append: false, control: false };
+  const modes: Set<AccessMode> = new Set([ AccessMode.read ]);
   const authorization: Authorization = { addMetadata: jest.fn() };
   const result: ResponseDescription = new ResetResponseDescription();
   const errorResult: ResponseDescription = { statusCode: 500 };
@@ -32,7 +32,7 @@ describe('An AuthenticatedLdpHandler', (): void => {
         handleSafe: jest.fn().mockResolvedValue(operation),
       } as any,
       credentialsExtractor: { handleSafe: jest.fn().mockResolvedValue(credentials) } as any,
-      permissionsExtractor: { handleSafe: jest.fn().mockResolvedValue(permissions) } as any,
+      modesExtractor: { handleSafe: jest.fn().mockResolvedValue(modes) } as any,
       authorizer: { handleSafe: jest.fn().mockResolvedValue(authorization) } as any,
       operationHandler: { handleSafe: jest.fn().mockResolvedValue(result) } as any,
       errorHandler: { handleSafe: jest.fn().mockResolvedValue(errorResult) } as any,
@@ -63,11 +63,11 @@ describe('An AuthenticatedLdpHandler', (): void => {
     expect(args.requestParser.handleSafe).toHaveBeenLastCalledWith(request);
     expect(args.credentialsExtractor.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.credentialsExtractor.handleSafe).toHaveBeenLastCalledWith(request);
-    expect(args.permissionsExtractor.handleSafe).toHaveBeenCalledTimes(1);
-    expect(args.permissionsExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
+    expect(args.modesExtractor.handleSafe).toHaveBeenCalledTimes(1);
+    expect(args.modesExtractor.handleSafe).toHaveBeenLastCalledWith(operation);
     expect(args.authorizer.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.authorizer.handleSafe)
-      .toHaveBeenLastCalledWith({ credentials, identifier: { path: 'identifier' }, permissions });
+      .toHaveBeenLastCalledWith({ credentials, identifier: { path: 'identifier' }, modes });
     expect(operation.authorization).toBe(authorization);
     expect(args.operationHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(args.operationHandler.handleSafe).toHaveBeenLastCalledWith(operation);

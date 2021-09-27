@@ -1,5 +1,6 @@
 import type { Authorizer, AuthorizerInput } from '../../../src/authorization/Authorizer';
 import { PathBasedAuthorizer } from '../../../src/authorization/PathBasedAuthorizer';
+import { AccessMode } from '../../../src/ldp/permissions/PermissionSet';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PathBasedAuthorizer', (): void => {
@@ -11,7 +12,7 @@ describe('A PathBasedAuthorizer', (): void => {
   beforeEach(async(): Promise<void> => {
     input = {
       identifier: { path: `${baseUrl}first` },
-      permissions: { read: true, append: false, write: false, control: false },
+      modes: new Set([ AccessMode.read ]),
       credentials: {},
     };
 
