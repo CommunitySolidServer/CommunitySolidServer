@@ -18,5 +18,5 @@ export interface SizeReporter {
    * @param identifier - the resource of which you want the size
    * @returns The size of the resource as a Size object
    */
-  getSize: (identifier: ResourceIdentifier) => Size;
+  getSize: (identifier: ResourceIdentifier) => Promise<Size>;
 }

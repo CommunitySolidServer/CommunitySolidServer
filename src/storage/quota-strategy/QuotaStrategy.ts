@@ -19,7 +19,7 @@ export interface QuotaStrategy {
    * @param identifier - the identifier of the resource of which you want the available space
    * @returns the available space and the unit of the space as a Size object
    */
-  getAvailableSpace: (identifier: ResourceIdentifier) => Size;
+  getAvailableSpace: (identifier: ResourceIdentifier) => Promise<Size>;
 
   /**
    * Get an estimated size of the resource
@@ -27,7 +27,7 @@ export interface QuotaStrategy {
    * @param metadata - the metadata that might include
    * @returns a Size object containing the estimated size and unit of the resource
    */
-  estimateSize: (metadata: RepresentationMetadata) => Size;
+  estimateSize: (metadata: RepresentationMetadata) => Promise<Size>;
 
   /**
    * Track the available space depending on the data stream that was given.
@@ -43,6 +43,6 @@ export interface QuotaStrategy {
     identifier: ResourceIdentifier,
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
-  ) => Guarded<Readable>;
+  ) => Promise<Guarded<Readable>>;
 
 }

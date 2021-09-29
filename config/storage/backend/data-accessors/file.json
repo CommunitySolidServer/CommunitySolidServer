@@ -2,10 +2,34 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Stores data on a file system.",
+      "@id": "urn:solid-server:default:SizeReporter",
+      "@type": "FileSizeReporter",
+      "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:QuotaStrategy",
+      "@type": "GlobalQuotaStrategy",
+      "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
+      "limitUnit": "bytes",
+      "limitAmount": "5000",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+    },
+
+    {
+      "@id": "urn:solid-server:default:DataValidator",
+      "@type": "QuotaDataValidator",
+      "strategy": { "@id": "urn:solid-server:default:QuotaStrategy" }
+    },
+
+    {
       "@id": "urn:solid-server:default:FileDataAccessor",
-      "@type": "FileDataAccessor",
-      "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
+      "@type": "ValidatingDataAccessor",
+      "accessor": {
+        "@type": "FileDataAccessor",
+        "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
+      },
+      "validator": { "@id": "urn:solid-server:default:DataValidator" }
     }
   ]
 }
