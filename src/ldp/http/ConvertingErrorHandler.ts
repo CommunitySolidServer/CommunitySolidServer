@@ -49,9 +49,7 @@ export class ConvertingErrorHandler extends ErrorHandler {
 
   public async handleSafe(input: ErrorHandlerArgs): Promise<ResponseDescription> {
     const { statusCode, conversionArgs } = this.prepareArguments(input);
-
     const converted = await this.converter.handleSafe(conversionArgs);
-
     return this.createResponse(statusCode, converted);
   }
 

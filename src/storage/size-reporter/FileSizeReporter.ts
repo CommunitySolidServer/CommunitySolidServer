@@ -37,27 +37,17 @@ export class FileSizeReporter implements SizeReporter {
 
     const files = readdirSync(fileLocation);
 
-    files.forEach(async(file: string): Promise<void> => {
-      const childFileLocation = join(fileLocation, file);
-      if (statSync(childFileLocation).isDirectory()) {
-        arrayOfFiles = await this.getAllFiles(childFileLocation, arrayOfFiles);
-      } else {
-        arrayOfFiles.push(childFileLocation);
-      }
-    });
-
-    return arrayOfFiles;
+    return files.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
+      const childFileLocation = join(fileLocation, current);
+      return statSync(childFileLocation).isDirectory() ?
+        [ ...await acc, ...await this.getAllFiles(childFileLocation, arrayOfFiles) ] :
+        [ ...await acc, childFileLocation ];
+    }, Promise.resolve([]));
   }
 
   private async getTotalSize(identifier: ResourceIdentifier): Promise<number> {
     const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
     const arrayOfFiles = await this.getAllFiles(fileLocation);
-    let totalSize = 0;
-
-    arrayOfFiles.forEach((filePath: string): void => {
-      totalSize += statSync(filePath).size;
-    });
-
-    return totalSize;
+    return arrayOfFiles.reduce((acc, current): number => acc + statSync(current).size, 0);
   }
 }

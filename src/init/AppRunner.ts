@@ -15,6 +15,7 @@ export interface CliParams {
   port: number;
   baseUrl?: string;
   rootFilePath?: string;
+  tempFilePath?: string;
   sparqlEndpoint?: string;
   showStackTrace?: boolean;
   podConfigJson?: string;
@@ -79,6 +80,7 @@ export class AppRunner {
         mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
         port: { type: 'number', alias: 'p', default: 3000, requiresArg: true },
         rootFilePath: { type: 'string', alias: 'f', default: './', requiresArg: true },
+        tempFilePath: { type: 'string', default: './data-temp', requiresArg: true },
         showStackTrace: { type: 'boolean', alias: 't', default: false },
         sparqlEndpoint: { type: 'string', alias: 's', requiresArg: true },
         podConfigJson: { type: 'string', default: './pod-config.json', requiresArg: true },
@@ -144,6 +146,7 @@ export class AppRunner {
       'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
       'urn:solid-server:default:variable:port': params.port,
       'urn:solid-server:default:variable:rootFilePath': resolveAssetPath(params.rootFilePath),
+      'urn:solid-server:default:variable:tempFilePath': resolveAssetPath(params.tempFilePath),
       'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
       'urn:solid-server:default:variable:showStackTrace': params.showStackTrace,
       'urn:solid-server:default:variable:podConfigJson': resolveAssetPath(params.podConfigJson),

@@ -22,7 +22,7 @@ import type { DataAccessor } from './DataAccessor';
  * DataAccessor that uses the file system to store documents as files and containers as folders.
  */
 export class FileDataAccessor implements DataAccessor {
-  private readonly resourceMapper: FileIdentifierMapper;
+  protected readonly resourceMapper: FileIdentifierMapper;
 
   public constructor(resourceMapper: FileIdentifierMapper) {
     this.resourceMapper = resourceMapper;
@@ -148,7 +148,7 @@ export class FileDataAccessor implements DataAccessor {
    * @throws NotFoundHttpError
    * If the file/folder doesn't exist.
    */
-  private async getStats(path: string): Promise<Stats> {
+  protected async getStats(path: string): Promise<Stats> {
     try {
       return await fsPromises.lstat(path);
     } catch (error: unknown) {
@@ -191,7 +191,7 @@ export class FileDataAccessor implements DataAccessor {
    *
    * @returns True if data was written to a file.
    */
-  private async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
+  protected async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
     metadata.remove(RDF.type, LDP.terms.Resource);
     metadata.remove(RDF.type, LDP.terms.Container);
@@ -321,7 +321,7 @@ export class FileDataAccessor implements DataAccessor {
    *
    * @param link - ResourceLink corresponding to the new resource data.
    */
-  private async verifyExistingExtension(link: ResourceLink): Promise<void> {
+  protected async verifyExistingExtension(link: ResourceLink): Promise<void> {
     try {
       // Delete the old file with the (now) wrong extension
       const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, false);
@@ -341,7 +341,7 @@ export class FileDataAccessor implements DataAccessor {
    * @param path - The filepath of the file to be created.
    * @param data - The data to be put in the file.
    */
-  private async writeDataFile(path: string, data: Readable): Promise<void> {
+  protected async writeDataFile(path: string, data: Readable): Promise<void> {
     return new Promise((resolve, reject): any => {
       const writeStream = createWriteStream(path);
       data.pipe(writeStream);
