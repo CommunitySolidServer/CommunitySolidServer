@@ -12,7 +12,6 @@ import type { Size } from '../size-reporter/size.model';
  * This can be bytes, quads, file count, ...
  */
 export interface QuotaStrategy {
-
   /**
    * Get the available space given a resource's identifier
    *
@@ -24,25 +23,24 @@ export interface QuotaStrategy {
   /**
    * Get an estimated size of the resource
    *
-   * @param metadata - the metadata that might include
+   * @param metadata - the metadata that might include the size
    * @returns a Size object containing the estimated size and unit of the resource
    */
   estimateSize: (metadata: RepresentationMetadata) => Promise<Size>;
 
   /**
-   * Track the available space depending on the data stream that was given.
-   * On every data event of the stream, the returned stream will push data containing
-   * a number representing the amount on space left.
+   * Get a Passthrough stream that will keep track of the available space.
+   * If the quota is exceeded the stream will be destroyed.
+   * Like other Passthrough instances this will simply pass on the chunks, when the quota isn't exceeded.
    *
    * @param identifier - the identifier of the resource in question
    * @param data - the Readable stream that belongs to the identifier
    * @param metadata - the RepresentationMetadata that belongs to the identifier
-   * @returns a readable stream that pushes the available space in numbers
+   * @returns a Passthrough instance that errors when quota is exceeded
    */
   trackAvailableSpace: (
     identifier: ResourceIdentifier,
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
   ) => Promise<Guarded<PassThrough>>;
-
 }
