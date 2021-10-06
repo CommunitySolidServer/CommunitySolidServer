@@ -16,7 +16,8 @@ export interface SizeReporter {
    * Get the size of a given resource
    *
    * @param identifier - the resource of which you want the size
-   * @returns The size of the resource as a Size object
+   * @returns The size of the resource as a Size object calculated recursively
+   * if the identifier leads to a container
    */
   getSize: (identifier: ResourceIdentifier) => Promise<Size>;
 }

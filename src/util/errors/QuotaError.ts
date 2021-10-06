@@ -1,6 +1,9 @@
 import type { HttpErrorOptions } from './HttpError';
 import { HttpError } from './HttpError';
 
+/**
+ * An error thrown when data exceeded the pre configured quota
+ */
 export class QuotaError extends HttpError {
   /**
    * Default message is 'Storage quota was exceeded.'.
