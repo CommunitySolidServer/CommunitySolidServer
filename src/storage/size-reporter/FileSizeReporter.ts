@@ -51,7 +51,6 @@ export class FileSizeReporter implements SizeReporter {
     const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
     // Filter out any duplicates
     const arrayOfFiles = [ ...new Set(await this.getAllFiles(fileLocation)) ];
-    console.log(arrayOfFiles);
     return arrayOfFiles.reduce((acc, current): number => acc + statSync(current).size, 0);
   }
 }
