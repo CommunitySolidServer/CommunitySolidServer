@@ -41,17 +41,17 @@ export class FileSizeReporter implements SizeReporter {
       const childFileLocation = join(fileLocation, current);
 
       return [
-        ...await acc, childFileLocation,
-        ...statSync(childFileLocation).isDirectory() ?
-          await this.getAllFiles(childFileLocation, arrayOfFiles) :
-          [],
+        ...await acc, fileLocation,
+        ...await this.getAllFiles(childFileLocation, arrayOfFiles),
       ];
     }, Promise.resolve([]));
   }
 
   private async getTotalSize(identifier: ResourceIdentifier): Promise<number> {
     const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
-    const arrayOfFiles = await this.getAllFiles(fileLocation);
+    // Filter out any duplicates
+    const arrayOfFiles = [ ...new Set(await this.getAllFiles(fileLocation)) ];
+    console.log(arrayOfFiles);
     return arrayOfFiles.reduce((acc, current): number => acc + statSync(current).size, 0);
   }
 }
