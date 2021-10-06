@@ -39,9 +39,13 @@ export class FileSizeReporter implements SizeReporter {
 
     return files.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
       const childFileLocation = join(fileLocation, current);
-      return statSync(childFileLocation).isDirectory() ?
-        [ ...await acc, ...await this.getAllFiles(childFileLocation, arrayOfFiles) ] :
-        [ ...await acc, childFileLocation ];
+
+      return [
+        ...await acc, childFileLocation,
+        ...statSync(childFileLocation).isDirectory() ?
+          await this.getAllFiles(childFileLocation, arrayOfFiles) :
+          [],
+      ];
     }, Promise.resolve([]));
   }
 
