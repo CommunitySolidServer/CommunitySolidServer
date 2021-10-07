@@ -10,7 +10,7 @@ import type { SizeReporter } from './SizeReporter';
  */
 export class FileSizeReporter implements SizeReporter {
   // The FileSizeReporter will always return byte values
-  public unit = 'bytes';
+  public readonly unit = 'bytes';
   private readonly fileIdentifierMapper: FileIdentifierMapper;
 
   public constructor(fileIdentifierMapper: FileIdentifierMapper) {
