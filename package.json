@@ -53,6 +53,7 @@
     "prepare": "npm run build",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
+    "start:file:quota": "node ./bin/server.js -c config/quota-file.json -f ./data",
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-package.sh",
     "test:ts": "tsc -p test --noEmit",
