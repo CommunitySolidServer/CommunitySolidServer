@@ -80,7 +80,7 @@ export class AppRunner {
         mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
         port: { type: 'number', alias: 'p', default: 3000, requiresArg: true },
         rootFilePath: { type: 'string', alias: 'f', default: './', requiresArg: true },
-        tempFilePath: { type: 'string', default: './data-temp', requiresArg: true },
+        tempFilePath: { type: 'string', default: './tmp', requiresArg: true },
         showStackTrace: { type: 'boolean', alias: 't', default: false },
         sparqlEndpoint: { type: 'string', alias: 's', requiresArg: true },
         podConfigJson: { type: 'string', default: './pod-config.json', requiresArg: true },
