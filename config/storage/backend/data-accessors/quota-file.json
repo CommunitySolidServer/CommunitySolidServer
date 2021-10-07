@@ -1,13 +1,16 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "comment": "DataAccessor configuration using a GlobalQuotaStrategy to enforce quota globally on the server",
   "@graph": [
     {
+      "comment": "calculates the already taken up space by a resource",
       "@id": "urn:solid-server:default:SizeReporter",
       "@type": "FileSizeReporter",
       "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
     },
 
     {
+      "comment": "enforces quota globally for all data on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "GlobalQuotaStrategy",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
@@ -17,15 +20,18 @@
     },
 
     {
+      "comment": "validates the data being written to the server",
       "@id": "urn:solid-server:default:DataValidator",
       "@type": "QuotaDataValidator",
       "strategy": { "@id": "urn:solid-server:default:QuotaStrategy" }
     },
 
     {
+      "comment": "simple wrapper for another DataAccessor but adds validation",
       "@id": "urn:solid-server:default:FileDataAccessor",
       "@type": "ValidatingDataAccessor",
       "accessor": {
+        "comment": "DataAccessor that writes data to the disk with atomicity in mind",
         "@type": "AtomicFileDataAccessor",
         "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
         "tempFilePath": { "@id": "urn:solid-server:default:variable:tempFilePath" }
