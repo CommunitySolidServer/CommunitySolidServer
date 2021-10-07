@@ -1,4 +1,7 @@
-import type { TransformOptions } from 'stream';
+// These two eslint lines are needed to store 'this' in a variable so it can be used
+// in the PassThrough of trackAvailableSpace
+/* eslint-disable @typescript-eslint/no-this-alias */
+/* eslint-disable consistent-this */
 import { PassThrough } from 'stream';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -8,30 +11,6 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Size } from '../size-reporter/size.model';
 import type { SizeReporter } from '../size-reporter/SizeReporter';
 import type { QuotaStrategy } from './QuotaStrategy';
-
-class SpaceTrackingPassthrough extends PassThrough {
-  private total = 0;
-  private readonly availableAmount: Size;
-
-  public constructor(availableAmount: Size, opts?: TransformOptions) {
-    super(opts);
-    this.availableAmount = availableAmount;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  public async _transform(chunk: any, enc: string, done: () => void): Promise<void> {
-    this.total += chunk.length;
-
-    if (this.availableAmount.amount < this.total) {
-      this.destroy(new QuotaError(
-        `Quota exceeded by ${this.total - this.availableAmount.amount} ${this.availableAmount.unit} during write`,
-      ));
-    }
-
-    this.push(chunk);
-    done();
-  }
-}
 
 /**
  * The GlobalQuotaStrategy sets a limit on the amount of data stored on the server globally
@@ -78,8 +57,25 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
     // Not using - data: Guarded<Readable>,
     // Not using - metadata: RepresentationMetadata,
   ): Promise<Guarded<PassThrough>> {
-    const available = await this.getAvailableSpace(identifier);
-    return guardStream(new SpaceTrackingPassthrough(available));
+    let total = 0;
+    const strategy = this;
+
+    return guardStream(new PassThrough({
+      // An arrow function cannot have a 'this' parameter.ts(2730)
+      // eslint-disable-next-line object-shorthand
+      transform: async function(this, chunk: any, enc: string, done: () => void): Promise<void> {
+        total += chunk.length;
+        const availableSpace = await strategy.getAvailableSpace(identifier);
+        if (availableSpace.amount < total) {
+          this.destroy(new QuotaError(
+            `Quota exceeded by ${total - availableSpace.amount} ${availableSpace.unit} during write`,
+          ));
+        }
+
+        this.push(chunk);
+        done();
+      },
+    }));
   }
 }
 
