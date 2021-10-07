@@ -5,8 +5,8 @@ import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy'
 import { MetadataGenerator } from './MetadataGenerator';
 
 /**
- * Adds a link to the auxiliary resource when called on the associated resource.
- * Specifically: <associatedId> <link> <auxiliaryId> will be added.
+ * Adds a link to the auxiliary resource when called on the subject resource.
+ * Specifically: <subjectId> <link> <auxiliaryId> will be added.
  *
  * In case the input is metadata of an auxiliary resource no metadata will be added
  */

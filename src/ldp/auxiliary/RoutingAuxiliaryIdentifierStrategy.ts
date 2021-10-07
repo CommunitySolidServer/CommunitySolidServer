@@ -28,9 +28,9 @@ export class RoutingAuxiliaryIdentifierStrategy implements AuxiliaryIdentifierSt
     return this.sources.some((source): boolean => source.isAuxiliaryIdentifier(identifier));
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     const source = this.getMatchingSource(identifier);
-    return source.getAssociatedIdentifier(identifier);
+    return source.getSubjectIdentifier(identifier);
   }
 
   protected getMatchingSource(identifier: ResourceIdentifier): AuxiliaryIdentifierStrategy {

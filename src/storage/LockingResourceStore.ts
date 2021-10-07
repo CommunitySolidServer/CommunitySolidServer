@@ -17,7 +17,7 @@ import type { ResourceStore } from './ResourceStore';
  * and releases it afterwards.
  * In case the request returns a Representation the lock will only be released when the data stream is finished.
  *
- * For auxiliary resources the lock will be applied to the associated resource.
+ * For auxiliary resources the lock will be applied to the subject resource.
  * The actual operation is still executed on the auxiliary resource.
  */
 export class LockingResourceStore implements AtomicResourceStore {
@@ -71,11 +71,11 @@ export class LockingResourceStore implements AtomicResourceStore {
 
   /**
    * Acquires the correct identifier to lock this resource.
-   * For auxiliary resources this means the associated identifier.
+   * For auxiliary resources this means the subject identifier.
    */
   protected getLockIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) ?
-      this.auxiliaryStrategy.getAssociatedIdentifier(identifier) :
+      this.auxiliaryStrategy.getSubjectIdentifier(identifier) :
       identifier;
   }
 

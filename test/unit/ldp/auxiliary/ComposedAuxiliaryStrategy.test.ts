@@ -15,7 +15,7 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     identifierStrategy = {
       getAuxiliaryIdentifier: jest.fn(),
       getAuxiliaryIdentifiers: jest.fn(),
-      getAssociatedIdentifier: jest.fn(),
+      getSubjectIdentifier: jest.fn(),
       isAuxiliaryIdentifier: jest.fn(),
     };
     metadataGenerator = {
@@ -36,9 +36,9 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
     expect(identifierStrategy.getAuxiliaryIdentifiers).toHaveBeenCalledTimes(1);
     expect(identifierStrategy.getAuxiliaryIdentifiers).toHaveBeenLastCalledWith(identifier);
 
-    strategy.getAssociatedIdentifier(identifier);
-    expect(identifierStrategy.getAssociatedIdentifier).toHaveBeenCalledTimes(1);
-    expect(identifierStrategy.getAssociatedIdentifier).toHaveBeenLastCalledWith(identifier);
+    strategy.getSubjectIdentifier(identifier);
+    expect(identifierStrategy.getSubjectIdentifier).toHaveBeenCalledTimes(1);
+    expect(identifierStrategy.getSubjectIdentifier).toHaveBeenLastCalledWith(identifier);
 
     strategy.isAuxiliaryIdentifier(identifier);
     expect(identifierStrategy.isAuxiliaryIdentifier).toHaveBeenCalledTimes(1);

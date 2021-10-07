@@ -27,7 +27,7 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     return identifier.path.endsWith(this.suffix);
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
 

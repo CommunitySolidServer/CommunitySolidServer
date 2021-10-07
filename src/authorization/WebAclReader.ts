@@ -62,7 +62,7 @@ export class WebAclReader extends PermissionReader {
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId} for ${identifier.path}`);
 
     const isAcl = this.aclStrategy.isAuxiliaryIdentifier(identifier);
-    const mainIdentifier = isAcl ? this.aclStrategy.getAssociatedIdentifier(identifier) : identifier;
+    const mainIdentifier = isAcl ? this.aclStrategy.getSubjectIdentifier(identifier) : identifier;
 
     // Determine the full authorization for the agent granted by the applicable ACL
     const acl = await this.getAclRecursive(mainIdentifier);

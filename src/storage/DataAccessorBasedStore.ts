@@ -244,8 +244,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
     if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
       this.auxiliaryStrategy.isRequiredInRoot(identifier)) {
-      const associatedIdentifier = this.auxiliaryStrategy.getAssociatedIdentifier(identifier);
-      const parentMetadata = await this.accessor.getMetadata(associatedIdentifier);
+      const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
+      const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
         throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
       }
