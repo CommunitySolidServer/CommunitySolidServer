@@ -7,6 +7,7 @@ import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdenti
 import type { Guarded } from '../../util/GuardedStream';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import { FileDataAccessor } from './FileDataAccessor';
+
 /**
  * DataAccessor that uses the file system to store documents as files and containers as folders.
  */
@@ -31,7 +32,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor {
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
-    const wroteMetadata = await this.writeMetadata(link, metadata);
+    const metadataWritten = await this.writeMetadata(link, metadata);
     // Generate temporary file name
     const tempFilePath = join(this.tempFilePath, `temp-${v4()}.txt`);
 
@@ -39,15 +40,14 @@ export class AtomicFileDataAccessor extends FileDataAccessor {
       await this.writeDataFile(tempFilePath, data);
 
       // When no quota errors occur move the file to its desired location
-      await fsPromises.copyFile(tempFilePath, link.filePath);
-      await fsPromises.unlink(tempFilePath);
+      await fsPromises.rename(tempFilePath, link.filePath);
     } catch (error: unknown) {
       // Delete the data already written
       if ((await this.getStats(tempFilePath)).isFile()) {
         await fsPromises.unlink(tempFilePath);
       }
       // Delete the metadata if there was an error writing the file
-      if (wroteMetadata) {
+      if (metadataWritten) {
         const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
         await fsPromises.unlink(metaLink.filePath);
       }

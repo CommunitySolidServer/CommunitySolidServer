@@ -2,7 +2,7 @@ import type { Readable } from 'stream';
 import { PassThrough } from 'stream';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import { QuotaError } from '../../util/errors/QuotaError';
+import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { QuotaStrategy } from '../quota-strategy/QuotaStrategy';
@@ -28,15 +28,15 @@ export class QuotaDataValidator implements DataValidator {
 
     // 2. Check if the estimated size is bigger then the available size
     const estimatedSize = await this.strategy.estimateSize(metadata);
-    let checkEstimateSizeHelper = 0;
+    let estimatedSizeChecked = false;
     const checkEstimateSize = new PassThrough({
       // An arrow function cannot have a 'this' parameter.ts(2730)
       // eslint-disable-next-line object-shorthand
       transform: async function(this: PassThrough, chunk: any, enc: string, done: () => void): Promise<void> {
-        if (checkEstimateSizeHelper === 0) {
-          checkEstimateSizeHelper += 1;
+        if (!estimatedSizeChecked) {
+          estimatedSizeChecked = true;
           if (estimatedSize && availableSize.amount < estimatedSize.amount) {
-            this.destroy(new QuotaError(
+            this.destroy(new PayloadHttpError(
               `Quota exceeded: Advertised Content-Length is ${estimatedSize.amount} ${estimatedSize.unit} ` +
               `and only ${availableSize.amount} ${availableSize.unit} is available`,
             ));
@@ -54,7 +54,7 @@ export class QuotaDataValidator implements DataValidator {
     const afterWrite = new PassThrough({
       flush: async(done): Promise<void> => {
         const availableSpace = (await this.strategy.getAvailableSpace(identifier)).amount;
-        done(availableSpace < 0 ? new QuotaError('Quota exceeded after write completed') : undefined);
+        done(availableSpace < 0 ? new PayloadHttpError('Quota exceeded after write completed') : undefined);
       },
     });
 

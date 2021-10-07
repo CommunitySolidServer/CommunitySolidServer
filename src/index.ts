@@ -262,11 +262,11 @@ export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
 
-// Storage/size-reporter
+// Storage/Size-Reporter
 export * from './storage/size-reporter/SizeReporter';
 export * from './storage/size-reporter/FileSizeReporter';
 
-// Storage/validators
+// Storage/Validators
 export * from './storage/validators/DataValidator';
 export * from './storage/validators/QuotaDataValidator';
 
@@ -284,7 +284,7 @@ export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
-export * from './storage/size-reporter/size.model';
+export * from './storage/size-reporter/Size';
 
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';

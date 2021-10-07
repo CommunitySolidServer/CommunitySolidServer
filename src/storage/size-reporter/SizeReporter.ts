@@ -1,5 +1,5 @@
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
-import type { Size } from './size.model';
+import type { Size } from './Size';
 
 /**
  * A SizeReporter's only purpose (at the moment) is to calculate the size
@@ -10,7 +10,10 @@ import type { Size } from './size.model';
  */
 export interface SizeReporter {
 
-  unit: string;
+  /**
+   * Get the unit as a string in which a SizeReporter returns data
+   */
+  getUnit: () => string;
 
   /**
    * Get the size of a given resource

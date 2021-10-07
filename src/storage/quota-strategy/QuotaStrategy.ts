@@ -2,7 +2,7 @@ import type { PassThrough, Readable } from 'stream';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
-import type { Size } from '../size-reporter/size.model';
+import type { Size } from '../size-reporter/Size';
 
 /**
  * A QuotaStrategy is used when we want to set a limit to the amount of data that can be

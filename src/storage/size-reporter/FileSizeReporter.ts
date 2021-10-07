@@ -2,26 +2,29 @@ import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
-import type { Size } from './size.model';
+import type { Size } from './Size';
 import type { SizeReporter } from './SizeReporter';
 
 /**
  * SizeReporter that is used to calculate sizes of resources for a file based system
  */
 export class FileSizeReporter implements SizeReporter {
-  // The FileSizeReporter will always return byte values
-  public readonly unit = 'bytes';
   private readonly fileIdentifierMapper: FileIdentifierMapper;
 
   public constructor(fileIdentifierMapper: FileIdentifierMapper) {
     this.fileIdentifierMapper = fileIdentifierMapper;
   }
 
+  /** The FileSizeReporter will always return data in the form of bytes */
+  public getUnit(): string {
+    return 'bytes';
+  }
+
   /**
    * Returns the size of the given resource ( and its children ) in bytes
    */
   public async getSize(identifier: ResourceIdentifier): Promise<Size> {
-    return { unit: this.unit, amount: await this.getTotalSize(identifier) };
+    return { unit: this.getUnit(), amount: await this.getTotalSize(identifier) };
   }
 
   /**
@@ -29,38 +32,36 @@ export class FileSizeReporter implements SizeReporter {
    * If a path to a file is given it will simply return an array containing that path.
    *
    * @param fileLocation - the location on disk of the file / container of which you want the size
-   * @param arrayOfFiles - An array of string of file / container locations on disk.
+   * @param files - An array of string of file / container locations on disk.
    * This parameter was solely added for recursive reasons
    * @returns a list of string containing every file / container present
    * in the original 'fileLocation' (if a directory) and itself
    */
-  private async getAllFiles(fileLocation: string, arrayOfFiles: string[] = []): Promise<string[]> {
-    arrayOfFiles = arrayOfFiles ?? [];
-
+  private async getAllFiles(fileLocation: string, files: string[] = []): Promise<string[]> {
     // Check if the file exists
     try {
       await fsPromises.access(fileLocation);
     } catch {
-      return arrayOfFiles;
+      return files;
     }
 
     // If the file's location points to a file, simply add the file the array and return it
     if ((await fsPromises.lstat(fileLocation)).isFile()) {
-      return [ ...arrayOfFiles, fileLocation ];
+      return [ ...files, fileLocation ];
     }
 
     // If the location DOES exist and is NOT a file it should be a directory
     // recursively add all children to the array
-    const files = await fsPromises.readdir(fileLocation);
+    const childFiles = await fsPromises.readdir(fileLocation);
 
-    return files.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
+    return childFiles.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
       const childFileLocation = join(fileLocation, current);
 
       // Add the accumulator together with the container's path and recursively add all
       // the container's children to the array
       return [
         ...await acc, fileLocation,
-        ...await this.getAllFiles(childFileLocation, arrayOfFiles),
+        ...await this.getAllFiles(childFileLocation, files),
       ];
     }, Promise.resolve([]));
   }

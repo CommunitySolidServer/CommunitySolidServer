@@ -52,7 +52,7 @@ describe('A FileSizeReporter', (): void => {
     unlinkSync(testFile);
   });
 
-  it('should have the right unit property.', (): void => {
-    expect(fileSizeReporter.unit).toBe('bytes');
+  it('getUnit() should return \'bytes\'.', (): void => {
+    expect(fileSizeReporter.getUnit()).toBe('bytes');
   });
 });

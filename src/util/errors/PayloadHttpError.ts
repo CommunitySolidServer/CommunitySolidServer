@@ -4,7 +4,7 @@ import { HttpError } from './HttpError';
 /**
  * An error thrown when data exceeded the pre configured quota
  */
-export class QuotaError extends HttpError {
+export class PayloadHttpError extends HttpError {
   /**
    * Default message is 'Storage quota was exceeded.'.
    * @param message - Optional, more specific, message.
@@ -12,12 +12,12 @@ export class QuotaError extends HttpError {
    */
   public constructor(message?: string, options?: HttpErrorOptions) {
     super(413,
-      'QuotaError',
+      'PayloadHttpError',
       message ?? 'Storage quota was exceeded.',
       options);
   }
 
-  public static isInstance(error: any): error is QuotaError {
+  public static isInstance(error: any): error is PayloadHttpError {
     return HttpError.isInstance(error) && error.statusCode === 413;
   }
 }

@@ -8,10 +8,8 @@ import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
 /**
- * The ValidatingDataAccessor wraps a AtomicDataAccessor and mostly passes on its calls
- * to that accessor.
- * For now the only addition to the wrapped DataAccessor is that while writing a
- * document, validation is added to the stream before actually writing the data.
+ * A ValidatingDataAccessor wraps a AtomicDataAccessor such that,
+ * while writing a document, validation is performed before writing the data.
  */
 export class ValidatingDataAccessor implements DataAccessor {
   private readonly accessor: AtomicDataAccessor;
@@ -35,8 +33,6 @@ export class ValidatingDataAccessor implements DataAccessor {
     // - TODO what do we do here ?
     return this.accessor.writeContainer(identifier, metadata);
   }
-
-  // The following functions are unchanged and simply get passed along to the accessor
 
   public async canHandle(representation: Representation): Promise<void> {
     return this.accessor.canHandle(representation);

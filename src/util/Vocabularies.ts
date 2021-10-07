@@ -84,6 +84,10 @@ export const FOAF = createUriAndTermNamespace('http://xmlns.com/foaf/0.1/',
   'Agent',
 );
 
+export const HH = createUriAndTermNamespace('http://www.w3.org/2011/http-headers#',
+  'content-length',
+);
+
 export const HTTP = createUriAndTermNamespace('http://www.w3.org/2011/http#',
   'statusCodeNumber',
 );
@@ -144,10 +148,6 @@ export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
 export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#',
   'dateTime',
   'integer',
-);
-
-export const HH = createUriAndTermNamespace('http://www.w3.org/2011/http-headers#',
-  'content-length',
 );
 
 // Alias for commonly used types
