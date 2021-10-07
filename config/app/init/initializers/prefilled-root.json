@@ -4,14 +4,23 @@
     {
       "comment": "Makes sure the root container exists and contains the necessary resources.",
       "@id": "urn:solid-server:default:RootInitializer",
-      "@type": "RootInitializer",
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "store": { "@id": "urn:solid-server:default:ResourceStore" },
-      "generator": {
-        "@type": "TemplatedResourcesGenerator",
-        "templateFolder": "@css:templates/root/prefilled",
-        "factory": { "@type": "ExtensionBasedMapperFactory" },
-        "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+      "@type": "ConditionalHandler",
+      "storageKey": "rootInitialized",
+      "storageValue": true,
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" },
+      "source": {
+        "@type": "ContainerInitializer",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_path": "/",
+        "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
+        "args_generator": {
+          "@type": "TemplatedResourcesGenerator",
+          "templateFolder": "@css:templates/root/prefilled",
+          "factory": { "@type": "ExtensionBasedMapperFactory" },
+          "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+        },
+        "args_storageKey": "rootInitialized",
+        "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }
       }
     }
   ]
