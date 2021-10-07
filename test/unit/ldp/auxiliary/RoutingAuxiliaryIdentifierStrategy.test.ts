@@ -23,7 +23,7 @@ class SimpleSuffixStrategy implements AuxiliaryIdentifierStrategy {
     return identifier.path.endsWith(this.suffix);
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
 }
@@ -58,9 +58,9 @@ describe('A RoutingAuxiliaryIdentifierStrategy', (): void => {
     expect(strategy.isAuxiliaryIdentifier(dummy3Id)).toBe(false);
   });
 
-  it('#getAssociatedIdentifier returns the base id if a match is found.', async(): Promise<void> => {
-    expect(strategy.getAssociatedIdentifier(dummy1Id)).toEqual(baseId);
-    expect(strategy.getAssociatedIdentifier(dummy2Id)).toEqual(baseId);
-    expect((): any => strategy.getAssociatedIdentifier(dummy3Id)).toThrow(NotImplementedHttpError);
+  it('#getSubjectIdentifier returns the base id if a match is found.', async(): Promise<void> => {
+    expect(strategy.getSubjectIdentifier(dummy1Id)).toEqual(baseId);
+    expect(strategy.getSubjectIdentifier(dummy2Id)).toEqual(baseId);
+    expect((): any => strategy.getSubjectIdentifier(dummy3Id)).toThrow(NotImplementedHttpError);
   });
 });

@@ -8,8 +8,8 @@ import { PermissionReader } from './PermissionReader';
 
 /**
  * A PermissionReader for auxiliary resources such as acl or shape resources.
- * The access permissions of an auxiliary resource depend on those of the resource it is associated with.
- * This authorizer calls the source authorizer with the identifier of the associated resource.
+ * By default, the access permissions of an auxiliary resource depend on those of its subject resource.
+ * This authorizer calls the source authorizer with the identifier of the subject resource.
  */
 export class AuxiliaryReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
@@ -51,7 +51,7 @@ export class AuxiliaryReader extends PermissionReader {
 
     return {
       ...auxiliaryAuth,
-      identifier: this.auxiliaryStrategy.getAssociatedIdentifier(auxiliaryAuth.identifier),
+      identifier: this.auxiliaryStrategy.getSubjectIdentifier(auxiliaryAuth.identifier),
     };
   }
 }

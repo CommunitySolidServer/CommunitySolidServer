@@ -25,7 +25,7 @@ describe('A WebAclReader', (): void => {
   const aclStrategy: AuxiliaryIdentifierStrategy = {
     getAuxiliaryIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: `${id.path}.acl` }),
     isAuxiliaryIdentifier: (id: ResourceIdentifier): boolean => id.path.endsWith('.acl'),
-    getAssociatedIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: id.path.slice(0, -4) }),
+    getSubjectIdentifier: (id: ResourceIdentifier): ResourceIdentifier => ({ path: id.path.slice(0, -4) }),
   } as any;
   let store: jest.Mocked<ResourceStore>;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');

@@ -28,7 +28,7 @@ export class SuffixAuxiliaryIdentifierStrategy implements AuxiliaryIdentifierStr
     return identifier.path.endsWith(this.suffix);
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     if (!this.isAuxiliaryIdentifier(identifier)) {
       throw new InternalServerError(`${identifier.path} does not end on ${this.suffix} so no conversion is possible.`);
     }

@@ -38,8 +38,8 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
     return this.identifierStrategy.isAuxiliaryIdentifier(identifier);
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
-    return this.identifierStrategy.getAssociatedIdentifier(identifier);
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+    return this.identifierStrategy.getSubjectIdentifier(identifier);
   }
 
   public usesOwnAuthorization(): boolean {

@@ -42,7 +42,7 @@ export interface AuxiliaryIdentifierStrategy {
    * This does not guarantee that this resource exists.
    * @param identifier - Identifier of the auxiliary resource.
    *
-   * @returns The ResourceIdentifier of the corresponding resource.
+   * @returns The ResourceIdentifier of the subject resource.
    */
-  getAssociatedIdentifier: (identifier: ResourceIdentifier) => ResourceIdentifier;
+  getSubjectIdentifier: (identifier: ResourceIdentifier) => ResourceIdentifier;
 }

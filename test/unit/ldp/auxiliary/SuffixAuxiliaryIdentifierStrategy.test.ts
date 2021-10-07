@@ -7,7 +7,7 @@ const suffix = '.dummy';
 
 describe('A SuffixAuxiliaryManager', (): void => {
   let strategy: SuffixAuxiliaryIdentifierStrategy;
-  const associatedId: ResourceIdentifier = { path: 'http://test.com/foo' };
+  const subjectId: ResourceIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryId: ResourceIdentifier = { path: 'http://test.com/foo.dummy' };
 
   beforeEach(async(): Promise<void> => {
@@ -19,23 +19,23 @@ describe('A SuffixAuxiliaryManager', (): void => {
   });
 
   it('creates new identifiers by appending the suffix.', async(): Promise<void> => {
-    expect(strategy.getAuxiliaryIdentifier(associatedId)).toEqual(auxiliaryId);
+    expect(strategy.getAuxiliaryIdentifier(subjectId)).toEqual(auxiliaryId);
   });
 
   it('returns the same single identifier when requesting all of them.', async(): Promise<void> => {
-    expect(strategy.getAuxiliaryIdentifiers(associatedId)).toEqual([ auxiliaryId ]);
+    expect(strategy.getAuxiliaryIdentifiers(subjectId)).toEqual([ auxiliaryId ]);
   });
 
   it('checks the suffix to determine if an identifier is auxiliary.', async(): Promise<void> => {
-    expect(strategy.isAuxiliaryIdentifier(associatedId)).toBe(false);
+    expect(strategy.isAuxiliaryIdentifier(subjectId)).toBe(false);
     expect(strategy.isAuxiliaryIdentifier(auxiliaryId)).toBe(true);
   });
 
-  it('errors when trying to get the associated id from a non-auxiliary identifier.', async(): Promise<void> => {
-    expect((): any => strategy.getAssociatedIdentifier(associatedId)).toThrow(InternalServerError);
+  it('errors when trying to get the subject id from a non-auxiliary identifier.', async(): Promise<void> => {
+    expect((): any => strategy.getSubjectIdentifier(subjectId)).toThrow(InternalServerError);
   });
 
-  it('removes the suffix to create the associated identifier.', async(): Promise<void> => {
-    expect(strategy.getAssociatedIdentifier(auxiliaryId)).toEqual(associatedId);
+  it('removes the suffix to create the subject identifier.', async(): Promise<void> => {
+    expect(strategy.getSubjectIdentifier(auxiliaryId)).toEqual(subjectId);
   });
 });

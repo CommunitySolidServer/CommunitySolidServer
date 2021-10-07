@@ -10,7 +10,7 @@ import type { AuxiliaryIdentifierStrategy } from './AuxiliaryIdentifierStrategy'
  */
 export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
-   * Whether this auxiliary resources uses its own authorization instead of the associated resource authorization.
+   * Whether this auxiliary resources uses its own authorization instead of the subject resource authorization.
    * @param identifier - Identifier of the auxiliary resource.
    */
   usesOwnAuthorization: (identifier: ResourceIdentifier) => boolean;
@@ -25,7 +25,7 @@ export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
   /**
    * Adds metadata related to this auxiliary resource,
    * in case this is required for this type of auxiliary resource.
-   * The metadata that is added depends on the given identifier being an auxiliary or associated resource:
+   * The metadata that is added depends on the given identifier being an auxiliary or subject resource:
    * the metadata will be used to link to the other one, and potentially add extra typing info.
    *
    * Used for:
@@ -33,7 +33,7 @@ export interface AuxiliaryStrategy extends AuxiliaryIdentifierStrategy {
    * that resource MUST include an HTTP Link header pointing to the location of each auxiliary resource."
    * https://solid.github.io/specification/protocol#auxiliary-resources-server
    *
-   * The above is an example of how that metadata would only be added in case the input is the associated identifier.
+   * The above is an example of how that metadata would only be added in case the input is the subject identifier.
    *
    * @param metadata - Metadata to update.
    */
