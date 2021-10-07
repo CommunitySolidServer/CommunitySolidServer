@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync } from 'fs';
+import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
@@ -37,18 +37,21 @@ export class FileSizeReporter implements SizeReporter {
   private async getAllFiles(fileLocation: string, arrayOfFiles: string[] = []): Promise<string[]> {
     arrayOfFiles = arrayOfFiles ?? [];
 
-    if (!existsSync(fileLocation)) {
+    // Check if the file exists
+    try {
+      await fsPromises.access(fileLocation);
+    } catch {
       return arrayOfFiles;
     }
 
     // If the file's location points to a file, simply add the file the array and return it
-    if (statSync(fileLocation).isFile()) {
+    if ((await fsPromises.lstat(fileLocation)).isFile()) {
       return [ ...arrayOfFiles, fileLocation ];
     }
 
     // If the location DOES exist and is NOT a file it should be a directory
     // recursively add all children to the array
-    const files = readdirSync(fileLocation);
+    const files = await fsPromises.readdir(fileLocation);
 
     return files.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
       const childFileLocation = join(fileLocation, current);
@@ -72,6 +75,17 @@ export class FileSizeReporter implements SizeReporter {
     const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
     // Filter out any duplicates
     const arrayOfFiles = [ ...new Set(await this.getAllFiles(fileLocation)) ];
-    return arrayOfFiles.reduce((acc, current): number => acc + statSync(current).size, 0);
+
+    return arrayOfFiles.reduce(
+      async(acc, current): Promise<number> => {
+        // Extra check to see if file does really exist
+        try {
+          return await acc + (await fsPromises.lstat(current)).size;
+        } catch {
+          return await acc;
+        }
+      },
+      Promise.resolve(0),
+    );
   }
 }
