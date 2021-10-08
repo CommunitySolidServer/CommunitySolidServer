@@ -1,12 +1,12 @@
 import type { CredentialSet } from '../../../src/authentication/Credentials';
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type {
   AccountSettings,
   AccountStore,
 } from '../../../src/identity/interaction/email-password/storage/AccountStore';
-import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
 
 describe('An OwnerPermissionReader', (): void => {
   const owner = 'http://test.com/alice/profile/card#me';

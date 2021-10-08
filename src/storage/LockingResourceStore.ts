@@ -1,10 +1,10 @@
 import type { Readable } from 'stream';
-import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import type { Patch } from '../ldp/http/Patch';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
-import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Patch } from '../http/representation/Patch';
+import type { Representation } from '../http/representation/Representation';
+import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ExpiringReadWriteLocker } from '../util/locking/ExpiringReadWriteLocker';
 import { endOfStream } from '../util/StreamUtil';

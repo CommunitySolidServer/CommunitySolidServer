@@ -2,13 +2,9 @@ import type { Quad, Term } from 'n3';
 import { Store } from 'n3';
 import { CredentialGroup } from '../authentication/Credentials';
 import type { Credential, CredentialSet } from '../authentication/Credentials';
-import type { AuxiliaryIdentifierStrategy } from '../ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import { AclMode } from '../ldp/permissions/AclPermission';
-import type { AclPermission } from '../ldp/permissions/AclPermission';
-import type { PermissionSet } from '../ldp/permissions/Permissions';
-import { AccessMode } from '../ldp/permissions/Permissions';
-import type { Representation } from '../ldp/representation/Representation';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
+import type { Representation } from '../http/representation/Representation';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -19,9 +15,13 @@ import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import { readableToQuads } from '../util/StreamUtil';
 import { ACL, RDF } from '../util/Vocabularies';
-import type { AccessChecker } from './access-checkers/AccessChecker';
+import type { AccessChecker } from './access/AccessChecker';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
+import type { AclPermission } from './permissions/AclPermission';
+import { AclMode } from './permissions/AclPermission';
+import { AccessMode } from './permissions/Permissions';
+import type { PermissionSet } from './permissions/Permissions';
 
 const modesMap: Record<string, keyof AclPermission> = {
   [ACL.Read]: AccessMode.read,

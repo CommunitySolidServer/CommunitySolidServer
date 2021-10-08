@@ -1,8 +1,8 @@
 import 'jest-rdf';
 import type { NamedNode, Literal } from 'n3';
-import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { addTemplateMetadata, cloneRepresentation, updateModifiedDate } from '../../../src/util/ResourceUtil';
 import { CONTENT_TYPE_TERM, DC, SOLID_META, XSD } from '../../../src/util/Vocabularies';
 

@@ -1,7 +1,7 @@
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';

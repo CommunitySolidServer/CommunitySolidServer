@@ -1,8 +1,8 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
-import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Representation } from '../http/representation/Representation';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { guardedStreamFrom } from './StreamUtil';
 import { toLiteral } from './TermUtil';
 import { CONTENT_TYPE_TERM, DC, LDP, RDF, SOLID_META, XSD } from './Vocabularies';

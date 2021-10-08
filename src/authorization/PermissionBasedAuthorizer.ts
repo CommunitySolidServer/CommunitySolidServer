@@ -1,10 +1,10 @@
 import type { CredentialSet } from '../authentication/Credentials';
-import type { AccessMode, PermissionSet } from '../ldp/permissions/Permissions';
 import { getLoggerFor } from '../logging/LogUtil';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../util/errors/UnauthorizedHttpError';
 import type { AuthorizerInput } from './Authorizer';
 import { Authorizer } from './Authorizer';
+import type { AccessMode, PermissionSet } from './permissions/Permissions';
 
 /**
  * Authorizer that bases its decision on the output it gets from its PermissionReader.

@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
 import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';

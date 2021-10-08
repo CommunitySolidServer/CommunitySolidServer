@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../storage/ResourceStore';

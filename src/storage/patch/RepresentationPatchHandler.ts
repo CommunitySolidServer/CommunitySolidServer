@@ -1,5 +1,5 @@
-import type { Representation } from '../../ldp/representation/Representation';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../../http/representation/Representation';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { PatchHandlerInput } from './PatchHandler';

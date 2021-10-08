@@ -10,10 +10,11 @@ import type { AnyObject,
   KoaContextWithOIDC,
   Configuration,
   Account,
-  ErrorOut, Adapter } from 'oidc-provider';
+  ErrorOut,
+  Adapter } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
-import type { ErrorHandler } from '../../ldp/http/ErrorHandler';
-import type { ResponseWriter } from '../../ldp/http/ResponseWriter';
+import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
+import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
 import type { AdapterFactory } from '../storage/AdapterFactory';

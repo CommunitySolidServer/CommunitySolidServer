@@ -1,5 +1,5 @@
-import type { Patch } from '../ldp/http/Patch';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Patch } from '../http/representation/Patch';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';

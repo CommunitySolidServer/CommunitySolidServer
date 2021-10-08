@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
 import type {
   FileIdentifierMapper,

@@ -4,7 +4,7 @@ import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';

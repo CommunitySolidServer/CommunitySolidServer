@@ -1,7 +1,7 @@
 import { DataFactory } from 'n3';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import type { RepresentationPreferences } from '../../../../src/http/representation/RepresentationPreferences';
 import { DynamicJsonToTemplateConverter } from '../../../../src/storage/conversion/DynamicJsonToTemplateConverter';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';

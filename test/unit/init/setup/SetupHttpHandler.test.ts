@@ -1,14 +1,14 @@
+import type { Operation } from '../../../../src/http/Operation';
+import type { ErrorHandler, ErrorHandlerArgs } from '../../../../src/http/output/error/ErrorHandler';
+import type { ResponseDescription } from '../../../../src/http/output/response/ResponseDescription';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { RegistrationManager,
   RegistrationResponse } from '../../../../src/identity/interaction/email-password/util/RegistrationManager';
 import type { Initializer } from '../../../../src/init/Initializer';
 import type { SetupInput } from '../../../../src/init/setup/SetupHttpHandler';
 import { SetupHttpHandler } from '../../../../src/init/setup/SetupHttpHandler';
-import type { ErrorHandlerArgs, ErrorHandler } from '../../../../src/ldp/http/ErrorHandler';
-import type { ResponseDescription } from '../../../../src/ldp/http/response/ResponseDescription';
-import type { Operation } from '../../../../src/ldp/operations/Operation';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import { getBestPreference } from '../../../../src/storage/conversion/ConversionUtil';

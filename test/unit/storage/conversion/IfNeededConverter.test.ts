@@ -1,4 +1,4 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
+import type { Representation } from '../../../../src/http/representation/Representation';
 import { IfNeededConverter } from '../../../../src/storage/conversion/IfNeededConverter';
 import type {
   RepresentationConverter,

@@ -1,12 +1,12 @@
 import { namedNode, quad } from '@rdfjs/data-model';
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { CredentialSet } from '../../../src/authentication/Credentials';
-import type { AccessChecker } from '../../../src/authorization/access-checkers/AccessChecker';
+import type { AccessChecker } from '../../../src/authorization/access/AccessChecker';
 import { WebAclReader } from '../../../src/authorization/WebAclReader';
-import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../src/ldp/representation/Representation';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../src/http/representation/Representation';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';

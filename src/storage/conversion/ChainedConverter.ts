@@ -1,5 +1,5 @@
-import type { Representation } from '../../ldp/representation/Representation';
-import type { ValuePreference, ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { Representation } from '../../http/representation/Representation';
+import type { ValuePreference, ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';

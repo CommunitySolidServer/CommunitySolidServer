@@ -1,9 +1,9 @@
+import type { Operation } from '../../http/Operation';
+import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
+import { ResponseDescription } from '../../http/output/response/ResponseDescription';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { RegistrationParams,
   RegistrationManager } from '../../identity/interaction/email-password/util/RegistrationManager';
-import type { ErrorHandler } from '../../ldp/http/ErrorHandler';
-import { ResponseDescription } from '../../ldp/http/response/ResponseDescription';
-import type { Operation } from '../../ldp/operations/Operation';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { OperationHttpHandlerInput } from '../../server/OperationHttpHandler';
 import { OperationHttpHandler } from '../../server/OperationHttpHandler';

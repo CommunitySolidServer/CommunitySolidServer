@@ -8,11 +8,17 @@ export * from './authentication/UnionCredentialsExtractor';
 export * from './authentication/UnsecureConstantCredentialsExtractor';
 export * from './authentication/UnsecureWebIdExtractor';
 
-// Authorization/Access-Checkers
-export * from './authorization/access-checkers/AccessChecker';
-export * from './authorization/access-checkers/AgentAccessChecker';
-export * from './authorization/access-checkers/AgentClassAccessChecker';
-export * from './authorization/access-checkers/AgentGroupAccessChecker';
+// Authorization/Access
+export * from './authorization/access/AccessChecker';
+export * from './authorization/access/AgentAccessChecker';
+export * from './authorization/access/AgentClassAccessChecker';
+export * from './authorization/access/AgentGroupAccessChecker';
+
+// Authorization/Permissions
+export * from './authorization/permissions/Permissions';
+export * from './authorization/permissions/ModesExtractor';
+export * from './authorization/permissions/MethodModesExtractor';
+export * from './authorization/permissions/SparqlPatchModesExtractor';
 
 // Authorization
 export * from './authorization/OwnerPermissionReader';
@@ -24,6 +30,95 @@ export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
 export * from './authorization/UnionPermissionReader';
 export * from './authorization/WebAclReader';
+
+// HTTP/Auxiliary
+export * from './http/auxiliary/AuxiliaryIdentifierStrategy';
+export * from './http/auxiliary/AuxiliaryStrategy';
+export * from './http/auxiliary/ComposedAuxiliaryStrategy';
+export * from './http/auxiliary/LinkMetadataGenerator';
+export * from './http/auxiliary/MetadataGenerator';
+export * from './http/auxiliary/RdfValidator';
+export * from './http/auxiliary/RoutingAuxiliaryIdentifierStrategy';
+export * from './http/auxiliary/RoutingAuxiliaryStrategy';
+export * from './http/auxiliary/SuffixAuxiliaryIdentifierStrategy';
+export * from './http/auxiliary/Validator';
+
+// HTTP/Input/Body
+export * from './http/input/body/BodyParser';
+export * from './http/input/body/RawBodyParser';
+export * from './http/input/body/SparqlUpdateBodyParser';
+
+// HTTP/Input/Conditions
+export * from './http/input/conditions/BasicConditionsParser';
+export * from './http/input/conditions/ConditionsParser';
+
+// HTTP/Input/Identifier
+export * from './http/input/identifier/OriginalUrlExtractor';
+export * from './http/input/identifier/TargetExtractor';
+
+// HTTP/Input/Metadata
+export * from './http/input/metadata/ContentTypeParser';
+export * from './http/input/metadata/LinkRelParser';
+export * from './http/input/metadata/MetadataParser';
+export * from './http/input/metadata/SlugParser';
+
+// HTTP/Input/Preferences
+export * from './http/input/preferences/AcceptPreferenceParser';
+export * from './http/input/preferences/PreferenceParser';
+
+// HTTP/Input
+export * from './http/input/BasicRequestParser';
+export * from './http/input/RequestParser';
+
+// HTTP/LDP/Metadata
+export * from './http/ldp/metadata/OperationMetadataCollector';
+export * from './http/ldp/metadata/WebAclMetadataCollector';
+
+// HTTP/LDP
+export * from './http/ldp/DeleteOperationHandler';
+export * from './http/ldp/GetOperationHandler';
+export * from './http/ldp/HeadOperationHandler';
+export * from './http/ldp/OperationHandler';
+export * from './http/ldp/PatchOperationHandler';
+export * from './http/ldp/PostOperationHandler';
+export * from './http/ldp/PutOperationHandler';
+
+// HTTP/Output/Error
+export * from './http/output/error/ConvertingErrorHandler';
+export * from './http/output/error/ErrorHandler';
+export * from './http/output/error/SafeErrorHandler';
+
+// HTTP/Output/Metadata
+export * from './http/output/metadata/ConstantMetadataWriter';
+export * from './http/output/metadata/LinkRelMetadataWriter';
+export * from './http/output/metadata/MappedMetadataWriter';
+export * from './http/output/metadata/MetadataWriter';
+export * from './http/output/metadata/ModifiedMetadataWriter';
+export * from './http/output/metadata/WacAllowMetadataWriter';
+export * from './http/output/metadata/WwwAuthMetadataWriter';
+
+// HTTP/Output/Response
+export * from './http/output/response/CreatedResponseDescription';
+export * from './http/output/response/OkResponseDescription';
+export * from './http/output/response/ResetResponseDescription';
+export * from './http/output/response/ResponseDescription';
+
+// HTTP/Output
+export * from './http/output/BasicResponseWriter';
+export * from './http/output/ResponseWriter';
+
+// HTTP/Representation
+export * from './http/representation/BasicRepresentation';
+export * from './http/representation/Patch';
+export * from './http/representation/Representation';
+export * from './http/representation/RepresentationMetadata';
+export * from './http/representation/RepresentationPreferences';
+export * from './http/representation/ResourceIdentifier';
+export * from './http/representation/SparqlUpdatePatch';
+
+// HTTP
+export * from './http/Operation';
+export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
 export * from './identity/configuration/IdentityProviderFactory';
@@ -86,89 +181,6 @@ export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ServerInitializer';
-
-// LDP/Authorization
-export * from './ldp/auxiliary/AuxiliaryIdentifierStrategy';
-export * from './ldp/auxiliary/AuxiliaryStrategy';
-export * from './ldp/auxiliary/ComposedAuxiliaryStrategy';
-export * from './ldp/auxiliary/LinkMetadataGenerator';
-export * from './ldp/auxiliary/MetadataGenerator';
-export * from './ldp/auxiliary/RdfValidator';
-export * from './ldp/auxiliary/RoutingAuxiliaryIdentifierStrategy';
-export * from './ldp/auxiliary/RoutingAuxiliaryStrategy';
-export * from './ldp/auxiliary/SuffixAuxiliaryIdentifierStrategy';
-export * from './ldp/auxiliary/Validator';
-
-// LDP/HTTP/Conditions
-export * from './ldp/http/conditions/BasicConditionsParser';
-export * from './ldp/http/conditions/ConditionsParser';
-
-// LDP/HTTP/Metadata
-export * from './ldp/http/metadata/ConstantMetadataWriter';
-export * from './ldp/http/metadata/ContentTypeParser';
-export * from './ldp/http/metadata/LinkRelMetadataWriter';
-export * from './ldp/http/metadata/LinkRelParser';
-export * from './ldp/http/metadata/MappedMetadataWriter';
-export * from './ldp/http/metadata/MetadataParser';
-export * from './ldp/http/metadata/MetadataWriter';
-export * from './ldp/http/metadata/ModifiedMetadataWriter';
-export * from './ldp/http/metadata/SlugParser';
-export * from './ldp/http/metadata/WacAllowMetadataWriter';
-export * from './ldp/http/metadata/WwwAuthMetadataWriter';
-
-// LDP/HTTP/Response
-export * from './ldp/http/response/CreatedResponseDescription';
-export * from './ldp/http/response/OkResponseDescription';
-export * from './ldp/http/response/ResetResponseDescription';
-export * from './ldp/http/response/ResponseDescription';
-
-// LDP/HTTP
-export * from './ldp/http/AcceptPreferenceParser';
-export * from './ldp/http/BasicRequestParser';
-export * from './ldp/http/BasicResponseWriter';
-export * from './ldp/http/BodyParser';
-export * from './ldp/http/ConvertingErrorHandler';
-export * from './ldp/http/ErrorHandler';
-export * from './ldp/http/OriginalUrlExtractor';
-export * from './ldp/http/Patch';
-export * from './ldp/http/PreferenceParser';
-export * from './ldp/http/RawBodyParser';
-export * from './ldp/http/RequestParser';
-export * from './ldp/http/ResponseWriter';
-export * from './ldp/http/SafeErrorHandler';
-export * from './ldp/http/SparqlUpdateBodyParser';
-export * from './ldp/http/SparqlUpdatePatch';
-export * from './ldp/http/TargetExtractor';
-
-// LDP/Operations/Metadata
-export * from './ldp/operations/metadata/OperationMetadataCollector';
-export * from './ldp/operations/metadata/WebAclMetadataCollector';
-
-// LDP/Operations
-export * from './ldp/operations/DeleteOperationHandler';
-export * from './ldp/operations/GetOperationHandler';
-export * from './ldp/operations/HeadOperationHandler';
-export * from './ldp/operations/Operation';
-export * from './ldp/operations/OperationHandler';
-export * from './ldp/operations/PatchOperationHandler';
-export * from './ldp/operations/PostOperationHandler';
-export * from './ldp/operations/PutOperationHandler';
-
-// LDP/Permissions
-export * from './ldp/permissions/Permissions';
-export * from './ldp/permissions/ModesExtractor';
-export * from './ldp/permissions/MethodModesExtractor';
-export * from './ldp/permissions/SparqlPatchModesExtractor';
-
-// LDP/Representation
-export * from './ldp/representation/BasicRepresentation';
-export * from './ldp/representation/Representation';
-export * from './ldp/representation/RepresentationMetadata';
-export * from './ldp/representation/RepresentationPreferences';
-export * from './ldp/representation/ResourceIdentifier';
-
-// LDP
-export * from './ldp/UnsecureWebSocketsProtocol';
 
 // Logging
 export * from './logging/LazyLogger';

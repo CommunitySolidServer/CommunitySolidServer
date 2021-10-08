@@ -1,6 +1,6 @@
-import type { Patch } from '../ldp/http/Patch';
-import type { Representation } from '../ldp/representation/Representation';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Patch } from '../http/representation/Patch';
+import type { Representation } from '../http/representation/Representation';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import type { Conditions } from './Conditions';
 import { PassthroughStore } from './PassthroughStore';

@@ -1,4 +1,4 @@
-import type { Representation } from '../../ldp/representation/Representation';
+import type { Representation } from '../../http/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { UnsupportedAsyncHandler } from '../../util/handlers/UnsupportedAsyncHandler';

@@ -1,10 +1,10 @@
 import { namedNode, triple } from '@rdfjs/data-model';
 import rdfSerializer from 'rdf-serialize';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { RepresentationPreferences } from '../../../../src/http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';

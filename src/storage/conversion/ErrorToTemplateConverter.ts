@@ -1,6 +1,6 @@
 import assert from 'assert';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { modulePathPlaceholder } from '../../util/PathUtil';

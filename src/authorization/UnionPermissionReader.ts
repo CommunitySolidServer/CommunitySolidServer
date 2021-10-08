@@ -1,7 +1,7 @@
 import type { CredentialGroup } from '../authentication/Credentials';
-import type { Permission, PermissionSet } from '../ldp/permissions/Permissions';
 import { UnionHandler } from '../util/handlers/UnionHandler';
 import type { PermissionReader } from './PermissionReader';
+import type { Permission, PermissionSet } from './permissions/Permissions';
 
 /**
  * Combines the results of multiple PermissionReaders.

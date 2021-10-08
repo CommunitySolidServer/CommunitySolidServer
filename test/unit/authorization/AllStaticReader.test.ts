@@ -1,6 +1,6 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { AllStaticReader } from '../../../src/authorization/AllStaticReader';
-import type { Permission } from '../../../src/ldp/permissions/Permissions';
+import type { Permission } from '../../../src/authorization/permissions/Permissions';
 
 function getPermissions(allow: boolean): Permission {
   return {

@@ -1,4 +1,4 @@
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToJsonConverter } from '../../../../src/storage/conversion/ErrorToJsonConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { readJsonStream } from '../../../../src/util/StreamUtil';

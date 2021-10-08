@@ -1,5 +1,5 @@
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../conversion/RepresentationConverter';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';

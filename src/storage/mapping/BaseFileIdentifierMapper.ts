@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';

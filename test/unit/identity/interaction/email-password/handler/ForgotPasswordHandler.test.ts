@@ -1,9 +1,9 @@
+import type { Operation } from '../../../../../../src/http/Operation';
 import {
   ForgotPasswordHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/ForgotPasswordHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import type { EmailSender } from '../../../../../../src/identity/interaction/util/EmailSender';
-import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import type { TemplateEngine } from '../../../../../../src/util/templates/TemplateEngine';
 import { createPostJsonOperation } from './Util';
 

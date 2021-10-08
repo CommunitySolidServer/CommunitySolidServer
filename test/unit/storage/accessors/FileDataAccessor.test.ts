@@ -1,8 +1,8 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
 import { namedNode } from '@rdfjs/data-model';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';

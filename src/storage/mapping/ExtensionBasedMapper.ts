@@ -1,6 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import * as mime from 'mime-types';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { DEFAULT_CUSTOM_TYPES } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { joinFilePath, getExtension } from '../../util/PathUtil';

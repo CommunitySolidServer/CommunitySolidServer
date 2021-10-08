@@ -1,9 +1,9 @@
-import type { ErrorHandler } from '../ldp/http/ErrorHandler';
-import type { RequestParser } from '../ldp/http/RequestParser';
-import type { ResponseDescription } from '../ldp/http/response/ResponseDescription';
-import type { ResponseWriter } from '../ldp/http/ResponseWriter';
-import type { OperationMetadataCollector } from '../ldp/operations/metadata/OperationMetadataCollector';
-import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
+import type { RequestParser } from '../http/input/RequestParser';
+import type { OperationMetadataCollector } from '../http/ldp/metadata/OperationMetadataCollector';
+import type { ErrorHandler } from '../http/output/error/ErrorHandler';
+import type { ResponseDescription } from '../http/output/response/ResponseDescription';
+import type { ResponseWriter } from '../http/output/ResponseWriter';
+import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import { getLoggerFor } from '../logging/LogUtil';
 import { assertError } from '../util/errors/ErrorUtil';
 import type { HttpHandlerInput } from './HttpHandler';

@@ -1,6 +1,6 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import type { RepresentationPreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import type { RepresentationPreferences } from '../../../../src/http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSupport';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';

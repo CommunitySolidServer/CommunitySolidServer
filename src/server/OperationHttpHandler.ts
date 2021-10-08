@@ -1,5 +1,5 @@
-import type { ResponseDescription } from '../ldp/http/response/ResponseDescription';
-import type { Operation } from '../ldp/operations/Operation';
+import type { Operation } from '../http/Operation';
+import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { AsyncHandler } from '../util/handlers/AsyncHandler';
 import type { HttpHandlerInput } from './HttpHandler';
 

@@ -1,4 +1,4 @@
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { getETag } from '../../../src/storage/Conditions';
 import { DC } from '../../../src/util/Vocabularies';
 

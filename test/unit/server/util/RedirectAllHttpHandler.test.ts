@@ -1,6 +1,6 @@
-import type { ResponseWriter } from '../../../../src/ldp/http/ResponseWriter';
-import type { TargetExtractor } from '../../../../src/ldp/http/TargetExtractor';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
+import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import { RedirectAllHttpHandler } from '../../../../src/server/util/RedirectAllHttpHandler';

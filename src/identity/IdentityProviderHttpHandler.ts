@@ -1,9 +1,9 @@
-import type { ErrorHandler } from '../ldp/http/ErrorHandler';
-import { RedirectResponseDescription } from '../ldp/http/response/RedirectResponseDescription';
-import { ResponseDescription } from '../ldp/http/response/ResponseDescription';
-import type { Operation } from '../ldp/operations/Operation';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
+import type { Operation } from '../http/Operation';
+import type { ErrorHandler } from '../http/output/error/ErrorHandler';
+import { RedirectResponseDescription } from '../http/output/response/RedirectResponseDescription';
+import { ResponseDescription } from '../http/output/response/ResponseDescription';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';

@@ -1,4 +1,4 @@
-import type { ValuePreference, ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { ValuePreference, ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { INTERNAL_ALL } from '../../util/ContentTypes';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 

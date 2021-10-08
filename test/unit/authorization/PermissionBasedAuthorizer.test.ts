@@ -1,7 +1,7 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { AuthorizerInput } from '../../../src/authorization/Authorizer';
 import { PermissionBasedAuthorizer } from '../../../src/authorization/PermissionBasedAuthorizer';
-import { AccessMode } from '../../../src/ldp/permissions/Permissions';
+import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
 import { UnauthorizedHttpError } from '../../../src/util/errors/UnauthorizedHttpError';
 

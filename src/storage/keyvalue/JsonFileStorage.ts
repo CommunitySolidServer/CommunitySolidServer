@@ -1,5 +1,5 @@
 import { promises as fsPromises } from 'fs';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { isSystemError } from '../../util/errors/SystemError';
 import type { ReadWriteLocker } from '../../util/locking/ReadWriteLocker';
 import type { KeyValueStorage } from './KeyValueStorage';

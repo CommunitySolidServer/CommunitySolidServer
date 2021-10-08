@@ -1,7 +1,7 @@
 import type { CredentialGroup } from '../authentication/Credentials';
-import type { Permission, PermissionSet } from '../ldp/permissions/Permissions';
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
+import type { Permission, PermissionSet } from './permissions/Permissions';
 
 /**
  * PermissionReader which sets all permissions to true or false

@@ -1,8 +1,8 @@
+import type { Operation } from '../../../../../../src/http/Operation';
 import {
   ResetPasswordHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/ResetPasswordHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
-import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import { createPostJsonOperation } from './Util';
 
 describe('A ResetPasswordHandler', (): void => {

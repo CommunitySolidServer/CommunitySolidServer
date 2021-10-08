@@ -1,5 +1,5 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { ConvertingRouterRule } from '../../../../src/storage/routing/ConvertingRouterRule';
 import type { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSupport';

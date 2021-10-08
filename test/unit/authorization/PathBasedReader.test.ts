@@ -1,7 +1,7 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { PathBasedReader } from '../../../src/authorization/PathBasedReader';
 import type { PermissionReader, PermissionReaderInput } from '../../../src/authorization/PermissionReader';
-import type { PermissionSet } from '../../../src/ldp/permissions/Permissions';
+import type { PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 
 describe('A PathBasedReader', (): void => {

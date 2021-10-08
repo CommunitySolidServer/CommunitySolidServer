@@ -1,5 +1,5 @@
-import type { Patch } from '../../../../src/ldp/http/Patch';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Patch } from '../../../../src/http/representation/Patch';
 import type { PatchHandlerInput } from '../../../../src/storage/patch/PatchHandler';
 import type { RepresentationPatcher } from '../../../../src/storage/patch/RepresentationPatcher';
 import { RepresentationPatchHandler } from '../../../../src/storage/patch/RepresentationPatchHandler';

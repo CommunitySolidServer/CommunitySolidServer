@@ -1,9 +1,9 @@
 import type { Term, NamedNode } from 'rdf-js';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { APPLICATION_JSON } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { readableToString } from '../../util/StreamUtil';

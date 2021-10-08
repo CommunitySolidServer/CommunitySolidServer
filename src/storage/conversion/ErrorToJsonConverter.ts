@@ -1,5 +1,5 @@
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON, INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { getSingleItem } from '../../util/StreamUtil';

@@ -1,9 +1,9 @@
-import type { PermissionSet } from '../ldp/permissions/Permissions';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { ensureTrailingSlash, trimTrailingSlashes } from '../util/PathUtil';
 
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
+import type { PermissionSet } from './permissions/Permissions';
 
 /**
  * Redirects requests to specific PermissionReaders based on their identifier.

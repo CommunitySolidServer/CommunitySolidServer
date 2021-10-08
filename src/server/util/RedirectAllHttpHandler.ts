@@ -1,6 +1,6 @@
-import { RedirectResponseDescription } from '../../ldp/http/response/RedirectResponseDescription';
-import type { ResponseWriter } from '../../ldp/http/ResponseWriter';
-import type { TargetExtractor } from '../../ldp/http/TargetExtractor';
+import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
+import { RedirectResponseDescription } from '../../http/output/response/RedirectResponseDescription';
+import type { ResponseWriter } from '../../http/output/ResponseWriter';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { getRelativeUrl, joinUrl } from '../../util/PathUtil';
 import type { HttpHandlerInput } from '../HttpHandler';

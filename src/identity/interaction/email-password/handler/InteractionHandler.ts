@@ -1,5 +1,5 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
-import type { Operation } from '../../../../ldp/operations/Operation';
+import type { Operation } from '../../../../http/Operation';
 import { APPLICATION_JSON } from '../../../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../../../util/errors/NotImplementedHttpError';
 import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
