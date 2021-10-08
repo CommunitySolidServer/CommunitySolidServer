@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { ForbiddenHttpError } from '../errors/ForbiddenHttpError';
 import { InternalServerError } from '../errors/InternalServerError';

@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { ConfigPodManager } from '../../../src/pods/ConfigPodManager';
 import type { PodGenerator } from '../../../src/pods/generate/PodGenerator';
 import type { Resource, ResourcesGenerator } from '../../../src/pods/generate/ResourcesGenerator';

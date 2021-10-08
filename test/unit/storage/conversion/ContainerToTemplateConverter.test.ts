@@ -1,5 +1,5 @@
 import { namedNode as nn, quad } from '@rdfjs/data-model';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ContainerToTemplateConverter } from '../../../../src/storage/conversion/ContainerToTemplateConverter';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { readableToString } from '../../../../src/util/StreamUtil';

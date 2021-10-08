@@ -1,6 +1,6 @@
 import { createReadStream } from 'fs';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { isContainerIdentifier } from '../../util/PathUtil';
 import { matchesMediaType, getTypeWeight, cleanPreferences } from './ConversionUtil';

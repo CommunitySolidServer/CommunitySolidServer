@@ -1,4 +1,4 @@
-import type { Patch } from '../../../src/ldp/http/Patch';
+import type { Patch } from '../../../src/http/representation/Patch';
 import type { PatchHandler } from '../../../src/storage/patch/PatchHandler';
 import { PatchingStore } from '../../../src/storage/PatchingStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';

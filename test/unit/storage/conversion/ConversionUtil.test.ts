@@ -1,4 +1,4 @@
-import type { ValuePreferences } from '../../../../src/ldp/representation/RepresentationPreferences';
+import type { ValuePreferences } from '../../../../src/http/representation/RepresentationPreferences';
 import {
   cleanPreferences,
   getBestPreference,

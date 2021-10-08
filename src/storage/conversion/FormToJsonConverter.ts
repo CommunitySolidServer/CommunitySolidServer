@@ -1,7 +1,7 @@
 import { parse } from 'querystring';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../util/ContentTypes';
 import { readableToString } from '../../util/StreamUtil';
 import { CONTENT_TYPE } from '../../util/Vocabularies';

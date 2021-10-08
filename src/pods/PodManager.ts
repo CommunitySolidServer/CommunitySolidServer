@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { PodSettings } from './settings/PodSettings';
 
 /**

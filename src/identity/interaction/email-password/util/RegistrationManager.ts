@@ -1,5 +1,5 @@
 import assert from 'assert';
-import type { ResourceIdentifier } from '../../../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';

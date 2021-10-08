@@ -1,7 +1,7 @@
-import { RoutingAuxiliaryStrategy } from '../../src/ldp/auxiliary/RoutingAuxiliaryStrategy';
-import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../src/ldp/representation/RepresentationMetadata';
+import { RoutingAuxiliaryStrategy } from '../../src/http/auxiliary/RoutingAuxiliaryStrategy';
+import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../src/http/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
 import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore';
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';

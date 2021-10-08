@@ -1,4 +1,4 @@
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { getConversionTarget, getTypeWeight } from './ConversionUtil';
 import { RepresentationConverter } from './RepresentationConverter';

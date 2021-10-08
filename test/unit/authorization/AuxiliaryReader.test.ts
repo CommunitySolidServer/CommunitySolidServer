@@ -1,9 +1,9 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import type { AuxiliaryStrategy } from '../../../src/ldp/auxiliary/AuxiliaryStrategy';
-import type { PermissionSet } from '../../../src/ldp/permissions/Permissions';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { PermissionSet } from '../../../src/authorization/permissions/Permissions';
+import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
 
 describe('An AuxiliaryReader', (): void => {

@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
-import type { AuxiliaryIdentifierStrategy } from '../../../src/ldp/auxiliary/AuxiliaryIdentifierStrategy';
-import type { Patch } from '../../../src/ldp/http/Patch';
-import type { Representation } from '../../../src/ldp/representation/Representation';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
+import type { Patch } from '../../../src/http/representation/Patch';
+import type { Representation } from '../../../src/http/representation/Representation';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { LockingResourceStore } from '../../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';

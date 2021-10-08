@@ -1,7 +1,7 @@
 import { posix, win32 } from 'path';
 import urljoin from 'url-join';
-import type { TargetExtractor } from '../ldp/http/TargetExtractor';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 

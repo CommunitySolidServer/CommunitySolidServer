@@ -1,6 +1,6 @@
-import type { Representation } from '../ldp/representation/Representation';
-import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../http/representation/Representation';
+import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { Conditions } from './Conditions';
 import { PassthroughConverter } from './conversion/PassthroughConverter';

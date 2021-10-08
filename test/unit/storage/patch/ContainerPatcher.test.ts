@@ -1,10 +1,10 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { Patch } from '../../../../src/ldp/http/Patch';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import type { Patch } from '../../../../src/http/representation/Patch';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { ContainerPatcher } from '../../../../src/storage/patch/ContainerPatcher';
 import type {
   RepresentationPatcherInput,

@@ -1,4 +1,4 @@
-import type { Operation } from '../../../ldp/operations/Operation';
+import type { Operation } from '../../../http/Operation';
 import type { Interaction, InteractionHandlerResult } from '../email-password/handler/InteractionHandler';
 
 export type TemplatedInteractionResult<T extends InteractionHandlerResult = InteractionHandlerResult> = T & {

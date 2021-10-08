@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { InternalServerError } from '../errors/InternalServerError';
 import { ensureTrailingSlash } from '../PathUtil';
 import type { IdentifierStrategy } from './IdentifierStrategy';

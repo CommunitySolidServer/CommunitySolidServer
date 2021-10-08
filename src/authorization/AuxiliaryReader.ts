@@ -1,10 +1,9 @@
-import type { AuxiliaryStrategy } from '../ldp/auxiliary/AuxiliaryStrategy';
-import type { PermissionSet } from '../ldp/permissions/Permissions';
+import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../logging/LogUtil';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-
 import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
+import type { PermissionSet } from './permissions/Permissions';
 
 /**
  * A PermissionReader for auxiliary resources such as acl or shape resources.

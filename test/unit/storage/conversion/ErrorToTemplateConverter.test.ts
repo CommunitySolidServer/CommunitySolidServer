@@ -1,4 +1,4 @@
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToTemplateConverter } from '../../../../src/storage/conversion/ErrorToTemplateConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { readableToString } from '../../../../src/util/StreamUtil';

@@ -1,4 +1,4 @@
-import type { TargetExtractor } from '../../ldp/http/TargetExtractor';
+import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { MethodNotAllowedHttpError } from '../../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';

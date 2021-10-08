@@ -1,5 +1,5 @@
 import { stringify } from 'querystring';
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { FormToJsonConverter } from '../../../../src/storage/conversion/FormToJsonConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';
 

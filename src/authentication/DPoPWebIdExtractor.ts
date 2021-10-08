@@ -1,6 +1,6 @@
 import type { RequestMethod } from '@solid/access-token-verifier';
 import { createSolidTokenVerifier } from '@solid/access-token-verifier';
-import type { TargetExtractor } from '../ldp/http/TargetExtractor';
+import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';

@@ -1,8 +1,8 @@
 import type { Configuration } from 'oidc-provider';
+import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
+import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import type { ErrorHandler } from '../../../../src/ldp/http/ErrorHandler';
-import type { ResponseWriter } from '../../../../src/ldp/http/ResponseWriter';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 

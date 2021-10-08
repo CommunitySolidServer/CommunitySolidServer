@@ -1,6 +1,6 @@
 import type { ResourceStore } from '../../src/';
 import { BasicRepresentation } from '../../src/';
-import type { AclPermission } from '../../src/ldp/permissions/AclPermission';
+import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
 
 export class AclHelper {
   public readonly store: ResourceStore;

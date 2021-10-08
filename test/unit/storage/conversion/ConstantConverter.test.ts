@@ -1,6 +1,6 @@
 import fs from 'fs';
 import arrayifyStream from 'arrayify-stream';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ConstantConverterOptions } from '../../../../src/storage/conversion/ConstantConverter';
 import { ConstantConverter } from '../../../../src/storage/conversion/ConstantConverter';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';

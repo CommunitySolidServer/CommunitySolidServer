@@ -1,5 +1,5 @@
 import assert from 'assert';
-import type { Operation } from '../../../../ldp/operations/Operation';
+import type { Operation } from '../../../../http/Operation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { readJsonStream } from '../../../../util/StreamUtil';

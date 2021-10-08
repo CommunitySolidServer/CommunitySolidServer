@@ -1,6 +1,6 @@
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { INTERNAL_ERROR, INTERNAL_QUADS } from '../../util/ContentTypes';
 import { getSingleItem } from '../../util/StreamUtil';
 import { DC, SOLID_ERROR } from '../../util/Vocabularies';

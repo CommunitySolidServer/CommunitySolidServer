@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 
 /**
  * Allows the locking of resources which is needed for non-atomic {@link ResourceStore}s.

@@ -1,5 +1,5 @@
-import type { Operation } from '../../../../../../src/ldp/operations/Operation';
-import { BasicRepresentation } from '../../../../../../src/ldp/representation/BasicRepresentation';
+import type { Operation } from '../../../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../../../src/http/representation/BasicRepresentation';
 
 /**
  * Creates a mock HttpRequest which is a stream of an object encoded as application/json

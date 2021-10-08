@@ -1,4 +1,4 @@
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { MarkdownToHtmlConverter } from '../../../../src/storage/conversion/MarkdownToHtmlConverter';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';

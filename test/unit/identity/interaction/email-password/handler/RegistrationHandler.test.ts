@@ -1,10 +1,10 @@
+import type { Operation } from '../../../../../../src/http/Operation';
 import {
   RegistrationHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/RegistrationHandler';
 import type {
   RegistrationManager, RegistrationParams, RegistrationResponse,
 } from '../../../../../../src/identity/interaction/email-password/util/RegistrationManager';
-import type { Operation } from '../../../../../../src/ldp/operations/Operation';
 import { createPostJsonOperation } from './Util';
 
 describe('A RegistrationHandler', (): void => {

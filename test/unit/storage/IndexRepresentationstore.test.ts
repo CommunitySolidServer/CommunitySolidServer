@@ -1,5 +1,5 @@
-import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { IndexRepresentationStore } from '../../../src/storage/IndexRepresentationStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';

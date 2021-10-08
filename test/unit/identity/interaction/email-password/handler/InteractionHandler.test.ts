@@ -1,10 +1,10 @@
+import { BasicRepresentation } from '../../../../../../src/http/representation/BasicRepresentation';
 import type {
   InteractionResponseResult,
 } from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
 import {
   InteractionHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
-import { BasicRepresentation } from '../../../../../../src/ldp/representation/BasicRepresentation';
 import { NotImplementedHttpError } from '../../../../../../src/util/errors/NotImplementedHttpError';
 
 class SimpleInteractionHandler extends InteractionHandler {

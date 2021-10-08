@@ -1,7 +1,7 @@
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from './ContentTypes';

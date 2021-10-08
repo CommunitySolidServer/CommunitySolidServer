@@ -1,6 +1,6 @@
 import { existsSync } from 'fs';
-import type { TargetExtractor } from '../../../src/ldp/http/TargetExtractor';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { TargetExtractor } from '../../../src/http/input/identifier/TargetExtractor';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import {
   absoluteFilePath,

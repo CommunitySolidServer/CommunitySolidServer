@@ -1,4 +1,4 @@
-import type { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { DC } from '../util/Vocabularies';
 
 /**

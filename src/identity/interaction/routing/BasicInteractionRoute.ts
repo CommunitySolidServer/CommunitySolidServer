@@ -1,4 +1,4 @@
-import type { Operation } from '../../../ldp/operations/Operation';
+import type { Operation } from '../../../http/Operation';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { createErrorMessage, isError } from '../../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../../util/errors/InternalServerError';

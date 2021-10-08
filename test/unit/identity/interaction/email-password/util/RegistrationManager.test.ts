@@ -1,9 +1,9 @@
+import type { ResourceIdentifier } from '../../../../../../src/http/representation/ResourceIdentifier';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
 import {
   RegistrationManager,
 } from '../../../../../../src/identity/interaction/email-password/util/RegistrationManager';
 import type { OwnershipValidator } from '../../../../../../src/identity/ownership/OwnershipValidator';
-import type { ResourceIdentifier } from '../../../../../../src/ldp/representation/ResourceIdentifier';
 import type { IdentifierGenerator } from '../../../../../../src/pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../../../src/pods/PodManager';
 import type { PodSettings } from '../../../../../../src/pods/settings/PodSettings';

@@ -1,6 +1,6 @@
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { matchesMediaType, getConversionTarget } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
