@@ -18,9 +18,6 @@ export interface DataValidator {
    * purposes like estimating the size of the data stream
    * @returns a piped stream with checks that destroy the stream on error
    */
-  validateRepresentation: (
-    id: ResourceIdentifier,
-    data: Guarded<Readable>,
-    metadata: RepresentationMetadata,
-  ) => Promise<Guarded<Readable>>;
+  validateRepresentation: (id: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata) =>
+  Promise<Guarded<Readable>>;
 }

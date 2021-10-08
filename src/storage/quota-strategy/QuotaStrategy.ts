@@ -38,9 +38,6 @@ export interface QuotaStrategy {
    * @param metadata - the RepresentationMetadata that belongs to the identifier
    * @returns a Passthrough instance that errors when quota is exceeded
    */
-  trackAvailableSpace: (
-    identifier: ResourceIdentifier,
-    data: Guarded<Readable>,
-    metadata: RepresentationMetadata,
-  ) => Promise<Guarded<PassThrough>>;
+  trackAvailableSpace: (identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata) =>
+  Promise<Guarded<PassThrough>>;
 }

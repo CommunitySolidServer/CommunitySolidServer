@@ -20,12 +20,7 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
   private readonly reporter: SizeReporter;
   private readonly base: string;
 
-  public constructor(
-    limitUnit: string,
-    limitAmount: number,
-    reporter: SizeReporter,
-    base: string,
-  ) {
+  public constructor(limitUnit: string, limitAmount: number, reporter: SizeReporter, base: string) {
     this.limit = { unit: limitUnit, amount: limitAmount };
     this.reporter = reporter;
     this.base = base;

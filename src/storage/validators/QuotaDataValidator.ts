@@ -18,11 +18,8 @@ export class QuotaDataValidator implements DataValidator {
     this.strategy = strategy;
   }
 
-  public async validateRepresentation(
-    identifier: ResourceIdentifier,
-    data: Guarded<Readable>,
-    metadata: RepresentationMetadata,
-  ): Promise<Guarded<Readable>> {
+  public async validateRepresentation(identifier: ResourceIdentifier, data: Guarded<Readable>,
+    metadata: RepresentationMetadata): Promise<Guarded<Readable>> {
     // 1. Get the available size
     const availableSize = await this.strategy.getAvailableSpace(identifier);
 
