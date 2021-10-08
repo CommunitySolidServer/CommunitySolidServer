@@ -41,7 +41,7 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
   /** The estimated size of a resource in this strategy is simply the content-length header */
   public async estimateSize(metadata: RepresentationMetadata): Promise<Size> {
     return {
-      amount: metadata.contentLength ? Number(metadata.contentLength) : 0,
+      amount: metadata.contentLength ?? 0,
       unit: this.limit.unit,
     };
   }

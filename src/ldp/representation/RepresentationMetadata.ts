@@ -8,7 +8,7 @@ import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
 export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
-export type MetadataValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
+export type MetadataValue = NamedNode | Literal | string | number | (NamedNode | Literal | string | number)[];
 export type MetadataRecord = Record<string, MetadataValue>;
 export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 
@@ -320,8 +320,8 @@ export class RepresentationMetadata {
   /**
   * Shorthand for the CONTENT_LENGTH predicate.
   */
-  public get contentLength(): string | undefined {
-    return this.get(CONTENT_LENGTH_TERM)?.value;
+  public get contentLength(): number | undefined {
+    return Number(this.get(CONTENT_LENGTH_TERM)?.value);
   }
 
   public set contentLength(input) {

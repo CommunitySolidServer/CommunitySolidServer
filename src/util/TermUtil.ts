@@ -55,12 +55,15 @@ export const toPredicateTerm = toNamedTerm;
  * @param object - Object to potentially transform.
  * @param preferLiteral - Whether strings are converted to literals or named nodes.
  */
-export function toObjectTerm(object: string, preferLiteral?: boolean): NamedNode;
+export function toObjectTerm(object: string | number, preferLiteral?: boolean): NamedNode;
 export function toObjectTerm<T extends Term>(object: T, preferLiteral?: boolean): T;
-export function toObjectTerm<T extends Term>(object: T | string, preferLiteral?: boolean): T | NamedNode;
-export function toObjectTerm(object: Term | string, preferLiteral = false): Term {
+export function toObjectTerm<T extends Term>(object: T | string | number, preferLiteral?: boolean): T | NamedNode;
+export function toObjectTerm(object: Term | string | number, preferLiteral = false): Term {
   if (typeof object === 'string') {
     return (preferLiteral ? literal(object) : namedNode(object)) as any;
+  }
+  if (typeof object === 'number') {
+    return (preferLiteral ? literal(object) : namedNode(object.toString())) as any;
   }
   return object;
 }

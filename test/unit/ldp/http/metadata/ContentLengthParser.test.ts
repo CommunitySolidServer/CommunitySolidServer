@@ -21,6 +21,6 @@ describe('A ContentLengthParser', (): void => {
     request.headers['content-length'] = '50';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.contentLength).toBe('50');
+    expect(metadata.contentLength).toBe(50);
   });
 });
