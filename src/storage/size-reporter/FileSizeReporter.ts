@@ -24,69 +24,40 @@ export class FileSizeReporter implements SizeReporter {
    * Returns the size of the given resource ( and its children ) in bytes
    */
   public async getSize(identifier: ResourceIdentifier): Promise<Size> {
-    return { unit: this.getUnit(), amount: await this.getTotalSize(identifier) };
+    const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
+
+    return { unit: this.getUnit(), amount: await this.getTotalSize(fileLocation) };
   }
 
   /**
-   * Get all the files present on disk of a container.
-   * If a path to a file is given it will simply return an array containing that path.
+   * Get the total size of a resource and its children if present
    *
-   * @param fileLocation - the location on disk of the file / container of which you want the size
-   * @param files - An array of string of file / container locations on disk.
-   * This parameter was solely added for recursive reasons
-   * @returns a list of string containing every file / container present
-   * in the original 'fileLocation' (if a directory) and itself
+   * @param fileLocation - the resource of which you want the total size of ( on disk )
+   * @returns a number specifying how many bytes are used by the resource
    */
-  private async getAllFiles(fileLocation: string, files: string[] = []): Promise<string[]> {
+  private async getTotalSize(fileLocation: string): Promise<number> {
     // Check if the file exists
     try {
       await fsPromises.access(fileLocation);
     } catch {
-      return files;
+      return 0;
     }
 
+    const lstat = await fsPromises.lstat(fileLocation);
+
     // If the file's location points to a file, simply add the file the array and return it
-    if ((await fsPromises.lstat(fileLocation)).isFile()) {
-      return [ ...files, fileLocation ];
+    if (lstat.isFile()) {
+      return lstat.size;
     }
 
     // If the location DOES exist and is NOT a file it should be a directory
     // recursively add all children to the array
     const childFiles = await fsPromises.readdir(fileLocation);
 
-    return childFiles.reduce(async(acc: Promise<string[]>, current): Promise<string[]> => {
+    return childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
       const childFileLocation = join(fileLocation, current);
 
-      // Add the accumulator together with the container's path and recursively add all
-      // the container's children to the array
-      return [
-        ...await acc, fileLocation,
-        ...await this.getAllFiles(childFileLocation, files),
-      ];
-    }, Promise.resolve([]));
-  }
-
-  /**
-   * Get the total size of a resource and its children if present
-   *
-   * @param identifier - the resource of which you want the total size of ( on disk )
-   * @returns a number specifying how many bytes are used by the resource
-   */
-  private async getTotalSize(identifier: ResourceIdentifier): Promise<number> {
-    const fileLocation = (await this.fileIdentifierMapper.mapUrlToFilePath(identifier, false)).filePath;
-    // Filter out any duplicates
-    const arrayOfFiles = [ ...new Set(await this.getAllFiles(fileLocation)) ];
-
-    return arrayOfFiles.reduce(
-      async(acc, current): Promise<number> => {
-        // Extra check to see if file does really exist
-        try {
-          return await acc + (await fsPromises.lstat(current)).size;
-        } catch {
-          return await acc;
-        }
-      },
-      Promise.resolve(0),
-    );
+      return await acc + lstat.size + await this.getTotalSize(childFileLocation);
+    }, Promise.resolve(0));
   }
 }
