@@ -1,3 +1,4 @@
+import type { Stats } from 'fs';
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
@@ -36,14 +37,14 @@ export class FileSizeReporter implements SizeReporter {
    * @returns a number specifying how many bytes are used by the resource
    */
   private async getTotalSize(fileLocation: string): Promise<number> {
+    let lstat: Stats;
+
     // Check if the file exists
     try {
-      await fsPromises.access(fileLocation);
+      lstat = await fsPromises.lstat(fileLocation);
     } catch {
       return 0;
     }
-
-    const lstat = await fsPromises.lstat(fileLocation);
 
     // If the file's location points to a file, simply add the file the array and return it
     if (lstat.isFile()) {
@@ -54,10 +55,10 @@ export class FileSizeReporter implements SizeReporter {
     // recursively add all children to the array
     const childFiles = await fsPromises.readdir(fileLocation);
 
-    return childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
+    return lstat.size + await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
       const childFileLocation = join(fileLocation, current);
 
-      return await acc + lstat.size + await this.getTotalSize(childFileLocation);
+      return await acc + await this.getTotalSize(childFileLocation);
     }, Promise.resolve(0));
   }
 }

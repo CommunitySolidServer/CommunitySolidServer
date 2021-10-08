@@ -32,7 +32,6 @@ export class AtomicFileDataAccessor extends FileDataAccessor {
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
-    const metadataWritten = await this.writeMetadata(link, metadata);
     // Generate temporary file name
     const tempFilePath = join(this.tempFilePath, `temp-${v4()}.txt`);
 
@@ -46,12 +45,8 @@ export class AtomicFileDataAccessor extends FileDataAccessor {
       if ((await this.getStats(tempFilePath)).isFile()) {
         await fsPromises.unlink(tempFilePath);
       }
-      // Delete the metadata if there was an error writing the file
-      if (metadataWritten) {
-        const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
-        await fsPromises.unlink(metaLink.filePath);
-      }
       throw error;
     }
+    await this.writeMetadata(link, metadata);
   }
 }
