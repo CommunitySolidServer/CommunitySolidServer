@@ -2,13 +2,13 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM } from '../../util/Vocabularies';
+import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
+import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
 export type MetadataIdentifier = ResourceIdentifier | NamedNode | BlankNode;
-export type MetadataValue = NamedNode | Literal | string | number | (NamedNode | Literal | string | number)[];
+export type MetadataValue = NamedNode | Literal | string | (NamedNode | Literal | string)[];
 export type MetadataRecord = Record<string, MetadataValue>;
 export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 
@@ -325,6 +325,8 @@ export class RepresentationMetadata {
   }
 
   public set contentLength(input) {
-    this.set(CONTENT_LENGTH_TERM, input);
+    if (input) {
+      this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
+    }
   }
 }
