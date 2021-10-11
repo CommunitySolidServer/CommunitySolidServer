@@ -1,14 +1,5 @@
 ## Interacting with the server
 
-### `POST`: Creating a new pod
-
-Create a pod using an external WebID for authentication:
-```shell
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"login": "timbl", "webId": "http://timbl.inrupt.net/profile/card#me"}' \
-  http://localhost:3000/pods
-```
-
 ### `PUT`: Creating resources for a given URL
 
 Create a plain text file:
