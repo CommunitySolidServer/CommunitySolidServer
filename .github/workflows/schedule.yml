@@ -9,6 +9,12 @@ on:
 jobs:
   conformance:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        branch:
+          - 'main'
+          - 'versions/2.0.0'
     timeout-minutes: 10
     steps:
       - name: Use Node.js 16.x
@@ -17,6 +23,8 @@ jobs:
           node-version: 16.x
       - name: Check out the project
         uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.branch }}
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Start the server in the background
