@@ -55,4 +55,9 @@ describe('A FileSizeReporter', (): void => {
   it('getUnit() should return \'bytes\'.', (): void => {
     expect(fileSizeReporter.getUnit()).toBe('bytes');
   });
+
+  it('should return 0 when the size of a non existent file is requested.', async(): Promise<void> => {
+    const result = fileSizeReporter.getSize({ path: './test.txt' });
+    await expect(result).resolves.toEqual(expect.objectContaining({ amount: 0 }));
+  });
 });
