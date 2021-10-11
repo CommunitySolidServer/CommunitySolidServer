@@ -181,6 +181,21 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         const { folder, name } = getFolder(path);
         folder[name] = data;
       },
+      rename(path: string, destination: string): void {
+        const { folder, name } = getFolder(path);
+        if (!folder[name]) {
+          throwSystemError('ENOENT');
+        }
+
+        const { folder: folderDest, name: nameDest } = getFolder(destination);
+        folderDest[nameDest] = folder[name];
+
+        if (!this.lstat(path).isFile()) {
+          throwSystemError('EISDIR');
+        }
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete folder[name];
+      },
     },
   };
 
