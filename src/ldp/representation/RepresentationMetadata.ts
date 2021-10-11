@@ -321,7 +321,8 @@ export class RepresentationMetadata {
   * Shorthand for the CONTENT_LENGTH predicate.
   */
   public get contentLength(): number | undefined {
-    return Number(this.get(CONTENT_LENGTH_TERM)?.value);
+    const length = this.get(CONTENT_LENGTH_TERM);
+    return length?.value ? Number(length.value) : undefined;
   }
 
   public set contentLength(input) {
