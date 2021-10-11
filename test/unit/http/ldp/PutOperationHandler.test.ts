@@ -6,18 +6,23 @@ import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PutOperationHandler', (): void => {
   let operation: Operation;
   let body: Representation;
   const conditions = new BasicConditions({});
-  const store = {} as unknown as ResourceStore;
-  const handler = new PutOperationHandler(store);
+  let store: jest.Mocked<ResourceStore>;
+  let handler: PutOperationHandler;
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PUT', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    store.setRepresentation = jest.fn(async(): Promise<any> => {});
+    store = {
+      resourceExists: jest.fn(),
+      setRepresentation: jest.fn(),
+    } as any;
+
+    handler = new PutOperationHandler(store);
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {
@@ -31,7 +36,17 @@ describe('A PutOperationHandler', (): void => {
     await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
   });
 
-  it('sets the representation in the store and returns the correct response.', async(): Promise<void> => {
+  it('creates the representation in the store and returns the correct response.', async(): Promise<void> => {
+    const result = await handler.handle({ operation });
+    expect(store.setRepresentation).toHaveBeenCalledTimes(1);
+    expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);
+    expect(result.statusCode).toBe(201);
+    expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe(operation.target.path);
+    expect(result.data).toBeUndefined();
+  });
+
+  it('returns the correct response if the resource already exists.', async(): Promise<void> => {
+    store.resourceExists.mockResolvedValueOnce(true);
     const result = await handler.handle({ operation });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);

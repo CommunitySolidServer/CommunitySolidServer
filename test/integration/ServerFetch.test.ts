@@ -77,7 +77,8 @@ describe('A Solid server', (): void => {
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(url);
   });
 
   it('can PUT to resources.', async(): Promise<void> => {
@@ -89,7 +90,8 @@ describe('A Solid server', (): void => {
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(url);
   });
 
   it('can handle PUT errors.', async(): Promise<void> => {

@@ -76,7 +76,8 @@ describe('A server with restricted IDP access', (): void => {
       headers: { 'content-type': 'text/turtle' },
       body: restrictedAcl,
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(`${baseUrl}idp/register/.acl`);
 
     // Registration is now disabled
     res = await fetch(`${baseUrl}idp/register/`);

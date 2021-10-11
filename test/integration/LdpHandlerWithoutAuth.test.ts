@@ -110,7 +110,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // PUT
-    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1' });
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1', exists: true });
 
     // GET
     response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
@@ -253,7 +253,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       },
       body: createReadStream(joinFilePath(__dirname, '../assets/testimage.png')) as any,
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
+    expect(response.headers.get('location')).toBe(documentUrl);
     await expect(response.text()).resolves.toHaveLength(0);
 
     // GET
@@ -291,7 +292,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       headers: { 'content-length': '0', 'content-type': 'text/turtle' },
       body: '',
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
+    expect(response.headers.get('location')).toBe(documentUrl);
 
     // GET
     await getResource(documentUrl);
@@ -312,7 +314,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
-    await patchResource(documentUrl, query);
+    await patchResource(documentUrl, query, true);
 
     // PATCH using a content-type header with charset
     const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
@@ -361,7 +363,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
-    await patchResource(documentUrl, query);
+    await patchResource(documentUrl, query, true);
 
     // GET
     response = await getResource(documentUrl);

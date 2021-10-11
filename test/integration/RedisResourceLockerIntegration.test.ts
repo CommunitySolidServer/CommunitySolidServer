@@ -39,7 +39,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       },
       body: fileData,
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
 
     // Get file
     response = await fetch(fileUrl);
@@ -64,7 +64,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
         'content-type': 'text/plain',
       },
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
 
     // GET
     response = await fetch(containerUrl);
@@ -88,7 +88,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       },
       body: fileData,
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
 
     // GET 4 times
     for (let i = 0; i < 4; i++) {

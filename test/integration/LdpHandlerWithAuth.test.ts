@@ -84,7 +84,7 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // PUT
     const document = `${baseUrl}test.txt`;
-    await putResource(document, { contentType: 'text/plain', body: 'TESTDATA' });
+    await putResource(document, { contentType: 'text/plain', body: 'TESTDATA', exists: false });
 
     // GET
     const response = await getResource(document);

@@ -36,7 +36,7 @@ export async function getResource(url: string,
 /**
  * This is specifically for PUT requests which are expected to succeed.
  */
-export async function putResource(url: string, options: { contentType: string; body?: string }):
+export async function putResource(url: string, options: { contentType: string; body?: string; exists?: boolean }):
 Promise<Response> {
   const init: RequestInit = {
     method: 'PUT',
@@ -47,7 +47,10 @@ Promise<Response> {
     (init.headers as Record<string, string>).link = '<http://www.w3.org/ns/ldp#Container>; rel="type"';
   }
   const response = await fetch(url, init);
-  expect(response.status).toBe(205);
+  expect(response.status).toBe(options.exists ? 205 : 201);
+  if (!options.exists) {
+    expect(response.headers.get('location')).toBe(url);
+  }
   await expect(response.text()).resolves.toHaveLength(0);
   return response;
 }
@@ -84,7 +87,7 @@ export async function postResource(container: string, options: CreateOptions): P
 /**
  * This is specifically for PATCH requests which are expected to succeed.
  */
-export async function patchResource(url: string, query: string): Promise<Response> {
+export async function patchResource(url: string, query: string, exists?: boolean): Promise<Response> {
   const response = await fetch(url, {
     method: 'PATCH',
     headers: {
@@ -93,7 +96,10 @@ export async function patchResource(url: string, query: string): Promise<Respons
     body: query,
   });
   await expect(response.text()).resolves.toHaveLength(0);
-  expect(response.status).toBe(205);
+  expect(response.status).toBe(exists ? 205 : 201);
+  if (!exists) {
+    expect(response.headers.get('location')).toBe(url);
+  }
 
   return response;
 }

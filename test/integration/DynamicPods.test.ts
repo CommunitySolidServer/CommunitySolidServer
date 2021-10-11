@@ -105,7 +105,8 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       },
       body: 'this is new data!',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(`${podUrl}test`);
 
     res = await fetch(`${podUrl}test`, {
       headers: {
