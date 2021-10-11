@@ -20,8 +20,8 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
   private readonly reporter: SizeReporter;
   private readonly base: string;
 
-  public constructor(limitUnit: string, limitAmount: number, reporter: SizeReporter, base: string) {
-    this.limit = { unit: limitUnit, amount: limitAmount };
+  public constructor(limit: Size, reporter: SizeReporter, base: string) {
+    this.limit = limit;
     this.reporter = reporter;
     this.base = base;
   }
@@ -51,7 +51,7 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
     const strategy = this;
 
     return guardStream(new PassThrough({
-      // An arrow function cannot have a 'this' parameter.ts(2730)
+      // We need a regular function to use the `this` pointer
       // eslint-disable-next-line object-shorthand
       transform: async function(this, chunk: any, enc: string, done: () => void): Promise<void> {
         total += chunk.length;

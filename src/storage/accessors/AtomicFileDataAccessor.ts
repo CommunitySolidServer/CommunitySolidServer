@@ -6,12 +6,13 @@ import type { RepresentationMetadata } from '../../ldp/representation/Representa
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
+import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import { FileDataAccessor } from './FileDataAccessor';
 
 /**
- * DataAccessor that uses the file system to store documents as files and containers as folders.
+ * AtomicDataAccessor that uses the file system to store documents as files and containers as folders.
  */
-export class AtomicFileDataAccessor extends FileDataAccessor {
+export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDataAccessor {
   private readonly tempFilePath: string;
 
   public constructor(resourceMapper: FileIdentifierMapper, tempFilePath: string) {
@@ -23,7 +24,10 @@ export class AtomicFileDataAccessor extends FileDataAccessor {
 
   /**
    * Writes the given data as a file (and potential metadata as additional file).
-   * The metadata file will be written first and will be deleted if something goes wrong writing the actual data.
+   * Data will first be written to a temporary file and if no errors occur only then the
+   * file will be moved to desired destination.
+   * If the stream errors it is made sure the temporary file will be deleted.
+   * The metadata file will only be written if the data was written successfully.
    */
   public async writeDocument(identifier: ResourceIdentifier, data: Guarded<Readable>, metadata: RepresentationMetadata):
   Promise<void> {

@@ -13,9 +13,9 @@
       "comment": "enforces quota globally for all data on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "GlobalQuotaStrategy",
+      "limit_amount": "5000",
+      "limit_unit": "bytes",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
-      "limitUnit": "bytes",
-      "limitAmount": "5000",
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" }
     },
 
