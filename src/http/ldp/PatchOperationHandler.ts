@@ -32,9 +32,9 @@ export class PatchOperationHandler extends OperationHandler {
     // Solid, §2.1: "A Solid server MUST reject PUT, POST and PATCH requests
     // without the Content-Type header with a status code of 400."
     // https://solid.github.io/specification/protocol#http-server
-    if (!operation.body?.metadata.contentType) {
-      this.logger.warn('No Content-Type header specified on PATCH request');
-      throw new BadRequestHttpError('No Content-Type header specified on PATCH request');
+    if (!operation.body.metadata.contentType) {
+      this.logger.warn('PATCH requests require the Content-Type header to be set');
+      throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
     }
     await this.store.modifyResource(operation.target, operation.body as Patch, operation.conditions);
     return new ResetResponseDescription();

@@ -26,7 +26,7 @@ describe('A ConvertingRouterRule', (): void => {
     rule = new ConvertingRouterRule({ store: store1, supportChecker: checker1 }, defaultStore);
 
     metadata = new RepresentationMetadata();
-    representation = { binary: true, data: 'data!' as any, metadata };
+    representation = { binary: true, data: 'data!' as any, metadata, isEmpty: false };
   });
 
   it('returns the corresponding store if it supports the input.', async(): Promise<void> => {

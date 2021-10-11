@@ -43,7 +43,7 @@ export class LoginHandler extends InteractionHandler {
    */
   private async parseInput(operation: Operation): Promise<{ email: string; password: string; remember: boolean }> {
     const prefilled: Record<string, string> = {};
-    const { email, password, remember } = await readJsonStream(operation.body!.data);
+    const { email, password, remember } = await readJsonStream(operation.body.data);
     assert(typeof email === 'string' && email.length > 0, 'Email required');
     prefilled.email = email;
     assert(typeof password === 'string' && password.length > 0, 'Password required');

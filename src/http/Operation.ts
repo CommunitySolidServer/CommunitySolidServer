@@ -29,7 +29,7 @@ export interface Operation {
    */
   permissionSet?: PermissionSet;
   /**
-   * Optional representation of the body.
+   * Representation of the body and metadata headers.
    */
-  body?: Representation;
+  body: Representation;
 }

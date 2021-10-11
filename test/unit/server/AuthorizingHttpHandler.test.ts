@@ -5,6 +5,7 @@ import type { PermissionReader } from '../../../src/authorization/PermissionRead
 import type { ModesExtractor } from '../../../src/authorization/permissions/ModesExtractor';
 import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { Operation } from '../../../src/http/Operation';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import { AuthorizingHttpHandler } from '../../../src/server/AuthorizingHttpHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
@@ -30,6 +31,7 @@ describe('An AuthorizingHttpHandler', (): void => {
       target: { path: 'http://test.com/foo' },
       method: 'GET',
       preferences: {},
+      body: new BasicRepresentation(),
     };
 
     credentialsExtractor = {

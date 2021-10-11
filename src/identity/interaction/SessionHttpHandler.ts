@@ -12,7 +12,7 @@ export class SessionHttpHandler extends InteractionHandler {
       throw new NotImplementedHttpError('Only interactions with a valid session are supported.');
     }
 
-    const { remember } = await readJsonStream(operation.body!.data);
+    const { remember } = await readJsonStream(operation.body.data);
     return {
       type: 'complete',
       details: { webId: oidcInteraction.session.accountId, shouldRemember: Boolean(remember) },

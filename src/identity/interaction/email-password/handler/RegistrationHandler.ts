@@ -19,7 +19,7 @@ export class RegistrationHandler extends InteractionHandler {
 
   public async handle({ operation }: InteractionHandlerInput):
   Promise<InteractionResponseResult<RegistrationResponse>> {
-    const data = await readJsonStream(operation.body!.data);
+    const data = await readJsonStream(operation.body.data);
     const validated = this.registrationManager.validateInput(data, false);
     const details = await this.registrationManager.register(validated, false);
     return { type: 'response', details };

@@ -19,10 +19,6 @@ describe('A SparqlPatchModesExtractor', (): void => {
     await expect(result).rejects.toThrow(NotImplementedHttpError);
     await expect(result).rejects.toThrow('Cannot determine permissions of GET, only PATCH.');
 
-    result = extractor.canHandle({ ...operation, body: undefined });
-    await expect(result).rejects.toThrow(NotImplementedHttpError);
-    await expect(result).rejects.toThrow('Cannot determine permissions of PATCH operations without a body.');
-
     result = extractor.canHandle({ ...operation, body: {} as SparqlUpdatePatch });
     await expect(result).rejects.toThrow(NotImplementedHttpError);
     await expect(result).rejects.toThrow('Cannot determine permissions of non-SPARQL patches.');

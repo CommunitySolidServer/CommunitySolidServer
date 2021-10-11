@@ -5,6 +5,7 @@ import type { ErrorHandler } from '../../../src/http/output/error/ErrorHandler';
 import { OkResponseDescription } from '../../../src/http/output/response/OkResponseDescription';
 import { ResponseDescription } from '../../../src/http/output/response/ResponseDescription';
 import type { ResponseWriter } from '../../../src/http/output/ResponseWriter';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
@@ -15,7 +16,8 @@ describe('A ParsingHttpHandler', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
   const preferences = { type: { 'text/html': 1 }};
-  const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences };
+  const body = new BasicRepresentation();
+  const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, body };
   const errorResponse = new ResponseDescription(400);
   let requestParser: jest.Mocked<RequestParser>;
   let metadataCollector: jest.Mocked<OperationMetadataCollector>;

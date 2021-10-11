@@ -24,7 +24,7 @@ export class ResetPasswordHandler extends InteractionHandler {
     // Extract record ID from request URL
     const recordId = /\/([^/]+)$/u.exec(operation.target.path)?.[1];
     // Validate input data
-    const { password, confirmPassword } = await readJsonStream(operation.body!.data);
+    const { password, confirmPassword } = await readJsonStream(operation.body.data);
     assert(
       typeof recordId === 'string' && recordId.length > 0,
       'Invalid request. Open the link from your email again',

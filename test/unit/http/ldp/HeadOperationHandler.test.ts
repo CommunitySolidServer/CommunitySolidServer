@@ -1,6 +1,7 @@
 import type { Readable } from 'stream';
 import { HeadOperationHandler } from '../../../../src/http/ldp/HeadOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
@@ -10,12 +11,13 @@ describe('A HeadOperationHandler', (): void => {
   let operation: Operation;
   const conditions = new BasicConditions({});
   const preferences = {};
+  const body = new BasicRepresentation();
   let store: ResourceStore;
   let handler: HeadOperationHandler;
   let data: Readable;
 
   beforeEach(async(): Promise<void> => {
-    operation = { method: 'HEAD', target: { path: 'http://test.com/foo' }, preferences, conditions };
+    operation = { method: 'HEAD', target: { path: 'http://test.com/foo' }, preferences, conditions, body };
     data = { destroy: jest.fn() } as any;
     store = {
       getRepresentation: jest.fn(async(): Promise<Representation> =>

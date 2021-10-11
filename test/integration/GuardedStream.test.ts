@@ -37,7 +37,7 @@ class DummyConverter extends TypedRepresentationConverter {
     const data = guardedStreamFrom([ 'dummy' ]);
     const metadata = new RepresentationMetadata(representation.metadata, 'x/x');
 
-    return { binary: true, data, metadata };
+    return { binary: true, data, metadata, isEmpty: false };
   }
 }
 

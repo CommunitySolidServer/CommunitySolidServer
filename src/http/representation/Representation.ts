@@ -19,4 +19,10 @@ export interface Representation {
    * (as opposed to complex objects).
    */
   binary: boolean;
+  /**
+   * Whether the data stream is empty.
+   * This being true does not imply that the data stream has a length of more than 0,
+   * only that it is a possibility and should be read to be sure.
+   */
+  isEmpty: boolean;
 }

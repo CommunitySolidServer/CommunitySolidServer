@@ -164,6 +164,7 @@ describe('A DataAccessorBasedStore', (): void => {
       metadata: new RepresentationMetadata(
         { [CONTENT_TYPE]: 'text/plain', [RDF.type]: DataFactory.namedNode(LDP.Resource) },
       ),
+      isEmpty: false,
     };
   });
 

@@ -19,4 +19,4 @@ export interface BodyParserArgs {
  * Parses the body of an incoming {@link HttpRequest} and converts it to a {@link Representation}.
  */
 export abstract class BodyParser extends
-  AsyncHandler<BodyParserArgs, Representation | undefined> {}
+  AsyncHandler<BodyParserArgs, Representation> {}

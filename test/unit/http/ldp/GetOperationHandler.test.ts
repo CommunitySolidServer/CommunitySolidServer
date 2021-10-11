@@ -1,5 +1,6 @@
 import { GetOperationHandler } from '../../../../src/http/ldp/GetOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
@@ -9,11 +10,12 @@ describe('A GetOperationHandler', (): void => {
   let operation: Operation;
   const conditions = new BasicConditions({});
   const preferences = {};
+  const body = new BasicRepresentation();
   let store: ResourceStore;
   let handler: GetOperationHandler;
 
   beforeEach(async(): Promise<void> => {
-    operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, conditions };
+    operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, conditions, body };
     store = {
       getRepresentation: jest.fn(async(): Promise<Representation> =>
         ({ binary: false, data: 'data', metadata: 'metadata' } as any)),

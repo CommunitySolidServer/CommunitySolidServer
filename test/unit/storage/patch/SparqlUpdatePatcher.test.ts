@@ -19,6 +19,7 @@ function getPatch(query: string): SparqlUpdatePatch {
     data: guardedStreamFrom(prefixedQuery),
     metadata: new RepresentationMetadata(),
     binary: true,
+    isEmpty: false,
   };
 }
 
