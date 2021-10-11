@@ -11,10 +11,8 @@ import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
 
-const rootFilePath = 'uploads';
-const now = new Date();
-
 describe('AtomicFileDataAccessor', (): void => {
+  const rootFilePath = 'uploads';
   const base = 'http://test.com/';
   let accessor: AtomicFileDataAccessor;
   let cache: { data: any };
@@ -22,8 +20,12 @@ describe('AtomicFileDataAccessor', (): void => {
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath, now);
-    accessor = new AtomicFileDataAccessor(new ExtensionBasedMapper(base, rootFilePath), '/temp');
+    cache = mockFs(rootFilePath, new Date());
+    accessor = new AtomicFileDataAccessor(
+      new ExtensionBasedMapper(base, rootFilePath),
+      '/.internal/tempFiles/',
+    );
+    (accessor as any).tempFilePath = rootFilePath;
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
     data = guardedStreamFrom([ 'data' ]);
   });

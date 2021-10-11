@@ -19,7 +19,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
 
   public constructor(resourceMapper: FileIdentifierMapper, tempFilePath: string) {
     super(resourceMapper);
-    this.tempFilePath = tempFilePath;
+    this.tempFilePath = process.cwd() + tempFilePath;
     // Cannot use fsPromises in constructor
     mkdirSync(this.tempFilePath, { recursive: true });
   }

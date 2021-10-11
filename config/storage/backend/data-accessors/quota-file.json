@@ -34,7 +34,7 @@
         "comment": "DataAccessor that writes data to the disk with atomicity in mind",
         "@type": "AtomicFileDataAccessor",
         "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
-        "tempFilePath": { "@id": "urn:solid-server:default:variable:tempFilePath" }
+        "tempFilePath": "/.internal/tempFiles/"
       },
       "validator": { "@id": "urn:solid-server:default:DataValidator" }
     }
