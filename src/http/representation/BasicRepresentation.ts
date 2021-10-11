@@ -25,6 +25,11 @@ export class BasicRepresentation implements Representation {
   public readonly binary: boolean;
 
   /**
+   * An empty Representation
+   */
+  public constructor();
+
+  /**
    * @param data - The representation data
    * @param metadata - The representation metadata
    * @param binary - Whether the representation is a binary or object stream
@@ -86,13 +91,15 @@ export class BasicRepresentation implements Representation {
   );
 
   public constructor(
-    data: Readable | any[] | string,
-    metadata: RepresentationMetadata | MetadataRecord | MetadataIdentifier | string,
+    data?: Readable | any[] | string,
+    metadata?: RepresentationMetadata | MetadataRecord | MetadataIdentifier | string,
     metadataRest?: MetadataRecord | string | boolean,
     binary?: boolean,
   ) {
     if (typeof data === 'string' || Array.isArray(data)) {
       data = guardedStreamFrom(data);
+    } else if (!data) {
+      data = guardedStreamFrom([]);
     }
     this.data = guardStream(data);
 
@@ -109,5 +116,12 @@ export class BasicRepresentation implements Representation {
       binary = metadata.contentType !== INTERNAL_QUADS;
     }
     this.binary = binary;
+  }
+
+  /**
+   * Data should only be interpreted if there is a content type.
+   */
+  public get isEmpty(): boolean {
+    return !this.metadata.contentType;
   }
 }

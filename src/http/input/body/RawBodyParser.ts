@@ -13,7 +13,7 @@ export class RawBodyParser extends BodyParser {
 
   // Note that the only reason this is a union is in case the body is empty.
   // If this check gets moved away from the BodyParsers this union could be removed
-  public async handle({ request, metadata }: BodyParserArgs): Promise<Representation | undefined> {
+  public async handle({ request, metadata }: BodyParserArgs): Promise<Representation> {
     const {
       'content-type': contentType,
       'content-length': contentLength,
@@ -26,7 +26,7 @@ export class RawBodyParser extends BodyParser {
     // some still provide a Content-Length of 0 (but without Content-Type).
     if ((!contentLength || (/^0+$/u.test(contentLength) && !contentType)) && !transferEncoding) {
       this.logger.debug('HTTP request does not have a body, or its empty body is missing a Content-Type header');
-      return;
+      return new BasicRepresentation([], metadata);
     }
 
     // While RFC7231 allows treating a body without content type as an octet stream,

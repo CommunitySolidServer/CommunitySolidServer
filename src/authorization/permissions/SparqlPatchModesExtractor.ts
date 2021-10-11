@@ -11,9 +11,6 @@ export class SparqlPatchModesExtractor extends ModesExtractor {
     if (method !== 'PATCH') {
       throw new NotImplementedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
     }
-    if (!body) {
-      throw new NotImplementedHttpError('Cannot determine permissions of PATCH operations without a body.');
-    }
     if (!this.isSparql(body)) {
       throw new NotImplementedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }

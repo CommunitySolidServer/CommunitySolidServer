@@ -159,7 +159,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
 
     // Registration manager expects JSON data
     let json: SetupInput = {};
-    if (operation.body) {
+    if (!operation.body.isEmpty) {
       const args = {
         representation: operation.body,
         preferences: { type: { [APPLICATION_JSON]: 1 }},

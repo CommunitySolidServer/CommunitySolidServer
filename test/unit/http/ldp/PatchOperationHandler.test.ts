@@ -25,10 +25,8 @@ describe('A PatchOperationHandler', (): void => {
     await expect(handler.canHandle({ operation })).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('errors if there is no body or content-type.', async(): Promise<void> => {
-    operation.body!.metadata.contentType = undefined;
-    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
-    delete operation.body;
+  it('errors if there is no content-type.', async(): Promise<void> => {
+    operation.body.metadata.contentType = undefined;
     await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
   });
 

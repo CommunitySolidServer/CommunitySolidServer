@@ -19,16 +19,18 @@ describe('A RawBodyparser', (): void => {
   });
 
   it('returns empty output if there is no content length or transfer encoding.', async(): Promise<void> => {
-    input.request = guardedStreamFrom([ '' ]) as HttpRequest;
+    input.request = guardedStreamFrom([ 'data' ]) as HttpRequest;
     input.request.headers = {};
-    await expect(bodyParser.handle(input)).resolves.toBeUndefined();
+    const result = await bodyParser.handle(input);
+    await expect(arrayifyStream(result.data)).resolves.toEqual([]);
   });
 
   // https://github.com/solid/community-server/issues/498
   it('returns empty output if the content length is 0 and there is no content type.', async(): Promise<void> => {
-    input.request = guardedStreamFrom([ '' ]) as HttpRequest;
+    input.request = guardedStreamFrom([ 'data' ]) as HttpRequest;
     input.request.headers = { 'content-length': '0' };
-    await expect(bodyParser.handle(input)).resolves.toBeUndefined();
+    const result = await bodyParser.handle(input);
+    await expect(arrayifyStream(result.data)).resolves.toEqual([]);
   });
 
   it('errors when a content length is specified without content type.', async(): Promise<void> => {
@@ -48,7 +50,7 @@ describe('A RawBodyparser', (): void => {
   it('returns a Representation if there is empty data.', async(): Promise<void> => {
     input.request = guardedStreamFrom([]) as HttpRequest;
     input.request.headers = { 'content-length': '0', 'content-type': 'text/turtle' };
-    const result = (await bodyParser.handle(input))!;
+    const result = await bodyParser.handle(input);
     expect(result).toEqual({
       binary: true,
       data: input.request,
@@ -60,7 +62,7 @@ describe('A RawBodyparser', (): void => {
   it('returns a Representation if there is non-empty data.', async(): Promise<void> => {
     input.request = guardedStreamFrom([ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ]) as HttpRequest;
     input.request.headers = { 'transfer-encoding': 'chunked', 'content-type': 'text/turtle' };
-    const result = (await bodyParser.handle(input))!;
+    const result = await bodyParser.handle(input);
     expect(result).toEqual({
       binary: true,
       data: input.request,

@@ -43,6 +43,7 @@ describe('A SetupHttpHandler', (): void => {
       method: 'GET',
       target: { path: 'http://test.com/setup' },
       preferences: { type: { 'text/html': 1 }},
+      body: new BasicRepresentation(),
     };
 
     errorHandler = { handleSafe: jest.fn(({ error }: ErrorHandlerArgs): ResponseDescription => ({

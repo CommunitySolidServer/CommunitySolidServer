@@ -38,7 +38,12 @@ describe('An IdentityProviderHttpHandler', (): void => {
   let handler: IdentityProviderHttpHandler;
 
   beforeEach(async(): Promise<void> => {
-    operation = { method: 'GET', target: { path: 'http://test.com/idp' }, preferences: { type: { 'text/html': 1 }}};
+    operation = {
+      method: 'GET',
+      target: { path: 'http://test.com/idp' },
+      preferences: { type: { 'text/html': 1 }},
+      body: new BasicRepresentation(),
+    };
 
     provider = {
       callback: jest.fn(),

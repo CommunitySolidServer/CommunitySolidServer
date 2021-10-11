@@ -38,6 +38,7 @@ export class SparqlUpdateBodyParser extends BodyParser {
       binary: true,
       data: guardedStreamFrom(sparql),
       metadata,
+      isEmpty: false,
     };
   }
 }

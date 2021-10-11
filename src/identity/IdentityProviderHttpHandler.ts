@@ -3,7 +3,6 @@ import type { ErrorHandler } from '../http/output/error/ErrorHandler';
 import { RedirectResponseDescription } from '../http/output/response/RedirectResponseDescription';
 import { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
-import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
@@ -124,10 +123,10 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
     }
 
     // Cloning input data so it can be sent back in case of errors
-    let clone: Representation | undefined;
+    let clone = operation.body;
 
     // IDP handlers expect JSON data
-    if (operation.body) {
+    if (!operation.body.isEmpty) {
       const args = {
         representation: operation.body,
         preferences: { type: { [APPLICATION_JSON]: 1 }},
@@ -187,7 +186,7 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
       const details = await readJsonStream(response.data!);
 
       // Add the input data to the JSON response;
-      if (operation.body) {
+      if (!operation.body.isEmpty) {
         details.prefilled = await readJsonStream(operation.body.data);
 
         // Don't send passwords back

@@ -3,6 +3,7 @@ import { CredentialGroup } from '../../../../../src/authentication/Credentials';
 import type { AclPermission } from '../../../../../src/authorization/permissions/AclPermission';
 import { WebAclMetadataCollector } from '../../../../../src/http/ldp/metadata/WebAclMetadataCollector';
 import type { Operation } from '../../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import { ACL, AUTH } from '../../../../../src/util/Vocabularies';
 
@@ -16,6 +17,7 @@ describe('A WebAclMetadataCollector', (): void => {
       method: 'GET',
       target: { path: 'http://test.com/foo' },
       preferences: {},
+      body: new BasicRepresentation(),
     };
 
     metadata = new RepresentationMetadata();
