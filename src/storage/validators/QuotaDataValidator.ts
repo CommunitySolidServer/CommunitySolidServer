@@ -1,11 +1,11 @@
-import { Readable } from 'stream';
-import { PassThrough } from 'stream';
+import { Readable, PassThrough } from 'stream';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
-import { Guarded, guardStream } from '../../util/GuardedStream';
+import type { Guarded } from '../../util/GuardedStream';
+import { guardStream } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
-import type { QuotaStrategy } from '../quota-strategy/QuotaStrategy';
+import type { QuotaStrategy } from '../quota/QuotaStrategy';
 import type { DataValidator } from './DataValidator';
 
 /**

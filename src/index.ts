@@ -251,9 +251,9 @@ export * from './storage/patch/ConvertingPatchHandler';
 export * from './storage/patch/PatchHandler';
 export * from './storage/patch/SparqlUpdatePatchHandler';
 
-// Storage/Quota-Strategy
-export * from './storage/quota-strategy/QuotaStrategy';
-export * from './storage/quota-strategy/GlobalQuotaStrategy';
+// Storage/Quota
+export * from './storage/quota/QuotaStrategy';
+export * from './storage/quota/GlobalQuotaStrategy';
 
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';

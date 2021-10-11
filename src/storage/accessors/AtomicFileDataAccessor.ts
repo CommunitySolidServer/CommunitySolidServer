@@ -11,6 +11,8 @@ import { FileDataAccessor } from './FileDataAccessor';
 
 /**
  * AtomicDataAccessor that uses the file system to store documents as files and containers as folders.
+ * Data will first be written to a temporary location and only if no errors occur
+ * will the data be written to the desired location.
  */
 export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDataAccessor {
   private readonly tempFilePath: string;
