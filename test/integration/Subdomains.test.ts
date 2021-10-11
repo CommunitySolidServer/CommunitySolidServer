@@ -79,7 +79,8 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
         },
         body: 'this is new data!',
       });
-      expect(res.status).toBe(205);
+      expect(res.status).toBe(201);
+      expect(res.headers.get('location')).toBe(`${baseUrl}alice`);
 
       res = await fetch(`${baseUrl}alice`);
       expect(res.status).toBe(200);
@@ -136,7 +137,8 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
         },
         body: 'this is new data!',
       });
-      expect(res.status).toBe(205);
+      expect(res.status).toBe(201);
+      expect(res.headers.get('location')).toBe(`${podUrl}alice`);
 
       res = await fetch(`${baseUrl}alice`, {
         headers: {
