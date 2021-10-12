@@ -1,4 +1,5 @@
 import { Readable, PassThrough } from 'stream';
+import { Validator } from '../../ldp/auxiliary/Validator';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
@@ -6,20 +7,27 @@ import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { QuotaStrategy } from '../quota/QuotaStrategy';
-import type { DataValidator } from './DataValidator';
+
+type QuotaDataValidatorInput = {
+  identifier: ResourceIdentifier;
+  data: Guarded<Readable>;
+  metadata: RepresentationMetadata;
+};
 
 /**
  * The QuotaDataValidator validates data streams according to a QuotaStrategy's implementation
  */
-export class QuotaDataValidator implements DataValidator {
+export class QuotaDataValidator extends Validator<QuotaDataValidatorInput, Guarded<Readable>> {
   private readonly strategy: QuotaStrategy;
 
   public constructor(strategy: QuotaStrategy) {
+    super();
     this.strategy = strategy;
   }
 
-  public async validateRepresentation(identifier: ResourceIdentifier, data: Guarded<Readable>,
-    metadata: RepresentationMetadata): Promise<Guarded<Readable>> {
+  public async handle(input: QuotaDataValidatorInput): Promise<Guarded<Readable>> {
+    const { identifier, data, metadata } = input;
+
     // 1. Get the available size
     const availableSize = await this.strategy.getAvailableSpace(identifier);
 
@@ -28,6 +36,7 @@ export class QuotaDataValidator implements DataValidator {
 
     if (estimatedSize && availableSize.amount < estimatedSize.amount) {
       return guardStream(new Readable({
+        // We need a regular function to use the `this` pointer
         // eslint-disable-next-line object-shorthand
         read: function(this): void {
           this.destroy(new PayloadHttpError(

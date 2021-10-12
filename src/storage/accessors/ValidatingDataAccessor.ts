@@ -1,21 +1,21 @@
 import type { Readable } from 'stream';
+import type { Validator } from '../../ldp/auxiliary/Validator';
 import type { Representation } from '../../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
-import type { DataValidator } from '../validators/DataValidator';
 import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
 /**
- * A ValidatingDataAccessor wraps a AtomicDataAccessor such that,
+ * A ValidatingDataAccessor wraps an AtomicDataAccessor such that,
  * while writing a document, validation is performed before writing the data.
  */
 export class ValidatingDataAccessor implements DataAccessor {
   private readonly accessor: AtomicDataAccessor;
-  private readonly validator: DataValidator;
+  private readonly validator: Validator<any, Guarded<Readable>>;
 
-  public constructor(accessor: DataAccessor, validator: DataValidator) {
+  public constructor(accessor: DataAccessor, validator: Validator<any, Guarded<Readable>>) {
     this.accessor = accessor;
     this.validator = validator;
   }
@@ -25,7 +25,7 @@ export class ValidatingDataAccessor implements DataAccessor {
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    const pipedData = await this.validator.validateRepresentation(identifier, data, metadata);
+    const pipedData = await this.validator.handle({ identifier, data, metadata });
     return this.accessor.writeDocument(identifier, pipedData, metadata);
   }
 

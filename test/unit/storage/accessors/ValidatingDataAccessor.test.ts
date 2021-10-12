@@ -1,11 +1,11 @@
 import type { Readable } from 'stream';
+import type { Validator } from '../../../../src/ldp/auxiliary/Validator';
 import type { Representation } from '../../../../src/ldp/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { AtomicDataAccessor } from '../../../../src/storage/accessors/AtomicDataAccessor';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { ValidatingDataAccessor } from '../../../../src/storage/accessors/ValidatingDataAccessor';
-import type { DataValidator } from '../../../../src/storage/validators/DataValidator';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
@@ -15,7 +15,7 @@ jest.mock('../../../../src/storage/accessors/InMemoryDataAccessor');
 describe('ValidatingDataAccessor', (): void => {
   let validatingAccessor: ValidatingDataAccessor;
   let childAccessor: AtomicDataAccessor;
-  let validator: DataValidator;
+  let validator: Validator<any, Guarded<Readable>>;
 
   const mockIdentifier = { path: 'http://localhost/test.txt' };
   const mockMetadata = new RepresentationMetadata();
@@ -31,21 +31,27 @@ describe('ValidatingDataAccessor', (): void => {
     childAccessor = new InMemoryDataAccessor(new SingleRootIdentifierStrategy('http://localhost'));
     childAccessor.getChildren = jest.fn();
     validator = {
-      validateRepresentation: async(
-        id: ResourceIdentifier,
-        data: Guarded<Readable>,
-        // Not using - metadata: RepresentationMetadata,
-      ): Promise<Guarded<Readable>> => data,
+      canHandle: jest.fn(),
+      handle: async(input: {
+        identifier: ResourceIdentifier;
+        data: Guarded<Readable>;
+        metadata: RepresentationMetadata;
+      }): Promise<Guarded<Readable>> => input.data,
+      handleSafe: jest.fn(),
     };
     validatingAccessor = new ValidatingDataAccessor(childAccessor, validator);
   });
 
   describe('writeDocument()', (): void => {
-    it('should call the validator\'s validateRepresentation() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(validator, 'validateRepresentation');
+    it('should call the validator\'s handle() function.', async(): Promise<void> => {
+      const spy = jest.spyOn(validator, 'handle');
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
+      expect(spy).toHaveBeenCalledWith({
+        identifier: mockIdentifier,
+        data: mockData,
+        metadata: mockMetadata,
+      });
     });
     it('should call the accessors writeDocument() function.', async(): Promise<void> => {
       const spy = jest.spyOn(childAccessor, 'writeDocument');

@@ -4,4 +4,4 @@ import type { Representation } from '../representation/Representation';
 /**
  * Generic interface for classes that validate Representations in some way.
  */
-export abstract class Validator extends AsyncHandler<Representation> { }
+export abstract class Validator<TIn = Representation, TOut = void> extends AsyncHandler<TIn, TOut> { }
