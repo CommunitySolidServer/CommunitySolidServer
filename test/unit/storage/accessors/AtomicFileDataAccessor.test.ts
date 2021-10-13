@@ -23,7 +23,8 @@ describe('AtomicFileDataAccessor', (): void => {
     cache = mockFs(rootFilePath, new Date());
     accessor = new AtomicFileDataAccessor(
       new ExtensionBasedMapper(base, rootFilePath),
-      '/.internal/tempFiles/',
+      rootFilePath,
+      '../.internal/tempFiles/',
     );
     (accessor as any).tempFilePath = rootFilePath;
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);

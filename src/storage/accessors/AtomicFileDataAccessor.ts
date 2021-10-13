@@ -17,9 +17,9 @@ import { FileDataAccessor } from './FileDataAccessor';
 export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDataAccessor {
   private readonly tempFilePath: string;
 
-  public constructor(resourceMapper: FileIdentifierMapper, tempFilePath: string) {
+  public constructor(resourceMapper: FileIdentifierMapper, rootFilePath: string, tempFilePath: string) {
     super(resourceMapper);
-    this.tempFilePath = process.cwd() + tempFilePath;
+    this.tempFilePath = join(rootFilePath, tempFilePath);
     // Cannot use fsPromises in constructor
     mkdirSync(this.tempFilePath, { recursive: true });
   }
