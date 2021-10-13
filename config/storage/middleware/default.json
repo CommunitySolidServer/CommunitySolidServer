@@ -24,7 +24,15 @@
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Patching",
-      "PatchingStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
+      "PatchingStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Shape" }
+    },
+    {
+      "comment": "Validates resources when the parent container has ldp:constrainedBy in its metadata",
+      "@id": "urn:solid-server:default:ResourceStore_Shape",
+      "@type": "ShapeValidationStore",
+      "ShapeValidationStore:_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "ShapeValidationStore:_converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" },
+      "ShapeValidationStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Converting",

@@ -96,6 +96,7 @@ export const LDP = createUriAndTermNamespace('http://www.w3.org/ns/ldp#',
   'BasicContainer',
   'Container',
   'Resource',
+  'constrainedBy',
 );
 
 export const MA = createUriAndTermNamespace('http://www.w3.org/ns/ma-ont#',

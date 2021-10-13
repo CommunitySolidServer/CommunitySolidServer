@@ -98,6 +98,7 @@
     "@types/uuid": "^8.3.0",
     "@types/ws": "^7.4.5",
     "@types/yargs": "^17.0.0",
+    "@types/rdf-validate-shacl": "^0.2.4",
     "arrayify-stream": "^1.0.0",
     "async-lock": "^1.3.0",
     "bcrypt": "^5.0.1",
@@ -129,7 +130,8 @@
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",
     "ws": "^8.0.0",
-    "yargs": "^17.0.1"
+    "yargs": "^17.0.1",
+    "rdf-validate-shacl": "^0.3.2"
   },
   "devDependencies": {
     "@inrupt/solid-client-authn-node": "^1.9.1",
