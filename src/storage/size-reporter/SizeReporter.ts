@@ -23,4 +23,12 @@ export interface SizeReporter {
    * if the identifier leads to a container
    */
   getSize: (identifier: ResourceIdentifier) => Promise<Size>;
+
+  /**
+   * Calculate the size of a chunk based on which SizeReporter is being used
+   *
+   * @param chunk - the chunk of which you want the size
+   * @returns the size of the passed chunk as a number
+   */
+  calculateChunkSize: (chunk: any) => Promise<number>;
 }

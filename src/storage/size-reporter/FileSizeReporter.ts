@@ -30,6 +30,10 @@ export class FileSizeReporter implements SizeReporter {
     return { unit: this.getUnit(), amount: await this.getTotalSize(fileLocation) };
   }
 
+  public async calculateChunkSize(chunk: any): Promise<number> {
+    return chunk.length;
+  }
+
   /**
    * Get the total size of a resource and its children if present
    *
