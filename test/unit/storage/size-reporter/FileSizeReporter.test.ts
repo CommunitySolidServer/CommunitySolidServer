@@ -60,4 +60,10 @@ describe('A FileSizeReporter', (): void => {
     const result = fileSizeReporter.getSize({ path: './test.txt' });
     await expect(result).resolves.toEqual(expect.objectContaining({ amount: 0 }));
   });
+
+  it('should calculate the chunk size correctly.', async(): Promise<void> => {
+    const testString = 'testesttesttesttest==testtest';
+    const result = fileSizeReporter.calculateChunkSize(testString);
+    await expect(result).resolves.toEqual(testString.length);
+  });
 });

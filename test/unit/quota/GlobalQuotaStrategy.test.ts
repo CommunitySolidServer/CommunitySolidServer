@@ -21,6 +21,7 @@ describe('GlobalQuotaStrategy', (): void => {
         amount: identifier.path === mockBase ? 1000 : 50,
       }),
       getUnit: (): string => mockSize.unit,
+      calculateChunkSize: async(chunk: any): Promise<number> => chunk.length,
     };
     strategy = new GlobalQuotaStrategy(mockSize, mockReporter, mockBase);
   });
