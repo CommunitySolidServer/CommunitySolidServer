@@ -52,9 +52,7 @@ export class GlobalQuotaStrategy implements QuotaStrategy {
     const { reporter } = this;
 
     return guardStream(new PassThrough({
-      // We need a regular function to use the `this` pointer
-      // eslint-disable-next-line object-shorthand
-      transform: async function(this, chunk: any, enc: string, done: () => void): Promise<void> {
+      async transform(this, chunk: any, enc: string, done: () => void): Promise<void> {
         total += await reporter.calculateChunkSize(chunk);
         const availableSpace = await strategy.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {

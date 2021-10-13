@@ -29,9 +29,7 @@ export class QuotaDataValidator extends DataValidator {
 
     if (estimatedSize && availableSize.amount < estimatedSize.amount) {
       return guardStream(new Readable({
-        // We need a regular function to use the `this` pointer
-        // eslint-disable-next-line object-shorthand
-        read: function(this): void {
+        read(this): void {
           this.destroy(new PayloadHttpError(
             `Quota exceeded: Advertised Content-Length is ${estimatedSize.amount} ${estimatedSize.unit} ` +
             `and only ${availableSize.amount} ${availableSize.unit} is available`,

@@ -1,105 +1,113 @@
-// Commented imports for now
-// import { Readable } from 'stream';
-// import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-// import type { QuotaStrategy } from '../../../../src/storage/quota-strategy/QuotaStrategy';
-// import type { Size } from '../../../../src/storage/size-reporter/Size';
-// import { QuotaDataValidator } from '../../../../src/storage/validators/QuotaDataValidator';
-// import { guardStream } from '../../../../src/util/GuardedStream';
-// import type { Guarded } from '../../../../src/util/GuardedStream';
-// import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
+import type { Readable } from 'stream';
+import { PassThrough } from 'stream';
+import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { QuotaStrategy } from '../../../../src/storage/quota/QuotaStrategy';
+import type { Size } from '../../../../src/storage/size-reporter/Size';
+import type { DataValidatorInput } from '../../../../src/storage/validators/DataValidator';
+import { QuotaDataValidator } from '../../../../src/storage/validators/QuotaDataValidator';
+import { guardStream } from '../../../../src/util/GuardedStream';
+import type { Guarded } from '../../../../src/util/GuardedStream';
+import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 
 describe('QuotaDataValidator', (): void => {
-  it('Your test suite must contain at least one test.', (): void => {
-    expect(true).toBe(true);
+  let mockedStrategy: QuotaStrategy;
+  let validator: QuotaDataValidator;
+  let identifier: ResourceIdentifier;
+  let mockMetadata: RepresentationMetadata;
+  let mockData: Guarded<Readable>;
+  let mockInput: DataValidatorInput;
+
+  beforeEach((): void => {
+    jest.clearAllMocks();
+    identifier = { path: 'http://localhost/' };
+    mockMetadata = new RepresentationMetadata();
+    mockData = guardedStreamFrom([ 'test string' ]);
+    mockInput = { identifier, data: mockData, metadata: mockMetadata };
+    mockedStrategy = {
+      getAvailableSpace: async(): Promise<Size> => ({ unit: 'bytes', amount: 10 }),
+      estimateSize: async(): Promise<Size> => ({ unit: 'bytes', amount: 8 }),
+      trackAvailableSpace: async(): Promise<Guarded<PassThrough>> => guardStream(new PassThrough()),
+    };
+    validator = new QuotaDataValidator(mockedStrategy);
   });
-  // Commented tests for now
-  // const mockedStrategy: QuotaStrategy = {
-  //   getAvailableSpace: (): Size => ({ unit: 'bytes', amount: 10 }),
-  //   estimateSize: (): Size => ({ unit: 'bytes', amount: 8 }),
-  //   trackAvailableSpace(identifier, data): Guarded<Readable> {
-  //     const newStream = guardedStreamFrom('');
-  //     data.on('data', (): void => {
-  //       newStream.push(1);
-  //     });
-  //     return newStream;
-  //   },
-  // };
 
-  // let validator: QuotaDataValidator;
-  // const identifier = { path: 'http://localhost/' };
-  // const mockMetadata = new RepresentationMetadata();
-  // let mockData: Guarded<Readable>;
+  describe('constructor()', (): void => {
+    it('should set the strategy parameter.', async(): Promise<void> => {
+      expect((validator as any).strategy).toEqual(mockedStrategy);
+    });
+  });
 
-  // beforeEach((): void => {
-  //   jest.clearAllMocks();
-  //   mockData = guardedStreamFrom([ 'test string' ]);
-  //   validator = new QuotaDataValidator(mockedStrategy);
-  // });
+  describe('handle()', (): void => {
+    // Step 2
+    it('should destroy the stream when estimated size is larger than the available size.', async(): Promise<void> => {
+      mockedStrategy.estimateSize = jest.fn().mockReturnValueOnce({ unit: 'bytes', amount: 11 });
 
-  // describe('constructor()', (): void => {
-  //   it('should set the strategy parameter.', async(): Promise<void> => {
-  //     expect((validator as any).strategy).toEqual(mockedStrategy);
-  //   });
-  // });
+      const result = validator.handle(mockInput);
+      await expect(result).resolves.toBeDefined();
+      const awaitedResult = await result;
 
-  // describe('validateRepresentation()', (): void => {
-  //   it('should destroy the when the estimated size is larger than the available size.', async(): Promise<void> => {
-  //     const spy = jest.spyOn(mockData, 'destroy');
-  //     const trackAvailableSpaceSpy = jest.spyOn(mockedStrategy, 'trackAvailableSpace');
-  //     mockedStrategy.estimateSize = jest.fn().mockReturnValueOnce({ unit: 'bytes', amount: 11 });
+      const prom = new Promise<void>((resolve, reject): void => {
+        awaitedResult.on('error', (): void => resolve());
+        awaitedResult.on('end', (): void => reject(new Error('reject')));
+      });
 
-  //     const result = validator.validateRepresentation(identifier, mockData, mockMetadata);
+      // Consume the stream
+      await expect(readableToString(awaitedResult)).rejects.toThrow('Quota exceeded: Advertised Content-Length is');
+      await expect(prom).resolves.toBeUndefined();
+    });
 
-  //     await expect(result).resolves.toBeDefined();
-  //     expect(spy).toHaveBeenCalledTimes(1);
-  //     expect(trackAvailableSpaceSpy).toHaveBeenCalledTimes(0);
-  //   });
-  //   it('should destroy the data stream when quota is exceeded during write.', async(): Promise<void> => {
-  //     const destroySpy = jest.spyOn(mockData, 'destroy');
-  //     const trackAvailableSpaceSpy = jest.spyOn(mockedStrategy, 'trackAvailableSpace')
-  //       .mockImplementationOnce((identifier, data): Guarded<Readable> => {
-  //         const newStream = guardedStreamFrom('');
-  //         data.on('data', (): void => {
-  //           newStream.push(-1);
-  //         });
-  //         return newStream;
-  //       });
+    // Step 3
+    it('should destroy the stream when quota is exceeded during write.', async(): Promise<void> => {
+      const trackAvailableSpaceSpy = jest.spyOn(mockedStrategy, 'trackAvailableSpace')
+        .mockImplementationOnce(async(): Promise<Guarded<PassThrough>> => guardStream(new PassThrough({
+          async transform(this): Promise<void> {
+            this.destroy();
+          },
+        })));
 
-  //     const result = validator.validateRepresentation(identifier, mockData, mockMetadata);
+      const result = validator.handle(mockInput);
+      await expect(result).resolves.toBeDefined();
+      const awaitedResult = await result;
 
-  //     await expect(result).resolves.toBeDefined();
-  //     const awaitedResult = await result;
+      const prom = new Promise<void>((resolve, reject): void => {
+        awaitedResult.on('error', (): void => resolve());
+        awaitedResult.on('end', (): void => reject(new Error('reject')));
+      });
 
-  //     await expect(readableToString(awaitedResult)).resolves.toBe('test string');
-  //     expect(trackAvailableSpaceSpy).toHaveBeenCalledTimes(1);
-  //     expect(destroySpy).toHaveBeenCalled();
-  //   });
-  //   it('should throw when quota were exceeded after stream was finished.', async(): Promise<void> => {
-  //     const result = validator.validateRepresentation(identifier, mockData, mockMetadata);
+      // Consume the stream
+      await expect(readableToString(awaitedResult)).rejects.toThrow();
+      expect(trackAvailableSpaceSpy).toHaveBeenCalledTimes(1);
+      await expect(prom).resolves.toBeUndefined();
+    });
 
-  //     mockedStrategy.getAvailableSpace = jest.fn().mockImplementation((): Size =>
-  //       ({ unit: 'bytes', amount: -100 }));
+    // Step 4
+    it('should throw when quota were exceeded after stream was finished.', async(): Promise<void> => {
+      const result = validator.handle(mockInput);
 
-  //     await expect(result).resolves.toBeDefined();
-  //     const awaitedResult = await result;
+      // Putting this after the handle / before consuming the stream will only effect
+      // this function in the flush part of the code.
+      mockedStrategy.getAvailableSpace = jest.fn().mockImplementationOnce((): Size =>
+        ({ unit: 'bytes', amount: -100 }));
 
-  //     const prom = new Promise<string>((resolveP, reject): void => {
-  //       awaitedResult.on('error', (): void => {
-  //         resolveP('not undefined');
-  //       });
-  //       awaitedResult.on('end', (): void => {
-  //         reject(new Error('Reject'));
-  //       });
-  //     });
+      await expect(result).resolves.toBeDefined();
+      const awaitedResult = await result;
 
-  //     await expect(readableToString(awaitedResult)).rejects.toThrow('Quota exceeded after write completed');
+      const prom = new Promise<void>((resolve, reject): void => {
+        awaitedResult.on('error', (): void => resolve());
+        awaitedResult.on('end', (): void => reject(new Error('reject')));
+      });
 
-  //     await expect(prom).resolves.toBeDefined();
-  //   });
-  //   it('should return the desired Guarded<Readable> returned by the pipe.', async(): Promise<void> => {
-  //     const result = validator.validateRepresentation(identifier, mockData, mockMetadata);
-  //     await expect(result).resolves.toBeDefined();
-  //     const awaitedResult = await result;
-  //   });
-  // });
+      // Consume the stream
+      await expect(readableToString(awaitedResult)).rejects.toThrow('Quota exceeded after write completed');
+      await expect(prom).resolves.toBeUndefined();
+    });
+
+    it('should return a stream that is consumable without error if quota isn\'t exceeded.', async(): Promise<void> => {
+      const result = validator.handle(mockInput);
+      await expect(result).resolves.toBeDefined();
+      const awaitedResult = await result;
+      await expect(readableToString(awaitedResult)).resolves.toBe('test string');
+    });
+  });
 });
