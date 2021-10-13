@@ -6,6 +6,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from './ContentTypes';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
+import { parseContentType } from './HeaderUtil';
 
 const logger = getLoggerFor('FetchUtil');
 
@@ -41,11 +42,12 @@ Promise<Representation> {
     throw error;
   }
 
-  const contentType = response.headers.get('content-type');
+  let contentType = response.headers.get('content-type');
   if (!contentType) {
     logger.warn(`Missing content-type header from ${response.url}`);
     throw error;
   }
+  contentType = parseContentType(contentType);
 
   // Try to convert to quads
   const representation = new BasicRepresentation(body, contentType);

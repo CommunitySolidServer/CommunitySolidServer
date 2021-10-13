@@ -416,6 +416,17 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 }
 
 /**
+ * Extracts only the first parameter of the content-type header
+ *
+ * @param contentType - The media type of the content-type header
+ *
+ * @returns The parsed media type of the content-type
+ */
+export function parseContentType(contentType: string): string {
+  return /^\s*[^;\s]*/u.exec(contentType)![0];
+}
+
+/**
  * The Forwarded header from RFC7239
  */
 export interface Forwarded {
