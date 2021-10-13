@@ -267,6 +267,7 @@ export * from './storage/size-reporter/SizeReporter';
 export * from './storage/size-reporter/FileSizeReporter';
 
 // Storage/Validators
+export * from './storage/validators/DataValidator';
 export * from './storage/validators/QuotaDataValidator';
 
 // Storage

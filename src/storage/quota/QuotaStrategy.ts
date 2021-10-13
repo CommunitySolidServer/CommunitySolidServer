@@ -13,7 +13,10 @@ import type { Size } from '../size-reporter/Size';
  */
 export interface QuotaStrategy {
   /**
-   * Get the available space given a resource's identifier
+   * Get the available space given a resource's identifier.
+   * If the given resource already exists it will deduct the already taken up
+   * space by that resource since it is going to be overwritten and thus counts
+   * as available space.
    *
    * @param identifier - the identifier of the resource of which you want the available space
    * @returns the available space and the unit of the space as a Size object

@@ -1,9 +1,9 @@
 import type { Readable } from 'stream';
-import type { Validator } from '../../ldp/auxiliary/Validator';
 import type { Representation } from '../../ldp/representation/Representation';
 import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
+import type { DataValidator } from '../validators/DataValidator';
 import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
@@ -13,9 +13,9 @@ import type { DataAccessor } from './DataAccessor';
  */
 export class ValidatingDataAccessor implements DataAccessor {
   private readonly accessor: AtomicDataAccessor;
-  private readonly validator: Validator<any, Guarded<Readable>>;
+  private readonly validator: DataValidator;
 
-  public constructor(accessor: DataAccessor, validator: Validator<any, Guarded<Readable>>) {
+  public constructor(accessor: DataAccessor, validator: DataValidator) {
     this.accessor = accessor;
     this.validator = validator;
   }

@@ -1,23 +1,16 @@
 import { Readable, PassThrough } from 'stream';
-import { Validator } from '../../ldp/auxiliary/Validator';
-import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { QuotaStrategy } from '../quota/QuotaStrategy';
-
-type QuotaDataValidatorInput = {
-  identifier: ResourceIdentifier;
-  data: Guarded<Readable>;
-  metadata: RepresentationMetadata;
-};
+import type { DataValidatorInput } from './DataValidator';
+import { DataValidator } from './DataValidator';
 
 /**
  * The QuotaDataValidator validates data streams according to a QuotaStrategy's implementation
  */
-export class QuotaDataValidator extends Validator<QuotaDataValidatorInput, Guarded<Readable>> {
+export class QuotaDataValidator extends DataValidator {
   private readonly strategy: QuotaStrategy;
 
   public constructor(strategy: QuotaStrategy) {
@@ -25,7 +18,7 @@ export class QuotaDataValidator extends Validator<QuotaDataValidatorInput, Guard
     this.strategy = strategy;
   }
 
-  public async handle(input: QuotaDataValidatorInput): Promise<Guarded<Readable>> {
+  public async handle(input: DataValidatorInput): Promise<Guarded<Readable>> {
     const { identifier, data, metadata } = input;
 
     // 1. Get the available size
