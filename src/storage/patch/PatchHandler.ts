@@ -1,9 +1,9 @@
-import type { Patch } from '../../ldp/http/Patch';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Patch } from '../../http/representation/Patch';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { ResourceStore } from '../ResourceStore';
 
-export type PatchHandlerArgs<T extends ResourceStore = ResourceStore> = {
+export type PatchHandlerInput<T extends ResourceStore = ResourceStore> = {
   source: T;
   identifier: ResourceIdentifier;
   patch: Patch;
@@ -13,4 +13,4 @@ export type PatchHandlerArgs<T extends ResourceStore = ResourceStore> = {
  * Executes the given Patch.
  */
 export abstract class PatchHandler<T extends ResourceStore = ResourceStore>
-  extends AsyncHandler<PatchHandlerArgs<T>, ResourceIdentifier[]> {}
+  extends AsyncHandler<PatchHandlerInput<T>, ResourceIdentifier[]> {}

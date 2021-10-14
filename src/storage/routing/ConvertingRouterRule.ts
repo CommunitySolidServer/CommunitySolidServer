@@ -1,5 +1,5 @@
-import type { Representation } from '../../ldp/representation/Representation';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../../http/representation/Representation';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../ResourceStore';
 import type { PreferenceSupport } from './PreferenceSupport';
 import { RouterRule } from './RouterRule';

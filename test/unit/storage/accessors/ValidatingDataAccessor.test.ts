@@ -1,8 +1,8 @@
 import type { Readable } from 'stream';
-import type { Validator } from '../../../../src/ldp/auxiliary/Validator';
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { Validator } from '../../../../src/http/auxiliary/Validator';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { AtomicDataAccessor } from '../../../../src/storage/accessors/AtomicDataAccessor';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { ValidatingDataAccessor } from '../../../../src/storage/accessors/ValidatingDataAccessor';
@@ -24,6 +24,7 @@ describe('ValidatingDataAccessor', (): void => {
     binary: true,
     data: mockData,
     metadata: mockMetadata,
+    isEmpty: false,
   };
 
   beforeEach(async(): Promise<void> => {

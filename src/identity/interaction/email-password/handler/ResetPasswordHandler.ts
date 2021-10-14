@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import { assertPassword, throwIdpInteractionError } from '../EmailPasswordUtil';
+import { readJsonStream } from '../../../../util/StreamUtil';
+import { assertPassword } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
 import { InteractionHandler } from './InteractionHandler';
@@ -20,23 +20,19 @@ export class ResetPasswordHandler extends InteractionHandler {
     this.accountStore = accountStore;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult> {
-    try {
-      // Extract record ID from request URL
-      const recordId = /\/([^/]+)$/u.exec(request.url!)?.[1];
-      // Validate input data
-      const { password, confirmPassword } = await getFormDataRequestBody(request);
-      assert(
-        typeof recordId === 'string' && recordId.length > 0,
-        'Invalid request. Open the link from your email again',
-      );
-      assertPassword(password, confirmPassword);
+  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult> {
+    // Extract record ID from request URL
+    const recordId = /\/([^/]+)$/u.exec(operation.target.path)?.[1];
+    // Validate input data
+    const { password, confirmPassword } = await readJsonStream(operation.body.data);
+    assert(
+      typeof recordId === 'string' && recordId.length > 0,
+      'Invalid request. Open the link from your email again',
+    );
+    assertPassword(password, confirmPassword);
 
-      await this.resetPassword(recordId, password);
-      return { type: 'response' };
-    } catch (error: unknown) {
-      throwIdpInteractionError(error);
-    }
+    await this.resetPassword(recordId, password);
+    return { type: 'response' };
   }
 
   /**

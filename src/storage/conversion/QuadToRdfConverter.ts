@@ -1,9 +1,9 @@
 import type { Readable } from 'stream';
 import { StreamWriter } from 'n3';
 import rdfSerializer from 'rdf-serialize';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
-import type { ValuePreferences } from '../../ldp/representation/RepresentationPreferences';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { pipeSafely } from '../../util/StreamUtil';
 import { PREFERRED_PREFIX_TERM } from '../../util/Vocabularies';

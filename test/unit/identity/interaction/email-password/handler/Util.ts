@@ -1,16 +1,17 @@
-import { stringify } from 'querystring';
-import type { HttpRequest } from '../../../../../../src/server/HttpRequest';
-import { guardedStreamFrom } from '../../../../../../src/util/StreamUtil';
+import type { Operation } from '../../../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../../../src/http/representation/BasicRepresentation';
 
 /**
- * Creates a mock HttpRequest which is a stream of an object encoded as application/x-www-form-urlencoded
+ * Creates a mock HttpRequest which is a stream of an object encoded as application/json
  * and a matching content-type header.
  * @param data - Object to encode.
  * @param url - URL value of the request.
  */
-export function createPostFormRequest(data: NodeJS.Dict<any>, url?: string): HttpRequest {
-  const request = guardedStreamFrom(stringify(data)) as HttpRequest;
-  request.headers = { 'content-type': 'application/x-www-form-urlencoded' };
-  request.url = url;
-  return request;
+export function createPostJsonOperation(data: NodeJS.Dict<any>, url?: string): Operation {
+  return {
+    method: 'POST',
+    preferences: {},
+    target: { path: url ?? 'http://test.com/' },
+    body: new BasicRepresentation(JSON.stringify(data), 'application/json'),
+  };
 }

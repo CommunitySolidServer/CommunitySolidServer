@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';

@@ -1,0 +1,27 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure the .well-known container has the necessary root resources. Some IDP resources are stored there due to OIDC requirements.",
+      "@id": "urn:solid-server:default:WellKnownContainerInitializer",
+      "@type": "ConditionalHandler",
+      "storageKey": "wellKnownContainerInitialized",
+      "storageValue": true,
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" },
+      "source": {
+        "@type": "ContainerInitializer",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_path": "/.well-known/",
+        "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
+        "args_generator": {
+          "@type": "TemplatedResourcesGenerator",
+          "templateFolder": "@css:templates/root/empty",
+          "factory": { "@type": "ExtensionBasedMapperFactory" },
+          "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+        },
+        "args_storageKey": "wellKnownContainerInitialized",
+        "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }
+      }
+    }
+  ]
+}

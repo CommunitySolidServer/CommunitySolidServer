@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 
 /**
  * An interface for classes that only have 1 way to lock interfaces.

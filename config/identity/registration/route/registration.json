@@ -4,18 +4,31 @@
     {
       "comment": "Handles all functionality on the register page",
       "@id": "urn:solid-server:auth:password:RegistrationRoute",
-      "@type": "InteractionRoute",
-      "route": "^/register/?$",
-      "viewTemplate": "@css:templates/identity/email-password/register.html.ejs",
-      "responseTemplate": "@css:templates/identity/email-password/register-response.html.ejs",
+      "@type": "BasicInteractionRoute",
+      "route": "^/register/$",
+      "viewTemplates": {
+        "BasicInteractionRoute:_viewTemplates_key": "text/html",
+        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"
+      },
+      "responseTemplates": {
+        "BasicInteractionRoute:_responseTemplates_key": "text/html",
+        "BasicInteractionRoute:_responseTemplates_value": "@css:templates/identity/email-password/register-response.html.ejs"
+      },
+      "controls": {
+        "BasicInteractionRoute:_controls_key": "register",
+        "BasicInteractionRoute:_controls_value": "/register"
+      },
       "handler": {
         "@type": "RegistrationHandler",
-        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-        "args_webIdSuffix": "/profile/card#me",
-        "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
-        "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
-        "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-        "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+        "registrationManager": {
+          "@type": "RegistrationManager",
+          "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "args_webIdSuffix": "/profile/card#me",
+          "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+          "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
+          "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+          "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+        }
       }
     }
   ]

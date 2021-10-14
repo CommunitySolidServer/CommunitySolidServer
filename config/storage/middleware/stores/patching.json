@@ -5,10 +5,26 @@
       "comment": "Allows for PATCH operations on stores that don't have native support.",
       "@id": "urn:solid-server:default:ResourceStore_Patching",
       "@type": "PatchingStore",
-      "patcher": {
+      "patchHandler": {
         "@id": "urn:solid-server:default:PatchHandler",
-        "@type": "SparqlUpdatePatchHandler",
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+        "@type": "RepresentationPatchHandler",
+        "patcher": {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "comment": "Makes sure PATCH operations on containers target the metadata.",
+              "@type": "ContainerPatcher",
+              "patcher": { "@type": "SparqlUpdatePatcher" }
+            },
+            {
+              "@type": "ConvertingPatcher",
+              "patcher": { "@type": "SparqlUpdatePatcher" },
+              "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+              "intermediateType": "internal/quads",
+              "defaultType": "text/turtle"
+            }
+          ]
+        }
       }
     }
   ]

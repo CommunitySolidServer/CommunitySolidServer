@@ -36,7 +36,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
     // No reason to fetch the WebId if we don't have a token yet
     if (!token) {
       token = this.generateToken();
-      await this.storage.set(key, token, new Date(Date.now() + this.expiration));
+      await this.storage.set(key, token, this.expiration);
       this.throwError(webId, token);
     }
 
@@ -91,6 +91,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
       'to prove it belongs to you.',
       'You can remove this triple again after validation.',
     ].join(' ');
-    throw new BadRequestHttpError(errorMessage);
+    const details = { quad: `<${webId}> <${SOLID.oidcIssuerRegistrationToken}> "${token}".` };
+    throw new BadRequestHttpError(errorMessage, { details });
   }
 }

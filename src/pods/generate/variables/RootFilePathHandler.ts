@@ -1,5 +1,5 @@
 import { promises as fsPromises } from 'fs';
-import type { ResourceIdentifier } from '../../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper } from '../../../storage/mapping/FileIdentifierMapper';
 import { ConflictHttpError } from '../../../util/errors/ConflictHttpError';
 import { isSystemError } from '../../../util/errors/SystemError';

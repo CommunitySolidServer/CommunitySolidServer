@@ -1,6 +1,6 @@
 import { createReadStream } from 'fs';
 import fetch from 'cross-fetch';
-import { DataFactory, Parser } from 'n3';
+import { DataFactory, Parser, Store } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
@@ -72,13 +72,6 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
   });
 
-  it('can read the root container index page when asking for HTML.', async(): Promise<void> => {
-    const response = await getResource(baseUrl, { accept: 'text/html' }, { contentType: 'text/html' });
-
-    await expect(response.text()).resolves.toContain('Welcome to Solid');
-    expect(response.headers.get('link')).toContain(`<${PIM.Storage}>; rel="type"`);
-  });
-
   it('can read a container listing with a query string.', async(): Promise<void> => {
     // Helper functions would fail due to query params
     const response = await fetch(`${baseUrl}?abc=def&xyz`, { headers: { accept: 'text/turtle' }});
@@ -90,9 +83,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     const parser = new Parser({ baseIRI: baseUrl });
     const quads = parser.parse(await response.text());
-    expect(quads.some((entry): boolean => entry.equals(
-      quad(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container),
-    ))).toBe(true);
+    const store = new Store(quads);
+    expect(store.countQuads(namedNode(baseUrl), RDF.terms.type, LDP.terms.Container, null)).toBe(1);
   });
 
   it('can add a document to the store, read it and delete it.', async(): Promise<void> => {
@@ -118,7 +110,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     await expect(response.text()).resolves.toBe('TESTFILE0');
 
     // PUT
-    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1' });
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE1', exists: true });
 
     // GET
     response = await getResource(documentUrl, {}, { contentType: 'text/plain' });
@@ -261,7 +253,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       },
       body: createReadStream(joinFilePath(__dirname, '../assets/testimage.png')) as any,
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
+    expect(response.headers.get('location')).toBe(documentUrl);
     await expect(response.text()).resolves.toHaveLength(0);
 
     // GET
@@ -299,7 +292,8 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       headers: { 'content-length': '0', 'content-type': 'text/turtle' },
       body: '',
     });
-    expect(response.status).toBe(205);
+    expect(response.status).toBe(201);
+    expect(response.headers.get('location')).toBe(documentUrl);
 
     // GET
     await getResource(documentUrl);
@@ -320,7 +314,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
       'WHERE {}',
     ].join('\n');
-    await patchResource(documentUrl, query);
+    await patchResource(documentUrl, query, true);
 
     // PATCH using a content-type header with charset
     const query2 = [ 'DELETE { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> }',
@@ -352,6 +346,42 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       ),
     ];
     await expectQuads(response, expected, true);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can handle simple SPARQL updates on containers.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body, isContainer: true });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ 'DELETE { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> }',
+      'INSERT {<http://test.com/s3> <http://test.com/p3> <http://test.com/o3>}',
+      'WHERE {}',
+    ].join('\n');
+    await patchResource(documentUrl, query, true);
+
+    // GET
+    response = await getResource(documentUrl);
+    const parser = new Parser({ baseIRI: baseUrl });
+    const quads = parser.parse(await response.text());
+    const store = new Store(quads);
+    expect(store.countQuads(
+      namedNode('http://test.com/s3'),
+      namedNode('http://test.com/p3'),
+      namedNode('http://test.com/o3'),
+      null,
+    )).toBe(1);
+    expect(store.countQuads(
+      namedNode('http://test.com/s1'),
+      namedNode('http://test.com/p1'),
+      namedNode('http://test.com/o1'),
+      null,
+    )).toBe(0);
 
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();

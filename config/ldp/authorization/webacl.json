@@ -1,28 +1,40 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/authorization/authorizers/acl.json"
+    "files-scs:config/ldp/authorization/readers/acl.json",
+    "files-scs:config/ldp/authorization/readers/ownership.json"
   ],
   "@graph": [
     {
       "comment": "Uses Web Access Control for authorization.",
-      "@id": "urn:solid-server:default:Authorizer",
-      "@type": "WaterfallHandler",
-      "handlers": [
+      "@id": "urn:solid-server:default:PermissionReader",
+      "@type": "UnionPermissionReader",
+      "readers": [
         {
-          "comment": "This authorizer will be used to prevent external access to containers used for internal storage.",
-          "@id": "urn:solid-server:default:PathBasedAuthorizer",
-          "@type": "PathBasedAuthorizer",
+          "comment": "This PermissionReader will be used to prevent external access to containers used for internal storage.",
+          "@id": "urn:solid-server:default:PathBasedReader",
+          "@type": "PathBasedReader",
           "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
         },
+        { "@id": "urn:solid-server:default:OwnerPermissionReader" },
         {
-          "comment": "This authorizer makes sure that for auxiliary resources, the main authorizer gets called with the associated identifier.",
-          "@type": "AuxiliaryAuthorizer",
-          "resourceAuthorizer": { "@id": "urn:solid-server:default:WebAclAuthorizer" },
+          "comment": "This PermissionReader makes sure that for auxiliary resources, the main reader gets called with the associated identifier.",
+          "@type": "AuxiliaryReader",
+          "resourceReader": { "@id": "urn:solid-server:default:WebAclReader" },
           "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" }
         },
-        { "@id": "urn:solid-server:default:WebAclAuthorizer" }
+        { "@id": "urn:solid-server:default:WebAclReader" }
       ]
+    },
+    {
+      "comment": "In case of WebACL authorization the ACL resources determine authorization.",
+      "@id": "urn:solid-server:default:AuthResourceHttpHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "*" ],
+      "args_allowedPathNames": [ "^/.*\\.acl$" ],
+      "args_handler": { "@id": "urn:solid-server:default:LdpHandler" }
     }
   ]
 }

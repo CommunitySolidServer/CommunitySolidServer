@@ -1,6 +1,6 @@
 import marked from 'marked';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import { TEXT_HTML, TEXT_MARKDOWN } from '../../util/ContentTypes';
 import { readableToString } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';

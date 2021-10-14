@@ -1,0 +1,13 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allow everyone to register new pods.",
+      "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
+      "AuthorizingHttpHandler:_args_permissionReader": {
+        "@type": "AllStaticReader",
+        "allow": true
+      }
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 import { createReadStream, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
 import { Parser } from 'n3';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type {
   FileIdentifierMapper,
   FileIdentifierMapperFactory,

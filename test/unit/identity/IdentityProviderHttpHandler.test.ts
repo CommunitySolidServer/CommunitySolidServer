@@ -1,32 +1,49 @@
 import type { Provider } from 'oidc-provider';
+import type { Operation } from '../../../src/http/Operation';
+import type { ErrorHandler, ErrorHandlerArgs } from '../../../src/http/output/error/ErrorHandler';
+import type { ResponseDescription } from '../../../src/http/output/response/ResponseDescription';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { ProviderFactory } from '../../../src/identity/configuration/ProviderFactory';
-import { InteractionRoute, IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
-import type { InteractionHandler } from '../../../src/identity/interaction/email-password/handler/InteractionHandler';
-import { IdpInteractionError } from '../../../src/identity/interaction/util/IdpInteractionError';
+import type { IdentityProviderHttpHandlerArgs } from '../../../src/identity/IdentityProviderHttpHandler';
+import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
+import type { InteractionRoute } from '../../../src/identity/interaction/routing/InteractionRoute';
 import type { InteractionCompleter } from '../../../src/identity/interaction/util/InteractionCompleter';
-import type { ErrorHandler } from '../../../src/ldp/http/ErrorHandler';
-import type { ResponseWriter } from '../../../src/ldp/http/ResponseWriter';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
-import type { TemplateHandler } from '../../../src/server/util/TemplateHandler';
-import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
-import { InternalServerError } from '../../../src/util/errors/InternalServerError';
+import { getBestPreference } from '../../../src/storage/conversion/ConversionUtil';
+import type {
+  RepresentationConverter,
+  RepresentationConverterArgs,
+} from '../../../src/storage/conversion/RepresentationConverter';
+import { joinUrl } from '../../../src/util/PathUtil';
+import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
+import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
+  const apiVersion = '0.2';
+  const baseUrl = 'http://test.com/';
   const idpPath = '/idp';
-  let request: HttpRequest;
+  const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
+  let operation: Operation;
   let providerFactory: jest.Mocked<ProviderFactory>;
-  let routes: { response: InteractionRoute; complete: InteractionRoute };
+  let routes: Record<'response' | 'complete' | 'error', jest.Mocked<InteractionRoute>>;
+  let controls: Record<string, string>;
   let interactionCompleter: jest.Mocked<InteractionCompleter>;
-  let templateHandler: jest.Mocked<TemplateHandler>;
+  let converter: jest.Mocked<RepresentationConverter>;
   let errorHandler: jest.Mocked<ErrorHandler>;
-  let responseWriter: jest.Mocked<ResponseWriter>;
   let provider: jest.Mocked<Provider>;
   let handler: IdentityProviderHttpHandler;
 
   beforeEach(async(): Promise<void> => {
-    request = { url: '/idp', method: 'GET' } as any;
+    operation = {
+      method: 'GET',
+      target: { path: 'http://test.com/idp' },
+      preferences: { type: { 'text/html': 1 }},
+      body: new BasicRepresentation(),
+    };
 
     provider = {
       callback: jest.fn(),
@@ -37,214 +54,170 @@ describe('An IdentityProviderHttpHandler', (): void => {
       getProvider: jest.fn().mockResolvedValue(provider),
     };
 
-    const handlers: InteractionHandler[] = [
-      { handleSafe: jest.fn().mockResolvedValue({ type: 'response', details: { key: 'val' }}) } as any,
-      { handleSafe: jest.fn().mockResolvedValue({ type: 'complete', details: { webId: 'webId' }}) } as any,
-    ];
-
     routes = {
-      response: new InteractionRoute('/routeResponse', '/view1', handlers[0], 'default', '/response1'),
-      complete: new InteractionRoute('/routeComplete', '/view2', handlers[1], 'other', '/response2'),
+      response: {
+        getControls: jest.fn().mockReturnValue({ response: '/routeResponse' }),
+        supportsPath: jest.fn((path: string): boolean => /^\/routeResponse$/u.test(path)),
+        handleOperation: jest.fn().mockResolvedValue({
+          type: 'response',
+          details: { key: 'val' },
+          templateFiles: { 'text/html': '/response' },
+        }),
+      },
+      complete: {
+        getControls: jest.fn().mockReturnValue({}),
+        supportsPath: jest.fn((path: string): boolean => /^\/routeComplete$/u.test(path)),
+        handleOperation: jest.fn().mockResolvedValue({
+          type: 'complete',
+          details: { webId: 'webId' },
+          templateFiles: {},
+        }),
+      },
+      error: {
+        getControls: jest.fn().mockReturnValue({}),
+        supportsPath: jest.fn((path: string): boolean => /^\/routeError$/u.test(path)),
+        handleOperation: jest.fn().mockResolvedValue({
+          type: 'error',
+          error: new Error('test error'),
+          templateFiles: { 'text/html': '/response' },
+        }),
+      },
     };
+    controls = { response: 'http://test.com/idp/routeResponse' };
 
-    templateHandler = { handleSafe: jest.fn() } as any;
+    converter = {
+      handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => {
+        // Just find the best match;
+        const type = getBestPreference(input.preferences.type!, { '*/*': 1 })!;
+        const metadata = new RepresentationMetadata(input.representation.metadata, { [CONTENT_TYPE]: type.value });
+        return new BasicRepresentation(input.representation.data, metadata);
+      }),
+    } as any;
 
-    interactionCompleter = { handleSafe: jest.fn() } as any;
+    interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
 
-    errorHandler = { handleSafe: jest.fn() } as any;
+    errorHandler = { handleSafe: jest.fn(({ error }: ErrorHandlerArgs): ResponseDescription => ({
+      statusCode: 400,
+      data: guardedStreamFrom(`{ "name": "${error.name}", "message": "${error.message}" }`),
+    })) } as any;
 
-    responseWriter = { handleSafe: jest.fn() } as any;
-
-    handler = new IdentityProviderHttpHandler(
+    const args: IdentityProviderHttpHandlerArgs = {
+      baseUrl,
       idpPath,
       providerFactory,
-      Object.values(routes),
-      templateHandler,
+      interactionRoutes: Object.values(routes),
+      converter,
       interactionCompleter,
       errorHandler,
-      responseWriter,
-    );
-  });
-
-  it('errors if the idpPath does not start with a slash.', async(): Promise<void> => {
-    expect((): any => new IdentityProviderHttpHandler(
-      'idp', providerFactory, [], templateHandler, interactionCompleter, errorHandler, responseWriter,
-    )).toThrow('idpPath needs to start with a /');
+    };
+    handler = new IdentityProviderHttpHandler(args);
   });
 
   it('calls the provider if there is no matching route.', async(): Promise<void> => {
-    request.url = 'invalid';
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    operation.target.path = joinUrl(baseUrl, 'invalid');
+    await expect(handler.handle({ request, response, operation })).resolves.toBeUndefined();
     expect(provider.callback).toHaveBeenCalledTimes(1);
     expect(provider.callback).toHaveBeenLastCalledWith(request, response);
   });
 
-  it('calls the templateHandler for matching GET requests.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({ response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: '', prefilled: {}, authenticating: false }});
+  it('creates Representations for InteractionResponseResults.', async(): Promise<void> => {
+    operation.target.path = joinUrl(baseUrl, '/idp/routeResponse');
+    operation.method = 'POST';
+    operation.body = new BasicRepresentation('value', 'text/plain');
+    const result = (await handler.handle({ request, response, operation }))!;
+    expect(result).toBeDefined();
+    expect(routes.response.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.response.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
+    expect(operation.body?.metadata.contentType).toBe('application/json');
+
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, key: 'val', authenticating: false, controls });
+    expect(result.statusCode).toBe(200);
+    expect(result.metadata?.contentType).toBe('text/html');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
   });
 
-  it('calls the templateHandler for InteractionResponseResults.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request });
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: { key: 'val', authenticating: false }},
+  it('creates Representations for InteractionErrorResults.', async(): Promise<void> => {
+    operation.target.path = joinUrl(baseUrl, '/idp/routeError');
+    operation.method = 'POST';
+    operation.preferences = { type: { 'text/html': 1 }};
+
+    const result = (await handler.handle({ request, response, operation }))!;
+    expect(result).toBeDefined();
+    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
+
+    expect(JSON.parse(await readableToString(result.data!)))
+      .toEqual({ apiVersion, name: 'Error', message: 'test error', authenticating: false, controls });
+    expect(result.statusCode).toBe(400);
+    expect(result.metadata?.contentType).toBe('text/html');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
+  });
+
+  it('adds a prefilled field in case error requests had a body.', async(): Promise<void> => {
+    operation.target.path = joinUrl(baseUrl, '/idp/routeError');
+    operation.method = 'POST';
+    operation.preferences = { type: { 'text/html': 1 }};
+    operation.body = new BasicRepresentation('{ "key": "val" }', 'application/json');
+
+    const result = (await handler.handle({ request, response, operation }))!;
+    expect(result).toBeDefined();
+    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
+    expect(operation.body?.metadata.contentType).toBe('application/json');
+
+    expect(JSON.parse(await readableToString(result.data!))).toEqual(
+      { apiVersion, name: 'Error', message: 'test error', authenticating: false, controls, prefilled: { key: 'val' }},
     );
+    expect(result.statusCode).toBe(400);
+    expect(result.metadata?.contentType).toBe('text/html');
+    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
   });
 
   it('indicates to the templates if the request is part of an auth flow.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    const oidcInteraction = { session: { accountId: 'account' }} as any;
+    operation.target.path = joinUrl(baseUrl, '/idp/routeResponse');
+    operation.method = 'POST';
+    const oidcInteraction = { session: { accountId: 'account' }, prompt: {}} as any;
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
-    (routes.response.handler as jest.Mocked<InteractionHandler>).handleSafe.mockResolvedValueOnce({ type: 'response' });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith(
-      { response, templateFile: routes.response.responseTemplate, contents: { authenticating: true }},
-    );
+    routes.response.handleOperation
+      .mockResolvedValueOnce({ type: 'response', templateFiles: { 'text/html': '/response' }});
+
+    const result = (await handler.handle({ request, response, operation }))!;
+    expect(result).toBeDefined();
+    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, authenticating: true, controls });
   });
 
   it('errors for InteractionCompleteResults if no oidcInteraction is defined.', async(): Promise<void> => {
-    request.url = '/idp/routeComplete';
-    request.method = 'POST';
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 400 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request });
+    operation.target.path = joinUrl(baseUrl, '/idp/routeComplete');
+    operation.method = 'POST';
+
+    const error = expect.objectContaining({
+      statusCode: 400,
+      message: 'This action can only be performed as part of an OIDC authentication flow.',
+      errorCode: 'E0002',
+    });
+    await expect(handler.handle({ request, response, operation })).rejects.toThrow(error);
+    expect(routes.complete.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.complete.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(0);
-
-    const error = new BadRequestHttpError(
-      'This action can only be executed as part of an authentication flow. It should not be used directly.',
-    );
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 400 }});
   });
 
-  it('calls the interactionCompleter for InteractionCompleteResults.', async(): Promise<void> => {
-    request.url = '/idp/routeComplete';
-    request.method = 'POST';
-    const oidcInteraction = { session: { accountId: 'account' }} as any;
+  it('calls the interactionCompleter for InteractionCompleteResults and redirects.', async(): Promise<void> => {
+    operation.target.path = joinUrl(baseUrl, '/idp/routeComplete');
+    operation.method = 'POST';
+    operation.body = new BasicRepresentation('value', 'text/plain');
+    const oidcInteraction = { session: { accountId: 'account' }, prompt: {}} as any;
     provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
+    const result = (await handler.handle({ request, response, operation }))!;
+    expect(result).toBeDefined();
+    expect(routes.complete.handleOperation).toHaveBeenCalledTimes(1);
+    expect(routes.complete.handleOperation).toHaveBeenLastCalledWith(operation, oidcInteraction);
+    expect(operation.body?.metadata.contentType).toBe('application/json');
+
     expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, response, webId: 'webId' });
-  });
-
-  it('matches paths based on prompt for requests to the root IDP.', async(): Promise<void> => {
-    request.url = '/idp';
-    request.method = 'POST';
-    const oidcInteraction = { prompt: { name: 'other' }};
-    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(0);
-    expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
-  });
-
-  it('uses the default route for requests to the root IDP without (matching) prompt.', async(): Promise<void> => {
-    request.url = '/idp';
-    request.method = 'POST';
-    const oidcInteraction = { prompt: { name: 'notSupported' }};
-    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction as any);
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(routes.response.handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(routes.response.handler.handleSafe).toHaveBeenLastCalledWith({ request, oidcInteraction });
-    expect(routes.complete.handler.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('displays the viewTemplate again in case of POST errors.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    (routes.response.handler.handleSafe as any)
-      .mockRejectedValueOnce(new IdpInteractionError(500, 'handle error', { name: 'name' }));
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
-      response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: { name: 'name' }, authenticating: false },
-
-    });
-  });
-
-  it('defaults to an empty prefilled object in case of POST errors.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    (routes.response.handler.handleSafe as any).mockRejectedValueOnce(new Error('handle error'));
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(templateHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(templateHandler.handleSafe).toHaveBeenLastCalledWith({
-      response,
-      templateFile: routes.response.viewTemplate,
-      contents: { errorMessage: 'handle error', prefilled: {}, authenticating: false },
-    });
-  });
-
-  it('calls the errorHandler if there is a problem resolving the request.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'GET';
-    const error = new Error('bad template');
-    templateHandler.handleSafe.mockRejectedValueOnce(error);
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
-  });
-
-  it('can only resolve GET/POST requests.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'DELETE';
-    const error = new BadRequestHttpError('Unsupported request: DELETE /idp/routeResponse');
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
-  });
-
-  it('can only resolve InteractionResponseResult responses if a responseTemplate is set.', async(): Promise<void> => {
-    request.url = '/idp/routeResponse';
-    request.method = 'POST';
-    (routes.response as any).responseTemplate = undefined;
-    const error = new BadRequestHttpError('Unsupported request: POST /idp/routeResponse');
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
-  });
-
-  it('errors if no route is configured for the default prompt.', async(): Promise<void> => {
-    handler = new IdentityProviderHttpHandler(
-      idpPath, providerFactory, [], templateHandler, interactionCompleter, errorHandler, responseWriter,
-    );
-    request.url = '/idp';
-    provider.interactionDetails.mockResolvedValueOnce({ prompt: { name: 'other' }} as any);
-    const error = new InternalServerError('No handler for the default session prompt has been configured.');
-    errorHandler.handleSafe.mockResolvedValueOnce({ statusCode: 500 });
-    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
-    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
-    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, webId: 'webId' });
+    const location = await interactionCompleter.handleSafe.mock.results[0].value;
+    expect(result.statusCode).toBe(302);
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(location);
   });
 });

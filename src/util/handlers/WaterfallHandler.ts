@@ -1,9 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
-import { BadRequestHttpError } from '../errors/BadRequestHttpError';
-import { createErrorMessage } from '../errors/ErrorUtil';
-import { HttpError } from '../errors/HttpError';
 import { InternalServerError } from '../errors/InternalServerError';
 import type { AsyncHandler } from './AsyncHandler';
+import { findHandler } from './HandlerUtil';
 
 /**
  * A composite handler that tries multiple handlers one by one
@@ -31,7 +29,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
    * @returns A promise resolving if at least 1 handler supports to input, or rejecting if none do.
    */
   public async canHandle(input: TIn): Promise<void> {
-    await this.findHandler(input);
+    await findHandler(this.handlers, input);
   }
 
   /**
@@ -45,7 +43,7 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
     let handler: AsyncHandler<TIn, TOut>;
 
     try {
-      handler = await this.findHandler(input);
+      handler = await findHandler(this.handlers, input);
     } catch (error: unknown) {
       this.logger.warn('All handlers failed. This might be the consequence of calling handle before canHandle.');
       throw new InternalServerError('All handlers failed', { cause: error });
@@ -63,48 +61,8 @@ export class WaterfallHandler<TIn, TOut> implements AsyncHandler<TIn, TOut> {
    * It rejects if no handlers support the given data.
    */
   public async handleSafe(input: TIn): Promise<TOut> {
-    const handler = await this.findHandler(input);
+    const handler = await findHandler(this.handlers, input);
 
     return handler.handle(input);
-  }
-
-  /**
-   * Finds a handler that can handle the given input data.
-   * Otherwise an error gets thrown.
-   *
-   * @param input - The input data.
-   *
-   * @returns A promise resolving to a handler that supports the data or otherwise rejecting.
-   */
-  private async findHandler(input: TIn): Promise<AsyncHandler<TIn, TOut>> {
-    const errors: HttpError[] = [];
-
-    for (const handler of this.handlers) {
-      try {
-        await handler.canHandle(input);
-
-        return handler;
-      } catch (error: unknown) {
-        if (HttpError.isInstance(error)) {
-          errors.push(error);
-        } else {
-          errors.push(new InternalServerError(createErrorMessage(error)));
-        }
-      }
-    }
-
-    const joined = errors.map((error: Error): string => error.message).join(', ');
-    const message = `No handler supports the given input: [${joined}]`;
-
-    // Check if all errors have the same status code
-    if (errors.length > 0 && errors.every((error): boolean => error.statusCode === errors[0].statusCode)) {
-      throw new HttpError(errors[0].statusCode, errors[0].name, message);
-    }
-
-    // Find the error range (4xx or 5xx)
-    if (errors.some((error): boolean => error.statusCode >= 500)) {
-      throw new InternalServerError(message);
-    }
-    throw new BadRequestHttpError(message);
   }
 }

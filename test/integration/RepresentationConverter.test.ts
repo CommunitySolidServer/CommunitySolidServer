@@ -1,4 +1,4 @@
-import { BasicRepresentation } from '../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../src/http/representation/BasicRepresentation';
 import { ChainedConverter } from '../../src/storage/conversion/ChainedConverter';
 import { QuadToRdfConverter } from '../../src/storage/conversion/QuadToRdfConverter';
 import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';

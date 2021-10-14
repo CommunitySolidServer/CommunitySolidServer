@@ -1,5 +1,9 @@
 import { posix, win32 } from 'path';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import urljoin from 'url-join';
+import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
+import type { HttpRequest } from '../server/HttpRequest';
+import { BadRequestHttpError } from './errors/BadRequestHttpError';
 
 /**
  * Changes a potential Windows path into a POSIX path.
@@ -150,6 +154,24 @@ export function extractScheme(url: string): { scheme: string; rest: string } {
 }
 
 /**
+ * Creates a relative URL by removing the base URL.
+ * Will throw an error in case the resulting target is not withing the base URL scope.
+ * @param baseUrl - Base URL.
+ * @param request - Incoming request of which the target needs to be extracted.
+ * @param targetExtractor - Will extract the target from the request.
+ */
+export async function getRelativeUrl(baseUrl: string, request: HttpRequest, targetExtractor: TargetExtractor):
+Promise<string> {
+  baseUrl = ensureTrailingSlash(baseUrl);
+  const target = await targetExtractor.handleSafe({ request });
+  if (!target.path.startsWith(baseUrl)) {
+    throw new BadRequestHttpError(`The identifier ${target.path} is outside the configured identifier space.`,
+      { errorCode: 'E0001', details: { path: target.path }});
+  }
+  return target.path.slice(baseUrl.length - 1);
+}
+
+/**
  * Creates a regular expression that matches URLs containing the given baseUrl, or a subdomain of the given baseUrl.
  * In case there is a subdomain, the first match of the regular expression will be that subdomain.
  *
@@ -190,3 +212,9 @@ export function resolveAssetPath(path: string = modulePathPlaceholder): string {
   }
   return absoluteFilePath(path);
 }
+
+/**
+ * Concatenates all the given strings into a normalized URL.
+ * Will place slashes between input strings if necessary.
+ */
+export const joinUrl = urljoin;

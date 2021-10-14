@@ -2,7 +2,8 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/app/main/default.json",
-    "files-scs:config/app/init/default.json",
+    "files-scs:config/app/init/initialize-root.json",
+    "files-scs:config/app/setup/disabled.json",
     "files-scs:config/http/handler/simple.json",
     "files-scs:config/http/middleware/no-websockets.json",
     "files-scs:config/http/server-factory/no-websockets.json",
@@ -12,7 +13,7 @@
     "files-scs:config/ldp/handler/default.json",
     "files-scs:config/ldp/metadata-parser/default.json",
     "files-scs:config/ldp/metadata-writer/default.json",
-    "files-scs:config/ldp/permissions/acl.json",
+    "files-scs:config/ldp/modes/default.json",
     "files-scs:config/storage/backend/memory.json",
     "files-scs:config/storage/key-value/memory.json",
     "files-scs:config/storage/middleware/default.json",

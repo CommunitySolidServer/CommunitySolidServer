@@ -1,5 +1,5 @@
 import { toASCII, toUnicode } from 'punycode/';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { ForbiddenHttpError } from '../../util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';

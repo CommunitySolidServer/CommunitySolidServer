@@ -84,12 +84,12 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     // PUT
     const document = `${baseUrl}test.txt`;
-    await putResource(document, { contentType: 'text/plain', body: 'TESTDATA' });
+    await putResource(document, { contentType: 'text/plain', body: 'TESTDATA', exists: false });
 
     // GET
     const response = await getResource(document);
     await expect(response.text()).resolves.toBe('TESTDATA');
-    expect(response.headers.get('wac-allow')).toBe('user="read write append",public="read write append"');
+    expect(response.headers.get('wac-allow')).toBe('user="append read write",public="append read write"');
 
     // DELETE
     await deleteResource(document);
@@ -177,7 +177,8 @@ describe.each(stores)('An LDP handler with auth using %s', (name, { storeConfig,
 
     const response = await fetch(`${baseUrl}.acl`);
     expect(response.status).toBe(200);
-    expect(response.headers.get('wac-allow')).toBe('user="control",public="control"');
+    expect(response.headers.get('wac-allow'))
+      .toBe('user="append control read write",public="append control read write"');
 
     // Close response
     await response.text();

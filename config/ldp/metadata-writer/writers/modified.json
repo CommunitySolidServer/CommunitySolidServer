@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Adds the Last-Modified and ETag headers.",
+      "@id": "urn:solid-server:default:MetadataWriter_Modified",
+      "@type": "ModifiedMetadataWriter"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import type { Stats } from 'fs';
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import type { Size } from './Size';
 import type { SizeReporter } from './SizeReporter';
@@ -61,8 +61,14 @@ export class FileSizeReporter implements SizeReporter {
 
     return lstat.size + await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
       const childFileLocation = join(fileLocation, current);
+      let result = await acc;
 
-      return await acc + await this.getTotalSize(childFileLocation);
+      // Exclude internal files
+      if (!childFileLocation.includes('/.internal')) {
+        result += await this.getTotalSize(childFileLocation);
+      }
+
+      return result;
     }, Promise.resolve(0));
   }
 }

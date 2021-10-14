@@ -1,0 +1,21 @@
+<h1 id="public">Server setup complete</h1>
+<p>
+  Congratulations!
+  Your Solid server is now ready to use.
+  <br>
+  You can now visit its <a href="./">homepage</a>.
+</p>
+
+<% if (initialize && !registration) { %>
+<h2>Root Pod</h2>
+<p>
+  <strong>The root Pod is publicly accessible.</strong>
+  <br>
+  Prevent public write and control access to the root
+  by modifying its <a href=".acl">ACL document</a>.
+</p>
+<% } %>
+
+<% if (registration) { %>
+<%- include('../identity/email-password/register-response-partial.html.ejs', { authenticating: false }) %>
+<% } %>

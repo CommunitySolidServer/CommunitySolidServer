@@ -1,7 +1,6 @@
-import { BasicRepresentation } from '../../../../src/ldp/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToTemplateConverter } from '../../../../src/storage/conversion/ErrorToTemplateConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 
@@ -27,13 +26,6 @@ describe('An ErrorToTemplateConverter', (): void => {
   it('supports going from errors to the given content type.', async(): Promise<void> => {
     await expect(converter.getInputTypes()).resolves.toEqual({ 'internal/error': 1 });
     await expect(converter.getOutputTypes()).resolves.toEqual({ 'text/html': 1 });
-  });
-
-  it('does not support multiple errors.', async(): Promise<void> => {
-    const representation = new BasicRepresentation([ new Error('a'), new Error('b') ], 'internal/error', false);
-    const prom = converter.handle({ identifier, representation, preferences });
-    await expect(prom).rejects.toThrow('Only single errors are supported.');
-    await expect(prom).rejects.toThrow(InternalServerError);
   });
 
   it('works with non-HTTP errors.', async(): Promise<void> => {

@@ -1,22 +1,20 @@
+import { ServerResponse } from 'http';
 import type { Provider } from 'oidc-provider';
 import type { ProviderFactory } from '../../../../../src/identity/configuration/ProviderFactory';
 import { InteractionCompleter } from '../../../../../src/identity/interaction/util/InteractionCompleter';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
-import type { HttpResponse } from '../../../../../src/server/HttpResponse';
 
-// Use fixed dates
 jest.useFakeTimers();
 
 describe('An InteractionCompleter', (): void => {
   const request: HttpRequest = {} as any;
-  const response: HttpResponse = {} as any;
   const webId = 'http://alice.test.com/#me';
-  let provider: Provider;
+  let provider: jest.Mocked<Provider>;
   let completer: InteractionCompleter;
 
   beforeEach(async(): Promise<void> => {
     provider = {
-      interactionFinished: jest.fn(),
+      interactionResult: jest.fn(),
     } as any;
 
     const factory: ProviderFactory = {
@@ -27,10 +25,10 @@ describe('An InteractionCompleter', (): void => {
   });
 
   it('sends the correct data to the provider.', async(): Promise<void> => {
-    await expect(completer.handle({ request, response, webId, shouldRemember: true }))
+    await expect(completer.handle({ request, webId, shouldRemember: true }))
       .resolves.toBeUndefined();
-    expect(provider.interactionFinished).toHaveBeenCalledTimes(1);
-    expect(provider.interactionFinished).toHaveBeenLastCalledWith(request, response, {
+    expect(provider.interactionResult).toHaveBeenCalledTimes(1);
+    expect(provider.interactionResult).toHaveBeenLastCalledWith(request, expect.any(ServerResponse), {
       login: {
         account: webId,
         remember: true,
@@ -43,10 +41,10 @@ describe('An InteractionCompleter', (): void => {
   });
 
   it('rejects offline access if shouldRemember is false.', async(): Promise<void> => {
-    await expect(completer.handle({ request, response, webId, shouldRemember: false }))
+    await expect(completer.handle({ request, webId, shouldRemember: false }))
       .resolves.toBeUndefined();
-    expect(provider.interactionFinished).toHaveBeenCalledTimes(1);
-    expect(provider.interactionFinished).toHaveBeenLastCalledWith(request, response, {
+    expect(provider.interactionResult).toHaveBeenCalledTimes(1);
+    expect(provider.interactionResult).toHaveBeenLastCalledWith(request, expect.any(ServerResponse), {
       login: {
         account: webId,
         remember: false,

@@ -3,12 +3,13 @@ import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
-import type { AuxiliaryStrategy } from '../../../src/ldp/auxiliary/AuxiliaryStrategy';
-import { BasicRepresentation } from '../../../src/ldp/representation/BasicRepresentation';
-import type { Representation } from '../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../src/ldp/representation/ResourceIdentifier';
+import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
+import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
+import { BasicConditions } from '../../../src/storage/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
@@ -17,12 +18,15 @@ import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError'
 import { MethodNotAllowedHttpError } from '../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
+import { PreconditionFailedHttpError } from '../../../src/util/errors/PreconditionFailedHttpError';
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META } from '../../../src/util/Vocabularies';
+import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC } from '../../../src/util/Vocabularies';
 const { namedNode, quad } = DataFactory;
+
+const GENERATED_PREDICATE = namedNode('generated');
 
 class SimpleDataAccessor implements DataAccessor {
   public readonly data: Record<string, Representation> = {};
@@ -52,7 +56,9 @@ class SimpleDataAccessor implements DataAccessor {
 
   public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
     this.checkExists(identifier);
-    return this.data[identifier.path].metadata;
+    const metadata = new RepresentationMetadata(this.data[identifier.path].metadata);
+    metadata.add(GENERATED_PREDICATE, 'data', SOLID_META.terms.ResponseMetadata);
+    return metadata;
   }
 
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
@@ -85,6 +91,10 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     this.suffix = suffix;
   }
 
+  public usesOwnAuthorization(): boolean {
+    return true;
+  }
+
   public getAuxiliaryIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: `${identifier.path}${this.suffix}` };
   }
@@ -97,11 +107,11 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
     return identifier.path.endsWith(this.suffix);
   }
 
-  public getAssociatedIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
+  public getSubjectIdentifier(identifier: ResourceIdentifier): ResourceIdentifier {
     return { path: identifier.path.slice(0, -this.suffix.length) };
   }
 
-  public isRootRequired(): boolean {
+  public isRequiredInRoot(): boolean {
     return false;
   }
 
@@ -117,6 +127,9 @@ class SimpleSuffixStrategy implements AuxiliaryStrategy {
 }
 
 describe('A DataAccessorBasedStore', (): void => {
+  const now = new Date(2020, 5, 12);
+  const later = new Date(2021, 6, 13);
+  let mockDate: jest.SpyInstance;
   let store: DataAccessorBasedStore;
   let accessor: SimpleDataAccessor;
   const root = 'http://test.com/';
@@ -127,6 +140,8 @@ describe('A DataAccessorBasedStore', (): void => {
   const resourceData = 'text';
 
   beforeEach(async(): Promise<void> => {
+    mockDate = jest.spyOn(global, 'Date').mockReturnValue(now as any);
+
     accessor = new SimpleDataAccessor();
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
@@ -149,6 +164,7 @@ describe('A DataAccessorBasedStore', (): void => {
       metadata: new RepresentationMetadata(
         { [CONTENT_TYPE]: 'text/plain', [RDF.type]: DataFactory.namedNode(LDP.Resource) },
       ),
+      isEmpty: false,
     };
   });
 
@@ -173,6 +189,8 @@ describe('A DataAccessorBasedStore', (): void => {
       containerMetadata.identifier = namedNode(resourceID.path);
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaMirror = new RepresentationMetadata(containerMetadata);
+      // Generated metadata will have its graph removed
+      metaMirror.add(GENERATED_PREDICATE, 'data');
       await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });
@@ -201,12 +219,6 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(NotFoundHttpError);
     });
 
-    it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-      representation.binary = false;
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
-    });
-
     it('will 404 if the target does not exist.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(NotFoundHttpError);
@@ -228,6 +240,19 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(result).rejects.toThrow('The given path is not a container.');
     });
 
+    it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.binary = false;
+      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+    });
+
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.addResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
@@ -242,6 +267,7 @@ describe('A DataAccessorBasedStore', (): void => {
         path: expect.stringMatching(new RegExp(`^${root}[^/]+$`, 'u')),
       });
       await expect(arrayifyStream(accessor.data[result.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[result.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -256,8 +282,9 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[result.path]).toBeTruthy();
       expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
 
-      const { data } = await store.getRepresentation(result);
+      const { data, metadata } = await store.getRepresentation(result);
       const quads: Quad[] = await arrayifyStream(data);
+      expect(metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(quads.some((entry): boolean => entry.subject.value === result.path &&
         entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
     });
@@ -334,6 +361,13 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(prom).rejects.toThrow(ForbiddenHttpError);
     });
 
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.setRepresentation(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
     // can result in undefined behaviour since there is no parent container.
     it('will not trim the slash of root containers since there is no parent.', async(): Promise<void> => {
@@ -345,7 +379,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}` };
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${`${root}`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
       await expect(store.setRepresentation(resourceID, representation)).resolves
         .toEqual([{ path: `${root}` }]);
@@ -382,6 +416,9 @@ describe('A DataAccessorBasedStore', (): void => {
         { path: `${root}resource` },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -390,13 +427,38 @@ describe('A DataAccessorBasedStore', (): void => {
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${`${root}resource/`}> a <coolContainer>.` ]);
+      representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: root },
         { path: `${root}container/` },
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
+    });
+
+    it('can overwrite resources which does not update parent metadata.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: root },
+        { path: `${root}resource` },
+      ]);
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+
+      // Parent metadata does not get updated if the resource already exists
+      representation = new BasicRepresentation('updatedText', 'text/plain');
+      mockDate.mockReturnValue(later);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: `${root}resource` },
+      ]);
+      await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ 'updatedText' ]);
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(later.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      mockDate.mockReturnValue(now);
     });
 
     it('does not write generated metadata.', async(): Promise<void> => {
@@ -446,7 +508,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
       representation.data = guardedStreamFrom(
-        [ `<${`${root}resource/`}> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
+        [ `<${root}resource/> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
       );
       const result = store.setRepresentation(resourceID, representation);
       await expect(result).rejects.toThrow(ConflictHttpError);
@@ -494,8 +556,33 @@ describe('A DataAccessorBasedStore', (): void => {
   });
 
   describe('modifying a Representation', (): void => {
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
+    it('throws a 412 if the conditions are not matched on resources that do not exist.', async(): Promise<void> => {
+      const resourceID = { path: `${root}notHere` };
+      const conditions = new BasicConditions({ matchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
+    it('re-throws the error if something goes wrong accessing the metadata.', async(): Promise<void> => {
+      accessor.getMetadata = jest.fn(async(): Promise<any> => {
+        throw new Error('error');
+      });
+
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.modifyResource(resourceID, representation, conditions))
+        .rejects.toThrow('error');
+    });
+
     it('is not supported.', async(): Promise<void> => {
-      const result = store.modifyResource();
+      const result = store.modifyResource({ path: root }, representation);
       await expect(result).rejects.toThrow(NotImplementedHttpError);
       await expect(result).rejects.toThrow('Patches are not supported by the default store.');
     });
@@ -520,7 +607,7 @@ describe('A DataAccessorBasedStore', (): void => {
       storageMetadata.add(RDF.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       const result = store.deleteResource({ path: `${root}container/.dummy` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
       await expect(result).rejects.toThrow(
@@ -536,21 +623,40 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(result).rejects.toThrow('Can only delete empty containers.');
     });
 
+    it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      await expect(store.deleteResource(resourceID, conditions))
+        .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
     it('will delete resources.', async(): Promise<void> => {
       accessor.data[`${root}resource`] = representation;
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
         { path: `${root}resource` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
+    });
+
+    it('will delete root non-storage containers.', async(): Promise<void> => {
+      accessor.data[root] = new BasicRepresentation(representation.data, containerMetadata);
+      await expect(store.deleteResource({ path: root })).resolves.toEqual([
+        { path: root },
+      ]);
+      expect(accessor.data[root]).toBeUndefined();
     });
 
     it('will delete a root storage auxiliary resource of a non-root container.', async(): Promise<void> => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
-      auxiliaryStrategy.isRootRequired = jest.fn().mockReturnValue(true);
+      auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
         { path: `${root}container/.dummy` },
+        { path: `${root}container/` },
       ]);
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
     });
@@ -561,6 +667,7 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(store.deleteResource({ path: `${root}container/` })).resolves.toEqual([
         { path: `${root}container/` },
         { path: `${root}container/.dummy` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}container/`]).toBeUndefined();
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
@@ -580,35 +687,13 @@ describe('A DataAccessorBasedStore', (): void => {
       logger.error = jest.fn();
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
         { path: `${root}resource` },
+        { path: root },
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(
         'Error deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
-      );
-    });
-
-    it('can also handle auxiliary deletion to throw non-native errors.', async(): Promise<void> => {
-      accessor.data[`${root}resource`] = representation;
-      accessor.data[`${root}resource.dummy`] = representation;
-      const deleteFn = accessor.deleteResource;
-      accessor.deleteResource = jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
-        if (auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
-          throw 'auxiliary error!';
-        }
-        await deleteFn.call(accessor, identifier);
-      });
-      const { logger } = store as any;
-      logger.error = jest.fn();
-      await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
-        { path: `${root}resource` },
-      ]);
-      expect(accessor.data[`${root}resource`]).toBeUndefined();
-      expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
-      expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenLastCalledWith(
-        'Error deleting auxiliary resource http://test.com/resource.dummy: Unknown error: auxiliary error!',
       );
     });
   });

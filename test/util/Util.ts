@@ -4,6 +4,7 @@ import type { SystemError } from '../../src/util/errors/SystemError';
 
 const portNames = [
   // Integration
+  'Conditions',
   'DynamicPods',
   'Identity',
   'LpdHandlerWithAuth',
@@ -11,7 +12,9 @@ const portNames = [
   'Middleware',
   'PodCreation',
   'RedisResourceLocker',
+  'RestrictedIdentity',
   'ServerFetch',
+  'SetupMemory',
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',

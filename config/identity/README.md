@@ -1,6 +1,16 @@
 # Identity
 Options related to the Identity Provider.
 
+## Access
+Determines how publicly accessible some IDP features are.
+* *public*: Everything is publicly accessible.
+* *restricted*: The IDP components use the same authorization scheme as the main LDP component.
+  For example, if the server uses WebACL authorization and the registration endpoint is `/idp/register/`,
+  access to registration can be restricted by creating a valid `/idp/register/.acl` resource.
+  WARNING: This setting will write the necessary resources to the `.well-known` and IDP containers
+  to make this work. Again in the case of WebACL, this means ACL resources allowing full control access.
+  So make sure to update those two containers so only the correct credentials have the correct rights.
+
 ## Email
 Necessary for sending e-mail when using IDP.
 * *default*: Disables e-mail functionality.

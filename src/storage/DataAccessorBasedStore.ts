@@ -2,11 +2,12 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
-import type { AuxiliaryStrategy } from '../ldp/auxiliary/AuxiliaryStrategy';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
-import type { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Patch } from '../http/representation/Patch';
+import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
@@ -16,6 +17,7 @@ import { ForbiddenHttpError } from '../util/errors/ForbiddenHttpError';
 import { MethodNotAllowedHttpError } from '../util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { PreconditionFailedHttpError } from '../util/errors/PreconditionFailedHttpError';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
 import {
   ensureTrailingSlash,
@@ -25,7 +27,7 @@ import {
   toCanonicalUriPath,
 } from '../util/PathUtil';
 import { parseQuads } from '../util/QuadUtil';
-import { addResourceMetadata } from '../util/ResourceUtil';
+import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
   CONTENT_TYPE,
   DC,
@@ -39,6 +41,7 @@ import {
   PREFERRED_PREFIX_TERM,
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
+import type { Conditions } from './Conditions';
 import type { ResourceStore } from './ResourceStore';
 
 /**
@@ -134,11 +137,9 @@ export class DataAccessorBasedStore implements ResourceStore {
     return representation;
   }
 
-  public async addResource(container: ResourceIdentifier, representation: Representation): Promise<ResourceIdentifier> {
+  public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
+  Promise<ResourceIdentifier> {
     this.validateIdentifier(container);
-
-    // Ensure the representation is supported by the accessor
-    await this.accessor.canHandle(representation);
 
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
 
@@ -153,28 +154,34 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5: "Servers MUST respond with the 405 status code to requests using HTTP methods
     // that are not supported by the target resource."
     // https://solid.github.io/specification/protocol#reading-writing-resources
-    if (parentMetadata && !isContainerPath(parentMetadata.identifier.value)) {
+    if (!isContainerPath(parentMetadata.identifier.value)) {
       throw new MethodNotAllowedHttpError('The given path is not a container.');
     }
+
+    this.validateConditions(conditions, parentMetadata);
 
     // Solid, §5.1: "Servers MAY allow clients to suggest the URI of a resource created through POST,
     // using the HTTP Slug header as defined in [RFC5023].
     // Clients who want the server to assign a URI of a resource, MUST use the POST request."
     // https://solid.github.io/specification/protocol#resource-type-heuristics
     const newID = await this.createSafeUri(container, representation.metadata);
+    const isContainer = isContainerIdentifier(newID);
+
+    // Ensure the representation is supported by the accessor
+    // Containers are not checked because uploaded representations are treated as metadata
+    if (!isContainer) {
+      await this.accessor.canHandle(representation);
+    }
 
     // Write the data. New containers should never be made for a POST request.
-    await this.writeData(newID, representation, isContainerIdentifier(newID), false);
+    await this.writeData(newID, representation, isContainer, false, false);
 
     return newID;
   }
 
-  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation):
-  Promise<ResourceIdentifier[]> {
+  public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
-
-    // Ensure the representation is supported by the accessor
-    await this.accessor.canHandle(representation);
 
     // Check if the resource already exists
     const oldMetadata = await this.getSafeNormalizedMetadata(identifier);
@@ -196,15 +203,37 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
+    // Ensure the representation is supported by the accessor
+    // Containers are not checked because uploaded representations are treated as metadata
+    if (!isContainer) {
+      await this.accessor.canHandle(representation);
+    }
+
+    this.validateConditions(conditions, oldMetadata);
+
     // Potentially have to create containers if it didn't exist yet
-    return this.writeData(identifier, representation, isContainer, !oldMetadata);
+    return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
-  public async modifyResource(): Promise<ResourceIdentifier[]> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
+    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    if (conditions) {
+      let metadata: RepresentationMetadata | undefined;
+      try {
+        metadata = await this.accessor.getMetadata(identifier);
+      } catch (error: unknown) {
+        if (!NotFoundHttpError.isInstance(error)) {
+          throw error;
+        }
+      }
+
+      this.validateConditions(conditions, metadata);
+    }
+
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier): Promise<ResourceIdentifier[]> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -213,9 +242,10 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.isRootStorage(metadata)) {
       throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
     }
-    if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) && this.auxiliaryStrategy.isRootRequired(identifier)) {
-      const associatedIdentifier = this.auxiliaryStrategy.getAssociatedIdentifier(identifier);
-      const parentMetadata = await this.accessor.getMetadata(associatedIdentifier);
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
+      this.auxiliaryStrategy.isRequiredInRoot(identifier)) {
+      const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
+      const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
         throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
       }
@@ -229,14 +259,26 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (isContainerIdentifier(identifier) && await this.hasProperChildren(identifier)) {
       throw new ConflictHttpError('Can only delete empty containers.');
     }
-    // Solid, §5.4: "When a contained resource is deleted, the server MUST also delete the associated auxiliary
-    // resources"
+
+    this.validateConditions(conditions, metadata);
+
+    // Solid, §5.4: "When a contained resource is deleted,
+    // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
     const deleted = [ identifier ];
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       deleted.push(...await this.safelyDeleteAuxiliaryResources(auxiliaries));
     }
+
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const container = this.identifierStrategy.getParentContainer(identifier);
+      deleted.push(container);
+
+      // Update modified date of parent
+      await this.updateContainerModifiedDate(container);
+    }
+
     await this.accessor.deleteResource(identifier);
     return deleted;
   }
@@ -247,6 +289,17 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected validateIdentifier(identifier: ResourceIdentifier): void {
     if (!this.identifierStrategy.supportsIdentifier(identifier)) {
       throw new NotFoundHttpError();
+    }
+  }
+
+  /**
+   * Verify if the given metadata matches the conditions.
+   */
+  protected validateConditions(conditions?: Conditions, metadata?: RepresentationMetadata): void {
+    // The 412 (Precondition Failed) status code indicates
+    // that one or more conditions given in the request header fields evaluated to false when tested on the server.
+    if (conditions && !conditions.matchesMetadata(metadata)) {
+      throw new PreconditionFailedHttpError();
     }
   }
 
@@ -300,11 +353,12 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param representation - Corresponding Representation.
    * @param isContainer - Is the incoming resource a container?
    * @param createContainers - Should parent containers (potentially) be created?
+   * @param exists - If the resource already exists.
    *
    * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers?: boolean): Promise<ResourceIdentifier[]> {
+    createContainers: boolean, exists: boolean): Promise<ResourceIdentifier[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
@@ -320,12 +374,15 @@ export class DataAccessorBasedStore implements ResourceStore {
       await this.auxiliaryStrategy.validate(representation);
     }
 
+    // Add date modified metadata
+    updateModifiedDate(representation.metadata);
+
     // Root container should not have a parent container
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
     const modified = [];
-    if (!this.identifierStrategy.isRootContainer(identifier)) {
+    if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const container = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
         modified.push(container);
@@ -333,12 +390,13 @@ export class DataAccessorBasedStore implements ResourceStore {
         const created = await this.createRecursiveContainers(container);
         modified.push(...created.length === 0 ? [ container ] : created);
       }
+
+      // Parent container is also modified
+      await this.updateContainerModifiedDate(container);
     }
 
     // Remove all generated metadata to prevent it from being stored permanently
-    representation.metadata.removeQuads(
-      representation.metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata),
-    );
+    this.removeResponseMetadata(representation.metadata);
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
@@ -380,6 +438,25 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Container data is stored in the metadata
     representation.metadata.addQuads(quads);
+  }
+
+  /**
+   * Removes all generated data from metadata to prevent it from being stored permanently.
+   */
+  protected removeResponseMetadata(metadata: RepresentationMetadata): void {
+    metadata.removeQuads(
+      metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata),
+    );
+  }
+
+  /**
+   * Updates the last modified date of the given container
+   */
+  protected async updateContainerModifiedDate(container: ResourceIdentifier): Promise<void> {
+    const parentMetadata = await this.accessor.getMetadata(container);
+    updateModifiedDate(parentMetadata);
+    this.removeResponseMetadata(parentMetadata);
+    await this.accessor.writeContainer(container, parentMetadata);
   }
 
   /**
@@ -534,7 +611,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const ancestors = this.identifierStrategy.isRootContainer(container) ?
       [] :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-    await this.writeData(container, new BasicRepresentation([], container), true);
+    await this.writeData(container, new BasicRepresentation([], container), true, false, false);
     return [ ...ancestors, container ];
   }
 }

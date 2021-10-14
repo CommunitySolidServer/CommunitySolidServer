@@ -3,11 +3,6 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import type { AdapterFactory } from './AdapterFactory';
 
-export interface ExpiringAdapterArgs {
-  storageName: string;
-  storage: ExpiringStorage<string, unknown>;
-}
-
 /**
  * An IDP storage adapter that uses an ExpiringStorage
  * to persist data.
@@ -15,41 +10,39 @@ export interface ExpiringAdapterArgs {
 export class ExpiringAdapter implements Adapter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly storageName: string;
   private readonly name: string;
   private readonly storage: ExpiringStorage<string, unknown>;
 
-  public constructor(name: string, args: ExpiringAdapterArgs) {
+  public constructor(name: string, storage: ExpiringStorage<string, unknown>) {
     this.name = name;
-    this.storageName = args.storageName;
-    this.storage = args.storage;
+    this.storage = storage;
   }
 
   private grantKeyFor(id: string): string {
-    return `${this.storageName}/grant/${encodeURIComponent(id)}`;
+    return `grant/${encodeURIComponent(id)}`;
   }
 
   private userCodeKeyFor(userCode: string): string {
-    return `${this.storageName}/user_code/${encodeURIComponent(userCode)}`;
+    return `user_code/${encodeURIComponent(userCode)}`;
   }
 
   private uidKeyFor(uid: string): string {
-    return `${this.storageName}/uid/${encodeURIComponent(uid)}`;
+    return `uid/${encodeURIComponent(uid)}`;
   }
 
   private keyFor(id: string): string {
-    return `${this.storageName}/${this.name}/${encodeURIComponent(id)}`;
+    return `${this.name}/${encodeURIComponent(id)}`;
   }
 
   public async upsert(id: string, payload: AdapterPayload, expiresIn?: number): Promise<void> {
     // Despite what the typings say, `expiresIn` can be undefined
-    const expires = expiresIn ? new Date(Date.now() + (expiresIn * 1000)) : undefined;
+    const expiration = expiresIn ? expiresIn * 1000 : undefined;
     const key = this.keyFor(id);
 
     this.logger.debug(`Storing payload data for ${id}`);
 
     const storagePromises: Promise<unknown>[] = [
-      this.storage.set(key, payload, expires),
+      this.storage.set(key, payload, expiration),
     ];
     if (payload.grantId) {
       storagePromises.push(
@@ -57,15 +50,15 @@ export class ExpiringAdapter implements Adapter {
           const grantKey = this.grantKeyFor(payload.grantId!);
           const grants = (await this.storage.get(grantKey) || []) as string[];
           grants.push(key);
-          await this.storage.set(grantKey, grants, expires);
+          await this.storage.set(grantKey, grants, expiration);
         })(),
       );
     }
     if (payload.userCode) {
-      storagePromises.push(this.storage.set(this.userCodeKeyFor(payload.userCode), id, expires));
+      storagePromises.push(this.storage.set(this.userCodeKeyFor(payload.userCode), id, expiration));
     }
     if (payload.uid) {
-      storagePromises.push(this.storage.set(this.uidKeyFor(payload.uid), id, expires));
+      storagePromises.push(this.storage.set(this.uidKeyFor(payload.uid), id, expiration));
     }
     await Promise.all(storagePromises);
   }
@@ -117,13 +110,13 @@ export class ExpiringAdapter implements Adapter {
  * The factory for a ExpiringStorageAdapter
  */
 export class ExpiringAdapterFactory implements AdapterFactory {
-  private readonly args: ExpiringAdapterArgs;
+  private readonly storage: ExpiringStorage<string, unknown>;
 
-  public constructor(args: ExpiringAdapterArgs) {
-    this.args = args;
+  public constructor(storage: ExpiringStorage<string, unknown>) {
+    this.storage = storage;
   }
 
   public createStorageAdapter(name: string): ExpiringAdapter {
-    return new ExpiringAdapter(name, this.args);
+    return new ExpiringAdapter(name, this.storage);
   }
 }

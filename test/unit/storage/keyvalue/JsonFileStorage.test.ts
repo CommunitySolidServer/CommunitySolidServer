@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { JsonFileStorage } from '../../../../src/storage/keyvalue/JsonFileStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
 import { mockFs } from '../../../util/Util';

@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 
 class DummyStrategy extends BaseIdentifierStrategy {

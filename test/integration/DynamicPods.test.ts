@@ -1,5 +1,4 @@
 import { mkdirSync } from 'fs';
-import { stringify } from 'querystring';
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
 import { joinFilePath } from '../../src/util/PathUtil';
@@ -24,7 +23,15 @@ const configs: [string, any][] = [
 // Tests are very similar to subdomain/pod tests. Would be nice if they can be combined
 describe.each(configs)('A dynamic pod server with template config %s', (template, { teardown }): void => {
   let app: App;
-  const settings = { podName: 'alice', webId: 'http://test.com/#alice', email: 'alice@test.email', template, createPod: true };
+  const settings = {
+    podName: 'alice',
+    webId: 'http://test.com/#alice',
+    email: 'alice@test.email',
+    password: 'password',
+    confirmPassword: 'password',
+    template,
+    createPod: true,
+  };
   const podUrl = `${baseUrl}${settings.podName}/`;
 
   beforeAll(async(): Promise<void> => {
@@ -54,10 +61,10 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('creates a pod with the given config.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}idp/register`, {
+    const res = await fetch(`${baseUrl}idp/register/`, {
       method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      body: stringify(settings),
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(settings),
     });
     expect(res.status).toBe(200);
     await expect(res.text()).resolves.toContain(podUrl);
@@ -98,7 +105,8 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
       },
       body: 'this is new data!',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(`${podUrl}test`);
 
     res = await fetch(`${podUrl}test`, {
       headers: {
@@ -110,13 +118,13 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('should not be able to create a pod with the same name.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}idp/register`, {
+    const newSettings = { ...settings, webId: 'http://test.com/#bob', email: 'bob@test.email' };
+    const res = await fetch(`${baseUrl}idp/register/`, {
       method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      body: stringify(settings),
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(newSettings),
     });
-    // 200 due to there only being a HTML solution right now that only returns 200
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(409);
     await expect(res.text()).resolves.toContain(`There already is a pod at ${podUrl}`);
   });
 });

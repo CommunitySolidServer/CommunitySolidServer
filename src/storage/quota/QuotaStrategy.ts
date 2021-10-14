@@ -1,6 +1,6 @@
 import type { PassThrough, Readable } from 'stream';
-import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
 import type { Size } from '../size-reporter/Size';
 

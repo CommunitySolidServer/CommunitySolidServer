@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import { PassThrough } from 'stream';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { QuotaStrategy } from '../../../../src/storage/quota/QuotaStrategy';
 import type { Size } from '../../../../src/storage/size-reporter/Size';
 import type { DataValidatorInput } from '../../../../src/storage/validators/DataValidator';

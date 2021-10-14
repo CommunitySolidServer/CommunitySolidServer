@@ -13,9 +13,9 @@ import type {
   UpdateOperation,
 } from 'sparqljs';
 import { Generator } from 'sparqljs';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';

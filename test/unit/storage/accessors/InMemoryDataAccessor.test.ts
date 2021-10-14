@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';

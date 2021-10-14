@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/app/init/base/init.json",
+    "files-scs:config/app/init/initializers/root.json"
+  ],
+  "@graph": [
+    {
+      "comment": "These handlers are called whenever the server is started, and can be used to ensure that all necessary resources for booting are available.",
+      "@id": "urn:solid-server:default:ParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:RootInitializer" }
+      ]
+    }
+  ]
+}

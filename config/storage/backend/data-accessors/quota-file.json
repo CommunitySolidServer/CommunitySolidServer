@@ -13,7 +13,7 @@
       "comment": "enforces quota globally for all data on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "GlobalQuotaStrategy",
-      "limit_amount": "5000",
+      "limit_amount": "2000",
       "limit_unit": "bytes",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" }
@@ -35,7 +35,7 @@
         "@type": "AtomicFileDataAccessor",
         "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
         "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
-        "tempFilePath": "../.internal/tempFiles/"
+        "tempFilePath": ".internal/tempFiles/"
       },
       "validator": { "@id": "urn:solid-server:default:DataValidator" }
     }

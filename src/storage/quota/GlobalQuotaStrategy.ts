@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable consistent-this */
 import { PassThrough } from 'stream';
-import type { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';

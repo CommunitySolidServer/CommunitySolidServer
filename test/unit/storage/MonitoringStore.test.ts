@@ -1,5 +1,5 @@
-import type { Patch } from '../../../src/ldp/http/Patch';
-import type { Representation } from '../../../src/ldp/representation/Representation';
+import type { Patch } from '../../../src/http/representation/Patch';
+import type { Representation } from '../../../src/http/representation/Representation';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 

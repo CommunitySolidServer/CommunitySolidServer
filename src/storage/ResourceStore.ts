@@ -1,7 +1,7 @@
-import type { Patch } from '../ldp/http/Patch';
-import type { Representation } from '../ldp/representation/Representation';
-import type { RepresentationPreferences } from '../ldp/representation/RepresentationPreferences';
-import type { ResourceIdentifier } from '../ldp/representation/ResourceIdentifier';
+import type { Patch } from '../http/representation/Patch';
+import type { Representation } from '../http/representation/Representation';
+import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
+import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
 
 /**

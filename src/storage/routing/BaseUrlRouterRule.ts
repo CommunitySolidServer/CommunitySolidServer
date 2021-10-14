@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { KeyValueStorage } from '../keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../ResourceStore';

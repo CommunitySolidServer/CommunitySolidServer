@@ -3,9 +3,11 @@ import { Readable, Transform } from 'stream';
 import { promisify } from 'util';
 import arrayifyStream from 'arrayify-stream';
 import eos from 'end-of-stream';
+import { Store } from 'n3';
 import pump from 'pump';
 import { getLoggerFor } from '../logging/LogUtil';
 import { isHttpRequest } from '../server/HttpRequest';
+import { InternalServerError } from './errors/InternalServerError';
 import type { Guarded } from './GuardedStream';
 import { guardStream } from './GuardedStream';
 
@@ -21,6 +23,44 @@ const logger = getLoggerFor('StreamUtil');
  */
 export async function readableToString(stream: Readable): Promise<string> {
   return (await arrayifyStream(stream)).join('');
+}
+
+/**
+ * Imports quads from a stream into a Store.
+ * @param stream - Stream of quads.
+ *
+ * @returns A Store containing all the quads.
+ */
+export async function readableToQuads(stream: Readable): Promise<Store> {
+  const quads = new Store();
+  quads.import(stream);
+  await endOfStream(stream);
+  return quads;
+}
+
+/**
+ * Interprets the stream as JSON and converts it to a Dict.
+ * @param stream - Stream of JSON data.
+ *
+ * @returns The parsed object.
+ */
+export async function readJsonStream(stream: Readable): Promise<NodeJS.Dict<any>> {
+  const body = await readableToString(stream);
+  return JSON.parse(body);
+}
+
+/**
+ * Converts the stream to a single object.
+ * This assumes the stream is in object mode and only contains a single element,
+ * otherwise an error will be thrown.
+ * @param stream - Object stream with single entry.
+ */
+export async function getSingleItem(stream: Readable): Promise<unknown> {
+  const items = await arrayifyStream(stream);
+  if (items.length !== 1) {
+    throw new InternalServerError('Expected a stream with a single object.');
+  }
+  return items[0];
 }
 
 // These error messages usually indicate expected behaviour so should not give a warning.

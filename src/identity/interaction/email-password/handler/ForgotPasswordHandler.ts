@@ -1,11 +1,9 @@
 import assert from 'assert';
-import urljoin from 'url-join';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import { ensureTrailingSlash } from '../../../../util/PathUtil';
+import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
+import { readJsonStream } from '../../../../util/StreamUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import type { EmailSender } from '../../util/EmailSender';
-import { getFormDataRequestBody } from '../../util/FormDataUtil';
-import { throwIdpInteractionError } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
 import { InteractionHandler } from './InteractionHandler';
 import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
@@ -39,17 +37,13 @@ export class ForgotPasswordHandler extends InteractionHandler {
     this.emailSender = args.emailSender;
   }
 
-  public async handle({ request }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
-    try {
-      // Validate incoming data
-      const { email } = await getFormDataRequestBody(request);
-      assert(typeof email === 'string' && email.length > 0, 'Email required');
+  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
+    // Validate incoming data
+    const { email } = await readJsonStream(operation.body.data);
+    assert(typeof email === 'string' && email.length > 0, 'Email required');
 
-      await this.resetPassword(email);
-      return { type: 'response', details: { email }};
-    } catch (err: unknown) {
-      throwIdpInteractionError(err, {});
-    }
+    await this.resetPassword(email);
+    return { type: 'response', details: { email }};
   }
 
   /**
@@ -74,7 +68,7 @@ export class ForgotPasswordHandler extends InteractionHandler {
    */
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
-    const resetLink = urljoin(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
+    const resetLink = joinUrl(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
     const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,

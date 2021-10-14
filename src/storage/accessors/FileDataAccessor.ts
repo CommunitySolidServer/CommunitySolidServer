@@ -2,9 +2,9 @@ import type { Stats } from 'fs';
 import { createWriteStream, createReadStream, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
 import type { Quad } from 'rdf-js';
-import type { Representation } from '../../ldp/representation/Representation';
-import { RepresentationMetadata } from '../../ldp/representation/RepresentationMetadata';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { Representation } from '../../http/representation/Representation';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
@@ -12,7 +12,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
-import { addResourceMetadata } from '../../util/ResourceUtil';
+import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
 import { toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
@@ -193,9 +193,10 @@ export class FileDataAccessor implements DataAccessor {
    */
   protected async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
-    metadata.remove(RDF.type, LDP.terms.Resource);
-    metadata.remove(RDF.type, LDP.terms.Container);
-    metadata.remove(RDF.type, LDP.terms.BasicContainer);
+    metadata.remove(RDF.terms.type, LDP.terms.Resource);
+    metadata.remove(RDF.terms.type, LDP.terms.Container);
+    metadata.remove(RDF.terms.type, LDP.terms.BasicContainer);
+    metadata.removeAll(DC.terms.modified);
     metadata.removeAll(CONTENT_TYPE);
     const quads = metadata.quads();
     const metadataLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, true);
@@ -303,9 +304,7 @@ export class FileDataAccessor implements DataAccessor {
    * @param stats - Stats of the file/directory corresponding to the resource.
    */
   private addPosixMetadata(metadata: RepresentationMetadata, stats: Stats): void {
-    metadata.add(DC.terms.modified,
-      toLiteral(stats.mtime.toISOString(), XSD.terms.dateTime),
-      SOLID_META.terms.ResponseMetadata);
+    updateModifiedDate(metadata, stats.mtime);
     metadata.add(POSIX.terms.mtime,
       toLiteral(Math.floor(stats.mtime.getTime() / 1000), XSD.terms.integer),
       SOLID_META.terms.ResponseMetadata);

@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Redirects all request to the setup.",
+      "@id": "urn:solid-server:default:SetupRedirectHandler",
+      "@type": "RedirectAllHttpHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_target": "/setup",
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
+    },
+  ]
+}

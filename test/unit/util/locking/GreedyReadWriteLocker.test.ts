@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { ForbiddenHttpError } from '../../../../src/util/errors/ForbiddenHttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';

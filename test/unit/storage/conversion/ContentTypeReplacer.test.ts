@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentTypeReplacer } from '../../../../src/storage/conversion/ContentTypeReplacer';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 

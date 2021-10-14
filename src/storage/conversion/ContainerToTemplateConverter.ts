@@ -1,9 +1,9 @@
 import type { Readable } from 'stream';
 import orderBy from 'lodash.orderby';
 import type { Quad } from 'rdf-js';
-import { BasicRepresentation } from '../../ldp/representation/BasicRepresentation';
-import type { Representation } from '../../ldp/representation/Representation';
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';

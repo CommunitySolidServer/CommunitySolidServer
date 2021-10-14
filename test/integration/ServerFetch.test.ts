@@ -77,7 +77,8 @@ describe('A Solid server', (): void => {
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(url);
   });
 
   it('can PUT to resources.', async(): Promise<void> => {
@@ -89,7 +90,8 @@ describe('A Solid server', (): void => {
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    expect(res.status).toBe(205);
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(url);
   });
 
   it('can handle PUT errors.', async(): Promise<void> => {
@@ -158,6 +160,25 @@ describe('A Solid server', (): void => {
 
   it('can PATCH documents.', async(): Promise<void> => {
     const url = `${baseUrl}resourcePATCH`;
+    await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+      body: '<a:b> <a:b> <a:b>.',
+    });
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update',
+      },
+      body: 'INSERT DATA { <b:b> <b:b> <b:b>. }',
+    });
+    expect(res.status).toBe(205);
+  });
+
+  it('can PATCH containers.', async(): Promise<void> => {
+    const url = `${baseUrl}containerPATCH/`;
     await fetch(url, {
       method: 'PUT',
       headers: {

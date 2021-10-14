@@ -4,7 +4,8 @@ import arrayifyStream from 'arrayify-stream';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { SparqlDataAccessor } from '../../../../src/storage/accessors/SparqlDataAccessor';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
@@ -69,11 +70,13 @@ describe('A SparqlDataAccessor', (): void => {
   });
 
   it('can only handle quad data.', async(): Promise<void> => {
-    await expect(accessor.canHandle({ binary: true, data, metadata })).rejects.toThrow(UnsupportedMediaTypeHttpError);
-    metadata.contentType = 'newInternalType';
-    await expect(accessor.canHandle({ binary: false, data, metadata })).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    let representation = new BasicRepresentation(data, metadata, true);
+    await expect(accessor.canHandle(representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    representation = new BasicRepresentation(data, 'newInternalType', false);
+    await expect(accessor.canHandle(representation)).rejects.toThrow(UnsupportedMediaTypeHttpError);
+    representation = new BasicRepresentation(data, INTERNAL_QUADS, false);
     metadata.contentType = INTERNAL_QUADS;
-    await expect(accessor.canHandle({ binary: false, data, metadata })).resolves.toBeUndefined();
+    await expect(accessor.canHandle(representation)).resolves.toBeUndefined();
   });
 
   it('returns the corresponding quads when data is requested.', async(): Promise<void> => {

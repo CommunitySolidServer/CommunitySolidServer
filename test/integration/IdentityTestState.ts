@@ -94,15 +94,14 @@ export class IdentityTestState {
     return nextUrl;
   }
 
-  public async parseLoginPage(url: string): Promise<{ register: string; login: string; forgotPassword: string }> {
+  public async parseLoginPage(url: string): Promise<{ register: string; forgotPassword: string }> {
     const res = await this.fetchIdp(url);
     expect(res.status).toBe(200);
     const text = await res.text();
     const register = this.extractUrl(text, 'a:contains("Sign up")', 'href');
-    const login = this.extractUrl(text, 'form', 'action');
     const forgotPassword = this.extractUrl(text, 'a:contains("Forgot password")', 'href');
 
-    return { register, login, forgotPassword };
+    return { register, forgotPassword };
   }
 
   /**
@@ -116,21 +115,6 @@ export class IdentityTestState {
     const nextUrl = res.headers.get('location')!;
 
     return this.handleLoginRedirect(nextUrl);
-  }
-
-  /**
-   * Calls the given URL and extracts the action URL from a form contained within the resulting body.
-   * Also returns the resulting body in case further parsing is needed.
-   */
-  public async extractFormUrl(url: string): Promise<{ url: string; body: string }> {
-    const res = await this.fetchIdp(url);
-    expect(res.status).toBe(200);
-    const text = await res.text();
-    const formUrl = this.extractUrl(text, 'form', 'action');
-    return {
-      url: new URL(formUrl, this.baseUrl).href,
-      body: text,
-    };
   }
 
   /**

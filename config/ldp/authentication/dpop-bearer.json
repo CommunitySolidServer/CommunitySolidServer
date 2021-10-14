@@ -4,16 +4,21 @@
     {
       "comment": "Supports DPoP and Bearer access tokens, or no credentials.",
       "@id": "urn:solid-server:default:CredentialsExtractor",
-      "@type": "WaterfallHandler",
-      "handlers": [
+      "@type": "UnionCredentialsExtractor",
+      "extractors": [
         {
-          "@type": "DPoPWebIdExtractor",
-          "originalUrlExtractor": {
-            "@type": "OriginalUrlExtractor"
-          }
+          "@type": "WaterfallHandler",
+          "handlers": [
+            {
+              "@type": "DPoPWebIdExtractor",
+              "originalUrlExtractor": {
+                "@type": "OriginalUrlExtractor"
+              }
+            },
+            { "@type": "BearerWebIdExtractor" }
+          ]
         },
-        { "@type": "BearerWebIdExtractor" },
-        { "@type": "EmptyCredentialsExtractor" }
+        { "@type": "PublicCredentialsExtractor" }
       ]
     }
   ]

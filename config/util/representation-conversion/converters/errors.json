@@ -2,6 +2,10 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
   "@graph": [
     {
+      "@id": "urn:solid-server:default:ErrorToJsonConverter",
+      "@type": "ErrorToJsonConverter"
+    },
+    {
       "@id": "urn:solid-server:default:ErrorToQuadConverter",
       "@type": "ErrorToQuadConverter"
     },

@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
@@ -40,7 +40,7 @@
   "homepage": "https://github.com/solid/community-server#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:components": "componentsjs-generator -s src -c dist/components -i .componentsignore --typeScopedContexts",
+    "build:components": "componentsjs-generator -s src -c dist/components -r scs -i .componentsignore --typeScopedContexts",
     "build:ts": "tsc",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
@@ -78,14 +78,14 @@
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.21.3",
     "@rdfjs/data-model": "^1.2.0",
-    "@solid/access-token-verifier": "^0.11.0",
+    "@solid/access-token-verifier": "^1.0.0",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.10",
     "@types/end-of-stream": "^1.4.0",
     "@types/lodash.orderby": "^4.6.6",
-    "@types/marked": "^2.0.3",
+    "@types/marked": "^3.0.0",
     "@types/mime-types": "^2.1.0",
     "@types/n3": "^1.10.0",
     "@types/node": "^15.12.5",
@@ -112,7 +112,7 @@
     "handlebars": "^4.7.7",
     "jose": "^3.11.6",
     "lodash.orderby": "^4.6.0",
-    "marked": "^2.1.3",
+    "marked": "^3.0.0",
     "mime-types": "^2.1.32",
     "n3": "^1.10.0",
     "nodemailer": "^6.6.2",
@@ -163,7 +163,7 @@
     "set-cookie-parser": "^2.4.8",
     "supertest": "^6.1.3",
     "ts-jest": "^27.0.3",
-    "typedoc": "^0.21.2",
+    "typedoc": "^0.22.0",
     "typescript": "^4.3.4"
   }
 }

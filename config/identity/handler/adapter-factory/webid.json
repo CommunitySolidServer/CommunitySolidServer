@@ -7,8 +7,7 @@
       "@type": "WebIdAdapterFactory",
       "source": {
         "@type": "ExpiringAdapterFactory",
-        "args_storageName": "/idp/oidc",
-        "args_storage": { "@id": "urn:solid-server:default:ExpiringIdpStorage" }
+        "storage": { "@id": "urn:solid-server:default:IdpAdapterStorage" }
       },
       "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     }

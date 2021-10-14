@@ -1,4 +1,4 @@
-import type { ResourceIdentifier } from '../../ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import type { ResourcesGenerator } from './ResourcesGenerator';
 

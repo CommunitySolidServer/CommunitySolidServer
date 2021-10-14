@@ -17,7 +17,7 @@ describe('A WrappedExpiringStorage', (): void => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
-  let source: KeyValueStorage<string, Internal>;
+  let source: jest.Mocked<KeyValueStorage<string, Internal>>;
   let storage: WrappedExpiringStorage<string, string>;
 
   beforeEach(async(): Promise<void> => {
@@ -42,12 +42,12 @@ describe('A WrappedExpiringStorage', (): void => {
   });
 
   it('returns data if it has not expired.', async(): Promise<void> => {
-    (source.get as jest.Mock).mockResolvedValueOnce(createExpires('data!', tomorrow));
+    source.get.mockResolvedValueOnce(createExpires('data!', tomorrow));
     await expect(storage.get('key')).resolves.toEqual('data!');
   });
 
   it('deletes expired data when trying to get it.', async(): Promise<void> => {
-    (source.get as jest.Mock).mockResolvedValueOnce(createExpires('data!', yesterday));
+    source.get.mockResolvedValueOnce(createExpires('data!', yesterday));
     await expect(storage.get('key')).resolves.toBeUndefined();
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith('key');
@@ -60,12 +60,12 @@ describe('A WrappedExpiringStorage', (): void => {
   });
 
   it('true on `has` checks if there is non-expired data.', async(): Promise<void> => {
-    (source.get as jest.Mock).mockResolvedValueOnce(createExpires('data!', tomorrow));
+    source.get.mockResolvedValueOnce(createExpires('data!', tomorrow));
     await expect(storage.has('key')).resolves.toBe(true);
   });
 
   it('deletes expired data when checking if it exists.', async(): Promise<void> => {
-    (source.get as jest.Mock).mockResolvedValueOnce(createExpires('data!', yesterday));
+    source.get.mockResolvedValueOnce(createExpires('data!', yesterday));
     await expect(storage.has('key')).resolves.toBe(false);
     expect(source.delete).toHaveBeenCalledTimes(1);
     expect(source.delete).toHaveBeenLastCalledWith('key');
@@ -73,6 +73,12 @@ describe('A WrappedExpiringStorage', (): void => {
 
   it('converts the expiry date to a string when storing data.', async(): Promise<void> => {
     await storage.set('key', 'data!', tomorrow);
+    expect(source.set).toHaveBeenCalledTimes(1);
+    expect(source.set).toHaveBeenLastCalledWith('key', createExpires('data!', tomorrow));
+  });
+
+  it('can store data with an expiration duration.', async(): Promise<void> => {
+    await storage.set('key', 'data!', tomorrow.getTime() - Date.now());
     expect(source.set).toHaveBeenCalledTimes(1);
     expect(source.set).toHaveBeenLastCalledWith('key', createExpires('data!', tomorrow));
   });
@@ -99,7 +105,7 @@ describe('A WrappedExpiringStorage', (): void => {
       [ 'key2', createExpires('data2', yesterday) ],
       [ 'key3', createExpires('data3') ],
     ];
-    (source.entries as jest.Mock).mockImplementationOnce(function* (): any {
+    source.entries.mockImplementationOnce(function* (): any {
       yield* data;
     });
     const it = storage.entries();
@@ -123,7 +129,7 @@ describe('A WrappedExpiringStorage', (): void => {
       [ 'key2', createExpires('data2', yesterday) ],
       [ 'key3', createExpires('data3') ],
     ];
-    (source.entries as jest.Mock).mockImplementationOnce(function* (): any {
+    source.entries.mockImplementationOnce(function* (): any {
       yield* data;
     });
 
@@ -150,7 +156,7 @@ describe('A WrappedExpiringStorage', (): void => {
       [ 'key2', createExpires('data2', yesterday) ],
       [ 'key3', createExpires('data3') ],
     ];
-    (source.entries as jest.Mock).mockImplementationOnce(function* (): any {
+    source.entries.mockImplementationOnce(function* (): any {
       yield* data;
     });
 

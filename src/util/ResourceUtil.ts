@@ -1,10 +1,12 @@
 import arrayifyStream from 'arrayify-stream';
-import { BasicRepresentation } from '../ldp/representation/BasicRepresentation';
-import type { Representation } from '../ldp/representation/Representation';
-import { RepresentationMetadata } from '../ldp/representation/RepresentationMetadata';
+import { DataFactory } from 'n3';
+import { BasicRepresentation } from '../http/representation/BasicRepresentation';
+import type { Representation } from '../http/representation/Representation';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { guardedStreamFrom } from './StreamUtil';
-
-import { LDP, RDF } from './Vocabularies';
+import { toLiteral } from './TermUtil';
+import { CONTENT_TYPE_TERM, DC, LDP, RDF, SOLID_META, XSD } from './Vocabularies';
+import namedNode = DataFactory.namedNode;
 
 /**
  * Helper function to generate type quads for a Container or Resource.
@@ -19,6 +21,31 @@ export function addResourceMetadata(metadata: RepresentationMetadata, isContaine
     metadata.add(RDF.terms.type, LDP.terms.BasicContainer);
   }
   metadata.add(RDF.terms.type, LDP.terms.Resource);
+}
+
+/**
+ * Updates the dc:modified time to the given time.
+ * @param metadata - Metadata to update.
+ * @param date - Last modified date. Defaults to current time.
+ */
+export function updateModifiedDate(metadata: RepresentationMetadata, date = new Date()): void {
+  // Milliseconds get lost in some serializations, potentially causing mismatches
+  const lastModified = new Date(date);
+  lastModified.setMilliseconds(0);
+  metadata.set(DC.terms.modified, toLiteral(lastModified.toISOString(), XSD.terms.dateTime));
+}
+
+/**
+ * Links a template file with a given content-type to the metadata using the SOLID_META.template predicate.
+ * @param metadata - Metadata to update.
+ * @param templateFile - Path to the template.
+ * @param contentType - Content-type of the template after it is rendered.
+ */
+export function addTemplateMetadata(metadata: RepresentationMetadata, templateFile: string, contentType: string):
+void {
+  const templateNode = namedNode(templateFile);
+  metadata.add(SOLID_META.terms.template, templateNode);
+  metadata.addQuad(templateNode, CONTENT_TYPE_TERM, contentType);
 }
 
 /**

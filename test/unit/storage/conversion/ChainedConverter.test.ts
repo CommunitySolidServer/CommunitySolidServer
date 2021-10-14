@@ -1,9 +1,9 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type {
   RepresentationPreferences,
   ValuePreferences,
-} from '../../../../src/ldp/representation/RepresentationPreferences';
+} from '../../../../src/http/representation/RepresentationPreferences';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { matchesMediaType } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';

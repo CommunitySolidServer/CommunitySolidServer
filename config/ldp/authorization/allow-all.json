@@ -6,8 +6,14 @@
         "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
         "Always allows all operations."
       ],
-      "@id": "urn:solid-server:default:Authorizer",
-      "@type": "AllowAllAuthorizer"
+      "@id": "urn:solid-server:default:PermissionReader",
+      "@type": "AllStaticReader",
+      "allow": true
+    },
+    {
+      "comment": "Everything is allowed, so there are no auth-specific resources.",
+      "@id": "urn:solid-server:default:AuthResourceHttpHandler",
+      "@type": "UnsupportedAsyncHandler"
     }
   ]
 }

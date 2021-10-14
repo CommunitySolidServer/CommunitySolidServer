@@ -1,7 +1,9 @@
 <h1>Log in</h1>
-<form action="/idp/login" method="post">
-  <% if (errorMessage) { %>
-    <p class="error"><%= errorMessage %></p>
+<form method="post">
+  <% prefilled = locals.prefilled || {}; %>
+
+  <% if (locals.message) { %>
+    <p class="error"><%= message %></p>
   <% } %>
 
   <fieldset>
@@ -9,7 +11,7 @@
     <ol>
       <li>
         <label for="email">Email</label>
-        <input id="email" type="email" name="email" autofocus <% if (prefilled.email) { %> value="<%= prefilled.email %>" <% } %>>
+        <input id="email" type="email" name="email" autofocus value="<%= prefilled.email || '' %>">
       </li>
       <li>
         <label for="password">Password</label>
@@ -24,7 +26,7 @@
   <p class="actions"><button type="submit" name="submit">Log in</button></p>
 
   <ul class="actions">
-    <li><a href="/idp/register" class="link">Sign up</a></li>
-    <li><a href="/idp/forgotpassword" class="link">Forgot password</a></li>
+    <li><a href="<%= controls.register %>" class="link">Sign up</a></li>
+    <li><a href="<%= controls.forgotPassword %>" class="link">Forgot password</a></li>
   </ul>
 </form>

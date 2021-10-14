@@ -1,6 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
-import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
 
@@ -42,6 +42,32 @@ describe('A FileSizeReporter', (): void => {
     await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
 
     await fsPromises.unlink(testFile);
+    await fsPromises.rmdir(containerFile);
+  });
+
+  it('should not count files located in a .internal folder.', async(): Promise<void> => {
+    const containerFile = join(process.cwd(), './test-folder-2/');
+    await fsPromises.mkdir(containerFile, { recursive: true });
+    const testFile = join(containerFile, './test.txt');
+    await fsPromises.writeFile(testFile, 'Test file for file size!');
+
+    const internalContainerFile = join(process.cwd(), './test-folder-2/.internal/');
+    await fsPromises.mkdir(internalContainerFile, { recursive: true });
+    const internalTestFile = join(internalContainerFile, './test.txt');
+    await fsPromises.writeFile(internalTestFile, 'Test file for file size!');
+
+    const fileSize = fileSizeReporter.getSize({ path: testFile });
+    const containerSize = fileSizeReporter.getSize({ path: containerFile });
+
+    const expectedFileSize = (await fsPromises.lstat(testFile)).size;
+    const expectedContainerSize = expectedFileSize + (await fsPromises.lstat(containerFile)).size;
+
+    await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
+    await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
+
+    await fsPromises.unlink(testFile);
+    await fsPromises.unlink(internalTestFile);
+    await fsPromises.rmdir(internalContainerFile);
     await fsPromises.rmdir(containerFile);
   });
 

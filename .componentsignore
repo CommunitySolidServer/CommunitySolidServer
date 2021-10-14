@@ -1,9 +1,11 @@
 [
   "Adapter",
+  "BasicConditions",
   "BasicRepresentation",
   "Error",
   "EventEmitter",
   "HttpErrorOptions",
+  "Permission",
   "Template",
   "TemplateEngine",
   "ValuePreferencesArg",

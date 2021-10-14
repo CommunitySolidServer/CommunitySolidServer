@@ -7,7 +7,6 @@ import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringS
 jest.useFakeTimers();
 
 describe('An ExpiringAdapterFactory', (): void => {
-  const storageName = '/storage';
   const name = 'nnaammee';
   const id = 'http://alice.test.com/card#me';
   const grantId = 'grant123456';
@@ -15,8 +14,7 @@ describe('An ExpiringAdapterFactory', (): void => {
   let storage: ExpiringStorage<string, unknown>;
   let adapter: ExpiringAdapter;
   let factory: ExpiringAdapterFactory;
-  const expiresIn = 333;
-  const expireDate = new Date(Date.now() + (expiresIn * 1000));
+  const expiresIn = 333 * 1000;
 
   beforeEach(async(): Promise<void> => {
     payload = { data: 'data!' };
@@ -28,14 +26,14 @@ describe('An ExpiringAdapterFactory', (): void => {
       delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
     } as any;
 
-    factory = new ExpiringAdapterFactory({ storageName, storage });
+    factory = new ExpiringAdapterFactory(storage);
     adapter = factory.createStorageAdapter(name);
   });
 
   it('can find payload by id.', async(): Promise<void> => {
     await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
     expect(storage.set).toHaveBeenCalledTimes(1);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expiresIn);
     await expect(adapter.find(id)).resolves.toBe(payload);
   });
 
@@ -50,8 +48,8 @@ describe('An ExpiringAdapterFactory', (): void => {
     payload.userCode = userCode;
     await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expiresIn);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expiresIn);
     await expect(adapter.findByUserCode(userCode)).resolves.toBe(payload);
   });
 
@@ -60,8 +58,8 @@ describe('An ExpiringAdapterFactory', (): void => {
     payload.uid = uid;
     await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expiresIn);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), id, expiresIn);
     await expect(adapter.findByUid(uid)).resolves.toBe(payload);
   });
 
@@ -69,8 +67,8 @@ describe('An ExpiringAdapterFactory', (): void => {
     payload.grantId = grantId;
     await expect(adapter.upsert(id, payload, 333)).resolves.toBeUndefined();
     expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expireDate);
-    expect(storage.set).toHaveBeenCalledWith(expect.anything(), [ expect.anything() ], expireDate);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), payload, expiresIn);
+    expect(storage.set).toHaveBeenCalledWith(expect.anything(), [ expect.anything() ], expiresIn);
     await expect(adapter.find(id)).resolves.toBe(payload);
     await expect(adapter.revokeByGrantId(grantId)).resolves.toBeUndefined();
     expect(storage.delete).toHaveBeenCalledTimes(2);

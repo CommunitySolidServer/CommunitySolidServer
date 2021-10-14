@@ -3,9 +3,9 @@ import { URL } from 'url';
 import { load } from 'cheerio';
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
-import urljoin from 'url-join';
 import type { App } from '../../src/init/App';
 import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
+import { joinUrl } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 import { IdentityTestState } from './IdentityTestState';
@@ -51,8 +51,9 @@ describe('A Solid server with IDP', (): void => {
   let app: App;
   const redirectUrl = 'http://mockedredirect/';
   const oidcIssuer = baseUrl;
-  const card = urljoin(baseUrl, 'profile/card');
+  const card = joinUrl(baseUrl, 'profile/card');
   const webId = `${card}#me`;
+  const webId2 = `${card}#someoneElse`;
   const email = 'test@test.com';
   const password = 'password!';
   const password2 = 'password2!';
@@ -95,8 +96,8 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
-      expect(res.status).toBe(200);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
+      expect(res.status).toBe(400);
       registrationTriple = extractRegistrationTriple(await res.text(), webId);
     });
 
@@ -111,7 +112,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
       expect(text).toMatch(new RegExp(`your.WebID.*${webId}`, 'u'));
@@ -145,9 +146,8 @@ describe('A Solid server with IDP', (): void => {
 
     it('initializes the session and logs in.', async(): Promise<void> => {
       const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      await state.login(login, email, password);
+      await state.parseLoginPage(url);
+      await state.login(url, email, password);
       expect(state.session.info?.webId).toBe(webId);
     });
 
@@ -168,10 +168,10 @@ describe('A Solid server with IDP', (): void => {
     it('can log in again.', async(): Promise<void> => {
       const url = await state.startSession();
 
-      const form = await state.extractFormUrl(url);
-      expect(form.url.endsWith('/confirm')).toBe(true);
+      let res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
 
-      const res = await state.fetchIdp(form.url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
+      res = await state.fetchIdp(url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
       const nextUrl = res.headers.get('location');
       expect(typeof nextUrl).toBe('string');
 
@@ -184,7 +184,7 @@ describe('A Solid server with IDP', (): void => {
     let nextUrl: string;
 
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/forgotpassword`, stringify({ email }));
+      const res = await postForm(`${baseUrl}idp/forgotpassword/`, stringify({ email }));
       expect(res.status).toBe(200);
       expect(load(await res.text())('form p').first().text().trim())
         .toBe('If your account exists, an email has been sent with a link to reset your password.');
@@ -226,17 +226,13 @@ describe('A Solid server with IDP', (): void => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
     });
 
-    it('initializes the session.', async(): Promise<void> => {
-      const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      nextUrl = login;
-    });
-
     it('can not log in with the old password anymore.', async(): Promise<void> => {
+      const url = await state.startSession();
+      nextUrl = url;
+      await state.parseLoginPage(url);
       const formData = stringify({ email, password });
-      const res = await state.fetchIdp(nextUrl, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
-      expect(res.status).toBe(200);
+      const res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
+      expect(res.status).toBe(500);
       expect(await res.text()).toContain('Incorrect password');
     });
 
@@ -246,25 +242,32 @@ describe('A Solid server with IDP', (): void => {
     });
   });
 
-  describe('creating pods without registering', (): void => {
+  describe('creating pods without registering with the IDP', (): void => {
     let formBody: string;
     let registrationTriple: string;
     const podName = 'myPod';
 
     beforeAll(async(): Promise<void> => {
       // We will need this twice
-      formBody = stringify({ email, webId, podName, createPod: 'ok' });
+      formBody = stringify({
+        email: 'bob@test.email',
+        webId: webId2,
+        password,
+        confirmPassword: password,
+        podName,
+        createPod: 'ok',
+      });
     });
 
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
-      expect(res.status).toBe(200);
-      registrationTriple = extractRegistrationTriple(await res.text(), webId);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
+      expect(res.status).toBe(400);
+      registrationTriple = extractRegistrationTriple(await res.text(), webId2);
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
       const patchBody = `INSERT DATA { ${registrationTriple} }`;
-      const res = await fetch(webId, {
+      const res = await fetch(webId2, {
         method: 'PATCH',
         headers: { 'content-type': 'application/sparql-update' },
         body: patchBody,
@@ -273,7 +276,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
       expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
@@ -291,7 +294,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('sends the form to create the WebID and register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register`, formBody);
+      const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
       const text = await res.text();
 
@@ -307,9 +310,8 @@ describe('A Solid server with IDP', (): void => {
     it('initializes the session and logs in.', async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
       const url = await state.startSession();
-      const { login } = await state.parseLoginPage(url);
-      expect(typeof login).toBe('string');
-      await state.login(login, newMail, password);
+      await state.parseLoginPage(url);
+      await state.login(url, newMail, password);
       expect(state.session.info?.webId).toBe(newWebId);
     });
 
@@ -325,6 +327,43 @@ describe('A Solid server with IDP', (): void => {
 
       res = await state.session.fetch(newWebId, patchOptions);
       expect(res.status).toBe(205);
+    });
+
+    it('always has control over data in the pod.', async(): Promise<void> => {
+      const podBaseUrl = `${baseUrl}${podName}/`;
+      const brokenAcl = '<#authorization> a <http://www.w3.org/ns/auth/acl#Authorization> .';
+
+      // Make the acl file unusable
+      let res = await state.session.fetch(`${podBaseUrl}.acl`, {
+        method: 'PUT',
+        headers: { 'content-type': 'text/turtle' },
+        body: brokenAcl,
+      });
+      expect(res.status).toBe(205);
+
+      // The owner is locked out of their own pod due to a faulty acl file
+      res = await state.session.fetch(podBaseUrl);
+      expect(res.status).toBe(403);
+
+      const fixedAcl = `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<#authorization>
+    a               acl:Authorization;
+    acl:agentClass  foaf:Agent;
+    acl:mode        acl:Read;
+    acl:accessTo    <./>.`;
+      // Owner can still update the acl
+      res = await state.session.fetch(`${podBaseUrl}.acl`, {
+        method: 'PUT',
+        headers: { 'content-type': 'text/turtle' },
+        body: fixedAcl,
+      });
+      expect(res.status).toBe(205);
+
+      // Access is possible again
+      res = await state.session.fetch(podBaseUrl);
+      expect(res.status).toBe(200);
     });
   });
 

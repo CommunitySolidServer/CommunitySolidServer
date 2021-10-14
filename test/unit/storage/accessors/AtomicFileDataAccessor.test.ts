@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { AtomicFileDataAccessor } from '../../../../src/storage/accessors/AtomicFileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';

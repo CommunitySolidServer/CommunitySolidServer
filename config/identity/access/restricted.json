@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/identity/access/initializers/idp.json",
+    "files-scs:config/identity/access/initializers/well-known.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Use the same authorization for IDP components as is used for LDP, such that for instance registration can be restricted to certain agents.",
+      "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
+      "AuthorizingHttpHandler:_args_permissionReader": { "@id": "urn:solid-server:default:PermissionReader" }
+    },
+    {
+      "comment": "IDP-related containers require initialized resources to support authorization.",
+      "@id": "urn:solid-server:default:ParallelInitializer",
+      "ParallelHandler:_handlers": [
+        { "@id": "urn:solid-server:default:IdpContainerInitializer" },
+        { "@id": "urn:solid-server:default:WellKnownContainerInitializer" }
+      ]
+    }
+  ]
+}

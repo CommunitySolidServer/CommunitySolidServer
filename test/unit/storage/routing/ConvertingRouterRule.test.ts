@@ -1,5 +1,5 @@
-import type { Representation } from '../../../../src/ldp/representation/Representation';
-import { RepresentationMetadata } from '../../../../src/ldp/representation/RepresentationMetadata';
+import type { Representation } from '../../../../src/http/representation/Representation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { ConvertingRouterRule } from '../../../../src/storage/routing/ConvertingRouterRule';
 import type { PreferenceSupport } from '../../../../src/storage/routing/PreferenceSupport';
@@ -26,7 +26,7 @@ describe('A ConvertingRouterRule', (): void => {
     rule = new ConvertingRouterRule({ store: store1, supportChecker: checker1 }, defaultStore);
 
     metadata = new RepresentationMetadata();
-    representation = { binary: true, data: 'data!' as any, metadata };
+    representation = { binary: true, data: 'data!' as any, metadata, isEmpty: false };
   });
 
   it('returns the corresponding store if it supports the input.', async(): Promise<void> => {
