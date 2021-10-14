@@ -1,4 +1,5 @@
 import { statSync, unlinkSync, writeFileSync, mkdirSync, rmdirSync } from 'fs';
+import { join } from 'path';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
@@ -15,7 +16,7 @@ describe('A FileSizeReporter', (): void => {
   const fileSizeReporter = new FileSizeReporter(mapper);
 
   it('should report the right file size.', async(): Promise<void> => {
-    const testFile = './test.txt';
+    const testFile = join(process.cwd(), './test.txt');
     writeFileSync(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
@@ -26,9 +27,9 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should work recursively.', async(): Promise<void> => {
-    const containerFile = './test/data/';
+    const containerFile = join(process.cwd(), './test-folder-1/');
     mkdirSync(containerFile, { recursive: true });
-    const testFile = './test/data/test.txt';
+    const testFile = join(containerFile, './test.txt');
     writeFileSync(testFile, 'Test file for file size!');
 
     const fileSize = fileSizeReporter.getSize({ path: testFile });
@@ -42,7 +43,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should have the unit in its return value.', async(): Promise<void> => {
-    const testFile = './test.txt';
+    const testFile = join(process.cwd(), './test.txt');
     writeFileSync(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
@@ -57,7 +58,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should return 0 when the size of a non existent file is requested.', async(): Promise<void> => {
-    const result = fileSizeReporter.getSize({ path: './test.txt' });
+    const result = fileSizeReporter.getSize({ path: join(process.cwd(), './test.txt') });
     await expect(result).resolves.toEqual(expect.objectContaining({ amount: 0 }));
   });
 
