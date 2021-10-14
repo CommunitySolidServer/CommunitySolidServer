@@ -12,7 +12,7 @@ export class ContentTypeParser extends MetadataParser {
     const contentType = input.request.headers['content-type'];
     if (contentType) {
       // HeaderUtil.parseContentType has to be updated once parameters need to be parsed
-      input.metadata.contentType = parseContentType(contentType);
+      input.metadata.contentType = parseContentType(contentType).type;
     }
   }
 }
