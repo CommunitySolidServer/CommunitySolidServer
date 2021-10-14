@@ -3,9 +3,12 @@ import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
+import { INTERNAL_QUADS } from '../util/ContentTypes';
+import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import { fetchDataset } from '../util/FetchUtil';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
+import { cloneRepresentation } from '../util/ResourceUtil';
 import { readableToQuads } from '../util/StreamUtil';
 import { LDP } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
@@ -29,35 +32,36 @@ export class ShapeValidationStore<T extends ResourceStore = ResourceStore> exten
     // Check if the parent has ldp:constrainedBy in the metadata
     const parentContainer = await this.source.getRepresentation(identifier, {});
     const shapeURL = parentContainer.metadata.get(LDP.constrainedBy)?.value;
-
-    const dataStore = await readableToQuads(representation.data);
-
+    let representationData;
+    // Convert the RDF representation to a N3.Store
+    const preferences = { type: { [INTERNAL_QUADS]: 1 }};
+    try {
+      // Creating new representation since converter might edit metadata
+      const tempRepresentation = await cloneRepresentation(representation);
+      representationData = await this.converter.handleSafe({
+        identifier,
+        representation: tempRepresentation,
+        preferences,
+      });
+    } catch (error: unknown) {
+      representation.data.destroy();
+      throw error;
+    }
+    const dataStore = await readableToQuads(representationData.data);
     if (typeof shapeURL === 'string') {
-      // eslint-disable-next-line unicorn/expiring-todo-comments
-      // TODO: bekijk hoe gevalidate moet worden + later alle logger info naar debug brengen
-      this.logger.info(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
-
+      this.logger.debug(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
       const shape = await fetchDataset(shapeURL, this.converter);
       const shapeStore = await readableToQuads(shape.data);
 
-      //
-      // // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      // shapeStore.getQuads(null, null, null, null).forEach(quad => {
-      // this.logger.info(`${quad.subject.value} ${quad.predicate.value} ${quad.object.value}`);
-      // });
-      //
-
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      dataStore.getQuads(null, null, null, null).forEach(quad => {
-        this.logger.info(`${quad.subject.value} ${quad.predicate.value} ${quad.object.value}`);
-      });
-
       const validator = new SHACLValidator(shapeStore);
       const report = validator.validate(dataStore);
-      this.logger.info(`Validation of the data: ${report.conforms ? 'success' : 'failure'}`);
-    }
+      this.logger.debug(`Validation of the data: ${report.conforms ? 'success' : 'failure'}`);
 
-    return super.addResource(identifier, representation, conditions);
+      if (!report.conforms) {
+        throw new BadRequestHttpError(`Data does not conform to ${shapeURL}`);
+      }
+    }
+    return await this.source.addResource(identifier, representation, conditions);
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
@@ -66,15 +70,14 @@ export class ShapeValidationStore<T extends ResourceStore = ResourceStore> exten
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
       const parentContainer = await this.source.getRepresentation(parentIdentifier, {});
-      // eslint-disable-next-line no-console
-      console.log(parentContainer.metadata);
+      this.logger.debug(parentContainer.metadata.identifier.value);
       throw new NotImplementedHttpError();
     }
-    return super.modifyResource(identifier, patch, conditions);
+    return this.source.modifyResource(identifier, patch, conditions);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
-    return super.setRepresentation(identifier, representation, conditions);
+    return this.source.setRepresentation(identifier, representation, conditions);
   }
 }
