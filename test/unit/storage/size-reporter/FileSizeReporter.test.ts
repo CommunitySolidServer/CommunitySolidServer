@@ -1,4 +1,4 @@
-import { statSync, unlinkSync, writeFileSync, mkdirSync, rmdirSync } from 'fs';
+import { promises as fsPromises } from 'fs';
 import { join } from 'path';
 import type { ResourceIdentifier } from '../../../../src/ldp/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
@@ -17,40 +17,43 @@ describe('A FileSizeReporter', (): void => {
 
   it('should report the right file size.', async(): Promise<void> => {
     const testFile = join(process.cwd(), './test.txt');
-    writeFileSync(testFile, 'Test file for file size!');
+    await fsPromises.writeFile(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
-    expect((await result).amount).toBe(statSync(testFile).size);
+    expect((await result).amount).toBe((await fsPromises.lstat(testFile)).size);
 
-    unlinkSync(testFile);
+    await fsPromises.unlink(testFile);
   });
 
   it('should work recursively.', async(): Promise<void> => {
     const containerFile = join(process.cwd(), './test-folder-1/');
-    mkdirSync(containerFile, { recursive: true });
+    await fsPromises.mkdir(containerFile, { recursive: true });
     const testFile = join(containerFile, './test.txt');
-    writeFileSync(testFile, 'Test file for file size!');
+    await fsPromises.writeFile(testFile, 'Test file for file size!');
 
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
 
-    await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: 24 }));
-    await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: 120 }));
+    const expectedFileSize = (await fsPromises.lstat(testFile)).size;
+    const expectedContainerSize = expectedFileSize + (await fsPromises.lstat(containerFile)).size;
 
-    unlinkSync(testFile);
-    rmdirSync(containerFile);
+    await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
+    await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
+
+    await fsPromises.unlink(testFile);
+    await fsPromises.rmdir(containerFile);
   });
 
   it('should have the unit in its return value.', async(): Promise<void> => {
     const testFile = join(process.cwd(), './test.txt');
-    writeFileSync(testFile, 'Test file for file size!');
+    await fsPromises.writeFile(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
     expect((await result).unit).toBe('bytes');
 
-    unlinkSync(testFile);
+    await fsPromises.unlink(testFile);
   });
 
   it('getUnit() should return \'bytes\'.', (): void => {
