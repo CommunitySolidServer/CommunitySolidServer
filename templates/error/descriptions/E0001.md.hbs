@@ -1,5 +1,25 @@
-# Requests to `{{ path }}` are not supported
-The Community Solid Server received a request for `{{ path }}`, which is not configured.
-Here are some things you can try to fix this:
- - Have you started the server with the right hostname?
- - If you are running the server behind a reverse proxy, did you set up the `Forwarded` header correctly?
+# Request received for an unsupported path
+## This server appears to be misconfigured
+
+**A Community Solid Server needs to be assigned a specific URL**,
+<br>
+so it knows how to handle every incoming request.
+
+The request you made arrived at the server as `{{ path }}`,
+which is a URL not assigned to it.
+<br>
+As such, the server cannot respond correctly
+until its configuration is changed.
+
+## Fixing the server configuration
+**To solve this problem, the server administrator needs to fix the configuration.**
+<br>
+The problem is typically one of these:
+
+1. The server was started with **the wrong hostname.**
+    - Use the `--baseUrl` (or `-b`) option to set the base URL.  
+      Example: `community-solid-server --baseUrl https://mydomain.example/`
+
+2. A **reverse proxy** running in front of the server passes the wrong headers.
+    - Set up the [`Forwarded` header](https://solidproject.org/self-hosting/css/nginx)
+      to pass the correct URL on to the server.
