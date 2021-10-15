@@ -13,6 +13,10 @@
         {
           "LinkRelParser:_linkRelMap_key": "http://www.w3.org/ns/ldp#inbox",
           "LinkRelParser:_linkRelMap_value": "http://www.w3.org/ns/ldp#inbox"
+        },
+        {
+          "LinkRelParser:_linkRelMap_key": "http://www.w3.org/ns/ldp#constrainedBy",
+          "LinkRelParser:_linkRelMap_value": "http://www.w3.org/ns/ldp#constrainedBy"
         }
       ]
     }

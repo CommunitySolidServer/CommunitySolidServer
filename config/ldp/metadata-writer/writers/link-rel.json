@@ -17,6 +17,10 @@
         {
           "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/ns/ldp#inbox",
           "LinkRelMetadataWriter:_linkRelMap_value": "http://www.w3.org/ns/ldp#inbox"
+        },
+        {
+          "LinkRelMetadataWriter:_linkRelMap_key": "http://www.w3.org/ns/ldp#constrainedBy",
+          "LinkRelMetadataWriter:_linkRelMap_value": "http://www.w3.org/ns/ldp#constrainedBy"
         }
       ]
     }
