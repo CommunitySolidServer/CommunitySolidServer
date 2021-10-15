@@ -1,9 +1,10 @@
 import type { Readable } from 'stream';
+import type { Validator } from '../../http/auxiliary/Validator';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
-import type { DataValidator } from '../validators/DataValidator';
 import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
@@ -13,9 +14,9 @@ import type { DataAccessor } from './DataAccessor';
  */
 export class ValidatingDataAccessor implements DataAccessor {
   private readonly accessor: AtomicDataAccessor;
-  private readonly validator: DataValidator;
+  private readonly validator: Validator;
 
-  public constructor(accessor: DataAccessor, validator: DataValidator) {
+  public constructor(accessor: DataAccessor, validator: Validator) {
     this.accessor = accessor;
     this.validator = validator;
   }
@@ -25,8 +26,11 @@ export class ValidatingDataAccessor implements DataAccessor {
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    const pipedData = await this.validator.handle({ identifier, data, metadata });
-    return this.accessor.writeDocument(identifier, pipedData, metadata);
+    const pipedRep = await this.validator.handle({
+      representation: new BasicRepresentation(data, metadata),
+      identifier,
+    });
+    return this.accessor.writeDocument(identifier, pipedRep.data, metadata);
   }
 
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {

@@ -21,8 +21,8 @@
 
     {
       "comment": "validates the data being written to the server",
-      "@id": "urn:solid-server:default:DataValidator",
-      "@type": "QuotaDataValidator",
+      "@id": "urn:solid-server:default:QuotaValidator",
+      "@type": "QuotaValidator",
       "strategy": { "@id": "urn:solid-server:default:QuotaStrategy" }
     },
 
@@ -37,7 +37,7 @@
         "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
         "tempFilePath": ".internal/tempFiles/"
       },
-      "validator": { "@id": "urn:solid-server:default:DataValidator" }
+      "validator": { "@id": "urn:solid-server:default:QuotaValidator" }
     }
   ]
 }

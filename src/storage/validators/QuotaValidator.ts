@@ -1,16 +1,17 @@
 import { Readable, PassThrough } from 'stream';
+import { Validator } from '../../http/auxiliary/Validator';
+import type { ValidatorArgs } from '../../http/auxiliary/Validator';
+import type { Representation } from '../../http/representation/Representation';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
 import type { Guarded } from '../../util/GuardedStream';
 import { guardStream } from '../../util/GuardedStream';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { QuotaStrategy } from '../quota/QuotaStrategy';
-import type { DataValidatorInput } from './DataValidator';
-import { DataValidator } from './DataValidator';
 
 /**
  * The QuotaDataValidator validates data streams according to a QuotaStrategy's implementation
  */
-export class QuotaDataValidator extends DataValidator {
+export class QuotaValidator extends Validator {
   private readonly strategy: QuotaStrategy;
 
   public constructor(strategy: QuotaStrategy) {
@@ -18,8 +19,9 @@ export class QuotaDataValidator extends DataValidator {
     this.strategy = strategy;
   }
 
-  public async handle(input: DataValidatorInput): Promise<Guarded<Readable>> {
-    const { identifier, data, metadata } = input;
+  public async handle(input: ValidatorArgs): Promise<Representation> {
+    const { identifier, representation } = input;
+    const { data, metadata } = representation;
 
     // 1. Get the available size
     const availableSize = await this.strategy.getAvailableSpace(identifier);
@@ -28,14 +30,17 @@ export class QuotaDataValidator extends DataValidator {
     const estimatedSize = await this.strategy.estimateSize(metadata);
 
     if (estimatedSize && availableSize.amount < estimatedSize.amount) {
-      return guardStream(new Readable({
-        read(this): void {
-          this.destroy(new PayloadHttpError(
-            `Quota exceeded: Advertised Content-Length is ${estimatedSize.amount} ${estimatedSize.unit} ` +
-            `and only ${availableSize.amount} ${availableSize.unit} is available`,
-          ));
-        },
-      }));
+      return {
+        ...representation,
+        data: guardStream(new Readable({
+          read(this): void {
+            this.destroy(new PayloadHttpError(
+              `Quota exceeded: Advertised Content-Length is ${estimatedSize.amount} ${estimatedSize.unit} ` +
+              `and only ${availableSize.amount} ${availableSize.unit} is available`,
+            ));
+          },
+        })),
+      };
     }
 
     // 3. Track if quota is exceeded during writing
@@ -49,6 +54,9 @@ export class QuotaDataValidator extends DataValidator {
       },
     });
 
-    return pipeSafely(pipeSafely(data, tracking), afterWrite);
+    return {
+      ...representation,
+      data: pipeSafely(pipeSafely(data, tracking), afterWrite),
+    };
   }
 }

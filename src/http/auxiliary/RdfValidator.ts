@@ -3,6 +3,7 @@ import type { RepresentationConverter } from '../../storage/conversion/Represent
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { cloneRepresentation } from '../../util/ResourceUtil';
 import type { Representation } from '../representation/Representation';
+import type { ValidatorArgs } from './Validator';
 import { Validator } from './Validator';
 
 /**
@@ -17,27 +18,28 @@ export class RdfValidator extends Validator {
     this.converter = converter;
   }
 
-  public async handle(representation: Representation): Promise<void> {
+  public async handle(input: ValidatorArgs): Promise<Representation> {
     // If the data already is quads format we know it's RDF
-    if (representation.metadata.contentType === INTERNAL_QUADS) {
-      return;
+    if (input.representation.metadata.contentType === INTERNAL_QUADS) {
+      return input.representation;
     }
-    const identifier = { path: representation.metadata.identifier.value };
     const preferences = { type: { [INTERNAL_QUADS]: 1 }};
     let result;
     try {
       // Creating new representation since converter might edit metadata
-      const tempRepresentation = await cloneRepresentation(representation);
+      const tempRepresentation = await cloneRepresentation(input.representation);
       result = await this.converter.handleSafe({
-        identifier,
+        identifier: input.identifier,
         representation: tempRepresentation,
         preferences,
       });
     } catch (error: unknown) {
-      representation.data.destroy();
+      input.representation.data.destroy();
       throw error;
     }
     // Drain stream to make sure data was parsed correctly
     await arrayifyStream(result.data);
+
+    return input.representation;
   }
 }

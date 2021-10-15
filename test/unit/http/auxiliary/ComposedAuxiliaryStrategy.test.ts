@@ -61,10 +61,10 @@ describe('A ComposedAuxiliaryStrategy', (): void => {
   });
 
   it('validates data through the Validator.', async(): Promise<void> => {
-    const representation = { data: 'data!' } as any;
+    const representation = { data: 'data!', metadata: { identifier: { value: 'any' }}} as any;
     await expect(strategy.validate(representation)).resolves.toBeUndefined();
     expect(validator.handleSafe).toHaveBeenCalledTimes(1);
-    expect(validator.handleSafe).toHaveBeenLastCalledWith(representation);
+    expect(validator.handleSafe).toHaveBeenLastCalledWith({ representation, identifier: { path: 'any' }});
   });
 
   it('defaults isRequiredInRoot to false.', async(): Promise<void> => {

@@ -1,35 +1,39 @@
 import type { Readable } from 'stream';
 import { PassThrough } from 'stream';
+import type { ValidatorArgs } from '../../../../src/http/auxiliary/Validator';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { QuotaStrategy } from '../../../../src/storage/quota/QuotaStrategy';
 import type { Size } from '../../../../src/storage/size-reporter/Size';
-import type { DataValidatorInput } from '../../../../src/storage/validators/DataValidator';
-import { QuotaDataValidator } from '../../../../src/storage/validators/QuotaDataValidator';
+import { QuotaValidator } from '../../../../src/storage/validators/QuotaValidator';
 import { guardStream } from '../../../../src/util/GuardedStream';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 
-describe('QuotaDataValidator', (): void => {
+describe('QuotaValidator', (): void => {
   let mockedStrategy: QuotaStrategy;
-  let validator: QuotaDataValidator;
+  let validator: QuotaValidator;
   let identifier: ResourceIdentifier;
   let mockMetadata: RepresentationMetadata;
   let mockData: Guarded<Readable>;
-  let mockInput: DataValidatorInput;
+  let mockInput: ValidatorArgs;
 
   beforeEach((): void => {
     jest.clearAllMocks();
     identifier = { path: 'http://localhost/' };
     mockMetadata = new RepresentationMetadata();
     mockData = guardedStreamFrom([ 'test string' ]);
-    mockInput = { identifier, data: mockData, metadata: mockMetadata };
+    mockInput = {
+      representation: new BasicRepresentation(mockData, mockMetadata),
+      identifier,
+    };
     mockedStrategy = {
       getAvailableSpace: async(): Promise<Size> => ({ unit: 'bytes', amount: 10 }),
       estimateSize: async(): Promise<Size> => ({ unit: 'bytes', amount: 8 }),
       trackAvailableSpace: async(): Promise<Guarded<PassThrough>> => guardStream(new PassThrough()),
     };
-    validator = new QuotaDataValidator(mockedStrategy);
+    validator = new QuotaValidator(mockedStrategy);
   });
 
   describe('constructor()', (): void => {
@@ -48,12 +52,13 @@ describe('QuotaDataValidator', (): void => {
       const awaitedResult = await result;
 
       const prom = new Promise<void>((resolve, reject): void => {
-        awaitedResult.on('error', (): void => resolve());
-        awaitedResult.on('end', (): void => reject(new Error('reject')));
+        awaitedResult.data.on('error', (): void => resolve());
+        awaitedResult.data.on('end', (): void => reject(new Error('reject')));
       });
 
       // Consume the stream
-      await expect(readableToString(awaitedResult)).rejects.toThrow('Quota exceeded: Advertised Content-Length is');
+      await expect(readableToString(awaitedResult.data))
+        .rejects.toThrow('Quota exceeded: Advertised Content-Length is');
       await expect(prom).resolves.toBeUndefined();
     });
 
@@ -71,12 +76,12 @@ describe('QuotaDataValidator', (): void => {
       const awaitedResult = await result;
 
       const prom = new Promise<void>((resolve, reject): void => {
-        awaitedResult.on('error', (): void => resolve());
-        awaitedResult.on('end', (): void => reject(new Error('reject')));
+        awaitedResult.data.on('error', (): void => resolve());
+        awaitedResult.data.on('end', (): void => reject(new Error('reject')));
       });
 
       // Consume the stream
-      await expect(readableToString(awaitedResult)).rejects.toThrow();
+      await expect(readableToString(awaitedResult.data)).rejects.toThrow();
       expect(trackAvailableSpaceSpy).toHaveBeenCalledTimes(1);
       await expect(prom).resolves.toBeUndefined();
     });
@@ -94,12 +99,12 @@ describe('QuotaDataValidator', (): void => {
       const awaitedResult = await result;
 
       const prom = new Promise<void>((resolve, reject): void => {
-        awaitedResult.on('error', (): void => resolve());
-        awaitedResult.on('end', (): void => reject(new Error('reject')));
+        awaitedResult.data.on('error', (): void => resolve());
+        awaitedResult.data.on('end', (): void => reject(new Error('reject')));
       });
 
       // Consume the stream
-      await expect(readableToString(awaitedResult)).rejects.toThrow('Quota exceeded after write completed');
+      await expect(readableToString(awaitedResult.data)).rejects.toThrow('Quota exceeded after write completed');
       await expect(prom).resolves.toBeUndefined();
     });
 
@@ -107,7 +112,7 @@ describe('QuotaDataValidator', (): void => {
       const result = validator.handle(mockInput);
       await expect(result).resolves.toBeDefined();
       const awaitedResult = await result;
-      await expect(readableToString(awaitedResult)).resolves.toBe('test string');
+      await expect(readableToString(awaitedResult.data)).resolves.toBe('test string');
     });
   });
 });
