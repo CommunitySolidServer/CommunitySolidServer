@@ -1,1022 +1,188 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Community Solid Server - v1.1.0</title>
-	<meta name="description" content="Documentation for Community Solid Server - v1.1.0">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-	<script async src="assets/js/search.js" id="search-script"></script>
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">Community Solid Server - v1.1.0</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<h1>Community Solid Server - v1.1.0</h1>
-		</div>
-	</div>
-</header>
-<div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#community-solid-server" id="community-solid-server" style="color: inherit; text-decoration: none;">
-					<h1>Community Solid Server</h1>
-				</a>
-				<img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
-				<p><a href="https://github.com/solid/community-server/blob/main/LICENSE.md"><img src="https://img.shields.io/npm/l/@solid/community-server" alt="MIT license"></a>
-					<a href="https://www.npmjs.com/package/@solid/community-server"><img src="https://img.shields.io/npm/v/@solid/community-server" alt="npm version"></a>
-					<a href="https://www.npmjs.com/package/@solid/community-server"><img src="https://img.shields.io/node/v/@solid/community-server" alt="Node.js version"></a>
-					<a href="https://github.com/solid/community-server/actions"><img src="https://github.com/solid/community-server/workflows/CI/badge.svg" alt="Build Status"></a>
-					<a href="https://coveralls.io/github/solid/community-server"><img src="https://coveralls.io/repos/github/solid/community-server/badge.svg" alt="Coverage Status"></a>
-					<a href="https://github.com/solid/community-server/discussions"><img src="https://img.shields.io/github/discussions/solid/community-server" alt="GitHub discussions"></a>
-				<a href="https://gitter.im/solid/community-server"><img src="https://badges.gitter.im/solid/community-server.svg" alt="Chat on Gitter"></a></p>
-				<p><strong>The Community Solid Server is open software
-						that provides you with a <a href="https://solidproject.org/">Solid</a> Pod and identity.
-						This Pod acts as your own personal storage space
-				so you can share data with people and Solid applications.</strong></p>
-				<p>As an open and modular implementation of the
-					<a href="https://solid.github.io/specification/">Solid specifications</a>,
-				the Community Solid Server is a great companion:</p>
-				<ul>
-					<li><p>🧑🏽 <strong>for people</strong> who want to try out having their own Pod</p>
-					</li>
-					<li><p>👨🏿‍💻 <strong>for developers</strong> who want to create and test Solid apps</p>
-					</li>
-					<li><p>👩🏻‍🔬 <strong>for researchers</strong> who want to design new features for Solid</p>
-					</li>
-				</ul>
-				<p>And, of course, for many others who like to experience Solid.</p>
-				<p>You can install the software locally or on your server
-				and get started with Solid immediately.</p>
-				<a href="#⚡-running-the-server" id="⚡-running-the-server" style="color: inherit; text-decoration: none;">
-					<h2>⚡ Running the server</h2>
-				</a>
-				<p>To run the server, you will need <a href="https://nodejs.org/en/">Node.js</a>.
-					We support versions 12.7 and up.
-					<br>
-					If you do not use Node.js,
-				you can run a <a href="https://www.docker.com/">Docker</a> version instead.</p>
-				<a href="#💻-installing-and-running-locally" id="💻-installing-and-running-locally" style="color: inherit; text-decoration: none;">
-					<h3>💻 Installing and running locally</h3>
-				</a>
-				<p>After installing Node.js,
-					install the latest server version
-				from the <a href="https://www.npmjs.com/">npm package repository</a>:</p>
-				<pre><code class="language-shell"><span style="color: #000000">npm install -g @solid/community-server</span>
+<!DOCTYPE html><html class="default no-js"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Community Solid Server - v2.0.0</title><meta name="description" content="Documentation for Community Solid Server - v2.0.0"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">Community Solid Server - v2.0.0</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>Community Solid Server - v2.0.0</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#community-solid-server" id="community-solid-server" style="color: inherit; text-decoration: none;">
+  <h1>Community Solid Server</h1>
+</a>
+<img src="https://raw.githubusercontent.com/solid/community-server/main/templates/images/solid.svg" alt="[Solid logo]" height="150" align="right"/>
+
+<p><a href="https://github.com/solid/community-server/blob/main/LICENSE.md"><img src="https://img.shields.io/npm/l/@solid/community-server" alt="MIT license"></a>
+<a href="https://www.npmjs.com/package/@solid/community-server"><img src="https://img.shields.io/npm/v/@solid/community-server" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/@solid/community-server"><img src="https://img.shields.io/node/v/@solid/community-server" alt="Node.js version"></a>
+<a href="https://github.com/solid/community-server/actions"><img src="https://github.com/solid/community-server/workflows/CI/badge.svg" alt="Build Status"></a>
+<a href="https://coveralls.io/github/solid/community-server"><img src="https://coveralls.io/repos/github/solid/community-server/badge.svg" alt="Coverage Status"></a>
+<a href="https://github.com/solid/community-server/discussions"><img src="https://img.shields.io/github/discussions/solid/community-server" alt="GitHub discussions"></a>
+<a href="https://gitter.im/solid/community-server"><img src="https://badges.gitter.im/solid/community-server.svg" alt="Chat on Gitter"></a></p>
+<p><strong>The Community Solid Server is open software
+that provides you with a <a href="https://solidproject.org/">Solid</a> Pod and identity.
+This Pod acts as your own personal storage space
+so you can share data with people and Solid applications.</strong></p>
+<p>As an open and modular implementation of the
+<a href="https://solid.github.io/specification/">Solid specifications</a>,
+the Community Solid Server is a great companion:</p>
+<ul>
+<li><p>🧑🏽 <strong>for people</strong> who want to try out having their own Pod</p>
+</li>
+<li><p>👨🏿‍💻 <strong>for developers</strong> who want to create and test Solid apps</p>
+</li>
+<li><p>👩🏻‍🔬 <strong>for researchers</strong> who want to design new features for Solid</p>
+</li>
+</ul>
+<p>And, of course, for many others who like to experience Solid.</p>
+<p>You can install the software locally or on your server
+and get started with Solid immediately.</p>
+
+<a href="#⚡-running-the-server" id="⚡-running-the-server" style="color: inherit; text-decoration: none;">
+  <h2>⚡ Running the server</h2>
+</a>
+<p>To run the server, you will need <a href="https://nodejs.org/en/">Node.js</a>.
+We support versions 12.7 and up.
+<br>
+If you do not use Node.js,
+you can run a <a href="https://www.docker.com/">Docker</a> version instead.</p>
+
+<a href="#💻-installing-and-running-locally" id="💻-installing-and-running-locally" style="color: inherit; text-decoration: none;">
+  <h3>💻 Installing and running locally</h3>
+</a>
+<p>After installing Node.js,
+install the latest server version
+from the <a href="https://www.npmjs.com/">npm package repository</a>:</p>
+<pre><code class="language-shell"><span class="hl-1">npm install -g @solid/community-server</span>
 </code></pre>
-				<p>To run the server with in-memory storage, use:</p>
-				<pre><code class="language-shell"><span style="color: #000000">community-solid-server </span><span style="color: #008000"># add parameters if needed</span>
+<p>To run the server with in-memory storage, use:</p>
+<pre><code class="language-shell"><span class="hl-1">community-solid-server </span><span class="hl-7"># add parameters if needed</span>
 </code></pre>
-				<p>To run the server with your current folder as storage, use:</p>
-				<pre><code class="language-shell"><span style="color: #000000">community-solid-server -c @css:config/file.json</span>
+<p>To run the server with your current folder as storage, use:</p>
+<pre><code class="language-shell"><span class="hl-1">community-solid-server -c @css:config/file.json</span>
 </code></pre>
-				<a href="#📃-installing-and-running-from-source" id="📃-installing-and-running-from-source" style="color: inherit; text-decoration: none;">
-					<h3>📃 Installing and running from source</h3>
-				</a>
-				<p>If you rather prefer to run the latest source code version,
-					or if you want to try a specific <a href="https://www.npmjs.com/">branch</a> of the code,
-				you can use:</p>
-				<pre><code class="language-shell"><span style="color: #000000">git clone https://github.com/solid/community-server.git</span>
-<span style="color: #795E26">cd</span><span style="color: #000000"> community-server</span>
-<span style="color: #000000">npm ci</span>
-<span style="color: #000000">npm start -- </span><span style="color: #008000"># add parameters if needed</span>
+
+<a href="#📃-installing-and-running-from-source" id="📃-installing-and-running-from-source" style="color: inherit; text-decoration: none;">
+  <h3>📃 Installing and running from source</h3>
+</a>
+<p>If you rather prefer to run the latest source code version,
+or if you want to try a specific <a href="https://www.npmjs.com/">branch</a> of the code,
+you can use:</p>
+<pre><code class="language-shell"><span class="hl-1">git clone https://github.com/solid/community-server.git</span><br/><span class="hl-4">cd</span><span class="hl-1"> community-server</span><br/><span class="hl-1">npm ci</span><br/><span class="hl-1">npm start -- </span><span class="hl-7"># add parameters if needed</span>
 </code></pre>
-				<a href="#📦-running-via-docker" id="📦-running-via-docker" style="color: inherit; text-decoration: none;">
-					<h3>📦 Running via Docker</h3>
-				</a>
-				<p>Docker allows you to run the server without having Node.js installed:</p>
-				<pre><code class="language-shell"><span style="color: #000000">git clone https://github.com/solid/community-server.git</span>
-<span style="color: #795E26">cd</span><span style="color: #000000"> community-server</span>
-<span style="color: #008000"># Build the Docker image</span>
-<span style="color: #000000">docker build --rm -f Dockerfile -t css:latest </span><span style="color: #795E26">.</span>
-<span style="color: #008000"># Run the image, serving your `~/Solid` directory on `http://localhost:3000`</span>
-<span style="color: #000000">docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest</span>
-<span style="color: #008000"># Or use one of the built-in configurations</span>
-<span style="color: #000000">docker run --rm -p 3000:3000 -it css:latest -c config/default.json</span>
-<span style="color: #008000"># Or use your own configuration mapped to the right directory</span>
-<span style="color: #000000">docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json</span>
+
+<a href="#📦-running-via-docker" id="📦-running-via-docker" style="color: inherit; text-decoration: none;">
+  <h3>📦 Running via Docker</h3>
+</a>
+<p>Docker allows you to run the server without having Node.js installed:</p>
+<pre><code class="language-shell"><span class="hl-1">git clone https://github.com/solid/community-server.git</span><br/><span class="hl-4">cd</span><span class="hl-1"> community-server</span><br/><span class="hl-7"># Build the Docker image</span><br/><span class="hl-1">docker build --rm -f Dockerfile -t css:latest </span><span class="hl-4">.</span><br/><span class="hl-7"># Run the image, serving your `~/Solid` directory on `http://localhost:3000`</span><br/><span class="hl-1">docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest</span><br/><span class="hl-7"># Or use one of the built-in configurations</span><br/><span class="hl-1">docker run --rm -p 3000:3000 -it css:latest -c config/default.json</span><br/><span class="hl-7"># Or use your own configuration mapped to the right directory</span><br/><span class="hl-1">docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json</span>
 </code></pre>
-				<a href="#🔧-configuring-the-server" id="🔧-configuring-the-server" style="color: inherit; text-decoration: none;">
-					<h2>🔧 Configuring the server</h2>
-				</a>
-				<p>The Community Solid Server is designed to be flexible
-					such that people can easily run different configurations.
-					This is useful for customizing the server with plugins,
-					testing applications in different setups,
-					or developing new parts for the server
-				without needing to change its base code.</p>
-				<a href="#⏱️-parameters" id="⏱️-parameters" style="color: inherit; text-decoration: none;">
-					<h3>⏱️ Parameters</h3>
-				</a>
-				<p>An easy way to customize the server is
-					by passing parameters to the server command.
-					These parameters give you direct access
-				to some commonly used settings:</p>
-				<table>
-					<thead>
-						<tr>
-							<th>parameter name</th>
-							<th>default value</th>
-							<th>description</th>
-						</tr>
-					</thead>
-					<tbody><tr>
-							<td><code>--port, -p</code></td>
-							<td><code>3000</code></td>
-							<td>The TCP port on which the server runs.</td>
-						</tr>
-						<tr>
-							<td><code>--baseUrl. -b</code></td>
-							<td><code>http://localhost:$PORT/</code></td>
-							<td>The public URL of your server.</td>
-						</tr>
-						<tr>
-							<td><code>--loggingLevel, -l</code></td>
-							<td><code>info</code></td>
-							<td>The detail level of logging; useful for debugging problems.</td>
-						</tr>
-						<tr>
-							<td><code>--config, -c</code></td>
-							<td><code>@css:config/default.json</code></td>
-							<td>The configuration for the server. The default only stores data in memory; to persist to your filesystem, use <code>@css:config/file.json</code></td>
-						</tr>
-						<tr>
-							<td><code>--rootFilePath, -f</code></td>
-							<td><code>./</code></td>
-							<td>Root folder of the server, when using a file-based configuration.</td>
-						</tr>
-						<tr>
-							<td><code>--sparqlEndpoint, -s</code></td>
-							<td></td>
-							<td>URL of the SPARQL endpoint, when using a quadstore-based configuration.</td>
-						</tr>
-						<tr>
-							<td><code>--showStackTrace, -t</code></td>
-							<td>false</td>
-							<td>Enables detailed logging on error pages.</td>
-						</tr>
-						<tr>
-							<td><code>--podConfigJson</code></td>
-							<td><code>./pod-config.json</code></td>
-							<td>Path to the file that keeps track of dynamic Pod configurations.</td>
-						</tr>
-						<tr>
-							<td><code>--mainModulePath, -m</code></td>
-							<td></td>
-							<td>Path from where Components.js will start its lookup when initializing configurations.</td>
-						</tr>
-				</tbody></table>
-				<a href="#🧶-custom-configurations" id="🧶-custom-configurations" style="color: inherit; text-decoration: none;">
-					<h3>🧶 Custom configurations</h3>
-				</a>
-				<p>More substantial changes to server behavior can be achieved
-					by writing new configuration files in JSON-LD.
-					The Community Solid Server uses <a href="https://componentsjs.readthedocs.io/en/latest/">Components.js</a>
-				to specify how modules and components need to be wired together at runtime.</p>
-				<p>Examples and guidance on configurations
-				are available in the <a href="https://github.com/solid/community-server/tree/main/config"><code>config</code> folder</a>.</p>
-				<p>Recipes for configuring the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
-				<a href="#👩🏽💻-developing-server-code" id="👩🏽💻-developing-server-code" style="color: inherit; text-decoration: none;">
-					<h2>👩🏽‍💻 Developing server code</h2>
-				</a>
-				<p>The server allows writing and plugging in custom modules
-				without altering its base source code.</p>
-				<p>The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a> and
-					the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural diagram</a>
-				can help you find your way.</p>
-				<p>If you want to help out with server development,
-					have a look at the <a href="guides/developer-notes.md">📓 developer notes</a> and
-				<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first issues</a>.</p>
-				<a href="#📜-license" id="📜-license" style="color: inherit; text-decoration: none;">
-					<h2>📜 License</h2>
-				</a>
-				<p>The Solid Community Server code
-					is copyrighted by <a href="https://inrupt.com/">Inrupt Inc.</a>
-					and <a href="https://www.imec-int.com/">imec</a>
-				and available under the <a href="https://github.com/solid/community-server/blob/main/LICENSE.md">MIT License</a>.</p>
-				<p>Core contributors are
-					<a href="https://github.com/joachimvh">Joachim Van Herwegen</a>,
-					<a href="https://github.com/RubenVerborgh">Ruben Verborgh</a>,
-					<a href="https://github.com/rubensworks">Ruben Taelman</a>,
-					and
-				<a href="https://github.com/matthieubosquet">Matthieu Bosquet</a>.</p>
-				<a href="#🎤-feedback-and-questions" id="🎤-feedback-and-questions" style="color: inherit; text-decoration: none;">
-					<h2>🎤 Feedback and questions</h2>
-				</a>
-				<p>Don&#39;t hesitate to <a href="https://github.com/solid/community-server/discussions">start a discussion</a>
-				or <a href="https://github.com/solid/community-server/issues">report a bug</a>.</p>
-				<p>Learn more about Solid at <a href="https://solidproject.org/">solidproject.org</a>.</p>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class=" ">
-						<a href="modules.html">Modules</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_bearerwebidextractor.html">authentication/<wbr>Bearer<wbr>Web<wbr>IdExtractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_credentials.html">authentication/<wbr>Credentials</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_credentialsextractor.html">authentication/<wbr>Credentials<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_dpopwebidextractor.html">authentication/DPoPWeb<wbr>IdExtractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_emptycredentialsextractor.html">authentication/<wbr>Empty<wbr>Credentials<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_unsecureconstantcredentialsextractor.html">authentication/<wbr>Unsecure<wbr>Constant<wbr>Credentials<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authentication_unsecurewebidextractor.html">authentication/<wbr>Unsecure<wbr>Web<wbr>IdExtractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_allowallauthorizer.html">authorization/<wbr>Allow<wbr>All<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_authorization.html">authorization/<wbr>Authorization</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_authorizer.html">authorization/<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_auxiliaryauthorizer.html">authorization/<wbr>Auxiliary<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_denyallauthorizer.html">authorization/<wbr>Deny<wbr>All<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_pathbasedauthorizer.html">authorization/<wbr>Path<wbr>Based<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_webaclauthorization.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorization</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/authorization_webaclauthorizer.html">authorization/<wbr>Web<wbr>Acl<wbr>Authorizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_identityproviderhttphandler.html">identity/<wbr>Identity<wbr>Provider<wbr>Http<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_configuration_identityproviderfactory.html">identity/configuration/<wbr>Identity<wbr>Provider<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_configuration_providerfactory.html">identity/configuration/<wbr>Provider<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_sessionhttphandler.html">identity/interaction/<wbr>Session<wbr>Http<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_emailpasswordutil.html">identity/interaction/email-<wbr>password/<wbr>Email<wbr>Password<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_forgotpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Forgot<wbr>Password<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_interactionhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Interaction<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_loginhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Login<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_registrationhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Registration<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_handler_resetpasswordhandler.html">identity/interaction/email-<wbr>password/handler/<wbr>Reset<wbr>Password<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_storage_accountstore.html">identity/interaction/email-<wbr>password/storage/<wbr>Account<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_email_password_storage_baseaccountstore.html">identity/interaction/email-<wbr>password/storage/<wbr>Base<wbr>Account<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_baseemailsender.html">identity/interaction/util/<wbr>Base<wbr>Email<wbr>Sender</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_emailsender.html">identity/interaction/util/<wbr>Email<wbr>Sender</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_formdatautil.html">identity/interaction/util/<wbr>Form<wbr>Data<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_idpinteractionerror.html">identity/interaction/util/<wbr>Idp<wbr>Interaction<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_interaction_util_interactioncompleter.html">identity/interaction/util/<wbr>Interaction<wbr>Completer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_ownership_nocheckownershipvalidator.html">identity/ownership/<wbr>NoCheck<wbr>Ownership<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_ownership_ownershipvalidator.html">identity/ownership/<wbr>Ownership<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_ownership_tokenownershipvalidator.html">identity/ownership/<wbr>Token<wbr>Ownership<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_storage_adapterfactory.html">identity/storage/<wbr>Adapter<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_storage_expiringadapterfactory.html">identity/storage/<wbr>Expiring<wbr>Adapter<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/identity_storage_webidadapterfactory.html">identity/storage/<wbr>Web<wbr>IdAdapter<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/index.html">index</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_app.html">init/<wbr>App</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_apprunner.html">init/<wbr>App<wbr>Runner</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_configpodinitializer.html">init/<wbr>Config<wbr>Pod<wbr>Initializer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_initializer.html">init/<wbr>Initializer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_loggerinitializer.html">init/<wbr>Logger<wbr>Initializer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_rootinitializer.html">init/<wbr>Root<wbr>Initializer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_serverinitializer.html">init/<wbr>Server<wbr>Initializer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_final_finalizable.html">init/final/<wbr>Finalizable</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/init_final_parallelfinalizer.html">init/final/<wbr>Parallel<wbr>Finalizer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_authenticatedldphandler.html">ldp/<wbr>Authenticated<wbr>Ldp<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_unsecurewebsocketsprotocol.html">ldp/<wbr>Unsecure<wbr>Web<wbr>Sockets<wbr>Protocol</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_auxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_auxiliarystrategy.html">ldp/auxiliary/<wbr>Auxiliary<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_composedauxiliarystrategy.html">ldp/auxiliary/<wbr>Composed<wbr>Auxiliary<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_linkmetadatagenerator.html">ldp/auxiliary/<wbr>Link<wbr>Metadata<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_metadatagenerator.html">ldp/auxiliary/<wbr>Metadata<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_rdfvalidator.html">ldp/auxiliary/<wbr>Rdf<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_routingauxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Routing<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_routingauxiliarystrategy.html">ldp/auxiliary/<wbr>Routing<wbr>Auxiliary<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_suffixauxiliaryidentifierstrategy.html">ldp/auxiliary/<wbr>Suffix<wbr>Auxiliary<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_auxiliary_validator.html">ldp/auxiliary/<wbr>Validator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_acceptpreferenceparser.html">ldp/http/<wbr>Accept<wbr>Preference<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_basicrequestparser.html">ldp/http/<wbr>Basic<wbr>Request<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_basicresponsewriter.html">ldp/http/<wbr>Basic<wbr>Response<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_bodyparser.html">ldp/http/<wbr>Body<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_convertingerrorhandler.html">ldp/http/<wbr>Converting<wbr>Error<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_errorhandler.html">ldp/http/<wbr>Error<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_originalurlextractor.html">ldp/http/<wbr>Original<wbr>Url<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_patch.html">ldp/http/<wbr>Patch</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_preferenceparser.html">ldp/http/<wbr>Preference<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_rawbodyparser.html">ldp/http/<wbr>Raw<wbr>Body<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_requestparser.html">ldp/http/<wbr>Request<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_responsewriter.html">ldp/http/<wbr>Response<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_safeerrorhandler.html">ldp/http/<wbr>Safe<wbr>Error<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_sparqlupdatebodyparser.html">ldp/http/<wbr>Sparql<wbr>Update<wbr>Body<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_sparqlupdatepatch.html">ldp/http/<wbr>Sparql<wbr>Update<wbr>Patch</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_targetextractor.html">ldp/http/<wbr>Target<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_constantmetadatawriter.html">ldp/http/metadata/<wbr>Constant<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_contenttypeparser.html">ldp/http/metadata/<wbr>Content<wbr>Type<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_linkrelmetadatawriter.html">ldp/http/metadata/<wbr>Link<wbr>Rel<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_linktypeparser.html">ldp/http/metadata/<wbr>Link<wbr>Type<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_mappedmetadatawriter.html">ldp/http/metadata/<wbr>Mapped<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_metadataparser.html">ldp/http/metadata/<wbr>Metadata<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_metadatawriter.html">ldp/http/metadata/<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_slugparser.html">ldp/http/metadata/<wbr>Slug<wbr>Parser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_wacallowmetadatawriter.html">ldp/http/metadata/<wbr>Wac<wbr>Allow<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_metadata_wwwauthmetadatawriter.html">ldp/http/metadata/<wbr>Www<wbr>Auth<wbr>Metadata<wbr>Writer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_response_createdresponsedescription.html">ldp/http/response/<wbr>Created<wbr>Response<wbr>Description</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_response_okresponsedescription.html">ldp/http/response/<wbr>OkResponse<wbr>Description</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_response_resetresponsedescription.html">ldp/http/response/<wbr>Reset<wbr>Response<wbr>Description</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_http_response_responsedescription.html">ldp/http/response/<wbr>Response<wbr>Description</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_deleteoperationhandler.html">ldp/operations/<wbr>Delete<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_getoperationhandler.html">ldp/operations/<wbr>Get<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_headoperationhandler.html">ldp/operations/<wbr>Head<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_operation.html">ldp/operations/<wbr>Operation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_operationhandler.html">ldp/operations/<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_patchoperationhandler.html">ldp/operations/<wbr>Patch<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_postoperationhandler.html">ldp/operations/<wbr>Post<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_operations_putoperationhandler.html">ldp/operations/<wbr>Put<wbr>Operation<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_permissions_aclpermissionsextractor.html">ldp/permissions/<wbr>Acl<wbr>Permissions<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_permissions_methodpermissionsextractor.html">ldp/permissions/<wbr>Method<wbr>Permissions<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_permissions_permissionset.html">ldp/permissions/<wbr>Permission<wbr>Set</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_permissions_permissionsextractor.html">ldp/permissions/<wbr>Permissions<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_permissions_sparqlpatchpermissionsextractor.html">ldp/permissions/<wbr>Sparql<wbr>Patch<wbr>Permissions<wbr>Extractor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_representation_basicrepresentation.html">ldp/representation/<wbr>Basic<wbr>Representation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_representation_representation.html">ldp/representation/<wbr>Representation</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_representation_representationmetadata.html">ldp/representation/<wbr>Representation<wbr>Metadata</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_representation_representationpreferences.html">ldp/representation/<wbr>Representation<wbr>Preferences</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/ldp_representation_resourceidentifier.html">ldp/representation/<wbr>Resource<wbr>Identifier</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_lazylogger.html">logging/<wbr>Lazy<wbr>Logger</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_lazyloggerfactory.html">logging/<wbr>Lazy<wbr>Logger<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_loglevel.html">logging/<wbr>Log<wbr>Level</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_logutil.html">logging/<wbr>Log<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_logger.html">logging/<wbr>Logger</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_loggerfactory.html">logging/<wbr>Logger<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_voidlogger.html">logging/<wbr>Void<wbr>Logger</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_voidloggerfactory.html">logging/<wbr>Void<wbr>Logger<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_winstonlogger.html">logging/<wbr>Winston<wbr>Logger</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/logging_winstonloggerfactory.html">logging/<wbr>Winston<wbr>Logger<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_configpodmanager.html">pods/<wbr>Config<wbr>Pod<wbr>Manager</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generatedpodmanager.html">pods/<wbr>Generated<wbr>Pod<wbr>Manager</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_podmanager.html">pods/<wbr>Pod<wbr>Manager</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_basecomponentsjsfactory.html">pods/generate/<wbr>Base<wbr>Components<wbr>JsFactory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_componentsjsfactory.html">pods/generate/<wbr>Components<wbr>JsFactory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_generateutil.html">pods/generate/<wbr>Generate<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_identifiergenerator.html">pods/generate/<wbr>Identifier<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_podgenerator.html">pods/generate/<wbr>Pod<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_resourcesgenerator.html">pods/generate/<wbr>Resources<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_subdomainidentifiergenerator.html">pods/generate/<wbr>Subdomain<wbr>Identifier<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_suffixidentifiergenerator.html">pods/generate/<wbr>Suffix<wbr>Identifier<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_templatedpodgenerator.html">pods/generate/<wbr>Templated<wbr>Pod<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_templatedresourcesgenerator.html">pods/generate/<wbr>Templated<wbr>Resources<wbr>Generator</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_variables_baseurlhandler.html">pods/generate/variables/<wbr>Base<wbr>Url<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_variables_rootfilepathhandler.html">pods/generate/variables/<wbr>Root<wbr>File<wbr>Path<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_variables_variablehandler.html">pods/generate/variables/<wbr>Variable<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_variables_variablesetter.html">pods/generate/variables/<wbr>Variable<wbr>Setter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_generate_variables_variables.html">pods/generate/variables/<wbr>Variables</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/pods_settings_podsettings.html">pods/settings/<wbr>Pod<wbr>Settings</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_basehttpserverfactory.html">server/<wbr>Base<wbr>Http<wbr>Server<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_httphandler.html">server/<wbr>Http<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_httprequest.html">server/<wbr>Http<wbr>Request</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_httpresponse.html">server/<wbr>Http<wbr>Response</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_httpserverfactory.html">server/<wbr>Http<wbr>Server<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_websockethandler.html">server/<wbr>Web<wbr>Socket<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_websocketserverfactory.html">server/<wbr>Web<wbr>Socket<wbr>Server<wbr>Factory</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_middleware_corshandler.html">server/middleware/<wbr>Cors<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_middleware_headerhandler.html">server/middleware/<wbr>Header<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_middleware_staticassethandler.html">server/middleware/<wbr>Static<wbr>Asset<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_middleware_websocketadvertiser.html">server/middleware/<wbr>Web<wbr>Socket<wbr>Advertiser</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_util_routerhandler.html">server/util/<wbr>Router<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/server_util_templatehandler.html">server/util/<wbr>Template<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_atomicresourcestore.html">storage/<wbr>Atomic<wbr>Resource<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_baseresourcestore.html">storage/<wbr>Base<wbr>Resource<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conditions.html">storage/<wbr>Conditions</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_dataaccessorbasedstore.html">storage/<wbr>Data<wbr>Accessor<wbr>Based<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_indexrepresentationstore.html">storage/<wbr>Index<wbr>Representation<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_lockingresourcestore.html">storage/<wbr>Locking<wbr>Resource<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_monitoringstore.html">storage/<wbr>Monitoring<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_passthroughstore.html">storage/<wbr>Passthrough<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_patchingstore.html">storage/<wbr>Patching<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_readonlystore.html">storage/<wbr>Read<wbr>Only<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_representationconvertingstore.html">storage/<wbr>Representation<wbr>Converting<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_resourcestore.html">storage/<wbr>Resource<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routingresourcestore.html">storage/<wbr>Routing<wbr>Resource<wbr>Store</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_accessors_dataaccessor.html">storage/accessors/<wbr>Data<wbr>Accessor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_accessors_filedataaccessor.html">storage/accessors/<wbr>File<wbr>Data<wbr>Accessor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_accessors_inmemorydataaccessor.html">storage/accessors/<wbr>InMemory<wbr>Data<wbr>Accessor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_accessors_sparqldataaccessor.html">storage/accessors/<wbr>Sparql<wbr>Data<wbr>Accessor</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_chainedconverter.html">storage/conversion/<wbr>Chained<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_constantconverter.html">storage/conversion/<wbr>Constant<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_containertotemplateconverter.html">storage/conversion/<wbr>Container<wbr>ToTemplate<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_contenttypereplacer.html">storage/conversion/<wbr>Content<wbr>Type<wbr>Replacer</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_conversionutil.html">storage/conversion/<wbr>Conversion<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_errortoquadconverter.html">storage/conversion/<wbr>Error<wbr>ToQuad<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_errortotemplateconverter.html">storage/conversion/<wbr>Error<wbr>ToTemplate<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_ifneededconverter.html">storage/conversion/<wbr>IfNeeded<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_markdowntohtmlconverter.html">storage/conversion/<wbr>Markdown<wbr>ToHtml<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_passthroughconverter.html">storage/conversion/<wbr>Passthrough<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_quadtordfconverter.html">storage/conversion/<wbr>Quad<wbr>ToRdf<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_rdftoquadconverter.html">storage/conversion/<wbr>Rdf<wbr>ToQuad<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_representationconverter.html">storage/conversion/<wbr>Representation<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_conversion_typedrepresentationconverter.html">storage/conversion/<wbr>Typed<wbr>Representation<wbr>Converter</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_expiringstorage.html">storage/keyvalue/<wbr>Expiring<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_jsonfilestorage.html">storage/keyvalue/<wbr>Json<wbr>File<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_jsonresourcestorage.html">storage/keyvalue/<wbr>Json<wbr>Resource<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_keyvaluestorage.html">storage/keyvalue/<wbr>Key<wbr>Value<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_memorymapstorage.html">storage/keyvalue/<wbr>Memory<wbr>Map<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_keyvalue_wrappedexpiringstorage.html">storage/keyvalue/<wbr>Wrapped<wbr>Expiring<wbr>Storage</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_basefileidentifiermapper.html">storage/mapping/<wbr>Base<wbr>File<wbr>Identifier<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_extensionbasedmapper.html">storage/mapping/<wbr>Extension<wbr>Based<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_fileidentifiermapper.html">storage/mapping/<wbr>File<wbr>Identifier<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_fixedcontenttypemapper.html">storage/mapping/<wbr>Fixed<wbr>Content<wbr>Type<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_mapping_subdomainextensionbasedmapper.html">storage/mapping/<wbr>Subdomain<wbr>Extension<wbr>Based<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_patch_convertingpatchhandler.html">storage/patch/<wbr>Converting<wbr>Patch<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_patch_patchhandler.html">storage/patch/<wbr>Patch<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_patch_sparqlupdatepatchhandler.html">storage/patch/<wbr>Sparql<wbr>Update<wbr>Patch<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routing_baseurlrouterrule.html">storage/routing/<wbr>Base<wbr>Url<wbr>Router<wbr>Rule</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routing_convertingrouterrule.html">storage/routing/<wbr>Converting<wbr>Router<wbr>Rule</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routing_preferencesupport.html">storage/routing/<wbr>Preference<wbr>Support</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routing_regexrouterrule.html">storage/routing/<wbr>Regex<wbr>Router<wbr>Rule</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/storage_routing_routerrule.html">storage/routing/<wbr>Router<wbr>Rule</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_contenttypes.html">util/<wbr>Content<wbr>Types</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_fetchutil.html">util/<wbr>Fetch<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_guardedstream.html">util/<wbr>Guarded<wbr>Stream</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_headerutil.html">util/<wbr>Header<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_pathutil.html">util/<wbr>Path<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_quadutil.html">util/<wbr>Quad<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_recordobject.html">util/<wbr>Record<wbr>Object</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_resourceutil.html">util/<wbr>Resource<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_streamutil.html">util/<wbr>Stream<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_termutil.html">util/<wbr>Term<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_vocabularies.html">util/<wbr>Vocabularies</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_badrequesthttperror.html">util/errors/<wbr>Bad<wbr>Request<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_conflicthttperror.html">util/errors/<wbr>Conflict<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_errorutil.html">util/errors/<wbr>Error<wbr>Util</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_forbiddenhttperror.html">util/errors/<wbr>Forbidden<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_httperror.html">util/errors/<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_internalservererror.html">util/errors/<wbr>Internal<wbr>Server<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_methodnotallowedhttperror.html">util/errors/<wbr>Method<wbr>Not<wbr>Allowed<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_notfoundhttperror.html">util/errors/<wbr>Not<wbr>Found<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_notimplementedhttperror.html">util/errors/<wbr>Not<wbr>Implemented<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_systemerror.html">util/errors/<wbr>System<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_unauthorizedhttperror.html">util/errors/<wbr>Unauthorized<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_errors_unsupportedmediatypehttperror.html">util/errors/<wbr>Unsupported<wbr>Media<wbr>Type<wbr>Http<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_handlers_asynchandler.html">util/handlers/<wbr>Async<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_handlers_parallelhandler.html">util/handlers/<wbr>Parallel<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_handlers_sequencehandler.html">util/handlers/<wbr>Sequence<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_handlers_unsupportedasynchandler.html">util/handlers/<wbr>Unsupported<wbr>Async<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_handlers_waterfallhandler.html">util/handlers/<wbr>Waterfall<wbr>Handler</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_identifiers_baseidentifierstrategy.html">util/identifiers/<wbr>Base<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_identifiers_identifierstrategy.html">util/identifiers/<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_identifiers_singlerootidentifierstrategy.html">util/identifiers/<wbr>Single<wbr>Root<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_identifiers_subdomainidentifierstrategy.html">util/identifiers/<wbr>Subdomain<wbr>Identifier<wbr>Strategy</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_equalreadwritelocker.html">util/locking/<wbr>Equal<wbr>Read<wbr>Write<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_expiringreadwritelocker.html">util/locking/<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_greedyreadwritelocker.html">util/locking/<wbr>Greedy<wbr>Read<wbr>Write<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_readwritelocker.html">util/locking/<wbr>Read<wbr>Write<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_redisresourcelocker.html">util/locking/<wbr>Redis<wbr>Resource<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_resourcelocker.html">util/locking/<wbr>Resource<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_singlethreadedresourcelocker.html">util/locking/<wbr>Single<wbr>Threaded<wbr>Resource<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_locking_wrappedexpiringreadwritelocker.html">util/locking/<wbr>Wrapped<wbr>Expiring<wbr>Read<wbr>Write<wbr>Locker</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_templates_chainedtemplateengine.html">util/templates/<wbr>Chained<wbr>Template<wbr>Engine</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_templates_ejstemplateengine.html">util/templates/<wbr>Ejs<wbr>Template<wbr>Engine</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_templates_handlebarstemplateengine.html">util/templates/<wbr>Handlebars<wbr>Template<wbr>Engine</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/util_templates_templateengine.html">util/templates/<wbr>Template<wbr>Engine</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer>
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-</body>
-</html>
+
+<a href="#🔧-configuring-the-server" id="🔧-configuring-the-server" style="color: inherit; text-decoration: none;">
+  <h2>🔧 Configuring the server</h2>
+</a>
+<p>The Community Solid Server is designed to be flexible
+such that people can easily run different configurations.
+This is useful for customizing the server with plugins,
+testing applications in different setups,
+or developing new parts for the server
+without needing to change its base code.</p>
+
+<a href="#⏱️-parameters" id="⏱️-parameters" style="color: inherit; text-decoration: none;">
+  <h3>⏱️ Parameters</h3>
+</a>
+<p>An easy way to customize the server is
+by passing parameters to the server command.
+These parameters give you direct access
+to some commonly used settings:</p>
+<table>
+<thead>
+<tr>
+<th>parameter name</th>
+<th>default value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--port, -p</code></td>
+<td><code>3000</code></td>
+<td>The TCP port on which the server runs.</td>
+</tr>
+<tr>
+<td><code>--baseUrl. -b</code></td>
+<td><code>http://localhost:$PORT/</code></td>
+<td>The public URL of your server.</td>
+</tr>
+<tr>
+<td><code>--loggingLevel, -l</code></td>
+<td><code>info</code></td>
+<td>The detail level of logging; useful for debugging problems.</td>
+</tr>
+<tr>
+<td><code>--config, -c</code></td>
+<td><code>@css:config/default.json</code></td>
+<td>The configuration for the server. The default only stores data in memory; to persist to your filesystem, use <code>@css:config/file.json</code></td>
+</tr>
+<tr>
+<td><code>--rootFilePath, -f</code></td>
+<td><code>./</code></td>
+<td>Root folder of the server, when using a file-based configuration.</td>
+</tr>
+<tr>
+<td><code>--sparqlEndpoint, -s</code></td>
+<td></td>
+<td>URL of the SPARQL endpoint, when using a quadstore-based configuration.</td>
+</tr>
+<tr>
+<td><code>--showStackTrace, -t</code></td>
+<td>false</td>
+<td>Enables detailed logging on error pages.</td>
+</tr>
+<tr>
+<td><code>--podConfigJson</code></td>
+<td><code>./pod-config.json</code></td>
+<td>Path to the file that keeps track of dynamic Pod configurations.</td>
+</tr>
+<tr>
+<td><code>--mainModulePath, -m</code></td>
+<td></td>
+<td>Path from where Components.js will start its lookup when initializing configurations.</td>
+</tr>
+</tbody></table>
+
+<a href="#🧶-custom-configurations" id="🧶-custom-configurations" style="color: inherit; text-decoration: none;">
+  <h3>🧶 Custom configurations</h3>
+</a>
+<p>More substantial changes to server behavior can be achieved
+by writing new configuration files in JSON-LD.
+The Community Solid Server uses <a href="https://componentsjs.readthedocs.io/en/latest/">Components.js</a>
+to specify how modules and components need to be wired together at runtime.</p>
+<p>Examples and guidance on configurations
+are available in the <a href="https://github.com/solid/community-server/tree/main/config"><code>config</code> folder</a>.</p>
+<p>Recipes for configuring the server can be found at <a href="https://github.com/solid/community-server-recipes">solid/community-server-recipes</a>.</p>
+
+<a href="#👩🏽💻-developing-server-code" id="👩🏽💻-developing-server-code" style="color: inherit; text-decoration: none;">
+  <h2>👩🏽‍💻 Developing server code</h2>
+</a>
+<p>The server allows writing and plugging in custom modules
+without altering its base source code.</p>
+<p>The <a href="https://solid.github.io/community-server/docs/">📗 API documentation</a> and
+the <a href="https://rubenverborgh.github.io/solid-server-architecture/solid-architecture-v1-3-0.pdf">📐 architectural diagram</a>
+can help you find your way.</p>
+<p>If you want to help out with server development,
+have a look at the <a href="guides/developer-notes.md">📓 developer notes</a> and
+<a href="https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">🛠️ good first issues</a>.</p>
+
+<a href="#📜-license" id="📜-license" style="color: inherit; text-decoration: none;">
+  <h2>📜 License</h2>
+</a>
+<p>The Solid Community Server code
+is copyrighted by <a href="https://inrupt.com/">Inrupt Inc.</a>
+and <a href="https://www.imec-int.com/">imec</a>
+and available under the <a href="https://github.com/solid/community-server/blob/main/LICENSE.md">MIT License</a>.</p>
+<p>Core contributors are
+<a href="https://github.com/joachimvh">Joachim Van Herwegen</a>,
+<a href="https://github.com/RubenVerborgh">Ruben Verborgh</a>,
+<a href="https://github.com/rubensworks">Ruben Taelman</a>,
+and
+<a href="https://github.com/matthieubosquet">Matthieu Bosquet</a>.</p>
+
+<a href="#🎤-feedback-and-questions" id="🎤-feedback-and-questions" style="color: inherit; text-decoration: none;">
+  <h2>🎤 Feedback and questions</h2>
+</a>
+<p>Don&#39;t hesitate to <a href="https://github.com/solid/community-server/discussions">start a discussion</a>
+or <a href="https://github.com/solid/community-server/issues">report a bug</a>.</p>
+<p>Learn more about Solid at <a href="https://solidproject.org/">solidproject.org</a>.</p>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-enum"><a href="enums/AccessMode.html" class="tsd-kind-icon">Access<wbr/>Mode</a></li><li class="tsd-kind-enum"><a href="enums/CredentialGroup.html" class="tsd-kind-icon">Credential<wbr/>Group</a></li><li class="tsd-kind-class"><a href="classes/AcceptPreferenceParser.html" class="tsd-kind-icon">Accept<wbr/>Preference<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/AccessChecker.html" class="tsd-kind-icon">Access<wbr/>Checker</a></li><li class="tsd-kind-class"><a href="classes/AgentAccessChecker.html" class="tsd-kind-icon">Agent<wbr/>Access<wbr/>Checker</a></li><li class="tsd-kind-class"><a href="classes/AgentClassAccessChecker.html" class="tsd-kind-icon">Agent<wbr/>Class<wbr/>Access<wbr/>Checker</a></li><li class="tsd-kind-class"><a href="classes/AgentGroupAccessChecker.html" class="tsd-kind-icon">Agent<wbr/>Group<wbr/>Access<wbr/>Checker</a></li><li class="tsd-kind-class"><a href="classes/AllStaticReader.html" class="tsd-kind-icon">All<wbr/>Static<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/App.html" class="tsd-kind-icon">App</a></li><li class="tsd-kind-class"><a href="classes/AppRunner.html" class="tsd-kind-icon">App<wbr/>Runner</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/AsyncHandler.html" class="tsd-kind-icon">Async<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/Authorizer.html" class="tsd-kind-icon">Authorizer</a></li><li class="tsd-kind-class"><a href="classes/AuthorizingHttpHandler.html" class="tsd-kind-icon">Authorizing<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/AuxiliaryReader.html" class="tsd-kind-icon">Auxiliary<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/BadRequestHttpError.html" class="tsd-kind-icon">Bad<wbr/>Request<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/BaseAccountStore.html" class="tsd-kind-icon">Base<wbr/>Account<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/BaseComponentsJsFactory.html" class="tsd-kind-icon">Base<wbr/>Components<wbr/>Js<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/BaseEmailSender.html" class="tsd-kind-icon">Base<wbr/>Email<wbr/>Sender</a></li><li class="tsd-kind-class"><a href="classes/BaseFileIdentifierMapper.html" class="tsd-kind-icon">Base<wbr/>File<wbr/>Identifier<wbr/>Mapper</a></li><li class="tsd-kind-class"><a href="classes/BaseHttpServerFactory.html" class="tsd-kind-icon">Base<wbr/>Http<wbr/>Server<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/BaseIdentifierStrategy.html" class="tsd-kind-icon">Base<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/BaseResourceStore.html" class="tsd-kind-icon">Base<wbr/>Resource<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/BaseUrlHandler.html" class="tsd-kind-icon">Base<wbr/>Url<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/BaseUrlRouterRule.html" class="tsd-kind-icon">Base<wbr/>Url<wbr/>Router<wbr/>Rule</a></li><li class="tsd-kind-class"><a href="classes/BasicConditions.html" class="tsd-kind-icon">Basic<wbr/>Conditions</a></li><li class="tsd-kind-class"><a href="classes/BasicConditionsParser.html" class="tsd-kind-icon">Basic<wbr/>Conditions<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/BasicInteractionRoute.html" class="tsd-kind-icon">Basic<wbr/>Interaction<wbr/>Route</a></li><li class="tsd-kind-class"><a href="classes/BasicRepresentation.html" class="tsd-kind-icon">Basic<wbr/>Representation</a></li><li class="tsd-kind-class"><a href="classes/BasicRequestParser.html" class="tsd-kind-icon">Basic<wbr/>Request<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/BasicResponseWriter.html" class="tsd-kind-icon">Basic<wbr/>Response<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/BearerWebIdExtractor.html" class="tsd-kind-icon">Bearer<wbr/>Web<wbr/>Id<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/BodyParser.html" class="tsd-kind-icon">Body<wbr/>Parser</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/BooleanHandler.html" class="tsd-kind-icon">Boolean<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ChainedConverter.html" class="tsd-kind-icon">Chained<wbr/>Converter</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/ChainedTemplateEngine.html" class="tsd-kind-icon">Chained<wbr/>Template<wbr/>Engine</a></li><li class="tsd-kind-class"><a href="classes/ComposedAuxiliaryStrategy.html" class="tsd-kind-icon">Composed<wbr/>Auxiliary<wbr/>Strategy</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/ConditionalHandler.html" class="tsd-kind-icon">Conditional<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ConditionsParser.html" class="tsd-kind-icon">Conditions<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/ConfigPodInitializer.html" class="tsd-kind-icon">Config<wbr/>Pod<wbr/>Initializer</a></li><li class="tsd-kind-class"><a href="classes/ConfigPodManager.html" class="tsd-kind-icon">Config<wbr/>Pod<wbr/>Manager</a></li><li class="tsd-kind-class"><a href="classes/ConflictHttpError.html" class="tsd-kind-icon">Conflict<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/ConstantConverter.html" class="tsd-kind-icon">Constant<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/ConstantMetadataWriter.html" class="tsd-kind-icon">Constant<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/ContainerInitializer.html" class="tsd-kind-icon">Container<wbr/>Initializer</a></li><li class="tsd-kind-class"><a href="classes/ContainerPatcher.html" class="tsd-kind-icon">Container<wbr/>Patcher</a></li><li class="tsd-kind-class"><a href="classes/ContainerToTemplateConverter.html" class="tsd-kind-icon">Container<wbr/>To<wbr/>Template<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/ContentTypeParser.html" class="tsd-kind-icon">Content<wbr/>Type<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/ContentTypeReplacer.html" class="tsd-kind-icon">Content<wbr/>Type<wbr/>Replacer</a></li><li class="tsd-kind-class"><a href="classes/ConvertingErrorHandler.html" class="tsd-kind-icon">Converting<wbr/>Error<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ConvertingPatcher.html" class="tsd-kind-icon">Converting<wbr/>Patcher</a></li><li class="tsd-kind-class"><a href="classes/ConvertingRouterRule.html" class="tsd-kind-icon">Converting<wbr/>Router<wbr/>Rule</a></li><li class="tsd-kind-class"><a href="classes/CorsHandler.html" class="tsd-kind-icon">Cors<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/CreatedResponseDescription.html" class="tsd-kind-icon">Created<wbr/>Response<wbr/>Description</a></li><li class="tsd-kind-class"><a href="classes/CredentialsExtractor.html" class="tsd-kind-icon">Credentials<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/DPoPWebIdExtractor.html" class="tsd-kind-icon">DPoPWeb<wbr/>Id<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/DataAccessorBasedStore.html" class="tsd-kind-icon">Data<wbr/>Accessor<wbr/>Based<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/DeleteOperationHandler.html" class="tsd-kind-icon">Delete<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/DynamicJsonToTemplateConverter.html" class="tsd-kind-icon">Dynamic<wbr/>Json<wbr/>To<wbr/>Template<wbr/>Converter</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/EjsTemplateEngine.html" class="tsd-kind-icon">Ejs<wbr/>Template<wbr/>Engine</a></li><li class="tsd-kind-class"><a href="classes/EmailSender.html" class="tsd-kind-icon">Email<wbr/>Sender</a></li><li class="tsd-kind-class"><a href="classes/EqualReadWriteLocker.html" class="tsd-kind-icon">Equal<wbr/>Read<wbr/>Write<wbr/>Locker</a></li><li class="tsd-kind-class"><a href="classes/ErrorHandler.html" class="tsd-kind-icon">Error<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ErrorToJsonConverter.html" class="tsd-kind-icon">Error<wbr/>To<wbr/>Json<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/ErrorToQuadConverter.html" class="tsd-kind-icon">Error<wbr/>To<wbr/>Quad<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/ErrorToTemplateConverter.html" class="tsd-kind-icon">Error<wbr/>To<wbr/>Template<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/ExpiringAdapter.html" class="tsd-kind-icon">Expiring<wbr/>Adapter</a></li><li class="tsd-kind-class"><a href="classes/ExpiringAdapterFactory.html" class="tsd-kind-icon">Expiring<wbr/>Adapter<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/ExtensionBasedMapper.html" class="tsd-kind-icon">Extension<wbr/>Based<wbr/>Mapper</a></li><li class="tsd-kind-class"><a href="classes/ExtensionBasedMapperFactory.html" class="tsd-kind-icon">Extension<wbr/>Based<wbr/>Mapper<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/FileDataAccessor.html" class="tsd-kind-icon">File<wbr/>Data<wbr/>Accessor</a></li><li class="tsd-kind-class"><a href="classes/FixedContentTypeMapper.html" class="tsd-kind-icon">Fixed<wbr/>Content<wbr/>Type<wbr/>Mapper</a></li><li class="tsd-kind-class"><a href="classes/ForbiddenHttpError.html" class="tsd-kind-icon">Forbidden<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/ForgotPasswordHandler.html" class="tsd-kind-icon">Forgot<wbr/>Password<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/FormToJsonConverter.html" class="tsd-kind-icon">Form<wbr/>To<wbr/>Json<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/GeneratedPodManager.html" class="tsd-kind-icon">Generated<wbr/>Pod<wbr/>Manager</a></li><li class="tsd-kind-class"><a href="classes/GetOperationHandler.html" class="tsd-kind-icon">Get<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/GreedyReadWriteLocker.html" class="tsd-kind-icon">Greedy<wbr/>Read<wbr/>Write<wbr/>Locker</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/HandlebarsTemplateEngine.html" class="tsd-kind-icon">Handlebars<wbr/>Template<wbr/>Engine</a></li><li class="tsd-kind-class"><a href="classes/HeadOperationHandler.html" class="tsd-kind-icon">Head<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/HeaderHandler.html" class="tsd-kind-icon">Header<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/HttpError.html" class="tsd-kind-icon">Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/HttpHandler.html" class="tsd-kind-icon">Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/IdentityProviderFactory.html" class="tsd-kind-icon">Identity<wbr/>Provider<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/IdentityProviderHttpHandler.html" class="tsd-kind-icon">Identity<wbr/>Provider<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/IfNeededConverter.html" class="tsd-kind-icon">If<wbr/>Needed<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/InMemoryDataAccessor.html" class="tsd-kind-icon">In<wbr/>Memory<wbr/>Data<wbr/>Accessor</a></li><li class="tsd-kind-class"><a href="classes/IndexRepresentationStore.html" class="tsd-kind-icon">Index<wbr/>Representation<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/Initializer.html" class="tsd-kind-icon">Initializer</a></li><li class="tsd-kind-class"><a href="classes/InteractionCompleter.html" class="tsd-kind-icon">Interaction<wbr/>Completer</a></li><li class="tsd-kind-class"><a href="classes/InteractionHandler.html" class="tsd-kind-icon">Interaction<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/InternalServerError.html" class="tsd-kind-icon">Internal<wbr/>Server<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/JsonFileStorage.html" class="tsd-kind-icon">Json<wbr/>File<wbr/>Storage</a></li><li class="tsd-kind-class"><a href="classes/JsonResourceStorage.html" class="tsd-kind-icon">Json<wbr/>Resource<wbr/>Storage</a></li><li class="tsd-kind-class"><a href="classes/LazyLogger.html" class="tsd-kind-icon">Lazy<wbr/>Logger</a></li><li class="tsd-kind-class"><a href="classes/LazyLoggerFactory.html" class="tsd-kind-icon">Lazy<wbr/>Logger<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/LinkMetadataGenerator.html" class="tsd-kind-icon">Link<wbr/>Metadata<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/LinkRelMetadataWriter.html" class="tsd-kind-icon">Link<wbr/>Rel<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/LinkRelParser.html" class="tsd-kind-icon">Link<wbr/>Rel<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/LockingResourceStore.html" class="tsd-kind-icon">Locking<wbr/>Resource<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/Logger.html" class="tsd-kind-icon">Logger</a></li><li class="tsd-kind-class"><a href="classes/LoggerInitializer.html" class="tsd-kind-icon">Logger<wbr/>Initializer</a></li><li class="tsd-kind-class"><a href="classes/LoginHandler.html" class="tsd-kind-icon">Login<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/MappedMetadataWriter.html" class="tsd-kind-icon">Mapped<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/MarkdownToHtmlConverter.html" class="tsd-kind-icon">Markdown<wbr/>To<wbr/>Html<wbr/>Converter</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/MemoryMapStorage.html" class="tsd-kind-icon">Memory<wbr/>Map<wbr/>Storage</a></li><li class="tsd-kind-class"><a href="classes/MetadataGenerator.html" class="tsd-kind-icon">Metadata<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/MetadataParser.html" class="tsd-kind-icon">Metadata<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/MetadataWriter.html" class="tsd-kind-icon">Metadata<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/MethodModesExtractor.html" class="tsd-kind-icon">Method<wbr/>Modes<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/MethodNotAllowedHttpError.html" class="tsd-kind-icon">Method<wbr/>Not<wbr/>Allowed<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/ModesExtractor.html" class="tsd-kind-icon">Modes<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/ModifiedMetadataWriter.html" class="tsd-kind-icon">Modified<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/MonitoringStore.html" class="tsd-kind-icon">Monitoring<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/NoCheckOwnershipValidator.html" class="tsd-kind-icon">No<wbr/>Check<wbr/>Ownership<wbr/>Validator</a></li><li class="tsd-kind-class"><a href="classes/NotFoundHttpError.html" class="tsd-kind-icon">Not<wbr/>Found<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/NotImplementedHttpError.html" class="tsd-kind-icon">Not<wbr/>Implemented<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/OkResponseDescription.html" class="tsd-kind-icon">Ok<wbr/>Response<wbr/>Description</a></li><li class="tsd-kind-class"><a href="classes/OperationHandler.html" class="tsd-kind-icon">Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/OperationHttpHandler.html" class="tsd-kind-icon">Operation<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/OperationMetadataCollector.html" class="tsd-kind-icon">Operation<wbr/>Metadata<wbr/>Collector</a></li><li class="tsd-kind-class"><a href="classes/OriginalUrlExtractor.html" class="tsd-kind-icon">Original<wbr/>Url<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/OwnerPermissionReader.html" class="tsd-kind-icon">Owner<wbr/>Permission<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/OwnershipValidator.html" class="tsd-kind-icon">Ownership<wbr/>Validator</a></li><li class="tsd-kind-class"><a href="classes/ParallelFinalizer.html" class="tsd-kind-icon">Parallel<wbr/>Finalizer</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/ParallelHandler.html" class="tsd-kind-icon">Parallel<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ParsingHttpHandler.html" class="tsd-kind-icon">Parsing<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/PassthroughConverter.html" class="tsd-kind-icon">Passthrough<wbr/>Converter</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/PassthroughStore.html" class="tsd-kind-icon">Passthrough<wbr/>Store</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/PatchHandler.html" class="tsd-kind-icon">Patch<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/PatchOperationHandler.html" class="tsd-kind-icon">Patch<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/PatchingStore.html" class="tsd-kind-icon">Patching<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/PathBasedReader.html" class="tsd-kind-icon">Path<wbr/>Based<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/PermissionBasedAuthorizer.html" class="tsd-kind-icon">Permission<wbr/>Based<wbr/>Authorizer</a></li><li class="tsd-kind-class"><a href="classes/PermissionReader.html" class="tsd-kind-icon">Permission<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/PostOperationHandler.html" class="tsd-kind-icon">Post<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/PreconditionFailedHttpError.html" class="tsd-kind-icon">Precondition<wbr/>Failed<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/PreferenceParser.html" class="tsd-kind-icon">Preference<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/PreferenceSupport.html" class="tsd-kind-icon">Preference<wbr/>Support</a></li><li class="tsd-kind-class"><a href="classes/PublicCredentialsExtractor.html" class="tsd-kind-icon">Public<wbr/>Credentials<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/PutOperationHandler.html" class="tsd-kind-icon">Put<wbr/>Operation<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/QuadToRdfConverter.html" class="tsd-kind-icon">Quad<wbr/>To<wbr/>Rdf<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/RawBodyParser.html" class="tsd-kind-icon">Raw<wbr/>Body<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/RdfToQuadConverter.html" class="tsd-kind-icon">Rdf<wbr/>To<wbr/>Quad<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/RdfValidator.html" class="tsd-kind-icon">Rdf<wbr/>Validator</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/ReadOnlyStore.html" class="tsd-kind-icon">Read<wbr/>Only<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/RecordObject.html" class="tsd-kind-icon">Record<wbr/>Object</a></li><li class="tsd-kind-class"><a href="classes/RedirectAllHttpHandler.html" class="tsd-kind-icon">Redirect<wbr/>All<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/RedisResourceLocker.html" class="tsd-kind-icon">Redis<wbr/>Resource<wbr/>Locker</a></li><li class="tsd-kind-class"><a href="classes/RegexRouterRule.html" class="tsd-kind-icon">Regex<wbr/>Router<wbr/>Rule</a></li><li class="tsd-kind-class"><a href="classes/RegistrationHandler.html" class="tsd-kind-icon">Registration<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/RegistrationManager.html" class="tsd-kind-icon">Registration<wbr/>Manager</a></li><li class="tsd-kind-class"><a href="classes/RepresentationConverter.html" class="tsd-kind-icon">Representation<wbr/>Converter</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/RepresentationConvertingStore.html" class="tsd-kind-icon">Representation<wbr/>Converting<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/RepresentationMetadata.html" class="tsd-kind-icon">Representation<wbr/>Metadata</a></li><li class="tsd-kind-class"><a href="classes/RepresentationPatchHandler.html" class="tsd-kind-icon">Representation<wbr/>Patch<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/RepresentationPatcher.html" class="tsd-kind-icon">Representation<wbr/>Patcher</a></li><li class="tsd-kind-class"><a href="classes/RequestParser.html" class="tsd-kind-icon">Request<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/ResetPasswordHandler.html" class="tsd-kind-icon">Reset<wbr/>Password<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ResetResponseDescription.html" class="tsd-kind-icon">Reset<wbr/>Response<wbr/>Description</a></li><li class="tsd-kind-class"><a href="classes/ResponseDescription.html" class="tsd-kind-icon">Response<wbr/>Description</a></li><li class="tsd-kind-class"><a href="classes/ResponseWriter.html" class="tsd-kind-icon">Response<wbr/>Writer</a></li><li class="tsd-kind-class"><a href="classes/RootFilePathHandler.html" class="tsd-kind-icon">Root<wbr/>File<wbr/>Path<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/RouterHandler.html" class="tsd-kind-icon">Router<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/RouterRule.html" class="tsd-kind-icon">Router<wbr/>Rule</a></li><li class="tsd-kind-class"><a href="classes/RoutingAuxiliaryIdentifierStrategy.html" class="tsd-kind-icon">Routing<wbr/>Auxiliary<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/RoutingAuxiliaryStrategy.html" class="tsd-kind-icon">Routing<wbr/>Auxiliary<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/RoutingResourceStore.html" class="tsd-kind-icon">Routing<wbr/>Resource<wbr/>Store</a></li><li class="tsd-kind-class"><a href="classes/SafeErrorHandler.html" class="tsd-kind-icon">Safe<wbr/>Error<wbr/>Handler</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/SequenceHandler.html" class="tsd-kind-icon">Sequence<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/ServerInitializer.html" class="tsd-kind-icon">Server<wbr/>Initializer</a></li><li class="tsd-kind-class"><a href="classes/SessionHttpHandler.html" class="tsd-kind-icon">Session<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/SetupHttpHandler.html" class="tsd-kind-icon">Setup<wbr/>Http<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/SingleRootIdentifierStrategy.html" class="tsd-kind-icon">Single<wbr/>Root<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/SingleThreadedResourceLocker.html" class="tsd-kind-icon">Single<wbr/>Threaded<wbr/>Resource<wbr/>Locker</a></li><li class="tsd-kind-class"><a href="classes/SlugParser.html" class="tsd-kind-icon">Slug<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/SparqlDataAccessor.html" class="tsd-kind-icon">Sparql<wbr/>Data<wbr/>Accessor</a></li><li class="tsd-kind-class"><a href="classes/SparqlPatchModesExtractor.html" class="tsd-kind-icon">Sparql<wbr/>Patch<wbr/>Modes<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/SparqlUpdateBodyParser.html" class="tsd-kind-icon">Sparql<wbr/>Update<wbr/>Body<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/SparqlUpdatePatcher.html" class="tsd-kind-icon">Sparql<wbr/>Update<wbr/>Patcher</a></li><li class="tsd-kind-class"><a href="classes/StaticAssetHandler.html" class="tsd-kind-icon">Static<wbr/>Asset<wbr/>Handler</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/StaticHandler.html" class="tsd-kind-icon">Static<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/SubdomainExtensionBasedMapper.html" class="tsd-kind-icon">Subdomain<wbr/>Extension<wbr/>Based<wbr/>Mapper</a></li><li class="tsd-kind-class"><a href="classes/SubdomainIdentifierGenerator.html" class="tsd-kind-icon">Subdomain<wbr/>Identifier<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/SubdomainIdentifierStrategy.html" class="tsd-kind-icon">Subdomain<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/SuffixAuxiliaryIdentifierStrategy.html" class="tsd-kind-icon">Suffix<wbr/>Auxiliary<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-class"><a href="classes/SuffixIdentifierGenerator.html" class="tsd-kind-icon">Suffix<wbr/>Identifier<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/TargetExtractor.html" class="tsd-kind-icon">Target<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/TemplatedPodGenerator.html" class="tsd-kind-icon">Templated<wbr/>Pod<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/TemplatedResourcesGenerator.html" class="tsd-kind-icon">Templated<wbr/>Resources<wbr/>Generator</a></li><li class="tsd-kind-class"><a href="classes/TokenOwnershipValidator.html" class="tsd-kind-icon">Token<wbr/>Ownership<wbr/>Validator</a></li><li class="tsd-kind-class"><a href="classes/TypedRepresentationConverter.html" class="tsd-kind-icon">Typed<wbr/>Representation<wbr/>Converter</a></li><li class="tsd-kind-class"><a href="classes/UnauthorizedHttpError.html" class="tsd-kind-icon">Unauthorized<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/UnionCredentialsExtractor.html" class="tsd-kind-icon">Union<wbr/>Credentials<wbr/>Extractor</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/UnionHandler.html" class="tsd-kind-icon">Union<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/UnionPermissionReader.html" class="tsd-kind-icon">Union<wbr/>Permission<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/UnsecureConstantCredentialsExtractor.html" class="tsd-kind-icon">Unsecure<wbr/>Constant<wbr/>Credentials<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/UnsecureWebIdExtractor.html" class="tsd-kind-icon">Unsecure<wbr/>Web<wbr/>Id<wbr/>Extractor</a></li><li class="tsd-kind-class"><a href="classes/UnsecureWebSocketsProtocol.html" class="tsd-kind-icon">Unsecure<wbr/>Web<wbr/>Sockets<wbr/>Protocol</a></li><li class="tsd-kind-class"><a href="classes/UnsupportedAsyncHandler.html" class="tsd-kind-icon">Unsupported<wbr/>Async<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/UnsupportedMediaTypeHttpError.html" class="tsd-kind-icon">Unsupported<wbr/>Media<wbr/>Type<wbr/>Http<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/Validator.html" class="tsd-kind-icon">Validator</a></li><li class="tsd-kind-class"><a href="classes/VariableHandler.html" class="tsd-kind-icon">Variable<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/VariableSetter.html" class="tsd-kind-icon">Variable<wbr/>Setter</a></li><li class="tsd-kind-class"><a href="classes/VoidLogger.html" class="tsd-kind-icon">Void<wbr/>Logger</a></li><li class="tsd-kind-class"><a href="classes/VoidLoggerFactory.html" class="tsd-kind-icon">Void<wbr/>Logger<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/WacAllowMetadataWriter.html" class="tsd-kind-icon">Wac<wbr/>Allow<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/WaterfallHandler.html" class="tsd-kind-icon">Waterfall<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/WebAclMetadataCollector.html" class="tsd-kind-icon">Web<wbr/>Acl<wbr/>Metadata<wbr/>Collector</a></li><li class="tsd-kind-class"><a href="classes/WebAclReader.html" class="tsd-kind-icon">Web<wbr/>Acl<wbr/>Reader</a></li><li class="tsd-kind-class"><a href="classes/WebIdAdapter.html" class="tsd-kind-icon">Web<wbr/>Id<wbr/>Adapter</a></li><li class="tsd-kind-class"><a href="classes/WebIdAdapterFactory.html" class="tsd-kind-icon">Web<wbr/>Id<wbr/>Adapter<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/WebSocketAdvertiser.html" class="tsd-kind-icon">Web<wbr/>Socket<wbr/>Advertiser</a></li><li class="tsd-kind-class"><a href="classes/WebSocketHandler.html" class="tsd-kind-icon">Web<wbr/>Socket<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/WebSocketServerFactory.html" class="tsd-kind-icon">Web<wbr/>Socket<wbr/>Server<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/WinstonLogger.html" class="tsd-kind-icon">Winston<wbr/>Logger</a></li><li class="tsd-kind-class"><a href="classes/WinstonLoggerFactory.html" class="tsd-kind-icon">Winston<wbr/>Logger<wbr/>Factory</a></li><li class="tsd-kind-class"><a href="classes/WrappedExpiringReadWriteLocker.html" class="tsd-kind-icon">Wrapped<wbr/>Expiring<wbr/>Read<wbr/>Write<wbr/>Locker</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/WrappedExpiringStorage.html" class="tsd-kind-icon">Wrapped<wbr/>Expiring<wbr/>Storage</a></li><li class="tsd-kind-class"><a href="classes/WwwAuthMetadataWriter.html" class="tsd-kind-icon">Www<wbr/>Auth<wbr/>Metadata<wbr/>Writer</a></li><li class="tsd-kind-interface"><a href="interfaces/Accept.html" class="tsd-kind-icon">Accept</a></li><li class="tsd-kind-interface"><a href="interfaces/AcceptCharset.html" class="tsd-kind-icon">Accept<wbr/>Charset</a></li><li class="tsd-kind-interface"><a href="interfaces/AcceptDatetime.html" class="tsd-kind-icon">Accept<wbr/>Datetime</a></li><li class="tsd-kind-interface"><a href="interfaces/AcceptEncoding.html" class="tsd-kind-icon">Accept<wbr/>Encoding</a></li><li class="tsd-kind-interface"><a href="interfaces/AcceptHeader.html" class="tsd-kind-icon">Accept<wbr/>Header</a></li><li class="tsd-kind-interface"><a href="interfaces/AcceptLanguage.html" class="tsd-kind-icon">Accept<wbr/>Language</a></li><li class="tsd-kind-interface"><a href="interfaces/AccessCheckerArgs.html" class="tsd-kind-icon">Access<wbr/>Checker<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/AccountPayload.html" class="tsd-kind-icon">Account<wbr/>Payload</a></li><li class="tsd-kind-interface"><a href="interfaces/AccountSettings.html" class="tsd-kind-icon">Account<wbr/>Settings</a></li><li class="tsd-kind-interface"><a href="interfaces/AccountStore.html" class="tsd-kind-icon">Account<wbr/>Store</a></li><li class="tsd-kind-interface"><a href="interfaces/AdapterFactory.html" class="tsd-kind-icon">Adapter<wbr/>Factory</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/AsyncTransformOptions.html" class="tsd-kind-icon">Async<wbr/>Transform<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/AtomicResourceStore.html" class="tsd-kind-icon">Atomic<wbr/>Resource<wbr/>Store</a></li><li class="tsd-kind-interface"><a href="interfaces/AuthorizerInput.html" class="tsd-kind-icon">Authorizer<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/AuthorizingHttpHandlerArgs.html" class="tsd-kind-icon">Authorizing<wbr/>Http<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/AuxiliaryIdentifierStrategy.html" class="tsd-kind-icon">Auxiliary<wbr/>Identifier<wbr/>Strategy</a></li><li class="tsd-kind-interface"><a href="interfaces/AuxiliaryStrategy.html" class="tsd-kind-icon">Auxiliary<wbr/>Strategy</a></li><li class="tsd-kind-interface"><a href="interfaces/BaseHttpServerOptions.html" class="tsd-kind-icon">Base<wbr/>Http<wbr/>Server<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/BasicConditionsOptions.html" class="tsd-kind-icon">Basic<wbr/>Conditions<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/BasicRequestParserArgs.html" class="tsd-kind-icon">Basic<wbr/>Request<wbr/>Parser<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/BodyParserArgs.html" class="tsd-kind-icon">Body<wbr/>Parser<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/CliParams.html" class="tsd-kind-icon">Cli<wbr/>Params</a></li><li class="tsd-kind-interface"><a href="interfaces/ComponentsJsFactory.html" class="tsd-kind-icon">Components<wbr/>Js<wbr/>Factory</a></li><li class="tsd-kind-interface"><a href="interfaces/Conditions.html" class="tsd-kind-icon">Conditions</a></li><li class="tsd-kind-interface"><a href="interfaces/ConstantConverterOptions.html" class="tsd-kind-icon">Constant<wbr/>Converter<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ContainerInitializerArgs.html" class="tsd-kind-icon">Container<wbr/>Initializer<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/ConvertingStoreEntry.html" class="tsd-kind-icon">Converting<wbr/>Store<wbr/>Entry</a></li><li class="tsd-kind-interface"><a href="interfaces/Credential.html" class="tsd-kind-icon">Credential</a></li><li class="tsd-kind-interface"><a href="interfaces/DataAccessor.html" class="tsd-kind-icon">Data<wbr/>Accessor</a></li><li class="tsd-kind-interface"><a href="interfaces/EmailArgs.html" class="tsd-kind-icon">Email<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/EmailSenderArgs.html" class="tsd-kind-icon">Email<wbr/>Sender<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/ErrorHandlerArgs.html" class="tsd-kind-icon">Error<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/ExpiringReadWriteLocker.html" class="tsd-kind-icon">Expiring<wbr/>Read<wbr/>Write<wbr/>Locker</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/ExpiringStorage.html" class="tsd-kind-icon">Expiring<wbr/>Storage</a></li><li class="tsd-kind-interface"><a href="interfaces/FileIdentifierMapper.html" class="tsd-kind-icon">File<wbr/>Identifier<wbr/>Mapper</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/FileIdentifierMapperFactory.html" class="tsd-kind-icon">File<wbr/>Identifier<wbr/>Mapper<wbr/>Factory</a></li><li class="tsd-kind-interface"><a href="interfaces/Finalizable.html" class="tsd-kind-icon">Finalizable</a></li><li class="tsd-kind-interface"><a href="interfaces/ForgotPasswordHandlerArgs.html" class="tsd-kind-icon">Forgot<wbr/>Password<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/ForgotPasswordPayload.html" class="tsd-kind-icon">Forgot<wbr/>Password<wbr/>Payload</a></li><li class="tsd-kind-interface"><a href="interfaces/Forwarded.html" class="tsd-kind-icon">Forwarded</a></li><li class="tsd-kind-interface"><a href="interfaces/GreedyReadWriteSuffixes.html" class="tsd-kind-icon">Greedy<wbr/>Read<wbr/>Write<wbr/>Suffixes</a></li><li class="tsd-kind-interface"><a href="interfaces/HttpErrorOptions.html" class="tsd-kind-icon">Http<wbr/>Error<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/HttpHandlerInput.html" class="tsd-kind-icon">Http<wbr/>Handler<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/HttpServerFactory.html" class="tsd-kind-icon">Http<wbr/>Server<wbr/>Factory</a></li><li class="tsd-kind-interface"><a href="interfaces/IdentifierGenerator.html" class="tsd-kind-icon">Identifier<wbr/>Generator</a></li><li class="tsd-kind-interface"><a href="interfaces/IdentifierStrategy.html" class="tsd-kind-icon">Identifier<wbr/>Strategy</a></li><li class="tsd-kind-interface"><a href="interfaces/IdentityProviderFactoryArgs.html" class="tsd-kind-icon">Identity<wbr/>Provider<wbr/>Factory<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/IdentityProviderHttpHandlerArgs.html" class="tsd-kind-icon">Identity<wbr/>Provider<wbr/>Http<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionCompleteResult.html" class="tsd-kind-icon">Interaction<wbr/>Complete<wbr/>Result</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionCompleterInput.html" class="tsd-kind-icon">Interaction<wbr/>Completer<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionCompleterParams.html" class="tsd-kind-icon">Interaction<wbr/>Completer<wbr/>Params</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionErrorResult.html" class="tsd-kind-icon">Interaction<wbr/>Error<wbr/>Result</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionHandlerInput.html" class="tsd-kind-icon">Interaction<wbr/>Handler<wbr/>Input</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/InteractionResponseResult.html" class="tsd-kind-icon">Interaction<wbr/>Response<wbr/>Result</a></li><li class="tsd-kind-interface"><a href="interfaces/InteractionRoute.html" class="tsd-kind-icon">Interaction<wbr/>Route</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/KeyValueStorage.html" class="tsd-kind-icon">Key<wbr/>Value<wbr/>Storage</a></li><li class="tsd-kind-interface"><a href="interfaces/LoggerFactory.html" class="tsd-kind-icon">Logger<wbr/>Factory</a></li><li class="tsd-kind-interface"><a href="interfaces/Operation.html" class="tsd-kind-icon">Operation</a></li><li class="tsd-kind-interface"><a href="interfaces/OperationHandlerInput.html" class="tsd-kind-icon">Operation<wbr/>Handler<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/OperationHttpHandlerInput.html" class="tsd-kind-icon">Operation<wbr/>Http<wbr/>Handler<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/OperationMetadataCollectorInput.html" class="tsd-kind-icon">Operation<wbr/>Metadata<wbr/>Collector<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/ParsingHttpHandlerArgs.html" class="tsd-kind-icon">Parsing<wbr/>Http<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/Patch.html" class="tsd-kind-icon">Patch</a></li><li class="tsd-kind-interface"><a href="interfaces/PermissionReaderInput.html" class="tsd-kind-icon">Permission<wbr/>Reader<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/PodGenerator.html" class="tsd-kind-icon">Pod<wbr/>Generator</a></li><li class="tsd-kind-interface"><a href="interfaces/PodManager.html" class="tsd-kind-icon">Pod<wbr/>Manager</a></li><li class="tsd-kind-interface"><a href="interfaces/PodSettings.html" class="tsd-kind-icon">Pod<wbr/>Settings</a></li><li class="tsd-kind-interface"><a href="interfaces/ProviderFactory.html" class="tsd-kind-icon">Provider<wbr/>Factory</a></li><li class="tsd-kind-interface"><a href="interfaces/ReadWriteLocker.html" class="tsd-kind-icon">Read<wbr/>Write<wbr/>Locker</a></li><li class="tsd-kind-interface"><a href="interfaces/RedirectAllHttpHandlerArgs.html" class="tsd-kind-icon">Redirect<wbr/>All<wbr/>Http<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/RegistrationManagerArgs.html" class="tsd-kind-icon">Registration<wbr/>Manager<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/RegistrationParams.html" class="tsd-kind-icon">Registration<wbr/>Params</a></li><li class="tsd-kind-interface"><a href="interfaces/RegistrationResponse.html" class="tsd-kind-icon">Registration<wbr/>Response</a></li><li class="tsd-kind-interface"><a href="interfaces/Representation.html" class="tsd-kind-icon">Representation</a></li><li class="tsd-kind-interface"><a href="interfaces/RepresentationConverterArgs.html" class="tsd-kind-icon">Representation<wbr/>Converter<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/RepresentationPatcherInput.html" class="tsd-kind-icon">Representation<wbr/>Patcher<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/RepresentationPreferences.html" class="tsd-kind-icon">Representation<wbr/>Preferences</a></li><li class="tsd-kind-interface"><a href="interfaces/Resource.html" class="tsd-kind-icon">Resource</a></li><li class="tsd-kind-interface"><a href="interfaces/ResourceIdentifier.html" class="tsd-kind-icon">Resource<wbr/>Identifier</a></li><li class="tsd-kind-interface"><a href="interfaces/ResourceLink.html" class="tsd-kind-icon">Resource<wbr/>Link</a></li><li class="tsd-kind-interface"><a href="interfaces/ResourceLocker.html" class="tsd-kind-icon">Resource<wbr/>Locker</a></li><li class="tsd-kind-interface"><a href="interfaces/ResourceStore.html" class="tsd-kind-icon">Resource<wbr/>Store</a></li><li class="tsd-kind-interface"><a href="interfaces/ResourcesGenerator.html" class="tsd-kind-icon">Resources<wbr/>Generator</a></li><li class="tsd-kind-interface"><a href="interfaces/RouterHandlerArgs.html" class="tsd-kind-icon">Router<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/SetupHttpHandlerArgs.html" class="tsd-kind-icon">Setup<wbr/>Http<wbr/>Handler<wbr/>Args</a></li><li class="tsd-kind-interface"><a href="interfaces/SetupInput.html" class="tsd-kind-icon">Setup<wbr/>Input</a></li><li class="tsd-kind-interface"><a href="interfaces/SparqlUpdatePatch.html" class="tsd-kind-icon">Sparql<wbr/>Update<wbr/>Patch</a></li><li class="tsd-kind-interface"><a href="interfaces/SystemError.html" class="tsd-kind-icon">System<wbr/>Error</a></li><li class="tsd-kind-interface tsd-has-type-parameter"><a href="interfaces/TemplateEngine.html" class="tsd-kind-icon">Template<wbr/>Engine</a></li><li class="tsd-kind-interface"><a href="interfaces/TemplateOptions.html" class="tsd-kind-icon">Template<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/TemplatePath.html" class="tsd-kind-icon">Template<wbr/>Path</a></li><li class="tsd-kind-interface"><a href="interfaces/TemplateString.html" class="tsd-kind-icon">Template<wbr/>String</a></li><li class="tsd-kind-type-alias"><a href="modules.html#CredentialSet" class="tsd-kind-icon">Credential<wbr/>Set</a></li><li class="tsd-kind-type-alias"><a href="modules.html#EmailPasswordData" class="tsd-kind-icon">Email<wbr/>Password<wbr/>Data</a></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#Expires" class="tsd-kind-icon">Expires</a></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#Guarded" class="tsd-kind-icon">Guarded</a></li><li class="tsd-kind-type-alias"><a href="modules.html#HttpRequest" class="tsd-kind-icon">Http<wbr/>Request</a></li><li class="tsd-kind-type-alias"><a href="modules.html#HttpResponse" class="tsd-kind-icon">Http<wbr/>Response</a></li><li class="tsd-kind-type-alias"><a href="modules.html#Interaction" class="tsd-kind-icon">Interaction</a></li><li class="tsd-kind-type-alias"><a href="modules.html#InteractionHandlerResult" class="tsd-kind-icon">Interaction<wbr/>Handler<wbr/>Result</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LogLevel" class="tsd-kind-icon">Log<wbr/>Level</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MetadataGraph" class="tsd-kind-icon">Metadata<wbr/>Graph</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MetadataIdentifier" class="tsd-kind-icon">Metadata<wbr/>Identifier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MetadataRecord" class="tsd-kind-icon">Metadata<wbr/>Record</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MetadataValue" class="tsd-kind-icon">Metadata<wbr/>Value</a></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#Namespace" class="tsd-kind-icon">Namespace</a></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#PatchHandlerInput" class="tsd-kind-icon">Patch<wbr/>Handler<wbr/>Input</a></li><li class="tsd-kind-type-alias"><a href="modules.html#Permission" class="tsd-kind-icon">Permission</a></li><li class="tsd-kind-type-alias"><a href="modules.html#PermissionSet" class="tsd-kind-icon">Permission<wbr/>Set</a></li><li class="tsd-kind-type-alias"><a href="modules.html#Template" class="tsd-kind-icon">Template</a></li><li class="tsd-kind-type-alias"><a href="modules.html#TemplateFileName" class="tsd-kind-icon">Template<wbr/>File<wbr/>Name</a></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#TemplatedInteractionResult" class="tsd-kind-icon">Templated<wbr/>Interaction<wbr/>Result</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ValuePreference" class="tsd-kind-icon">Value<wbr/>Preference</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ValuePreferences" class="tsd-kind-icon">Value<wbr/>Preferences</a></li><li class="tsd-kind-variable"><a href="modules.html#ACL" class="tsd-kind-icon">ACL</a></li><li class="tsd-kind-variable"><a href="modules.html#APPLICATION_JSON" class="tsd-kind-icon">APPLICATION_<wbr/>JSON</a></li><li class="tsd-kind-variable"><a href="modules.html#APPLICATION_OCTET_STREAM" class="tsd-kind-icon">APPLICATION_<wbr/>OCTET_<wbr/>STREAM</a></li><li class="tsd-kind-variable"><a href="modules.html#APPLICATION_SPARQL_UPDATE" class="tsd-kind-icon">APPLICATION_<wbr/>SPARQL_<wbr/>UPDATE</a></li><li class="tsd-kind-variable"><a href="modules.html#APPLICATION_X_WWW_FORM_URLENCODED" class="tsd-kind-icon">APPLICATION_<wbr/>X_<wbr/>WWW_<wbr/>FORM_<wbr/>URLENCODED</a></li><li class="tsd-kind-variable"><a href="modules.html#AUTH" class="tsd-kind-icon">AUTH</a></li><li class="tsd-kind-variable"><a href="modules.html#CONTENT_TYPE" class="tsd-kind-icon">CONTENT_<wbr/>TYPE</a></li><li class="tsd-kind-variable"><a href="modules.html#CONTENT_TYPE_TERM" class="tsd-kind-icon">CONTENT_<wbr/>TYPE_<wbr/>TERM</a></li><li class="tsd-kind-variable"><a href="modules.html#DC" class="tsd-kind-icon">DC</a></li><li class="tsd-kind-variable"><a href="modules.html#DEFAULT_CUSTOM_TYPES" class="tsd-kind-icon">DEFAULT_<wbr/>CUSTOM_<wbr/>TYPES</a></li><li class="tsd-kind-variable"><a href="modules.html#FOAF" class="tsd-kind-icon">FOAF</a></li><li class="tsd-kind-variable"><a href="modules.html#HTTP" class="tsd-kind-icon">HTTP</a></li><li class="tsd-kind-variable"><a href="modules.html#INTERNAL_ALL" class="tsd-kind-icon">INTERNAL_<wbr/>ALL</a></li><li class="tsd-kind-variable"><a href="modules.html#INTERNAL_ERROR" class="tsd-kind-icon">INTERNAL_<wbr/>ERROR</a></li><li class="tsd-kind-variable"><a href="modules.html#INTERNAL_QUADS" class="tsd-kind-icon">INTERNAL_<wbr/>QUADS</a></li><li class="tsd-kind-variable"><a href="modules.html#LDP" class="tsd-kind-icon">LDP</a></li><li class="tsd-kind-variable"><a href="modules.html#MA" class="tsd-kind-icon">MA</a></li><li class="tsd-kind-variable"><a href="modules.html#OIDC" class="tsd-kind-icon">OIDC</a></li><li class="tsd-kind-variable"><a href="modules.html#PIM" class="tsd-kind-icon">PIM</a></li><li class="tsd-kind-variable"><a href="modules.html#POSIX" class="tsd-kind-icon">POSIX</a></li><li class="tsd-kind-variable"><a href="modules.html#PREFERRED_PREFIX" class="tsd-kind-icon">PREFERRED_<wbr/>PREFIX</a></li><li class="tsd-kind-variable"><a href="modules.html#PREFERRED_PREFIX_TERM" class="tsd-kind-icon">PREFERRED_<wbr/>PREFIX_<wbr/>TERM</a></li><li class="tsd-kind-variable"><a href="modules.html#RDF" class="tsd-kind-icon">RDF</a></li><li class="tsd-kind-variable"><a href="modules.html#SOLID" class="tsd-kind-icon">SOLID</a></li><li class="tsd-kind-variable"><a href="modules.html#SOLID_ERROR" class="tsd-kind-icon">SOLID_<wbr/>ERROR</a></li><li class="tsd-kind-variable"><a href="modules.html#SOLID_HTTP" class="tsd-kind-icon">SOLID_<wbr/>HTTP</a></li><li class="tsd-kind-variable"><a href="modules.html#SOLID_META" class="tsd-kind-icon">SOLID_<wbr/>META</a></li><li class="tsd-kind-variable"><a href="modules.html#TEMPLATE" class="tsd-kind-icon">TEMPLATE</a></li><li class="tsd-kind-variable"><a href="modules.html#TEMPLATE_VARIABLE" class="tsd-kind-icon">TEMPLATE_<wbr/>VARIABLE</a></li><li class="tsd-kind-variable"><a href="modules.html#TEXT_HTML" class="tsd-kind-icon">TEXT_<wbr/>HTML</a></li><li class="tsd-kind-variable"><a href="modules.html#TEXT_MARKDOWN" class="tsd-kind-icon">TEXT_<wbr/>MARKDOWN</a></li><li class="tsd-kind-variable"><a href="modules.html#TEXT_TURTLE" class="tsd-kind-icon">TEXT_<wbr/>TURTLE</a></li><li class="tsd-kind-variable"><a href="modules.html#VANN" class="tsd-kind-icon">VANN</a></li><li class="tsd-kind-variable"><a href="modules.html#VCARD" class="tsd-kind-icon">VCARD</a></li><li class="tsd-kind-variable"><a href="modules.html#XSD" class="tsd-kind-icon">XSD</a></li><li class="tsd-kind-variable"><a href="modules.html#modulePathPlaceholder" class="tsd-kind-icon">module<wbr/>Path<wbr/>Placeholder</a></li><li class="tsd-kind-function"><a href="modules.html#absoluteFilePath" class="tsd-kind-icon">absolute<wbr/>File<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#addGeneratedResources" class="tsd-kind-icon">add<wbr/>Generated<wbr/>Resources</a></li><li class="tsd-kind-function"><a href="modules.html#addHeader" class="tsd-kind-icon">add<wbr/>Header</a></li><li class="tsd-kind-function"><a href="modules.html#addResourceMetadata" class="tsd-kind-icon">add<wbr/>Resource<wbr/>Metadata</a></li><li class="tsd-kind-function"><a href="modules.html#addTemplateMetadata" class="tsd-kind-icon">add<wbr/>Template<wbr/>Metadata</a></li><li class="tsd-kind-function"><a href="modules.html#assertError" class="tsd-kind-icon">assert<wbr/>Error</a></li><li class="tsd-kind-function"><a href="modules.html#assertPassword" class="tsd-kind-icon">assert<wbr/>Password</a></li><li class="tsd-kind-function"><a href="modules.html#cleanPreferences" class="tsd-kind-icon">clean<wbr/>Preferences</a></li><li class="tsd-kind-function"><a href="modules.html#cloneRepresentation" class="tsd-kind-icon">clone<wbr/>Representation</a></li><li class="tsd-kind-function"><a href="modules.html#createErrorMessage" class="tsd-kind-icon">create<wbr/>Error<wbr/>Message</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#createNamespace" class="tsd-kind-icon">create<wbr/>Namespace</a></li><li class="tsd-kind-function"><a href="modules.html#createSubdomainRegexp" class="tsd-kind-icon">create<wbr/>Subdomain<wbr/>Regexp</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#createTermNamespace" class="tsd-kind-icon">create<wbr/>Term<wbr/>Namespace</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#createUriAndTermNamespace" class="tsd-kind-icon">create<wbr/>Uri<wbr/>And<wbr/>Term<wbr/>Namespace</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#createUriNamespace" class="tsd-kind-icon">create<wbr/>Uri<wbr/>Namespace</a></li><li class="tsd-kind-function"><a href="modules.html#decodeUriPathComponents" class="tsd-kind-icon">decode<wbr/>Uri<wbr/>Path<wbr/>Components</a></li><li class="tsd-kind-function"><a href="modules.html#encodeUriPathComponents" class="tsd-kind-icon">encode<wbr/>Uri<wbr/>Path<wbr/>Components</a></li><li class="tsd-kind-function"><a href="modules.html#endOfStream" class="tsd-kind-icon">end<wbr/>Of<wbr/>Stream</a></li><li class="tsd-kind-function"><a href="modules.html#ensureTrailingSlash" class="tsd-kind-icon">ensure<wbr/>Trailing<wbr/>Slash</a></li><li class="tsd-kind-function"><a href="modules.html#extractScheme" class="tsd-kind-icon">extract<wbr/>Scheme</a></li><li class="tsd-kind-function"><a href="modules.html#fetchDataset" class="tsd-kind-icon">fetch<wbr/>Dataset</a></li><li class="tsd-kind-function"><a href="modules.html#getBestPreference" class="tsd-kind-icon">get<wbr/>Best<wbr/>Preference</a></li><li class="tsd-kind-function"><a href="modules.html#getConversionTarget" class="tsd-kind-icon">get<wbr/>Conversion<wbr/>Target</a></li><li class="tsd-kind-function"><a href="modules.html#getETag" class="tsd-kind-icon">getETag</a></li><li class="tsd-kind-function"><a href="modules.html#getExtension" class="tsd-kind-icon">get<wbr/>Extension</a></li><li class="tsd-kind-function"><a href="modules.html#getLoggerFor" class="tsd-kind-icon">get<wbr/>Logger<wbr/>For</a></li><li class="tsd-kind-function"><a href="modules.html#getModuleRoot" class="tsd-kind-icon">get<wbr/>Module<wbr/>Root</a></li><li class="tsd-kind-function"><a href="modules.html#getRelativeUrl" class="tsd-kind-icon">get<wbr/>Relative<wbr/>Url</a></li><li class="tsd-kind-function"><a href="modules.html#getSingleItem" class="tsd-kind-icon">get<wbr/>Single<wbr/>Item</a></li><li class="tsd-kind-function"><a href="modules.html#getStatusCode" class="tsd-kind-icon">get<wbr/>Status<wbr/>Code</a></li><li class="tsd-kind-function"><a href="modules.html#getTemplateFilePath" class="tsd-kind-icon">get<wbr/>Template<wbr/>File<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#getTypeWeight" class="tsd-kind-icon">get<wbr/>Type<wbr/>Weight</a></li><li class="tsd-kind-function"><a href="modules.html#getWeightedPreferences" class="tsd-kind-icon">get<wbr/>Weighted<wbr/>Preferences</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#guardStream" class="tsd-kind-icon">guard<wbr/>Stream</a></li><li class="tsd-kind-function"><a href="modules.html#guardedStreamFrom" class="tsd-kind-icon">guarded<wbr/>Stream<wbr/>From</a></li><li class="tsd-kind-function"><a href="modules.html#isContainerIdentifier" class="tsd-kind-icon">is<wbr/>Container<wbr/>Identifier</a></li><li class="tsd-kind-function"><a href="modules.html#isContainerPath" class="tsd-kind-icon">is<wbr/>Container<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#isError" class="tsd-kind-icon">is<wbr/>Error</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#isGuarded" class="tsd-kind-icon">is<wbr/>Guarded</a></li><li class="tsd-kind-function"><a href="modules.html#isHttpRequest" class="tsd-kind-icon">is<wbr/>Http<wbr/>Request</a></li><li class="tsd-kind-function"><a href="modules.html#isInternalContentType" class="tsd-kind-icon">is<wbr/>Internal<wbr/>Content<wbr/>Type</a></li><li class="tsd-kind-function"><a href="modules.html#isRepresentationMetadata" class="tsd-kind-icon">is<wbr/>Representation<wbr/>Metadata</a></li><li class="tsd-kind-function"><a href="modules.html#isResourceIdentifier" class="tsd-kind-icon">is<wbr/>Resource<wbr/>Identifier</a></li><li class="tsd-kind-function"><a href="modules.html#isSystemError" class="tsd-kind-icon">is<wbr/>System<wbr/>Error</a></li><li class="tsd-kind-function"><a href="modules.html#isTerm" class="tsd-kind-icon">is<wbr/>Term</a></li><li class="tsd-kind-function"><a href="modules.html#isValidVariable" class="tsd-kind-icon">is<wbr/>Valid<wbr/>Variable</a></li><li class="tsd-kind-function"><a href="modules.html#joinFilePath" class="tsd-kind-icon">join<wbr/>File<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#joinUrl" class="tsd-kind-icon">join<wbr/>Url</a></li><li class="tsd-kind-function"><a href="modules.html#matchesMediaPreferences" class="tsd-kind-icon">matches<wbr/>Media<wbr/>Preferences</a></li><li class="tsd-kind-function"><a href="modules.html#matchesMediaType" class="tsd-kind-icon">matches<wbr/>Media<wbr/>Type</a></li><li class="tsd-kind-function"><a href="modules.html#normalizeFilePath" class="tsd-kind-icon">normalize<wbr/>File<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#parseAccept" class="tsd-kind-icon">parse<wbr/>Accept</a></li><li class="tsd-kind-function"><a href="modules.html#parseAcceptCharset" class="tsd-kind-icon">parse<wbr/>Accept<wbr/>Charset</a></li><li class="tsd-kind-function"><a href="modules.html#parseAcceptDateTime" class="tsd-kind-icon">parse<wbr/>Accept<wbr/>Date<wbr/>Time</a></li><li class="tsd-kind-function"><a href="modules.html#parseAcceptEncoding" class="tsd-kind-icon">parse<wbr/>Accept<wbr/>Encoding</a></li><li class="tsd-kind-function"><a href="modules.html#parseAcceptLanguage" class="tsd-kind-icon">parse<wbr/>Accept<wbr/>Language</a></li><li class="tsd-kind-function"><a href="modules.html#parseForwarded" class="tsd-kind-icon">parse<wbr/>Forwarded</a></li><li class="tsd-kind-function"><a href="modules.html#parseParameters" class="tsd-kind-icon">parse<wbr/>Parameters</a></li><li class="tsd-kind-function"><a href="modules.html#parseQuads" class="tsd-kind-icon">parse<wbr/>Quads</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#pipeSafely" class="tsd-kind-icon">pipe<wbr/>Safely</a></li><li class="tsd-kind-function"><a href="modules.html#promiseSome" class="tsd-kind-icon">promise<wbr/>Some</a></li><li class="tsd-kind-function"><a href="modules.html#readJsonStream" class="tsd-kind-icon">read<wbr/>Json<wbr/>Stream</a></li><li class="tsd-kind-function"><a href="modules.html#readTemplate" class="tsd-kind-icon">read<wbr/>Template</a></li><li class="tsd-kind-function"><a href="modules.html#readableToQuads" class="tsd-kind-icon">readable<wbr/>To<wbr/>Quads</a></li><li class="tsd-kind-function"><a href="modules.html#readableToString" class="tsd-kind-icon">readable<wbr/>To<wbr/>String</a></li><li class="tsd-kind-function"><a href="modules.html#resetGlobalLoggerFactory" class="tsd-kind-icon">reset<wbr/>Global<wbr/>Logger<wbr/>Factory</a></li><li class="tsd-kind-function"><a href="modules.html#resolveAssetPath" class="tsd-kind-icon">resolve<wbr/>Asset<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#serializeQuads" class="tsd-kind-icon">serialize<wbr/>Quads</a></li><li class="tsd-kind-function"><a href="modules.html#setGlobalLoggerFactory" class="tsd-kind-icon">set<wbr/>Global<wbr/>Logger<wbr/>Factory</a></li><li class="tsd-kind-function"><a href="modules.html#splitAndClean" class="tsd-kind-icon">split<wbr/>And<wbr/>Clean</a></li><li class="tsd-kind-function"><a href="modules.html#toCachedNamedNode" class="tsd-kind-icon">to<wbr/>Cached<wbr/>Named<wbr/>Node</a></li><li class="tsd-kind-function"><a href="modules.html#toCanonicalUriPath" class="tsd-kind-icon">to<wbr/>Canonical<wbr/>Uri<wbr/>Path</a></li><li class="tsd-kind-function"><a href="modules.html#toLiteral" class="tsd-kind-icon">to<wbr/>Literal</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#toNamedTerm" class="tsd-kind-icon">to<wbr/>Named<wbr/>Term</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#toObjectTerm" class="tsd-kind-icon">to<wbr/>Object<wbr/>Term</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#toPredicateTerm" class="tsd-kind-icon">to<wbr/>Predicate<wbr/>Term</a></li><li class="tsd-kind-function"><a href="modules.html#transformQuotedStrings" class="tsd-kind-icon">transform<wbr/>Quoted<wbr/>Strings</a></li><li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#transformSafely" class="tsd-kind-icon">transform<wbr/>Safely</a></li><li class="tsd-kind-function"><a href="modules.html#trimTrailingSlashes" class="tsd-kind-icon">trim<wbr/>Trailing<wbr/>Slashes</a></li><li class="tsd-kind-function"><a href="modules.html#updateModifiedDate" class="tsd-kind-icon">update<wbr/>Modified<wbr/>Date</a></li></ul></nav></div></div></div><footer class=""><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li><li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="assets/main.js"></script></body></html>
