@@ -64,7 +64,8 @@ export class FileSizeReporter implements SizeReporter {
       let result = await acc;
 
       // Exclude internal files
-      if (!childFileLocation.includes('/.internal')) {
+      // Slash for Unix + backslash for Windows
+      if (!/[\/\\]\.internal/u.test(childFileLocation)) {
         result += await this.getTotalSize(childFileLocation);
       }
 
