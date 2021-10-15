@@ -65,7 +65,7 @@ export class FileSizeReporter implements SizeReporter {
 
       // Exclude internal files
       // Slash for Unix + backslash for Windows
-      if (!/[\/\\]\.internal/u.test(childFileLocation)) {
+      if (!/[/\\]\.internal/u.test(childFileLocation)) {
         result += await this.getTotalSize(childFileLocation);
       }
 
