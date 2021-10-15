@@ -145,7 +145,7 @@
     "@typescript-eslint/parser": "^4.28.1",
     "cheerio": "^1.0.0-rc.10",
     "componentsjs-generator": "^2.6.0",
-    "eslint": "^7.29.0",
+    "eslint": "^8.0.0",
     "eslint-config-es": "^3.20.3",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.23.4",
