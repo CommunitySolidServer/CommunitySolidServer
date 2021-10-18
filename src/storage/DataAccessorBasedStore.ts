@@ -193,7 +193,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // requests for the latter URI with a 301 redirect to the former."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
     if (oldMetadata && oldMetadata.identifier.value !== identifier.path) {
-      throw new ForbiddenHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
+      throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
     const isContainer = this.isNewContainer(representation.metadata, identifier.path);

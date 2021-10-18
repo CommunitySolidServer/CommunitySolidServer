@@ -42,15 +42,15 @@ Promise<Representation> {
     throw error;
   }
 
-  let contentType = response.headers.get('content-type');
+  const contentType = response.headers.get('content-type');
   if (!contentType) {
     logger.warn(`Missing content-type header from ${response.url}`);
     throw error;
   }
-  contentType = parseContentType(contentType);
+  const contentTypeValue = parseContentType(contentType).type;
 
   // Try to convert to quads
-  const representation = new BasicRepresentation(body, contentType);
+  const representation = new BasicRepresentation(body, contentTypeValue);
   const preferences = { type: { [INTERNAL_QUADS]: 1 }};
   return converter.handleSafe({ representation, identifier: { path: response.url }, preferences });
 }

@@ -82,6 +82,8 @@ export class ShapeValidationStore<T extends ResourceStore = ResourceStore> exten
       const shape = await fetchDataset(shapeURL, this.converter);
       const shapeStore = await readableToQuads(shape.data);
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       targetClassCheck(shapeStore, dataStore, shapeURL);
 
       // Validation of the data

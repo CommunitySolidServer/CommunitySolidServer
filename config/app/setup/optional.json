@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/app/setup/handlers/setup.json"
   ],
@@ -8,7 +8,7 @@
       "comment": "Combines both the redirect and the setup.",
       "@id": "urn:solid-server:default:SetupHandler",
       "@type": "ConditionalHandler",
-      "storageKey": "setupCompleted-1.0",
+      "storageKey": "setupCompleted-2.0",
       "storageValue": true,
       "storage": { "@id": "urn:solid-server:default:SetupStorage" },
       "source": {

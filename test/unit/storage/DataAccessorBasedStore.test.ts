@@ -358,7 +358,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.identifier = DataFactory.namedNode(`${resourceID.path}/`);
       const prom = store.setRepresentation(resourceID, representation);
       await expect(prom).rejects.toThrow(`${resourceID.path} conflicts with existing path ${resourceID.path}/`);
-      await expect(prom).rejects.toThrow(ForbiddenHttpError);
+      await expect(prom).rejects.toThrow(ConflictHttpError);
     });
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
