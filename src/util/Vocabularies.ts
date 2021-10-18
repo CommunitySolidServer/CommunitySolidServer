@@ -120,6 +120,10 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
   'type',
 );
 
+export const SH = createUriAndTermNamespace('http://www.w3.org/ns/shacl#',
+  'targetClass',
+);
+
 export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
