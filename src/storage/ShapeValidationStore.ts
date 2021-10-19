@@ -1,105 +1,46 @@
-import type { Quad, Store } from 'n3';
-import SHACLValidator from 'rdf-validate-shacl';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import { INTERNAL_QUADS } from '../util/ContentTypes';
-import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import { fetchDataset } from '../util/FetchUtil';
 import type { IdentifierStrategy } from '../util/identifiers/IdentifierStrategy';
-import { cloneRepresentation } from '../util/ResourceUtil';
-import { readableToQuads } from '../util/StreamUtil';
-import { LDP, SH } from '../util/Vocabularies';
 import type { Conditions } from './Conditions';
-import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import { PassthroughStore } from './PassthroughStore';
 import type { ResourceStore } from './ResourceStore';
+import type { ShapeValidator } from './ShapeValidator';
 
 /**
- * Verifies that there is at least a triple with a type that corresponds to a target class.
- * Throws an error when that is not present.
+ * ResourceStore which validates input data based on shapes using SHACL.
  *
- * NOTE: it is possible to validate without targetClass and use one of the other target declarations,
- * but those are used less often.
+ * When a validation is successful, the input data is written away in the backend.
+ * Methods implemented:
+ *  * Adding a resource to the backend
  *
- * @param shapeStore - The N3.Store containing the shapes
- * @param dataStore - The N3.Store containing the data to be posted
- * @param shapeURL - The URL of where the shape is posted
  */
-function targetClassCheck(shapeStore: Store<Quad, Quad, Quad, Quad>,
-  dataStore: Store<Quad, Quad, Quad, Quad>,
-  shapeURL: string): void {
-  // Find if any of the sh:targetClass are present
-  const targetClasses = shapeStore.getObjects(null, SH.targetClass, null);
-
-  let targetClassesPresent = false;
-  for (const targetClass of targetClasses) {
-    targetClassesPresent = targetClassesPresent || dataStore.countQuads(null, null, targetClass, null) > 0;
-  }
-  if (!targetClassesPresent) {
-    throw new BadRequestHttpError(`Data not accepted as no nodes in the body conform to any of the target classes of  ${shapeURL}`);
-  }
-}
-
 export class ShapeValidationStore<T extends ResourceStore = ResourceStore> extends PassthroughStore<T> {
   private readonly identifierStrategy: IdentifierStrategy;
-  private readonly converter: RepresentationConverter;
+  private readonly validator: ShapeValidator;
   protected readonly logger = getLoggerFor(this);
 
-  public constructor(source: T, identifierStrategy: IdentifierStrategy, converter: RepresentationConverter) {
+  public constructor(source: T, identifierStrategy: IdentifierStrategy, validator: ShapeValidator) {
     super(source);
     this.identifierStrategy = identifierStrategy;
-    this.converter = converter;
+    this.validator = validator;
   }
 
-  public async addResource(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
-    // Check if the parent has ldp:constrainedBy in the metadata
+  public async addResource(identifier: ResourceIdentifier, representation: Representation, conditions?: Conditions):
+  Promise<ResourceIdentifier> {
     const parentContainer = await this.source.getRepresentation(identifier, {});
-    const shapeURL = parentContainer.metadata.get(LDP.constrainedBy)?.value;
-    let representationData;
 
-    // Convert the RDF representation to a N3.Store
-    const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-    try {
-      // Creating a new representation as the data might be written later by DataAccessorBasedStore
-      const tempRepresentation = await cloneRepresentation(representation);
-      representationData = await this.converter.handleSafe({
-        identifier,
-        representation: tempRepresentation,
-        preferences,
-      });
-    } catch (error: unknown) {
-      representation.data.destroy();
-      throw error;
-    }
-    const dataStore = await readableToQuads(representationData.data);
+    await this.validator.handleSafe({ parentContainerIdentifier: identifier,
+      parentContainerRepresentation: parentContainer,
+      representation });
 
-    if (typeof shapeURL === 'string') {
-      this.logger.debug(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
-      const shape = await fetchDataset(shapeURL, this.converter);
-      const shapeStore = await readableToQuads(shape.data);
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      targetClassCheck(shapeStore, dataStore, shapeURL);
-
-      // Validation of the data
-      const validator = new SHACLValidator(shapeStore);
-      const report = validator.validate(dataStore);
-      this.logger.debug(`Validation of the data: ${report.conforms ? 'success' : 'failure'}`);
-
-      if (!report.conforms) {
-        throw new BadRequestHttpError(`Data does not conform to ${shapeURL}`);
-      }
-    }
     return await this.source.addResource(identifier, representation, conditions);
   }
 
-  public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+  public async modifyResource(identifier: ResourceIdentifier, patch: Patch, conditions?: Conditions):
+  Promise<ResourceIdentifier[]> {
     // Check if the parent has ldp:constrainedBy in the metadata
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
@@ -112,6 +53,13 @@ export class ShapeValidationStore<T extends ResourceStore = ResourceStore> exten
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    if (!this.identifierStrategy.isRootContainer(identifier)) {
+      const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
+      const parentContainer = await this.source.getRepresentation(parentIdentifier, {});
+      await this.validator.handleSafe({ parentContainerIdentifier: parentIdentifier,
+        parentContainerRepresentation: parentContainer,
+        representation });
+    }
     return this.source.setRepresentation(identifier, representation, conditions);
   }
 }

@@ -314,6 +314,8 @@ export * from './storage/RepresentationConvertingStore';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 export * from './storage/ShapeValidationStore';
+export * from './storage/ShaclValidator';
+export * from './storage/ShapeValidator';
 
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';

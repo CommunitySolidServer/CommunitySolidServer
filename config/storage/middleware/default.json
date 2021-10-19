@@ -31,8 +31,12 @@
       "@id": "urn:solid-server:default:ResourceStore_Shape",
       "@type": "ShapeValidationStore",
       "ShapeValidationStore:_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "ShapeValidationStore:_converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" },
-      "ShapeValidationStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Converting" }
+      "ShapeValidationStore:_source": { "@id": "urn:solid-server:default:ResourceStore_Converting" },
+      "ShapeValidationStore:_validator": {
+        "@id": "urn:solid-server:default:ShaclValidator",
+        "@type": "ShaclValidator",
+        "ShaclValidator:_converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" }
+      }
     },
     {
       "@id": "urn:solid-server:default:ResourceStore_Converting",
