@@ -109,7 +109,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
       return stream;
     },
     promises: {
-      lstat(path: string): Stats {
+      async lstat(path: string): Promise<Stats> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -121,18 +121,18 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
           mtime: time,
         } as Stats;
       },
-      unlink(path: string): void {
+      async unlink(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
-        if (!this.lstat(path).isFile()) {
+        if (!(await this.lstat(path)).isFile()) {
           throwSystemError('EISDIR');
         }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
-      rmdir(path: string): void {
+      async rmdir(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -140,13 +140,13 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         if (Object.keys(folder[name]).length > 0) {
           throwSystemError('ENOTEMPTY');
         }
-        if (!this.lstat(path).isDirectory()) {
+        if (!(await this.lstat(path)).isDirectory()) {
           throwSystemError('ENOTDIR');
         }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
-      readdir(path: string): string[] {
+      async readdir(path: string): Promise<string[]> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -166,21 +166,21 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
           } as Dirent;
         }
       },
-      mkdir(path: string): void {
+      async mkdir(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (folder[name]) {
           throwSystemError('EEXIST');
         }
         folder[name] = {};
       },
-      readFile(path: string): string {
+      async readFile(path: string): Promise<string> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
         return folder[name];
       },
-      writeFile(path: string, data: string): void {
+      async writeFile(path: string, data: string): Promise<void> {
         const { folder, name } = getFolder(path);
         folder[name] = data;
       },
