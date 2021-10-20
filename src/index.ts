@@ -298,6 +298,7 @@ export * from './storage/patch/SparqlUpdatePatcher';
 // Storage/Quota
 export * from './storage/quota/QuotaStrategy';
 export * from './storage/quota/GlobalQuotaStrategy';
+export * from './storage/quota/PodQuotaStrategy';
 
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';
