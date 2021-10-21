@@ -109,6 +109,9 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
       return stream;
     },
     promises: {
+      async stat(path: string): Promise<Stats> {
+        return this.lstat(await this.realpath(path));
+      },
       async lstat(path: string): Promise<Stats> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
@@ -117,6 +120,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         return {
           isFile: (): boolean => typeof folder[name] === 'string',
           isDirectory: (): boolean => typeof folder[name] === 'object',
+          isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
           size: typeof folder[name] === 'string' ? folder[name].length : 0,
           mtime: time,
         } as Stats;
@@ -131,6 +135,15 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
+      },
+      async symlink(target: string, path: string): Promise<void> {
+        const { folder, name } = getFolder(path);
+        folder[name] = Symbol(target);
+      },
+      async realpath(path: string): Promise<string> {
+        const { folder, name } = getFolder(path);
+        const entry = folder[name];
+        return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
       },
       async rmdir(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
@@ -158,11 +171,12 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
-        for (const child of Object.keys(folder[name])) {
+        for (const [ child, entry ] of Object.entries(folder[name])) {
           yield {
             name: child,
-            isFile: (): boolean => typeof folder[name][child] === 'string',
-            isDirectory: (): boolean => typeof folder[name][child] === 'object',
+            isFile: (): boolean => typeof entry === 'string',
+            isDirectory: (): boolean => typeof entry === 'object',
+            isSymbolicLink: (): boolean => typeof entry === 'symbol',
           } as Dirent;
         }
       },
