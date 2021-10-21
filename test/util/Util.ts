@@ -109,7 +109,10 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
       return stream;
     },
     promises: {
-      lstat(path: string): Stats {
+      async stat(path: string): Promise<Stats> {
+        return this.lstat(await this.realpath(path));
+      },
+      async lstat(path: string): Promise<Stats> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -117,22 +120,32 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         return {
           isFile: (): boolean => typeof folder[name] === 'string',
           isDirectory: (): boolean => typeof folder[name] === 'object',
+          isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
           size: typeof folder[name] === 'string' ? folder[name].length : 0,
           mtime: time,
         } as Stats;
       },
-      unlink(path: string): void {
+      async unlink(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
-        if (!this.lstat(path).isFile()) {
+        if (!(await this.lstat(path)).isFile()) {
           throwSystemError('EISDIR');
         }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
-      rmdir(path: string): void {
+      async symlink(target: string, path: string): Promise<void> {
+        const { folder, name } = getFolder(path);
+        folder[name] = Symbol(target);
+      },
+      async realpath(path: string): Promise<string> {
+        const { folder, name } = getFolder(path);
+        const entry = folder[name];
+        return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
+      },
+      async rmdir(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -140,13 +153,13 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         if (Object.keys(folder[name]).length > 0) {
           throwSystemError('ENOTEMPTY');
         }
-        if (!this.lstat(path).isDirectory()) {
+        if (!(await this.lstat(path)).isDirectory()) {
           throwSystemError('ENOTDIR');
         }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
-      readdir(path: string): string[] {
+      async readdir(path: string): Promise<string[]> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -158,29 +171,30 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
-        for (const child of Object.keys(folder[name])) {
+        for (const [ child, entry ] of Object.entries(folder[name])) {
           yield {
             name: child,
-            isFile: (): boolean => typeof folder[name][child] === 'string',
-            isDirectory: (): boolean => typeof folder[name][child] === 'object',
+            isFile: (): boolean => typeof entry === 'string',
+            isDirectory: (): boolean => typeof entry === 'object',
+            isSymbolicLink: (): boolean => typeof entry === 'symbol',
           } as Dirent;
         }
       },
-      mkdir(path: string): void {
+      async mkdir(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (folder[name]) {
           throwSystemError('EEXIST');
         }
         folder[name] = {};
       },
-      readFile(path: string): string {
+      async readFile(path: string): Promise<string> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
         return folder[name];
       },
-      writeFile(path: string, data: string): void {
+      async writeFile(path: string, data: string): Promise<void> {
         const { folder, name } = getFolder(path);
         folder[name] = data;
       },
