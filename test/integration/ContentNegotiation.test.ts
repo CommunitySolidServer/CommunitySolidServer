@@ -8,10 +8,14 @@ const port = getPort('ContentNegotiation');
 const baseUrl = `http://localhost:${port}`;
 
 const documents = [
+  [ '/turtle', 'text/turtle', '# Test' ],
   [ '/markdown', 'text/markdown', '# Test' ],
 ];
 
 const cases: [string, string, string][] = [
+  [ '/turtle', 'text/turtle', '' ],
+  [ '/turtle', 'text/turtle', '*/*' ],
+  [ '/turtle', 'application/octet-stream', 'application/octet-stream' ],
   [ '/markdown', 'text/markdown', '' ],
   [ '/markdown', 'text/markdown', '*/*' ],
   [ '/markdown', 'text/markdown', 'text/html,text/markdown' ],
