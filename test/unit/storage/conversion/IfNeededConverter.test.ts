@@ -76,7 +76,7 @@ describe('An IfNeededConverter', (): void => {
     expect(innerConverter.handleSafe).toHaveBeenCalledTimes(0);
   });
 
-  it('performs a conversion when the content type matches the preferences.', async(): Promise<void> => {
+  it('performs a conversion when the content type does not match the preferences.', async(): Promise<void> => {
     const preferences = { type: { 'text/turtle': 0 }};
     const args = { identifier, representation, preferences };
 
@@ -127,5 +127,71 @@ describe('An IfNeededConverter', (): void => {
       .toThrow('The content type does not match the preferences');
     await expect(emptyConverter.handleSafe(args)).rejects
       .toThrow('The content type does not match the preferences');
+  });
+
+  describe('when ignoreWildcards is set to the default', (): void => {
+    const wildcardConverter = new IfNeededConverter(innerConverter);
+
+    it('performs no conversion when */* has the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.9 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(representation);
+    });
+
+    it('performs a conversion when */* does not have the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.7 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
+
+    it('performs a conversion when */* is not preferred.', async(): Promise<void> => {
+      const preferences = { type: { '*/*': 0 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
+  });
+
+  describe('when ignoreWildcards is set to true', (): void => {
+    const wildcardConverter = new IfNeededConverter(innerConverter, true);
+
+    it('performs a conversion when */* has the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.9 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
+
+    it('performs a conversion when */* does not have the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.7 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
+
+    it('performs a conversion when */* is not preferred.', async(): Promise<void> => {
+      const preferences = { type: { '*/*': 0 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
+  });
+
+  describe('when ignoreWildcards is set to false', (): void => {
+    const wildcardConverter = new IfNeededConverter(innerConverter, false);
+
+    it('performs no conversion when */* has the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.9 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(representation);
+    });
+
+    it('performs no conversion when */* does not have the highest preference.', async(): Promise<void> => {
+      const preferences = { type: { 'another/another': 0.6, 'other/other': 0.8, '*/*': 0.7 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(representation);
+    });
+
+    it('performs a conversion when */* is not preferred.', async(): Promise<void> => {
+      const preferences = { type: { '*/*': 0 }};
+      const args = { identifier, representation, preferences };
+      await expect(wildcardConverter.handleSafe(args)).resolves.toBe(converted);
+    });
   });
 });
