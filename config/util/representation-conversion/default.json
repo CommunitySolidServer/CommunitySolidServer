@@ -14,17 +14,24 @@
       "comment": "Handles data conversion when required.",
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
+      "comment": "The conversion steps below are tried in order until one is successful",
       "handlers": [
         { "@id": "urn:solid-server:default:DefaultUiConverter" },
-        { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
         { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
         {
           "@type": "IfNeededConverter",
-          "comment": "Only continue converting if the requester cannot accept the available content type"
+          "comment": "Only continue below if the request does not prefer the current content type"
         },
-        { "@id": "urn:solid-server:default:ContentTypeReplacer" },
         {
-          "comment": "Automatically finds a path through a set of converters from one type to another.",
+          "@id": "urn:solid-server:default:MarkdownToHtmlConverter",
+          "comment": "Some of the internal pages are in Markdown, so we want to convert them"
+        },
+        {
+          "@id": "urn:solid-server:default:ContentTypeReplacer",
+          "comment": "Some content types can be replaced without conversion"
+        },
+        {
+          "comment": "Automatically find a path through a set of converters from one type to another",
           "@id": "urn:solid-server:default:ChainedConverter",
           "@type": "ChainedConverter",
           "converters": [
