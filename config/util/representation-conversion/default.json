@@ -27,10 +27,6 @@
           "comment": "Some of the internal pages are in Markdown, so we want to convert them"
         },
         {
-          "@id": "urn:solid-server:default:ContentTypeReplacer",
-          "comment": "Some content types can be replaced without conversion"
-        },
-        {
           "comment": "Automatically find a path through a set of converters from one type to another",
           "@id": "urn:solid-server:default:ChainedConverter",
           "@type": "ChainedConverter",

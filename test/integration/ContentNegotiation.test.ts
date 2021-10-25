@@ -15,7 +15,7 @@ const documents = [
 const cases: [string, string, string][] = [
   [ '/turtle', 'text/turtle', '' ],
   [ '/turtle', 'text/turtle', '*/*' ],
-  [ '/turtle', 'application/octet-stream', 'application/octet-stream' ],
+  [ '/turtle', 'text/turtle', 'text/html,*/*;q=0.8' ],
   [ '/markdown', 'text/markdown', '' ],
   [ '/markdown', 'text/markdown', '*/*' ],
   [ '/markdown', 'text/markdown', 'text/html,text/markdown' ],
@@ -25,7 +25,9 @@ const cases: [string, string, string][] = [
 ];
 
 const todo: [string, string, string][] = [
+  [ '/turtle', 'application/octet-stream', 'application/octet-stream' ],
   [ '/markdown', 'text/html', 'text/markdown;q=0.1, text/html;q=0.9' ],
+  [ '/markdown', 'application/octet-stream', 'application/octet-stream' ],
 ];
 
 describe('Content negotiation', (): void => {
