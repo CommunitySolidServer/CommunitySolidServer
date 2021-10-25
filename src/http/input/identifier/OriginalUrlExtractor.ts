@@ -45,12 +45,11 @@ export class OriginalUrlExtractor extends TargetExtractor {
     }
 
     // URL object applies punycode encoding to domain
-    const base = `${protocol}://${host}`;
-    const originalUrl = new URL(toCanonicalUriPath(url), base);
-
-    // Drop the query string if requested
-    if (!this.includeQueryString) {
-      originalUrl.search = '';
+    const originalUrl = new URL(`${protocol}://${host}`);
+    const [ , pathname, search ] = /^([^?]*)(.*)/u.exec(toCanonicalUriPath(url))!;
+    originalUrl.pathname = pathname;
+    if (this.includeQueryString && search) {
+      originalUrl.search = search;
     }
 
     return { path: originalUrl.href };

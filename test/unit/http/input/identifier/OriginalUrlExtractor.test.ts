@@ -32,6 +32,12 @@ describe('A OriginalUrlExtractor', (): void => {
       .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
+  it('returns an input URL with multiple leading slashes.', async(): Promise<void> => {
+    const noQuery = new OriginalUrlExtractor({ includeQueryString: true });
+    await expect(noQuery.handle({ request: { url: '///url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
+      .resolves.toEqual({ path: 'http://test.com///url?abc=def&xyz' });
+  });
+
   it('drops the query string when includeQueryString is set to false.', async(): Promise<void> => {
     await expect(extractor.handle({ request: { url: '/url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
       .resolves.toEqual({ path: 'http://test.com/url?abc=def&xyz' });
