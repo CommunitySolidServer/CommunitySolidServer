@@ -11,8 +11,8 @@ import { isContainerIdentifier, isContainerPath } from '../../util/PathUtil';
 import { endOfStream } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import { LDP } from '../../util/Vocabularies';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 interface ResourceDetails {
   name: string;
@@ -23,7 +23,7 @@ interface ResourceDetails {
 /**
  * A {@link RepresentationConverter} that creates a templated representation of a container.
  */
-export class ContainerToTemplateConverter extends TypedRepresentationConverter {
+export class ContainerToTemplateConverter extends BaseTypedRepresentationConverter {
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly templateEngine: TemplateEngine;
   private readonly contentType: string;

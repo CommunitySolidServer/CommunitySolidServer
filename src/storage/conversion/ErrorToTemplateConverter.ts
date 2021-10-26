@@ -6,8 +6,8 @@ import { HttpError } from '../../util/errors/HttpError';
 import { modulePathPlaceholder } from '../../util/PathUtil';
 import { getSingleItem } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 // Fields optional due to https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
 export interface TemplateOptions {
@@ -35,7 +35,7 @@ const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
  * That result will be passed as an additional parameter to the main templating call,
  * using the variable `codeMessage`.
  */
-export class ErrorToTemplateConverter extends TypedRepresentationConverter {
+export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
   private readonly templateEngine: TemplateEngine;
   private readonly mainTemplatePath: string;
   private readonly codeTemplatesPath: string;

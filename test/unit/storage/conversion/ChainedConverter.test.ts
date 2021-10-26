@@ -4,13 +4,13 @@ import type {
   RepresentationPreferences,
   ValuePreferences,
 } from '../../../../src/http/representation/RepresentationPreferences';
+import { BaseTypedRepresentationConverter } from '../../../../src/storage/conversion/BaseTypedRepresentationConverter';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { matchesMediaType } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
-import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
-class DummyConverter extends TypedRepresentationConverter {
+class DummyConverter extends BaseTypedRepresentationConverter {
   private readonly inTypes: ValuePreferences;
   private readonly outTypes: ValuePreferences;
 
