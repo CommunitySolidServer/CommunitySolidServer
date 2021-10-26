@@ -27,7 +27,7 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
   public async handle({ identifier, representation: quads, preferences }: RepresentationConverterArgs):
   Promise<Representation> {
     // Can not be undefined if the `canHandle` call passed
-    const contentType = getConversionTarget(await this.getOutputTypes(), preferences.type)!;
+    const contentType = getConversionTarget(await this.getOutputTypes(INTERNAL_QUADS), preferences.type)!;
     let data: Readable;
 
     // Use prefixes if possible (see https://github.com/rubensworks/rdf-serialize.js/issues/1)
@@ -36,7 +36,7 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
         .map(({ subject, object }): [string, string] => [ object.value, subject.value ]));
       const options = { format: contentType, baseIRI: identifier.path, prefixes };
       data = pipeSafely(quads.data, new StreamWriter(options));
-    // Otherwise, write without prefixes
+      // Otherwise, write without prefixes
     } else {
       data = rdfSerializer.serialize(quads.data, { contentType }) as Readable;
     }

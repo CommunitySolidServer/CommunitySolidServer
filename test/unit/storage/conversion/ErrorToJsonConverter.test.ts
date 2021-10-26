@@ -9,8 +9,7 @@ describe('An ErrorToJsonConverter', (): void => {
   const preferences = {};
 
   it('supports going from errors to json.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'internal/error': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'application/json': 1 });
+    await expect(converter.getOutputTypes('internal/error')).resolves.toEqual({ 'application/json': 1 });
   });
 
   it('adds all HttpError fields.', async(): Promise<void> => {

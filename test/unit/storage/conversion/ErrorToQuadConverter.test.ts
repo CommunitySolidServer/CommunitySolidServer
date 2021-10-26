@@ -13,8 +13,7 @@ describe('An ErrorToQuadConverter', (): void => {
   const preferences = {};
 
   it('supports going from errors to quads.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'internal/error': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'internal/quads': 1 });
+    await expect(converter.getOutputTypes('internal/error')).resolves.toEqual({ 'internal/quads': 1 });
   });
 
   it('adds triples for all error fields.', async(): Promise<void> => {

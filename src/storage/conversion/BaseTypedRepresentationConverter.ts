@@ -1,8 +1,8 @@
 import type { ValuePreferences } from '../../http/representation/RepresentationPreferences';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { getConversionTarget, getTypeWeight } from './ConversionUtil';
-import { RepresentationConverter } from './RepresentationConverter';
+import { getConversionTarget, getTypeWeight, preferencesToString } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
+import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 type PromiseOrValue<T> = T | Promise<T>;
 type ValuePreferencesArg =
@@ -22,30 +22,37 @@ async function toValuePreferences(arg: ValuePreferencesArg): Promise<ValuePrefer
 }
 
 /**
- * A {@link RepresentationConverter} that allows requesting the supported types.
+ * A base {@link TypedRepresentationConverter} implementation for converters
+ * that can convert from all its input types to all its output types.
+ *
+ * This base class handles the `canHandle` call by comparing the input content type to the stored input types
+ * and the output preferences to the stored output types.
+ *
+ * Output weights are determined by multiplying all stored output weights with the weight of the input type.
  */
-export abstract class BaseTypedRepresentationConverter extends RepresentationConverter {
+export abstract class BaseTypedRepresentationConverter extends TypedRepresentationConverter {
   protected inputTypes: Promise<ValuePreferences>;
   protected outputTypes: Promise<ValuePreferences>;
 
-  public constructor(inputTypes: ValuePreferencesArg = {}, outputTypes: ValuePreferencesArg = {}) {
+  public constructor(inputTypes: ValuePreferencesArg, outputTypes: ValuePreferencesArg) {
     super();
     this.inputTypes = toValuePreferences(inputTypes);
     this.outputTypes = toValuePreferences(outputTypes);
   }
 
   /**
-   * Gets the supported input content types for this converter, mapped to a numerical priority.
+   * Matches all inputs to all outputs.
    */
-  public async getInputTypes(): Promise<ValuePreferences> {
-    return this.inputTypes;
-  }
-
-  /**
-   * Gets the supported output content types for this converter, mapped to a numerical quality.
-   */
-  public async getOutputTypes(): Promise<ValuePreferences> {
-    return this.outputTypes;
+  public async getOutputTypes(contentType: string): Promise<ValuePreferences> {
+    const weight = getTypeWeight(contentType, await this.inputTypes);
+    if (weight > 0) {
+      const outputTypes = { ...await this.outputTypes };
+      for (const [ key, value ] of Object.entries(outputTypes)) {
+        outputTypes[key] = value * weight;
+      }
+      return outputTypes;
+    }
+    return {};
   }
 
   /**
@@ -57,19 +64,18 @@ export abstract class BaseTypedRepresentationConverter extends RepresentationCon
    * Throws an error with details if conversion is not possible.
    */
   public async canHandle(args: RepresentationConverterArgs): Promise<void> {
-    const types = [ this.getInputTypes(), this.getOutputTypes() ];
     const { contentType } = args.representation.metadata;
 
     if (!contentType) {
       throw new NotImplementedHttpError('Can not convert data without a Content-Type.');
     }
 
-    const [ inputTypes, outputTypes ] = await Promise.all(types);
+    const outputTypes = await this.getOutputTypes(contentType);
     const outputPreferences = args.preferences.type ?? {};
-    if (getTypeWeight(contentType, inputTypes) === 0 || !getConversionTarget(outputTypes, outputPreferences)) {
+    if (!getConversionTarget(outputTypes, outputPreferences)) {
       throw new NotImplementedHttpError(
-        `Cannot convert from ${contentType} to ${Object.keys(outputPreferences)
-        }, only from ${Object.keys(inputTypes)} to ${Object.keys(outputTypes)}.`,
+        `Cannot convert from ${contentType} to ${preferencesToString(outputPreferences)
+        }, only to ${preferencesToString(outputTypes)}.`,
       );
     }
   }

@@ -3,12 +3,16 @@ import type { ValuePreference, ValuePreferences } from '../../http/representatio
 import { getLoggerFor } from '../../logging/LogUtil';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { cleanPreferences, getBestPreference, getTypeWeight } from './ConversionUtil';
+import { cleanPreferences, getBestPreference, getTypeWeight, preferencesToString } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
 import { RepresentationConverter } from './RepresentationConverter';
 import type { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
-type ConverterPreference = ValuePreference & { converter: TypedRepresentationConverter };
+type ConverterPreference = {
+  converter: TypedRepresentationConverter;
+  inType: string;
+  outTypes: ValuePreferences;
+};
 
 /**
  * A chain of converters that can go from `inTypes` to `outTypes`.
@@ -17,16 +21,15 @@ type ConverterPreference = ValuePreference & { converter: TypedRepresentationCon
 type ConversionPath = {
   converters: TypedRepresentationConverter[];
   intermediateTypes: string[];
-  inTypes: ValuePreferences;
+  inType: string;
   outTypes: ValuePreferences;
 };
 
 /**
- * The result of applying a `ConversionPath` to a specific input.
+ * The result of choosing a specific output for a `ConversionPath`.
  */
 type MatchedPath = {
   path: ConversionPath;
-  inType: string;
   outType: string;
   weight: number;
 };
@@ -78,8 +81,8 @@ export class ChainedConverter extends RepresentationConverter {
       return input.representation;
     }
 
-    const { path, inType, outType } = match;
-    this.logger.debug(`Converting ${inType} -> ${[ ...path.intermediateTypes, outType ].join(' -> ')}.`);
+    const { path, outType } = match;
+    this.logger.debug(`Converting ${path.inType} -> ${[ ...path.intermediateTypes, outType ].join(' -> ')}.`);
 
     const args = { ...input };
     for (let i = 0; i < path.converters.length - 1; ++i) {
@@ -105,7 +108,7 @@ export class ChainedConverter extends RepresentationConverter {
 
     const weight = getTypeWeight(type, preferences);
     if (weight > 0) {
-      this.logger.debug(`No conversion required: ${type} already matches ${Object.keys(preferences)}`);
+      this.logger.debug(`No conversion required: ${type} already matches ${preferencesToString(preferences)}`);
       return { value: type, weight };
     }
 
@@ -122,13 +125,13 @@ export class ChainedConverter extends RepresentationConverter {
     // Generate paths from all converters that match the input type
     let paths = await this.converters.reduce(async(matches: Promise<ConversionPath[]>, converter):
     Promise<ConversionPath[]> => {
-      const inTypes = await converter.getInputTypes();
-      if (getTypeWeight(inType, inTypes) > 0) {
+      const outTypes = await converter.getOutputTypes(inType);
+      if (Object.keys(outTypes).length > 0) {
         (await matches).push({
           converters: [ converter ],
           intermediateTypes: [],
-          inTypes,
-          outTypes: await converter.getOutputTypes(),
+          inType,
+          outTypes,
         });
       }
       return matches;
@@ -137,18 +140,18 @@ export class ChainedConverter extends RepresentationConverter {
     // It's impossible for a path to have a higher weight than this value
     const maxWeight = Math.max(...Object.values(outPreferences));
 
-    let bestPath = this.findBest(inType, outPreferences, paths);
-    paths = this.removeBadPaths(paths, maxWeight, inType, bestPath);
+    let bestPath = this.findBest(outPreferences, paths);
+    paths = this.removeBadPaths(paths, maxWeight, bestPath);
     // This will always stop at some point since paths can't have the same converter twice
     while (paths.length > 0) {
       // For every path, find all the paths that can be made by adding 1 more converter
       const promises = paths.map(async(path): Promise<ConversionPath[]> => this.takeStep(path));
       paths = (await Promise.all(promises)).flat();
-      const newBest = this.findBest(inType, outPreferences, paths);
+      const newBest = this.findBest(outPreferences, paths);
       if (newBest && (!bestPath || newBest.weight > bestPath.weight)) {
         bestPath = newBest;
       }
-      paths = this.removeBadPaths(paths, maxWeight, inType, bestPath);
+      paths = this.removeBadPaths(paths, maxWeight, bestPath);
     }
 
     if (!bestPath) {
@@ -161,18 +164,17 @@ export class ChainedConverter extends RepresentationConverter {
   }
 
   /**
-   * Finds the path from the given list that can convert the given type to the given preferences.
+   * Finds the path from the given list that can convert to the given preferences.
    * If there are multiple matches the one with the highest result weight gets chosen.
    * Will return undefined if there are no matches.
    */
-  private findBest(type: string, preferences: ValuePreferences, paths: ConversionPath[]): MatchedPath | undefined {
+  private findBest(preferences: ValuePreferences, paths: ConversionPath[]): MatchedPath | undefined {
     // Need to use null instead of undefined so `reduce` doesn't take the first element of the array as `best`
     return paths.reduce((best: MatchedPath | null, path): MatchedPath | null => {
       const outMatch = getBestPreference(path.outTypes, preferences);
       if (outMatch && !(best && best.weight >= outMatch.weight)) {
         // Create new MatchedPath, using the output match above
-        const inWeight = getTypeWeight(type, path.inTypes);
-        return { path, inType: type, outType: outMatch.value, weight: inWeight * outMatch.weight };
+        return { path, outType: outMatch.value, weight: outMatch.weight };
       }
       return best;
     }, null) ?? undefined;
@@ -184,11 +186,9 @@ export class ChainedConverter extends RepresentationConverter {
    *
    * @param paths - Paths to filter.
    * @param maxWeight - The maximum weight in the output preferences.
-   * @param inType - The input type.
    * @param bestMatch - The current best path.
    */
-  private removeBadPaths(paths: ConversionPath[], maxWeight: number, inType: string, bestMatch?: MatchedPath):
-  ConversionPath[] {
+  private removeBadPaths(paths: ConversionPath[], maxWeight: number, bestMatch?: MatchedPath): ConversionPath[] {
     // All paths are still good if there is no best match yet
     if (!bestMatch) {
       return paths;
@@ -200,9 +200,7 @@ export class ChainedConverter extends RepresentationConverter {
 
     // Only return paths that can potentially improve upon bestPath
     return paths.filter((path): boolean => {
-      const optimisticWeight = getTypeWeight(inType, path.inTypes) *
-        Math.max(...Object.values(path.outTypes)) *
-        maxWeight;
+      const optimisticWeight = Math.max(...Object.values(path.outTypes)) * maxWeight;
       return optimisticWeight > bestMatch.weight;
     });
   }
@@ -218,9 +216,9 @@ export class ChainedConverter extends RepresentationConverter {
     // Create a new path for every converter that can be appended
     return Promise.all(nextConverters.map(async(pref): Promise<ConversionPath> => ({
       converters: [ ...path.converters, pref.converter ],
-      intermediateTypes: [ ...path.intermediateTypes, pref.value ],
-      inTypes: path.inTypes,
-      outTypes: this.modifyTypeWeights(pref.weight, await pref.converter.getOutputTypes()),
+      intermediateTypes: [ ...path.intermediateTypes, pref.inType ],
+      inType: path.inType,
+      outTypes: pref.outTypes,
     })));
   }
 
@@ -237,13 +235,15 @@ export class ChainedConverter extends RepresentationConverter {
    */
   private async supportedConverters(types: ValuePreferences, converters: TypedRepresentationConverter[]):
   Promise<ConverterPreference[]> {
-    const promises = converters.map(async(converter): Promise<ConverterPreference | undefined> => {
-      const inputTypes = await converter.getInputTypes();
-      const match = getBestPreference(types, inputTypes);
-      if (match) {
-        return { ...match, converter };
+    const typeEntries = Object.entries(types);
+    const results: ConverterPreference[] = [];
+    for (const converter of converters) {
+      for (const [ inType, weight ] of typeEntries) {
+        let outTypes = await converter.getOutputTypes(inType);
+        outTypes = this.modifyTypeWeights(weight, outTypes);
+        results.push({ converter, inType, outTypes });
       }
-    });
-    return (await Promise.all(promises)).filter(Boolean) as ConverterPreference[];
+    }
+    return results;
   }
 }

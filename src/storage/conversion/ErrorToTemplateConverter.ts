@@ -43,7 +43,7 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
   private readonly contentType: string;
 
   public constructor(templateEngine: TemplateEngine, templateOptions?: TemplateOptions) {
-    super(INTERNAL_ERROR, templateOptions?.contentType ?? DEFAULT_TEMPLATE_OPTIONS.contentType);
+    super(INTERNAL_ERROR, templateOptions?.contentType ?? DEFAULT_TEMPLATE_OPTIONS.contentType!);
     // Workaround for https://github.com/LinkedSoftwareDependencies/Components.js/issues/20
     if (!templateOptions || Object.keys(templateOptions).length === 0) {
       templateOptions = DEFAULT_TEMPLATE_OPTIONS;
