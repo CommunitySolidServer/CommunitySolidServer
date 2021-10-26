@@ -97,4 +97,14 @@ describe('A ContentTypeReplacer', (): void => {
     expect(result.data).toBe(data);
     expect(result.metadata.contentType).toBe('application/trig');
   });
+
+  it('returns all matching output types.', async(): Promise<void> => {
+    await expect(converter.getOutputTypes('application/n-triples')).resolves.toEqual({
+      'text/turtle': 1,
+      'application/trig': 1,
+      'application/n-quads': 1,
+      'application/octet-stream': 1,
+      'internal/anything': 1,
+    });
+  });
 });

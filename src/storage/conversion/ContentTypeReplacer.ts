@@ -4,7 +4,7 @@ import type { ValuePreferences } from '../../http/representation/RepresentationP
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { matchesMediaType, getConversionTarget } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { RepresentationConverter } from './RepresentationConverter';
+import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * A {@link RepresentationConverter} that changes the content type
@@ -13,7 +13,7 @@ import { RepresentationConverter } from './RepresentationConverter';
  * Useful for when a content type is binary-compatible with another one;
  * for instance, all JSON-LD files are valid JSON files.
  */
-export class ContentTypeReplacer extends RepresentationConverter {
+export class ContentTypeReplacer extends TypedRepresentationConverter {
   private readonly contentTypeMap: Record<string, ValuePreferences> = {};
 
   /**
@@ -40,15 +40,22 @@ export class ContentTypeReplacer extends RepresentationConverter {
     }
   }
 
+  public async getOutputTypes(contentType: string): Promise<ValuePreferences> {
+    const supported = Object.keys(this.contentTypeMap)
+      .filter((type): boolean => matchesMediaType(contentType, type))
+      .map((type): ValuePreferences => this.contentTypeMap[type]);
+    return Object.assign({} as ValuePreferences, ...supported);
+  }
+
   public async canHandle({ representation, preferences }: RepresentationConverterArgs): Promise<void> {
-    this.getReplacementType(representation.metadata.contentType, preferences.type);
+    await this.getReplacementType(representation.metadata.contentType, preferences.type);
   }
 
   /**
    * Changes the content type on the representation.
    */
   public async handle({ representation, preferences }: RepresentationConverterArgs): Promise<Representation> {
-    const contentType = this.getReplacementType(representation.metadata.contentType, preferences.type);
+    const contentType = await this.getReplacementType(representation.metadata.contentType, preferences.type);
     const metadata = new RepresentationMetadata(representation.metadata, contentType);
     return { ...representation, metadata };
   }
@@ -61,11 +68,9 @@ export class ContentTypeReplacer extends RepresentationConverter {
    * Find a replacement content type that matches the preferences,
    * or throws an error if none was found.
    */
-  private getReplacementType(contentType = 'unknown', preferred: ValuePreferences = {}): string {
-    const supported = Object.keys(this.contentTypeMap)
-      .filter((type): boolean => matchesMediaType(contentType, type))
-      .map((type): ValuePreferences => this.contentTypeMap[type]);
-    const match = getConversionTarget(Object.assign({} as ValuePreferences, ...supported), preferred);
+  private async getReplacementType(contentType = 'unknown', preferred: ValuePreferences = {}): Promise<string> {
+    const supported = await this.getOutputTypes(contentType);
+    const match = getConversionTarget(supported, preferred);
     if (!match) {
       throw new NotImplementedHttpError(`Cannot convert from ${contentType} to ${Object.keys(preferred)}`);
     }
