@@ -1,12 +1,12 @@
+import { BaseTypedRepresentationConverter } from '../../../../src/storage/conversion/BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
-import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
-class CustomTypedRepresentationConverter extends TypedRepresentationConverter {
+class CustomTypedRepresentationConverter extends BaseTypedRepresentationConverter {
   public handle = jest.fn();
 }
 
-describe('A TypedRepresentationConverter', (): void => {
+describe('A BaseTypedRepresentationConverter', (): void => {
   it('defaults to allowing everything.', async(): Promise<void> => {
     const converter = new CustomTypedRepresentationConverter();
     await expect(converter.getInputTypes()).resolves.toEqual({

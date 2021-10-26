@@ -7,14 +7,14 @@ import type { ValuePreferences } from '../../http/representation/RepresentationP
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { pipeSafely } from '../../util/StreamUtil';
 import { PREFERRED_PREFIX_TERM } from '../../util/Vocabularies';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import { getConversionTarget } from './ConversionUtil';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * Converts `internal/quads` to most major RDF serializations.
  */
-export class QuadToRdfConverter extends TypedRepresentationConverter {
+export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
   private readonly outputPreferences?: ValuePreferences;
 
   public constructor(options: { outputPreferences?: Record<string, number> } = {}) {
