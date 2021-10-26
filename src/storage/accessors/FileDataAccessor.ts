@@ -142,7 +142,8 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   /**
-   * Gets the Stats object corresponding to the given file path.
+   * Gets the Stats object corresponding to the given file path,
+   * resolving symbolic links.
    * @param path - File path to get info from.
    *
    * @throws NotFoundHttpError
@@ -150,7 +151,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   protected async getStats(path: string): Promise<Stats> {
     try {
-      return await fsPromises.lstat(path);
+      return await fsPromises.stat(path);
     } catch (error: unknown) {
       if (isSystemError(error) && error.code === 'ENOENT') {
         throw new NotFoundHttpError('', { cause: error });
@@ -273,16 +274,23 @@ export class FileDataAccessor implements DataAccessor {
 
     // For every child in the container we want to generate specific metadata
     for await (const entry of dir) {
-      const childName = entry.name;
+      // Obtain details of the entry, resolving any symbolic links
+      const childPath = joinFilePath(link.filePath, entry.name);
+      let childStats;
+      try {
+        childStats = await this.getStats(childPath);
+      } catch {
+        // Skip this entry if details could not be retrieved (e.g., bad symbolic link)
+        continue;
+      }
 
       // Ignore non-file/directory entries in the folder
-      if (!entry.isFile() && !entry.isDirectory()) {
+      if (!childStats.isFile() && !childStats.isDirectory()) {
         continue;
       }
 
       // Generate the URI corresponding to the child resource
-      const childLink = await this.resourceMapper
-        .mapFilePathToUrl(joinFilePath(link.filePath, childName), entry.isDirectory());
+      const childLink = await this.resourceMapper.mapFilePathToUrl(childPath, childStats.isDirectory());
 
       // Hide metadata files
       if (childLink.isMetadata) {
@@ -290,7 +298,6 @@ export class FileDataAccessor implements DataAccessor {
       }
 
       // Generate metadata of this specific child
-      const childStats = await fsPromises.lstat(joinFilePath(link.filePath, childName));
       const metadata = new RepresentationMetadata(childLink.identifier);
       addResourceMetadata(metadata, childStats.isDirectory());
       this.addPosixMetadata(metadata, childStats);

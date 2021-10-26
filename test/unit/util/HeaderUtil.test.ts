@@ -6,6 +6,7 @@ import {
   parseAcceptDateTime,
   parseAcceptEncoding,
   parseAcceptLanguage,
+  parseContentType,
   parseForwarded,
 } from '../../../src/util/HeaderUtil';
 
@@ -187,6 +188,18 @@ describe('HeaderUtil', (): void => {
     });
   });
 
+  describe('#parseContentType', (): void => {
+    const contentTypeTurtle = 'text/turtle';
+    it('handles single content-type parameter (with leading and trailing whitespaces).', (): void => {
+      expect(parseContentType('text/turtle').type).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/turtle ').type).toEqual(contentTypeTurtle);
+      expect(parseContentType(' text/turtle').type).toEqual(contentTypeTurtle);
+    });
+
+    it('handles multiple content-type parameters.', (): void => {
+      expect(parseContentType('text/turtle; charset=UTF-8').type).toEqual(contentTypeTurtle);
+    });
+  });
   describe('#parseForwarded', (): void => {
     it('handles an empty set of headers.', (): void => {
       expect(parseForwarded({})).toEqual({});

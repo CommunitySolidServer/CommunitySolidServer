@@ -124,11 +124,18 @@ ul {
 li {
   margin: .5em 0;
 }
+li p {
+  margin: 0;
+}
 ul > li {
   list-style-type: square;
 }
 ul > li::marker {
   color: var(--solid-purple);
+}
+ul ul, ol ul {
+  margin-top: 0;
+  padding-left: 1em;
 }
 
 pre {

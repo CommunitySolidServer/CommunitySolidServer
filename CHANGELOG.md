@@ -1,6 +1,50 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.0"></a>
+## [v2.0.0](https://github.com/solid/community-server/compare/v1.1.0...v2.0.0) - 2021-10-15
+
+### Added
+* [feat: Keep track of last modified date of resources](https://github.com/solid/community-server/commit/97c534b2bf3a4b7821397ef46aa0ae724a023bb5)
+* [feat: Expose Last-Modified and ETag headers](https://github.com/solid/community-server/commit/77d695c8b6d23b143536eaddd70a8e593926032c)
+* [feat: Create conditions based on input headers](https://github.com/solid/community-server/commit/20f783a5811810fa062a61876ebd9bce76a04d75)
+* [feat: Verify conditions in DataAccessorBasedStore](https://github.com/solid/community-server/commit/0d42987bbd2d68bfbc81e5270e16870d994f322e)
+* [feat: Use RequestParser and ResponseWriter for IDP](https://github.com/solid/community-server/commit/7b7040a1969d10c5dbe30ba70499873941d1f97a)
+* [feat: Support content negotiation for IDP requests](https://github.com/solid/community-server/commit/80ebd02cc40773f7971bb24ef7ba071eb37db7f0)
+* [feat: Add support for agentGroup ACL rules](https://github.com/solid/community-server/commit/401923b792b6d1dcd51b6645cf414274560fd38d)
+* [feat: Support LDN inbox headers](https://github.com/solid/community-server/commit/759112bc04fe3395894dac8a419c59e7d611155d)
+* [feat: Convert IDP input data to JSON](https://github.com/solid/community-server/commit/4f1a86dfa0ef91afa44d94494421d79808b43a1c)
+* [feat: Support JSON errors](https://github.com/solid/community-server/commit/cc1c3d9223aede72232bb716be20030406179297)
+* [feat: Patch containers by recreating Representation from metadata](https://github.com/solid/community-server/commit/ef9703e2846efc6638d08667598b1e7045a8e58b)
+* [feat: Create SetupHttpHandler](https://github.com/solid/community-server/commit/4e1a2f5981a3b902dfea40ea4e8a710ce88e9cf6)
+* [feat: Integrate setup behaviour](https://github.com/solid/community-server/commit/b592d449ebece81875e37ccc0fe8dfa4a3124a70)
+* [feat: Let CredentialsExtractors specify what type of Credentials they generate](https://github.com/solid/community-server/commit/c3fa74de78efbcbd5008f42877cdeed92dfa9f9b)
+* [feat: Create UnionHandler to combine AsyncHandler results](https://github.com/solid/community-server/commit/62f026f2bc259125baf28b6c1338e05c3046dafb)
+* [feat: Combine the results of multiple CredentialsExtractors](https://github.com/solid/community-server/commit/ba1886ab85d222cc38c78a57b3256b5b4403ae99)
+* [feat: Extract set of required modes instead of PermissionSet](https://github.com/solid/community-server/commit/e8dedf5c239f12c36b414c1dd9c6419a31f467de)
+* [feat: Use PermissionReaders to determine available permissions](https://github.com/solid/community-server/commit/bf28c83ffab3c9779e28284a313bfdff31e62c2b)
+* [feat: Create OperationMetadataCollector to handle operation metadata](https://github.com/solid/community-server/commit/5104cd56e896c654873a68e3f13d1776d93b98fa)
+* [feat: Store account settings separately](https://github.com/solid/community-server/commit/6c4ccb334de93d42451f9443afebfc0bc264b95b)
+* [feat: Always grant control permissions to pod owners](https://github.com/solid/community-server/commit/8f5d61911d771c623cfb20b0ecded3ea913fc899)
+* [feat: Support acl authorization for IDP components](https://github.com/solid/community-server/commit/13c49045d47ef685223941bb926a9d34bace14c8)
+
+### Fixed
+* [fix: Explain why logging in will not work](https://github.com/solid/community-server/commit/a062a710bca6148b38050083786eb5ca5dfd5459)
+* [fix: Prevent parent containers from storing generated metadata](https://github.com/solid/community-server/commit/7f3eab0b20e6f9a92c8abf642e82cd55440142fe)
+* [fix: Make json-ld prefix generation deterministic](https://github.com/solid/community-server/commit/a75d5aa63c55b7481ea4b3aa7cd4b2eb1f8daa5b)
+* [fix: Hide internal data by making it auxiliary](https://github.com/solid/community-server/commit/0271133d33b27a0fe5faec8e0a556becdcd15d79)
+* [fix: Only check DataAccessor canHandle call for Documents](https://github.com/solid/community-server/commit/a1c3633a25d09633cac46a77b85f05a31b1a28b7)
+* [feat: Replace acl specific permissions with generic permissions](https://github.com/solid/community-server/commit/7f8b923399d0b9510ed1aaf4615e49b568ae5ea7)
+* [fix: Add required triple to pod README acl](https://github.com/solid/community-server/commit/f40e2c768f54c7c78972c2ea3ffaec8d365a7aa6)
+* [fix: Let Representations always have a body](https://github.com/solid/community-server/commit/5613ff9e71a31c1d75589e7bcabfb6209e397902)
+* [fix: Return 201 when creating new resources](https://github.com/solid/community-server/commit/76c87bb56ae68e78bedc69a0798a149a187ed472)
+* [fix: Return 409 when there is a slash semantics issue](https://github.com/solid/community-server/commit/fb3a59c0541fef61be622a18a79c822192c85420)
+
+### Changed
+* [change: Rename resourceStore to aclStore.](https://github.com/solid/community-server/commit/60fc273ea5364e59361aa1542839bc09c3bb3bc3)
+* [refactor: Restructure source code folder](https://github.com/solid/community-server/commit/b3da9c9fcfb642e8a8a6d537b2e69cbd74ee8a88)
+
+
 <a name="v1.1.0"></a>
 ## [v1.1.0](https://github.com/solid/community-server/compare/v1.0.0...v1.1.0) - 2021-09-03
 
