@@ -21,12 +21,12 @@
           "@type": "IfNeededConverter",
           "comment": "Only continue converting if the requester cannot accept the available content type"
         },
-        { "@id": "urn:solid-server:default:ContentTypeReplacer" },
         {
           "comment": "Automatically finds a path through a set of converters from one type to another.",
           "@id": "urn:solid-server:default:ChainedConverter",
           "@type": "ChainedConverter",
           "converters": [
+            { "@id": "urn:solid-server:default:ContentTypeReplacer" },
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
             { "@id": "urn:solid-server:default:ContainerToTemplateConverter" },
