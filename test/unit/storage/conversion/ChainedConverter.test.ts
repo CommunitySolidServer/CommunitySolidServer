@@ -15,17 +15,9 @@ class DummyConverter extends BaseTypedRepresentationConverter {
   private readonly outTypes: ValuePreferences;
 
   public constructor(inTypes: ValuePreferences, outTypes: ValuePreferences) {
-    super();
+    super(inTypes, outTypes);
     this.inTypes = inTypes;
     this.outTypes = outTypes;
-  }
-
-  public async getInputTypes(): Promise<ValuePreferences> {
-    return this.inTypes;
-  }
-
-  public async getOutputTypes(): Promise<ValuePreferences> {
-    return this.outTypes;
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {

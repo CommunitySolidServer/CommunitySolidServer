@@ -6,12 +6,7 @@ import { RepresentationConverter } from './RepresentationConverter';
  */
 export abstract class TypedRepresentationConverter extends RepresentationConverter {
   /**
-   * Gets the supported input content types for this converter, mapped to a numerical priority.
+   * Gets the output content types this converter can convert the input type to, mapped to a numerical priority.
    */
-  public abstract getInputTypes(): Promise<ValuePreferences>;
-
-  /**
-   * Gets the supported output content types for this converter, mapped to a numerical quality.
-   */
-  public abstract getOutputTypes(): Promise<ValuePreferences>;
+  public abstract getOutputTypes(contentType: string): Promise<ValuePreferences>;
 }

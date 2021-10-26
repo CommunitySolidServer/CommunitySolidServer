@@ -22,15 +22,7 @@ const logger: jest.Mocked<Logger> = getLoggerFor('GuardedStream') as any;
 
 class DummyConverter extends BaseTypedRepresentationConverter {
   public constructor() {
-    super('*/*', 'custom/type');
-  }
-
-  public async getInputTypes(): Promise<Record<string, number>> {
-    return { [INTERNAL_QUADS]: 1 };
-  }
-
-  public async getOutputTypes(): Promise<Record<string, number>> {
-    return { 'x/x': 1 };
+    super(INTERNAL_QUADS, 'x/x');
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {
