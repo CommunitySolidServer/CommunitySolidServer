@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^1.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
   "comment": "DataAccessor configuration using a GlobalQuotaStrategy to enforce quota globally on the server",
   "@graph": [
     {
