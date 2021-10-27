@@ -122,7 +122,7 @@
     "rdf-serialize": "^1.1.0",
     "redis": "^3.1.2",
     "redlock": "^4.2.0",
-    "sparqlalgebrajs": "^3.0.0",
+    "sparqlalgebrajs": "^4.0.1",
     "sparqljs": "^3.4.2",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2",
