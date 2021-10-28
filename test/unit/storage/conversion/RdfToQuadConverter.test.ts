@@ -17,9 +17,9 @@ describe('A RdfToQuadConverter', (): void => {
   const identifier: ResourceIdentifier = { path: 'path' };
 
   it('supports serializing as quads.', async(): Promise<void> => {
-    const types = Object.entries(await rdfParser.getContentTypesPrioritized());
-    for (const [ type, weight ] of types) {
-      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: weight });
+    const types = await rdfParser.getContentTypes();
+    for (const type of types) {
+      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
     }
   });
 

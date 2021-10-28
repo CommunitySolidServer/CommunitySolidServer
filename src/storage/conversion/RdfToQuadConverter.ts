@@ -13,7 +13,7 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  */
 export class RdfToQuadConverter extends BaseTypedRepresentationConverter {
   public constructor() {
-    super(rdfParser.getContentTypesPrioritized(), INTERNAL_QUADS);
+    super(rdfParser.getContentTypes(), INTERNAL_QUADS);
   }
 
   public async handle({ representation, identifier }: RepresentationConverterArgs): Promise<Representation> {
