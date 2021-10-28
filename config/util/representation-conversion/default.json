@@ -15,12 +15,7 @@
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
         { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
-        {
-          "@type": "IfNeededConverter",
-          "comment": "Only continue converting if the requester cannot accept the available content type"
-        },
         {
           "comment": "Automatically finds a path through a set of converters from one type to another.",
           "@id": "urn:solid-server:default:ChainedConverter",
