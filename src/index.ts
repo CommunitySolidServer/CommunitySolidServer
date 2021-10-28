@@ -261,7 +261,6 @@ export * from './storage/conversion/ErrorToJsonConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/FormToJsonConverter';
-export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';
 export * from './storage/conversion/QuadToRdfConverter';
