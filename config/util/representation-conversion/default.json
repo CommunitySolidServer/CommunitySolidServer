@@ -15,7 +15,6 @@
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:DefaultUiConverter" },
         { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
         { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
         {
@@ -38,6 +37,16 @@
             { "@id": "urn:solid-server:default:FormToJsonConverter" }
           ]
         }
+      ]
+    },
+
+    {
+      "comment": "Converts either to a default UI or to a representation.",
+      "@id": "urn:solid-server:default:UiEnabledConverter",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:DefaultUiConverter" },
+        { "@id": "urn:solid-server:default:RepresentationConverter" }
       ]
     }
   ]

@@ -9,7 +9,7 @@
       "errorHandler": {
         "comment": "Changes an error into a valid representation to send as a response.",
         "@type": "ConvertingErrorHandler",
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
+        "converter": { "@id": "urn:solid-server:default:UiEnabledConverter" },
         "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" }
       }
     }
