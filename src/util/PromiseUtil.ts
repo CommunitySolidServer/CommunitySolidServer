@@ -1,3 +1,5 @@
+import { createAggregateError } from './errors/HttpErrorUtil';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const infinitePromise = new Promise<boolean>((): void => {});
 
@@ -27,4 +29,27 @@ export async function promiseSome(predicates: Promise<boolean>[]): Promise<boole
   // Either one of the infinitePredicates will return true,
   // or finalPromise will return the result if none of them did or finalPromise was faster
   return Promise.race([ ...infinitePredicates, finalPromise ]);
+}
+
+/**
+ * Obtains the values of all fulfilled promises.
+ * If there are rejections (and `ignoreErrors` is false), throws a combined error of all rejected promises.
+ */
+export async function allFulfilled<T>(promises: Promise<T> [], ignoreErrors = false): Promise<T[]> {
+  // Collect values and errors
+  const values: T[] = [];
+  const errors: Error[] = [];
+  for (const result of await Promise.allSettled(promises)) {
+    if (result.status === 'fulfilled') {
+      values.push(result.value);
+    } else if (!ignoreErrors) {
+      errors.push(result.reason);
+    }
+  }
+
+  // Either throw or return
+  if (errors.length > 0) {
+    throw createAggregateError(errors);
+  }
+  return values;
 }

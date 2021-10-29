@@ -1,5 +1,4 @@
-import { assertError, createErrorMessage, getStatusCode, isError } from '../../../../src/util/errors/ErrorUtil';
-import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { assertError, createErrorMessage, isError } from '../../../../src/util/errors/ErrorUtil';
 
 describe('ErrorUtil', (): void => {
   describe('#isError', (): void => {
@@ -37,16 +36,6 @@ describe('ErrorUtil', (): void => {
 
     it('tries to put the object in a string .', async(): Promise<void> => {
       expect(createErrorMessage('apple')).toBe('Unknown error: apple');
-    });
-  });
-
-  describe('#getStatusCode', (): void => {
-    it('returns the corresponding status code for HttpErrors.', async(): Promise<void> => {
-      expect(getStatusCode(new NotFoundHttpError())).toBe(404);
-    });
-
-    it('returns 500 for other errors.', async(): Promise<void> => {
-      expect(getStatusCode(new Error('404'))).toBe(500);
     });
   });
 });
