@@ -45,6 +45,8 @@ jobs:
           - '14.x'
           - '16.0'
           - '16.x'
+          - '17.0'
+          - '17.x'
     timeout-minutes: 10
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
