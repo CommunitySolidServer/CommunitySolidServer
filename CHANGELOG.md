@@ -4,21 +4,14 @@ All notable changes to this project will be documented in this file.
 <a name="v2.0.1"></a>
 ## [v2.0.1](https://github.com/solid/community-server/compare/v2.0.0...v2.0.1) - 2021-11-02
 
-### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
-* [fix: Do not serve UI on special pages.](https://github.com/solid/community-server/commit/8c9887feea7ac27d8acf67f4a0cd52f3e417a483)
-* [chore: Run CI on version branches.](https://github.com/solid/community-server/commit/e1a4ef29b9d5b2e1943dee063594a5b9016990c1)
-* [chore: Run CI on Node 17.](https://github.com/solid/community-server/commit/a17731ed1e0cacb6b02b708c7a52734e7a86afd8)
-* [chore: Gather coverage from all OSes.](https://github.com/solid/community-server/commit/557ba3257782d9da28ca910a484c8649303ba717)
-* [chore: Run integration tests separately.](https://github.com/solid/community-server/commit/b8db72dfd30911a387be10048dbad4c5080fcdba)
-* [chore: Fix dependency vulnerabilities.](https://github.com/solid/community-server/commit/81e76948450af0df9b6b45a4ece2d3c1755f4101)
-* [fix: Allow URLs with multiple leading slashes.](https://github.com/solid/community-server/commit/b42150cf52212ff2d6ba76e0db78faf71b10db89)
+### Added
 * [feat: Display symlinks in container listings.](https://github.com/solid/community-server/commit/2e4589938f4475a1a776dbc82ca4fd1501360764)
-* [chore: Ignore test/tmp.](https://github.com/solid/community-server/commit/9f241631f837f2b4e59aae646fdccdf31ecc9d11)
-* [docs: Add more warning to root ACLs.](https://github.com/solid/community-server/commit/93b71eb72688cc501a9435325699eea55b93974c)
-* [chore: Add v2.1.0 branch to conformance test run](https://github.com/solid/community-server/commit/d81b9ef2a4a0a8333f49c2f552433d1f87d42120)
+
+### Fixed
 * [fix: Added a content-type parser to HeaderUtil](https://github.com/solid/community-server/commit/54ccbed48dcce890df02d230c64a51d15f5ca6b5)
-* [chore: Remove v2.0.0 branch from conformance test CI](https://github.com/solid/community-server/commit/2a48b1f3334b2e560bae79820d5d6b168b9228c9)
-* [chore: Update @solid/access-token-verifier to v1.0.1](https://github.com/solid/community-server/commit/6f858be3507648f0afd6b88e635c6282d5cde97e)
+* [fix: Allow URLs with multiple leading slashes.](https://github.com/solid/community-server/commit/b42150cf52212ff2d6ba76e0db78faf71b10db89)
+* [fix: Do not serve UI on special pages.](https://github.com/solid/community-server/commit/8c9887feea7ac27d8acf67f4a0cd52f3e417a483)
+
 
 <a name="v2.0.0"></a>
 ## [v2.0.0](https://github.com/solid/community-server/compare/v1.1.0...v2.0.0) - 2021-10-15
