@@ -3,9 +3,9 @@
   "@graph": [
     {
       "comment": [
-        "Sets all the relevant oidc parameters.",
-        "webid claim is in openid scope until an official scope has been decided: https://github.com/solid/authentication-panel/issues/86"
-        ],
+        "Sets all the relevant Solid-OIDC parameters.",
+        "dPoP is draft-01 since that is the latest version v6 of the OIDC library supports."
+      ],
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
       "args_adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
@@ -16,14 +16,12 @@
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "config": {
         "claims": {
-          "openid": [ "webid", "client_id" ]
+          "openid": [ "client_id" ],
+          "webid": [ "webid" ]
         },
         "cookies": {
           "long": { "signed": true, "maxAge": 86400000 },
           "short": { "signed": true }
-        },
-        "discovery": {
-          "solid_oidc_supported": "https://solidproject.org/TR/solid-oidc"
         },
         "features": {
           "claimsParameter": { "enabled": true },
@@ -36,8 +34,8 @@
         "formats": {
           "AccessToken": "jwt"
         },
-        "scopes": [ "openid", "profile", "offline_access" ],
-        "subjectTypes": [ "public", "pairwise" ],
+        "scopes": [ "openid", "profile", "offline_access", "webid" ],
+        "subjectTypes": [ "public" ],
         "ttl": {
           "AccessToken": 3600,
           "AuthorizationCode": 600,
