@@ -65,7 +65,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.github_token }}
-          flag-name: run-${{ matrix.node-version }}
+          flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
           parallel: true
       - name: Run deployment tests
         run: npm run test:deploy
