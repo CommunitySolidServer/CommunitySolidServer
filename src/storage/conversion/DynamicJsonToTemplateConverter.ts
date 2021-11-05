@@ -24,6 +24,8 @@ import type { RepresentationConverterArgs } from './RepresentationConverter';
  * describing the content-type of that template.
  *
  * The output of the result depends on the content-type matched with the template.
+ * In case JSON is the most preferred output type,
+ * the input representation will be returned unless a JSON template is defined.
  */
 export class DynamicJsonToTemplateConverter extends RepresentationConverter {
   private readonly templateEngine: TemplateEngine;
@@ -51,6 +53,11 @@ export class DynamicJsonToTemplateConverter extends RepresentationConverter {
     const typeMap = this.constructTypeMap(identifier, representation);
     const type = this.findType(typeMap, preferences.type);
 
+    // No conversion needed if JSON is requested and there is no specific JSON template
+    if (type === APPLICATION_JSON && typeMap[APPLICATION_JSON].length === 0) {
+      return representation;
+    }
+
     const json = JSON.parse(await readableToString(representation.data));
 
     const rendered = await this.templateEngine.render(json, { templateFile: typeMap[type] });
@@ -69,6 +76,11 @@ export class DynamicJsonToTemplateConverter extends RepresentationConverter {
       .map((quad): Term => quad.object)
       .filter((term: Term): boolean => term.termType === 'NamedNode') as NamedNode[];
 
+    // This handler should only cover cases where templates are defined
+    if (templates.length === 0) {
+      throw new NotImplementedHttpError('No templates found.');
+    }
+
     // Maps all content-types to their template
     const typeMap: Record<string, string> = {};
     for (const template of templates) {
@@ -77,6 +89,12 @@ export class DynamicJsonToTemplateConverter extends RepresentationConverter {
         typeMap[type] = template.value;
       }
     }
+
+    // Not using a template is always an option unless there is a specific JSON template
+    if (!typeMap[APPLICATION_JSON]) {
+      typeMap[APPLICATION_JSON] = '';
+    }
+
     return typeMap;
   }
 
