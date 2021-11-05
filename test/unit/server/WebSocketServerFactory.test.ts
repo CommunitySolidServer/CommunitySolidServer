@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import request from 'supertest';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { BaseHttpServerFactory } from '../../../src/server/BaseHttpServerFactory';
 import type { HttpHandlerInput } from '../../../src/server/HttpHandler';
 import { HttpHandler } from '../../../src/server/HttpHandler';

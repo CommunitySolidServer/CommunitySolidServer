@@ -1,6 +1,6 @@
 import type { Server } from 'http';
 import type { Socket } from 'net';
-import type WebSocket from 'ws';
+import type { WebSocket } from 'ws';
 import { Server as WebSocketServer } from 'ws';
 import type { HttpRequest } from './HttpRequest';
 import type { HttpServerFactory } from './HttpServerFactory';

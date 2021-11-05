@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import type WebSocket from 'ws';
+import type { WebSocket } from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
