@@ -165,6 +165,7 @@ export * from './identity/storage/WebIdAdapterFactory';
 
 // Identity
 export * from './identity/IdentityProviderHttpHandler';
+export * from './identity/OidcHttpHandler';
 
 // Init/Final
 export * from './init/final/Finalizable';

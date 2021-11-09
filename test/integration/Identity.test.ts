@@ -378,7 +378,7 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('should return correct error output.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}idp/auth`);
+      const res = await fetch(`${baseUrl}.oidc/auth`);
       expect(res.status).toBe(400);
       await expect(res.text()).resolves.toContain('InvalidRequest: invalid_request');
     });

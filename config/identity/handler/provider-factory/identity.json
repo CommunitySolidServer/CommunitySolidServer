@@ -10,6 +10,7 @@
       "@type": "IdentityProviderFactory",
       "args_adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_oidcPath": "/.oidc",
       "args_idpPath": "/idp",
       "args_storage": { "@id": "urn:solid-server:default:IdpKeyStorage" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },

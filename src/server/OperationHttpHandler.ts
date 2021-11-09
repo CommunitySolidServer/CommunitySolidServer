@@ -9,8 +9,6 @@ export interface OperationHttpHandlerInput extends HttpHandlerInput {
 
 /**
  * An HTTP handler that makes use of an already parsed Operation.
- * Can either return a ResponseDescription to be resolved by the calling class,
- * or undefined if this class handles the response itself.
  */
 export abstract class OperationHttpHandler
-  extends AsyncHandler<OperationHttpHandlerInput, ResponseDescription | undefined> {}
+  extends AsyncHandler<OperationHttpHandlerInput, ResponseDescription> {}

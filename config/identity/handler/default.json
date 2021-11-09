@@ -14,7 +14,7 @@
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_allowedMethods": [ "*" ],
-      "args_allowedPathNames": [ "^/idp/.*", "^/\\.well-known/openid-configuration" ],
+      "args_allowedPathNames": [ "^/idp/.*" ],
       "args_handler": { "@id": "urn:solid-server:default:IdentityProviderParsingHandler" }
     },
     {

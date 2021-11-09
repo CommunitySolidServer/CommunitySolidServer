@@ -17,6 +17,7 @@ import type {
   RepresentationConverter,
   RepresentationConverterArgs,
 } from '../../../src/storage/conversion/RepresentationConverter';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { joinUrl } from '../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
@@ -46,7 +47,6 @@ describe('An IdentityProviderHttpHandler', (): void => {
     };
 
     provider = {
-      callback: jest.fn(),
       interactionDetails: jest.fn(),
     } as any;
 
@@ -113,11 +113,9 @@ describe('An IdentityProviderHttpHandler', (): void => {
     handler = new IdentityProviderHttpHandler(args);
   });
 
-  it('calls the provider if there is no matching route.', async(): Promise<void> => {
+  it('throws a 404 if there is no matching route.', async(): Promise<void> => {
     operation.target.path = joinUrl(baseUrl, 'invalid');
-    await expect(handler.handle({ request, response, operation })).resolves.toBeUndefined();
-    expect(provider.callback).toHaveBeenCalledTimes(1);
-    expect(provider.callback).toHaveBeenLastCalledWith(request, response);
+    await expect(handler.handle({ request, response, operation })).rejects.toThrow(NotFoundHttpError);
   });
 
   it('creates Representations for InteractionResponseResults.', async(): Promise<void> => {
