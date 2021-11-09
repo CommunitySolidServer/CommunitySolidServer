@@ -15,6 +15,9 @@ The following changes are relevant for v2 custom configs that replaced certain f
   - `/util/representation-conversion/default.json`
 - The IDP settings have changed to support the latest Solid-OIDC draft.
   - `/identity/handler/provider-factory/identity.json`
+- Requests targeting the OIDC library now use a separate handler.
+  - `/http/handler/default.json`
+  - `/identity/handler/default.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

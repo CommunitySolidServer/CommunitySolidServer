@@ -10,6 +10,7 @@ import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
+import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata, cloneRepresentation } from '../util/ResourceUtil';
 import { readJsonStream } from '../util/StreamUtil';
@@ -77,8 +78,6 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
   private readonly controls: Record<string, string>;
 
   public constructor(args: IdentityProviderHttpHandlerArgs) {
-    // It is important that the RequestParser does not read out the Request body stream.
-    // Otherwise we can't pass it anymore to the OIDC library when needed.
     super();
     // Trimming trailing slashes so the relative URL starts with a slash after slicing this off
     this.baseUrl = trimTrailingSlashes(joinUrl(args.baseUrl, args.idpPath));
@@ -97,29 +96,19 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
   /**
    * Finds the matching route and resolves the operation.
    */
-  public async handle({ operation, request, response }: OperationHttpHandlerInput):
-  Promise<ResponseDescription | undefined> {
+  public async handle({ operation, request, response }: OperationHttpHandlerInput): Promise<ResponseDescription> {
     // This being defined means we're in an OIDC session
     let oidcInteraction: Interaction | undefined;
     try {
       const provider = await this.providerFactory.getProvider();
-      // This being defined means we're in an OIDC session
       oidcInteraction = await provider.interactionDetails(request, response);
     } catch {
       // Just a regular request
     }
 
-    // If our own interaction handler does not support the input, it is either invalid or a request for the OIDC library
     const route = await this.findRoute(operation, oidcInteraction);
-
     if (!route) {
-      const provider = await this.providerFactory.getProvider();
-      this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
-      // Even though the typings do not indicate this, this is a Promise that needs to be awaited.
-      // Otherwise the `BaseHttpServerFactory` will write a 404 before the OIDC library could handle the response.
-      // eslint-disable-next-line @typescript-eslint/await-thenable
-      await provider.callback(request, response);
-      return;
+      throw new NotFoundHttpError();
     }
 
     // Cloning input data so it can be sent back in case of errors
@@ -149,7 +138,7 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
    */
   private async findRoute(operation: Operation, oidcInteraction?: Interaction): Promise<InteractionRoute | undefined> {
     if (!operation.target.path.startsWith(this.baseUrl)) {
-      // This is either an invalid request or a call to the .well-known configuration
+      // This is an invalid request
       return;
     }
     const pathName = operation.target.path.slice(this.baseUrl.length);
