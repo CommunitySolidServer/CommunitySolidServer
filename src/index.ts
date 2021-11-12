@@ -86,6 +86,7 @@ export * from './http/ldp/PutOperationHandler';
 // HTTP/Output/Error
 export * from './http/output/error/ConvertingErrorHandler';
 export * from './http/output/error/ErrorHandler';
+export * from './http/output/error/RedirectingErrorHandler';
 export * from './http/output/error/SafeErrorHandler';
 
 // HTTP/Output/Metadata
@@ -320,13 +321,16 @@ export * from './util/errors/BadRequestHttpError';
 export * from './util/errors/ConflictHttpError';
 export * from './util/errors/ErrorUtil';
 export * from './util/errors/ForbiddenHttpError';
+export * from './util/errors/FoundHttpError';
 export * from './util/errors/HttpError';
 export * from './util/errors/HttpErrorUtil';
 export * from './util/errors/InternalServerError';
 export * from './util/errors/MethodNotAllowedHttpError';
+export * from './util/errors/MovedPermanentlyHttpError';
 export * from './util/errors/NotFoundHttpError';
 export * from './util/errors/NotImplementedHttpError';
 export * from './util/errors/PreconditionFailedHttpError';
+export * from './util/errors/RedirectHttpError';
 export * from './util/errors/SystemError';
 export * from './util/errors/UnauthorizedHttpError';
 export * from './util/errors/UnsupportedMediaTypeHttpError';

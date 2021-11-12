@@ -10,6 +10,7 @@ import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
+import { FoundHttpError } from '../util/errors/FoundHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata, cloneRepresentation } from '../util/ResourceUtil';
@@ -167,7 +168,7 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
       }
       // Create a redirect URL with the OIDC library
       const location = await this.interactionCompleter.handleSafe({ ...result.details, request });
-      responseDescription = new RedirectResponseDescription(location);
+      responseDescription = new RedirectResponseDescription(new FoundHttpError(location));
     } else if (result.type === 'error') {
       // We want to show the errors on the original page in case of html interactions, so we can't just throw them here
       const preferences = { type: { [APPLICATION_JSON]: 1 }};
