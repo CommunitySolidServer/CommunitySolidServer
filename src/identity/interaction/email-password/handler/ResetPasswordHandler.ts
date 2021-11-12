@@ -1,10 +1,10 @@
 import assert from 'assert';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { readJsonStream } from '../../../../util/StreamUtil';
+import type { InteractionResponseResult, InteractionHandlerInput } from '../../InteractionHandler';
+import { InteractionHandler } from '../../InteractionHandler';
 import { assertPassword } from '../EmailPasswordUtil';
 import type { AccountStore } from '../storage/AccountStore';
-import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
-import { InteractionHandler } from './InteractionHandler';
 
 /**
  * Handles the submission of the ResetPassword form:

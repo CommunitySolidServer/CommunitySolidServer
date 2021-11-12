@@ -1,26 +1,20 @@
 import type { Operation } from '../http/Operation';
 import type { ErrorHandler } from '../http/output/error/ErrorHandler';
-import { RedirectResponseDescription } from '../http/output/response/RedirectResponseDescription';
 import { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import { getLoggerFor } from '../logging/LogUtil';
-import type { HttpRequest } from '../server/HttpRequest';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
 import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { APPLICATION_JSON } from '../util/ContentTypes';
-import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
-import { FoundHttpError } from '../util/errors/FoundHttpError';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
 import { addTemplateMetadata, cloneRepresentation } from '../util/ResourceUtil';
 import { readJsonStream } from '../util/StreamUtil';
 import type { ProviderFactory } from './configuration/ProviderFactory';
-import type { Interaction } from './interaction/email-password/handler/InteractionHandler';
+import type { Interaction } from './interaction/InteractionHandler';
 import type { InteractionRoute, TemplatedInteractionResult } from './interaction/routing/InteractionRoute';
-import type { InteractionCompleter } from './interaction/util/InteractionCompleter';
 
-// Registration is not standardized within Solid yet, so we use a custom versioned API for now
 const API_VERSION = '0.2';
 
 export interface IdentityProviderHttpHandlerArgs {
@@ -44,10 +38,6 @@ export interface IdentityProviderHttpHandlerArgs {
    * Used for content negotiation.
    */
   converter: RepresentationConverter;
-  /**
-   * Used for POST requests that need to be handled by the OIDC library.
-   */
-  interactionCompleter: InteractionCompleter;
   /**
    * Used for converting output errors.
    */
@@ -73,7 +63,6 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
   private readonly providerFactory: ProviderFactory;
   private readonly interactionRoutes: InteractionRoute[];
   private readonly converter: RepresentationConverter;
-  private readonly interactionCompleter: InteractionCompleter;
   private readonly errorHandler: ErrorHandler;
 
   private readonly controls: Record<string, string>;
@@ -85,7 +74,6 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
     this.providerFactory = args.providerFactory;
     this.interactionRoutes = args.interactionRoutes;
     this.converter = args.converter;
-    this.interactionCompleter = args.interactionCompleter;
     this.errorHandler = args.errorHandler;
 
     this.controls = Object.assign(
@@ -131,7 +119,7 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
     // Reset the body so it can be reused when needed for output
     operation.body = clone;
 
-    return this.handleInteractionResult(operation, request, result, oidcInteraction);
+    return this.handleInteractionResult(operation, result, oidcInteraction);
   }
 
   /**
@@ -155,21 +143,11 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
    * Creates a ResponseDescription based on the InteractionHandlerResult.
    * This will either be a redirect if type is "complete" or a data stream if the type is "response".
    */
-  private async handleInteractionResult(operation: Operation, request: HttpRequest,
-    result: TemplatedInteractionResult, oidcInteraction?: Interaction): Promise<ResponseDescription> {
+  private async handleInteractionResult(operation: Operation, result: TemplatedInteractionResult,
+    oidcInteraction?: Interaction): Promise<ResponseDescription> {
     let responseDescription: ResponseDescription | undefined;
 
-    if (result.type === 'complete') {
-      if (!oidcInteraction) {
-        throw new BadRequestHttpError(
-          'This action can only be performed as part of an OIDC authentication flow.',
-          { errorCode: 'E0002' },
-        );
-      }
-      // Create a redirect URL with the OIDC library
-      const location = await this.interactionCompleter.handleSafe({ ...result.details, request });
-      responseDescription = new RedirectResponseDescription(new FoundHttpError(location));
-    } else if (result.type === 'error') {
+    if (result.type === 'error') {
       // We want to show the errors on the original page in case of html interactions, so we can't just throw them here
       const preferences = { type: { [APPLICATION_JSON]: 1 }};
       const response = await this.errorHandler.handleSafe({ error: result.error, preferences });

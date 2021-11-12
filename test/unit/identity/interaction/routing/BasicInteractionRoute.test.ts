@@ -1,8 +1,9 @@
 import type {
   InteractionHandler,
-} from '../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
+} from '../../../../../src/identity/interaction/InteractionHandler';
 import { BasicInteractionRoute } from '../../../../../src/identity/interaction/routing/BasicInteractionRoute';
 import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
+import { FoundHttpError } from '../../../../../src/util/errors/FoundHttpError';
 import { InternalServerError } from '../../../../../src/util/errors/InternalServerError';
 
 describe('A BasicInteractionRoute', (): void => {
@@ -55,6 +56,12 @@ describe('A BasicInteractionRoute', (): void => {
     handler.handleSafe.mockRejectedValueOnce(error);
     await expect(route.handleOperation({ method: 'POST' } as any))
       .resolves.toEqual({ type: 'error', error, templateFiles: viewTemplates });
+  });
+
+  it('re-throws redirect errors.', async(): Promise<void> => {
+    const error = new FoundHttpError('http://test.com/redirect');
+    handler.handleSafe.mockRejectedValueOnce(error);
+    await expect(route.handleOperation({ method: 'POST' } as any)).rejects.toThrow(error);
   });
 
   it('creates an internal error in case of non-native errors.', async(): Promise<void> => {

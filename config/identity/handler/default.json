@@ -43,11 +43,6 @@
       "args_idpPath": "/idp",
       "args_providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
       "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-      "args_interactionCompleter": {
-        "comment": "Responsible for finishing OIDC interactions.",
-        "@type": "InteractionCompleter",
-        "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
-      },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" }
     }
   ]

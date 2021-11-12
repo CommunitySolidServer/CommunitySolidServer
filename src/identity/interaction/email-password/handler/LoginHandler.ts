@@ -3,24 +3,28 @@ import type { Operation } from '../../../../http/Operation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { BadRequestHttpError } from '../../../../util/errors/BadRequestHttpError';
 import { readJsonStream } from '../../../../util/StreamUtil';
+import { CompletingInteractionHandler } from '../../CompletingInteractionHandler';
+import type { InteractionHandlerInput } from '../../InteractionHandler';
+import type { InteractionCompleterInput, InteractionCompleter } from '../../util/InteractionCompleter';
+
 import type { AccountStore } from '../storage/AccountStore';
-import { InteractionHandler } from './InteractionHandler';
-import type { InteractionCompleteResult, InteractionHandlerInput } from './InteractionHandler';
 
 /**
  * Handles the submission of the Login Form and logs the user in.
+ * Will throw a RedirectHttpError on success.
  */
-export class LoginHandler extends InteractionHandler {
+export class LoginHandler extends CompletingInteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
 
-  public constructor(accountStore: AccountStore) {
-    super();
+  public constructor(accountStore: AccountStore, interactionCompleter: InteractionCompleter) {
+    super(interactionCompleter);
     this.accountStore = accountStore;
   }
 
-  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionCompleteResult> {
+  protected async getCompletionParameters({ operation, oidcInteraction }: Required<InteractionHandlerInput>):
+  Promise<InteractionCompleterInput> {
     const { email, password, remember } = await this.parseInput(operation);
     // Try to log in, will error if email/password combination is invalid
     const webId = await this.accountStore.authenticate(email, password);
@@ -30,10 +34,8 @@ export class LoginHandler extends InteractionHandler {
       throw new BadRequestHttpError('This server is not an identity provider for this account.');
     }
     this.logger.debug(`Logging in user ${email}`);
-    return {
-      type: 'complete',
-      details: { webId, shouldRemember: remember },
-    };
+
+    return { oidcInteraction, webId, shouldRemember: remember };
   }
 
   /**

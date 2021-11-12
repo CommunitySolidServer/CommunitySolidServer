@@ -126,7 +126,6 @@ export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Handler
-export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
@@ -148,10 +147,13 @@ export * from './identity/interaction/routing/InteractionRoute';
 
 // Identity/Interaction/Util
 export * from './identity/interaction/util/BaseEmailSender';
+export * from './identity/interaction/util/BaseInteractionCompleter';
 export * from './identity/interaction/util/EmailSender';
 export * from './identity/interaction/util/InteractionCompleter';
 
 // Identity/Interaction
+export * from './identity/interaction/CompletingInteractionHandler';
+export * from './identity/interaction/InteractionHandler';
 export * from './identity/interaction/SessionHttpHandler';
 
 // Identity/Ownership

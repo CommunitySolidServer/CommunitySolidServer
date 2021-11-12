@@ -3,10 +3,10 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
 import { readJsonStream } from '../../../../util/StreamUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
+import { InteractionHandler } from '../../InteractionHandler';
+import type { InteractionResponseResult, InteractionHandlerInput } from '../../InteractionHandler';
 import type { EmailSender } from '../../util/EmailSender';
 import type { AccountStore } from '../storage/AccountStore';
-import { InteractionHandler } from './InteractionHandler';
-import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
 
 export interface ForgotPasswordHandlerArgs {
   accountStore: AccountStore;

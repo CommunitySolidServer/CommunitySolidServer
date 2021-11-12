@@ -1,12 +1,11 @@
 import type { KoaContextWithOIDC } from 'oidc-provider';
-import type { Operation } from '../../../../http/Operation';
-import { APPLICATION_JSON } from '../../../../util/ContentTypes';
-import { NotImplementedHttpError } from '../../../../util/errors/NotImplementedHttpError';
-import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
-import type { InteractionCompleterParams } from '../../util/InteractionCompleter';
+import type { Operation } from '../../http/Operation';
+import { APPLICATION_JSON } from '../../util/ContentTypes';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 // OIDC library does not directly export the Interaction type
-export type Interaction = KoaContextWithOIDC['oidc']['entities']['Interaction'];
+export type Interaction = NonNullable<KoaContextWithOIDC['oidc']['entities']['Interaction']>;
 
 export interface InteractionHandlerInput {
   /**
@@ -20,16 +19,11 @@ export interface InteractionHandlerInput {
   oidcInteraction?: Interaction;
 }
 
-export type InteractionHandlerResult = InteractionResponseResult | InteractionCompleteResult | InteractionErrorResult;
+export type InteractionHandlerResult = InteractionResponseResult | InteractionErrorResult;
 
 export interface InteractionResponseResult<T = NodeJS.Dict<any>> {
   type: 'response';
   details?: T;
-}
-
-export interface InteractionCompleteResult {
-  type: 'complete';
-  details: InteractionCompleterParams;
 }
 
 export interface InteractionErrorResult {
