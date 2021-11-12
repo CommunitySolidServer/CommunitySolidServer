@@ -1,11 +1,11 @@
-import { BasicRepresentation } from '../../../../../../src/http/representation/BasicRepresentation';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type {
   InteractionResponseResult,
-} from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
+} from '../../../../src/identity/interaction/InteractionHandler';
 import {
   InteractionHandler,
-} from '../../../../../../src/identity/interaction/email-password/handler/InteractionHandler';
-import { NotImplementedHttpError } from '../../../../../../src/util/errors/NotImplementedHttpError';
+} from '../../../../src/identity/interaction/InteractionHandler';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 class SimpleInteractionHandler extends InteractionHandler {
   public async handle(): Promise<InteractionResponseResult> {

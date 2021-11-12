@@ -11,7 +11,10 @@
         "BasicInteractionRoute:_viewTemplates_key": "text/html",
         "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/confirm.html.ejs"
       },
-      "handler": { "@type": "SessionHttpHandler" }
+      "handler": {
+        "@type": "SessionHttpHandler",
+        "interactionCompleter": { "@type": "BaseInteractionCompleter" }
+      }
     }
   ]
 }

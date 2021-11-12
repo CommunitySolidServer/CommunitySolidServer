@@ -2,11 +2,12 @@ import type { Operation } from '../../../http/Operation';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { createErrorMessage, isError } from '../../../util/errors/ErrorUtil';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
+import { RedirectHttpError } from '../../../util/errors/RedirectHttpError';
 import { trimTrailingSlashes } from '../../../util/PathUtil';
 import type {
   InteractionHandler,
   Interaction,
-} from '../email-password/handler/InteractionHandler';
+} from '../InteractionHandler';
 import type { InteractionRoute, TemplatedInteractionResult } from './InteractionRoute';
 
 /**
@@ -84,6 +85,11 @@ export class BasicInteractionRoute implements InteractionRoute {
           const result = await this.handler.handleSafe({ operation, oidcInteraction });
           return { ...result, templateFiles: this.responseTemplates };
         } catch (err: unknown) {
+          // Redirect errors need to be propagated and not rendered on the response pages.
+          // Otherwise, the user would be redirected to a new page only containing that error.
+          if (RedirectHttpError.isInstance(err)) {
+            throw err;
+          }
           const error = isError(err) ? err : new InternalServerError(createErrorMessage(err));
           // Potentially render the error in the view
           return { type: 'error', error, templateFiles: this.viewTemplates };
