@@ -39,10 +39,8 @@ export class PodQuotaStrategy implements QuotaStrategy {
   public async getAvailableSpace(identifier: ResourceIdentifier): Promise<Size> {
     const pimStorage = await this.searchPimStorage(identifier);
 
-    // There is no pod above this resource so it is assumed this is an identifier
-    // that points to somewhere in the root outside an actual pod.
-    // No quota apply here ( people do not have access to write here ).
-    // The lack of enforced quota in the root makes sure pod can be created freely.
+    // No storage was found containing this identifier, so we assume this identifier points to an internal location.
+    // Quota does not apply here so there is always available space.
     if (!pimStorage) {
       return { amount: Number.MAX_SAFE_INTEGER, unit: this.limit.unit };
     }
@@ -57,13 +55,10 @@ export class PodQuotaStrategy implements QuotaStrategy {
 
   /** Finds the closest parent container that has pim:storage as metadata */
   private async searchPimStorage(identifier: ResourceIdentifier): Promise<ResourceIdentifier | undefined> {
-    let parent;
-
-    try {
-      parent = this.identifierStrategy.getParentContainer(identifier);
-    } catch {
+    if (this.identifierStrategy.isRootContainer(identifier)) {
       return undefined;
     }
+    const parent = this.identifierStrategy.getParentContainer(identifier);
 
     const parentMetadata = await this.accessor.getMetadata(parent);
     const hasPimStorageMetadata = parentMetadata.getAll(RDF.type)

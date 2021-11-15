@@ -1,5 +1,5 @@
 /**
- * An object containing a unit field explaining in what unit the amount field in listed.
+ * Describes the size of something by stating how much of a certain unit is present.
  */
 export interface Size {
   unit: string;

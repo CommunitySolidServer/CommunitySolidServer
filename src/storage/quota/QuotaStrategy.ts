@@ -13,7 +13,7 @@ import type { Size } from '../size-reporter/Size';
  */
 export interface QuotaStrategy {
   /**
-   * Get the available space given a resource's identifier.
+   * Get the available space when writing data to the given identifier.
    * If the given resource already exists it will deduct the already taken up
    * space by that resource since it is going to be overwritten and thus counts
    * as available space.
@@ -33,7 +33,7 @@ export interface QuotaStrategy {
 
   /**
    * Get a Passthrough stream that will keep track of the available space.
-   * If the quota is exceeded the stream will be destroyed.
+   * If the quota is exceeded the stream will emit an error and destroy itself.
    * Like other Passthrough instances this will simply pass on the chunks, when the quota isn't exceeded.
    *
    * @param identifier - the identifier of the resource in question
