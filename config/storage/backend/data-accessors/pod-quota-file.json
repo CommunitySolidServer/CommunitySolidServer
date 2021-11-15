@@ -1,0 +1,47 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "comment": "DataAccessor configuration using a PodQuotaStrategy to enforce pod quotas on the server",
+  "@graph": [
+    {
+      "comment": "DataAccessor that writes data to the disk with atomicity in mind",
+      "@id": "urn:solid-server:default:AtomicFileDataAccessor",
+      "@type": "AtomicFileDataAccessor",
+      "resourceMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
+      "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
+      "tempFilePath": ".internal/tempFiles/"
+    },
+
+    {
+      "comment": "Calculates the space already taken up by a resource",
+      "@id": "urn:solid-server:default:SizeReporter",
+      "@type": "FileSizeReporter",
+      "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
+    },
+
+    {
+      "comment": "Enforces quota for all data per pod on the server",
+      "@id": "urn:solid-server:default:QuotaStrategy",
+      "@type": "PodQuotaStrategy",
+      "limit_amount": "7000",
+      "limit_unit": "bytes",
+      "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
+      "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+    },
+
+    {
+      "comment": "Validates the data being written to the server",
+      "@id": "urn:solid-server:default:QuotaValidator",
+      "@type": "QuotaValidator",
+      "strategy": { "@id": "urn:solid-server:default:QuotaStrategy" }
+    },
+
+    {
+      "comment": "Simple wrapper for another DataAccessor but adds validation",
+      "@id": "urn:solid-server:default:FileDataAccessor",
+      "@type": "ValidatingDataAccessor",
+      "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
+      "validator": { "@id": "urn:solid-server:default:QuotaValidator" }
+    }
+  ]
+}

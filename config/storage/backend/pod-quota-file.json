@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/quota-file.json"
+    "files-scs:config/storage/backend/data-accessors/pod-quota-file.json"
   ],
   "@graph": [
     {

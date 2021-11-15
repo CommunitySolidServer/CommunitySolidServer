@@ -21,8 +21,8 @@
     {
       "comment": "Enforces quota globally for all data on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "@type": "PodQuotaStrategy",
-      "limit_amount": "7000",
+      "@type": "GlobalQuotaStrategy",
+      "limit_amount": "10000",
       "limit_unit": "bytes",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
       "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
