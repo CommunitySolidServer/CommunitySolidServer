@@ -64,7 +64,7 @@ describe('A ForgotPasswordHandler', (): void => {
     expect(emailSender.handleSafe).toHaveBeenLastCalledWith({
       recipient: email,
       subject: 'Reset your password',
-      text: `To reset your password, go to this link: http://test.com/base/idp/resetpassword/${recordId}`,
+      text: `To reset your password, go to this link: http://test.com/base/idp/resetpassword/?rid=${recordId}`,
       html,
     });
   });

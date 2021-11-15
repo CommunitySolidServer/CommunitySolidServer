@@ -68,7 +68,8 @@ export class ForgotPasswordHandler extends InteractionHandler {
    */
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
-    const resetLink = joinUrl(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
+    // `joinUrl` strips trailing slash when query parameter gets added
+    const resetLink = `${joinUrl(this.baseUrl, this.idpPath, 'resetpassword/')}?rid=${recordId}`;
     const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,
