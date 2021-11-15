@@ -12,14 +12,14 @@
     },
 
     {
-      "comment": "calculates the already taken up space by a resource",
+      "comment": "Calculates the space already taken up by a resource",
       "@id": "urn:solid-server:default:SizeReporter",
       "@type": "FileSizeReporter",
       "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" }
     },
 
     {
-      "comment": "enforces quota globally for all data on the server",
+      "comment": "Enforces quota globally for all data on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "PodQuotaStrategy",
       "limit_amount": "7000",
@@ -30,14 +30,14 @@
     },
 
     {
-      "comment": "validates the data being written to the server",
+      "comment": "Validates the data being written to the server",
       "@id": "urn:solid-server:default:QuotaValidator",
       "@type": "QuotaValidator",
       "strategy": { "@id": "urn:solid-server:default:QuotaStrategy" }
     },
 
     {
-      "comment": "simple wrapper for another DataAccessor but adds validation",
+      "comment": "Simple wrapper for another DataAccessor but adds validation",
       "@id": "urn:solid-server:default:FileDataAccessor",
       "@type": "ValidatingDataAccessor",
       "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
