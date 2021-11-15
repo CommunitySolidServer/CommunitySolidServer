@@ -1,6 +1,6 @@
 import { Readable, PassThrough } from 'stream';
 import { Validator } from '../../http/auxiliary/Validator';
-import type { ValidatorArgs } from '../../http/auxiliary/Validator';
+import type { ValidatorInput } from '../../http/auxiliary/Validator';
 import type { Representation } from '../../http/representation/Representation';
 import { PayloadHttpError } from '../../util/errors/PayloadHttpError';
 import type { Guarded } from '../../util/GuardedStream';
@@ -19,8 +19,7 @@ export class QuotaValidator extends Validator {
     this.strategy = strategy;
   }
 
-  public async handle(input: ValidatorArgs): Promise<Representation> {
-    const { identifier, representation } = input;
+  public async handle({ representation, identifier }: ValidatorInput): Promise<Representation> {
     const { data, metadata } = representation;
 
     // 1. Get the available size

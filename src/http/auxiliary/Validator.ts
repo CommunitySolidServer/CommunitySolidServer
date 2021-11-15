@@ -2,7 +2,7 @@ import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import type { Representation } from '../representation/Representation';
 import type { ResourceIdentifier } from '../representation/ResourceIdentifier';
 
-export type ValidatorArgs = {
+export type ValidatorInput = {
   representation: Representation;
   identifier: ResourceIdentifier;
 };
@@ -10,4 +10,4 @@ export type ValidatorArgs = {
 /**
  * Generic interface for classes that validate Representations in some way.
  */
-export abstract class Validator extends AsyncHandler<ValidatorArgs, Representation> { }
+export abstract class Validator extends AsyncHandler<ValidatorInput, Representation> { }

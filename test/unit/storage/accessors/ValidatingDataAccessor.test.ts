@@ -1,4 +1,4 @@
-import type { Validator, ValidatorArgs } from '../../../../src/http/auxiliary/Validator';
+import type { Validator, ValidatorInput } from '../../../../src/http/auxiliary/Validator';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -26,7 +26,7 @@ describe('ValidatingDataAccessor', (): void => {
     childAccessor.getChildren = jest.fn();
     validator = {
       canHandle: jest.fn(),
-      handle: async(input: ValidatorArgs): Promise<Representation> => input.representation,
+      handle: async(input: ValidatorInput): Promise<Representation> => input.representation,
       handleSafe: jest.fn(),
     };
     validatingAccessor = new ValidatingDataAccessor(childAccessor, validator);

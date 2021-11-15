@@ -1,6 +1,6 @@
 import type { Readable } from 'stream';
 import { PassThrough } from 'stream';
-import type { ValidatorArgs } from '../../../../src/http/auxiliary/Validator';
+import type { ValidatorInput } from '../../../../src/http/auxiliary/Validator';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
@@ -17,7 +17,7 @@ describe('QuotaValidator', (): void => {
   let identifier: ResourceIdentifier;
   let mockMetadata: RepresentationMetadata;
   let mockData: Guarded<Readable>;
-  let mockInput: ValidatorArgs;
+  let mockInput: ValidatorInput;
 
   beforeEach((): void => {
     jest.clearAllMocks();
