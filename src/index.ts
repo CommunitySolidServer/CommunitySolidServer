@@ -21,10 +21,10 @@ export * from './authorization/permissions/MethodModesExtractor';
 export * from './authorization/permissions/SparqlPatchModesExtractor';
 
 // Authorization
-export * from './authorization/OwnerPermissionReader';
 export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
+export * from './authorization/OwnerPermissionReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
@@ -57,8 +57,8 @@ export * from './http/input/identifier/OriginalUrlExtractor';
 export * from './http/input/identifier/TargetExtractor';
 
 // HTTP/Input/Metadata
-export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/ContentLengthParser';
+export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
 export * from './http/input/metadata/SlugParser';
@@ -126,8 +126,8 @@ export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Handler
-export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
+export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
 export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
@@ -245,12 +245,12 @@ export * from './server/util/RedirectAllHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors
+export * from './storage/accessors/AtomicDataAccessor';
+export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
-export * from './storage/accessors/AtomicDataAccessor';
-export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conversion
@@ -296,9 +296,9 @@ export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';
 
 // Storage/Quota
-export * from './storage/quota/QuotaStrategy';
 export * from './storage/quota/GlobalQuotaStrategy';
 export * from './storage/quota/PodQuotaStrategy';
+export * from './storage/quota/QuotaStrategy';
 
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';
@@ -308,8 +308,9 @@ export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
 
 // Storage/Size-Reporter
-export * from './storage/size-reporter/SizeReporter';
 export * from './storage/size-reporter/FileSizeReporter';
+export * from './storage/size-reporter/Size';
+export * from './storage/size-reporter/SizeReporter';
 
 // Storage/Validators
 export * from './storage/validators/QuotaValidator';
@@ -329,7 +330,6 @@ export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
-export * from './storage/size-reporter/Size';
 
 // Util/Errors
 export * from './util/errors/BadRequestHttpError';
