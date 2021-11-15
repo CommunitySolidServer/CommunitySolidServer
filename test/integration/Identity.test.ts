@@ -206,8 +206,12 @@ describe('A Solid server with IDP', (): void => {
       // Reset password form has no action causing the current URL to be used
       expect(relative).toBeUndefined();
 
+      // Extract recordId from URL since JS is used to add it
+      const recordId = /\?rid=([^/]+)$/u.exec(nextUrl)?.[1];
+      expect(typeof recordId).toBe('string');
+
       // POST the new password to the same URL
-      const formData = stringify({ password: password2, confirmPassword: password2 });
+      const formData = stringify({ password: password2, confirmPassword: password2, recordId });
       res = await fetch(nextUrl, {
         method: 'POST',
         headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
