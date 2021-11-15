@@ -34,7 +34,9 @@ export class ValidatingDataAccessor implements DataAccessor {
   }
 
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    // - TODO what do we do here ?
+    // A container's data mainly resides in its metadata which we can't calculate the disk size of
+    // at this point in code.
+    // Extra info can be found here: https://github.com/solid/community-server/pull/973#discussion_r723376888
     return this.accessor.writeContainer(identifier, metadata);
   }
 
