@@ -250,6 +250,7 @@ export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
+export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
 export * from './storage/accessors/ValidatingDataAccessor';
 

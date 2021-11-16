@@ -1,23 +1,21 @@
 import type { Readable } from 'stream';
 import type { Validator } from '../../http/auxiliary/Validator';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
-import type { Representation } from '../../http/representation/Representation';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
-import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
+import { PassthroughDataAccessor } from './PassthroughDataAccessor';
 
 /**
  * A ValidatingDataAccessor wraps an AtomicDataAccessor such that,
  * while writing a document, validation is performed before writing the data.
  */
-export class ValidatingDataAccessor implements DataAccessor {
-  private readonly accessor: AtomicDataAccessor;
+export class ValidatingDataAccessor extends PassthroughDataAccessor {
   private readonly validator: Validator;
 
   public constructor(accessor: DataAccessor, validator: Validator) {
-    this.accessor = accessor;
+    super(accessor);
     this.validator = validator;
   }
 
@@ -38,25 +36,5 @@ export class ValidatingDataAccessor implements DataAccessor {
     // at this point in code.
     // Extra info can be found here: https://github.com/solid/community-server/pull/973#discussion_r723376888
     return this.accessor.writeContainer(identifier, metadata);
-  }
-
-  public async canHandle(representation: Representation): Promise<void> {
-    return this.accessor.canHandle(representation);
-  }
-
-  public async getData(identifier: ResourceIdentifier): Promise<Guarded<Readable>> {
-    return this.accessor.getData(identifier);
-  }
-
-  public async getMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
-    return this.accessor.getMetadata(identifier);
-  }
-
-  public getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
-    return this.accessor.getChildren(identifier);
-  }
-
-  public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-    return this.accessor.deleteResource(identifier);
   }
 }
