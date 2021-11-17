@@ -1,7 +1,7 @@
 import { createAggregateError } from './errors/HttpErrorUtil';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const infinitePromise = new Promise<boolean>((): void => {});
+function noop(): void {}
 
 /**
  * A function that simulates the Array.some behaviour but on an array of Promises.
@@ -16,19 +16,15 @@ const infinitePromise = new Promise<boolean>((): void => {});
  * 2. throwing an error should be logically equivalent to returning false.
  */
 export async function promiseSome(predicates: Promise<boolean>[]): Promise<boolean> {
-  // These promises will only finish when their predicate returns true
-  const infinitePredicates = predicates.map(async(predicate): Promise<boolean> => predicate.then(
-    async(value): Promise<boolean> => value ? true : infinitePromise,
-    async(): Promise<boolean> => infinitePromise,
-  ));
-
-  // Returns after all predicates are resolved
-  const finalPromise = Promise.allSettled(predicates).then((results): boolean =>
-    results.some((result): boolean => result.status === 'fulfilled' && result.value));
-
-  // Either one of the infinitePredicates will return true,
-  // or finalPromise will return the result if none of them did or finalPromise was faster
-  return Promise.race([ ...infinitePredicates, finalPromise ]);
+  return new Promise((resolve): void => {
+    function resolveIfTrue(value: boolean): void {
+      if (value) {
+        resolve(true);
+      }
+    }
+    Promise.all(predicates.map((predicate): Promise<void> => predicate.then(resolveIfTrue, noop)))
+      .then((): void => resolve(false), noop);
+  });
 }
 
 /**
