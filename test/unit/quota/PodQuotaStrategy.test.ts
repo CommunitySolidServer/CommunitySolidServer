@@ -16,7 +16,7 @@ jest.mock('fs');
 describe('PodQuotaStrategy', (): void => {
   let strategy: PodQuotaStrategy;
   let mockSize: Size;
-  let mockReporter: SizeReporter;
+  let mockReporter: jest.Mocked<SizeReporter>;
   let identifierStrategy: IdentifierStrategy;
   let accessor: FileDataAccessor;
   const base = 'http://localhost:3000/';
@@ -28,9 +28,9 @@ describe('PodQuotaStrategy', (): void => {
     mockSize = { amount: 2000, unit: 'bytes' };
     identifierStrategy = new SingleRootIdentifierStrategy(base);
     mockReporter = {
-      getSize: async(): Promise<Size> => ({ unit: mockSize.unit, amount: 50 }),
-      getUnit: (): string => mockSize.unit,
-      calculateChunkSize: async(chunk: any): Promise<number> => chunk.length,
+      getSize: jest.fn().mockResolvedValue({ unit: mockSize.unit, amount: 50 }),
+      getUnit: jest.fn().mockReturnValue(mockSize.unit),
+      calculateChunkSize: jest.fn(async(chunk: any): Promise<number> => chunk.length),
     };
     accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
     strategy = new PodQuotaStrategy(mockSize, mockReporter, identifierStrategy, accessor);
@@ -39,9 +39,6 @@ describe('PodQuotaStrategy', (): void => {
   describe('constructor()', (): void => {
     it('should set the passed parameters as properties.', async(): Promise<void> => {
       expect(strategy.limit).toEqual(mockSize);
-      expect((strategy as any).reporter).toEqual(mockReporter);
-      expect((strategy as any).identifierStrategy).toEqual(identifierStrategy);
-      expect((strategy as any).accessor).toEqual(accessor);
     });
   });
 

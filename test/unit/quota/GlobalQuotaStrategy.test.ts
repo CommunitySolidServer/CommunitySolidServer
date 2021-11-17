@@ -8,20 +8,20 @@ import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
 describe('GlobalQuotaStrategy', (): void => {
   let strategy: GlobalQuotaStrategy;
   let mockSize: Size;
-  let mockReporter: SizeReporter;
+  let mockReporter: jest.Mocked<SizeReporter>;
   let mockBase: string;
 
   beforeEach((): void => {
     mockSize = { amount: 2000, unit: 'bytes' };
     mockBase = '';
     mockReporter = {
-      getSize: async(identifier: ResourceIdentifier): Promise<Size> => ({
+      getSize: jest.fn(async(identifier: ResourceIdentifier): Promise<Size> => ({
         unit: mockSize.unit,
         // This mock will return 1000 as size of the root and 50 for any other resource
         amount: identifier.path === mockBase ? 1000 : 50,
-      }),
-      getUnit: (): string => mockSize.unit,
-      calculateChunkSize: async(chunk: any): Promise<number> => chunk.length,
+      })),
+      getUnit: jest.fn().mockReturnValue(mockSize.unit),
+      calculateChunkSize: jest.fn(async(chunk: any): Promise<number> => chunk.length),
     };
     strategy = new GlobalQuotaStrategy(mockSize, mockReporter, mockBase);
   });
@@ -29,8 +29,6 @@ describe('GlobalQuotaStrategy', (): void => {
   describe('constructor()', (): void => {
     it('should set the passed parameters as properties.', async(): Promise<void> => {
       expect(strategy.limit).toEqual(mockSize);
-      expect((strategy as any).reporter).toEqual(mockReporter);
-      expect((strategy as any).base).toBe(mockBase);
     });
   });
 

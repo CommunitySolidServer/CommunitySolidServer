@@ -13,7 +13,7 @@ jest.mock('../../../../src/storage/accessors/InMemoryDataAccessor');
 describe('ValidatingDataAccessor', (): void => {
   let validatingAccessor: ValidatingDataAccessor;
   let childAccessor: AtomicDataAccessor;
-  let validator: Validator;
+  let validator: jest.Mocked<Validator>;
 
   const mockIdentifier = { path: 'http://localhost/test.txt' };
   const mockMetadata = new RepresentationMetadata();
@@ -26,7 +26,7 @@ describe('ValidatingDataAccessor', (): void => {
     childAccessor.getChildren = jest.fn();
     validator = {
       canHandle: jest.fn(),
-      handle: async(input: ValidatorInput): Promise<Representation> => input.representation,
+      handle: jest.fn(async(input: ValidatorInput): Promise<Representation> => input.representation),
       handleSafe: jest.fn(),
     };
     validatingAccessor = new ValidatingDataAccessor(childAccessor, validator);

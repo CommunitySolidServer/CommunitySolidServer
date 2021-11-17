@@ -5,7 +5,7 @@ import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
 
 describe('A FileSizeReporter', (): void => {
-  const mapper: FileIdentifierMapper = {
+  const mapper: jest.Mocked<FileIdentifierMapper> = {
     mapFilePathToUrl: jest.fn(),
     mapUrlToFilePath: jest.fn().mockImplementation((id: ResourceIdentifier): ResourceLink => ({
       filePath: id.path,
