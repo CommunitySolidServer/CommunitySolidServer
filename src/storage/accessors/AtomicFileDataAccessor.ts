@@ -35,14 +35,14 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
   Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false, metadata.contentType);
 
-    // Check if we already have a corresponding file with a different extension
-    await this.verifyExistingExtension(link);
-
     // Generate temporary file name
     const tempFilePath = join(this.tempFilePath, `temp-${v4()}.txt`);
 
     try {
       await this.writeDataFile(tempFilePath, data);
+
+      // Check if we already have a corresponding file with a different extension
+      await this.verifyExistingExtension(link);
 
       // When no quota errors occur move the file to its desired location
       await fsPromises.rename(tempFilePath, link.filePath);
