@@ -114,20 +114,4 @@ export class AppRunner {
     // Create the app
     return await componentsManager.instantiate(componentIri, { variables });
   }
-
-  /**
-   * Translates command-line parameters into Components.js variables.
-   */
-  protected createVariables(params: CliParams): Record<string, any> {
-    return {
-      'urn:solid-server:default:variable:baseUrl':
-        params.baseUrl ? ensureTrailingSlash(params.baseUrl) : `http://localhost:${params.port}/`,
-      'urn:solid-server:default:variable:loggingLevel': params.loggingLevel,
-      'urn:solid-server:default:variable:port': params.port,
-      'urn:solid-server:default:variable:rootFilePath': resolveAssetPath(params.rootFilePath),
-      'urn:solid-server:default:variable:sparqlEndpoint': params.sparqlEndpoint,
-      'urn:solid-server:default:variable:showStackTrace': params.showStackTrace,
-      'urn:solid-server:default:variable:podConfigJson': resolveAssetPath(params.podConfigJson),
-    };
-  }
 }
