@@ -11,11 +11,13 @@ import type { SizeReporter } from './SizeReporter';
  */
 export class FileSizeReporter implements SizeReporter {
   private readonly fileIdentifierMapper: FileIdentifierMapper;
-  private readonly ignoreFolder: RegExp;
+  private readonly ignoreFolders: RegExp[];
+  private readonly rootFilePath: string;
 
-  public constructor(fileIdentifierMapper: FileIdentifierMapper, ignoreFolder: string) {
+  public constructor(fileIdentifierMapper: FileIdentifierMapper, rootFilePath: string, ignoreFolders: string[]) {
     this.fileIdentifierMapper = fileIdentifierMapper;
-    this.ignoreFolder = new RegExp(`^${ignoreFolder}$`, 'u');
+    this.ignoreFolders = ignoreFolders.map((folder: string): RegExp => new RegExp(folder, 'u'));
+    this.rootFilePath = rootFilePath;
   }
 
   /** The FileSizeReporter will always return data in the form of bytes */
@@ -66,7 +68,8 @@ export class FileSizeReporter implements SizeReporter {
       let result = await acc;
 
       // Exclude internal files
-      if (!this.ignoreFolder.test(current)) {
+      if (!this.ignoreFolders.some((folder: RegExp): boolean =>
+        folder.test(childFileLocation.split(this.rootFilePath)[1]))) {
         result += await this.getTotalSize(childFileLocation);
       }
 

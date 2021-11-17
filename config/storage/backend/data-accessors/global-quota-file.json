@@ -16,7 +16,8 @@
       "@id": "urn:solid-server:default:SizeReporter",
       "@type": "FileSizeReporter",
       "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
-      "ignoreFolder": ".internal"
+      "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
+      "ignoreFolders": [ "^[/\\\\]\\.internal[^/\\\\]?" ]
     },
 
     {

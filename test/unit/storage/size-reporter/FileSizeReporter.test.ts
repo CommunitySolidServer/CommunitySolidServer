@@ -13,10 +13,22 @@ describe('A FileSizeReporter', (): void => {
       isMetadata: false,
     })),
   };
-  const fileSizeReporter = new FileSizeReporter(mapper, '.internal');
+  const fileRoot = join(process.cwd(), './test-folder');
+  const fileSizeReporter = new FileSizeReporter(
+    mapper,
+    fileRoot,
+    [ '^[/\\\\]\\.internal[^/\\\\]?$' ],
+  );
+
+  beforeAll(async(): Promise<void> => {
+    await fsPromises.mkdir(fileRoot, { recursive: true });
+  });
+  afterAll(async(): Promise<void> => {
+    await fsPromises.rmdir(fileRoot, { recursive: true });
+  });
 
   it('should report the right file size.', async(): Promise<void> => {
-    const testFile = join(process.cwd(), './test.txt');
+    const testFile = join(fileRoot, './test.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
@@ -27,7 +39,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should work recursively.', async(): Promise<void> => {
-    const containerFile = join(process.cwd(), './test-folder-1/');
+    const containerFile = join(fileRoot, './test-folder-1/');
     await fsPromises.mkdir(containerFile, { recursive: true });
     const testFile = join(containerFile, './test.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
@@ -45,13 +57,13 @@ describe('A FileSizeReporter', (): void => {
     await fsPromises.rmdir(containerFile);
   });
 
-  it('should not count files located in a .internal folder.', async(): Promise<void> => {
-    const containerFile = join(process.cwd(), './test-folder-2/');
+  it('should not count files located in an ignored folder.', async(): Promise<void> => {
+    const containerFile = join(fileRoot, './test-folder-2');
     await fsPromises.mkdir(containerFile, { recursive: true });
     const testFile = join(containerFile, './test.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
 
-    const internalContainerFile = join(process.cwd(), './test-folder-2/.internal/');
+    const internalContainerFile = join(fileRoot, './.internal/');
     await fsPromises.mkdir(internalContainerFile, { recursive: true });
     const internalTestFile = join(internalContainerFile, './test.txt');
     await fsPromises.writeFile(internalTestFile, 'Test file for file size!');
@@ -72,7 +84,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should have the unit in its return value.', async(): Promise<void> => {
-    const testFile = join(process.cwd(), './test.txt');
+    const testFile = join(fileRoot, './test2.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
 
     const result = fileSizeReporter.getSize({ path: testFile });
@@ -87,7 +99,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should return 0 when the size of a non existent file is requested.', async(): Promise<void> => {
-    const result = fileSizeReporter.getSize({ path: join(process.cwd(), './test.txt') });
+    const result = fileSizeReporter.getSize({ path: join(fileRoot, './test.txt') });
     await expect(result).resolves.toEqual(expect.objectContaining({ amount: 0 }));
   });
 
