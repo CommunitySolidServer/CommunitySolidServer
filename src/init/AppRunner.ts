@@ -5,7 +5,7 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { ensureTrailingSlash, resolveAssetPath } from '../util/PathUtil';
+import { resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
 import type { VarResolver } from './VarResolver';
 import { baseYargsOptions } from './VarResolver';
