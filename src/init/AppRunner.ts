@@ -5,10 +5,13 @@ import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
-import { ensureTrailingSlash, resolveAssetPath, modulePathPlaceholder } from '../util/PathUtil';
+import { ensureTrailingSlash, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
+import type { VarResolver } from './VarResolver';
+import { baseYargsOptions } from './VarResolver';
 
-const defaultConfig = `${modulePathPlaceholder}config/default.json`;
+const varConfigComponentIri = 'urn:solid-server-app-setup:default:VarResolver';
+const appComponentIri = 'urn:solid-server:default:App';
 
 export interface CliParams {
   loggingLevel: string;
@@ -35,7 +38,7 @@ export class AppRunner {
     configFile: string,
     variableParams: CliParams,
   ): Promise<void> {
-    const app = await this.createApp(loaderProperties, configFile, variableParams);
+    const app = await this.createComponent(loaderProperties, configFile, variableParams, appComponentIri);
     await app.start();
   }
 
@@ -45,7 +48,7 @@ export class AppRunner {
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public runCli({
+  public async runCli({
     argv = process.argv,
     stderr = process.stderr,
   }: {
@@ -53,85 +56,63 @@ export class AppRunner {
     stdin?: ReadStream;
     stdout?: WriteStream;
     stderr?: WriteStream;
-  } = {}): void {
+  } = {}): Promise<void> {
     // Parse the command-line arguments
-    // eslint-disable-next-line no-sync
-    const params = yargs(argv.slice(2))
-      .strict()
+    const params = await yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
-      .check((args): boolean => {
-        if (args._.length > 0) {
-          throw new Error(`Unsupported positional arguments: "${args._.join('", "')}"`);
-        }
-        for (const key of Object.keys(args)) {
-          // We have no options that allow for arrays
-          const val = args[key];
-          if (key !== '_' && Array.isArray(val)) {
-            throw new Error(`Multiple values were provided for: "${key}": "${val.join('", "')}"`);
-          }
-        }
-        return true;
-      })
-      .options({
-        baseUrl: { type: 'string', alias: 'b', requiresArg: true },
-        config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
-        loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true },
-        mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
-        port: { type: 'number', alias: 'p', default: 3000, requiresArg: true },
-        rootFilePath: { type: 'string', alias: 'f', default: './', requiresArg: true },
-        showStackTrace: { type: 'boolean', alias: 't', default: false },
-        sparqlEndpoint: { type: 'string', alias: 's', requiresArg: true },
-        podConfigJson: { type: 'string', default: './pod-config.json', requiresArg: true },
-      })
-      .parseSync();
+      .options(baseYargsOptions)
+      .parse();
 
     // Gather settings for instantiating the server
-    const loaderProperties: IComponentsManagerBuilderOptions<App> = {
-      mainModulePath: resolveAssetPath(params.mainModulePath),
+    const loaderProperties = {
+      mainModulePath: resolveAssetPath(params.mainModulePath as string),
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
-    const configFile = resolveAssetPath(params.config);
 
-    // Create and execute the app
-    this.createApp(loaderProperties, configFile, params)
-      .then(
-        async(app): Promise<void> => app.start(),
-        (error: Error): void => {
-          // Instantiation of components has failed, so there is no logger to use
-          stderr.write(`Error: could not instantiate server from ${configFile}\n`);
-          stderr.write(`${error.stack}\n`);
-          process.exit(1);
-        },
-      ).catch((error): void => {
-        this.logger.error(`Could not start server: ${error}`, { error });
-        process.exit(1);
-      });
-  }
+    // Create varResolver
+    const varConfigFile = resolveAssetPath(params.varConfig as string);
+    const varResolver = await this.createComponent(
+      loaderProperties as IComponentsManagerBuilderOptions<VarResolver>, varConfigFile, {}, varConfigComponentIri,
+    );
+    // Resolve vars for app startup
+    const vars = await varResolver.resolveVars(argv);
 
-  /**
-   * Creates the main app object to start the server from a given config.
-   * @param loaderProperties - Components.js loader properties.
-   * @param configFile - Path to a Components.js config file.
-   * @param variables - Variables to pass into the config file.
-   */
-  public async createApp(
-    loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string,
-    variables: CliParams | Record<string, any>,
-  ): Promise<App> {
-    // Translate command-line parameters if needed
-    if (typeof variables.loggingLevel === 'string') {
-      variables = this.createVariables(variables as CliParams);
+    const configFile = resolveAssetPath(params.config as string);
+    let app: App;
+
+    // Create app
+    try {
+      app = await this.createComponent(
+        loaderProperties as IComponentsManagerBuilderOptions<App>, configFile, vars, appComponentIri,
+      );
+    } catch (error: unknown) {
+      stderr.write(`Error: could not instantiate server from ${configFile}\n`);
+      stderr.write(`${(error as Error).stack}\n`);
+      process.exit(1);
     }
 
+    // Execute app
+    try {
+      await app.start();
+    } catch (error: unknown) {
+      this.logger.error(`Could not start server: ${error}`, { error });
+      process.exit(1);
+    }
+  }
+
+  public async createComponent<TComp>(
+    loaderProperties: IComponentsManagerBuilderOptions<TComp>,
+    configFile: string,
+    variables: Record<string, any>,
+    componentIri: string,
+  ): Promise<TComp> {
     // Set up Components.js
     const componentsManager = await ComponentsManager.build(loaderProperties);
     await componentsManager.configRegistry.register(configFile);
 
     // Create the app
-    const app = 'urn:solid-server:default:App';
-    return await componentsManager.instantiate(app, { variables });
+    return await componentsManager.instantiate(componentIri, { variables });
   }
 
   /**
