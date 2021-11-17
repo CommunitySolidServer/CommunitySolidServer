@@ -13,16 +13,6 @@ import { baseYargsOptions } from './VarResolver';
 const varConfigComponentIri = 'urn:solid-server-app-setup:default:VarResolver';
 const appComponentIri = 'urn:solid-server:default:App';
 
-export interface CliParams {
-  loggingLevel: string;
-  port: number;
-  baseUrl?: string;
-  rootFilePath?: string;
-  sparqlEndpoint?: string;
-  showStackTrace?: boolean;
-  podConfigJson?: string;
-}
-
 export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
@@ -36,7 +26,7 @@ export class AppRunner {
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variableParams: CliParams,
+    variableParams: Record<string, any>,
   ): Promise<void> {
     const app = await this.createComponent(loaderProperties, configFile, variableParams, appComponentIri);
     await app.start();
@@ -48,7 +38,7 @@ export class AppRunner {
    * @param args - Command line arguments.
    * @param stderr - Standard error stream.
    */
-  public async runCli({
+  public runCli({
     argv = process.argv,
     stderr = process.stderr,
   }: {
@@ -56,12 +46,13 @@ export class AppRunner {
     stdin?: ReadStream;
     stdout?: WriteStream;
     stderr?: WriteStream;
-  } = {}): Promise<void> {
+  } = {}): void {
     // Parse the command-line arguments
-    const params = await yargs(argv.slice(2))
+    // eslint-disable-next-line no-sync
+    const params = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
       .options(baseYargsOptions)
-      .parse();
+      .parseSync();
 
     // Gather settings for instantiating the server
     const loaderProperties = {
@@ -72,36 +63,57 @@ export class AppRunner {
 
     // Create varResolver
     const varConfigFile = resolveAssetPath(params.varConfig as string);
-    const varResolver = await this.createComponent(
+    this.createComponent(
       loaderProperties as IComponentsManagerBuilderOptions<VarResolver>, varConfigFile, {}, varConfigComponentIri,
-    );
-    // Resolve vars for app startup
-    const vars = await varResolver.resolveVars(argv);
+    ).then(
+    //  Using varResolver resolve vars and start app
+      async(varResolver): Promise<void> => {
+        let vars;
+        try {
+          vars = await varResolver.resolveVars(argv);
+        } catch (error: unknown) {
+          this.exitWithError(error as Error, 'Error in computing variables', stderr);
+        }
+        return this.initApp(
+          loaderProperties, resolveAssetPath(params.config as string), vars as unknown as Record<string, any>, stderr,
+        );
+      },
 
-    const configFile = resolveAssetPath(params.config as string);
-    let app: App;
+      (error): void => this.exitWithError(
+        error, `Error in loading variable configuration from ${varConfigFile}\n`, stderr,
+      ),
+    ).catch((error): void => this.exitWithError(error, 'Could not start the server', stderr));
+  }
 
+  private exitWithError(error: Error, message: string, stderr: WriteStream): void {
+    stderr.write(message);
+    stderr.write(`${error.stack}\n`);
+    process.exit(1);
+  }
+
+  private async initApp(
+    loaderProperties: IComponentsManagerBuilderOptions<App>,
+    configFile: string, vars: Record<string, any>, stderr: WriteStream,
+  ): Promise<void> {
+    let app;
     // Create app
     try {
       app = await this.createComponent(
-        loaderProperties as IComponentsManagerBuilderOptions<App>, configFile, vars, appComponentIri,
+        loaderProperties, configFile, vars, appComponentIri,
       );
     } catch (error: unknown) {
-      stderr.write(`Error: could not instantiate server from ${configFile}\n`);
-      stderr.write(`${(error as Error).stack}\n`);
-      process.exit(1);
+      this.exitWithError(error as Error, `Error: could not instantiate server from ${configFile}\n`, stderr);
     }
 
     // Execute app
     try {
-      await app.start();
+      await (app as unknown as App).start();
     } catch (error: unknown) {
-      this.logger.error(`Could not start server: ${error}`, { error });
-      process.exit(1);
+      this.exitWithError(error as Error, 'Could not start server', stderr);
     }
   }
 
-  public async createComponent<TComp>(
+  private async createComponent<TComp>(
     loaderProperties: IComponentsManagerBuilderOptions<TComp>,
     configFile: string,
     variables: Record<string, any>,

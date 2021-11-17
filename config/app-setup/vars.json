@@ -11,14 +11,12 @@
             "opts_strictMode": true,
             "opts_yargsOptions": [
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "baseUrl",
                     "VarResolver:_opts_alias": "b",
                     "VarResolver:_opts_requiresArg": true,
                     "VarResolver:_opts_type": "string"
                 },
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "port",
                     "VarResolver:_opts_alias": "p",
                     "VarResolver:_opts_requiresArg": true,
@@ -26,7 +24,6 @@
                     "VarResolver:_opts_default": 3000
                 },
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "rootFilePath",
                     "VarResolver:_opts_alias": "f",
                     "VarResolver:_opts_requiresArg": true,
@@ -34,21 +31,18 @@
                     "VarResolver:_opts_default": "./"
                 },
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "showStackTrace",
                     "VarResolver:_opts_alias": "t",
                     "VarResolver:_opts_type": "boolean",
                     "VarResolver:_opts_default": false
                 },
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "sparqlEndpoint",
                     "VarResolver:_opts_alias": "s",
                     "VarResolver:_opts_requiresArg": true,
                     "VarResolver:_opts_type": "string"
                 },
                 {
-                    "@type": "IYargsOptions",
                     "VarResolver:_opts_yargsOptions_key": "podConfigJson",
                     "VarResolver:_opts_requiresArg": true,
                     "VarResolver:_opts_type": "string",
