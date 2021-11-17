@@ -1,4 +1,4 @@
-import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
+import { HttpError } from '../../../../src/util/errors/HttpError';
 import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 import { BooleanHandler } from '../../../../src/util/handlers/BooleanHandler';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
@@ -13,8 +13,8 @@ describe('A BooleanHandler', (): void => {
     handlerFalse = new StaticAsyncHandler(true, false);
     handlerTrue = new StaticAsyncHandler(true, true);
     handlerError = new StaticAsyncHandler(true, null) as any;
-    handlerError.handle = (): never => {
-      throw new InternalServerError();
+    handlerError.handle = async(): Promise<never> => {
+      throw new Error('handleError');
     };
     handlerCanNotHandle = new StaticAsyncHandler(false, null);
   });
@@ -41,7 +41,7 @@ describe('A BooleanHandler', (): void => {
 
   it('throw an internal error when calling handle with unsupported input.', async(): Promise<void> => {
     const handler = new BooleanHandler([ handlerCanNotHandle, handlerCanNotHandle ]);
-    await expect(handler.handle(null)).rejects.toThrow(InternalServerError);
+    await expect(handler.handle(null)).rejects.toThrow(HttpError);
   });
 
   it('returns the same handle results with handleSafe.', async(): Promise<void> => {
@@ -51,6 +51,7 @@ describe('A BooleanHandler', (): void => {
 
   it('throws the canHandle error when calling handleSafe with unsupported input.', async(): Promise<void> => {
     const handler = new BooleanHandler([ handlerCanNotHandle, handlerCanNotHandle ]);
-    await expect(handler.handleSafe(null)).rejects.toThrow('[Not supported, Not supported]');
+    await expect(handler.handleSafe(null)).rejects
+      .toThrow('No handler supports the given input: [Not supported, Not supported]');
   });
 });
