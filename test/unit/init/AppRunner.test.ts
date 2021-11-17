@@ -80,8 +80,13 @@ describe('AppRunner', (): void => {
 
   describe('runCli', (): void => {
     it('starts the server with default settings.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -113,7 +118,7 @@ describe('AppRunner', (): void => {
     });
 
     it('accepts abbreviated flags.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [
           'node', 'script',
           '-b', 'http://pod.example/',
@@ -126,6 +131,11 @@ describe('AppRunner', (): void => {
           '-t',
           '--podConfigJson', '/different-path.json',
         ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -153,7 +163,7 @@ describe('AppRunner', (): void => {
     });
 
     it('accepts full flags.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [
           'node', 'script',
           '--baseUrl', 'http://pod.example/',
@@ -166,6 +176,11 @@ describe('AppRunner', (): void => {
           '--showStackTrace',
           '--podConfigJson', '/different-path.json',
         ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
@@ -193,12 +208,13 @@ describe('AppRunner', (): void => {
     });
 
     it('accepts asset paths for the config flag.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [
           'node', 'script',
           '--config', '@css:config/file.json',
         ],
       });
+      await new Promise(setImmediate);
 
       expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
       expect(manager.configRegistry.register).toHaveBeenCalledWith(
@@ -221,7 +237,12 @@ describe('AppRunner', (): void => {
         '--podConfigJson', '/different-path.json',
       ];
 
-      await new AppRunner().runCli();
+      new AppRunner().runCli();
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
+      });
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
@@ -251,14 +272,19 @@ describe('AppRunner', (): void => {
 
     it('exits with output to stderr when instantiation fails.', async(): Promise<void> => {
       manager.instantiate.mockRejectedValueOnce(new Error('Fatal'));
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script' ],
       });
 
-      expect(write).toHaveBeenCalledTimes(1);
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
+      });
+
+      expect(write).toHaveBeenCalledTimes(2);
       expect(write).toHaveBeenNthCalledWith(1,
         expect.stringMatching(/^Error: could not instantiate server from .*default\.json/u));
-      expect(write).toHaveBeenNthCalledWith(1,
+      expect(write).toHaveBeenNthCalledWith(2,
         expect.stringMatching(/^Error: Fatal/u));
 
       expect(exit).toHaveBeenCalledTimes(1);
@@ -267,8 +293,13 @@ describe('AppRunner', (): void => {
 
     it('exits without output to stderr when initialization fails.', async(): Promise<void> => {
       app.start.mockRejectedValueOnce(new Error('Fatal'));
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(write).toHaveBeenCalledTimes(0);
@@ -277,8 +308,13 @@ describe('AppRunner', (): void => {
     });
 
     it('exits when unknown options are passed to the main executable.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script', '--foo' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(error).toHaveBeenCalledWith('Unknown argument: foo');
@@ -287,8 +323,13 @@ describe('AppRunner', (): void => {
     });
 
     it('exits when no value is passed to the main executable for an argument.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script', '-s' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(error).toHaveBeenCalledWith('Not enough arguments following: s');
@@ -297,8 +338,13 @@ describe('AppRunner', (): void => {
     });
 
     it('exits when unknown parameters are passed to the main executable.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script', 'foo', 'bar', 'foo.txt', 'bar.txt' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(error).toHaveBeenCalledWith('Unsupported positional arguments: "foo", "bar", "foo.txt", "bar.txt"');
@@ -307,8 +353,13 @@ describe('AppRunner', (): void => {
     });
 
     it('exits when multiple values for a parameter are passed.', async(): Promise<void> => {
-      await new AppRunner().runCli({
+      new AppRunner().runCli({
         argv: [ 'node', 'script', '-l', 'info', '-l', 'debug' ],
+      });
+
+      // Wait until app.start has been called, because we can't await AppRunner.run.
+      await new Promise((resolve): void => {
+        setImmediate(resolve);
       });
 
       expect(error).toHaveBeenCalledWith('Multiple values were provided for: "l": "info", "debug"');
