@@ -23,4 +23,10 @@ describe('A ContentLengthParser', (): void => {
     expect(metadata.quads()).toHaveLength(1);
     expect(metadata.contentLength).toBe(50);
   });
+
+  it('does not set a content-length when the header is invalid.', async(): Promise<void> => {
+    request.headers['content-length'] = 'aabbcc50ccbbaa';
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(0);
+  });
 });
