@@ -22,8 +22,6 @@
       "comment": "Enforces quota for all data per pod on the server",
       "@id": "urn:solid-server:default:QuotaStrategy",
       "@type": "PodQuotaStrategy",
-      "limit_amount": "7000",
-      "limit_unit": "bytes",
       "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
       "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }

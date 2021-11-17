@@ -34,6 +34,13 @@
   "@graph": [
     {
       "comment": "A single-pod server that stores its resources on disk while enforcing quota."
+    },
+    {
+      "@id": "urn:solid-server:default:QuotaStrategy",
+      "PodQuotaStrategy:_limit_amount": 7000,
+      "PodQuotaStrategy:_limit_unit": "bytes",
+      "GlobalQuotaStrategy:_limit_amount": 10000,
+      "GlobalQuotaStrategy:_limit_unit": "bytes"
     }
   ]
 }
