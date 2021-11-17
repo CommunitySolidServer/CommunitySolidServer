@@ -84,7 +84,7 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script' ],
       });
 
-      expect(ComponentsManager.build).toHaveBeenCalledTimes((1));
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'info',
@@ -128,7 +128,7 @@ describe('AppRunner', (): void => {
         ],
       });
 
-      expect(ComponentsManager.build).toHaveBeenCalledTimes((1));
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'debug',
@@ -168,7 +168,7 @@ describe('AppRunner', (): void => {
         ],
       });
 
-      expect(ComponentsManager.build).toHaveBeenCalledTimes((1));
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'debug',
@@ -223,7 +223,7 @@ describe('AppRunner', (): void => {
 
       await new AppRunner().runCli();
 
-      expect(ComponentsManager.build).toHaveBeenCalledTimes((1));
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
         dumpErrorState: true,
         logLevel: 'debug',
@@ -255,10 +255,10 @@ describe('AppRunner', (): void => {
         argv: [ 'node', 'script' ],
       });
 
-      expect(write).toHaveBeenCalledTimes((1));
+      expect(write).toHaveBeenCalledTimes(1);
       expect(write).toHaveBeenNthCalledWith(1,
         expect.stringMatching(/^Error: could not instantiate server from .*default\.json/u));
-      expect(write).toHaveBeenNthCalledWith((1),
+      expect(write).toHaveBeenNthCalledWith(1,
         expect.stringMatching(/^Error: Fatal/u));
 
       expect(exit).toHaveBeenCalledTimes(1);
