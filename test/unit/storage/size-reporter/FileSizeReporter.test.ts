@@ -13,7 +13,7 @@ describe('A FileSizeReporter', (): void => {
       isMetadata: false,
     })),
   };
-  const fileSizeReporter = new FileSizeReporter(mapper);
+  const fileSizeReporter = new FileSizeReporter(mapper, '.internal');
 
   it('should report the right file size.', async(): Promise<void> => {
     const testFile = join(process.cwd(), './test.txt');
