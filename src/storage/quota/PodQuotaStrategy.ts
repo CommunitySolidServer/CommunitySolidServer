@@ -59,11 +59,18 @@ export class PodQuotaStrategy implements QuotaStrategy {
       return undefined;
     }
 
-    const metadata = await this.accessor.getMetadata(identifier);
-    const hasPimStorageMetadata = metadata.getAll(RDF.type)
-      .some((term): boolean => term.value === PIM.Storage);
-
+    let metadata: RepresentationMetadata;
     const parent = this.identifierStrategy.getParentContainer(identifier);
+
+    try {
+      metadata = await this.accessor.getMetadata(identifier);
+    } catch {
+      // Resource and/or its metadata do not exist
+      return this.searchPimStorage(parent);
+    }
+
+    const hasPimStorageMetadata = metadata!.getAll(RDF.type)
+      .some((term): boolean => term.value === PIM.Storage);
 
     return hasPimStorageMetadata ? identifier : this.searchPimStorage(parent);
   }
