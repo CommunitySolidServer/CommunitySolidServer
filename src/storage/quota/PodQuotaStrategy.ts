@@ -20,13 +20,13 @@ import type { QuotaStrategy } from './QuotaStrategy';
  */
 export class PodQuotaStrategy implements QuotaStrategy {
   public readonly limit: Size;
-  private readonly reporter: SizeReporter;
+  private readonly reporter: SizeReporter<any>;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessor: DataAccessor;
 
   public constructor(
     limit: Size,
-    reporter: SizeReporter,
+    reporter: SizeReporter<any>,
     identifierStrategy: IdentifierStrategy,
     accessor: DataAccessor,
   ) {

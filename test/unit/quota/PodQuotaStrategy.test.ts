@@ -16,7 +16,7 @@ jest.mock('fs');
 describe('PodQuotaStrategy', (): void => {
   let strategy: PodQuotaStrategy;
   let mockSize: Size;
-  let mockReporter: jest.Mocked<SizeReporter>;
+  let mockReporter: jest.Mocked<SizeReporter<any>>;
   let identifierStrategy: IdentifierStrategy;
   let accessor: FileDataAccessor;
   const base = 'http://localhost:3000/';

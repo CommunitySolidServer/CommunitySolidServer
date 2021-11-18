@@ -8,7 +8,7 @@ import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
 describe('GlobalQuotaStrategy', (): void => {
   let strategy: GlobalQuotaStrategy;
   let mockSize: Size;
-  let mockReporter: jest.Mocked<SizeReporter>;
+  let mockReporter: jest.Mocked<SizeReporter<any>>;
   let mockBase: string;
 
   beforeEach((): void => {

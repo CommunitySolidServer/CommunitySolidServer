@@ -9,7 +9,7 @@ import type { SizeReporter } from './SizeReporter';
 /**
  * SizeReporter that is used to calculate sizes of resources for a file based system
  */
-export class FileSizeReporter implements SizeReporter {
+export class FileSizeReporter implements SizeReporter<string> {
   private readonly fileIdentifierMapper: FileIdentifierMapper;
   private readonly ignoreFolders: RegExp[];
   private readonly rootFilePath: string;
@@ -34,7 +34,7 @@ export class FileSizeReporter implements SizeReporter {
     return { unit: this.getUnit(), amount: await this.getTotalSize(fileLocation) };
   }
 
-  public async calculateChunkSize(chunk: any): Promise<number> {
+  public async calculateChunkSize(chunk: string): Promise<number> {
     return chunk.length;
   }
 

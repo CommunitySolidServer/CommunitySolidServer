@@ -8,7 +8,7 @@ import type { Size } from './Size';
  * One might use the amount of bytes and another might use the amount of triples
  * stored in a resource.
  */
-export interface SizeReporter {
+export interface SizeReporter<T> {
 
   /**
    * Get the unit as a string in which a SizeReporter returns data
@@ -30,5 +30,5 @@ export interface SizeReporter {
    * @param chunk - the chunk of which you want the size
    * @returns the size of the passed chunk as a number
    */
-  calculateChunkSize: (chunk: any) => Promise<number>;
+  calculateChunkSize: (chunk: T) => Promise<number>;
 }

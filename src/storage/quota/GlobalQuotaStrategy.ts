@@ -17,10 +17,10 @@ import type { QuotaStrategy } from './QuotaStrategy';
  */
 export class GlobalQuotaStrategy implements QuotaStrategy {
   public readonly limit: Size;
-  private readonly reporter: SizeReporter;
+  private readonly reporter: SizeReporter<any>;
   private readonly base: string;
 
-  public constructor(limit: Size, reporter: SizeReporter, base: string) {
+  public constructor(limit: Size, reporter: SizeReporter<any>, base: string) {
     this.limit = limit;
     this.reporter = reporter;
     this.base = base;
