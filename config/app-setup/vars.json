@@ -7,93 +7,89 @@
             "comment": "VarResolver resolves variables to be used in app instantiation, from cli args",
             "@id": "urn:solid-server-app-setup:default:VarResolver",
             "@type": "VarResolver",
-            "opts_usage": "node ./bin/server.js [args]",
-            "opts_strictMode": true,
-            "opts_yargsOptions": [
-                {
-                    "VarResolver:_opts_yargsOptions_key": "baseUrl",
-                    "VarResolver:_opts_alias": "b",
-                    "VarResolver:_opts_requiresArg": true,
-                    "VarResolver:_opts_type": "string"
+            "yargsArgOptions": {
+                "baseUrl": {
+                    "alias": "b",
+                    "requiresArg": true,
+                    "type": "string"
                 },
-                {
-                    "VarResolver:_opts_yargsOptions_key": "port",
-                    "VarResolver:_opts_alias": "p",
-                    "VarResolver:_opts_requiresArg": true,
-                    "VarResolver:_opts_type": "number",
-                    "VarResolver:_opts_default": 3000
+                "port": {
+                    "alias": "p",
+                    "requiresArg": true,
+                    "type": "number",
+                    "default": 3000
                 },
-                {
-                    "VarResolver:_opts_yargsOptions_key": "rootFilePath",
-                    "VarResolver:_opts_alias": "f",
-                    "VarResolver:_opts_requiresArg": true,
-                    "VarResolver:_opts_type": "string",
-                    "VarResolver:_opts_default": "./"
+                "rootFilePath": {
+                    "alias": "f",
+                    "requiresArg": true,
+                    "type": "string",
+                    "default": "./"
                 },
-                {
-                    "VarResolver:_opts_yargsOptions_key": "showStackTrace",
-                    "VarResolver:_opts_alias": "t",
-                    "VarResolver:_opts_type": "boolean",
-                    "VarResolver:_opts_default": false
+                "showStackTrace": {
+                    "alias": "t",
+                    "type": "boolean",
+                    "default": false
                 },
-                {
-                    "VarResolver:_opts_yargsOptions_key": "sparqlEndpoint",
-                    "VarResolver:_opts_alias": "s",
-                    "VarResolver:_opts_requiresArg": true,
-                    "VarResolver:_opts_type": "string"
+                "sparqlEndpoint": {
+                    "alias": "s",
+                    "requiresArg": true,
+                    "type": "string"
                 },
-                {
-                    "VarResolver:_opts_yargsOptions_key": "podConfigJson",
-                    "VarResolver:_opts_requiresArg": true,
-                    "VarResolver:_opts_type": "string",
-                    "VarResolver:_opts_default": "./pod-config.json"
+                "podConfigJson": {
+                    "requiresArg": true,
+                    "type": "string",
+                    "default": "./pod-config.json"
                 }
-            ],
-            "opts_varComputers": [
+            },
+            "yargvOptions": {
+                "usage": "node ./bin/server.js [args]",
+                "strictMode": true
+            },
+            "varComputers": [
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:baseUrl",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:baseUrl",
+                    "VarResolver:_varComputers_value": {
                         "@type": "BaseUrlComputer"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:loggingLevel",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:loggingLevel",
+                    "VarResolver:_varComputers_value": {
                         "@type": "ArgExtractor",
                         "argKey": "loggingLevel"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:port",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:port",
+                    "VarResolver:_varComputers_value": {
                         "@type": "ArgExtractor",
                         "argKey": "port"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:rootFilePath",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:rootFilePath",
+                    "VarResolver:_varComputers_value": {
                         "@type": "AssetPathResolver",
                         "pathArgKey": "rootFilePath"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:sparqlEndpoint",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:sparqlEndpoint",
+                    "VarResolver:_varComputers_value": {
                         "@type": "ArgExtractor",
                         "argKey": "sparqlEndpoint"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:showStackTrace",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:showStackTrace",
+                    "VarResolver:_varComputers_value": {
                         "@type": "ArgExtractor",
                         "argKey": "showStackTrace"
                     }
                 },
                 {
-                    "VarResolver:_opts_varComputers_key": "urn:solid-server:default:variable:AssetPathResolver",
-                    "VarResolver:_opts_varComputers_value": {
+                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:AssetPathResolver",
+                    "VarResolver:_varComputers_value": {
                         "@type": "AssetPathResolver",
                         "pathArgKey": "podConfigJson"
                     }
