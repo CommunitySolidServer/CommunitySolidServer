@@ -188,7 +188,13 @@ export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ServerInitializer';
-export * from './init/VarResolver';
+
+// Init/Vars
+export * from './init/variables/VarResolver';
+export * from './init/variables/VarComputer';
+export * from './init/variables/computers/ArgExtractor';
+export * from './init/variables/computers/AssetPathResolver';
+export * from './init/variables/computers/BaseUrlResolver';
 
 // Logging
 export * from './logging/LazyLogger';

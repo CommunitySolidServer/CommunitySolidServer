@@ -7,8 +7,8 @@ import yargs from 'yargs';
 import { getLoggerFor } from '../logging/LogUtil';
 import { resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
-import type { VarResolver } from './VarResolver';
-import { baseYargsOptions } from './VarResolver';
+import type { VarResolver, VarRecord } from './variables/VarResolver';
+import { BASE_YARGS_ARG_OPTIONS } from './variables/VarResolver';
 
 const varConfigComponentIri = 'urn:solid-server-app-setup:default:VarResolver';
 const appComponentIri = 'urn:solid-server:default:App';
@@ -26,7 +26,7 @@ export class AppRunner {
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variableParams: Record<string, any>,
+    variableParams: VarRecord,
   ): Promise<void> {
     const app = await this.createComponent(loaderProperties, configFile, variableParams, appComponentIri);
     await app.start();
@@ -51,10 +51,10 @@ export class AppRunner {
     // eslint-disable-next-line no-sync
     const params = yargs(argv.slice(2))
       .usage('node ./bin/server.js [args]')
-      .options(baseYargsOptions)
+      .options(BASE_YARGS_ARG_OPTIONS)
       .parseSync();
 
-    // Gather settings for instantiating the server
+    // Gather settings for instantiating VarResolver
     const loaderProperties = {
       mainModulePath: resolveAssetPath(params.mainModulePath as string),
       dumpErrorState: true,
@@ -68,9 +68,9 @@ export class AppRunner {
     ).then(
     //  Using varResolver resolve vars and start app
       async(varResolver): Promise<void> => {
-        let vars;
+        let vars: VarRecord;
         try {
-          vars = await varResolver.resolveVars(argv);
+          vars = await varResolver.handle(argv);
         } catch (error: unknown) {
           this.exitWithError(error as Error, 'Error in computing variables', stderr);
         }
@@ -80,13 +80,13 @@ export class AppRunner {
       },
 
       (error): void => this.exitWithError(
-        error, `Error in loading variable configuration from ${varConfigFile}\n`, stderr,
+        error, `Error in loading variable configuration from ${varConfigFile}`, stderr,
       ),
     ).catch((error): void => this.exitWithError(error, 'Could not start the server', stderr));
   }
 
-  private exitWithError(error: Error, message: string, stderr: WriteStream): void {
-    stderr.write(message);
+  private exitWithError(error: Error, message: string, stderr: WriteStream): never {
+    stderr.write(`message\n`);
     stderr.write(`${error.stack}\n`);
     process.exit(1);
   }
@@ -95,19 +95,17 @@ export class AppRunner {
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string, vars: Record<string, any>, stderr: WriteStream,
   ): Promise<void> {
-    let app;
+    let app: App;
     // Create app
     try {
-      app = await this.createComponent(
-        loaderProperties, configFile, vars, appComponentIri,
-      );
+      app = await this.createComponent(loaderProperties, configFile, vars, appComponentIri);
     } catch (error: unknown) {
-      this.exitWithError(error as Error, `Error: could not instantiate server from ${configFile}\n`, stderr);
+      this.exitWithError(error as Error, `Error: could not instantiate server from ${configFile}`, stderr);
     }
 
     // Execute app
     try {
-      await (app as unknown as App).start();
+      await app.start();
     } catch (error: unknown) {
       this.exitWithError(error as Error, 'Could not start server', stderr);
     }
@@ -123,7 +121,7 @@ export class AppRunner {
     const componentsManager = await ComponentsManager.build(loaderProperties);
     await componentsManager.configRegistry.register(configFile);
 
-    // Create the app
+    // Create the component
     return await componentsManager.instantiate(componentIri, { variables });
   }
 }
