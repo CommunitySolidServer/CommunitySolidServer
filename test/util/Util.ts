@@ -203,13 +203,13 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         if (!folder[name]) {
           throwSystemError('ENOENT');
         }
+        if (!(await this.lstat(path)).isFile()) {
+          throwSystemError('EISDIR');
+        }
 
         const { folder: folderDest, name: nameDest } = getFolder(destination);
         folderDest[nameDest] = folder[name];
 
-        if (!(await this.lstat(path)).isFile()) {
-          throwSystemError('EISDIR');
-        }
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
