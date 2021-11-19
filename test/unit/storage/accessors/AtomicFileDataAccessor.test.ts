@@ -24,9 +24,12 @@ describe('AtomicFileDataAccessor', (): void => {
     accessor = new AtomicFileDataAccessor(
       new ExtensionBasedMapper(base, rootFilePath),
       rootFilePath,
-      '../.internal/tempFiles/',
+      './.internal/tempFiles/',
     );
-    (accessor as any).tempFilePath = rootFilePath;
+    // The 'mkdirSync' in AtomicFileDataAccessor's constructor does not seem to create the folder in the
+    // cache object used for mocking fs.
+    // This line creates what represents a folder in the cache object
+    cache.data['.internal'] = { tempFiles: {}};
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
     data = guardedStreamFrom([ 'data' ]);
   });
@@ -47,7 +50,8 @@ describe('AtomicFileDataAccessor', (): void => {
 
     it('should delete temp file when done writing.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
-      expect(Object.keys(cache.data)).toHaveLength(1);
+      // Being: 'resource' the file and '.internal' the folder in the root dir
+      expect(Object.keys(cache.data).length + Object.keys(cache.data['.internal'].tempFiles).length).toEqual(2);
     });
 
     it('should throw an error when writing the data goes wrong.', async(): Promise<void> => {
