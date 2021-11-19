@@ -1,7 +1,6 @@
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
-import { FileDataAccessor } from '../../../src/storage/accessors/FileDataAccessor';
-import { ExtensionBasedMapper } from '../../../src/storage/mapping/ExtensionBasedMapper';
+import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { PodQuotaStrategy } from '../../../src/storage/quota/PodQuotaStrategy';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
@@ -18,7 +17,7 @@ describe('PodQuotaStrategy', (): void => {
   let mockSize: Size;
   let mockReporter: jest.Mocked<SizeReporter<any>>;
   let identifierStrategy: IdentifierStrategy;
-  let accessor: FileDataAccessor;
+  let accessor: jest.Mocked<DataAccessor>;
   const base = 'http://localhost:3000/';
   const rootFilePath = 'folder';
 
@@ -32,7 +31,24 @@ describe('PodQuotaStrategy', (): void => {
       getUnit: jest.fn().mockReturnValue(mockSize.unit),
       calculateChunkSize: jest.fn(async(chunk: any): Promise<number> => chunk.length),
     };
-    accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
+    accessor = {
+      // Assume that the pod is called "nested"
+      getMetadata: jest.fn().mockImplementation(
+        async(identifier: ResourceIdentifier): Promise<RepresentationMetadata> => {
+          const res = new RepresentationMetadata();
+          if (identifier.path === `${base}nested/`) {
+            res.add(RDF.type, PIM.Storage);
+          }
+          return res;
+        },
+      ),
+      canHandle: jest.fn(),
+      writeDocument: jest.fn(),
+      getData: jest.fn(),
+      getChildren: jest.fn(),
+      writeContainer: jest.fn(),
+      deleteResource: jest.fn(),
+    };
     strategy = new PodQuotaStrategy(mockSize, mockReporter, identifierStrategy, accessor);
   });
 
@@ -43,18 +59,6 @@ describe('PodQuotaStrategy', (): void => {
   });
 
   describe('getAvailableSpace()', (): void => {
-    beforeEach((): void => {
-      // Assume that the pod is called "nested"
-      accessor.getMetadata = jest.fn().mockImplementation(
-        async(identifier: ResourceIdentifier): Promise<RepresentationMetadata> => {
-          const res = new RepresentationMetadata();
-          if (identifier.path === `${base}nested/`) {
-            res.add(RDF.type, PIM.Storage);
-          }
-          return res;
-        },
-      );
-    });
     it('should return a Size containing MAX_SAFE_INTEGER when writing outside a pod.', async(): Promise<void> => {
       const result = strategy.getAvailableSpace({ path: `${base}file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: Number.MAX_SAFE_INTEGER }));
@@ -75,7 +79,6 @@ describe('PodQuotaStrategy', (): void => {
         expect.objectContaining({ amount: 100 }),
       );
     });
-
     it(
       'should return a Size object containing 0 as amount if no content-length is present in the metadata.',
       async(): Promise<void> => {
@@ -85,7 +88,6 @@ describe('PodQuotaStrategy', (): void => {
         );
       },
     );
-
     it('should return a Size object containing the correct unit.', async(): Promise<void> => {
       const metadata = new RepresentationMetadata();
       await expect(strategy.estimateSize(metadata)).resolves.toEqual(

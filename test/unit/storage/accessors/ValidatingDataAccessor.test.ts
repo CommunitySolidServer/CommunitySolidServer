@@ -2,17 +2,13 @@ import type { Validator, ValidatorInput } from '../../../../src/http/auxiliary/V
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import type { AtomicDataAccessor } from '../../../../src/storage/accessors/AtomicDataAccessor';
-import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
+import type { DataAccessor } from '../../../../src/storage/accessors/DataAccessor';
 import { ValidatingDataAccessor } from '../../../../src/storage/accessors/ValidatingDataAccessor';
-import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
-
-jest.mock('../../../../src/storage/accessors/InMemoryDataAccessor');
 
 describe('ValidatingDataAccessor', (): void => {
   let validatingAccessor: ValidatingDataAccessor;
-  let childAccessor: AtomicDataAccessor;
+  let childAccessor: jest.Mocked<DataAccessor>;
   let validator: jest.Mocked<Validator>;
 
   const mockIdentifier = { path: 'http://localhost/test.txt' };
@@ -22,7 +18,15 @@ describe('ValidatingDataAccessor', (): void => {
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
-    childAccessor = new InMemoryDataAccessor(new SingleRootIdentifierStrategy('http://localhost'));
+    childAccessor = {
+      canHandle: jest.fn(),
+      writeDocument: jest.fn(),
+      getData: jest.fn(),
+      getChildren: jest.fn(),
+      writeContainer: jest.fn(),
+      deleteResource: jest.fn(),
+      getMetadata: jest.fn(),
+    };
     childAccessor.getChildren = jest.fn();
     validator = {
       canHandle: jest.fn(),
