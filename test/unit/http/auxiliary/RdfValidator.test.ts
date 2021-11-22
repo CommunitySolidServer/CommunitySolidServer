@@ -22,8 +22,7 @@ describe('An RdfValidator', (): void => {
 
   it('always accepts content-type internal/quads.', async(): Promise<void> => {
     const representation = new BasicRepresentation('data', 'internal/quads');
-    // Output is not important for this Validator
-    await expect(validator.handle({ representation, identifier })).resolves.toBeDefined();
+    await expect(validator.handle({ representation, identifier })).resolves.toEqual(representation);
   });
 
   it('validates data by running it through a converter.', async(): Promise<void> => {
