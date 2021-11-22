@@ -5,6 +5,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { QuotaStrategy } from '../../../../src/storage/quota/QuotaStrategy';
+import type { SizeReporter } from '../../../../src/storage/size-reporter/SizeReporter';
 import { QuotaValidator } from '../../../../src/storage/validators/QuotaValidator';
 import { guardStream } from '../../../../src/util/GuardedStream';
 import type { Guarded } from '../../../../src/util/GuardedStream';
@@ -17,6 +18,7 @@ describe('QuotaValidator', (): void => {
   let mockMetadata: RepresentationMetadata;
   let mockData: Guarded<Readable>;
   let mockInput: ValidatorInput;
+  let mockReporter: jest.Mocked<SizeReporter<any>>;
 
   beforeEach((): void => {
     jest.clearAllMocks();
@@ -27,7 +29,13 @@ describe('QuotaValidator', (): void => {
       representation: new BasicRepresentation(mockData, mockMetadata),
       identifier,
     };
+    mockReporter = {
+      getSize: jest.fn(),
+      getUnit: jest.fn(),
+      calculateChunkSize: jest.fn(),
+    };
     mockedStrategy = {
+      reporter: mockReporter,
       getAvailableSpace: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 10 }),
       estimateSize: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 8 }),
       trackAvailableSpace: jest.fn().mockResolvedValue(guardStream(new PassThrough())),
