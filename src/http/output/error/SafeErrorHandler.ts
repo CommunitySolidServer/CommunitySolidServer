@@ -1,5 +1,6 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
-import { createErrorMessage, getStatusCode } from '../../../util/errors/ErrorUtil';
+import { createErrorMessage } from '../../../util/errors/ErrorUtil';
+import { getStatusCode } from '../../../util/errors/HttpErrorUtil';
 import { guardedStreamFrom } from '../../../util/StreamUtil';
 import { toLiteral } from '../../../util/TermUtil';
 import { HTTP, XSD } from '../../../util/Vocabularies';

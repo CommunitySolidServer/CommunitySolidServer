@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import type { App } from '../../src/init/App';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';

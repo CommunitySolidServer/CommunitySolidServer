@@ -2,10 +2,6 @@ import type { AsyncHandler } from '../../../../src/util/handlers/AsyncHandler';
 import { UnionHandler } from '../../../../src/util/handlers/UnionHandler';
 
 class SimpleUnionHandler extends UnionHandler<AsyncHandler<any, string>> {
-  public constructor(handlers: AsyncHandler<any, any>[], requireAll?: boolean) {
-    super(handlers, requireAll);
-  }
-
   protected async combine(results: string[]): Promise<string> {
     return results.join('');
   }
@@ -60,5 +56,26 @@ describe('A UnionHandler', (): void => {
     // `handle` call does not need to check `canHandle` values anymore
     handlers[0].canHandle.mockRejectedValue(new Error('bad request'));
     await expect(handler.handle(input)).resolves.toBe('ab');
+  });
+
+  it('requires all handlers to succeed if requireAll is true.', async(): Promise<void> => {
+    handler = new SimpleUnionHandler(handlers, true);
+
+    handlers[0].handle.mockRejectedValue(new Error('bad request'));
+    await expect(handler.handleSafe(input)).rejects.toThrow('bad request');
+  });
+
+  it('does not require all handlers to succeed if ignoreErrors is true.', async(): Promise<void> => {
+    handler = new SimpleUnionHandler(handlers, true, true);
+
+    handlers[0].handle.mockRejectedValueOnce(new Error('bad request'));
+    await expect(handler.handleSafe(input)).resolves.toBe('b');
+
+    handlers[1].handle.mockRejectedValueOnce(new Error('bad request'));
+    await expect(handler.handleSafe(input)).resolves.toBe('a');
+
+    handlers[0].handle.mockRejectedValueOnce(new Error('bad request'));
+    handlers[1].handle.mockRejectedValueOnce(new Error('bad request'));
+    await expect(handler.handleSafe(input)).resolves.toBe('');
   });
 });

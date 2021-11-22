@@ -320,6 +320,7 @@ export * from './util/errors/ConflictHttpError';
 export * from './util/errors/ErrorUtil';
 export * from './util/errors/ForbiddenHttpError';
 export * from './util/errors/HttpError';
+export * from './util/errors/HttpErrorUtil';
 export * from './util/errors/InternalServerError';
 export * from './util/errors/MethodNotAllowedHttpError';
 export * from './util/errors/NotFoundHttpError';

@@ -46,7 +46,6 @@ jobs:
           - '14.x'
           - '16.0'
           - '16.x'
-          - '17.0'
           - '17.x'
     timeout-minutes: 10
     steps:
@@ -74,11 +73,9 @@ jobs:
         run: npm run test:deploy
 
   test-integration:
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        operating-system:
-          - ubuntu-latest
         node-version:
           - '12.x'
           - '14.x'
@@ -102,6 +99,29 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run integration tests
+        run: npm run test:integration
+
+  test-integration-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version:
+          - '12.x'
+          - '14.x'
+          - '16.x'
+    timeout-minutes: 10
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Install dependencies and run build scripts

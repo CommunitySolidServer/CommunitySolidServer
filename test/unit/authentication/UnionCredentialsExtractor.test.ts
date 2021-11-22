@@ -43,4 +43,11 @@ describe('A UnionCredentialsExtractor', (): void => {
       [CredentialGroup.public]: {},
     });
   });
+
+  it('skips erroring handlers.', async(): Promise<void> => {
+    extractors[0].handle.mockRejectedValueOnce(new Error('error'));
+    await expect(extractor.handle(request)).resolves.toEqual({
+      [CredentialGroup.public]: {},
+    });
+  });
 });
