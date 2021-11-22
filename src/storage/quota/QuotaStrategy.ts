@@ -29,7 +29,7 @@ export interface QuotaStrategy {
    * @param metadata - the metadata that might include the size
    * @returns a Size object containing the estimated size and unit of the resource
    */
-  estimateSize: (metadata: RepresentationMetadata) => Promise<Size>;
+  estimateSize: (metadata: RepresentationMetadata) => Promise<Size | undefined>;
 
   /**
    * Get a Passthrough stream that will keep track of the available space.

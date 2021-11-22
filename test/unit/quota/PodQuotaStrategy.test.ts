@@ -80,16 +80,15 @@ describe('PodQuotaStrategy', (): void => {
       );
     });
     it(
-      'should return a Size object containing 0 as amount if no content-length is present in the metadata.',
+      'should return undefined if no content-length is present in the metadata.',
       async(): Promise<void> => {
         const metadata = new RepresentationMetadata();
-        await expect(strategy.estimateSize(metadata)).resolves.toEqual(
-          expect.objectContaining({ amount: 0 }),
-        );
+        await expect(strategy.estimateSize(metadata)).resolves.toBeUndefined();
       },
     );
     it('should return a Size object containing the correct unit.', async(): Promise<void> => {
       const metadata = new RepresentationMetadata();
+      metadata.contentLength = 100;
       await expect(strategy.estimateSize(metadata)).resolves.toEqual(
         expect.objectContaining({ unit: mockSize.unit }),
       );

@@ -76,9 +76,12 @@ export class PodQuotaStrategy implements QuotaStrategy {
   }
 
   /** The estimated size of a resource in this strategy is simply the content-length header */
-  public async estimateSize(metadata: RepresentationMetadata): Promise<Size> {
+  public async estimateSize(metadata: RepresentationMetadata): Promise<Size | undefined> {
+    if (!metadata.contentLength) {
+      return undefined;
+    }
     return {
-      amount: metadata.contentLength ?? 0,
+      amount: metadata.contentLength,
       unit: this.limit.unit,
     };
   }
