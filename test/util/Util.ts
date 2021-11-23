@@ -20,6 +20,8 @@ const portNames = [
   'WebSocketsProtocol',
   // Unit
   'BaseHttpServerFactory',
+  'PodQuota',
+  'GlobalQuota',
 ] as const;
 
 export function getPort(name: typeof portNames[number]): number {
