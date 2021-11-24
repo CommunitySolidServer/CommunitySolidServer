@@ -33,7 +33,7 @@ describe('A FileSizeReporter', (): void => {
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
-    expect((await result).amount).toBe((await fsPromises.lstat(testFile)).size);
+    expect((await result).amount).toBe((await fsPromises.stat(testFile)).size);
 
     await fsPromises.unlink(testFile);
   });
@@ -47,8 +47,8 @@ describe('A FileSizeReporter', (): void => {
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
 
-    const expectedFileSize = (await fsPromises.lstat(testFile)).size;
-    const expectedContainerSize = expectedFileSize + (await fsPromises.lstat(containerFile)).size;
+    const expectedFileSize = (await fsPromises.stat(testFile)).size;
+    const expectedContainerSize = expectedFileSize + (await fsPromises.stat(containerFile)).size;
 
     await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
     await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
@@ -71,8 +71,8 @@ describe('A FileSizeReporter', (): void => {
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
 
-    const expectedFileSize = (await fsPromises.lstat(testFile)).size;
-    const expectedContainerSize = expectedFileSize + (await fsPromises.lstat(containerFile)).size;
+    const expectedFileSize = (await fsPromises.stat(testFile)).size;
+    const expectedContainerSize = expectedFileSize + (await fsPromises.stat(containerFile)).size;
 
     await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
     await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));

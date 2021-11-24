@@ -45,18 +45,18 @@ export class FileSizeReporter implements SizeReporter<string> {
    * @returns a number specifying how many bytes are used by the resource
    */
   private async getTotalSize(fileLocation: string): Promise<number> {
-    let lstat: Stats;
+    let stat: Stats;
 
     // Check if the file exists
     try {
-      lstat = await fsPromises.lstat(fileLocation);
+      stat = await fsPromises.stat(fileLocation);
     } catch {
       return 0;
     }
 
     // If the file's location points to a file, simply return the file's size
-    if (lstat.isFile()) {
-      return lstat.size;
+    if (stat.isFile()) {
+      return stat.size;
     }
 
     // If the location DOES exist and is NOT a file it should be a directory
@@ -74,6 +74,6 @@ export class FileSizeReporter implements SizeReporter<string> {
       }
 
       return result;
-    }, Promise.resolve(lstat.size));
+    }, Promise.resolve(stat.size));
   }
 }
