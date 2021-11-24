@@ -1,3 +1,4 @@
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Size } from './Size';
 
@@ -31,4 +32,13 @@ export interface SizeReporter<T> {
    * @returns the size of the passed chunk as a number
    */
   calculateChunkSize: (chunk: T) => Promise<number>;
+
+  /**
+   * Estimate the size of a body / request by looking at its metadata
+   *
+   * @param metadata - the metadata of the resource you want an estimated  size of
+   * @returns the estimated size of the body / request or undefined if no
+   * meaningful estimation can be made
+   */
+  estimateSize: (metadata: RepresentationMetadata) => Promise<number | undefined>;
 }

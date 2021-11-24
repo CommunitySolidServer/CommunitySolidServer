@@ -33,9 +33,11 @@ describe('QuotaValidator', (): void => {
       getSize: jest.fn(),
       getUnit: jest.fn(),
       calculateChunkSize: jest.fn(),
+      estimateSize: jest.fn().mockResolvedValue(8),
     };
     mockedStrategy = {
       reporter: mockReporter,
+      limit: { unit: 'bytes', amount: 8 },
       getAvailableSpace: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 10 }),
       estimateSize: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 8 }),
       trackAvailableSpace: jest.fn().mockResolvedValue(guardStream(new PassThrough())),

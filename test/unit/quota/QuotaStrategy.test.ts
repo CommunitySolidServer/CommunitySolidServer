@@ -1,0 +1,86 @@
+import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
+import { QuotaStrategy } from '../../../src/storage/quota/QuotaStrategy';
+import type { Size } from '../../../src/storage/size-reporter/Size';
+import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
+import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
+import { mockFs } from '../../util/Util';
+
+jest.mock('fs');
+
+class QuotaStrategyWrapper extends QuotaStrategy {
+  public constructor(reporter: SizeReporter<any>, limit: Size) {
+    super(reporter, limit);
+  }
+
+  public getAvailableSpace = async(): Promise<Size> => ({ unit: 'bytes', amount: 5 });
+}
+
+describe('PodQuotaStrategy', (): void => {
+  let strategy: QuotaStrategyWrapper;
+  let mockSize: Size;
+  let mockReporter: jest.Mocked<SizeReporter<any>>;
+  const base = 'http://localhost:3000/';
+  const rootFilePath = 'folder';
+
+  beforeEach((): void => {
+    jest.restoreAllMocks();
+    mockFs(rootFilePath, new Date());
+    mockSize = { amount: 2000, unit: 'bytes' };
+    mockReporter = {
+      getSize: jest.fn().mockResolvedValue({ unit: mockSize.unit, amount: 50 }),
+      getUnit: jest.fn().mockReturnValue(mockSize.unit),
+      calculateChunkSize: jest.fn(async(chunk: any): Promise<number> => chunk.length),
+      estimateSize: jest.fn().mockResolvedValue(5),
+    };
+    strategy = new QuotaStrategyWrapper(mockReporter, mockSize);
+  });
+
+  describe('constructor()', (): void => {
+    it('should set the passed parameters as properties.', async(): Promise<void> => {
+      expect(strategy.limit).toEqual(mockSize);
+      expect(strategy.reporter).toEqual(mockReporter);
+    });
+  });
+
+  describe('estimateSize()', (): void => {
+    it('should return a Size object containing the correct unit and amount.', async(): Promise<void> => {
+      await expect(strategy.estimateSize(new RepresentationMetadata())).resolves.toEqual(
+        // This '5' comes from the reporter mock a little up in this file
+        expect.objectContaining({ unit: mockSize.unit, amount: 5 }),
+      );
+    });
+    it('should return undefined when the reporter returns undefined.', async(): Promise<void> => {
+      mockReporter.estimateSize.mockResolvedValueOnce(undefined);
+      await expect(strategy.estimateSize(new RepresentationMetadata())).resolves.toBeUndefined();
+    });
+  });
+
+  describe('trackAvailableSpace()', (): void => {
+    it('should return a passthrough that destroys the stream when quota is exceeded.', async(): Promise<void> => {
+      strategy.getAvailableSpace = jest.fn().mockReturnValue({ amount: 50, unit: mockSize.unit });
+      const fiftyChars = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const stream = guardedStreamFrom(fiftyChars);
+      const track = await strategy.trackAvailableSpace({ path: `${base}nested/file2.txt` });
+      const piped = pipeSafely(stream, track);
+
+      for (let i = 0; i < 10; i++) {
+        stream.push(fiftyChars);
+      }
+
+      expect(piped.destroyed).toBe(false);
+
+      for (let i = 0; i < 10; i++) {
+        stream.push(fiftyChars);
+      }
+
+      expect(piped.destroyed).toBe(false);
+
+      stream.push(fiftyChars);
+
+      const destroy = new Promise<void>((resolve): void => {
+        piped.on('error', (): void => resolve());
+      });
+      await expect(destroy).resolves.toBeUndefined();
+    });
+  });
+});

@@ -1,5 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import { join } from 'path';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
@@ -107,5 +108,20 @@ describe('A FileSizeReporter', (): void => {
     const testString = 'testesttesttesttest==testtest';
     const result = fileSizeReporter.calculateChunkSize(testString);
     await expect(result).resolves.toEqual(testString.length);
+  });
+
+  describe('estimateSize()', (): void => {
+    it('should return the content-length.', async(): Promise<void> => {
+      const metadata = new RepresentationMetadata();
+      metadata.contentLength = 100;
+      await expect(fileSizeReporter.estimateSize(metadata)).resolves.toEqual(100);
+    });
+    it(
+      'should return undefined if no content-length is present in the metadata.',
+      async(): Promise<void> => {
+        const metadata = new RepresentationMetadata();
+        await expect(fileSizeReporter.estimateSize(metadata)).resolves.toBeUndefined();
+      },
+    );
   });
 });

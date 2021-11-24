@@ -1,5 +1,6 @@
 import type { Stats } from 'fs';
 import { promises as fsPromises } from 'fs';
+import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { joinFilePath } from '../../util/PathUtil';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
@@ -37,6 +38,9 @@ export class FileSizeReporter implements SizeReporter<string> {
   public async calculateChunkSize(chunk: string): Promise<number> {
     return chunk.length;
   }
+
+  /** The estimated size of a resource in this reporter is simply the content-length header */
+  public estimateSize = async(metadata: RepresentationMetadata): Promise<number | undefined> => metadata?.contentLength;
 
   /**
    * Get the total size of a resource and its children if present

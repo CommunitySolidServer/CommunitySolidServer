@@ -20,9 +20,11 @@ import type { SizeReporter } from '../size-reporter/SizeReporter';
  */
 export abstract class QuotaStrategy {
   public readonly reporter: SizeReporter<any>;
+  public readonly limit: Size;
 
-  public constructor(reporter: SizeReporter<any>) {
+  public constructor(reporter: SizeReporter<any>, limit: Size) {
     this.reporter = reporter;
+    this.limit = limit;
   }
 
   /**
@@ -42,7 +44,10 @@ export abstract class QuotaStrategy {
    * @param metadata - the metadata that might include the size
    * @returns a Size object containing the estimated size and unit of the resource
    */
-  public abstract estimateSize: (metadata: RepresentationMetadata) => Promise<Size | undefined>;
+  public async estimateSize(metadata: RepresentationMetadata): Promise<Size | undefined> {
+    const estimate = await this.reporter.estimateSize(metadata);
+    return estimate ? { unit: this.limit.unit, amount: estimate } : undefined;
+  }
 
   /**
    * Get a Passthrough stream that will keep track of the available space.

@@ -11,7 +11,6 @@ import { QuotaStrategy } from './QuotaStrategy';
  * The GlobalQuotaStrategy sets a limit on the amount of data stored on the server globally
  */
 export class PodQuotaStrategy extends QuotaStrategy {
-  public readonly limit: Size;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly accessor: DataAccessor;
 
@@ -21,8 +20,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
     identifierStrategy: IdentifierStrategy,
     accessor: DataAccessor,
   ) {
-    super(reporter);
-    this.limit = limit;
+    super(reporter, limit);
     this.identifierStrategy = identifierStrategy;
     this.accessor = accessor;
   }
@@ -65,16 +63,5 @@ export class PodQuotaStrategy extends QuotaStrategy {
 
     return hasPimStorageMetadata ? identifier : this.searchPimStorage(parent);
   }
-
-  /** The estimated size of a resource in this strategy is simply the content-length header */
-  public estimateSize = async(metadata: RepresentationMetadata): Promise<Size | undefined> => {
-    if (!metadata.contentLength) {
-      return undefined;
-    }
-    return {
-      amount: metadata.contentLength,
-      unit: this.limit.unit,
-    };
-  };
 }
 
