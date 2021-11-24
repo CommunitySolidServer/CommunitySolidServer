@@ -2,7 +2,7 @@ import type { Stats } from 'fs';
 import { promises as fsPromises } from 'fs';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { joinFilePath } from '../../util/PathUtil';
+import { joinFilePath, trimTrailingSlashes } from '../../util/PathUtil';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import type { Size } from './Size';
 import type { SizeReporter } from './SizeReporter';
@@ -40,7 +40,7 @@ export class FileSizeReporter implements SizeReporter<string> {
   }
 
   /** The estimated size of a resource in this reporter is simply the content-length header */
-  public estimateSize = async(metadata: RepresentationMetadata): Promise<number | undefined> => metadata?.contentLength;
+  public estimateSize = async(metadata: RepresentationMetadata): Promise<number | undefined> => metadata.contentLength;
 
   /**
    * Get the total size of a resource and its children if present
@@ -73,7 +73,7 @@ export class FileSizeReporter implements SizeReporter<string> {
 
       // Exclude internal files
       if (!this.ignoreFolders.some((folder: RegExp): boolean =>
-        folder.test(childFileLocation.split(this.rootFilePath)[1]))) {
+        folder.test(childFileLocation.split(trimTrailingSlashes(this.rootFilePath))[1]))) {
         result += await this.getTotalSize(childFileLocation);
       }
 

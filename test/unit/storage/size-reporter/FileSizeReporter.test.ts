@@ -14,7 +14,7 @@ describe('A FileSizeReporter', (): void => {
       isMetadata: false,
     })),
   };
-  const fileRoot = join(process.cwd(), './test-folder');
+  const fileRoot = join(process.cwd(), './test-folder/');
   const fileSizeReporter = new FileSizeReporter(
     mapper,
     fileRoot,
@@ -59,7 +59,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should not count files located in an ignored folder.', async(): Promise<void> => {
-    const containerFile = join(fileRoot, './test-folder-2');
+    const containerFile = join(fileRoot, './test-folder-2/');
     await fsPromises.mkdir(containerFile, { recursive: true });
     const testFile = join(containerFile, './test.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
@@ -71,12 +71,15 @@ describe('A FileSizeReporter', (): void => {
 
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
+    const rootSize = fileSizeReporter.getSize({ path: fileRoot });
 
     const expectedFileSize = (await fsPromises.stat(testFile)).size;
     const expectedContainerSize = expectedFileSize + (await fsPromises.stat(containerFile)).size;
+    const expectedRootSize = expectedContainerSize + (await fsPromises.stat(fileRoot)).size;
 
     await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
     await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
+    await expect(rootSize).resolves.toEqual(expect.objectContaining({ amount: expectedRootSize }));
 
     await fsPromises.unlink(testFile);
     await fsPromises.unlink(internalTestFile);

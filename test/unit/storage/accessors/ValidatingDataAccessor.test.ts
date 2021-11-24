@@ -50,4 +50,12 @@ describe('ValidatingDataAccessor', (): void => {
       expect(spy).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
     });
   });
+  describe('writeContainer()', (): void => {
+    it('should call the accessors writeContainer() function.', async(): Promise<void> => {
+      const spy = jest.spyOn(childAccessor, 'writeContainer');
+      await validatingAccessor.writeContainer(mockIdentifier, mockMetadata);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
+    });
+  });
 });

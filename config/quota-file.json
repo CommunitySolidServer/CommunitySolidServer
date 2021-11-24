@@ -41,6 +41,10 @@
       "PodQuotaStrategy:_limit_unit": "bytes",
       "GlobalQuotaStrategy:_limit_amount": 10000,
       "GlobalQuotaStrategy:_limit_unit": "bytes"
+    },
+    {
+      "@id": "urn:solid-server:default:SizeReporter",
+      "FileSizeReporter:_ignoreFolders": [ "^[/\\\\]\\.internal[^/\\\\]?" ]
     }
   ]
 }
