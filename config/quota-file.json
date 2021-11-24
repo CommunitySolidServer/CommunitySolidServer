@@ -44,7 +44,7 @@
     },
     {
       "@id": "urn:solid-server:default:SizeReporter",
-      "FileSizeReporter:_ignoreFolders": [ "^[/\\\\]\\.internal[^/\\\\]?" ]
+      "FileSizeReporter:_ignoreFolders": [ "^[/\\\\]\\.internal[/\\\\]?" ]
     }
   ]
 }
