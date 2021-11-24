@@ -24,8 +24,7 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('supports going from errors to the given content type.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'internal/error': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'text/html': 1 });
+    await expect(converter.getOutputTypes('internal/error')).resolves.toEqual({ 'text/html': 1 });
   });
 
   it('works with non-HTTP errors.', async(): Promise<void> => {

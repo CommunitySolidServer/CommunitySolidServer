@@ -51,7 +51,7 @@ describe('A Solid server with setup', (): void => {
 
     // Root access disabled
     res = await fetch(baseUrl);
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(401);
 
     // Registration still possible
     const registerParams = { email, podName, password, confirmPassword: password, createWebId: true };

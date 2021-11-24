@@ -16,12 +16,11 @@ describe('A RdfToQuadConverter', (): void => {
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
 
-  it('supports parsing the same types as rdfParser.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual(await rdfParser.getContentTypesPrioritized());
-  });
-
   it('supports serializing as quads.', async(): Promise<void> => {
-    await expect(converter.getOutputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    const types = await rdfParser.getContentTypes();
+    for (const type of types) {
+      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    }
   });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {

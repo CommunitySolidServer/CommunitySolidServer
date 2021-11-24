@@ -2,6 +2,7 @@ import 'jest-rdf';
 import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'rdf-js';
+import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
@@ -15,7 +16,7 @@ import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 function getPatch(query: string): SparqlUpdatePatch {
   const prefixedQuery = `prefix : <http://test.com/>\n${query}`;
   return {
-    algebra: translate(prefixedQuery, { quads: true }),
+    algebra: translate(prefixedQuery, { quads: true }) as Algebra.Update,
     data: guardedStreamFrom(prefixedQuery),
     metadata: new RepresentationMetadata(),
     binary: true,

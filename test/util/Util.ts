@@ -5,6 +5,7 @@ import type { SystemError } from '../../src/util/errors/SystemError';
 const portNames = [
   // Integration
   'Conditions',
+  'ContentNegotiation',
   'DynamicPods',
   'Identity',
   'LpdHandlerWithAuth',

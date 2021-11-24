@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.1"></a>
+## [v2.0.1](https://github.com/solid/community-server/compare/v2.0.0...v2.0.1) - 2021-11-02
+
+### Added
+* [feat: Display symlinks in container listings.](https://github.com/solid/community-server/commit/2e4589938f4475a1a776dbc82ca4fd1501360764)
+
+### Fixed
+* [fix: Added a content-type parser to HeaderUtil](https://github.com/solid/community-server/commit/54ccbed48dcce890df02d230c64a51d15f5ca6b5)
+* [fix: Allow URLs with multiple leading slashes.](https://github.com/solid/community-server/commit/b42150cf52212ff2d6ba76e0db78faf71b10db89)
+* [fix: Do not serve UI on special pages.](https://github.com/solid/community-server/commit/8c9887feea7ac27d8acf67f4a0cd52f3e417a483)
+
+
 <a name="v2.0.0"></a>
 ## [v2.0.0](https://github.com/solid/community-server/compare/v1.1.0...v2.0.0) - 2021-10-15
 

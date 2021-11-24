@@ -3,7 +3,7 @@ import type {
   RepresentationConverterArgs,
 } from '../../../storage/conversion/RepresentationConverter';
 import { INTERNAL_ERROR } from '../../../util/ContentTypes';
-import { getStatusCode } from '../../../util/errors/ErrorUtil';
+import { getStatusCode } from '../../../util/errors/HttpErrorUtil';
 import { toLiteral } from '../../../util/TermUtil';
 import { HTTP, XSD } from '../../../util/Vocabularies';
 import { BasicRepresentation } from '../../representation/BasicRepresentation';

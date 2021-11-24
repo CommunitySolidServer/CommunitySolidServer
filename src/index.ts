@@ -255,6 +255,7 @@ export * from './storage/accessors/SparqlDataAccessor';
 export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conversion
+export * from './storage/conversion/BaseTypedRepresentationConverter';
 export * from './storage/conversion/ChainedConverter';
 export * from './storage/conversion/ConstantConverter';
 export * from './storage/conversion/ContainerToTemplateConverter';
@@ -265,7 +266,6 @@ export * from './storage/conversion/ErrorToJsonConverter';
 export * from './storage/conversion/ErrorToQuadConverter';
 export * from './storage/conversion/ErrorToTemplateConverter';
 export * from './storage/conversion/FormToJsonConverter';
-export * from './storage/conversion/IfNeededConverter';
 export * from './storage/conversion/MarkdownToHtmlConverter';
 export * from './storage/conversion/PassthroughConverter';
 export * from './storage/conversion/QuadToRdfConverter';
@@ -338,6 +338,7 @@ export * from './util/errors/ConflictHttpError';
 export * from './util/errors/ErrorUtil';
 export * from './util/errors/ForbiddenHttpError';
 export * from './util/errors/HttpError';
+export * from './util/errors/HttpErrorUtil';
 export * from './util/errors/InternalServerError';
 export * from './util/errors/MethodNotAllowedHttpError';
 export * from './util/errors/NotFoundHttpError';

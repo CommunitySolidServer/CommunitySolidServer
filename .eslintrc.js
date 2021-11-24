@@ -44,6 +44,7 @@ module.exports = {
     // Problems with optional parameters
     '@typescript-eslint/no-unnecessary-condition': 'off',
     '@typescript-eslint/prefer-optional-chain': 'error',
+    '@typescript-eslint/promise-function-async': [ 'error', { checkArrowFunctions: false } ],
     '@typescript-eslint/space-before-function-paren': [ 'error', 'never' ],
     '@typescript-eslint/unbound-method': 'off',
     '@typescript-eslint/unified-signatures': 'off',

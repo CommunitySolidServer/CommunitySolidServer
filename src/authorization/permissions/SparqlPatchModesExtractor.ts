@@ -40,25 +40,25 @@ export class SparqlPatchModesExtractor extends ModesExtractor {
     return Boolean((data as SparqlUpdatePatch).algebra);
   }
 
-  private isSupported(op: Algebra.Operation): boolean {
+  private isSupported(op: Algebra.Update): boolean {
     if (this.isDeleteInsert(op) || this.isNop(op)) {
       return true;
     }
     if (op.type === Algebra.types.COMPOSITE_UPDATE) {
-      return (op as Algebra.CompositeUpdate).updates.every((update): boolean => this.isSupported(update));
+      return op.updates.every((update): boolean => this.isSupported(update));
     }
     return false;
   }
 
-  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
+  private isDeleteInsert(op: Algebra.Update): op is Algebra.DeleteInsert {
     return op.type === Algebra.types.DELETE_INSERT;
   }
 
-  private isNop(op: Algebra.Operation): op is Algebra.Nop {
+  private isNop(op: Algebra.Update): op is Algebra.Nop {
     return op.type === Algebra.types.NOP;
   }
 
-  private needsAppend(update: Algebra.Operation): boolean {
+  private needsAppend(update: Algebra.Update): boolean {
     if (this.isNop(update)) {
       return false;
     }
@@ -69,7 +69,7 @@ export class SparqlPatchModesExtractor extends ModesExtractor {
     return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.needsAppend(op));
   }
 
-  private needsWrite(update: Algebra.Operation): boolean {
+  private needsWrite(update: Algebra.Update): boolean {
     if (this.isNop(update)) {
       return false;
     }
