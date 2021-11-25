@@ -2,7 +2,7 @@ import type { Stats } from 'fs';
 import { promises as fsPromises } from 'fs';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
-import { joinFilePath, trimTrailingSlashes } from '../../util/PathUtil';
+import { joinFilePath, normalizeFilePath, trimTrailingSlashes } from '../../util/PathUtil';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import type { Size } from './Size';
 import type { SizeReporter } from './SizeReporter';
@@ -68,7 +68,7 @@ export class FileSizeReporter implements SizeReporter<string> {
     const childFiles = await fsPromises.readdir(fileLocation);
 
     return await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
-      const childFileLocation = joinFilePath(fileLocation, current);
+      const childFileLocation = normalizeFilePath(joinFilePath(fileLocation, current));
       let result = await acc;
 
       // Exclude internal files
