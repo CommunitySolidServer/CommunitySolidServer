@@ -4,11 +4,12 @@ import type { ReadStream, WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
+
 import { getLoggerFor } from '../logging/LogUtil';
 import { resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
 import type { VarResolver, VarRecord } from './variables/VarResolver';
-import { BASE_YARGS_ARG_OPTIONS } from './variables/VarResolver';
+import { setupYargvWithBaseArgs } from './variables/VarResolver';
 
 const varConfigComponentIri = 'urn:solid-server-app-setup:default:VarResolver';
 const appComponentIri = 'urn:solid-server:default:App';
@@ -49,20 +50,18 @@ export class AppRunner {
   } = {}): void {
     // Parse the command-line arguments
     // eslint-disable-next-line no-sync
-    const params = yargs(argv.slice(2))
-      .usage('node ./bin/server.js [args]')
-      .options(BASE_YARGS_ARG_OPTIONS)
-      .parseSync();
+    const params = setupYargvWithBaseArgs(yargs(argv.slice(2))
+      .usage('node ./bin/server.js [args]')).parseSync();
 
     // Gather settings for instantiating VarResolver
     const loaderProperties = {
-      mainModulePath: resolveAssetPath(params.mainModulePath as string),
+      mainModulePath: resolveAssetPath(params.mainModulePath),
       dumpErrorState: true,
       logLevel: params.loggingLevel as LogLevel,
     };
 
     // Create varResolver
-    const varConfigFile = resolveAssetPath(params.varConfig as string);
+    const varConfigFile = resolveAssetPath(params.varConfig);
     this.createComponent(
       loaderProperties as IComponentsManagerBuilderOptions<VarResolver>, varConfigFile, {}, varConfigComponentIri,
     ).then(
@@ -75,7 +74,7 @@ export class AppRunner {
           this.exitWithError(error as Error, 'Error in computing variables', stderr);
         }
         return this.initApp(
-          loaderProperties, resolveAssetPath(params.config as string), vars as unknown as Record<string, any>, stderr,
+          loaderProperties, resolveAssetPath(params.config), vars as unknown as Record<string, any>, stderr,
         );
       },
 

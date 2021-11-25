@@ -10,16 +10,21 @@ const defaultVarConfig = `${modulePathPlaceholder}config/app-setup/vars.json`;
 
 export type YargsArgOptions = Record<string, yargs.Options>;
 
-/**
- * CLI options needed for performing meta-process of app initialization.
- * These options doesn't contribute to components-js vars normally.
- */
-export const BASE_YARGS_ARG_OPTIONS: YargsArgOptions = {
-  config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
-  loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true },
-  mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
-  varConfig: { type: 'string', alias: 'v', default: defaultVarConfig, requiresArg: true },
-};
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function setupYargvWithBaseArgs(yargv: yargs.Argv) {
+  // Values from componentsjs LogLevel type
+  const logLevels = [ 'error', 'warn', 'info', 'verbose', 'debug', 'silly' ];
+  return yargv.options({
+    /**
+   * CLI options needed for performing meta-process of app initialization.
+   * These options doesn't contribute to components-js vars normally.
+   */
+    config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
+    loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: logLevels },
+    mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
+    varConfig: { type: 'string', alias: 'v', default: defaultVarConfig, requiresArg: true },
+  });
+}
 
 export interface YargvOptions {
   usage?: string;
@@ -33,7 +38,6 @@ export type VarRecord = Record<string, unknown>;
 
 export class VarResolver extends AsyncHandler<string[], VarRecord> {
   protected readonly yargsArgOptions: YargsArgOptions;
-  protected readonly effectiveYargsArgOptions: YargsArgOptions;
   protected readonly yargvOptions: YargvOptions;
   protected readonly varComputers: Record<string, VarComputer>;
 
@@ -47,10 +51,6 @@ export class VarResolver extends AsyncHandler<string[], VarRecord> {
   ) {
     super();
     this.yargsArgOptions = yargsArgOptions;
-    this.effectiveYargsArgOptions = {
-      ...yargsArgOptions,
-      ...BASE_YARGS_ARG_OPTIONS,
-    };
     this.yargvOptions = yargvOptions;
     this.varComputers = varComputers;
   }
@@ -78,7 +78,8 @@ export class VarResolver extends AsyncHandler<string[], VarRecord> {
         }
       }
       return true;
-    }).options(this.effectiveYargsArgOptions);
+    }).options(this.yargsArgOptions);
+    setupYargvWithBaseArgs(yArgv);
 
     return yArgv.parse();
   }
