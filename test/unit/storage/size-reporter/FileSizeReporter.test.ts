@@ -18,7 +18,7 @@ describe('A FileSizeReporter', (): void => {
   const fileSizeReporter = new FileSizeReporter(
     mapper,
     fileRoot,
-    [ '^/\\.internal/?$' ],
+    [ '^/\\.internal$' ],
   );
 
   beforeAll(async(): Promise<void> => {

@@ -18,7 +18,7 @@ export class FileSizeReporter implements SizeReporter<string> {
   public constructor(fileIdentifierMapper: FileIdentifierMapper, rootFilePath: string, ignoreFolders: string[]) {
     this.fileIdentifierMapper = fileIdentifierMapper;
     this.ignoreFolders = ignoreFolders.map((folder: string): RegExp => new RegExp(folder, 'u'));
-    this.rootFilePath = rootFilePath;
+    this.rootFilePath = normalizeFilePath(rootFilePath);
   }
 
   /** The FileSizeReporter will always return data in the form of bytes */
