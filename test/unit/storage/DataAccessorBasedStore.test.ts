@@ -7,10 +7,12 @@ import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStr
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
+import { resourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { BasicConditions } from '../../../src/storage/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
+import { changedResource, createdResource, deletedResource } from '../../../src/storage/ResourceStore';
 import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
@@ -263,11 +265,11 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
       const result = await store.addResource(resourceID, representation);
-      expect(result).toEqual({
-        path: expect.stringMatching(new RegExp(`^${root}[^/]+$`, 'u')),
-      });
-      await expect(arrayifyStream(accessor.data[result.path].data)).resolves.toEqual([ resourceData ]);
-      expect(accessor.data[result.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(result).toEqual(
+        createdResource(resourceIdentifier(expect.stringMatching(new RegExp(`^${root}[^/]+$`, 'u')))),
+      );
+      await expect(arrayifyStream(accessor.data[result.resource.path].data)).resolves.toEqual([ resourceData ]);
+      expect(accessor.data[result.resource.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
     });
 
     it('can write containers.', async(): Promise<void> => {
@@ -276,16 +278,16 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ '<> a <http://test.com/coolContainer>.' ]);
       const result = await store.addResource(resourceID, representation);
-      expect(result).toEqual({
-        path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
-      });
-      expect(accessor.data[result.path]).toBeTruthy();
-      expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
+      expect(result).toEqual(
+        createdResource(resourceIdentifier(expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')))),
+      );
+      expect(accessor.data[result.resource.path]).toBeTruthy();
+      expect(accessor.data[result.resource.path].metadata.contentType).toBeUndefined();
 
-      const { data, metadata } = await store.getRepresentation(result);
+      const { data, metadata } = await store.getRepresentation(result.resource);
       const quads: Quad[] = await arrayifyStream(data);
       expect(metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
-      expect(quads.some((entry): boolean => entry.subject.value === result.path &&
+      expect(quads.some((entry): boolean => entry.subject.value === result.resource.path &&
         entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
     });
 
@@ -294,9 +296,9 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.add(SOLID_HTTP.slug, 'newName');
       const result = await store.addResource(resourceID, representation);
-      expect(result).toEqual({
-        path: `${root}newName`,
-      });
+      expect(result).toEqual(
+        createdResource(resourceIdentifier(`${root}newName`)),
+      );
     });
 
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
@@ -304,12 +306,12 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(SOLID_HTTP.slug, 'newName');
       accessor.data[`${root}newName`] = representation;
       const result = await store.addResource(resourceID, representation);
-      expect(result).not.toEqual({
-        path: `${root}newName`,
-      });
-      expect(result).not.toEqual({
-        path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
-      });
+      expect(result).not.toEqual(
+        createdResource(resourceIdentifier(`${root}newName`)),
+      );
+      expect(result).not.toEqual(
+        createdResource(resourceIdentifier(expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')))),
+      );
     });
 
     it('generates http://test.com/%26%26 when slug is &%26.', async(): Promise<void> => {
@@ -317,7 +319,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.add(SOLID_HTTP.slug, '&%26');
       const result = await store.addResource(resourceID, representation);
-      expect(result).toEqual({ path: `${root}%26%26` });
+      expect(result).toEqual(createdResource(resourceIdentifier(`${root}%26%26`)));
     });
 
     it('errors if the slug contains a slash.', async(): Promise<void> => {
@@ -382,7 +384,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
       await expect(store.setRepresentation(resourceID, representation)).resolves
-        .toEqual([{ path: `${root}` }]);
+        .toEqual([ createdResource(resourceIdentifier(`${root}`)) ]);
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenLastCalledWith(resourceID);
 
@@ -412,8 +414,8 @@ describe('A DataAccessorBasedStore', (): void => {
     it('can write resources.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: root },
-        { path: `${root}resource` },
+        changedResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -429,8 +431,8 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: root },
-        { path: `${root}container/` },
+        changedResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}container/`)),
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
@@ -441,9 +443,11 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can overwrite resources which does not update parent metadata.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
+      // eslint-disable-next-line unicorn/expiring-todo-comments
+      // TODO: is this expect correct??
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: root },
-        { path: `${root}resource` },
+        changedResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -453,7 +457,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation = new BasicRepresentation('updatedText', 'text/plain');
       mockDate.mockReturnValue(later);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}resource` },
+        changedResource(resourceIdentifier(`${root}resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ 'updatedText' ]);
       expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(later.toISOString());
@@ -466,8 +470,8 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add('notGen', 'value');
       representation.metadata.add('gen', 'value', SOLID_META.terms.ResponseMetadata);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: root },
-        { path: `${root}resource` },
+        changedResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[resourceID.path].metadata.get('notGen')?.value).toBe('value');
@@ -479,8 +483,8 @@ describe('A DataAccessorBasedStore', (): void => {
       delete accessor.data[root];
       const resourceID = { path: `${root}resource` };
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}` },
-        { path: `${root}resource` },
+        createdResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
@@ -495,8 +499,8 @@ describe('A DataAccessorBasedStore', (): void => {
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
       );
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}` },
-        { path: `${root}container/` },
+        changedResource(resourceIdentifier(root)),
+        createdResource(resourceIdentifier(`${root}container/`)),
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
@@ -518,9 +522,9 @@ describe('A DataAccessorBasedStore', (): void => {
     it('creates recursive containers when needed.', async(): Promise<void> => {
       const resourceID = { path: `${root}a/b/resource` };
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}a/` },
-        { path: `${root}a/b/` },
-        { path: `${root}a/b/resource` },
+        createdResource(resourceIdentifier(`${root}a/`)),
+        createdResource(resourceIdentifier(`${root}a/b/`)),
+        createdResource(resourceIdentifier(`${root}a/b/resource`)),
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
       expect(accessor.data[`${root}a/`].metadata.getAll(RDF.type).map((type): string => type.value))
@@ -547,7 +551,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}` },
+        createdResource(resourceIdentifier(root)),
       ]);
       expect(accessor.data[resourceID.path]).toBeTruthy();
       expect(Object.keys(accessor.data)).toHaveLength(1);
@@ -633,8 +637,8 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will delete resources.', async(): Promise<void> => {
       accessor.data[`${root}resource`] = representation;
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
-        { path: `${root}resource` },
-        { path: root },
+        deletedResource(resourceIdentifier(`${root}resource`)),
+        changedResource(resourceIdentifier(root)),
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
@@ -644,7 +648,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will delete root non-storage containers.', async(): Promise<void> => {
       accessor.data[root] = new BasicRepresentation(representation.data, containerMetadata);
       await expect(store.deleteResource({ path: root })).resolves.toEqual([
-        { path: root },
+        deletedResource(resourceIdentifier(root)),
       ]);
       expect(accessor.data[root]).toBeUndefined();
     });
@@ -655,8 +659,8 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}container/.dummy`] = representation;
       auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);
       await expect(store.deleteResource({ path: `${root}container/.dummy` })).resolves.toEqual([
-        { path: `${root}container/.dummy` },
-        { path: `${root}container/` },
+        deletedResource(resourceIdentifier(`${root}container/.dummy`)),
+        changedResource(resourceIdentifier(`${root}container/`)),
       ]);
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
     });
@@ -665,9 +669,9 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[`${root}container/`] = representation;
       accessor.data[`${root}container/.dummy`] = representation;
       await expect(store.deleteResource({ path: `${root}container/` })).resolves.toEqual([
-        { path: `${root}container/` },
-        { path: `${root}container/.dummy` },
-        { path: root },
+        deletedResource(resourceIdentifier(`${root}container/`)),
+        deletedResource(resourceIdentifier(`${root}container/.dummy`)),
+        changedResource(resourceIdentifier(root)),
       ]);
       expect(accessor.data[`${root}container/`]).toBeUndefined();
       expect(accessor.data[`${root}container/.dummy`]).toBeUndefined();
@@ -686,8 +690,8 @@ describe('A DataAccessorBasedStore', (): void => {
       const { logger } = store as any;
       logger.error = jest.fn();
       await expect(store.deleteResource({ path: `${root}resource` })).resolves.toEqual([
-        { path: `${root}resource` },
-        { path: root },
+        deletedResource(resourceIdentifier(`${root}resource`)),
+        changedResource(resourceIdentifier(root)),
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
       expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();

@@ -3,8 +3,8 @@ import type { WebSocket } from 'ws';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
+import type { ModifiedResource } from '../storage/ResourceStore';
 import { parseForwarded } from '../util/HeaderUtil';
-import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
 
@@ -60,10 +60,13 @@ class WebSocketListener extends EventEmitter {
     this.emit('closed');
   }
 
-  public onResourceChanged({ path }: ResourceIdentifier): void {
-    if (this.subscribedPaths.has(path)) {
-      this.sendMessage('pub', path);
-    }
+  public onResourceChanged(modifiedResources: ModifiedResource[]): void {
+    modifiedResources.forEach((modified: ModifiedResource): void => {
+      const resourcePath = modified.resource.path;
+      if (this.subscribedPaths.has(resourcePath)) {
+        this.sendMessage('pub', resourcePath);
+      }
+    });
   }
 
   private onMessage(message: string): void {
@@ -123,7 +126,7 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
 
   public constructor(source: EventEmitter) {
     super();
-    source.on('changed', (changed: ResourceIdentifier): void => this.onResourceChanged(changed));
+    source.on('changed', (modified: ModifiedResource[]): void => this.onResourceChanged(modified));
   }
 
   public async handle(input: { webSocket: WebSocket; upgradeRequest: HttpRequest }): Promise<void> {
@@ -138,9 +141,9 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
     listener.start(input.upgradeRequest);
   }
 
-  private onResourceChanged(changed: ResourceIdentifier): void {
+  private onResourceChanged(modified: ModifiedResource[]): void {
     for (const listener of this.listeners) {
-      listener.onResourceChanged(changed);
+      listener.onResourceChanged(modified);
     }
   }
 }

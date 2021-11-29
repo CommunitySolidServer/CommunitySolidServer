@@ -5,7 +5,7 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
 import type { Conditions } from './Conditions';
-import type { ResourceStore } from './ResourceStore';
+import type { ModifiedResource, ResourceStore } from './ResourceStore';
 import type { RouterRule } from './routing/RouterRule';
 
 /**
@@ -31,22 +31,22 @@ export class RoutingResourceStore implements ResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier> {
+    conditions?: Conditions): Promise<ModifiedResource> {
     return (await this.getStore(container, representation)).addResource(container, representation, conditions);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ModifiedResource[]> {
     return (await this.getStore(identifier, representation)).setRepresentation(identifier, representation, conditions);
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ModifiedResource[]> {
     return (await this.getStore(identifier)).deleteResource(identifier, conditions);
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ResourceIdentifier[]> {
+    conditions?: Conditions): Promise<ModifiedResource[]> {
     return (await this.getStore(identifier)).modifyResource(identifier, patch, conditions);
   }
 
