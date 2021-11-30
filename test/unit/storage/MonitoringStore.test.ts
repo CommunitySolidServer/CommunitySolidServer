@@ -2,37 +2,37 @@ import type { NamedNode } from 'n3';
 import type { RepresentationMetadata } from '../../../src';
 import type { Patch } from '../../../src/http/representation/Patch';
 import type { Representation } from '../../../src/http/representation/Representation';
-import { resourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
+import { createResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { MonitoringStore } from '../../../src/storage/MonitoringStore';
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
-import { changedResource, createdResource, deletedResource } from '../../../src/storage/ResourceStore';
+import { ModificationType, createModifiedResource } from '../../../src/storage/ResourceStore';
 
 describe('A MonitoringStore', (): void => {
   let store: MonitoringStore;
   let source: ResourceStore;
   let changedCallback: () => void;
-  const addedResource = createdResource(resourceIdentifier('http://example.org/foo/bar/new'));
+  const addedResource = createModifiedResource(createResourceIdentifier('http://example.org/foo/bar/new'), ModificationType.created);
   const createdResources = [
-    changedResource(resourceIdentifier('http://example.org/created/')),
-    createdResource(resourceIdentifier('http://example.org/created/1')),
-    createdResource(resourceIdentifier('http://example.org/created/2')),
+    createModifiedResource(createResourceIdentifier('http://example.org/created/'), ModificationType.changed),
+    createModifiedResource(createResourceIdentifier('http://example.org/created/1'), ModificationType.created),
+    createModifiedResource(createResourceIdentifier('http://example.org/created/2'), ModificationType.created),
   ];
 
   const changedResources = [
-    changedResource(resourceIdentifier('http://example.org/changed/')),
-    changedResource(resourceIdentifier('http://example.org/changed/1')),
-    changedResource(resourceIdentifier('http://example.org/changed/2')),
+    createModifiedResource(createResourceIdentifier('http://example.org/changed/'), ModificationType.changed),
+    createModifiedResource(createResourceIdentifier('http://example.org/changed/1'), ModificationType.changed),
+    createModifiedResource(createResourceIdentifier('http://example.org/changed/2'), ModificationType.changed),
   ];
 
   const deletedResources = [
-    changedResource(resourceIdentifier('http://example.org/deleted/')),
-    deletedResource(resourceIdentifier('http://example.org/deleted/container')),
-    deletedResource(resourceIdentifier('http://example.org/deleted/container/resource')),
+    createModifiedResource(createResourceIdentifier('http://example.org/deleted/'), ModificationType.changed),
+    createModifiedResource(createResourceIdentifier('http://example.org/deleted/container'), ModificationType.deleted),
+    createModifiedResource(createResourceIdentifier('http://example.org/deleted/container/resource'), ModificationType.deleted),
   ];
 
   const changedInternalResources = [
-    changedResource(resourceIdentifier('http://example.org/.internal/modified/1')),
-    changedResource(resourceIdentifier('http://example.org/.internal/modified/2')),
+    createModifiedResource(createResourceIdentifier('http://example.org/.internal/modified/1'), ModificationType.changed),
+    createModifiedResource(createResourceIdentifier('http://example.org/.internal/modified/2'), ModificationType.changed),
   ];
 
   const modifyResourceMockFn = jest.fn(async(): Promise<any> => changedResources);
@@ -69,7 +69,7 @@ describe('A MonitoringStore', (): void => {
 
   it('calls addResource directly from the source.', async(): Promise<void> => {
     await expect(store.addResource({ path: 'http://example.org/foo/bar' }, {} as Representation)).resolves
-      .toStrictEqual(createdResource(resourceIdentifier('http://example.org/foo/bar/new')));
+      .toStrictEqual(createModifiedResource(createResourceIdentifier('http://example.org/foo/bar/new'), ModificationType.created));
     expect(source.addResource).toHaveBeenCalledTimes(1);
     expect(source.addResource).toHaveBeenLastCalledWith({ path: 'http://example.org/foo/bar' }, {}, undefined);
   });
@@ -81,8 +81,8 @@ describe('A MonitoringStore', (): void => {
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
     expect(changedCallback).toHaveBeenCalledWith([
-      changedResource(resourceIdentifier('http://example.org/foo/bar/')),
-      createdResource(resourceIdentifier('http://example.org/foo/bar/new')),
+      createModifiedResource(createResourceIdentifier('http://example.org/foo/bar/'), ModificationType.changed),
+      createModifiedResource(createResourceIdentifier('http://example.org/foo/bar/new'), ModificationType.created),
     ]);
   });
 
@@ -99,9 +99,9 @@ describe('A MonitoringStore', (): void => {
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
     expect(changedCallback).toHaveBeenCalledWith([
-      changedResource(resourceIdentifier('http://example.org/created/')),
-      createdResource(resourceIdentifier('http://example.org/created/1')),
-      createdResource(resourceIdentifier('http://example.org/created/2')),
+      createModifiedResource(createResourceIdentifier('http://example.org/created/'), ModificationType.changed),
+      createModifiedResource(createResourceIdentifier('http://example.org/created/1'), ModificationType.created),
+      createModifiedResource(createResourceIdentifier('http://example.org/created/2'), ModificationType.created),
     ]);
   });
 
@@ -118,9 +118,9 @@ describe('A MonitoringStore', (): void => {
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
     expect(changedCallback).toHaveBeenCalledWith([
-      changedResource(resourceIdentifier('http://example.org/deleted/')),
-      deletedResource(resourceIdentifier('http://example.org/deleted/container')),
-      deletedResource(resourceIdentifier('http://example.org/deleted/container/resource')),
+      createModifiedResource(createResourceIdentifier('http://example.org/deleted/'), ModificationType.changed),
+      createModifiedResource(createResourceIdentifier('http://example.org/deleted/container'), ModificationType.deleted),
+      createModifiedResource(createResourceIdentifier('http://example.org/deleted/container/resource'), ModificationType.deleted),
     ]);
   });
 
@@ -137,9 +137,9 @@ describe('A MonitoringStore', (): void => {
     await result;
     expect(changedCallback).toHaveBeenCalledTimes(1);
     expect(changedCallback).toHaveBeenCalledWith([
-      changedResource(resourceIdentifier('http://example.org/changed/')),
-      changedResource(resourceIdentifier('http://example.org/changed/1')),
-      changedResource(resourceIdentifier('http://example.org/changed/2')),
+      createModifiedResource(createResourceIdentifier('http://example.org/changed/'), ModificationType.changed),
+      createModifiedResource(createResourceIdentifier('http://example.org/changed/1'), ModificationType.changed),
+      createModifiedResource(createResourceIdentifier('http://example.org/changed/2'), ModificationType.changed),
     ]);
   });
 

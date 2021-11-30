@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
-import { resourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
+import { createResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { UnsecureWebSocketsProtocol } from '../../../src/http/UnsecureWebSocketsProtocol';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
-import { createdResource } from '../../../src/storage/ResourceStore';
+import { createModifiedResource, ModificationType } from '../../../src/storage/ResourceStore';
 
 class DummySocket extends EventEmitter {
   public readonly messages = new Array<string>();
@@ -56,7 +56,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
 
     describe('before subscribing to resources', (): void => {
       it('does not emit pub messages.', (): void => {
-        source.emit('changed', [ createdResource(resourceIdentifier('http://example.org/foo/bar')) ]);
+        source.emit('changed', [ createModifiedResource(createResourceIdentifier('http://example.org/foo/bar'), ModificationType.created) ]);
         expect(webSocket.messages).toHaveLength(0);
       });
     });
@@ -72,7 +72,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', [ createdResource(resourceIdentifier('https://mypod.example/foo/bar')) ]);
+        source.emit('changed', [ createModifiedResource(createResourceIdentifier('https://mypod.example/foo/bar'), ModificationType.created) ]);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/foo/bar');
       });
@@ -89,7 +89,7 @@ describe('An UnsecureWebSocketsProtocol', (): void => {
       });
 
       it('emits pub messages for that resource.', (): void => {
-        source.emit('changed', [ createdResource(resourceIdentifier('https://mypod.example/relative/foo')) ]);
+        source.emit('changed', [ createModifiedResource(createResourceIdentifier('https://mypod.example/relative/foo'), ModificationType.created) ]);
         expect(webSocket.messages).toHaveLength(1);
         expect(webSocket.messages.shift()).toBe('pub https://mypod.example/relative/foo');
       });

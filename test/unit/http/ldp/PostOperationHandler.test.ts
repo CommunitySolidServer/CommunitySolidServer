@@ -3,10 +3,11 @@ import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import { resourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import { createResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ModifiedResource, ResourceStore } from '../../../../src/storage/ResourceStore';
-import { createdResource } from '../../../../src/storage/ResourceStore';
+import { ModificationType, createModifiedResource } from '../../../../src/storage/ResourceStore';
+
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
@@ -22,7 +23,13 @@ describe('A PostOperationHandler', (): void => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      addResource: jest.fn(async(): Promise<ModifiedResource> => createdResource(resourceIdentifier('newPath'))),
+      addResource: jest.fn(
+        async(): Promise<ModifiedResource> =>
+          createModifiedResource(
+            createResourceIdentifier('newPath'),
+            ModificationType.created,
+          ),
+      ),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);
   });

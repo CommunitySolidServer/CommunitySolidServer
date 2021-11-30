@@ -5,7 +5,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
 import type { ModifiedResource, ResourceStore } from './ResourceStore';
-import { changedResource } from './ResourceStore';
+import { ModificationType, createModifiedResource } from './ResourceStore';
 
 /**
  * Store that notifies listeners of changes to its source
@@ -32,7 +32,7 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   public async addResource(container: ResourceIdentifier, representation: Representation,
     conditions?: Conditions): Promise<ModifiedResource> {
     const identifier = await this.source.addResource(container, representation, conditions);
-    this.emitChanged([ changedResource(container), identifier ]);
+    this.emitChanged([ createModifiedResource(container, ModificationType.changed), identifier ]);
     return identifier;
   }
 
@@ -60,8 +60,6 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   private isInternalResource(result: ModifiedResource[]): boolean {
-    return result.filter(
-      (modified: ModifiedResource): boolean => modified.resource.path.includes('/.internal'),
-    ).length > 0;
+    return result.some((modified: ModifiedResource): boolean => modified.resource.path.includes('/.internal'));
   }
 }

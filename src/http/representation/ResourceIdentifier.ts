@@ -18,6 +18,6 @@ export function isResourceIdentifier(object: any): object is ResourceIdentifier 
 /**
  * Factory function creating a resource identifier for convenience
  */
-export function resourceIdentifier(resourcePath: string): ResourceIdentifier {
+export function createResourceIdentifier(resourcePath: string): ResourceIdentifier {
   return { path: resourcePath };
 }

@@ -2,6 +2,7 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
+import { ModificationType } from '..';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
@@ -43,7 +44,7 @@ import {
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
 import type { ModifiedResource, ResourceStore } from './ResourceStore';
-import { createdResource, changedResource, deletedResource } from './ResourceStore';
+import { createModifiedResource } from './ResourceStore';
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -177,7 +178,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Write the data. New containers should never be made for a POST request.
     await this.writeData(newID, representation, isContainer, false, false);
 
-    return createdResource(newID);
+    return createModifiedResource(newID, ModificationType.created);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
@@ -266,16 +267,16 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted,
     // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const modfied = [ deletedResource(identifier) ];
+    const modfied = [ createModifiedResource(identifier, ModificationType.deleted) ];
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
       modfied.push(...(await this.safelyDeleteAuxiliaryResources(auxiliaries))
-        .map((id: ResourceIdentifier): ModifiedResource => deletedResource(id)));
+        .map((id: ResourceIdentifier): ModifiedResource => createModifiedResource(id, ModificationType.deleted)));
     }
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      modfied.push(changedResource(container));
+      modfied.push(createModifiedResource(container, ModificationType.changed));
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
@@ -317,7 +318,9 @@ export class DataAccessorBasedStore implements ResourceStore {
    * the identifier with differing trailing slash is requested.
    * @param identifier - Identifier that needs to be checked.
    */
-  protected async getNormalizedMetadata(identifier: ResourceIdentifier): Promise<RepresentationMetadata> {
+  protected async getNormalizedMetadata(
+    identifier: ResourceIdentifier,
+  ): Promise<RepresentationMetadata> {
     const hasSlash = isContainerIdentifier(identifier);
     try {
       return await this.accessor.getMetadata(identifier);
@@ -387,11 +390,15 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const container = this.identifierStrategy.getParentContainer(identifier);
       if (!createContainers) {
-        modified.push(changedResource(container));
+        modified.push(createModifiedResource(container, ModificationType.changed));
       } else {
         const createdResources = await this.createRecursiveContainers(container);
         // The parent container is marked 'changed'
-        modified.push(...createdResources.length === 0 ? [ changedResource(container) ] : createdResources);
+        modified.push(
+          ...createdResources.length === 0 ?
+            [ createModifiedResource(container, ModificationType.changed) ] :
+            createdResources,
+        );
       }
 
       // Parent container is also modified
@@ -405,7 +412,12 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    return [ ...modified, exists ? changedResource(identifier) : createdResource(identifier) ];
+    return [
+      ...modified,
+      exists ?
+        createModifiedResource(identifier, ModificationType.changed) :
+        createModifiedResource(identifier, ModificationType.created),
+    ];
   }
 
   /**
@@ -615,6 +627,6 @@ export class DataAccessorBasedStore implements ResourceStore {
       [] :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
     await this.writeData(container, new BasicRepresentation([], container), true, false, false);
-    return [ ...ancestors, createdResource(container) ];
+    return [ ...ancestors, createModifiedResource(container, ModificationType.created) ];
   }
 }

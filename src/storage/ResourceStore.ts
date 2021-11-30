@@ -7,7 +7,11 @@ import type { Conditions } from './Conditions';
 /**
  * The types of modification being tracked
  */
-export type ModificationType = 'CREATED' | 'CHANGED' | 'DELETED';
+export enum ModificationType {
+  created,
+  changed,
+  deleted
+}
 
 /**
  * A modified resource with a specific modification type
@@ -21,36 +25,11 @@ export interface ModifiedResource {
  * The factory functions to be used when creating modified resources in storage classes and tests.
  * This is done for convinience.
  */
-
-function newModifiedResource(resource: ResourceIdentifier, modificationType: ModificationType): ModifiedResource {
+export function createModifiedResource(
+  resource: ResourceIdentifier,
+  modificationType: ModificationType,
+): ModifiedResource {
   return { resource, modificationType };
-}
-
-/**
- * Returns a modified resource with the 'CREATED' type
- * @param resource - the identifier of the createed resource
- * @returns the ModifiedResource
- */
-export function createdResource(resource: ResourceIdentifier): ModifiedResource {
-  return newModifiedResource(resource, 'CREATED');
-}
-
-/**
- * Returns a modified resource with the 'CHANGED' type
- * @param resource - the identifier of the changed resource
- * @returns the ModifiedResource
- */
-export function changedResource(resource: ResourceIdentifier): ModifiedResource {
-  return newModifiedResource(resource, 'CHANGED');
-}
-
-/**
- * Returns a modified resource with the 'DELETED' type
- * @param resource - the identifier of the deleted resource
- * @returns the ModifiedResource
- */
-export function deletedResource(resource: ResourceIdentifier): ModifiedResource {
-  return newModifiedResource(resource, 'DELETED');
 }
 
 /**
