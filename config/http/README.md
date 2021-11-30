@@ -22,3 +22,6 @@ The factory used to create the actual server object.
 Support for static files that should be found at a specific path.
 * *default*: The default handler with a favicon and css for the IDP.
   New entries can easily be added for new files.
+
+## Well-Known
+Supports the /.well-known/solid route

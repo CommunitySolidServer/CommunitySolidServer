@@ -32,7 +32,9 @@
     "files-scs:config/util/variables/default.json",
 
     "files-scs:config/storage/backend/data-accessors/file.json",
-    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
+    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json",
+
+    "files-scs:config/notification/default.json"
   ],
   "@graph": [
     {

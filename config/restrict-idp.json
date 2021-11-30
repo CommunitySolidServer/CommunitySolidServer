@@ -29,7 +29,8 @@
     "files-scs:config/util/logging/winston.json",
     "files-scs:config/util/representation-conversion/default.json",
     "files-scs:config/util/resource-locker/memory.json",
-    "files-scs:config/util/variables/default.json"
+    "files-scs:config/util/variables/default.json",
+    "files-scs:config/notification/default.json"
   ],
   "@graph": [
     {
