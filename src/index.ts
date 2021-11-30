@@ -376,3 +376,15 @@ export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
 export * from './util/Vocabularies';
+
+// Notification
+export * from './http/NotificationGatewayHttpHandler';
+export * from './http/NotificationWellKnownHttpHandler';
+export * from './http/NotificationSubscriptionHttpHandler';
+export * from './notification/BaseSubscriptionHandler';
+export * from './notification/WebHookSubscription2021Handler';
+export * from './notification/SubscriptionHandler';
+
+// HTTP/Client
+export * from './http/client/HttpClient';
+export * from './http/client/BaseHttpClient';
