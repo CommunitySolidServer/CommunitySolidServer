@@ -351,9 +351,9 @@ export class FileDataAccessor implements DataAccessor {
     return new Promise((resolve, reject): any => {
       const writeStream = createWriteStream(path);
       data.pipe(writeStream);
-      data.on('error', (error) => {
-        writeStream.end();
+      data.on('error', (error): void => {
         reject(error);
+        writeStream.end();
       });
 
       writeStream.on('error', reject);

@@ -40,10 +40,10 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
 
     try {
       await this.writeDataFile(tempFilePath, data);
-      
+
       // Check if we already have a corresponding file with a different extension
       await this.verifyExistingExtension(link);
-      
+
       // When no quota errors occur move the file to its desired location
       await fsPromises.rename(tempFilePath, link.filePath);
     } catch (error: unknown) {
