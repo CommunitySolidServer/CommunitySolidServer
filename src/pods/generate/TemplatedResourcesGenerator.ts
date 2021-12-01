@@ -1,4 +1,5 @@
-import { createReadStream, promises as fsPromises } from 'fs';
+import assert from 'assert';
+import { createReadStream, promises as fsPromises, readdirSync } from 'fs';
 import type { Readable } from 'stream';
 import { Parser } from 'n3';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
@@ -57,7 +58,19 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   public async* generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
     const mapper = await this.factory.create(location.path, this.templateFolder);
     const folderLink = await this.toTemplateLink(this.templateFolder, mapper);
-    yield* this.processFolder(folderLink, mapper, options);
+    const iterable = this.processFolder(folderLink, mapper, options);
+
+    // Temporary code to trace race condition https://github.com/solid/community-server/issues/1059
+    const results: Resource[] = [];
+    for await (const resource of iterable) {
+      results.push(resource);
+    }
+    const expected = readdirSync(folderLink.filePath);
+    assert.equal(results.length, expected.length, `Bug #1059 @generate\nExpected: ${
+      expected.join()}\nActual: ${
+      JSON.stringify({ folderLink, results }, null, '  ')}`);
+
+    yield* results;
   }
 
   /**
@@ -75,13 +88,25 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
 
     yield this.generateResource(folderLink, options, metaLink);
 
+    // Temporary code to trace race condition https://github.com/solid/community-server/issues/1059
+    let folderCount = 0;
+    let resourceCount = metaLink ? 1 : 0;
+    const expected = readdirSync(folderLink.filePath);
+
     for (const { link, meta } of Object.values(links)) {
       if (isContainerIdentifier(link.identifier)) {
+        folderCount += 1;
         yield* this.processFolder(link, mapper, options);
       } else {
+        resourceCount += 1;
         yield this.generateResource(link, options, meta);
       }
     }
+
+    // Temporary code to trace race condition https://github.com/solid/community-server/issues/1059
+    assert.equal(folderCount + resourceCount, expected.length, `Bug #1059 @processFolder\nExpected: ${
+      expected.join()}\nActual: ${
+      JSON.stringify({ folderLink, folderCount, resourceCount }, null, '  ')}`);
   }
 
   /**
@@ -112,11 +137,18 @@ export class TemplatedResourcesGenerator implements ResourcesGenerator {
   Promise<Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }>> {
     const files = await fsPromises.readdir(folderPath);
     const links: Record<string, { link: TemplateResourceLink; meta?: TemplateResourceLink }> = { };
-    for (const name of files) {
+    for await (const name of files) {
       const link = await this.toTemplateLink(joinFilePath(folderPath, name), mapper);
       const { path } = link.identifier;
       links[path] = Object.assign(links[path] || {}, link.isMetadata ? { meta: link } : { link });
     }
+
+    // Temporary code to trace race condition https://github.com/solid/community-server/issues/1059
+    const expected = readdirSync(folderPath);
+    assert.equal(Object.keys(links).length, expected.length, `Bug #1059 @groupLinks\nExpected: ${
+      expected.join()}\nActual: ${
+      JSON.stringify({ folderPath, links }, null, '  ')}`);
+
     return links;
   }
 
