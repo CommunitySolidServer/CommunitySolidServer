@@ -35,7 +35,8 @@
       "ShapeValidationStore:_validator": {
         "@id": "urn:solid-server:default:ShaclValidator",
         "@type": "ShaclValidator",
-        "ShaclValidator:_converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" }
+        "ShaclValidator:_converter": { "@id": "urn:solid-server:default:RdfToQuadConverter" },
+        "ShaclValidator:_auxiliaryStrategy": { "@id": "urn:solid-server:default:AclStrategy" }
       }
     },
     {

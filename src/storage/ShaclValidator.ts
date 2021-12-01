@@ -1,5 +1,6 @@
 import type { Store } from 'n3';
 import SHACLValidator from 'rdf-validate-shacl';
+import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -19,10 +20,12 @@ export class ShaclValidator extends ShapeValidator {
   private readonly converter: RepresentationConverter;
   protected readonly logger = getLoggerFor(this);
   private readonly noShapePresent = 'No ldp:constrainedBy predicate.';
+  private readonly auxiliaryStrategy: AuxiliaryStrategy;
 
-  public constructor(converter: RepresentationConverter) {
+  public constructor(converter: RepresentationConverter, auxiliaryStrategy: AuxiliaryStrategy) {
     super();
     this.converter = converter;
+    this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
   public async canHandle(input: { parentContainerIdentifier: ResourceIdentifier;
@@ -55,6 +58,11 @@ export class ShaclValidator extends ShapeValidator {
       throw error;
     }
     const dataStore = await readableToQuads(representationData.data);
+
+    if (this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: input.representation.metadata.identifier.value })) {
+      this.logger.debug('It is an auxiliry file, no validation is required here.');
+      return;
+    }
 
     this.logger.debug(`URL of the shapefile present in the metadata of the parent: ${shapeURL}`);
     const shape = await fetchDataset(shapeURL, this.converter);
