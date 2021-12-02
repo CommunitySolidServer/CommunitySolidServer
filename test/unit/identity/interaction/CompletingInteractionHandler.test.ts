@@ -1,7 +1,10 @@
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { CompletingInteractionHandler } from '../../../../src/identity/interaction/CompletingInteractionHandler';
-import type { Interaction, InteractionHandlerInput } from '../../../../src/identity/interaction/InteractionHandler';
+import type {
+  Interaction,
+  InteractionHandlerInput,
+} from '../../../../src/identity/interaction/InteractionHandler';
 import type {
   InteractionCompleter,
   InteractionCompleterInput,
@@ -11,7 +14,7 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 const webId = 'http://alice.test.com/card#me';
 class DummyCompletingInteractionHandler extends CompletingInteractionHandler {
   public constructor(interactionCompleter: InteractionCompleter) {
-    super(interactionCompleter);
+    super({}, interactionCompleter);
   }
 
   public async getCompletionParameters(input: Required<InteractionHandlerInput>): Promise<InteractionCompleterInput> {
@@ -28,7 +31,10 @@ describe('A CompletingInteractionHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     const representation = new BasicRepresentation('', 'application/json');
-    operation = { body: representation } as any;
+    operation = {
+      method: 'POST',
+      body: representation,
+    } as any;
 
     interactionCompleter = {
       handleSafe: jest.fn().mockResolvedValue(location),
@@ -39,10 +45,15 @@ describe('A CompletingInteractionHandler', (): void => {
 
   it('calls the parent JSON canHandle check.', async(): Promise<void> => {
     operation.body.metadata.contentType = 'application/x-www-form-urlencoded';
-    await expect(handler.canHandle({ operation } as any)).rejects.toThrow(NotImplementedHttpError);
+    await expect(handler.canHandle({ operation, oidcInteraction } as any)).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('errors if no OidcInteraction is defined.', async(): Promise<void> => {
+  it('can handle GET requests without interaction.', async(): Promise<void> => {
+    operation.method = 'GET';
+    await expect(handler.canHandle({ operation } as any)).resolves.toBeUndefined();
+  });
+
+  it('errors if no OidcInteraction is defined on POST requests.', async(): Promise<void> => {
     const error = expect.objectContaining({
       statusCode: 400,
       message: 'This action can only be performed as part of an OIDC authentication flow.',

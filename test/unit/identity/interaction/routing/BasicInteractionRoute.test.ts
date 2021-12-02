@@ -1,92 +1,59 @@
+import type { Operation } from '../../../../../src/http/Operation';
+import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
+import type { Representation } from '../../../../../src/http/representation/Representation';
 import type {
   InteractionHandler,
 } from '../../../../../src/identity/interaction/InteractionHandler';
 import { BasicInteractionRoute } from '../../../../../src/identity/interaction/routing/BasicInteractionRoute';
-import { BadRequestHttpError } from '../../../../../src/util/errors/BadRequestHttpError';
-import { FoundHttpError } from '../../../../../src/util/errors/FoundHttpError';
-import { InternalServerError } from '../../../../../src/util/errors/InternalServerError';
+import { APPLICATION_JSON } from '../../../../../src/util/ContentTypes';
+import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
+import { createPostJsonOperation } from '../email-password/handler/Util';
 
 describe('A BasicInteractionRoute', (): void => {
-  const path = '^/route$';
-  const viewTemplates = { 'text/html': '/viewTemplate' };
-  let handler: jest.Mocked<InteractionHandler>;
-  const prompt = 'login';
-  const responseTemplates = { 'text/html': '/responseTemplate' };
-  const controls = { login: '/route' };
-  const response = { type: 'response' };
+  const path = 'http://example.com/idp/path/';
+  let operation: Operation;
+  let representation: Representation;
+  let source: jest.Mocked<InteractionHandler>;
   let route: BasicInteractionRoute;
 
   beforeEach(async(): Promise<void> => {
-    handler = {
-      handleSafe: jest.fn().mockResolvedValue(response),
+    operation = createPostJsonOperation({}, 'http://example.com/idp/path/');
+
+    representation = new BasicRepresentation(JSON.stringify({}), APPLICATION_JSON);
+
+    source = {
+      canHandle: jest.fn(),
+      handle: jest.fn().mockResolvedValue(representation),
     } as any;
 
-    route = new BasicInteractionRoute(path, viewTemplates, handler, prompt, responseTemplates, controls);
+    route = new BasicInteractionRoute(path, source);
   });
 
-  it('returns its controls.', async(): Promise<void> => {
-    expect(route.getControls()).toEqual(controls);
+  it('returns the given path.', async(): Promise<void> => {
+    expect(route.getPath()).toBe('http://example.com/idp/path/');
   });
 
-  it('supports a path if it matches the stored route.', async(): Promise<void> => {
-    expect(route.supportsPath('/route')).toBe(true);
-    expect(route.supportsPath('/notRoute')).toBe(false);
+  it('rejects other paths.', async(): Promise<void> => {
+    operation = createPostJsonOperation({}, 'http://example.com/idp/otherPath/');
+    await expect(route.canHandle({ operation })).rejects.toThrow(NotFoundHttpError);
   });
 
-  it('supports prompts when targeting the base path.', async(): Promise<void> => {
-    expect(route.supportsPath('/', prompt)).toBe(true);
-    expect(route.supportsPath('/notRoute', prompt)).toBe(false);
-    expect(route.supportsPath('/', 'notPrompt')).toBe(false);
+  it('rejects input its source cannot handle.', async(): Promise<void> => {
+    source.canHandle.mockRejectedValueOnce(new Error('bad data'));
+    await expect(route.canHandle({ operation })).rejects.toThrow('bad data');
   });
 
-  it('returns a response result on a GET request.', async(): Promise<void> => {
-    await expect(route.handleOperation({ method: 'GET' } as any))
-      .resolves.toEqual({ type: 'response', templateFiles: viewTemplates });
+  it('can handle requests its source can handle.', async(): Promise<void> => {
+    await expect(route.canHandle({ operation })).resolves.toBeUndefined();
   });
 
-  it('returns the result of the InteractionHandler on POST requests.', async(): Promise<void> => {
-    await expect(route.handleOperation({ method: 'POST' } as any))
-      .resolves.toEqual({ ...response, templateFiles: responseTemplates });
-    expect(handler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(handler.handleSafe).toHaveBeenLastCalledWith({ operation: { method: 'POST' }});
+  it('lets its source handle requests.', async(): Promise<void> => {
+    await expect(route.handle({ operation })).resolves.toBe(representation);
   });
 
-  it('creates an error result in case the InteractionHandler errors.', async(): Promise<void> => {
-    const error = new Error('bad data');
-    handler.handleSafe.mockRejectedValueOnce(error);
-    await expect(route.handleOperation({ method: 'POST' } as any))
-      .resolves.toEqual({ type: 'error', error, templateFiles: viewTemplates });
-  });
-
-  it('re-throws redirect errors.', async(): Promise<void> => {
-    const error = new FoundHttpError('http://test.com/redirect');
-    handler.handleSafe.mockRejectedValueOnce(error);
-    await expect(route.handleOperation({ method: 'POST' } as any)).rejects.toThrow(error);
-  });
-
-  it('creates an internal error in case of non-native errors.', async(): Promise<void> => {
-    handler.handleSafe.mockRejectedValueOnce('notAnError');
-    await expect(route.handleOperation({ method: 'POST' } as any)).resolves.toEqual({
-      type: 'error',
-      error: new InternalServerError('Unknown error: notAnError'),
-      templateFiles: viewTemplates,
-    });
-  });
-
-  it('errors for non-supported operations.', async(): Promise<void> => {
-    const prom = route.handleOperation({ method: 'DELETE', target: { path: '/route' }} as any);
-    await expect(prom).rejects.toThrow(BadRequestHttpError);
-    await expect(prom).rejects.toThrow('Unsupported request: DELETE /route');
-    expect(handler.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('defaults to empty controls.', async(): Promise<void> => {
-    route = new BasicInteractionRoute(path, viewTemplates, handler, prompt);
-    expect(route.getControls()).toEqual({});
-  });
-
-  it('defaults to empty response templates.', async(): Promise<void> => {
-    route = new BasicInteractionRoute(path, viewTemplates, handler, prompt);
-    await expect(route.handleOperation({ method: 'POST' } as any)).resolves.toEqual({ ...response, templateFiles: {}});
+  it('defaults to an UnsupportedAsyncHandler if no source is provided.', async(): Promise<void> => {
+    route = new BasicInteractionRoute(path);
+    await expect(route.canHandle({ operation })).rejects.toThrow('This route has no associated handler.');
+    await expect(route.handle({ operation })).rejects.toThrow('This route has no associated handler.');
   });
 });

@@ -39,11 +39,9 @@
       "comment": "Handles IDP handler behaviour.",
       "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
       "@type": "IdentityProviderHttpHandler",
-      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "args_idpPath": "/idp",
       "args_providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" },
       "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
-      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" }
+      "args_handler": { "@id": "urn:solid-server:default:InteractionHandler" }
     }
   ]
 }

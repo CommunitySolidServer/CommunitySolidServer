@@ -1,101 +1,43 @@
-import type { Operation } from '../../../http/Operation';
-import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
-import { createErrorMessage, isError } from '../../../util/errors/ErrorUtil';
-import { InternalServerError } from '../../../util/errors/InternalServerError';
-import { RedirectHttpError } from '../../../util/errors/RedirectHttpError';
-import { trimTrailingSlashes } from '../../../util/PathUtil';
-import type {
-  InteractionHandler,
-  Interaction,
-} from '../InteractionHandler';
-import type { InteractionRoute, TemplatedInteractionResult } from './InteractionRoute';
+import type { Representation } from '../../../http/representation/Representation';
+import { NotFoundHttpError } from '../../../util/errors/NotFoundHttpError';
+import { UnsupportedAsyncHandler } from '../../../util/handlers/UnsupportedAsyncHandler';
+import { InteractionHandler } from '../InteractionHandler';
+import type { InteractionHandlerInput } from '../InteractionHandler';
+import type { InteractionRoute } from './InteractionRoute';
 
 /**
- * Default implementation of the InteractionRoute.
- * See function comments for specifics.
+ * Default implementation of an InteractionHandler with an InteractionRoute.
+ *
+ * Rejects operations that target a different path,
+ * otherwise the input parameters get passed to the source handler.
+ *
+ * In case no source handler is provided it defaults to an {@link UnsupportedAsyncHandler}.
+ * This can be useful if you want an object with just the route.
  */
-export class BasicInteractionRoute implements InteractionRoute {
-  public readonly route: RegExp;
-  public readonly handler: InteractionHandler;
-  public readonly viewTemplates: Record<string, string>;
-  public readonly prompt?: string;
-  public readonly responseTemplates: Record<string, string>;
-  public readonly controls: Record<string, string>;
+export class BasicInteractionRoute extends InteractionHandler implements InteractionRoute {
+  private readonly path: string;
+  private readonly source: InteractionHandler;
 
-  /**
-   * @param route - Regex to match this route.
-   * @param viewTemplates - Templates to render on GET requests.
-   *                        Keys are content-types, values paths to a template.
-   * @param handler - Handler to call on POST requests.
-   * @param prompt - In case of requests to the IDP entry point, the session prompt will be compared to this.
-   * @param responseTemplates - Templates to render as a response to POST requests when required.
-   *                            Keys are content-types, values paths to a template.
-   * @param controls - Controls to add to the response JSON.
-   *                   The keys will be copied and the values will be converted to full URLs.
-   */
-  public constructor(route: string,
-    viewTemplates: Record<string, string>,
-    handler: InteractionHandler,
-    prompt?: string,
-    responseTemplates: Record<string, string> = {},
-    controls: Record<string, string> = {}) {
-    this.route = new RegExp(route, 'u');
-    this.viewTemplates = viewTemplates;
-    this.handler = handler;
-    this.prompt = prompt;
-    this.responseTemplates = responseTemplates;
-    this.controls = controls;
+  public constructor(path: string, source?: InteractionHandler) {
+    super();
+    this.path = path;
+    this.source = source ?? new UnsupportedAsyncHandler('This route has no associated handler.');
   }
 
-  /**
-   * Returns the stored controls.
-   */
-  public getControls(): Record<string, string> {
-    return this.controls;
+  public getPath(): string {
+    return this.path;
   }
 
-  /**
-   * Checks support by comparing the prompt if the path targets the base URL,
-   * and otherwise comparing with the stored route regular expression.
-   */
-  public supportsPath(path: string, prompt?: string): boolean {
-    // In case the request targets the IDP entry point the prompt determines where to go
-    if (trimTrailingSlashes(path).length === 0 && prompt) {
-      return this.prompt === prompt;
+  public async canHandle(input: InteractionHandlerInput): Promise<void> {
+    const { target } = input.operation;
+    const path = this.getPath();
+    if (target.path !== path) {
+      throw new NotFoundHttpError();
     }
-    return this.route.test(path);
+    await this.source.canHandle(input);
   }
 
-  /**
-   * GET requests return a default response result.
-   * POST requests return the InteractionHandler result.
-   * InteractionHandler errors will be converted into response results.
-   *
-   * All results will be appended with the matching template paths.
-   *
-   * Will error for other methods
-   */
-  public async handleOperation(operation: Operation, oidcInteraction?: Interaction):
-  Promise<TemplatedInteractionResult> {
-    switch (operation.method) {
-      case 'GET':
-        return { type: 'response', templateFiles: this.viewTemplates };
-      case 'POST':
-        try {
-          const result = await this.handler.handleSafe({ operation, oidcInteraction });
-          return { ...result, templateFiles: this.responseTemplates };
-        } catch (err: unknown) {
-          // Redirect errors need to be propagated and not rendered on the response pages.
-          // Otherwise, the user would be redirected to a new page only containing that error.
-          if (RedirectHttpError.isInstance(err)) {
-            throw err;
-          }
-          const error = isError(err) ? err : new InternalServerError(createErrorMessage(err));
-          // Potentially render the error in the view
-          return { type: 'error', error, templateFiles: this.viewTemplates };
-        }
-      default:
-        throw new BadRequestHttpError(`Unsupported request: ${operation.method} ${operation.target.path}`);
-    }
+  public async handle(input: InteractionHandlerInput): Promise<Representation> {
+    return this.source.handle(input);
   }
 }

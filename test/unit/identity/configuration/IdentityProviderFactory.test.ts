@@ -1,10 +1,13 @@
-import type { Configuration } from 'oidc-provider';
+import type { Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => ({
@@ -28,10 +31,13 @@ const routes = {
 
 describe('An IdentityProviderFactory', (): void => {
   let baseConfig: Configuration;
-  const baseUrl = 'http://test.com/foo/';
+  const baseUrl = 'http://example.com/foo/';
   const oidcPath = '/oidc';
-  const idpPath = '/idp';
-  const webId = 'http://alice.test.com/card#me';
+  const webId = 'http://alice.example.com/card#me';
+  const redirectUrl = 'http://example.com/login/';
+  const oidcInteraction: Interaction = {} as any;
+  let ctx: KoaContextWithOIDC;
+  let interactionHandler: jest.Mocked<InteractionHandler>;
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
   let errorHandler: jest.Mocked<ErrorHandler>;
@@ -40,6 +46,17 @@ describe('An IdentityProviderFactory', (): void => {
 
   beforeEach(async(): Promise<void> => {
     baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}};
+
+    ctx = {
+      method: 'GET',
+      request: {
+        href: 'http://example.com/idp/',
+      },
+    } as any;
+
+    interactionHandler = {
+      handleSafe: jest.fn().mockRejectedValue(new FoundHttpError(redirectUrl)),
+    } as any;
 
     adapterFactory = {
       createStorageAdapter: jest.fn().mockReturnValue('adapter!'),
@@ -61,23 +78,11 @@ describe('An IdentityProviderFactory', (): void => {
       adapterFactory,
       baseUrl,
       oidcPath,
-      idpPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
     });
-  });
-
-  it('errors if the idpPath parameter does not start with a slash.', async(): Promise<void> => {
-    expect((): any => new IdentityProviderFactory(baseConfig, {
-      adapterFactory,
-      baseUrl,
-      oidcPath,
-      idpPath: 'idp',
-      storage,
-      errorHandler,
-      responseWriter,
-    })).toThrow('idpPath needs to start with a /');
   });
 
   it('creates a correct configuration.', async(): Promise<void> => {
@@ -98,7 +103,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ kty: 'RSA' }) ]});
     expect(config.routes).toEqual(routes);
 
-    expect((config.interactions?.url as any)()).toBe('/idp/');
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).resolves.toBe(redirectUrl);
     expect((config.audiences as any)(null, null, {}, 'access_token')).toBe('solid');
     expect((config.audiences as any)(null, null, { clientId: 'clientId' }, 'client_credentials')).toBe('clientId');
 
@@ -123,6 +128,17 @@ describe('An IdentityProviderFactory', (): void => {
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
   });
 
+  it('errors if there is no valid interaction redirect.', async(): Promise<void> => {
+    interactionHandler.handleSafe.mockRejectedValueOnce(new Error('bad data'));
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).rejects.toThrow('bad data');
+
+    interactionHandler.handleSafe.mockResolvedValueOnce(new BasicRepresentation());
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction))
+      .rejects.toThrow('Could not correctly redirect for the given interaction.');
+  });
+
   it('copies a field from the input config if values need to be added to it.', async(): Promise<void> => {
     baseConfig.cookies = {
       long: { signed: true },
@@ -131,7 +147,7 @@ describe('An IdentityProviderFactory', (): void => {
       adapterFactory,
       baseUrl,
       oidcPath,
-      idpPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
@@ -153,7 +169,7 @@ describe('An IdentityProviderFactory', (): void => {
       adapterFactory,
       baseUrl,
       oidcPath,
-      idpPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
