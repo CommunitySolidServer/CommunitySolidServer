@@ -6,8 +6,21 @@ import { readJsonStream } from '../../../../util/StreamUtil';
 import { CompletingInteractionHandler } from '../../CompletingInteractionHandler';
 import type { InteractionHandlerInput } from '../../InteractionHandler';
 import type { InteractionCompleterInput, InteractionCompleter } from '../../util/InteractionCompleter';
-
 import type { AccountStore } from '../storage/AccountStore';
+
+const loginView = {
+  required: {
+    email: 'string',
+    password: 'string',
+    remember: 'boolean',
+  },
+} as const;
+
+interface LoginInput {
+  email: string;
+  password: string;
+  remember: boolean;
+}
 
 /**
  * Handles the submission of the Login Form and logs the user in.
@@ -19,12 +32,13 @@ export class LoginHandler extends CompletingInteractionHandler {
   private readonly accountStore: AccountStore;
 
   public constructor(accountStore: AccountStore, interactionCompleter: InteractionCompleter) {
-    super(interactionCompleter);
+    super(loginView, interactionCompleter);
     this.accountStore = accountStore;
   }
 
-  protected async getCompletionParameters({ operation, oidcInteraction }: Required<InteractionHandlerInput>):
+  protected async getCompletionParameters(input: Required<InteractionHandlerInput>):
   Promise<InteractionCompleterInput> {
+    const { operation, oidcInteraction } = input;
     const { email, password, remember } = await this.parseInput(operation);
     // Try to log in, will error if email/password combination is invalid
     const webId = await this.accountStore.authenticate(email, password);
@@ -39,15 +53,12 @@ export class LoginHandler extends CompletingInteractionHandler {
   }
 
   /**
-   * Parses and validates the input form data.
+   * Validates the input data. Also makes sure remember is a boolean.
    * Will throw an error in case something is wrong.
-   * All relevant data that was correct up to that point will be prefilled.
    */
-  private async parseInput(operation: Operation): Promise<{ email: string; password: string; remember: boolean }> {
-    const prefilled: Record<string, string> = {};
+  private async parseInput(operation: Operation): Promise<LoginInput> {
     const { email, password, remember } = await readJsonStream(operation.body.data);
     assert(typeof email === 'string' && email.length > 0, 'Email required');
-    prefilled.email = email;
     assert(typeof password === 'string' && password.length > 0, 'Password required');
     return { email, password, remember: Boolean(remember) };
   }

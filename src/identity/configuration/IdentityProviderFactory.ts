@@ -12,10 +12,15 @@ import type { AnyObject,
   ErrorOut,
   Adapter } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
+import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
-import { ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
+import { InternalServerError } from '../../util/errors/InternalServerError';
+import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
+import { joinUrl } from '../../util/PathUtil';
+import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { ProviderFactory } from './ProviderFactory';
 
@@ -33,10 +38,9 @@ export interface IdentityProviderFactoryArgs {
    */
   oidcPath: string;
   /**
-   * The entry point for the custom IDP handlers of the server.
-   * Should start with a slash.
+   * The handler responsible for redirecting interaction requests to the correct URL.
    */
-  idpPath: string;
+  interactionHandler: InteractionHandler;
   /**
    * Storage used to store cookie and JWT keys so they can be re-used in case of multithreading.
    */
@@ -59,14 +63,14 @@ const COOKIES_KEY = 'cookie-secret';
  * The provider will be cached and returned on subsequent calls.
  * Cookie and JWT keys will be stored in an internal storage so they can be re-used over multiple threads.
  * Necessary claims for Solid OIDC interactions will be added.
- * Routes will be updated based on the `baseUrl` and `idpPath`.
+ * Routes will be updated based on the `baseUrl` and `oidcPath`.
  */
 export class IdentityProviderFactory implements ProviderFactory {
   private readonly config: Configuration;
   private readonly adapterFactory!: AdapterFactory;
   private readonly baseUrl!: string;
   private readonly oidcPath!: string;
-  private readonly idpPath!: string;
+  private readonly interactionHandler!: InteractionHandler;
   private readonly storage!: KeyValueStorage<string, unknown>;
   private readonly errorHandler!: ErrorHandler;
   private readonly responseWriter!: ResponseWriter;
@@ -78,9 +82,6 @@ export class IdentityProviderFactory implements ProviderFactory {
    * @param args - Remaining parameters required for the factory.
    */
   public constructor(config: Configuration, args: IdentityProviderFactoryArgs) {
-    if (!args.idpPath.startsWith('/')) {
-      throw new Error('idpPath needs to start with a /');
-    }
     this.config = config;
     Object.assign(this, args);
   }
@@ -230,7 +231,26 @@ export class IdentityProviderFactory implements ProviderFactory {
     // (missing user session, requested ACR not fulfilled, prompt requested, ...)
     // it will resolve the interactions.url helper function and redirect the User-Agent to that url.
     config.interactions = {
-      url: (): string => ensureTrailingSlash(this.idpPath),
+      url: async(ctx, oidcInteraction): Promise<string> => {
+        const operation: Operation = {
+          method: ctx.method,
+          target: { path: ctx.request.href },
+          preferences: {},
+          body: new BasicRepresentation(),
+        };
+
+        // Instead of sending a 3xx redirect to the client (via a RedirectHttpError),
+        // we need to pass the location URL to the OIDC library
+        try {
+          await this.interactionHandler.handleSafe({ operation, oidcInteraction });
+        } catch (error: unknown) {
+          if (RedirectHttpError.isInstance(error)) {
+            return error.location;
+          }
+          throw error;
+        }
+        throw new InternalServerError('Could not correctly redirect for the given interaction.');
+      },
     };
 
     config.routes = {
@@ -254,7 +274,7 @@ export class IdentityProviderFactory implements ProviderFactory {
    */
   private configureErrors(config: Configuration): void {
     config.renderError = async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
-      // This allows us to stream directly to to the response object, see https://github.com/koajs/koa/issues/944
+      // This allows us to stream directly to the response object, see https://github.com/koajs/koa/issues/944
       ctx.respond = false;
       const result = await this.errorHandler.handleSafe({ error, preferences: { type: { 'text/plain': 1 }}});
       await this.responseWriter.handleSafe({ response: ctx.res, result });

@@ -5,12 +5,12 @@ import type { InteractionHandlerInput } from './InteractionHandler';
 import type { InteractionCompleter, InteractionCompleterInput } from './util/InteractionCompleter';
 
 /**
- * Simple InteractionHttpHandler that sends the session accountId to the InteractionCompleter as webId.
+ * Simple CompletingInteractionRoute that returns the session accountId as webId.
  * This is relevant when a client already logged in this session and tries logging in again.
  */
-export class SessionHttpHandler extends CompletingInteractionHandler {
+export class ExistingLoginHandler extends CompletingInteractionHandler {
   public constructor(interactionCompleter: InteractionCompleter) {
-    super(interactionCompleter);
+    super({}, interactionCompleter);
   }
 
   protected async getCompletionParameters({ operation, oidcInteraction }: Required<InteractionHandlerInput>):

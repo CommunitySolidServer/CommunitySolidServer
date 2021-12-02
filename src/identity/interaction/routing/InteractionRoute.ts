@@ -1,33 +1,9 @@
-import type { Operation } from '../../../http/Operation';
-import type { Interaction, InteractionHandlerResult } from '../InteractionHandler';
-
-export type TemplatedInteractionResult<T extends InteractionHandlerResult = InteractionHandlerResult> = T & {
-  templateFiles: Record<string, string>;
-};
-
 /**
- * Handles the routing behaviour for IDP handlers.
+ * An object with a specific path.
  */
 export interface InteractionRoute {
   /**
-   * Returns the control fields that should be added to response objects.
-   * Keys are control names, values are relative URL paths.
+   * @returns The absolute path of this route.
    */
-  getControls: () => Record<string, string>;
-
-  /**
-   * If this route supports the given path.
-   * @param path - Relative URL path.
-   * @param prompt - Session prompt if there is one.
-   */
-  supportsPath: (path: string, prompt?: string) => boolean;
-
-  /**
-   * Handles the given operation.
-   * @param operation - Operation to handle.
-   * @param oidcInteraction - Interaction if there is one.
-   *
-   * @returns InteractionHandlerResult appended with relevant template files.
-   */
-  handleOperation: (operation: Operation, oidcInteraction?: Interaction) => Promise<TemplatedInteractionResult>;
+  getPath: () => string;
 }

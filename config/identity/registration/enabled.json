@@ -5,10 +5,34 @@
   ],
   "@graph": [
     {
-      "comment": "Enable registration by adding a registration handler to the list of interaction routes.",
-      "@id": "urn:solid-server:default:IdentityProviderHttpHandler",
-      "IdentityProviderHttpHandler:_args_interactionRoutes": [
+      "@id": "urn:solid-server:auth:password:RouteInteractionHandler",
+      "WaterfallHandler:_handlers": [
+        {
+          "comment": [
+            "This handler is required to prevent Components.js issues with arrays.",
+            "This might be fixed in the next Components.js release after which this can be removed."
+          ],
+          "@type": "UnsupportedAsyncHandler"
+        },
         { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:auth:password:ControlHandler",
+      "ControlHandler:_controls": [
+        {
+          "ControlHandler:_controls_key": "register",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:auth:password:HtmlViewHandler",
+      "HtmlViewHandler:_templates": [
+        {
+          "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/register.html.ejs",
+          "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
+        }
       ]
     }
   ]
