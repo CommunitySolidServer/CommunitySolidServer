@@ -98,11 +98,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/test2.txt`;
       const testFile2 = `${baseUrl}arthur/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 350);
+      const response1 = performSimplePUTWithLength(testFile1, 700);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePUTWithLength(testFile2, 350);
+      const response2 = performSimplePUTWithLength(testFile2, 700);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -145,7 +145,7 @@ describe('A server with', (): void => {
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePUTWithLength(testFile2, 200);
+      const response2 = performSimplePUTWithLength(testFile2, 600);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
