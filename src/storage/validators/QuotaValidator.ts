@@ -43,7 +43,7 @@ export class QuotaValidator extends Validator {
     }
 
     // 3. Track if quota is exceeded during writing
-    const tracking: Guarded<PassThrough> = await this.strategy.trackAvailableSpace(identifier);
+    const tracking: Guarded<PassThrough> = await this.strategy.createQuotaGuard(identifier);
 
     // 4. Double check quota is not exceeded after write (concurrent writing possible)
     const afterWrite = new PassThrough({

@@ -40,7 +40,7 @@ describe('QuotaValidator', (): void => {
       limit: { unit: 'bytes', amount: 8 },
       getAvailableSpace: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 10 }),
       estimateSize: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 8 }),
-      trackAvailableSpace: jest.fn().mockResolvedValue(guardStream(new PassThrough())),
+      createQuotaGuard: jest.fn().mockResolvedValue(guardStream(new PassThrough())),
     };
     validator = new QuotaValidator(mockedStrategy);
   });
@@ -67,7 +67,7 @@ describe('QuotaValidator', (): void => {
 
     // Step 3
     it('should destroy the stream when quota is exceeded during write.', async(): Promise<void> => {
-      const trackAvailableSpaceSpy = jest.spyOn(mockedStrategy, 'trackAvailableSpace')
+      const createQuotaGuardSpy = jest.spyOn(mockedStrategy, 'createQuotaGuard')
         .mockResolvedValueOnce(guardStream(new PassThrough({
           async transform(this): Promise<void> {
             this.destroy();
@@ -85,7 +85,7 @@ describe('QuotaValidator', (): void => {
 
       // Consume the stream
       await expect(readableToString(awaitedResult.data)).rejects.toThrow();
-      expect(trackAvailableSpaceSpy).toHaveBeenCalledTimes(1);
+      expect(createQuotaGuardSpy).toHaveBeenCalledTimes(1);
       await expect(prom).resolves.toBeUndefined();
     });
 

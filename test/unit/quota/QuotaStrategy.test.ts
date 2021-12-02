@@ -55,12 +55,12 @@ describe('PodQuotaStrategy', (): void => {
     });
   });
 
-  describe('trackAvailableSpace()', (): void => {
+  describe('createQuotaGuard()', (): void => {
     it('should return a passthrough that destroys the stream when quota is exceeded.', async(): Promise<void> => {
       strategy.getAvailableSpace = jest.fn().mockReturnValue({ amount: 50, unit: mockSize.unit });
       const fiftyChars = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
       const stream = guardedStreamFrom(fiftyChars);
-      const track = await strategy.trackAvailableSpace({ path: `${base}nested/file2.txt` });
+      const track = await strategy.createQuotaGuard({ path: `${base}nested/file2.txt` });
       const piped = pipeSafely(stream, track);
 
       for (let i = 0; i < 10; i++) {

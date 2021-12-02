@@ -1,5 +1,5 @@
 // These two eslint lines are needed to store 'this' in a variable so it can be used
-// in the PassThrough of trackAvailableSpace
+// in the PassThrough of createQuotaGuard
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable consistent-this */
 import { PassThrough } from 'stream';
@@ -59,7 +59,7 @@ export abstract class QuotaStrategy {
    * @param metadata - the RepresentationMetadata that belongs to the identifier
    * @returns a Passthrough instance that errors when quota is exceeded
    */
-  public async trackAvailableSpace(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
+  public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {
     let total = 0;
     const strategy = this;
     const { reporter } = this;
