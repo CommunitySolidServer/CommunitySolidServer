@@ -1,0 +1,29 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/app/init/initializers/root.json"
+  ],
+  "@graph": [
+    {
+      "comment": "These are all the handlers a request will go through until it is handled.",
+      "@id": "urn:solid-server:default:HttpHandler",
+      "@type": "SequenceHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:Middleware" },
+        {
+          "@type": "WaterfallHandler",
+          "handlers": [
+            { "@id": "urn:solid-server:default:StaticAssetHandler" },
+            { "@id": "urn:solid-server:default:SetupHandler" },
+            { "@id": "urn:solid-server:default:NotificationWellKnownHandler" },
+            { "@id": "urn:solid-server:default:NotificationGatewayHandler" },
+            { "@id": "urn:solid-server:default:NotificationSubscriptionHandler" },
+            { "@id": "urn:solid-server:default:AuthResourceHttpHandler" },
+            { "@id": "urn:solid-server:default:IdentityProviderHandler" },
+            { "@id": "urn:solid-server:default:LdpHandler" }
+          ]
+        }
+      ]
+    }
+  ]
+}

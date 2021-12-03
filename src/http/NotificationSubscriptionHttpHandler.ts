@@ -146,14 +146,21 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
   private async onResourceChanged(
     resources: ModifiedResource[],
   ): Promise<void> {
-    const modified = resources.pop();
-    const topic = await this.notificationStorage.get(modified!.resource.path);
-    const { subscriptions } = topic!;
-    // eslint-disable-next-line guard-for-in
-    for (const key in subscriptions) {
-      const subscription = subscriptions[key];
-      const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
-      await subscriptionHandler!.onResourcesChanged(resources, subscription);
+    const orgResources = [ ...resources ];
+    for (const modified of orgResources) {
+      // Aconst modified = resources[0];
+      let topic = await this.notificationStorage.get(modified.resource.path);
+      if (!topic) {
+        topic = { subscriptions: {}};
+      }
+      const { subscriptions } = topic;
+      // eslint-disable-next-line guard-for-in
+      for (const key in subscriptions) {
+        const subscription = subscriptions[key];
+        const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
+        await subscriptionHandler!.onResourcesChanged(resources, subscription);
+      }
+      resources.shift();
     }
   }
 }

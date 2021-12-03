@@ -33,6 +33,11 @@
       "comment": "Storage used by setup components.",
       "@id": "urn:solid-server:default:SetupStorage",
       "@type": "MemoryMapStorage"
+    },
+    {
+      "comment": "Storage used for notification management.",
+      "@id": "urn:solid-server:default:NotificationStorage",
+      "@type": "MemoryMapStorage"
     }
   ]
 }

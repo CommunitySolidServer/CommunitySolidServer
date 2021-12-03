@@ -1,0 +1,99 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the notification well-known solid endpoint.",
+      "@id": "urn:solid-server:default:NotificationWellKnownHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "GET" ],
+      "args_allowedPathNames": [ "^/\\.well-known/solid" ],
+      "args_handler": { "@id": "urn:solid-server:default:NotificationWellKnownParsingHandler" }
+    },
+    {
+      "comment": "Handles well-known endpoint input parsing.",
+      "@id": "urn:solid-server:default:NotificationWellKnownParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": {
+        "comment": "Handles notification well-known solid behaviour.",
+        "@id": "urn:solid-server:default:NotificationWellKnownHttpHandler",
+        "@type": "NotificationWellKnownHttpHandler",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+      }
+    },
+    {
+      "comment": "Handles the notification gateway endpoint.",
+      "@id": "urn:solid-server:default:NotificationGatewayHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "POST" ],
+      "args_allowedPathNames": [ "^/gateway"],
+      "args_handler": { "@id": "urn:solid-server:default:NotificationGatewayParsingHandler" }
+    },
+    {
+      "comment": "Handles notification gateway input parsing.",
+      "@id": "urn:solid-server:default:NotificationGatewayParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": {
+        "comment": "Handles notification handler behaviour.",
+        "@id": "urn:solid-server:default:NotificationGatewayHttpHandler",
+        "@type": "NotificationGatewayHttpHandler",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_subscriptionPath": "subscription",
+        "args_subscriptionHandler": { "@id": "urn:solid-server:default:NotificationSubscriptionHttpHandler"}
+      }
+    },
+    {
+      "comment": "Handles the notification subscription endpoint.",
+      "@id": "urn:solid-server:default:NotificationSubscriptionHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "POST" ],
+      "args_allowedPathNames": [ "^/subscription" ],
+      "args_handler": { "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler" }
+    },
+    {
+      "comment": "Handles notification subscription input parsing.",
+      "@id": "urn:solid-server:default:NotificationSubscriptionParsingHandler",
+      "@type": "ParsingHttpHandler",
+      "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
+      "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
+      "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_operationHandler": {
+        "comment": "Handles notification subscription behaviour.",
+        "@id": "urn:solid-server:default:NotificationSubscriptionHttpHandler",
+        "@type": "NotificationSubscriptionHttpHandler",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_wsEndpoint": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_credentialsExtractor": { "@id": "urn:solid-server:default:CredentialsExtractor" },
+        "args_permissionReader": { "@id": "urn:solid-server:default:PermissionReader" },
+        "args_notificationStorage": { "@id": "urn:solid-server:default:NotificationStorage"},
+        "args_handlers": [{ "@id": "urn:solid-server:default:WebHookSubscription2021Handler"}],
+        "args_source": { "@id": "urn:solid-server:default:ResourceStore"}
+      }
+    },
+    {
+      "comment": "Handles WebHookSubscription2021 subscriptions",
+      "@id": "urn:solid-server:default:WebHookSubscription2021Handler",
+      "@type": "WebHookSubscription2021Handler",
+      "httpClient": { "@id": "urn:solid-server:default:BaseHttpClient" }
+    },
+    {
+      "comment": "Handles http calls",
+      "@id": "urn:solid-server:default:BaseHttpClient",
+      "@type": "BaseHttpClient"
+    }
+  ]
+}
