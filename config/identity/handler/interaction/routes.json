@@ -3,6 +3,7 @@
   "import": [
     "files-scs:config/identity/handler/interaction/routes/existing-login.json",
     "files-scs:config/identity/handler/interaction/routes/forgot-password.json",
+    "files-scs:config/identity/handler/interaction/routes/index.json",
     "files-scs:config/identity/handler/interaction/routes/login.json",
     "files-scs:config/identity/handler/interaction/routes/prompt.json",
     "files-scs:config/identity/handler/interaction/routes/reset-password.json",
@@ -21,25 +22,34 @@
         {
           "comment": "Adds controls and API version to JSON responses.",
           "@id": "urn:solid-server:auth:password:ControlHandler",
-          "ControlHandler:_source" : {
-            "@id": "urn:solid-server:auth:password:RouteInteractionHandler",
-            "@type": "WaterfallHandler",
-            "handlers": [
-              {
-                "comment": [
-                  "This handler is required to prevent Components.js issues with arrays.",
-                  "This might be fixed in the next Components.js release after which this can be removed."
-                ],
-                "@type": "UnsupportedAsyncHandler"
-              },
-              { "@id": "urn:solid-server:auth:password:PromptRoute" },
-              { "@id": "urn:solid-server:auth:password:LoginRoute" },
-              { "@id": "urn:solid-server:auth:password:ExistingLoginRoute" },
-              { "@id": "urn:solid-server:auth:password:ForgotPasswordRoute" },
-              { "@id": "urn:solid-server:auth:password:ResetPasswordRoute" }
-            ]
-          }
+          "ControlHandler:_source" : { "@id": "urn:solid-server:auth:password:LocationInteractionHandler" }
         }
+      ]
+    },
+    {
+      "comment": "Converts redirect errors to location JSON responses.",
+      "@id": "urn:solid-server:auth:password:LocationInteractionHandler",
+      "@type": "LocationInteractionHandler",
+      "LocationInteractionHandler:_source" : { "@id": "urn:solid-server:auth:password:RouteInteractionHandler" }
+    },
+    {
+      "comment": "Handles every interaction based on their route.",
+      "@id": "urn:solid-server:auth:password:RouteInteractionHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "comment": [
+            "This handler is required to prevent Components.js issues with arrays.",
+            "This might be fixed in the next Components.js release after which this can be removed."
+          ],
+          "@type": "UnsupportedAsyncHandler"
+        },
+        { "@id": "urn:solid-server:auth:password:IndexRoute" },
+        { "@id": "urn:solid-server:auth:password:PromptRoute" },
+        { "@id": "urn:solid-server:auth:password:LoginRoute" },
+        { "@id": "urn:solid-server:auth:password:ExistingLoginRoute" },
+        { "@id": "urn:solid-server:auth:password:ForgotPasswordRoute" },
+        { "@id": "urn:solid-server:auth:password:ResetPasswordRoute" }
       ]
     }
   ]

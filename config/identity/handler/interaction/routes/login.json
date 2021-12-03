@@ -5,8 +5,8 @@
       "comment": "Handles the login interaction",
       "@id": "urn:solid-server:auth:password:LoginRoute",
       "@type": "RelativeInteractionRoute",
-      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "relativePath": "/idp/login/",
+      "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+      "relativePath": "/login/",
       "source": {
         "@type": "LoginHandler",
         "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },

@@ -5,8 +5,8 @@
       "comment": "Handles the interaction that occurs when a logged in user wants to authenticate with a new app.",
       "@id": "urn:solid-server:auth:password:ExistingLoginRoute",
       "@type": "RelativeInteractionRoute",
-      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "relativePath": "/idp/consent/",
+      "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+      "relativePath": "/consent/",
       "source": {
         "@type": "ExistingLoginHandler",
         "interactionCompleter": { "@type": "BaseInteractionCompleter" }

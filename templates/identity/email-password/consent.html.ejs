@@ -1,9 +1,7 @@
 <h1>Authorize</h1>
 <p>You are authorizing an application to access your Pod.</p>
-<form method="post">
-  <% if (locals.message) { %>
-    <p class="error"><%= message %></p>
-  <% } %>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
 
   <fieldset>
     <ol>
@@ -15,3 +13,7 @@
 
   <p class="actions"><button autofocus type="submit" name="submit">Continue</button></p>
 </form>
+
+<script>
+  addPostListener('mainForm', 'error', '', () => { throw new Error('Expected a location field in the response.') });
+</script>
