@@ -160,8 +160,10 @@ export * from './identity/interaction/BaseInteractionHandler';
 export * from './identity/interaction/CompletingInteractionHandler';
 export * from './identity/interaction/ExistingLoginHandler';
 export * from './identity/interaction/ControlHandler';
+export * from './identity/interaction/FixedInteractionHandler';
 export * from './identity/interaction/HtmlViewHandler';
 export * from './identity/interaction/InteractionHandler';
+export * from './identity/interaction/LocationInteractionHandler';
 export * from './identity/interaction/PromptHandler';
 
 // Identity/Ownership

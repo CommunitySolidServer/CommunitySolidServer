@@ -5,8 +5,8 @@
       "comment": "Handles the register interaction",
       "@id": "urn:solid-server:auth:password:RegistrationRoute",
       "@type": "RelativeInteractionRoute",
-      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "relativePath": "/idp/register/",
+      "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+      "relativePath": "/register/",
       "source": {
         "@type": "RegistrationHandler",
         "registrationManager": {

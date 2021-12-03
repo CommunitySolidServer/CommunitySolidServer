@@ -6,6 +6,14 @@
       "@type": "ControlHandler",
       "controls": [
         {
+          "ControlHandler:_controls_key": "index",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:IndexRoute" }
+        },
+        {
+          "ControlHandler:_controls_key": "prompt",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:PromptRoute" }
+        },
+        {
           "ControlHandler:_controls_key": "login",
           "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:LoginRoute" }
         },

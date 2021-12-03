@@ -18,13 +18,19 @@ import type { InteractionRoute } from './routing/InteractionRoute';
  * Will only handle GET operations for which there is a matching template if HTML is more preferred than JSON.
  * Reason for doing it like this instead of a standard content negotiation flow
  * is because we only want to return the HTML pages on GET requests. *
+ *
+ * Templates will receive the parameter `idpIndex` in their context pointing to the root index URL of the IDP API
+ * and an `authenticating` parameter indicating if this is an active OIDC interaction.
  */
 export class HtmlViewHandler extends InteractionHandler {
+  private readonly idpIndex: string;
   private readonly templateEngine: TemplateEngine;
   private readonly templates: Record<string, string>;
 
-  public constructor(templateEngine: TemplateEngine, templates: Record<string, InteractionRoute>) {
+  public constructor(index: InteractionRoute, templateEngine: TemplateEngine,
+    templates: Record<string, InteractionRoute>) {
     super();
+    this.idpIndex = index.getPath();
     this.templateEngine = templateEngine;
     this.templates = Object.fromEntries(
       Object.entries(templates).map(([ template, route ]): [ string, string ] => [ route.getPath(), template ]),
@@ -46,9 +52,10 @@ export class HtmlViewHandler extends InteractionHandler {
     }
   }
 
-  public async handle({ operation }: InteractionHandlerInput): Promise<Representation> {
+  public async handle({ operation, oidcInteraction }: InteractionHandlerInput): Promise<Representation> {
     const template = this.templates[operation.target.path];
-    const result = await this.templateEngine.render({}, { templateFile: template });
+    const contents = { idpIndex: this.idpIndex, authenticating: Boolean(oidcInteraction) };
+    const result = await this.templateEngine.render(contents, { templateFile: template });
     return new BasicRepresentation(result, operation.target, TEXT_HTML);
   }
 }

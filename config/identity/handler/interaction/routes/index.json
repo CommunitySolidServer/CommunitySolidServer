@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Root API entry. Returns an empty body so we can add controls pointing to other interaction routes.",
+      "@id": "urn:solid-server:auth:password:IndexRoute",
+      "@type": "RelativeInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "relativePath": "/idp/",
+      "source": {
+        "@type": "FixedInteractionHandler",
+        "response": {}
+      }
+    }
+  ]
+}
