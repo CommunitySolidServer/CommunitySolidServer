@@ -20,8 +20,14 @@ describe('An UnsecureWebIdExtractor', (): void => {
     await expect(result).rejects.toThrow('No WebID Authorization header specified.');
   });
 
-  it('returns the authorization header as WebID if there is one.', async(): Promise<void> => {
+  it('returns the authorization header as WebID if specified.', async(): Promise<void> => {
     const headers = { authorization: 'WebID http://alice.example/card#me' };
+    const result = extractor.handleSafe({ headers } as HttpRequest);
+    await expect(result).resolves.toEqual({ [CredentialGroup.agent]: { webId: 'http://alice.example/card#me' }});
+  });
+
+  it('returns the authorization header as WebID if specified with a lowercase token.', async(): Promise<void> => {
+    const headers = { authorization: 'webid http://alice.example/card#me' };
     const result = extractor.handleSafe({ headers } as HttpRequest);
     await expect(result).resolves.toEqual({ [CredentialGroup.agent]: { webId: 'http://alice.example/card#me' }});
   });

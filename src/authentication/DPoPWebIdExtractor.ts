@@ -27,7 +27,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !authorization.startsWith('DPoP ')) {
+    if (!authorization || !/^DPoP /ui.test(authorization)) {
       throw new NotImplementedHttpError('No DPoP-bound Authorization header specified.');
     }
   }
