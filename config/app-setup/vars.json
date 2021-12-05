@@ -7,7 +7,7 @@
             "comment": "VarResolver resolves variables to be used in app instantiation, from cli args",
             "@id": "urn:solid-server-app-setup:default:VarResolver",
             "@type": "VarResolver",
-            "yargsArgOptions": {
+            "parameters": {
                 "baseUrl": {
                     "alias": "b",
                     "requiresArg": true,
@@ -41,8 +41,8 @@
                     "default": "./pod-config.json"
                 }
             },
-            "yargvOptions": {
-                "usage": "node ./bin/server.js [args]",
+            "options": {
+                "usage": "community-solid-server [args]",
                 "strictMode": true
             },
             "varComputers": [

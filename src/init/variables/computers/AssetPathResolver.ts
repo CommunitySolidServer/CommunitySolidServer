@@ -2,6 +2,10 @@ import type yargs from 'yargs';
 import { resolveAssetPath } from '../../..';
 import { VarComputer } from '../VarComputer';
 
+/**
+ * This `VarComputer` resolves absolute path of asset, from path specified in specified argument.
+ * It follows conventions of `resolveAssetPath`  function for path resolution.
+ */
 export class AssetPathResolver extends VarComputer {
   private readonly pathArgKey: string;
 
