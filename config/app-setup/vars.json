@@ -42,7 +42,7 @@
                 }
             },
             "options": {
-                "usage": "community-solid-server [args]",
+                "usage": "node ./bin/server.js [args]",
                 "strictMode": true
             },
             "varComputers": [
