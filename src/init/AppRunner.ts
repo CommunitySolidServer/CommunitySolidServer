@@ -3,8 +3,8 @@
 import type { ReadStream, WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
-import VError from 'verror';
 import yargs from 'yargs';
+import { createErrorMessage } from '..';
 import { getLoggerFor } from '../logging/LogUtil';
 import { resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
@@ -66,9 +66,8 @@ export class AppRunner {
         loaderProperties, resolveAssetPath(params.config), vars as unknown as Record<string, any>,
       ))
       .catch((error): void => {
-        stderr.write(`Could not start the server\nCause:\n${error.message}\n`);
-        const stack = error instanceof VError ? error.cause()?.stack : error.stack;
-        stderr.write(`${stack}\n`);
+        stderr.write(`Could not start the server\nCause:\n${createErrorMessage(error)}\n`);
+        stderr.write(`${error.stack}\n`);
         process.exit(1);
       });
   }
@@ -78,7 +77,7 @@ export class AppRunner {
     try {
       val = await promise;
     } catch (error: unknown) {
-      throw new VError(error as Error, errorMessage);
+      throw new Error(`${errorMessage}\nCause: ${createErrorMessage(error)} `);
     }
     return val;
   }
