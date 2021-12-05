@@ -49,7 +49,9 @@ export class AppRunner {
     stderr?: WriteStream;
   } = {}): void {
     // Parse the command-line arguments
-    const params = this.parseCliParams(argv);
+    // eslint-disable-next-line no-sync
+    const params = setupBaseArgs(yargs(argv.slice(2))
+      .usage('node ./bin/server.js [args]')).parseSync();
 
     // Gather settings for instantiating VarResolver
     const loaderProperties = {
@@ -58,60 +60,53 @@ export class AppRunner {
       logLevel: params.loggingLevel as LogLevel,
     };
 
-    // Create a resolver, that resolves componentsjs variables from cli-params
-    const varConfigFile = resolveAssetPath(params.varConfig);
-    this.createComponent(
-      loaderProperties as IComponentsManagerBuilderOptions<VarResolver>, varConfigFile, {}, DEFAULT_VAR_RESOLVER,
-    ).then(
-    //  Using varResolver resolve vars and start app
-      async(varResolver): Promise<void> => {
-        let vars: VariableValues;
-        try {
-          vars = await varResolver.handle(argv);
-        } catch (error: unknown) {
-          throw new VError(error as Error, 'Error in computing variables');
-        }
-        return this.startApp(
-          loaderProperties, resolveAssetPath(params.config), vars as unknown as Record<string, any>,
-        );
-      },
-
-      (error): void => {
-        throw new VError(error as Error, `Error in loading variable configuration from ${varConfigFile}`);
-      },
-    ).catch((error): void => {
-      stderr.write(`Could not start the server\nCause:\n${error.message}\n`);
-      const stack = error instanceof VError ? error.cause()?.stack : error.stack;
-      stderr.write(`${stack}\n`);
-      process.exit(1);
-    });
+    const variableConfig = resolveAssetPath(params.varConfig);
+    this.resolveVariables(loaderProperties, variableConfig, argv)
+      .then((vars): Promise<void> => this.startApp(
+        loaderProperties, resolveAssetPath(params.config), vars as unknown as Record<string, any>,
+      ))
+      .catch((error): void => {
+        stderr.write(`Could not start the server\nCause:\n${error.message}\n`);
+        const stack = error instanceof VError ? error.cause()?.stack : error.stack;
+        stderr.write(`${stack}\n`);
+        process.exit(1);
+      });
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  private parseCliParams(argv: string[]) {
-    // eslint-disable-next-line no-sync
-    return setupBaseArgs(yargs(argv.slice(2))
-      .usage('node ./bin/server.js [args]')).parseSync();
+  private async fulfillOrChain<T>(promise: Promise<T>, errorMessage: string): Promise<T> {
+    let val: T;
+    try {
+      val = await promise;
+    } catch (error: unknown) {
+      throw new VError(error as Error, errorMessage);
+    }
+    return val;
+  }
+
+  private async resolveVariables(
+    loaderProperties: IComponentsManagerBuilderOptions<VarResolver>,
+    configFile: string, argv: string[],
+  ): Promise<VariableValues> {
+    // Create a resolver, that resolves componentsjs variables from cli-params
+    const resolver = await this.fulfillOrChain(
+      this.createComponent(loaderProperties, configFile, {}, DEFAULT_VAR_RESOLVER),
+      `Error in loading variable configuration from ${configFile}`,
+    );
+    //  Using varResolver resolve variables
+    return this.fulfillOrChain(resolver.handle(argv), 'Error in computing variables');
   }
 
   private async startApp(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string, vars: Record<string, any>,
+    configFile: string, vars: VariableValues,
   ): Promise<void> {
-    let app: App;
     // Create app
-    try {
-      app = await this.createComponent(loaderProperties, configFile, vars, DEFAULT_APP);
-    } catch (error: unknown) {
-      throw new VError(error as Error, `Error: could not instantiate server from ${configFile}`);
-    }
-
+    const app = await this.fulfillOrChain(
+      this.createComponent(loaderProperties, configFile, vars, DEFAULT_APP),
+      `Error: could not instantiate server from ${configFile}`,
+    );
     // Execute app
-    try {
-      await app.start();
-    } catch (error: unknown) {
-      throw new VError(error as Error, 'Could not start server');
-    }
+    await this.fulfillOrChain(app.start(), 'Could not start server');
   }
 
   public async createComponent<TComp>(
