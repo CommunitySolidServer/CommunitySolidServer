@@ -126,7 +126,6 @@
     "sparqljs": "^3.4.2",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2",
-    "verror": "^1.10.1",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0",
     "ws": "^8.2.3",
