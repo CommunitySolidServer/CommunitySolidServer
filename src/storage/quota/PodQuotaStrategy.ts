@@ -35,9 +35,11 @@ export class PodQuotaStrategy extends QuotaStrategy {
     }
 
     let used = (await this.reporter.getSize(pimStorage)).amount;
+    console.log('TOTAL USED', { identifier, used, limit: this.limit });
     // When a file is overwritten the space the file takes up right now should also
     // be counted as available space as it will disappear/be overwritten
     used -= (await this.reporter.getSize(identifier)).amount;
+    console.log('TOTAL USED 2', { identifier, used, limit: this.limit });
 
     return { amount: this.limit.amount - used, unit: this.limit.unit };
   };

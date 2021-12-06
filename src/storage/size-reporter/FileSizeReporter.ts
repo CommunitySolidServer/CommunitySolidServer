@@ -60,14 +60,12 @@ export class FileSizeReporter implements SizeReporter<string> {
 
     // If the file's location points to a file, simply return the file's size
     if (stat.isFile()) {
-      console.log('this is file', { fileLocation, size: stat.size });
       return stat.size;
     }
 
     // If the location DOES exist and is NOT a file it should be a directory
     // recursively add all sizes of children to the total
     const childFiles = await fsPromises.readdir(fileLocation);
-    console.log('folder content', { childFiles, fileLocation });
 
     return await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
       const childFileLocation = normalizeFilePath(joinFilePath(fileLocation, current));
