@@ -87,21 +87,21 @@ export class IdentityTestState {
     expect(nextUrl.startsWith(this.oidcIssuer)).toBeTruthy();
 
     // Need to catch the redirect so we can copy the cookies
-    const res = await this.fetchIdp(nextUrl);
+    let res = await this.fetchIdp(nextUrl);
     expect(res.status).toBe(302);
     nextUrl = res.headers.get('location')!;
 
-    return nextUrl;
-  }
-
-  public async parseLoginPage(url: string): Promise<{ register: string; forgotPassword: string }> {
-    const res = await this.fetchIdp(url);
+    // Handle redirect
+    res = await this.fetchIdp(nextUrl);
     expect(res.status).toBe(200);
-    const text = await res.text();
-    const register = this.extractUrl(text, 'a:contains("Sign up")', 'href');
-    const forgotPassword = this.extractUrl(text, 'a:contains("Forgot password")', 'href');
 
-    return { register, forgotPassword };
+    // Need to send request to prompt API to get actual location
+    let json = await res.json();
+    res = await this.fetchIdp(json.controls.prompt);
+    json = await res.json();
+    nextUrl = json.location;
+
+    return nextUrl;
   }
 
   /**
@@ -111,8 +111,9 @@ export class IdentityTestState {
   public async login(url: string, email: string, password: string): Promise<void> {
     const formData = stringify({ email, password });
     const res = await this.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
-    expect(res.status).toBe(302);
-    const nextUrl = res.headers.get('location')!;
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    const nextUrl = json.location;
 
     return this.handleLoginRedirect(nextUrl);
   }
