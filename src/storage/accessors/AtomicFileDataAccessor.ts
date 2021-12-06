@@ -39,7 +39,6 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
     const tempFilePath = join(this.tempFilePath, `temp-${v4()}.txt`);
 
     try {
-      console.log('writing temp file', { identifier, tempFilePath });
       await this.writeDataFile(tempFilePath, data);
 
       // Check if we already have a corresponding file with a different extension
