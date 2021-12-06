@@ -69,7 +69,6 @@ export abstract class QuotaStrategy {
         total += await reporter.calculateChunkSize(chunk);
         const availableSpace = await strategy.getAvailableSpace(identifier);
         if (availableSpace.amount < total) {
-          console.log('Quota exceeded during write', { total, availableSpace, identifier });
           this.destroy(new PayloadHttpError(
             `Quota exceeded by ${total - availableSpace.amount} ${availableSpace.unit} during write`,
           ));

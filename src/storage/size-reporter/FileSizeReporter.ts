@@ -60,6 +60,7 @@ export class FileSizeReporter implements SizeReporter<string> {
 
     // If the file's location points to a file, simply return the file's size
     if (stat.isFile()) {
+      console.log('this is file', { fileLocation, size: stat.size });
       return stat.size;
     }
 
