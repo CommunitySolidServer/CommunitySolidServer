@@ -30,19 +30,6 @@ async function postForm(url: string, formBody: string): Promise<Response> {
   });
 }
 
-/**
- * Extracts the registration triple from the registration form body.
- */
-function extractRegistrationTriple(body: string, webId: string): string {
-  const error = load(body)('p.error').first().text();
-  const regex = new RegExp(
-    `<${webId}>\\s+<http://www.w3.org/ns/solid/terms#oidcIssuerRegistrationToken>\\s+"[^"]+"\\s*\\.`, 'u',
-  );
-  const match = regex.exec(error);
-  expect(match).toHaveLength(1);
-  return match![0];
-}
-
 // No way around the cookies https://github.com/panva/node-oidc-provider/issues/552 .
 // They will be simulated by storing the values and passing them along.
 // This is why the redirects are handled manually.
@@ -98,7 +85,8 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(400);
-      registrationTriple = extractRegistrationTriple(await res.text(), webId);
+      const json = await res.json();
+      registrationTriple = json.details.quad;
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
@@ -114,10 +102,11 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form again to successfully register.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
-      const text = await res.text();
-      expect(text).toMatch(new RegExp(`your.WebID.*${webId}`, 'u'));
-      expect(text).toMatch(new RegExp(`your.email.address.*${email}`, 'u'));
-      expect(text).toMatch(new RegExp(`<code>&lt;${webId}&gt; &lt;http://www.w3.org/ns/solid/terms#oidcIssuer&gt; &lt;${baseUrl}&gt;\\.</code>`, 'mu'));
+      await expect(res.json()).resolves.toEqual(expect.objectContaining({
+        webId,
+        email,
+        oidcIssuer: baseUrl,
+      }));
     });
   });
 
@@ -146,7 +135,8 @@ describe('A Solid server with IDP', (): void => {
 
     it('initializes the session and logs in.', async(): Promise<void> => {
       const url = await state.startSession();
-      await state.parseLoginPage(url);
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
       await state.login(url, email, password);
       expect(state.session.info?.webId).toBe(webId);
     });
@@ -171,11 +161,13 @@ describe('A Solid server with IDP', (): void => {
       let res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
 
+      // Will receive confirm screen here instead of login screen
       res = await state.fetchIdp(url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
-      const nextUrl = res.headers.get('location');
+      const json = await res.json();
+      const nextUrl = json.location;
       expect(typeof nextUrl).toBe('string');
 
-      await state.handleLoginRedirect(nextUrl!);
+      await state.handleLoginRedirect(nextUrl);
       expect(state.session.info?.webId).toBe(webId);
     });
   });
@@ -186,8 +178,8 @@ describe('A Solid server with IDP', (): void => {
     it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/forgotpassword/`, stringify({ email }));
       expect(res.status).toBe(200);
-      expect(load(await res.text())('form p').first().text().trim())
-        .toBe('If your account exists, an email has been sent with a link to reset your password.');
+      const json = await res.json();
+      expect(json.email).toBe(email);
 
       const mail = sendMail.mock.calls[0][0];
       expect(mail.to).toBe(email);
@@ -218,7 +210,6 @@ describe('A Solid server with IDP', (): void => {
         body: formData,
       });
       expect(res.status).toBe(200);
-      expect(await res.text()).toContain('Your password was successfully reset.');
     });
   });
 
@@ -233,9 +224,10 @@ describe('A Solid server with IDP', (): void => {
     it('can not log in with the old password anymore.', async(): Promise<void> => {
       const url = await state.startSession();
       nextUrl = url;
-      await state.parseLoginPage(url);
+      let res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
       const formData = stringify({ email, password });
-      const res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
+      res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
       expect(res.status).toBe(500);
       expect(await res.text()).toContain('Incorrect password');
     });
@@ -266,7 +258,8 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form once to receive the registration triple.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(400);
-      registrationTriple = extractRegistrationTriple(await res.text(), webId2);
+      const json = await res.json();
+      registrationTriple = json.details.quad;
     });
 
     it('updates the webId with the registration token.', async(): Promise<void> => {
@@ -282,8 +275,11 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form again to successfully register.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
-      const text = await res.text();
-      expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
+      await expect(res.json()).resolves.toEqual(expect.objectContaining({
+        email: 'bob@test.email',
+        webId: webId2,
+        podBaseUrl: `${baseUrl}${podName}/`,
+      }));
     });
   });
 
@@ -300,21 +296,21 @@ describe('A Solid server with IDP', (): void => {
     it('sends the form to create the WebID and register.', async(): Promise<void> => {
       const res = await postForm(`${baseUrl}idp/register/`, formBody);
       expect(res.status).toBe(200);
-      const text = await res.text();
-
-      const matchWebId = /Your new WebID is [^>]+>([^<]+)/u.exec(text);
-      expect(matchWebId).toBeDefined();
-      expect(matchWebId).toHaveLength(2);
-      newWebId = matchWebId![1];
-      expect(text).toMatch(new RegExp(`new WebID is.*${newWebId}`, 'u'));
-      expect(text).toMatch(new RegExp(`your email address.*${newMail}`, 'u'));
-      expect(text).toMatch(new RegExp(`Your new Pod.*${baseUrl}${podName}/`, 'u'));
+      const json = await res.json();
+      expect(json).toEqual(expect.objectContaining({
+        webId: expect.any(String),
+        email: newMail,
+        oidcIssuer: baseUrl,
+        podBaseUrl: `${baseUrl}${podName}/`,
+      }));
+      newWebId = json.webId;
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
       const url = await state.startSession();
-      await state.parseLoginPage(url);
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
       await state.login(url, newMail, password);
       expect(state.session.info?.webId).toBe(newWebId);
     });
