@@ -27,7 +27,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
 
   public getAvailableSpace = async(identifier: ResourceIdentifier): Promise<Size> => {
     const pimStorage = await this.searchPimStorage(identifier);
-
+    console.log('pimStorage', { pimStorage, identifier });
     // No storage was found containing this identifier, so we assume this identifier points to an internal location.
     // Quota does not apply here so there is always available space.
     if (!pimStorage) {
