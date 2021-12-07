@@ -53,8 +53,8 @@ describe('A server with', (): void => {
     beforeAll(async(): Promise<void> => {
       // Calculate the allowed quota depending on file system used
       const folderSizeTest = await fsPromises.stat(process.cwd());
-      const size = (folderSizeTest.size * 2) + 2000;
-
+      const size = (folderSizeTest.size * 2) + 3000;
+      console.log('Size for this test run', { size });
       const instances = await instantiateFromConfig(
         'urn:solid-server:test:Instances',
         getTestConfigPath('quota-pod.json'),
@@ -81,11 +81,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/profile/test1.txt`;
       const testFile2 = `${baseUrl}abel/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 350);
+      const response1 = performSimplePUTWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePUTWithLength(testFile2, 700);
+      const response2 = performSimplePUTWithLength(testFile2, 2000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -94,7 +94,7 @@ describe('A server with', (): void => {
     it('should allow writing in a pod that isnt full yet.', async(): Promise<void> => {
       const testFile1 = `${baseUrl}arthur/profile/test1.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 350);
+      const response1 = performSimplePUTWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
     });
@@ -104,11 +104,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/test2.txt`;
       const testFile2 = `${baseUrl}arthur/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 700);
+      const response1 = performSimplePUTWithLength(testFile1, 2000);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePUTWithLength(testFile2, 700);
+      const response2 = performSimplePUTWithLength(testFile2, 2000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
