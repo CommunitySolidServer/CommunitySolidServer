@@ -125,7 +125,7 @@ describe('A server with', (): void => {
     beforeAll(async(): Promise<void> => {
       // Calculate the allowed quota depending on file system used
       const folderSizeTest = await fsPromises.stat(process.cwd());
-      const size = (folderSizeTest.size * 5) + 6000;
+      const size = (folderSizeTest.size * 6) + 6000;
       console.log('Size for this test run', { size });
       const instances = await instantiateFromConfig(
         'urn:solid-server:test:Instances',
