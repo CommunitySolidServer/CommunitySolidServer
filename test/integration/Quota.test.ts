@@ -53,7 +53,7 @@ describe('A server with', (): void => {
     beforeAll(async(): Promise<void> => {
       // Calculate the allowed quota depending on file system used
       const folderSizeTest = await fsPromises.stat(process.cwd());
-      const size = (folderSizeTest.size * 2) + 3000;
+      const size = (folderSizeTest.size * 2) + 4000;
       console.log('Size for this test run', { size });
       const instances = await instantiateFromConfig(
         'urn:solid-server:test:Instances',
@@ -85,7 +85,7 @@ describe('A server with', (): void => {
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePUTWithLength(testFile2, 2000);
+      const response2 = performSimplePUTWithLength(testFile2, 3000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -104,11 +104,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/test2.txt`;
       const testFile2 = `${baseUrl}arthur/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 2000);
+      const response1 = performSimplePUTWithLength(testFile1, 3000);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePUTWithLength(testFile2, 2000);
+      const response2 = performSimplePUTWithLength(testFile2, 3000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
