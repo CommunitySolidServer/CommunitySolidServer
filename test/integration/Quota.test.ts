@@ -1,3 +1,4 @@
+import { promises as fsPromises } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
 import type { App } from '../../src';
@@ -50,12 +51,17 @@ describe('A server with', (): void => {
     let app: App;
 
     beforeAll(async(): Promise<void> => {
+      // Calculate the allowed quota depending on file system used
+      const folderSizeTest = await fsPromises.stat(process.cwd());
+      const size = (folderSizeTest.size * 2) + 2000;
+
       const instances = await instantiateFromConfig(
         'urn:solid-server:test:Instances',
         getTestConfigPath('quota-pod.json'),
         {
           ...getDefaultVariables(port, baseUrl),
           'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+          'urn:solid-server:default:variable:PodQuota': size,
         },
       ) as Record<string, any>;
       ({ app } = instances);

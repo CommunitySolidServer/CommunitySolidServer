@@ -36,8 +36,15 @@
       "comment": "A single-pod server that stores its resources on disk while enforcing quota."
     },
     {
+      "comment": "",
+      "@id": "urn:solid-server:default:variable:PodQuota",
+      "@type": "Variable"
+    },
+    {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "PodQuotaStrategy:_limit_amount": 4000,
+      "PodQuotaStrategy:_limit_amount": {
+        "@id": "urn:solid-server:default:variable:PodQuota"
+      },
       "PodQuotaStrategy:_limit_unit": "bytes"
     },
     {
