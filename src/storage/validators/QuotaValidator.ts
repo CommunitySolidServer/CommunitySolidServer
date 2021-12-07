@@ -29,7 +29,6 @@ export class QuotaValidator extends Validator {
     const estimatedSize = await this.strategy.estimateSize(metadata);
 
     if (estimatedSize && availableSize.amount < estimatedSize.amount) {
-      console.log('Adv content length to high', { estimatedSize, availableSize });
       return {
         ...representation,
         data: guardStream(new Readable({
