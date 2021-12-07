@@ -36,8 +36,15 @@
       "comment": "A single-pod server that stores its resources on disk while enforcing quota."
     },
     {
+      "comment": "The set quota enforced globally",
+      "@id": "urn:solid-server:default:variable:GlobalQuota",
+      "@type": "Variable"
+    },
+    {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "GlobalQuotaStrategy:_limit_amount": 8000,
+      "GlobalQuotaStrategy:_limit_amount": {
+        "@id": "urn:solid-server:default:variable:GlobalQuota"
+      },
       "GlobalQuotaStrategy:_limit_unit": "bytes"
     },
     {

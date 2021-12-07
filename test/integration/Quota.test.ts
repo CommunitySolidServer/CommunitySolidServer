@@ -115,58 +115,63 @@ describe('A server with', (): void => {
   });
 
   /** Test the general functionality of the server using global quota */
-  // describe('global quota enabled', (): void => {
-  //   const port = getPort('GlobalQuota');
-  //   const baseUrl = `http://localhost:${port}/`;
-  //   const rootFilePath = getTestFolder('quota-global');
+  describe('global quota enabled', (): void => {
+    const port = getPort('GlobalQuota');
+    const baseUrl = `http://localhost:${port}/`;
+    const rootFilePath = getTestFolder('quota-global');
 
-  //   let app: App;
+    let app: App;
 
-  //   beforeAll(async(): Promise<void> => {
-  //     const instances = await instantiateFromConfig(
-  //       'urn:solid-server:test:Instances',
-  //       getTestConfigPath('quota-global.json'),
-  //       {
-  //         ...getDefaultVariables(port, baseUrl),
-  //         'urn:solid-server:default:variable:rootFilePath': rootFilePath,
-  //       },
-  //     ) as Record<string, any>;
-  //     ({ app } = instances);
-  //     await app.start();
+    beforeAll(async(): Promise<void> => {
+      // Calculate the allowed quota depending on file system used
+      const folderSizeTest = await fsPromises.stat(process.cwd());
+      const size = (folderSizeTest.size * 5) + 4000;
+      console.log('Size for this test run', { size });
+      const instances = await instantiateFromConfig(
+        'urn:solid-server:test:Instances',
+        getTestConfigPath('quota-global.json'),
+        {
+          ...getDefaultVariables(port, baseUrl),
+          'urn:solid-server:default:variable:rootFilePath': rootFilePath,
+          'urn:solid-server:default:variable:GlobalQuota': size,
+        },
+      ) as Record<string, any>;
+      ({ app } = instances);
+      await app.start();
 
-  //     // Initialize 2 pods
-  //     await registerTestPods(baseUrl);
-  //   });
+      // Initialize 2 pods
+      await registerTestPods(baseUrl);
+    });
 
-  //   afterAll(async(): Promise<void> => {
-  //     await app.stop();
-  //     await removeFolder(rootFilePath);
-  //   });
+    afterAll(async(): Promise<void> => {
+      await app.stop();
+      await removeFolder(rootFilePath);
+    });
 
-  //   it('should return 413 when global quota is exceeded.', async(): Promise<void> => {
-  //     const testFile1 = `${baseUrl}test1.txt`;
-  //     const testFile2 = `${baseUrl}test2.txt`;
+    it('should return 413 when global quota is exceeded.', async(): Promise<void> => {
+      const testFile1 = `${baseUrl}test1.txt`;
+      const testFile2 = `${baseUrl}test2.txt`;
 
-  //     const response1 = performSimplePUTWithLength(testFile1, 400);
-  //     await expect(response1).resolves.toBeDefined();
-  //     expect((await response1).status).toEqual(201);
+      const response1 = performSimplePUTWithLength(testFile1, 500);
+      await expect(response1).resolves.toBeDefined();
+      expect((await response1).status).toEqual(201);
 
-  //     const response2 = performSimplePUTWithLength(testFile2, 600);
-  //     await expect(response2).resolves.toBeDefined();
-  //     expect((await response2).status).toEqual(413);
-  //   });
+      const response2 = performSimplePUTWithLength(testFile2, 4000);
+      await expect(response2).resolves.toBeDefined();
+      expect((await response2).status).toEqual(413);
+    });
 
-  //   it('should return 413 when trying to write to any pod when global quota is exceeded.', async(): Promise<void> => {
-  //     const testFile1 = `${baseUrl}abel/test3.txt`;
-  //     const testFile2 = `${baseUrl}arthur/profile/test4.txt`;
+    it('should return 413 when trying to write to any pod when global quota is exceeded.', async(): Promise<void> => {
+      const testFile1 = `${baseUrl}abel/test3.txt`;
+      const testFile2 = `${baseUrl}arthur/profile/test4.txt`;
 
-  //     const response1 = performSimplePUTWithLength(testFile1, 700);
-  //     await expect(response1).resolves.toBeDefined();
-  //     expect((await response1).status).toEqual(413);
+      const response1 = performSimplePUTWithLength(testFile1, 4000);
+      await expect(response1).resolves.toBeDefined();
+      expect((await response1).status).toEqual(413);
 
-  //     const response2 = performSimplePUTWithLength(testFile2, 500);
-  //     await expect(response2).resolves.toBeDefined();
-  //     expect((await response2).status).toEqual(413);
-  //   });
-  // });
+      const response2 = performSimplePUTWithLength(testFile2, 4000);
+      await expect(response2).resolves.toBeDefined();
+      expect((await response2).status).toEqual(413);
+    });
+  });
 });

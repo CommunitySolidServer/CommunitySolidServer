@@ -36,7 +36,7 @@
       "comment": "A single-pod server that stores its resources on disk while enforcing quota."
     },
     {
-      "comment": "",
+      "comment": "The set quota enforced per pod",
       "@id": "urn:solid-server:default:variable:PodQuota",
       "@type": "Variable"
     },
