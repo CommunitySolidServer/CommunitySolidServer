@@ -1,0 +1,69 @@
+<h1>Set up your Solid server</h1>
+<p>
+  Your Solid server needs a <strong>one-time setup</strong>
+  so it acts exactly the way you want.
+</p>
+
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>Accounts on this server</legend>
+    <ol>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" checked disabled>
+          Enable account registration.
+        </label>
+        <p>
+          You can disable account registration
+          by <a href="https://github.com/solid/community-server/blob/main/config/identity/README.md">changing the configuration</a>.
+        </p>
+      </li>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="registration" name="registration">
+          Sign me up for an account.
+        </label>
+        <p>
+          Any existing root Pod will be disabled.
+        </p>
+      </li>
+      <li class="checkbox" id="initializeForm">
+        <label>
+          <input type="checkbox" id="initialize" name="initialize">
+          Expose a public root Pod.
+        </label>
+        <p>
+          By default, the public has read and write access to the root Pod.
+          <br>
+          You typically only want to choose this
+          for rapid testing and development.
+        </p>
+      </li>
+    </ol>
+  </fieldset>
+
+  <fieldset id="registrationForm">
+    <legend>Sign up</legend>
+    <%-
+    include('../identity/email-password/register-partial.html.ejs', {
+    allowRoot: true,
+    })
+    %>
+  </fieldset>
+
+  <p class="actions"><button type="submit">Complete setup</button></p>
+</form>
+
+<!-- Show or hide the account creation form when needed -->
+<script>
+  [
+    'registration', 'registrationForm', 'initializeForm',
+  ].forEach(registerElement);
+
+  Object.assign(visibilityConditions, {
+    registrationForm: () => elements.registration.checked,
+    initializeForm: () => !elements.registration.checked,
+  });
+</script>
