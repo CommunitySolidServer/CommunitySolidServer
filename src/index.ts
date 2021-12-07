@@ -185,6 +185,7 @@ export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
 
 // Init/Setup
+export * from './init/setup/SetupHandler';
 export * from './init/setup/SetupHttpHandler';
 
 // Init/Cli

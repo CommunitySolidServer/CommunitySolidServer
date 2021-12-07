@@ -1,72 +1,45 @@
-<h1>Set up your Solid server</h1>
-<p>
-  Your Solid server needs a <strong>one-time setup</strong>
-  so it acts exactly the way you want.
-</p>
+<div id="input-partial">
+  <%- include('./input-partial.html.ejs') %>
+</div>
+<div id="response-partial">
+  <h1 id="public">Server setup complete</h1>
+  <p>
+    Congratulations!
+    Your Solid server is now ready to use.
+    <br>
+    You can now visit its <a href="./">homepage</a>.
+  </p>
 
-<form method="post" id="mainForm">
-  <% const safePrefilled = locals.prefilled || {}; %>
+  <div id="response-initialize">
+    <h2>Root Pod</h2>
+    <p>
+      <strong>Warning: the root Pod is publicly accessible.</strong>
+      <br>
+      Prevent public write and control access to the root
+      by modifying its <a href=".acl">ACL document</a>.
+    </p>
+  </div>
 
-  <% if (locals.message) { %>
-    <p class="error"><%= message %></p>
-  <% } %>
-  <fieldset>
-    <legend>Accounts on this server</legend>
-    <ol>
-      <li class="checkbox">
-        <label>
-          <input type="checkbox" checked disabled>
-          Enable account registration.
-        </label>
-        <p>
-          You can disable account registration
-          by <a href="https://github.com/solid/community-server/blob/main/config/identity/README.md">changing the configuration</a>.
-        </p>
-      </li>
-      <li class="checkbox">
-        <label>
-          <input type="checkbox" id="registration" name="registration">
-          Sign me up for an account.
-        </label>
-        <p>
-          Any existing root Pod will be disabled.
-        </p>
-      </li>
-      <li class="checkbox" id="initializeForm">
-        <label>
-          <input type="checkbox" id="initialize" name="initialize">
-          Expose a public root Pod.
-        </label>
-        <p>
-          By default, the public has read and write access to the root Pod.
-          <br>
-          You typically only want to choose this
-          for rapid testing and development.
-        </p>
-      </li>
-    </ol>
-  </fieldset>
+  <div id="response-registration">
+    <%- include('../identity/email-password/register-response-partial.html.ejs', { idpIndex: '' }) %>
+  </div>
+</div>
 
-  <fieldset id="registrationForm">
-    <legend>Sign up</legend>
-    <%-
-      include('../identity/email-password/register-partial.html.ejs', {
-        allowRoot: true,
-      })
-    %>
-  </fieldset>
-
-  <p class="actions"><button type="submit">Complete setup</button></p>
-</form>
-
-<!-- Show or hide the account creation form when needed -->
 <script>
-  [
-    'registration', 'registrationForm', 'initializeForm',
-  ].forEach(registerElement);
+  function updateResponse(json) {
+    // Swap visibility
+    setVisibility('input-partial', false);
+    setVisibility('response-partial', true);
 
-  Object.assign(visibilityConditions, {
-    registrationForm: () => elements.registration.checked,
-    initializeForm: () => !elements.registration.checked,
-  });
+    setVisibility('response-initialize', json.initialize);
+
+    setVisibility('response-registration', json.registration);
+    if (json.registration) {
+      updateResponseFields(json);
+    }
+  }
+
+  setVisibility('response-partial', false);
+
+  addPostListener('mainForm', 'error', '', updateResponse);
 </script>
