@@ -381,6 +381,7 @@ export * from './util/Vocabularies';
 export * from './http/NotificationGatewayHttpHandler';
 export * from './http/NotificationWellKnownHttpHandler';
 export * from './http/NotificationSubscriptionHttpHandler';
+export * from './http/WebHookSubscription2021UnsubscribeHttpHandler';
 export * from './notification/BaseSubscriptionHandler';
 export * from './notification/WebHookSubscription2021Handler';
 export * from './notification/SubscriptionHandler';

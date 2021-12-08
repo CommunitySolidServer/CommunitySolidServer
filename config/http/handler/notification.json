@@ -18,6 +18,7 @@
             { "@id": "urn:solid-server:default:NotificationWellKnownHandler" },
             { "@id": "urn:solid-server:default:NotificationGatewayHandler" },
             { "@id": "urn:solid-server:default:NotificationSubscriptionHandler" },
+            { "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHandler" },
             { "@id": "urn:solid-server:default:AuthResourceHttpHandler" },
             { "@id": "urn:solid-server:default:IdentityProviderHandler" },
             { "@id": "urn:solid-server:default:LdpHandler" }

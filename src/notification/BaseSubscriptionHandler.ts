@@ -7,7 +7,7 @@ import type { Subscription, SubscriptionHandler } from './SubscriptionHandler';
 
 export abstract class BaseSubscriptionHandler
 implements SubscriptionHandler {
-  public abstract getResponseData(): Guarded<Readable> | undefined;
+  public abstract getResponseData(subscription: Subscription): Guarded<Readable> | undefined;
   public abstract getType(): string;
   public abstract subscribe(request: any): Subscription;
   public abstract onResourceCreated(resource: ResourceIdentifier, subscription: Subscription): void;

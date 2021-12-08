@@ -1,14 +1,20 @@
 import type { EventEmitter } from 'events';
 import type { CredentialSet } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
-import type { PermissionReader, PermissionReaderInput } from '../authorization/PermissionReader';
+import type {
+  PermissionReader,
+  PermissionReaderInput,
+} from '../authorization/PermissionReader';
 import type { PermissionSet } from '../authorization/permissions/Permissions';
 import type { OperationHandlerInput } from '../http/ldp/OperationHandler';
 import { OkResponseDescription } from '../http/output/response/OkResponseDescription';
 import type { ResponseDescription } from '../http/output/response/ResponseDescription';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import { getLoggerFor } from '../logging/LogUtil';
-import type { Subscription, SubscriptionHandler } from '../notification/SubscriptionHandler';
+import type {
+  Subscription,
+  SubscriptionHandler,
+} from '../notification/SubscriptionHandler';
 import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
@@ -60,8 +66,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
   private readonly credentialsExtractor: CredentialsExtractor;
   private readonly permissionReader: PermissionReader;
   private readonly notificationStorage: KeyValueStorage<string, Topic>;
-  private readonly subscriptionHandlers: Map<string, SubscriptionHandler> =
-  new Map();
+  private readonly subscriptionHandlers: Map<string, SubscriptionHandler> = new Map();
 
   private readonly source: EventEmitter;
 
@@ -75,7 +80,11 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       this.subscriptionHandlers.set(handler.getType(), handler);
     });
     this.source = args.source;
-    this.source.on('changed', async(changed: ModifiedResource[]): Promise<void> => this.onResourceChanged(changed));
+    this.source.on(
+      'changed',
+      async(changed: ModifiedResource[]): Promise<void> =>
+        this.onResourceChanged(changed),
+    );
   }
 
   public getSupportedTypes(): string[] {
@@ -84,7 +93,9 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
     if (operation.method !== 'POST') {
-      throw new NotImplementedHttpError('This handler only supports POST operations');
+      throw new NotImplementedHttpError(
+        'This handler only supports POST operations',
+      );
     }
   }
 
@@ -99,11 +110,14 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
 
     const subscriptionHandler = this.subscriptionHandlers.get(subscriptionType);
     if (!subscriptionHandler) {
-      throw new BadRequestHttpError(`Subscription type ${subscriptionType} not supported`);
+      throw new BadRequestHttpError(
+        `Subscription type ${subscriptionType} not supported`,
+      );
     }
     const topicURI: string = subscriptionRequest.topic;
 
-    const credentials: CredentialSet = await this.credentialsExtractor.handleSafe(request);
+    const credentials: CredentialSet =
+      await this.credentialsExtractor.handleSafe(request);
     if (!credentials.agent?.webId) {
       throw new BadRequestHttpError('No WebId present in request');
     }
@@ -113,7 +127,9 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       identifier: { path: topicURI },
     };
 
-    const permissionSet: PermissionSet = await this.permissionReader.handleSafe(permissionReaderInput);
+    const permissionSet: PermissionSet = await this.permissionReader.handleSafe(
+      permissionReaderInput,
+    );
     if (!permissionSet.public?.read && !permissionSet.agent?.read) {
       throw new BadRequestHttpError('Agent not allowed to read resource.');
     }
@@ -125,7 +141,8 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     }
 
     const { subscriptions } = topic;
-    const subscription: Subscription = subscriptionHandler.subscribe(subscriptionRequest);
+    const subscription: Subscription =
+      subscriptionHandler.subscribe(subscriptionRequest);
     subscriptions[credentials.agent.webId] = subscription;
 
     await this.notificationStorage.set(topicURI, topic);
@@ -139,7 +156,7 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
     );
     return new OkResponseDescription(
       representationMetadata,
-      subscriptionHandler.getResponseData(),
+      subscriptionHandler.getResponseData(subscription),
     );
   }
 
@@ -157,7 +174,9 @@ export class NotificationSubscriptionHttpHandler extends OperationHttpHandler {
       // eslint-disable-next-line guard-for-in
       for (const key in subscriptions) {
         const subscription = subscriptions[key];
-        const subscriptionHandler = this.subscriptionHandlers.get(subscription.type);
+        const subscriptionHandler = this.subscriptionHandlers.get(
+          subscription.type,
+        );
         await subscriptionHandler!.onResourcesChanged(resources, subscription);
       }
       resources.shift();
