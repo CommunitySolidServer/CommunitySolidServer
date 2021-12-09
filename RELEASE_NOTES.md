@@ -29,11 +29,15 @@ The following changes are relevant for v2 custom configs that replaced certain f
 - Requests targeting the OIDC library now use a separate handler.
   - `/http/handler/default.json`
   - `/identity/handler/default.json`
+- The architecture of IDP interaction handlers has completely changed to improve modularity
+  - `/identity/handler/interaction/*`
+  - `/identity/registration/*`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `TypedRepresentationConverter` function signatures changed 
-  and base functionality moved to `BaseTypedRepresentationConverter`
+  and base functionality moved to `BaseTypedRepresentationConverter`.
+- Many changes to several components related to the IDP. This includes the HTML templates.
 
 ## v2.0.0
 ### New features
