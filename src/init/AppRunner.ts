@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/no-process-exit */
-
 import type { ReadStream, WriteStream } from 'tty';
 import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
@@ -62,24 +61,20 @@ export class AppRunner {
 
     const variableConfig = resolveAssetPath(params.varConfig);
     this.resolveVariables(loaderProperties, variableConfig, argv)
-      .then((vars): Promise<void> => this.startApp(
-        loaderProperties, resolveAssetPath(params.config), vars as unknown as Record<string, any>,
-      ))
-      .catch((error): void => {
-        stderr.write(`Could not start the server\nCause:\n${createErrorMessage(error)}\n`);
-        stderr.write(`${error.stack}\n`);
-        process.exit(1);
-      });
+      .then(
+        (vars): Promise<void> => this.startApp(loaderProperties, resolveAssetPath(params.config), vars),
+        (error): void => this.writeError(stderr, 'Could not load config variables', error),
+      )
+      .catch((error): void => this.writeError(stderr, 'Could not start the server', error));
   }
 
-  private async fulfillOrChain<T>(promise: Promise<T>, errorMessage: string): Promise<T> {
-    let val: T;
-    try {
-      val = await promise;
-    } catch (error: unknown) {
-      throw new Error(`${errorMessage}\nCause: ${createErrorMessage(error)} `);
-    }
-    return val;
+  /**
+   * Writes the given message and error to the `stderr` and exits the process.
+   */
+  private writeError(stderr: WriteStream, message: string, error: Error): never {
+    stderr.write(`${message}\nCause:\n${createErrorMessage(error)}\n`);
+    stderr.write(`${error.stack}\n`);
+    process.exit(1);
   }
 
   private async resolveVariables(
@@ -87,12 +82,9 @@ export class AppRunner {
     configFile: string, argv: string[],
   ): Promise<VariableValues> {
     // Create a resolver, that resolves componentsjs variables from cli-params
-    const resolver = await this.fulfillOrChain(
-      this.createComponent(loaderProperties, configFile, {}, DEFAULT_VAR_RESOLVER),
-      `Error in loading variable configuration from ${configFile}`,
-    );
+    const resolver = await this.createComponent(loaderProperties, configFile, {}, DEFAULT_VAR_RESOLVER);
     //  Using varResolver resolve variables
-    return this.fulfillOrChain(resolver.handle(argv), 'Error in computing variables');
+    return resolver.handle(argv);
   }
 
   private async startApp(
@@ -100,12 +92,9 @@ export class AppRunner {
     configFile: string, vars: VariableValues,
   ): Promise<void> {
     // Create app
-    const app = await this.fulfillOrChain(
-      this.createComponent(loaderProperties, configFile, vars, DEFAULT_APP),
-      `Error: could not instantiate server from ${configFile}`,
-    );
+    const app = await this.createComponent(loaderProperties, configFile, vars, DEFAULT_APP);
     // Execute app
-    await this.fulfillOrChain(app.start(), 'Could not start server');
+    await app.start();
   }
 
   public async createComponent<TComp>(
