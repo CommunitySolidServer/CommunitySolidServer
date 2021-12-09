@@ -2,7 +2,7 @@ import type { CredentialSet } from '../authentication/Credentials';
 import type { CredentialsExtractor } from '../authentication/CredentialsExtractor';
 import { OkResponseDescription } from '../http/output/response/OkResponseDescription';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
-import type { WebHookSubscription2021 } from '../notification/WebHookSubscription2021Handler';
+import type { WebHookSubscription2021 } from '../notification/webhook-subscription-2021/WebHookSubscription2021Handler';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
 import { OperationHttpHandler } from '../server/OperationHttpHandler';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';

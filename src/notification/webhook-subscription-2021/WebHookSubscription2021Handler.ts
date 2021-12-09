@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 import { Readable } from 'stream';
 import { v4 } from 'uuid';
-import type { HttpClient } from '../http/client/HttpClient';
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import { getLoggerFor } from '../logging/LogUtil';
-import type { Guarded } from '../util/GuardedStream';
-import { guardStream } from '../util/GuardedStream';
-import { joinUrl, trimTrailingSlashes } from '../util/PathUtil';
-import { BaseSubscriptionHandler } from './BaseSubscriptionHandler';
-import type { Subscription } from './SubscriptionHandler';
+import type { HttpClient } from '../../http/client/HttpClient';
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
+import type { Guarded } from '../../util/GuardedStream';
+import { guardStream } from '../../util/GuardedStream';
+import { joinUrl, trimTrailingSlashes } from '../../util/PathUtil';
+import { BaseSubscriptionHandler } from '../BaseSubscriptionHandler';
+import type { Subscription } from '../SubscriptionHandler';
 
 export interface WebHookSubscription2021 extends Subscription {
   id: string;

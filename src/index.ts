@@ -116,6 +116,11 @@ export * from './http/representation/RepresentationPreferences';
 export * from './http/representation/ResourceIdentifier';
 export * from './http/representation/SparqlUpdatePatch';
 
+// HTTP/Well-Known
+export * from './http/well-known/WellKnownHandler';
+export * from './http/well-known/WellKnownBuilder';
+export * from './http/well-known/AggregateWellKnownBuilder';
+
 // HTTP
 export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
@@ -379,12 +384,15 @@ export * from './util/Vocabularies';
 
 // Notification
 export * from './http/NotificationGatewayHttpHandler';
-export * from './http/NotificationWellKnownHttpHandler';
 export * from './http/NotificationSubscriptionHttpHandler';
 export * from './http/WebHookSubscription2021UnsubscribeHttpHandler';
 export * from './notification/BaseSubscriptionHandler';
-export * from './notification/WebHookSubscription2021Handler';
 export * from './notification/SubscriptionHandler';
+export * from './notification/NotificationWellKnownBuilder';
+
+// Notification/WebHook2021
+export * from './notification/webhook-subscription-2021/WebHookSubscription2021Handler';
+export * from './notification/webhook-subscription-2021/webhook-auth/WebHook2021AuthWellKnownBuilder';
 
 // HTTP/Client
 export * from './http/client/HttpClient';
