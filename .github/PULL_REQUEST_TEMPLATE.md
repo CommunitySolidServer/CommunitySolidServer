@@ -18,3 +18,5 @@ Before this pull request can be merged, a core maintainer will check whether
     - semver.major: Breaking changes. This includes changing interfaces or configuration behaviour.
   * [ ] the correct branch is targeted. Patch updates can target main, other changes should target the latest versions/* branch.
   * [ ] the RELEASE_NOTES.md document in case of relevant feature or config changes.
+
+<!-- Try to check these to the best of your abilities before opening the PR -->
