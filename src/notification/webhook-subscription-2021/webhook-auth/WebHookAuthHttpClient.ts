@@ -2,6 +2,8 @@ import type { RequestOptions, IncomingMessage } from 'http';
 import { request } from 'http';
 import type { URL } from 'url';
 // eslint-disable-next-line import/no-unresolved
+import { parseJwk } from 'jose/jwk/parse';
+// eslint-disable-next-line import/no-unresolved
 import { SignJWT } from 'jose/jwt/sign';
 import type { HttpClient } from '../../../http/client/HttpClient';
 import type { JwksKeyGenerator } from '../../../identity/configuration/JwksKeyGenerator';
@@ -33,34 +35,34 @@ export class WebHookAuthHttpClient implements HttpClient {
       if (!jwk) {
         throw new InternalServerError('No jwk available.');
       }
-      const expirationDate = new Date(Date.now() + (1000 * 60 * 20));
-      const jwtRaw = {
-        htu: url,
-        htm: 'POST',
-        iss: this.baseUrl,
-        iat: new Date().getUTCDate(),
-        exp: expirationDate.getUTCDate(),
-      };
-      new SignJWT(jwtRaw)
-        .setIssuedAt(new Date().getUTCDate())
-        .setIssuer(this.baseUrl)
-        .setExpirationTime('20m')
-        .sign(jwk)
-        .then((signedJwt: string): void => {
-          console.log('Signed JWT');
-          console.log(signedJwt);
-          const augmentedOptions: RequestOptions = {
-            ...options,
-            headers: {
-              ...options.headers,
-              authorization: signedJwt,
-            },
-          };
+      parseJwk(jwk, 'RS256').then((jwkKeyLike): void => {
+        const jwtRaw = {
+          htu: url,
+          htm: 'POST',
+        };
+        new SignJWT(jwtRaw)
+          .setProtectedHeader({ alg: 'RS256' })
+          .setIssuedAt()
+          .setIssuer(this.baseUrl)
+          .setExpirationTime('20m')
+          .sign(jwkKeyLike)
+          .then((signedJwt: string): void => {
+            const augmentedOptions: RequestOptions = {
+              ...options,
+              headers: {
+                ...options.headers,
+                authorization: signedJwt,
+              },
+            };
 
-          const req = request(url, augmentedOptions, callback);
-          req.write(data);
-          req.end();
-        })
+            const req = request(url, augmentedOptions, callback);
+            req.write(data);
+            req.end();
+          })
+          .catch((err: unknown): void => {
+            throw err;
+          });
+      })
         .catch((err: unknown): void => {
           throw err;
         });
