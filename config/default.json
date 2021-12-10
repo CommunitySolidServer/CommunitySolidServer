@@ -1,6 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/app-setup/vars.json",
+
     "files-scs:config/app/main/default.json",
     "files-scs:config/app/init/initialize-prefilled-root.json",
     "files-scs:config/app/setup/optional.json",

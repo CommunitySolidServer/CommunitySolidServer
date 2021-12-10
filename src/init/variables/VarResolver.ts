@@ -6,7 +6,6 @@ import { modulePathPlaceholder } from '../../util/PathUtil';
 import type { VarComputer } from './VarComputer';
 
 const defaultConfig = `${modulePathPlaceholder}config/default.json`;
-const defaultVarConfig = `${modulePathPlaceholder}config/app-setup/vars.json`;
 
 export type YargsArgOptions = Record<string, yargs.Options>;
 
@@ -20,7 +19,6 @@ export function setupBaseArgs(yargv: yargs.Argv) {
     config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
     loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: LOG_LEVELS },
     mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
-    varConfig: { type: 'string', alias: 'v', default: defaultVarConfig, requiresArg: true },
   });
 }
 

@@ -28,8 +28,9 @@ export class AppRunner {
     configFile: string,
     variables: VariableValues,
   ): Promise<void> {
-    const app = await this.createComponent(loaderProperties, configFile, variables, DEFAULT_APP);
-    await app.start();
+    const componentsManager = await this.createComponentsManager(loaderProperties, configFile);
+    const defaultVariables = await this.resolveVariables(componentsManager, []);
+    await this.startApp(componentsManager, { ...defaultVariables, ...variables });
   }
 
   /**
@@ -59,13 +60,17 @@ export class AppRunner {
       logLevel: params.loggingLevel as LogLevel,
     };
 
-    const variableConfig = resolveAssetPath(params.varConfig);
-    this.resolveVariables(loaderProperties, variableConfig, argv)
-      .then(
-        (vars): Promise<void> => this.startApp(loaderProperties, resolveAssetPath(params.config), vars),
-        (error): void => this.writeError(stderr, 'Could not load config variables', error),
-      )
-      .catch((error): void => this.writeError(stderr, 'Could not start the server', error));
+    const config = resolveAssetPath(params.config);
+    this.createComponentsManager(loaderProperties, config)
+      .then((componentsManager): Promise<void> =>
+        this.resolveVariables(componentsManager, argv).then(
+          (vars): Promise<void> => this.startApp(componentsManager, vars),
+          (error): void => this.writeError(stderr, `Could not load config variables from ${config}`, error),
+        ).catch((error): void => {
+          this.logger.error(`Could not start server: ${error}`);
+          process.exit(1);
+        }))
+      .catch((error): void => this.writeError(stderr, `Could not build the config files from ${config}`, error));
   }
 
   /**
@@ -77,37 +82,32 @@ export class AppRunner {
     process.exit(1);
   }
 
-  private async resolveVariables(
-    loaderProperties: IComponentsManagerBuilderOptions<VarResolver>,
-    configFile: string, argv: string[],
-  ): Promise<VariableValues> {
+  private async resolveVariables(componentsManager: ComponentsManager<VarResolver>, argv: string[]):
+  Promise<VariableValues> {
     // Create a resolver, that resolves componentsjs variables from cli-params
-    const resolver = await this.createComponent(loaderProperties, configFile, {}, DEFAULT_VAR_RESOLVER);
+    const resolver = await componentsManager.instantiate(DEFAULT_VAR_RESOLVER, {});
     //  Using varResolver resolve variables
-    return resolver.handle(argv);
+    return resolver.handleSafe(argv);
   }
 
-  private async startApp(
-    loaderProperties: IComponentsManagerBuilderOptions<App>,
-    configFile: string, vars: VariableValues,
-  ): Promise<void> {
+  private async startApp(componentsManager: ComponentsManager<App>, variables: VariableValues): Promise<void> {
     // Create app
-    const app = await this.createComponent(loaderProperties, configFile, vars, DEFAULT_APP);
+    const app = await componentsManager.instantiate(DEFAULT_APP, { variables });
     // Execute app
     await app.start();
   }
 
-  public async createComponent<TComp>(
-    loaderProperties: IComponentsManagerBuilderOptions<TComp>,
+  /**
+   * Creates the Components Manager that will be used for instantiating.
+   * Typing is set to `any` since it will be used for instantiating multiple objects.
+   */
+  public async createComponentsManager(
+    loaderProperties: IComponentsManagerBuilderOptions<any>,
     configFile: string,
-    variables: Record<string, any>,
-    componentIri: string,
-  ): Promise<TComp> {
+  ): Promise<ComponentsManager<any>> {
     // Set up Components.js
     const componentsManager = await ComponentsManager.build(loaderProperties);
     await componentsManager.configRegistry.register(configFile);
-
-    // Create the component
-    return await componentsManager.instantiate(componentIri, { variables });
+    return componentsManager;
   }
 }
