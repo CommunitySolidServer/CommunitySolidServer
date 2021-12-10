@@ -396,6 +396,7 @@ export * from './notification/NotificationWellKnownBuilder';
 export * from './notification/webhook-subscription-2021/WebHookSubscription2021Handler';
 export * from './notification/webhook-subscription-2021/webhook-auth/WebHook2021AuthWellKnownBuilder';
 export * from './notification/webhook-subscription-2021/webhook-auth/PodJwksHttpHandler';
+export * from './notification/webhook-subscription-2021/webhook-auth/WebHookAuthHttpClient';
 
 // HTTP/Client
 export * from './http/client/HttpClient';

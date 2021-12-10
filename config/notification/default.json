@@ -109,7 +109,12 @@
       "comment": "Handles WebHookSubscription2021 subscriptions",
       "@id": "urn:solid-server:default:WebHookSubscription2021Handler",
       "@type": "WebHookSubscription2021Handler",
-      "args_httpClient": { "@id": "urn:solid-server:default:BaseHttpClient" },
+      "args_httpClient": {
+        "@id": "urn:solid-server:default:WebHook2021HttpClient",
+        "@type": "WebHook2021HttpClient",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" }
+      },
       "args_webhookUnsubscribePath": "webhook",
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
     },

@@ -6,7 +6,7 @@ export interface PodJwksHttpHandlerArgs {
   jwksKeyGenerator: JwksKeyGenerator;
 }
 
-const JWKS_KEY = 'POD_JWKS';
+export const POD_JWKS_KEY = 'POD_JWKS';
 
 export class PodJwksHttpHandler extends HttpHandler {
   private readonly jwksKeyGenerator: JwksKeyGenerator;
@@ -17,7 +17,7 @@ export class PodJwksHttpHandler extends HttpHandler {
   }
 
   public async handle(input: HttpHandlerInput): Promise<void> {
-    const jwksPublic = await this.jwksKeyGenerator.getPublicJwks(JWKS_KEY);
+    const jwksPublic = await this.jwksKeyGenerator.getPublicJwks(POD_JWKS_KEY);
 
     input.response.setHeader('Content-Type', 'application/ld+json');
     input.response.write(JSON.stringify(jwksPublic));
