@@ -128,6 +128,8 @@ export * from './http/UnsecureWebSocketsProtocol';
 // Identity/Configuration
 export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
+export * from './identity/configuration/BasicJwksKeyGenerator';
+export * from './identity/configuration/JwksKeyGenerator';
 
 // Identity/Interaction/Email-Password/Handler
 export * from './identity/interaction/email-password/handler/InteractionHandler';
@@ -393,6 +395,7 @@ export * from './notification/NotificationWellKnownBuilder';
 // Notification/WebHook2021
 export * from './notification/webhook-subscription-2021/WebHookSubscription2021Handler';
 export * from './notification/webhook-subscription-2021/webhook-auth/WebHook2021AuthWellKnownBuilder';
+export * from './notification/webhook-subscription-2021/webhook-auth/PodJwksHttpHandler';
 
 // HTTP/Client
 export * from './http/client/HttpClient';

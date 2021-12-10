@@ -2,6 +2,16 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
   "@graph": [
     {
+      "@id": "urn:solid-server:default:NotificationHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:NotificationGatewayHandler" },
+        { "@id": "urn:solid-server:default:NotificationSubscriptionHandler" },
+        { "@id": "urn:solid-server:default:WebHookSubscription2021UnsubscribeHandler" },
+        { "@id": "urn:solid-server:default:PodJwksHttpHandler" }
+      ]
+    },
+    {
       "comment": "The well known builder for all things pertaining to notifications",
       "@id": "urn:solid-server:default:NotificationWellKnownBuilder",
       "@type": "AggregateWellKnownBuilder",
@@ -20,7 +30,22 @@
     {
       "comment": "The WellKnown Builder for base notifications",
       "@id": "urn:solid-server:default:WebHook2021AuthWellKnownBuilder",
-      "@type": "WebHook2021AuthWellKnownBuilder"
+      "@type": "WebHook2021AuthWellKnownBuilder",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_jwksEndpointPath": ".well-known/podjwks"
+    },
+    {
+      "comment": "Http Handler for the Pod Jwks route",
+      "@id": "urn:solid-server:default:PodJwksHttpHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "GET" ],
+      "args_allowedPathNames": [ "^/.well-known/podjwks"],
+      "args_handler": {
+        "@type": "PodJwksHttpHandler",
+        "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" }
+      }
     },
     {
       "comment": "Handles the notification gateway endpoint.",

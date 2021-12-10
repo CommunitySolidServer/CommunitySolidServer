@@ -14,6 +14,7 @@
       "args_storage": { "@id": "urn:solid-server:default:IdpKeyStorage" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" },
       "config": {
         "claims": {
           "openid": [ "webid", "client_id" ]
@@ -46,6 +47,12 @@
           "RefreshToken": 86400
         }
       }
+    },
+    {
+      "comment": "Generates JWKS",
+      "@id": "urn:solid-server:default:JwksKeyGenerator",
+      "@type": "BasicJwksKeyGenerator",
+      "args_storage": { "@id": "urn:solid-server:default:IdpKeyStorage" }
     }
   ]
 }
