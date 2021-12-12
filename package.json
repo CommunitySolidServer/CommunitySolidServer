@@ -113,7 +113,7 @@
     "lodash.orderby": "^4.6.0",
     "marked": "^3.0.0",
     "mime-types": "^2.1.32",
-    "n3": "^1.10.0",
+    "n3": "^1.12.2",
     "nodemailer": "^6.6.2",
     "oidc-provider": "^6.31.1",
     "pump": "^3.0.0",
