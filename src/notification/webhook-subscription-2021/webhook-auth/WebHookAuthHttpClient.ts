@@ -61,7 +61,7 @@ export class WebHookAuthHttpClient implements HttpClient {
                   },
                 };
                 const requestClient =
-                  parsedUrl.protocol === 'https' ? httpsRequest : httpRequest;
+                  parsedUrl.protocol === 'https:' ? httpsRequest : httpRequest;
 
                 const req = requestClient(
                   parsedUrl.toString(),
