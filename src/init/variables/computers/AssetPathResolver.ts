@@ -1,5 +1,4 @@
-import type yargs from 'yargs';
-import { resolveAssetPath } from '../../..';
+import { resolveAssetPath } from '../../../util/PathUtil';
 import { VarComputer } from '../VarComputer';
 
 /**
@@ -14,7 +13,7 @@ export class AssetPathResolver extends VarComputer {
     this.pathArgKey = pathArgKey;
   }
 
-  public async handle(args: yargs.Arguments): Promise<unknown> {
+  public async handle(args: Record<string, unknown>): Promise<unknown> {
     const path = args[this.pathArgKey];
     if (typeof path !== 'string') {
       throw new Error(`Invalid ${this.pathArgKey} argument`);

@@ -1,4 +1,3 @@
-import type yargs from 'yargs';
 import { VarComputer } from '../VarComputer';
 
 /**
@@ -12,7 +11,7 @@ export class ArgExtractor extends VarComputer {
     this.argKey = argKey;
   }
 
-  public async handle(args: yargs.Arguments): Promise<unknown> {
+  public async handle(args: Record<string, unknown>): Promise<unknown> {
     return args[this.argKey];
   }
 }

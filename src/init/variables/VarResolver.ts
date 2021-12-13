@@ -1,26 +1,28 @@
 /* eslint-disable tsdoc/syntax */
+import type { Arguments, Argv, InferredOptionTypes, Options } from 'yargs';
 import yargs from 'yargs';
-import { createErrorMessage, LOG_LEVELS } from '../..';
+import { LOG_LEVELS } from '../../logging/LogLevel';
+import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 import { modulePathPlaceholder } from '../../util/PathUtil';
 import type { VarComputer } from './VarComputer';
 
 const defaultConfig = `${modulePathPlaceholder}config/default.json`;
+/**
+ * CLI options needed for performing meta-process of app initialization.
+ * These options doesn't contribute to components-js vars normally.
+ */
+const baseArgs = {
+  config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
+  loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: LOG_LEVELS },
+  mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
+} as const;
 
-export type YargsArgOptions = Record<string, yargs.Options>;
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function setupBaseArgs(yargv: yargs.Argv) {
-  return yargv.options({
-    /**
-       * CLI options needed for performing meta-process of app initialization.
-       * These options doesn't contribute to components-js vars normally.
-       */
-    config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
-    loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: LOG_LEVELS },
-    mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
-  });
+export function setupBaseArgs(yArgv: Argv): Argv<InferredOptionTypes<typeof baseArgs>> {
+  return yArgv.options(baseArgs);
 }
+
+export type YargsArgOptions = Record<string, Options>;
 
 export interface CliOptions {
   // Usage string to be given at cli
@@ -49,25 +51,23 @@ export class VarResolver extends AsyncHandler<string[], VariableValues> {
   /**
      * @param parameters - record of option to it's yargs opt config. @range {json}
      * @param options - options to configure yargv. @range {json}
-     * @param varComputers  - record of componentsjs var-iri to VarComputer.
+     * @param varComputers - record of componentsjs var-iri to VarComputer.
      */
-  public constructor(
-    parameters: YargsArgOptions, options: CliOptions, varComputers: Record<string, VarComputer>,
-  ) {
+  public constructor(parameters: YargsArgOptions, options: CliOptions, varComputers: Record<string, VarComputer>) {
     super();
     this.yargsArgOptions = parameters;
     this.yargvOptions = options;
     this.varComputers = varComputers;
   }
 
-  private async parseArgs(argv: readonly string[]): Promise<yargs.Arguments> {
+  private async parseArgs(argv: readonly string[]): Promise<Arguments> {
     let yArgv = this.createYArgv(argv);
     yArgv = this.validateArguments(yArgv);
 
     return yArgv.parse();
   }
 
-  private createYArgv(argv: readonly string[]): yargs.Argv {
+  private createYArgv(argv: readonly string[]): Argv {
     let yArgv = yargs(argv.slice(2));
     if (this.yargvOptions.usage !== undefined) {
       yArgv = yArgv.usage(this.yargvOptions.usage);
@@ -81,7 +81,7 @@ export class VarResolver extends AsyncHandler<string[], VariableValues> {
     return setupBaseArgs(yArgv.options(this.yargsArgOptions));
   }
 
-  private validateArguments(yArgv: yargs.Argv): yargs.Argv {
+  private validateArguments(yArgv: Argv): Argv {
     return yArgv.check((args): boolean => {
       if (args._.length > 0) {
         throw new Error(`Unsupported positional arguments: "${args._.join('", "')}"`);
@@ -96,7 +96,7 @@ export class VarResolver extends AsyncHandler<string[], VariableValues> {
     });
   }
 
-  private async resolveVariables(args: yargs.Arguments): Promise<Record<string, any>> {
+  private async resolveVariables(args: Record<string, unknown>): Promise<Record<string, any>> {
     const vars: Record<string, any> = {};
     for (const [ name, computer ] of Object.entries(this.varComputers)) {
       try {

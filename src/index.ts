@@ -180,6 +180,15 @@ export * from './init/final/ParallelFinalizer';
 // Init/Setup
 export * from './init/setup/SetupHttpHandler';
 
+// Init/Variables/Computers
+export * from './init/variables/computers/ArgExtractor';
+export * from './init/variables/computers/AssetPathResolver';
+export * from './init/variables/computers/BaseUrlComputer';
+
+// Init/Variables
+export * from './init/variables/VarResolver';
+export * from './init/variables/VarComputer';
+
 // Init
 export * from './init/App';
 export * from './init/AppRunner';
@@ -188,13 +197,6 @@ export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ServerInitializer';
-
-// Init/Vars
-export * from './init/variables/VarResolver';
-export * from './init/variables/VarComputer';
-export * from './init/variables/computers/ArgExtractor';
-export * from './init/variables/computers/AssetPathResolver';
-export * from './init/variables/computers/BaseUrlResolver';
 
 // Logging
 export * from './logging/LazyLogger';
