@@ -1,6 +1,7 @@
 import type { RequestOptions, IncomingMessage } from 'http';
-import { request } from 'http';
-import type { URL } from 'url';
+import { request as httpRequest } from 'http';
+import { request as httpsRequest } from 'https';
+import { URL } from 'url';
 // eslint-disable-next-line import/no-unresolved
 import { parseJwk } from 'jose/jwk/parse';
 // eslint-disable-next-line import/no-unresolved
@@ -31,6 +32,7 @@ export class WebHookAuthHttpClient implements HttpClient {
     data: any,
     callback?: ((res: IncomingMessage) => void) | undefined,
   ): void {
+    const parsedUrl = url instanceof URL ? url : new URL(url);
     this.jwksKeyGenerator
       .getPrivateJwks(POD_JWKS_KEY)
       .then((jwks: { keys: any[] }): void => {
@@ -41,7 +43,7 @@ export class WebHookAuthHttpClient implements HttpClient {
         parseJwk(jwk, 'RS256')
           .then((jwkKeyLike): void => {
             const jwtRaw = {
-              htu: url,
+              htu: parsedUrl.toString(),
               htm: 'POST',
             };
             new SignJWT(jwtRaw)
@@ -58,8 +60,14 @@ export class WebHookAuthHttpClient implements HttpClient {
                     authorization: signedJwt,
                   },
                 };
+                const requestClient =
+                  parsedUrl.protocol === 'https' ? httpsRequest : httpRequest;
 
-                const req = request(url, augmentedOptions, callback);
+                const req = requestClient(
+                  parsedUrl.toString(),
+                  augmentedOptions,
+                  callback,
+                );
                 req.write(data);
                 req.end();
               })
