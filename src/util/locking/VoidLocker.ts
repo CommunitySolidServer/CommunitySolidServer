@@ -6,6 +6,10 @@ import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
  *
  * Do not use this locker in combination with storages that doesn't handle concurrent read/writes gracefully
  */
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+function noop(): void {}
+
 export class VoidLocker implements ExpiringReadWriteLocker {
   protected readonly logger = getLoggerFor(this);
 
@@ -17,17 +21,13 @@ export class VoidLocker implements ExpiringReadWriteLocker {
     identifier: ResourceIdentifier,
     whileLocked: (maintainLock: () => void) => T | Promise<T>,
   ): Promise<T> {
-    return whileLocked((): void => {
-      // eslint:disable-next-line:no-empty
-    });
+    return whileLocked(noop);
   }
 
   public async withWriteLock<T>(
     identifier: ResourceIdentifier,
     whileLocked: (maintainLock: () => void) => T | Promise<T>,
   ): Promise<T> {
-    return whileLocked((): void => {
-      // eslint:disable-next-line:no-empty
-    });
+    return whileLocked(noop);
   }
 }
