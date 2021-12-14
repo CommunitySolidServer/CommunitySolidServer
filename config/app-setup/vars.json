@@ -5,93 +5,81 @@
     "@graph": [
         {
             "comment": "VarResolver resolves variables to be used in app instantiation, from cli args",
-            "@id": "urn:solid-server-app-setup:default:VarResolver",
-            "@type": "VarResolver",
-            "parameters": {
-                "baseUrl": {
-                    "alias": "b",
-                    "requiresArg": true,
-                    "type": "string"
-                },
-                "port": {
-                    "alias": "p",
-                    "requiresArg": true,
-                    "type": "number",
-                    "default": 3000
-                },
-                "rootFilePath": {
-                    "alias": "f",
-                    "requiresArg": true,
-                    "type": "string",
-                    "default": "./"
-                },
-                "showStackTrace": {
-                    "alias": "t",
-                    "type": "boolean",
-                    "default": false
-                },
-                "sparqlEndpoint": {
-                    "alias": "s",
-                    "requiresArg": true,
-                    "type": "string"
-                },
-                "podConfigJson": {
-                    "requiresArg": true,
-                    "type": "string",
-                    "default": "./pod-config.json"
-                }
-            },
-            "options": {
-                "usage": "node ./bin/server.js [args]",
-                "strictMode": true
-            },
-            "varComputers": [
+            "@id": "urn:solid-server-app-setup:default:CliResolver",
+            "@type": "RecordObject",
+            "record": [
                 {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:baseUrl",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "BaseUrlComputer"
+                    "RecordObject:_record_key": "extractor",
+                    "RecordObject:_record_value": {
+                        "@type": "YargsCliExtractor",
+                        "parameters": {
+                            "loggingLevel": { "alias": "l", "requiresArg": true, "type": "string", "default": "info" },
+                            "baseUrl": { "alias": "b", "requiresArg": true, "type": "string" },
+                            "port": { "alias": "p", "requiresArg": true, "type": "number", "default": 3000 },
+                            "rootFilePath": { "alias": "f", "requiresArg": true, "type": "string", "default": "./" },
+                            "showStackTrace": { "alias": "t", "type": "boolean", "default": false },
+                            "sparqlEndpoint": { "alias": "s", "requiresArg": true, "type": "string" },
+                            "podConfigJson": { "requiresArg": true, "type": "string", "default": "./pod-config.json" }
+                        },
+                        "options": {
+                            "usage": "node ./bin/server.js [args]"
+                        }
                     }
                 },
                 {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:loggingLevel",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "ArgExtractor",
-                        "argKey": "loggingLevel"
-                    }
-                },
-                {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:port",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "ArgExtractor",
-                        "argKey": "port"
-                    }
-                },
-                {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:rootFilePath",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "AssetPathResolver",
-                        "pathArgKey": "rootFilePath"
-                    }
-                },
-                {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:sparqlEndpoint",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "ArgExtractor",
-                        "argKey": "sparqlEndpoint"
-                    }
-                },
-                {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:showStackTrace",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "ArgExtractor",
-                        "argKey": "showStackTrace"
-                    }
-                },
-                {
-                    "VarResolver:_varComputers_key": "urn:solid-server:default:variable:AssetPathResolver",
-                    "VarResolver:_varComputers_value": {
-                        "@type": "AssetPathResolver",
-                        "pathArgKey": "podConfigJson"
+                    "RecordObject:_record_key": "resolver",
+                    "RecordObject:_record_value": {
+                        "@type": "ComputerResolver",
+                        "computers": [
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:baseUrl",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "BaseUrlComputer"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:loggingLevel",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "ArgExtractor",
+                                    "argKey": "loggingLevel"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:port",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "ArgExtractor",
+                                    "argKey": "port"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:rootFilePath",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "AssetPathResolver",
+                                    "pathArgKey": "rootFilePath"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:sparqlEndpoint",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "ArgExtractor",
+                                    "argKey": "sparqlEndpoint"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:showStackTrace",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "ArgExtractor",
+                                    "argKey": "showStackTrace"
+                                }
+                            },
+                            {
+                                "ComputerResolver:_computers_key": "urn:solid-server:default:variable:AssetPathResolver",
+                                "ComputerResolver:_computers_value": {
+                                    "@type": "AssetPathResolver",
+                                    "pathArgKey": "podConfigJson"
+                                }
+                            }
+                        ]
                     }
                 }
             ]

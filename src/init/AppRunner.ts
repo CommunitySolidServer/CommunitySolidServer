@@ -1,17 +1,33 @@
 /* eslint-disable unicorn/no-process-exit */
 import type { ReadStream, WriteStream } from 'tty';
-import type { IComponentsManagerBuilderOptions, LogLevel } from 'componentsjs';
+import type { IComponentsManagerBuilderOptions } from 'componentsjs';
 import { ComponentsManager } from 'componentsjs';
 import yargs from 'yargs';
+import type { LogLevel } from '../logging/LogLevel';
+import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
-import { resolveAssetPath } from '../util/PathUtil';
+import { modulePathPlaceholder, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
-import type { VarResolver, VariableValues } from './variables/VarResolver';
-import { setupBaseArgs } from './variables/VarResolver';
+import type { CliExtractor } from './cli/CliExtractor';
+import type { VariableResolver } from './variables/VariableResolver';
 
-const DEFAULT_VAR_RESOLVER = 'urn:solid-server-app-setup:default:VarResolver';
+const defaultConfig = `${modulePathPlaceholder}config/default.json`;
+
+const DEFAULT_CLI_RESOLVER = 'urn:solid-server-app-setup:default:CliResolver';
 const DEFAULT_APP = 'urn:solid-server:default:App';
+
+const baseArgs = {
+  config: { type: 'string', alias: 'c', default: defaultConfig, requiresArg: true },
+  loggingLevel: { type: 'string', alias: 'l', default: 'info', requiresArg: true, choices: LOG_LEVELS },
+  mainModulePath: { type: 'string', alias: 'm', requiresArg: true },
+} as const;
+
+// The components needed by the AppRunner to start up the server
+interface CliResolver {
+  extractor?: CliExtractor;
+  resolver: VariableResolver;
+}
 
 export class AppRunner {
   private readonly logger = getLoggerFor(this);
@@ -21,16 +37,17 @@ export class AppRunner {
    * This method can be used to start the server from within another JavaScript application.
    * @param loaderProperties - Components.js loader properties.
    * @param configFile - Path to the server config file.
-   * @param variables - Variables to pass into the config file.
+   * @param parameters - Parameters to pass into the VariableResolver.
    */
   public async run(
     loaderProperties: IComponentsManagerBuilderOptions<App>,
     configFile: string,
-    variables: VariableValues,
+    parameters: Record<string, unknown>,
   ): Promise<void> {
     const componentsManager = await this.createComponentsManager(loaderProperties, configFile);
-    const defaultVariables = await this.resolveVariables(componentsManager, []);
-    await this.startApp(componentsManager, { ...defaultVariables, ...variables });
+    const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
+    const variables = await resolver.resolver.handleSafe(parameters);
+    await this.startApp(componentsManager, variables);
   }
 
   /**
@@ -48,10 +65,12 @@ export class AppRunner {
     stdout?: WriteStream;
     stderr?: WriteStream;
   } = {}): void {
-    // Parse the command-line arguments
+    // Minimal parsing of the CLI parameters, so we can create a CliResolver
     // eslint-disable-next-line no-sync
-    const params = setupBaseArgs(yargs(argv.slice(2))
-      .usage('node ./bin/server.js [args]')).parseSync();
+    const params = yargs(argv.slice(2))
+      .usage('node ./bin/server.js [args]')
+      .options(baseArgs)
+      .parseSync();
 
     // Gather settings for instantiating VarResolver
     const loaderProperties = {
@@ -82,15 +101,20 @@ export class AppRunner {
     process.exit(1);
   }
 
-  private async resolveVariables(componentsManager: ComponentsManager<VarResolver>, argv: string[]):
-  Promise<VariableValues> {
+  private async resolveVariables(componentsManager: ComponentsManager<CliResolver>, argv: string[]):
+  Promise<Record<string, unknown>> {
     // Create a resolver, that resolves componentsjs variables from cli-params
-    const resolver = await componentsManager.instantiate(DEFAULT_VAR_RESOLVER, {});
+    const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
+    // Extract values from CLI parameters
+    if (!resolver.extractor) {
+      throw new Error('No CliExtractor is defined.');
+    }
+    const cliValues = await resolver.extractor.handleSafe(argv);
     //  Using varResolver resolve variables
-    return resolver.handleSafe(argv);
+    return await resolver.resolver.handleSafe(cliValues);
   }
 
-  private async startApp(componentsManager: ComponentsManager<App>, variables: VariableValues): Promise<void> {
+  private async startApp(componentsManager: ComponentsManager<App>, variables: Record<string, unknown>): Promise<void> {
     // Create app
     const app = await componentsManager.instantiate(DEFAULT_APP, { variables });
     // Execute app

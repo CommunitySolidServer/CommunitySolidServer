@@ -180,14 +180,19 @@ export * from './init/final/ParallelFinalizer';
 // Init/Setup
 export * from './init/setup/SetupHttpHandler';
 
+// Init/Cli
+export * from './init/cli/CliExtractor';
+export * from './init/cli/YargsCliExtractor';
+
 // Init/Variables/Computers
 export * from './init/variables/computers/ArgExtractor';
 export * from './init/variables/computers/AssetPathResolver';
 export * from './init/variables/computers/BaseUrlComputer';
+export * from './init/variables/computers/ValueComputer';
 
 // Init/Variables
-export * from './init/variables/VarResolver';
-export * from './init/variables/VarComputer';
+export * from './init/variables/ComputerResolver';
+export * from './init/variables/VariableResolver';
 
 // Init
 export * from './init/App';

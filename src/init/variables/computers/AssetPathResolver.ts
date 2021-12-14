@@ -1,11 +1,11 @@
 import { resolveAssetPath } from '../../../util/PathUtil';
-import { VarComputer } from '../VarComputer';
+import { ValueComputer } from './ValueComputer';
 
 /**
  * This `VarComputer` resolves absolute path of asset, from path specified in specified argument.
  * It follows conventions of `resolveAssetPath`  function for path resolution.
  */
-export class AssetPathResolver extends VarComputer {
+export class AssetPathResolver extends ValueComputer {
   private readonly pathArgKey: string;
 
   public constructor(pathArgKey: string) {
