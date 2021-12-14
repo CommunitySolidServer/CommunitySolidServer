@@ -1,6 +1,7 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ExpiringReadWriteLocker } from './ExpiringReadWriteLocker';
+
 /**
  * This locker will execute the whileLocked function without any locking mechanism
  *
