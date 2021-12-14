@@ -13,13 +13,13 @@
                     "RecordObject:_record_value": {
                         "@type": "YargsCliExtractor",
                         "parameters": {
-                            "loggingLevel": { "alias": "l", "requiresArg": true, "type": "string", "default": "info" },
+                            "loggingLevel": { "alias": "l", "requiresArg": true, "type": "string" },
                             "baseUrl": { "alias": "b", "requiresArg": true, "type": "string" },
-                            "port": { "alias": "p", "requiresArg": true, "type": "number", "default": 3000 },
-                            "rootFilePath": { "alias": "f", "requiresArg": true, "type": "string", "default": "./" },
-                            "showStackTrace": { "alias": "t", "type": "boolean", "default": false },
+                            "port": { "alias": "p", "requiresArg": true, "type": "number" },
+                            "rootFilePath": { "alias": "f", "requiresArg": true, "type": "string" },
+                            "showStackTrace": { "alias": "t", "type": "boolean" },
                             "sparqlEndpoint": { "alias": "s", "requiresArg": true, "type": "string" },
-                            "podConfigJson": { "requiresArg": true, "type": "string", "default": "./pod-config.json" }
+                            "podConfigJson": { "requiresArg": true, "type": "string" }
                         },
                         "options": {
                             "usage": "node ./bin/server.js [args]"
@@ -41,42 +41,47 @@
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:loggingLevel",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "ArgExtractor",
-                                    "argKey": "loggingLevel"
+                                    "key": "loggingLevel",
+                                    "defaultValue": "info"
                                 }
                             },
                             {
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:port",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "ArgExtractor",
-                                    "argKey": "port"
+                                    "key": "port",
+                                    "defaultValue": 3000
                                 }
                             },
                             {
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:rootFilePath",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "AssetPathResolver",
-                                    "pathArgKey": "rootFilePath"
+                                    "key": "rootFilePath",
+                                    "defaultPath": "./"
                                 }
                             },
                             {
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:sparqlEndpoint",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "ArgExtractor",
-                                    "argKey": "sparqlEndpoint"
+                                    "key": "sparqlEndpoint"
                                 }
                             },
                             {
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:showStackTrace",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "ArgExtractor",
-                                    "argKey": "showStackTrace"
+                                    "key": "showStackTrace",
+                                    "defaultValue": false
                                 }
                             },
                             {
                                 "ComputerResolver:_computers_key": "urn:solid-server:default:variable:AssetPathResolver",
                                 "ComputerResolver:_computers_value": {
                                     "@type": "AssetPathResolver",
-                                    "pathArgKey": "podConfigJson"
+                                    "key": "podConfigJson",
+                                    "defaultPath": "./pod-config.json"
                                 }
                             }
                         ]

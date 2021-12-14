@@ -6,17 +6,19 @@ import { ValueComputer } from './ValueComputer';
  * It follows conventions of `resolveAssetPath`  function for path resolution.
  */
 export class AssetPathResolver extends ValueComputer {
-  private readonly pathArgKey: string;
+  private readonly key: string;
+  private readonly defaultPath?: string;
 
-  public constructor(pathArgKey: string) {
+  public constructor(key: string, defaultPath?: string) {
     super();
-    this.pathArgKey = pathArgKey;
+    this.key = key;
+    this.defaultPath = defaultPath;
   }
 
   public async handle(args: Record<string, unknown>): Promise<unknown> {
-    const path = args[this.pathArgKey];
+    const path = args[this.key] ?? this.defaultPath;
     if (typeof path !== 'string') {
-      throw new Error(`Invalid ${this.pathArgKey} argument`);
+      throw new Error(`Invalid ${this.key} argument`);
     }
     return resolveAssetPath(path);
   }
