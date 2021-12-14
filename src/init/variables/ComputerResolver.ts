@@ -17,7 +17,7 @@ export class ComputerResolver extends VariableResolver {
     const vars: Record<string, any> = {};
     for (const [ name, computer ] of Object.entries(this.computers)) {
       try {
-        vars[name] = await computer.handle(input);
+        vars[name] = await computer.handleSafe(input);
       } catch (err: unknown) {
         throw new Error(`Error in computing value for variable ${name}: ${createErrorMessage(err)}`);
       }
