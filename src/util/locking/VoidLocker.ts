@@ -10,7 +10,7 @@ export class VoidLocker implements ExpiringReadWriteLocker {
   protected readonly logger = getLoggerFor(this);
 
   public constructor() {
-    this.logger.warn('Warning: this locker will execute the whileLocked function without any locking mechanism');
+    this.logger.warn('Locking mechanism disabled; data integrity during parallel requests not guaranteed.');
   }
 
   public async withReadLock<T>(
