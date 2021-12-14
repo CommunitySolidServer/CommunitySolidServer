@@ -4,6 +4,7 @@
     "files-scs:config/app/main/default.json",
     "files-scs:config/app/init/default.json",
     "files-scs:config/app/setup/disabled.json",
+    "files-scs:config/app/variables/default.json",
     "files-scs:config/http/handler/default.json",
     "files-scs:config/http/middleware/websockets.json",
     "files-scs:config/http/server-factory/websockets.json",

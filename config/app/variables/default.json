@@ -1,0 +1,28 @@
+{
+    "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+    "import": [
+        "files-scs:config/app/variables/cli/cli.json",
+        "files-scs:config/app/variables/resolver/resolver.json"
+    ],
+    "@graph": [
+        {
+            "comment": "Combines a CliExtractor and VariableResolver to be used by the AppRunner.",
+            "@id": "urn:solid-server-app-setup:default:CliResolver",
+            "@type": "RecordObject",
+            "record": [
+                {
+                    "RecordObject:_record_key": "extractor",
+                    "RecordObject:_record_value": {
+                        "@id": "urn:solid-server-app-setup:default:CliExtractor"
+                    }
+                },
+                {
+                    "RecordObject:_record_key": "resolver",
+                    "RecordObject:_record_value": {
+                        "@id": "urn:solid-server-app-setup:default:VariableResolver"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -20,3 +20,7 @@ Handles the setup page the first time the server is started.
 * *optional*: Setup is available at `/setup` but the server can already be used.
               Everyone can access the setup page so make sure to complete that as soon as possible.
 * *required*: All requests will be redirected to the setup page until setup is completed.
+
+## Variables
+Handles parsing CLI parameters and assigning values to Components.js variables.
+* *default*: Assigns CLI parameters for all variables defined in `/config/util/variables/default.json`

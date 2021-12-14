@@ -7,12 +7,15 @@
 - Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
 - An official docker image is now built on each version tag and published at https://hub.docker.com/r/solidproject/community-server.
 - Added support for N3 Patch.
+- It is now possible to modify how CLI variables are parsed.
 
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
 
 The following changes pertain to the imports in the default configs:
-- ...
+- There is a new configuration option that needs to be imported:
+  - `/app/variables/default/json` contains everything related to parsing CLI arguments 
+    and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.
 - Conversion has been simplified so most converters are part of the conversion chain:
