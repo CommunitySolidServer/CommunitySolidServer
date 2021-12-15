@@ -38,6 +38,7 @@ to the ChainedConverter list.
 Which locking mechanism to use to for example prevent 2 write simultaneous write requests.
 * *memory*: Uses an in-memory locking mechanism.
 * *redis*: Uses a Redis store for locking.
+* *debug-void*: No locking mechanism, does not prevent simultaneous read/writes.
 
 ## Variables
 Various variables used by other options.
