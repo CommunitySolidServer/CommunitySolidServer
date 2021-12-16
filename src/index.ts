@@ -363,6 +363,7 @@ export * from './util/locking/RedisResourceLocker';
 export * from './util/locking/ResourceLocker';
 export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
+export * from './util/locking/VoidLocker';
 
 // Util/Templates
 export * from './util/templates/ChainedTemplateEngine';
