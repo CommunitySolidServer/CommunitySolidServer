@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-// eslint-disable-next-line import/default
 import redis from 'redis';
 import Redlock from 'redlock';
 import type { Lock } from 'redlock';

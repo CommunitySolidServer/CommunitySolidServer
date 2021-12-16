@@ -21,7 +21,7 @@ describe('A ChainedTemplateEngine', (): void => {
   });
 
   it('chains the engines.', async(): Promise<void> => {
-    await expect(engine.render(contents, template)).resolves.toEqual('body2');
+    await expect(engine.render(contents, template)).resolves.toBe('body2');
     expect(engines[0].render).toHaveBeenCalledTimes(1);
     expect(engines[0].render).toHaveBeenLastCalledWith(contents, template);
     expect(engines[1].render).toHaveBeenCalledTimes(1);
@@ -30,7 +30,7 @@ describe('A ChainedTemplateEngine', (): void => {
 
   it('can use a different field to pass along the body.', async(): Promise<void> => {
     engine = new ChainedTemplateEngine(engines, 'different');
-    await expect(engine.render(contents, template)).resolves.toEqual('body2');
+    await expect(engine.render(contents, template)).resolves.toBe('body2');
     expect(engines[0].render).toHaveBeenCalledTimes(1);
     expect(engines[0].render).toHaveBeenLastCalledWith(contents, template);
     expect(engines[1].render).toHaveBeenCalledTimes(1);

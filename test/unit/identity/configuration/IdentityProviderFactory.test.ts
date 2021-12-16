@@ -95,7 +95,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ kty: 'RSA' }) ]});
     expect(config.routes).toEqual(routes);
 
-    expect((config.interactions?.url as any)()).toEqual('/idp/');
+    expect((config.interactions?.url as any)()).toBe('/idp/');
     expect((config.audiences as any)(null, null, {}, 'access_token')).toBe('solid');
     expect((config.audiences as any)(null, null, { clientId: 'clientId' }, 'client_credentials')).toBe('clientId');
 

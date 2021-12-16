@@ -25,7 +25,6 @@ describe('A SingleThreadedResourceLocker', (): void => {
     await expect(locker.release(identifier)).rejects.toThrow(InternalServerError);
   });
 
-  /* eslint-disable jest/valid-expect-in-promise */
   it('blocks lock acquisition until they are released.', async(): Promise<void> => {
     const results: number[] = [];
     const lock1 = locker.acquire(identifier);
