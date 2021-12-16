@@ -8,7 +8,7 @@ export interface Subscription {
 
 export interface SubscriptionHandler {
   getType: () => string;
-  getResponseData: () => Guarded<Readable> | undefined;
+  getResponseData: (subscription: Subscription) => Guarded<Readable> | undefined;
   subscribe: (request: any) => Subscription;
   onResourcesChanged: (resources: ModifiedResource[], subscription: Subscription) => Promise<void>;
 }

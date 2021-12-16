@@ -4,7 +4,7 @@
     "files-scs:config/app/main/default.json",
     "files-scs:config/app/init/initialize-prefilled-root.json",
     "files-scs:config/app/setup/optional.json",
-    "files-scs:config/http/handler/default.json",
+    "files-scs:config/http/handler/notification.json",
     "files-scs:config/http/middleware/websockets.json",
     "files-scs:config/http/server-factory/websockets.json",
     "files-scs:config/http/static/default.json",
@@ -21,7 +21,7 @@
     "files-scs:config/ldp/metadata-writer/default.json",
     "files-scs:config/ldp/modes/default.json",
     "files-scs:config/notification/default.json",
-    "files-scs:config/storage/backend/memory.json",
+    "files-scs:config/storage/backend/file.json",
     "files-scs:config/storage/key-value/resource-store.json",
     "files-scs:config/storage/middleware/default.json",
     "files-scs:config/util/auxiliary/acl.json",
@@ -34,7 +34,7 @@
   ],
   "@graph": [
     {
-      "comment": "A single-pod server that stores its resources in memory."
+      "comment": "A single-pod server that uses notifications."
     }
   ]
 }
