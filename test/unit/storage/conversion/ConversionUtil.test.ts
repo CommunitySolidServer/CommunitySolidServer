@@ -109,16 +109,16 @@ describe('ConversionUtil', (): void => {
   describe('#matchesMediaPreferences', (): void => {
     it('returns false if there are no matches.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(matchesMediaPreferences('c/x', preferences)).toEqual(false);
+      expect(matchesMediaPreferences('c/x', preferences)).toBe(false);
     });
 
     it('returns true if there are matches.', async(): Promise<void> => {
       const preferences: ValuePreferences = { 'a/x': 1, 'b/x': 0.5, 'c/x': 0 };
-      expect(matchesMediaPreferences('b/x', preferences)).toEqual(true);
+      expect(matchesMediaPreferences('b/x', preferences)).toBe(true);
     });
 
     it('matches anything if there are no preferences.', async(): Promise<void> => {
-      expect(matchesMediaPreferences('a/a')).toEqual(true);
+      expect(matchesMediaPreferences('a/a')).toBe(true);
     });
 
     it('does not match internal types if not in the preferences.', async(): Promise<void> => {

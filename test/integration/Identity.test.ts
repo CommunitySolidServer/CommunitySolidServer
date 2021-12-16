@@ -374,7 +374,7 @@ describe('A Solid server with IDP', (): void => {
 
       expect(res.status).toBe(200);
       // https://solid.github.io/authentication-panel/solid-oidc/#discovery
-      expect(jsonBody.solid_oidc_supported).toEqual('https://solidproject.org/TR/solid-oidc');
+      expect(jsonBody.solid_oidc_supported).toBe('https://solidproject.org/TR/solid-oidc');
     });
 
     it('should return correct error output.', async(): Promise<void> => {

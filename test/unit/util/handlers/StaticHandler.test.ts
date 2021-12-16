@@ -8,7 +8,7 @@ describe('A StaticHandler', (): void => {
 
   it('returns the stored value.', async(): Promise<void> => {
     const handler = new StaticHandler('apple');
-    await expect(handler.handle()).resolves.toEqual('apple');
+    await expect(handler.handle()).resolves.toBe('apple');
   });
 
   it('returns undefined if there is no stored value.', async(): Promise<void> => {

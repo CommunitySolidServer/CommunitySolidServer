@@ -57,7 +57,7 @@ describe('A WaterfallHandler', (): void => {
     it('handles data if a handler supports it.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerTrue ]);
 
-      await expect(handler.handle('test')).resolves.toEqual('test');
+      await expect(handler.handle('test')).resolves.toBe('test');
       expect(canHandleFn).toHaveBeenCalledTimes(1);
       expect(handleFn).toHaveBeenCalledTimes(1);
     });
@@ -71,7 +71,7 @@ describe('A WaterfallHandler', (): void => {
     it('only calls the canHandle function once of its handlers when handleSafe is called.', async(): Promise<void> => {
       const handler = new WaterfallHandler([ handlerFalse, handlerTrue ]);
 
-      await expect(handler.handleSafe('test')).resolves.toEqual('test');
+      await expect(handler.handleSafe('test')).resolves.toBe('test');
       expect(canHandleFn).toHaveBeenCalledTimes(1);
       expect(handleFn).toHaveBeenCalledTimes(1);
     });
