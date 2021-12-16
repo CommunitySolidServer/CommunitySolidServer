@@ -54,6 +54,47 @@ describe('AppRunner', (): void => {
     jest.clearAllMocks();
   });
 
+  describe('createApp', (): void => {
+    it('creates an App with the provided settings.', async(): Promise<void> => {
+      const parameters = {
+        port: 3000,
+        loggingLevel: 'info',
+        rootFilePath: '/var/cwd/',
+        showStackTrace: false,
+        podConfigJson: '/var/cwd/pod-config.json',
+      };
+      const createdApp = await new AppRunner().createApp(
+        {
+          mainModulePath: joinFilePath(__dirname, '../../../'),
+          dumpErrorState: true,
+          logLevel: 'info',
+        },
+        joinFilePath(__dirname, '../../../config/default.json'),
+        parameters,
+      );
+      expect(createdApp).toBe(app);
+
+      expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
+      expect(ComponentsManager.build).toHaveBeenCalledWith({
+        dumpErrorState: true,
+        logLevel: 'info',
+        mainModulePath: joinFilePath(__dirname, '../../../'),
+      });
+      expect(manager.configRegistry.register).toHaveBeenCalledTimes(1);
+      expect(manager.configRegistry.register)
+        .toHaveBeenCalledWith(joinFilePath(__dirname, '/../../../config/default.json'));
+      expect(manager.instantiate).toHaveBeenCalledTimes(2);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(1, 'urn:solid-server-app-setup:default:CliResolver', {});
+      expect(extractor.handleSafe).toHaveBeenCalledTimes(0);
+      expect(resolver.handleSafe).toHaveBeenCalledTimes(1);
+      expect(resolver.handleSafe).toHaveBeenCalledWith(parameters);
+      expect(manager.instantiate).toHaveBeenNthCalledWith(2,
+        'urn:solid-server:default:App',
+        { variables: defaultVariables });
+      expect(app.start).toHaveBeenCalledTimes(0);
+    });
+  });
+
   describe('run', (): void => {
     it('starts the server with provided settings.', async(): Promise<void> => {
       const parameters = {

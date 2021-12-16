@@ -33,6 +33,23 @@ export class AppRunner {
   private readonly logger = getLoggerFor(this);
 
   /**
+   * Returns an App object, created with the given config, that can start and stop the Solid server.
+   * @param loaderProperties - Components.js loader properties.
+   * @param configFile - Path to the server config file.
+   * @param parameters - Parameters to pass into the VariableResolver.
+   */
+  public async createApp(
+    loaderProperties: IComponentsManagerBuilderOptions<App>,
+    configFile: string,
+    parameters: Record<string, unknown>,
+  ): Promise<App> {
+    const componentsManager = await this.createComponentsManager(loaderProperties, configFile);
+    const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
+    const variables = await resolver.resolver.handleSafe(parameters);
+    return componentsManager.instantiate(DEFAULT_APP, { variables });
+  }
+
+  /**
    * Starts the server with a given config.
    * This method can be used to start the server from within another JavaScript application.
    * @param loaderProperties - Components.js loader properties.
@@ -44,10 +61,8 @@ export class AppRunner {
     configFile: string,
     parameters: Record<string, unknown>,
   ): Promise<void> {
-    const componentsManager = await this.createComponentsManager(loaderProperties, configFile);
-    const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
-    const variables = await resolver.resolver.handleSafe(parameters);
-    await this.startApp(componentsManager, variables);
+    const app = await this.createApp(loaderProperties, configFile, parameters);
+    await app.start();
   }
 
   /**
