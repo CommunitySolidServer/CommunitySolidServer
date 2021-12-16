@@ -1,7 +1,8 @@
 import { ValueComputer } from './ValueComputer';
 
 /**
- * Simple VarComputer that just extracts an arg from parsed args.
+ * A simple {@link ValueComputer} that extracts a single value from the input map.
+ * Returns the default value if it was defined in case no value was found in the map.
  */
 export class ArgExtractor extends ValueComputer {
   private readonly key: string;

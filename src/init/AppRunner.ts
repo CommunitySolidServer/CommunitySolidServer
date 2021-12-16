@@ -87,7 +87,7 @@ export class AppRunner {
       .options(baseArgs)
       .parseSync();
 
-    // Gather settings for instantiating VarResolver
+    // Minimal settings that are required to create the initial ComponentsManager
     const loaderProperties = {
       mainModulePath: resolveAssetPath(params.mainModulePath),
       dumpErrorState: true,
@@ -116,19 +116,27 @@ export class AppRunner {
     process.exit(1);
   }
 
+  /**
+   * Handles the first Components.js instantiation,
+   * where CLI settings and variable mappings are created.
+   */
   private async resolveVariables(componentsManager: ComponentsManager<CliResolver>, argv: string[]):
   Promise<Record<string, unknown>> {
-    // Create a resolver, that resolves componentsjs variables from cli-params
+    // Create a resolver, which combines a CliExtractor and a VariableResolver
     const resolver = await componentsManager.instantiate(DEFAULT_CLI_RESOLVER, {});
     // Extract values from CLI parameters
     if (!resolver.extractor) {
       throw new Error('No CliExtractor is defined.');
     }
     const cliValues = await resolver.extractor.handleSafe(argv);
-    //  Using varResolver resolve variables
+    //  Convert CLI values into variable mappings
     return await resolver.resolver.handleSafe(cliValues);
   }
 
+  /**
+   * The second Components.js instantiation,
+   * where the App is created and started using the variable mappings.
+   */
   private async startApp(componentsManager: ComponentsManager<App>, variables: Record<string, unknown>): Promise<void> {
     // Create app
     const app = await componentsManager.instantiate(DEFAULT_APP, { variables });

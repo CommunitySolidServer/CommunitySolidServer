@@ -2,8 +2,8 @@ import { resolveAssetPath } from '../../../util/PathUtil';
 import { ValueComputer } from './ValueComputer';
 
 /**
- * This `VarComputer` resolves absolute path of asset, from path specified in specified argument.
- * It follows conventions of `resolveAssetPath`  function for path resolution.
+ * A {@link ValueComputer} that converts a path value to an absolute asset path by making use of `resolveAssetPath`.
+ * Returns the default path in case it is defined and no path was found in the map.
  */
 export class AssetPathResolver extends ValueComputer {
   private readonly key: string;

@@ -2,7 +2,8 @@ import { ensureTrailingSlash } from '../../../util/PathUtil';
 import { ValueComputer } from './ValueComputer';
 
 /**
- * A handler to compute base-url from args
+ * A {@link ValueComputer} that that generates the base URL based on the input `baseUrl` value,
+ * or by using the port if the first isn't provided.
  */
 export class BaseUrlComputer extends ValueComputer {
   private readonly defaultPort: number;

@@ -6,25 +6,31 @@ import { CliExtractor } from './CliExtractor';
 export type YargsArgOptions = Record<string, Options>;
 
 export interface CliOptions {
-  // Usage string to be given at cli
+  // Usage string printed in case of CLI errors
   usage?: string;
-  // StrictMode determines wether to allow undefined cli-args or not.
+  // Errors on unknown CLI parameters when enabled.
+  // @see https://yargs.js.org/docs/#api-reference-strictenabledtrue
   strictMode?: boolean;
-  // Wether to load arguments from env-vars or not.
+  // Loads CLI args from environment variables when enabled.
   // @see http://yargs.js.org/docs/#api-reference-envprefix
   loadFromEnv?: boolean;
-  // Prefix for env-vars.
-  // see yargv docs for behavior. http://yargs.js.org/docs/#api-reference-envprefix
+  // Prefix to be used when `loadFromEnv` is enabled.
+  // @see http://yargs.js.org/docs/#api-reference-envprefix
   envVarPrefix?: string;
 }
 
+/**
+ * Parses CLI args using the yargs library.
+ * Specific settings can be enabled through the provided options.
+ */
 export class YargsCliExtractor extends CliExtractor {
   protected readonly yargsArgOptions: YargsArgOptions;
   protected readonly yargvOptions: CliOptions;
 
   /**
-   * @param parameters - record of option to it's yargs opt config. @range {json}
-   * @param options - options to configure yargv. @range {json}
+   * @param parameters - Parameters that should be parsed from the CLI. @range {json}
+   *                     Format details can be found at https://yargs.js.org/docs/#api-reference-optionskey-opt
+   * @param options - Additional options to configure yargs. @range {json}
    */
   public constructor(parameters: YargsArgOptions = {}, options: CliOptions = {}) {
     super();
@@ -39,6 +45,9 @@ export class YargsCliExtractor extends CliExtractor {
     return yArgv.parse();
   }
 
+  /**
+   * Creates the yargs Argv object based on the input CLI argv.
+   */
   private createYArgv(argv: readonly string[]): Argv {
     let yArgv = yargs(argv.slice(2));
     if (this.yargvOptions.usage !== undefined) {
@@ -53,6 +62,9 @@ export class YargsCliExtractor extends CliExtractor {
     return yArgv.options(this.yargsArgOptions);
   }
 
+  /**
+   * Makes sure there are no positional arguments or multiple values for the same key.
+   */
   private validateArguments(yArgv: Argv): Argv {
     return yArgv.check((args): boolean => {
       if (args._.length > 0) {

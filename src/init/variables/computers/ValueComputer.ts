@@ -1,6 +1,6 @@
 import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
 
 /**
- A handler that determines the value of a specific variable from parsed cli arguments.
+ * A handler that computes a specific value from a given map of values.
  */
 export abstract class ValueComputer extends AsyncHandler<Record<string, unknown>, unknown> {}
