@@ -131,7 +131,7 @@ the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-a
 can help you find your way.
 
 If you want to help out with server development,
-have a look at the [📓 developer notes](guides/developer-notes.md) and
+have a look at the [📓 developer notes](https://github.com/solid/community-server/blob/main/guides/developer-notes.md) and
 [🛠️ good first issues](https://github.com/solid/community-server/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 
