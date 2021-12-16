@@ -1,13 +1,13 @@
 {
-    "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
-    "@graph": [
-      {
-        "comment": [
-          "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
-          "Allows multiple simultaneous read operations and write operations without locks."
-        ],
-        "@id": "urn:solid-server:default:ResourceLocker",
-        "@type": "VoidLocker"
-      }
-    ]
-  }
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": [
+        "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
+        "Allows multiple simultaneous read operations and write operations without locks."
+      ],
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "VoidLocker"
+    }
+  ]
+}
