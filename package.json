@@ -109,7 +109,7 @@
     "escape-string-regexp": "^4.0.0",
     "fetch-sparql-endpoint": "^2.0.1",
     "handlebars": "^4.7.7",
-    "jose": "^3.11.6",
+    "jose": "^4.0.0",
     "lodash.orderby": "^4.6.0",
     "marked": "^3.0.0",
     "mime-types": "^2.1.32",
