@@ -49,25 +49,57 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects Accept Headers with invalid types.', async(): Promise<void> => {
-      expect((): any => parseAccept('*')).toThrow('Invalid Accept range:');
-      expect((): any => parseAccept('"bad"/text')).toThrow('Invalid Accept range:');
-      expect((): any => parseAccept('*/\\bad')).toThrow('Invalid Accept range:');
-      expect((): any => parseAccept('*/*')).not.toThrow('Invalid Accept range:');
+      //expect((): any => parseAccept('*')).toThrow('Invalid Accept range:');
+      expect(parseAccept('*')).toEqual([]);
+      //expect((): any => parseAccept('"bad"/text')).toThrow('Invalid Accept range:');
+      expect(parseAccept('"bad"/text')).toEqual([]);
+      //expect((): any => parseAccept('*/\\bad')).toThrow('Invalid Accept range:');
+      expect(parseAccept('*/\\bad')).toEqual([]);
+      //expect((): any => parseAccept('*/*')).not.toThrow('Invalid Accept range:');
+      expect(parseAccept('*/*')).toEqual([{
+        parameters: { extension: {}, mediaType: {}}, range: '*/*', weight: 1,
+      }]);
     });
 
-    it('rejects Accept Headers with invalid q values.', async(): Promise<void> => {
-      expect((): any => parseAccept('a/b; q=text')).toThrow('Invalid q value:');
-      expect((): any => parseAccept('a/b; q=0.1234')).toThrow('Invalid q value:');
-      expect((): any => parseAccept('a/b; q=1.1')).toThrow('Invalid q value:');
-      expect((): any => parseAccept('a/b; q=1.000')).not.toThrow();
-      expect((): any => parseAccept('a/b; q=0.123')).not.toThrow();
+    it('ignores the weight of Accept Headers with invalid q values.', async(): Promise<void> => {
+      //expect((): any => parseAccept('a/b; q=text')).toThrow('Invalid q value:');
+      //expect((): any => parseAccept('a/b; q=0.1234')).toThrow('Invalid q value:');
+      //expect((): any => parseAccept('a/b; q=1.1')).toThrow('Invalid q value:');
+      expect(parseAccept('a/b; q=text')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; q=0.1234')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; q=1.1')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      //expect((): any => parseAccept('a/b; q=1.000')).not.toThrow();
+      //expect((): any => parseAccept('a/b; q=0.123')).not.toThrow();
+      expect(parseAccept('a/b; q=1.000')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; q=0.123')).toEqual([{
+        range: 'a/b', weight: 0.123, parameters: { extension: {}, mediaType: {}},
+      }]);
     });
 
     it('rejects Accept Headers with invalid parameters.', async(): Promise<void> => {
-      expect((): any => parseAccept('a/b; a')).toThrow('Invalid Accept parameter');
-      expect((): any => parseAccept('a/b; a=\\')).toThrow('Invalid parameter value');
-      expect((): any => parseAccept('a/b; q=1 ; a=\\')).toThrow('Invalid parameter value');
-      expect((): any => parseAccept('a/b; q=1 ; a')).not.toThrow('Invalid Accept parameter');
+      //expect((): any => parseAccept('a/b; a')).toThrow('Invalid Accept parameter');
+      //expect((): any => parseAccept('a/b; a=\\')).toThrow('Invalid parameter value');
+      //expect((): any => parseAccept('a/b; q=1 ; a=\\')).toThrow('Invalid parameter value');
+      expect(parseAccept('a/b; a')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; a=\\')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; q=1 ; a=\\')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
+      }]);
+      expect(parseAccept('a/b; q=1 ; a')).toEqual([{
+        range: 'a/b', weight: 1, parameters: { extension: { a: '' }, mediaType: {}},
+      }]);
     });
 
     it('rejects Accept Headers with quoted parameters.', async(): Promise<void> => {

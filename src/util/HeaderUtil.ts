@@ -154,13 +154,16 @@ export function splitAndClean(input: string): string[] {
  * @throws {@link BadRequestHttpError}
  * Thrown on invalid syntax.
  */
-function testQValue(qvalue: string): void {
+function isValidQValue(qvalue: string): boolean {
   if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
-    logger.warn(`Invalid q value: ${qvalue}`);
-    throw new BadRequestHttpError(
-      `Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`,
-    );
+    // logger.warn(`Invalid q value: ${qvalue}`);
+    // throw new BadRequestHttpError(
+    //   `Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`,
+    // );
+    logger.warn(`Invalid q value: ${qvalue} does not match ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] ).`);
+    return false;
   }
+  return true;
 }
 
 /**
@@ -177,18 +180,24 @@ function testQValue(qvalue: string): void {
  */
 export function parseParameters(parameters: string[], replacements: Record<string, string>):
 { name: string; value: string }[] {
-  return parameters.map((param): { name: string; value: string } => {
+  //return parameters.map((param): { name: string; value: string } => {
+  return parameters.reduce<{ name: string; value: string }[]>((acc, param): { name: string; value: string }[] => {
     const [ name, rawValue ] = param.split('=').map((str): string => str.trim());
 
     // Test replaced string for easier check
     // parameter  = token "=" ( token / quoted-string )
     // second part is optional for certain parameters
     if (!(token.test(name) && (!rawValue || /^"\d+"$/u.test(rawValue) || token.test(rawValue)))) {
-      logger.warn(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue}`);
-      throw new BadRequestHttpError(
+      //logger.warn(`Invalid parameter value: ${name}=${replacements[rawValue] || rawValue}`);
+      //throw new BadRequestHttpError(
+      //  `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
+      //  `does not match (token ( "=" ( token / quoted-string ))?). `,
+      //);
+      logger.warn(
         `Invalid parameter value: ${name}=${replacements[rawValue] || rawValue} ` +
         `does not match (token ( "=" ( token / quoted-string ))?). `,
       );
+      return acc;
     }
 
     let value = rawValue;
@@ -196,8 +205,9 @@ export function parseParameters(parameters: string[], replacements: Record<strin
       value = replacements[rawValue];
     }
 
-    return { name, value };
-  });
+    acc.push({ name, value });
+    return acc;
+  }, []);
 }
 
 /**
@@ -214,16 +224,14 @@ export function parseParameters(parameters: string[], replacements: Record<strin
  *
  * @returns {@link Accept} object corresponding to the header string.
  */
-function parseAcceptPart(part: string, replacements: Record<string, string>): Accept {
+function parseAcceptPart(part: string, replacements: Record<string, string>): Accept | undefined {
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
   const [ type, subtype ] = range.split('/');
   if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
-    logger.warn(`Invalid Accept range: ${range}`);
-    throw new BadRequestHttpError(
-      `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
-    );
+    logger.warn(`Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`);
+    return;
   }
 
   let weight = 1;
@@ -235,13 +243,14 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
     if (name === 'q') {
       // Extension parameters appear after the q value
       map = extensionParams;
-      testQValue(value);
-      weight = Number.parseFloat(value);
+      if (isValidQValue(value)) {
+        weight = Number.parseFloat(value);
+      }
     } else {
       if (!value && map !== extensionParams) {
-        logger.warn(`Invalid Accept parameter ${name}`);
-        throw new BadRequestHttpError(`Invalid Accept parameter ${name}: ` +
-        `Accept parameter values are not optional when preceding the q value`);
+        logger.warn(`Invalid Accept parameter ${name}: ` +
+          `Accept parameter values are not optional when preceding the q value`);
+        return;
       }
       map[name] = value || '';
     }
@@ -275,11 +284,14 @@ function parseNoParameters(input: string): AcceptHeader[] {
     if (qvalue) {
       if (!qvalue.startsWith('q=')) {
         logger.warn(`Only q parameters are allowed in ${input}`);
-        throw new BadRequestHttpError(`Only q parameters are allowed in ${input}`);
+        // throw new BadRequestHttpError(`Only q parameters are allowed in ${input}`);
+        return result;
       }
       const val = qvalue.slice(2);
-      testQValue(val);
-      result.weight = Number.parseFloat(val);
+      // testQValue(val);
+      if (isValidQValue(val)) {
+        result.weight = Number.parseFloat(val);
+      }
     }
     return result;
   }).sort((left, right): number => right.weight - left.weight);
@@ -300,8 +312,20 @@ function parseNoParameters(input: string): AcceptHeader[] {
 export function parseAccept(input: string): Accept[] {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
+
+  // TODO: change parseAcceptPart to return undefined if
+  // value is invalid.
+  // add a filter for non-undef values after the map.
   return splitAndClean(result)
-    .map((part): Accept => parseAcceptPart(part, replacements))
+    .reduce<Accept[]>((acc, part): Accept[] => {
+      const partOrUndef = parseAcceptPart(part, replacements);
+
+      if (partOrUndef !== undefined) {
+        acc.push(partOrUndef);
+      }
+
+      return acc;
+    }, [])
     .sort((left, right): number => right.weight - left.weight);
 }
 
@@ -317,15 +341,18 @@ export function parseAccept(input: string): Accept[] {
  */
 export function parseAcceptCharset(input: string): AcceptCharset[] {
   const results = parseNoParameters(input);
-  results.forEach((result): void => {
+  // results.forEach((result): void => {
+  return results.filter((result): boolean => {
     if (!token.test(result.range)) {
-      logger.warn(`Invalid Accept-Charset range: ${result.range}`);
-      throw new BadRequestHttpError(
-        `Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
-      );
+      logger.warn(`Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`);
+      return false;
+      // throw new BadRequestHttpError(
+        //`Invalid Accept-Charset range: ${result.range} does not match (content-coding / "identity" / "*")`,
+      //);
     }
+    return true;
   });
-  return results;
+  //return results;
 }
 
 /**
@@ -340,13 +367,16 @@ export function parseAcceptCharset(input: string): AcceptCharset[] {
  */
 export function parseAcceptEncoding(input: string): AcceptEncoding[] {
   const results = parseNoParameters(input);
-  results.forEach((result): void => {
+  return results.filter((result): boolean => {
     if (!token.test(result.range)) {
-      logger.warn(`Invalid Accept-Encoding range: ${result.range}`);
-      throw new BadRequestHttpError(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
+      //logger.warn(`Invalid Accept-Encoding range: ${result.range}`);
+      //throw new BadRequestHttpError(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
+      logger.warn(`Invalid Accept-Encoding range: ${result.range} does not match (charset / "*")`);
+      return false;
     }
+    return true;
   });
-  return results;
+  // return results;
 }
 
 /**
@@ -361,18 +391,23 @@ export function parseAcceptEncoding(input: string): AcceptEncoding[] {
  */
 export function parseAcceptLanguage(input: string): AcceptLanguage[] {
   const results = parseNoParameters(input);
-  results.forEach((result): void => {
+  return results.filter((result): boolean => {
     // (1*8ALPHA *("-" 1*8alphanum)) / "*"
     if (result.range !== '*' && !/^[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*$/u.test(result.range)) {
+      //logger.warn(
+       // `Invalid Accept-Language range: ${result.range}`,
+      //);
+      //throw new BadRequestHttpError(
+       // `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
+      //);
       logger.warn(
-        `Invalid Accept-Language range: ${result.range}`,
-      );
-      throw new BadRequestHttpError(
         `Invalid Accept-Language range: ${result.range} does not match ((1*8ALPHA *("-" 1*8alphanum)) / "*")`,
       );
+      return false;
     }
+    return true;
   });
-  return results;
+  // return results;
 }
 
 // eslint-disable-next-line max-len
@@ -386,20 +421,21 @@ const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|
  * @returns An array with a single {@link AcceptDatetime} object.
  */
 export function parseAcceptDateTime(input: string): AcceptDatetime[] {
-  const results: AcceptDatetime[] = [];
   const range = input.trim();
-  if (range) {
-    if (!rfc1123Date.test(range)) {
-      logger.warn(
-        `Invalid Accept-DateTime range: ${range}`,
-      );
-      throw new BadRequestHttpError(
-        `Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`,
-      );
-    }
-    results.push({ range, weight: 1 });
+  if (!range) {
+    return [];
   }
-  return results;
+  if (!rfc1123Date.test(range)) {
+      //logger.warn(
+      //  `Invalid Accept-DateTime range: ${range}`,
+      //);
+      //throw new BadRequestHttpError(
+       // `Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`,
+      //);
+    logger.warn(`Invalid Accept-DateTime range: ${range} does not match the RFC1123 format`);
+    return [];
+  }
+  return [{ range, weight: 1 }];
 }
 
 /**
