@@ -49,22 +49,15 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects Accept Headers with invalid types.', async(): Promise<void> => {
-      //expect((): any => parseAccept('*')).toThrow('Invalid Accept range:');
       expect(parseAccept('*')).toEqual([]);
-      //expect((): any => parseAccept('"bad"/text')).toThrow('Invalid Accept range:');
       expect(parseAccept('"bad"/text')).toEqual([]);
-      //expect((): any => parseAccept('*/\\bad')).toThrow('Invalid Accept range:');
       expect(parseAccept('*/\\bad')).toEqual([]);
-      //expect((): any => parseAccept('*/*')).not.toThrow('Invalid Accept range:');
       expect(parseAccept('*/*')).toEqual([{
         parameters: { extension: {}, mediaType: {}}, range: '*/*', weight: 1,
       }]);
     });
 
     it('ignores the weight of Accept Headers with invalid q values.', async(): Promise<void> => {
-      //expect((): any => parseAccept('a/b; q=text')).toThrow('Invalid q value:');
-      //expect((): any => parseAccept('a/b; q=0.1234')).toThrow('Invalid q value:');
-      //expect((): any => parseAccept('a/b; q=1.1')).toThrow('Invalid q value:');
       expect(parseAccept('a/b; q=text')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
@@ -74,8 +67,6 @@ describe('HeaderUtil', (): void => {
       expect(parseAccept('a/b; q=1.1')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
-      //expect((): any => parseAccept('a/b; q=1.000')).not.toThrow();
-      //expect((): any => parseAccept('a/b; q=0.123')).not.toThrow();
       expect(parseAccept('a/b; q=1.000')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
@@ -85,9 +76,6 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects Accept Headers with invalid parameters.', async(): Promise<void> => {
-      //expect((): any => parseAccept('a/b; a')).toThrow('Invalid Accept parameter');
-      //expect((): any => parseAccept('a/b; a=\\')).toThrow('Invalid parameter value');
-      //expect((): any => parseAccept('a/b; q=1 ; a=\\')).toThrow('Invalid parameter value');
       expect(parseAccept('a/b; a')).toEqual([{
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
@@ -98,6 +86,7 @@ describe('HeaderUtil', (): void => {
         range: 'a/b', weight: 1, parameters: { extension: {}, mediaType: {}},
       }]);
       expect(parseAccept('a/b; q=1 ; a')).toEqual([{
+        // eslint-disable-next-line id-length
         range: 'a/b', weight: 1, parameters: { extension: { a: '' }, mediaType: {}},
       }]);
     });
@@ -117,9 +106,9 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects invalid Accept-Charset Headers.', async(): Promise<void> => {
-      expect((): any => parseAcceptCharset('a/b')).toThrow('Invalid Accept-Charset range:');
-      expect((): any => parseAcceptCharset('a; q=text')).toThrow('Invalid q value:');
-      expect((): any => parseAcceptCharset('a; c=d')).toThrow('Only q parameters are allowed');
+      expect(parseAcceptCharset('a/b')).toEqual([]);
+      expect(parseAcceptCharset('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
+      expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
     });
   });
 
@@ -137,9 +126,9 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects invalid Accept-Encoding Headers.', async(): Promise<void> => {
-      expect((): any => parseAcceptEncoding('a/b')).toThrow('Invalid Accept-Encoding range:');
-      expect((): any => parseAcceptEncoding('a; q=text')).toThrow('Invalid q value:');
-      expect((): any => parseAcceptCharset('a; c=d')).toThrow('Only q parameters are allowed');
+      expect(parseAcceptEncoding('a/b')).toEqual([]);
+      expect(parseAcceptEncoding('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
+      expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
     });
   });
 
@@ -153,15 +142,15 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects invalid Accept-Language Headers.', async(): Promise<void> => {
-      expect((): any => parseAcceptLanguage('a/b')).toThrow('Invalid Accept-Language range:');
-      expect((): any => parseAcceptLanguage('05-a')).toThrow('Invalid Accept-Language range:');
-      expect((): any => parseAcceptLanguage('a--05')).toThrow('Invalid Accept-Language range:');
-      expect((): any => parseAcceptLanguage('a-"a"')).toThrow('Invalid Accept-Language range:');
-      expect((): any => parseAcceptLanguage('a-05')).not.toThrow('Invalid Accept-Language range:');
-      expect((): any => parseAcceptLanguage('a-b-c-d')).not.toThrow('Invalid Accept-Language range:');
+      expect(parseAcceptLanguage('a/b')).toEqual([]);
+      expect(parseAcceptLanguage('05-a')).toEqual([]);
+      expect(parseAcceptLanguage('a--05')).toEqual([]);
+      expect(parseAcceptLanguage('a-"a"')).toEqual([]);
+      expect(parseAcceptLanguage('a-05')).toEqual([{ range: 'a-05', weight: 1 }]);
+      expect(parseAcceptLanguage('a-b-c-d')).toEqual([{ range: 'a-b-c-d', weight: 1 }]);
 
-      expect((): any => parseAcceptLanguage('a; q=text')).toThrow('Invalid q value:');
-      expect((): any => parseAcceptCharset('a; c=d')).toThrow('Only q parameters are allowed');
+      expect(parseAcceptLanguage('a; q=text')).toEqual([{ range: 'a', weight: 1 }]);
+      expect(parseAcceptCharset('a; c=d')).toEqual([{ range: 'a', weight: 1 }]);
     });
   });
 
@@ -178,8 +167,8 @@ describe('HeaderUtil', (): void => {
     });
 
     it('rejects invalid Accept-DateTime Headers.', async(): Promise<void> => {
-      expect((): any => parseAcceptDateTime('a/b')).toThrow('Invalid Accept-DateTime range:');
-      expect((): any => parseAcceptDateTime('30 May 2007')).toThrow('Invalid Accept-DateTime range:');
+      expect(parseAcceptDateTime('a/b')).toEqual([]);
+      expect(parseAcceptDateTime('30 May 2007')).toEqual([]);
     });
   });
 
