@@ -116,6 +116,9 @@ const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
  * Replaces all double quoted strings in the input string with `"0"`, `"1"`, etc.
  * @param input - The Accept header string.
  *
+ * @throws {@link BadRequestHttpError}
+ * Thrown if invalid characters are detected in a quoted string.
+ *
  * @returns The transformed string and a map with keys `"0"`, etc. and values the original string that was there.
  */
 export function transformQuotedStrings(input: string): { result: string; replacements: Record<string, string> } {
@@ -139,6 +142,8 @@ export function transformQuotedStrings(input: string): { result: string; replace
  * Splits the input string on commas, trims all parts and filters out empty ones.
  *
  * @param input - Input header string.
+ *
+ * @returns An array of trimmed strings.
  */
 export function splitAndClean(input: string): string[] {
   return input.split(',')
@@ -151,8 +156,7 @@ export function splitAndClean(input: string): string[] {
  *
  * @param qvalue - Input qvalue string (so "q=....").
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid syntax.
+ * @returns true if q value is valid, false otherwise.
  */
 function isValidQValue(qvalue: string): boolean {
   if (!/^(?:(?:0(?:\.\d{0,3})?)|(?:1(?:\.0{0,3})?))$/u.test(qvalue)) {
@@ -163,14 +167,11 @@ function isValidQValue(qvalue: string): boolean {
 }
 
 /**
- * Parses a list of split parameters and checks their validity.
+ * Parses a list of split parameters and checks their validity. Parameters with invalid
+ * syntax are ignored and not returned.
  *
  * @param parameters - A list of split parameters (token [ "=" ( token / quoted-string ) ])
  * @param replacements - The double quoted strings that need to be replaced.
- *
- *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid parameter syntax.
  *
  * @returns An array of name/value objects corresponding to the parameters.
  */
@@ -204,15 +205,14 @@ export function parseParameters(parameters: string[], replacements: Record<strin
  * Parses a single media range with corresponding parameters from an Accept header.
  * For every parameter value that is a double quoted string,
  * we check if it is a key in the replacements map.
- * If yes the value from the map gets inserted instead.
+ * If yes the value from the map gets inserted instead. Invalid q values and
+ * parameter values are ignored and not returned.
  *
  * @param part - A string corresponding to a media range and its corresponding parameters.
  * @param replacements - The double quoted strings that need to be replaced.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid type, qvalue or parameter syntax.
- *
- * @returns {@link Accept} object corresponding to the header string.
+ * @returns {@link Accept | undefined} object corresponding to the header string, or
+ * undefined if an invalid type or sub-type is detected.
  */
 function parseAcceptPart(part: string, replacements: Record<string, string>): Accept | undefined {
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
@@ -258,10 +258,8 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
 
 /**
  * Parses an Accept-* header where each part is only a value and a weight, so roughly /.*(q=.*)?/ separated by commas.
+ * The returned weights default to 1 if no q value is found or the q value is invalid.
  * @param input - Input header string.
- *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid qvalue syntax.
  *
  * @returns An array of ranges and weights.
  */
@@ -292,10 +290,8 @@ function parseNoParameters(input: string): AcceptHeader[] {
  *
  * @param input - The Accept header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid header syntax.
- *
- * @returns An array of {@link Accept} objects, sorted by weight.
+ * @returns An array of {@link Accept} objects, sorted by weight. Accept parts
+ * with invalid syntax are ignored and removed from the returned array.
  */
 export function parseAccept(input: string): Accept[] {
   // Quoted strings could prevent split from having correct results
@@ -319,10 +315,8 @@ export function parseAccept(input: string): Accept[] {
  *
  * @param input - The Accept-Charset header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid header syntax.
- *
- * @returns An array of {@link AcceptCharset} objects, sorted by weight.
+ * @returns An array of {@link AcceptCharset} objects, sorted by weight. Invalid ranges
+ * are ignored and not returned.
  */
 export function parseAcceptCharset(input: string): AcceptCharset[] {
   const results = parseNoParameters(input);
@@ -340,10 +334,8 @@ export function parseAcceptCharset(input: string): AcceptCharset[] {
  *
  * @param input - The Accept-Encoding header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid header syntax.
- *
- * @returns An array of {@link AcceptEncoding} objects, sorted by weight.
+ * @returns An array of {@link AcceptEncoding} objects, sorted by weight. Invalid ranges
+ * are ignored and not returned.
  */
 export function parseAcceptEncoding(input: string): AcceptEncoding[] {
   const results = parseNoParameters(input);
@@ -361,10 +353,8 @@ export function parseAcceptEncoding(input: string): AcceptEncoding[] {
  *
  * @param input - The Accept-Language header string.
  *
- * @throws {@link BadRequestHttpError}
- * Thrown on invalid header syntax.
- *
- * @returns An array of {@link AcceptLanguage} objects, sorted by weight.
+ * @returns An array of {@link AcceptLanguage} objects, sorted by weight. Invalid ranges
+ * are ignored and not returned.
  */
 export function parseAcceptLanguage(input: string): AcceptLanguage[] {
   const results = parseNoParameters(input);
@@ -388,7 +378,8 @@ const rfc1123Date = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (?:Jan|Feb|Mar|Apr|
  *
  * @param input - The Accept-DateTime header string.
  *
- * @returns An array with a single {@link AcceptDatetime} object.
+ * @returns An array with a single {@link AcceptDatetime} object, or an empty
+ * array if a range in an invalid format is detected.
  */
 export function parseAcceptDateTime(input: string): AcceptDatetime[] {
   const range = input.trim();
