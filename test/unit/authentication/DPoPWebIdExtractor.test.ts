@@ -90,6 +90,22 @@ describe('A DPoPWebIdExtractor', (): void => {
     });
   });
 
+  describe('on a request with Authorization specifying DPoP in lowercase', (): void => {
+    const request = {
+      method: 'GET',
+      headers: {
+        authorization: 'dpop token-1234',
+        dpop: 'token-5678',
+      },
+    } as any as HttpRequest;
+
+    it('calls the target extractor with the correct parameters.', async(): Promise<void> => {
+      await webIdExtractor.handleSafe(request);
+      expect(targetExtractor.handle).toHaveBeenCalledTimes(1);
+      expect(targetExtractor.handle).toHaveBeenCalledWith({ request });
+    });
+  });
+
   describe('when verification throws an error', (): void => {
     const request = {
       method: 'GET',
