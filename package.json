@@ -76,7 +76,7 @@
   ],
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.21.3",
-    "@rdfjs/data-model": "^1.2.0",
+    "@rdfjs/data-model": "^2.0.0",
     "@solid/access-token-verifier": "^1.1.2",
     "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.2",
