@@ -115,7 +115,7 @@
     "mime-types": "^2.1.32",
     "n3": "^1.12.2",
     "nodemailer": "^6.6.2",
-    "oidc-provider": "^6.31.1",
+    "oidc-provider": "^7.0.0",
     "pump": "^3.0.0",
     "punycode": "^2.1.1",
     "rdf-parse": "^1.8.1",
