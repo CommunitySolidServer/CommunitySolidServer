@@ -6,7 +6,7 @@ import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
 /** Performs a simple PUT request to the given 'path' with a body containing 'length' amount of characters */
-async function performSimplePUTWithLength(path: string, length: number): Promise<Response> {
+async function performSimplePutWithLength(path: string, length: number): Promise<Response> {
   return fetch(
     path,
     {
@@ -14,7 +14,7 @@ async function performSimplePUTWithLength(path: string, length: number): Promise
       headers: {
         'content-type': 'text/plain',
       },
-      body: Array.from({ length: length + 1 }).join('A'),
+      body: 'A'.repeat(length),
     },
   );
 }
@@ -41,7 +41,7 @@ async function registerTestPods(baseUrl: string): Promise<void> {
   });
 }
 
-describe('A server with', (): void => {
+describe('A quota server with', (): void => {
   /** Test the general functionality of the server using pod quota */
   describe('pod quota enabled', (): void => {
     const port = getPort('PodQuota');
@@ -81,11 +81,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/profile/test1.txt`;
       const testFile2 = `${baseUrl}abel/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 500);
+      const response1 = performSimplePutWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePUTWithLength(testFile2, 3000);
+      const response2 = performSimplePutWithLength(testFile2, 3000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -94,7 +94,7 @@ describe('A server with', (): void => {
     it('should allow writing in a pod that isnt full yet.', async(): Promise<void> => {
       const testFile1 = `${baseUrl}arthur/profile/test1.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 500);
+      const response1 = performSimplePutWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
     });
@@ -104,11 +104,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/test2.txt`;
       const testFile2 = `${baseUrl}arthur/test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 3000);
+      const response1 = performSimplePutWithLength(testFile1, 3000);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePUTWithLength(testFile2, 3000);
+      const response2 = performSimplePutWithLength(testFile2, 3000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -152,11 +152,11 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}test1.txt`;
       const testFile2 = `${baseUrl}test2.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 500);
+      const response1 = performSimplePutWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePUTWithLength(testFile2, 8000);
+      const response2 = performSimplePutWithLength(testFile2, 8000);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -165,12 +165,14 @@ describe('A server with', (): void => {
       const testFile1 = `${baseUrl}abel/test3.txt`;
       const testFile2 = `${baseUrl}arthur/profile/test4.txt`;
 
-      const response1 = performSimplePUTWithLength(testFile1, 8000);
+      const response1 = performSimplePutWithLength(testFile1, 8000);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePUTWithLength(testFile2, 8000);
+      const response2 = performSimplePutWithLength(testFile2, 8000);
       await expect(response2).resolves.toBeDefined();
+      // eslint-disable-next-line no-console
+      console.log(await response2);
       expect((await response2).status).toEqual(413);
     });
   });

@@ -59,21 +59,30 @@ describe('AtomicFileDataAccessor', (): void => {
         data.emit('error', new Error('error'));
         return null;
       });
-      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow();
+      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
+        isFile: (): boolean => false,
+      }));
+      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should throw when renameing / moving the file goes wrong.', async(): Promise<void> => {
       jest.requireMock('fs').promises.rename = jest.fn((): any => {
         throw new Error('error');
       });
-      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow();
+      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
+        isFile: (): boolean => true,
+      }));
+      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
-    it('should (on error) not unlink the temp file if it doesn\'t exist.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.lstat = jest.fn((): any => ({
+    it('should (on error) not unlink the temp file if it does not exist.', async(): Promise<void> => {
+      jest.requireMock('fs').promises.rename = jest.fn((): any => {
+        throw new Error('error');
+      });
+      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
         isFile: (): boolean => false,
       }));
-      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow();
+      await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
   });
 });

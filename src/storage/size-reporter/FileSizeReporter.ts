@@ -5,10 +5,11 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import { joinFilePath, normalizeFilePath, trimTrailingSlashes } from '../../util/PathUtil';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import type { Size } from './Size';
+import { UNIT_BYTES } from './Size';
 import type { SizeReporter } from './SizeReporter';
 
 /**
- * SizeReporter that is used to calculate sizes of resources for a file based system
+ * SizeReporter that is used to calculate sizes of resources for a file based system.
  */
 export class FileSizeReporter implements SizeReporter<string> {
   private readonly fileIdentifierMapper: FileIdentifierMapper;
@@ -23,7 +24,7 @@ export class FileSizeReporter implements SizeReporter<string> {
 
   /** The FileSizeReporter will always return data in the form of bytes */
   public getUnit(): string {
-    return 'bytes';
+    return UNIT_BYTES;
   }
 
   /**
@@ -40,7 +41,9 @@ export class FileSizeReporter implements SizeReporter<string> {
   }
 
   /** The estimated size of a resource in this reporter is simply the content-length header */
-  public estimateSize = async(metadata: RepresentationMetadata): Promise<number | undefined> => metadata.contentLength;
+  public async estimateSize(metadata: RepresentationMetadata): Promise<number | undefined> {
+    return metadata.contentLength;
+  }
 
   /**
    * Get the total size of a resource and its children if present

@@ -16,7 +16,7 @@ export class ContentLengthParser extends MetadataParser {
       if (length) {
         input.metadata.contentLength = Number(length);
       } else {
-        this.logger.warn('Invalid content-langth header found', { contentLength });
+        this.logger.warn(`Invalid content-length header found: ${contentLength}.`);
       }
     }
   }

@@ -57,13 +57,13 @@ describe('PodQuotaStrategy', (): void => {
       const result = strategy.getAvailableSpace({ path: `${base}file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: Number.MAX_SAFE_INTEGER }));
     });
-    it('should return a Size containing the available space when writing inside a pod.', async(): Promise<void> => {
+    it('should ignore the size of the existing resource when writing inside a pod.', async(): Promise<void> => {
       const getSizeSpy = jest.spyOn(mockReporter, 'getSize');
       const result = strategy.getAvailableSpace({ path: `${base}nested/nested2/file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
       expect(getSizeSpy).toHaveBeenCalledTimes(2);
     });
-    it('should return a Size containing the available space when writing inside a pod 2.', async(): Promise<void> => {
+    it('should return a Size containing the available space when writing inside a pod.', async(): Promise<void> => {
       const getSizeSpy = jest.spyOn(mockReporter, 'getSize');
       accessor.getMetadata.mockImplementationOnce((): any => {
         throw new Error('error');

@@ -15,7 +15,7 @@ class QuotaStrategyWrapper extends QuotaStrategy {
   public getAvailableSpace = async(): Promise<Size> => ({ unit: 'bytes', amount: 5 });
 }
 
-describe('PodQuotaStrategy', (): void => {
+describe('A QuotaStrategy', (): void => {
   let strategy: QuotaStrategyWrapper;
   let mockSize: Size;
   let mockReporter: jest.Mocked<SizeReporter<any>>;
@@ -58,7 +58,7 @@ describe('PodQuotaStrategy', (): void => {
   describe('createQuotaGuard()', (): void => {
     it('should return a passthrough that destroys the stream when quota is exceeded.', async(): Promise<void> => {
       strategy.getAvailableSpace = jest.fn().mockReturnValue({ amount: 50, unit: mockSize.unit });
-      const fiftyChars = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+      const fiftyChars = 'A'.repeat(50);
       const stream = guardedStreamFrom(fiftyChars);
       const track = await strategy.createQuotaGuard({ path: `${base}nested/file2.txt` });
       const piped = pipeSafely(stream, track);

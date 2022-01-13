@@ -5,3 +5,5 @@ export interface Size {
   unit: string;
   amount: number;
 }
+
+export const UNIT_BYTES = 'bytes';

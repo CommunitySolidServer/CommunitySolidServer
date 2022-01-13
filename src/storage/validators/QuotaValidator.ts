@@ -9,7 +9,7 @@ import { pipeSafely } from '../../util/StreamUtil';
 import type { QuotaStrategy } from '../quota/QuotaStrategy';
 
 /**
- * The QuotaDataValidator validates data streams according to a QuotaStrategy's implementation
+ * The QuotaValidator validates data streams by making sure they would not exceed the limits of a QuotaStrategy.
  */
 export class QuotaValidator extends Validator {
   private readonly strategy: QuotaStrategy;

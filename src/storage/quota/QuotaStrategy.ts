@@ -36,7 +36,7 @@ export abstract class QuotaStrategy {
    * @param identifier - the identifier of the resource of which you want the available space
    * @returns the available space and the unit of the space as a Size object
    */
-  public abstract getAvailableSpace: (identifier: ResourceIdentifier) => Promise<Size>;
+  public abstract getAvailableSpace(identifier: ResourceIdentifier): Promise<Size>;
 
   /**
    * Get an estimated size of the resource

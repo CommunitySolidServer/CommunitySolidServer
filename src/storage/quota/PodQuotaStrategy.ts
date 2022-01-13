@@ -8,7 +8,7 @@ import type { SizeReporter } from '../size-reporter/SizeReporter';
 import { QuotaStrategy } from './QuotaStrategy';
 
 /**
- * The GlobalQuotaStrategy sets a limit on the amount of data stored on the server globally
+ * The PodQuotaStrategy sets a limit on the amount of data stored on a per pod basis
  */
 export class PodQuotaStrategy extends QuotaStrategy {
   private readonly identifierStrategy: IdentifierStrategy;
@@ -25,7 +25,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
     this.accessor = accessor;
   }
 
-  public getAvailableSpace = async(identifier: ResourceIdentifier): Promise<Size> => {
+  public async getAvailableSpace(identifier: ResourceIdentifier): Promise<Size> {
     const pimStorage = await this.searchPimStorage(identifier);
 
     // No storage was found containing this identifier, so we assume this identifier points to an internal location.
@@ -41,12 +41,12 @@ export class PodQuotaStrategy extends QuotaStrategy {
     used -= (await this.reporter.getSize(identifier)).amount;
 
     return { amount: this.limit.amount - used, unit: this.limit.unit };
-  };
+  }
 
   /** Finds the closest parent container that has pim:storage as metadata */
   private async searchPimStorage(identifier: ResourceIdentifier): Promise<ResourceIdentifier | undefined> {
     if (this.identifierStrategy.isRootContainer(identifier)) {
-      return undefined;
+      return;
     }
 
     let metadata: RepresentationMetadata;

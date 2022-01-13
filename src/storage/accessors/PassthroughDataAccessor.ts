@@ -7,7 +7,9 @@ import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import type { DataAccessor } from './DataAccessor';
 
 /**
- * A PassthroughDataAccessor simple passes the call to its child accessor
+ * DataAccessor that calls the corresponding functions of the source DataAccessor.
+ * Can be extended by data accessors that do not want to override all functions
+ * by implementing a decorator pattern.
  */
 export class PassthroughDataAccessor implements DataAccessor {
   protected readonly accessor: AtomicDataAccessor;

@@ -19,10 +19,10 @@ const portNames = [
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
-  // Unit
-  'BaseHttpServerFactory',
   'PodQuota',
   'GlobalQuota',
+  // Unit
+  'BaseHttpServerFactory',
 ] as const;
 
 export function getPort(name: typeof portNames[number]): number {
