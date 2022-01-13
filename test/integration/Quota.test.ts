@@ -171,8 +171,8 @@ describe('A quota server with', (): void => {
 
       const response2 = performSimplePutWithLength(testFile2, 8000);
       await expect(response2).resolves.toBeDefined();
-      const { status } = await response2;
-      expect(status).toEqual(413);
+      const awaitedRes2 = await response2;
+      expect(awaitedRes2.status).toEqual(413);
     });
   });
 });
