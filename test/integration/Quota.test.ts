@@ -171,9 +171,8 @@ describe('A quota server with', (): void => {
 
       const response2 = performSimplePutWithLength(testFile2, 8000);
       await expect(response2).resolves.toBeDefined();
-      // eslint-disable-next-line no-console
-      console.log(await response2);
-      expect((await response2).status).toEqual(413);
+      const { status } = await response2;
+      expect(status).toEqual(413);
     });
   });
 });
