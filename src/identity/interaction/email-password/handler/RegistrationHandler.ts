@@ -1,8 +1,8 @@
 import { getLoggerFor } from '../../../../logging/LogUtil';
 import { readJsonStream } from '../../../../util/StreamUtil';
+import type { InteractionResponseResult, InteractionHandlerInput } from '../../InteractionHandler';
+import { InteractionHandler } from '../../InteractionHandler';
 import type { RegistrationManager, RegistrationResponse } from '../util/RegistrationManager';
-import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
-import { InteractionHandler } from './InteractionHandler';
 
 /**
  * Supports registration based on the `RegistrationManager` behaviour.

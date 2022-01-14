@@ -30,7 +30,11 @@ export interface IdentityProviderFactoryArgs {
    */
   baseUrl: string;
   /**
-   * Path of the IDP component in the server.
+   * Path for all requests targeting the OIDC library.
+   */
+  oidcPath: string;
+  /**
+   * The entry point for the custom IDP handlers of the server.
    * Should start with a slash.
    */
   idpPath: string;
@@ -62,6 +66,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly config: Configuration;
   private readonly adapterFactory!: AdapterFactory;
   private readonly baseUrl!: string;
+  private readonly oidcPath!: string;
   private readonly idpPath!: string;
   private readonly storage!: KeyValueStorage<string, unknown>;
   private readonly errorHandler!: ErrorHandler;
@@ -107,6 +112,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Allow provider to interpret reverse proxy headers
     const provider = new Provider(this.baseUrl, config);
     provider.proxy = true;
+
     return provider;
   }
 
@@ -210,11 +216,11 @@ export class IdentityProviderFactory implements ProviderFactory {
 
   /**
    * Creates the route string as required by the `oidc-provider` library.
-   * In case base URL is `http://test.com/foo/`, `idpPath` is `/idp` and `relative` is `device/auth`,
+   * In case base URL is `http://test.com/foo/`, `oidcPath` is `/idp` and `relative` is `device/auth`,
    * this would result in `/foo/idp/device/auth`.
    */
   private createRoute(relative: string): string {
-    return new URL(joinUrl(this.baseUrl, this.idpPath, relative)).pathname;
+    return new URL(joinUrl(this.baseUrl, this.oidcPath, relative)).pathname;
   }
 
   /**

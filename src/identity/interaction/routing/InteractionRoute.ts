@@ -1,5 +1,5 @@
 import type { Operation } from '../../../http/Operation';
-import type { Interaction, InteractionHandlerResult } from '../email-password/handler/InteractionHandler';
+import type { Interaction, InteractionHandlerResult } from '../InteractionHandler';
 
 export type TemplatedInteractionResult<T extends InteractionHandlerResult = InteractionHandlerResult> = T & {
   templateFiles: Record<string, string>;

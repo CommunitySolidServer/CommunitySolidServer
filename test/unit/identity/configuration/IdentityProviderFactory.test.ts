@@ -12,23 +12,24 @@ jest.mock('oidc-provider', (): any => ({
 }));
 
 const routes = {
-  authorization: '/foo/idp/auth',
-  check_session: '/foo/idp/session/check',
-  code_verification: '/foo/idp/device',
-  device_authorization: '/foo/idp/device/auth',
-  end_session: '/foo/idp/session/end',
-  introspection: '/foo/idp/token/introspection',
-  jwks: '/foo/idp/jwks',
-  pushed_authorization_request: '/foo/idp/request',
-  registration: '/foo/idp/reg',
-  revocation: '/foo/idp/token/revocation',
-  token: '/foo/idp/token',
-  userinfo: '/foo/idp/me',
+  authorization: '/foo/oidc/auth',
+  check_session: '/foo/oidc/session/check',
+  code_verification: '/foo/oidc/device',
+  device_authorization: '/foo/oidc/device/auth',
+  end_session: '/foo/oidc/session/end',
+  introspection: '/foo/oidc/token/introspection',
+  jwks: '/foo/oidc/jwks',
+  pushed_authorization_request: '/foo/oidc/request',
+  registration: '/foo/oidc/reg',
+  revocation: '/foo/oidc/token/revocation',
+  token: '/foo/oidc/token',
+  userinfo: '/foo/oidc/me',
 };
 
 describe('An IdentityProviderFactory', (): void => {
   let baseConfig: Configuration;
   const baseUrl = 'http://test.com/foo/';
+  const oidcPath = '/oidc';
   const idpPath = '/idp';
   const webId = 'http://alice.test.com/card#me';
   let adapterFactory: jest.Mocked<AdapterFactory>;
@@ -59,6 +60,7 @@ describe('An IdentityProviderFactory', (): void => {
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
+      oidcPath,
       idpPath,
       storage,
       errorHandler,
@@ -70,6 +72,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect((): any => new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
+      oidcPath,
       idpPath: 'idp',
       storage,
       errorHandler,
@@ -127,6 +130,7 @@ describe('An IdentityProviderFactory', (): void => {
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
+      oidcPath,
       idpPath,
       storage,
       errorHandler,
@@ -148,6 +152,7 @@ describe('An IdentityProviderFactory', (): void => {
     const factory2 = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
+      oidcPath,
       idpPath,
       storage,
       errorHandler,

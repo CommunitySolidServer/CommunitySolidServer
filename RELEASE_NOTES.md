@@ -3,6 +3,7 @@
 ## v3.0.0
 ### New features
 - The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
+- The `VoidLocker` can be used to disable locking for development/testing purposes. This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
 
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
@@ -15,6 +16,9 @@ The following changes are relevant for v2 custom configs that replaced certain f
   - `/util/representation-conversion/default.json`
 - The IDP settings have changed to support the latest Solid-OIDC draft.
   - `/identity/handler/provider-factory/identity.json`
+- Requests targeting the OIDC library now use a separate handler.
+  - `/http/handler/default.json`
+  - `/identity/handler/default.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
