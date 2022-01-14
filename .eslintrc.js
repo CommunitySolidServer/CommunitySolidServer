@@ -33,7 +33,8 @@ module.exports = {
         alwaysTryTypes: true,
       },
       node: {
-        extensions: [ ".js", ".ts" ],
+        extensions: [ '.js', '.ts' ],
+        moduleDirectory: [ 'node_modules', 'src/' ]
       }
     },
   },
