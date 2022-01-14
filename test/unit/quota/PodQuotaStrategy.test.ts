@@ -42,13 +42,7 @@ describe('PodQuotaStrategy', (): void => {
           return res;
         },
       ),
-      canHandle: jest.fn(),
-      writeDocument: jest.fn(),
-      getData: jest.fn(),
-      getChildren: jest.fn(),
-      writeContainer: jest.fn(),
-      deleteResource: jest.fn(),
-    };
+    } as any;
     strategy = new PodQuotaStrategy(mockSize, mockReporter, identifierStrategy, accessor);
   });
 

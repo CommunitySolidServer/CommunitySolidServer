@@ -19,20 +19,13 @@ describe('ValidatingDataAccessor', (): void => {
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
     childAccessor = {
-      canHandle: jest.fn(),
       writeDocument: jest.fn(),
-      getData: jest.fn(),
-      getChildren: jest.fn(),
       writeContainer: jest.fn(),
-      deleteResource: jest.fn(),
-      getMetadata: jest.fn(),
-    };
+    } as any;
     childAccessor.getChildren = jest.fn();
     validator = {
-      canHandle: jest.fn(),
       handle: jest.fn(async(input: ValidatorInput): Promise<Representation> => input.representation),
-      handleSafe: jest.fn(),
-    };
+    } as any;
     validatingAccessor = new ValidatingDataAccessor(childAccessor, validator);
   });
 

@@ -46,6 +46,8 @@ describe('A quota server with', (): void => {
   describe('pod quota enabled', (): void => {
     const port = getPort('PodQuota');
     const baseUrl = `http://localhost:${port}/`;
+    const pod1 = `${baseUrl}arthur`;
+    const pod2 = `${baseUrl}abel`;
     const rootFilePath = getTestFolder('quota-pod');
 
     let app: App;
@@ -78,8 +80,8 @@ describe('A quota server with', (): void => {
 
     // Test quota in the first pod
     it('should return a 413 when the quota is exceeded during write.', async(): Promise<void> => {
-      const testFile1 = `${baseUrl}abel/profile/test1.txt`;
-      const testFile2 = `${baseUrl}abel/test2.txt`;
+      const testFile1 = `${pod1}/profile/test1.txt`;
+      const testFile2 = `${pod1}/test2.txt`;
 
       const response1 = performSimplePutWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
@@ -92,7 +94,7 @@ describe('A quota server with', (): void => {
 
     // Test if writing in another pod is still possible
     it('should allow writing in a pod that isnt full yet.', async(): Promise<void> => {
-      const testFile1 = `${baseUrl}arthur/profile/test1.txt`;
+      const testFile1 = `${pod2}/profile/test1.txt`;
 
       const response1 = performSimplePutWithLength(testFile1, 500);
       await expect(response1).resolves.toBeDefined();
@@ -101,8 +103,8 @@ describe('A quota server with', (): void => {
 
     // Both pods should not accept this request anymore
     it('should block PUT requests to different pods if their quota is exceeded.', async(): Promise<void> => {
-      const testFile1 = `${baseUrl}abel/test2.txt`;
-      const testFile2 = `${baseUrl}arthur/test2.txt`;
+      const testFile1 = `${pod1}/test2.txt`;
+      const testFile2 = `${pod2}/test2.txt`;
 
       const response1 = performSimplePutWithLength(testFile1, 3000);
       await expect(response1).resolves.toBeDefined();
@@ -118,6 +120,8 @@ describe('A quota server with', (): void => {
   describe('global quota enabled', (): void => {
     const port = getPort('GlobalQuota');
     const baseUrl = `http://localhost:${port}/`;
+    const pod1 = `${baseUrl}arthur`;
+    const pod2 = `${baseUrl}abel`;
     const rootFilePath = getTestFolder('quota-global');
 
     let app: App;
@@ -164,8 +168,8 @@ describe('A quota server with', (): void => {
     });
 
     it('should return 413 when trying to write to any pod when global quota is exceeded.', async(): Promise<void> => {
-      const testFile1 = `${baseUrl}abel/test3.txt`;
-      const testFile2 = `${baseUrl}arthur/profile/test4.txt`;
+      const testFile1 = `${pod1}/test3.txt`;
+      const testFile2 = `${pod2}/profile/test4.txt`;
 
       const response1 = performSimplePutWithLength(testFile1, 8000);
       await expect(response1).resolves.toBeDefined();

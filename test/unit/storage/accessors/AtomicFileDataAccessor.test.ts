@@ -50,8 +50,8 @@ describe('AtomicFileDataAccessor', (): void => {
 
     it('should delete temp file when done writing.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
-      // Being: 'resource' the file and '.internal' the folder in the root dir
-      expect(Object.keys(cache.data).length + Object.keys(cache.data['.internal'].tempFiles).length).toEqual(2);
+      expect(Object.keys(cache.data['.internal'].tempFiles)).toHaveLength(0);
+      expect(cache.data.resource).toBe('data');
     });
 
     it('should throw an error when writing the data goes wrong.', async(): Promise<void> => {

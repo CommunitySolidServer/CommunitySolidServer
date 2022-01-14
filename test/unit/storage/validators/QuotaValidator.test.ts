@@ -67,12 +67,11 @@ describe('QuotaValidator', (): void => {
 
     // Step 3
     it('should destroy the stream when quota is exceeded during write.', async(): Promise<void> => {
-      const createQuotaGuardSpy = jest.spyOn(mockedStrategy, 'createQuotaGuard')
-        .mockResolvedValueOnce(guardStream(new PassThrough({
-          async transform(this): Promise<void> {
-            this.destroy();
-          },
-        })));
+      mockedStrategy.createQuotaGuard.mockResolvedValueOnce(guardStream(new PassThrough({
+        async transform(this): Promise<void> {
+          this.destroy(new Error('error'));
+        },
+      })));
 
       const result = validator.handle(mockInput);
       await expect(result).resolves.toBeDefined();
@@ -84,8 +83,8 @@ describe('QuotaValidator', (): void => {
       });
 
       // Consume the stream
-      await expect(readableToString(awaitedResult.data)).rejects.toThrow();
-      expect(createQuotaGuardSpy).toHaveBeenCalledTimes(1);
+      await expect(readableToString(awaitedResult.data)).rejects.toThrow('error');
+      expect(mockedStrategy.createQuotaGuard).toHaveBeenCalledTimes(1);
       await expect(prom).resolves.toBeUndefined();
     });
 
