@@ -34,7 +34,7 @@ module.exports = {
       },
       node: {
         extensions: [ '.js', '.ts' ],
-        moduleDirectory: [ 'node_modules', 'src/' ]
+        paths: [ 'src' ]
       }
     },
   },
