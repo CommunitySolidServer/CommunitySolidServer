@@ -31,24 +31,21 @@ describe('ValidatingDataAccessor', (): void => {
 
   describe('writeDocument()', (): void => {
     it('should call the validator\'s handle() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(validator, 'handle');
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({ representation: mockRepresentation, identifier: mockIdentifier });
+      expect(validator.handle).toHaveBeenCalledTimes(1);
+      expect(validator.handle).toHaveBeenCalledWith({ representation: mockRepresentation, identifier: mockIdentifier });
     });
     it('should call the accessors writeDocument() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'writeDocument');
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
+      expect(childAccessor.writeDocument).toHaveBeenCalledTimes(1);
+      expect(childAccessor.writeDocument).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
     });
   });
   describe('writeContainer()', (): void => {
     it('should call the accessors writeContainer() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'writeContainer');
       await validatingAccessor.writeContainer(mockIdentifier, mockMetadata);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
+      expect(childAccessor.writeContainer).toHaveBeenCalledTimes(1);
+      expect(childAccessor.writeContainer).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
     });
   });
 });

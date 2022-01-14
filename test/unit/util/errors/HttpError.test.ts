@@ -7,6 +7,7 @@ import { InternalServerError } from '../../../../src/util/errors/InternalServerE
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { PayloadHttpError } from '../../../../src/util/errors/PayloadHttpError';
 import { PreconditionFailedHttpError } from '../../../../src/util/errors/PreconditionFailedHttpError';
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -27,6 +28,7 @@ describe('HttpError', (): void => {
     [ 'MethodNotAllowedHttpError', 405, MethodNotAllowedHttpError ],
     [ 'ConflictHttpError', 409, ConflictHttpError ],
     [ 'PreconditionFailedHttpError', 412, PreconditionFailedHttpError ],
+    [ 'PayloadHttpError', 413, PayloadHttpError ],
     [ 'UnsupportedMediaTypeHttpError', 415, UnsupportedMediaTypeHttpError ],
     [ 'InternalServerError', 500, InternalServerError ],
     [ 'NotImplementedHttpError', 501, NotImplementedHttpError ],

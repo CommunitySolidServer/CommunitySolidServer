@@ -69,6 +69,7 @@ export class FileSizeReporter implements SizeReporter<string> {
     // If the location DOES exist and is NOT a file it should be a directory
     // recursively add all sizes of children to the total
     const childFiles = await fsPromises.readdir(fileLocation);
+    const rootFilePathLength = trimTrailingSlashes(this.rootFilePath).length;
 
     return await childFiles.reduce(async(acc: Promise<number>, current): Promise<number> => {
       const childFileLocation = normalizeFilePath(joinFilePath(fileLocation, current));
@@ -76,7 +77,7 @@ export class FileSizeReporter implements SizeReporter<string> {
 
       // Exclude internal files
       if (!this.ignoreFolders.some((folder: RegExp): boolean =>
-        folder.test(childFileLocation.split(trimTrailingSlashes(this.rootFilePath))[1]))) {
+        folder.test(childFileLocation.slice(rootFilePathLength)))) {
         result += await this.getTotalSize(childFileLocation);
       }
 

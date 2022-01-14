@@ -30,58 +30,51 @@ describe('ValidatingDataAccessor', (): void => {
 
   describe('writeDocument()', (): void => {
     it('should call the accessors writeDocument() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'writeDocument');
       await passthrough.writeDocument(mockIdentifier, mockData, mockMetadata);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
+      expect(childAccessor.writeDocument).toHaveBeenCalledTimes(1);
+      expect(childAccessor.writeDocument).toHaveBeenCalledWith(mockIdentifier, mockData, mockMetadata);
     });
   });
   describe('canHandle()', (): void => {
     it('should call the accessors canHandle() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'canHandle');
       await passthrough.canHandle(mockRepresentation);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockRepresentation);
+      expect(childAccessor.canHandle).toHaveBeenCalledTimes(1);
+      expect(childAccessor.canHandle).toHaveBeenCalledWith(mockRepresentation);
     });
   });
   describe('getData()', (): void => {
     it('should call the accessors getData() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'getData');
       await passthrough.getData(mockIdentifier);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier);
+      expect(childAccessor.getData).toHaveBeenCalledTimes(1);
+      expect(childAccessor.getData).toHaveBeenCalledWith(mockIdentifier);
     });
   });
   describe('getMetadata()', (): void => {
     it('should call the accessors getMetadata() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'getMetadata');
       await passthrough.getMetadata(mockIdentifier);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier);
+      expect(childAccessor.getMetadata).toHaveBeenCalledTimes(1);
+      expect(childAccessor.getMetadata).toHaveBeenCalledWith(mockIdentifier);
     });
   });
   describe('getChildren()', (): void => {
     it('should call the accessors getChildren() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'getChildren');
       passthrough.getChildren(mockIdentifier);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier);
+      expect(childAccessor.getChildren).toHaveBeenCalledTimes(1);
+      expect(childAccessor.getChildren).toHaveBeenCalledWith(mockIdentifier);
     });
   });
   describe('deleteResource()', (): void => {
     it('should call the accessors deleteResource() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'deleteResource');
       await passthrough.deleteResource(mockIdentifier);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier);
+      expect(childAccessor.deleteResource).toHaveBeenCalledTimes(1);
+      expect(childAccessor.deleteResource).toHaveBeenCalledWith(mockIdentifier);
     });
   });
   describe('writeContainer()', (): void => {
     it('should call the accessors writeContainer() function.', async(): Promise<void> => {
-      const spy = jest.spyOn(childAccessor, 'writeContainer');
       await passthrough.writeContainer(mockIdentifier, mockMetadata);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
+      expect(childAccessor.writeContainer).toHaveBeenCalledTimes(1);
+      expect(childAccessor.writeContainer).toHaveBeenCalledWith(mockIdentifier, mockMetadata);
     });
   });
 });

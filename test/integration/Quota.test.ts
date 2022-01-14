@@ -1,4 +1,5 @@
 import { promises as fsPromises } from 'fs';
+import type { Stats } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
 import type { App } from '../../src';
@@ -24,24 +25,52 @@ async function registerTestPods(baseUrl: string): Promise<void> {
   await fetch(`${baseUrl}idp/register/`, {
     method: 'POST',
     headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'content-length': '120',
+      'content-type': 'application/json',
     },
-    body: 'createWebId=on&webId=&register=on&createPod=on&' +
-      'podName=abel&email=abel%40example.ai&password=t&confirmPassword=t&submit=',
+    body: JSON.stringify({
+      createWebId: 'on',
+      webId: '',
+      register: 'on',
+      createPod: 'on',
+      podName: 'abel',
+      email: 'abel@example.ai',
+      password: 't',
+      confirmPassword: 't',
+      submit: '',
+    }),
   });
   await fetch(`${baseUrl}idp/register/`, {
     method: 'POST',
     headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'content-length': '124',
+      'content-type': 'application/json',
     },
-    body: 'createWebId=on&webId=&register=on&createPod=on&' +
-      'podName=arthur&email=arthur%40example.ai&password=t&confirmPassword=t&submit=',
+    body: JSON.stringify({
+      createWebId: 'on',
+      webId: '',
+      register: 'on',
+      createPod: 'on',
+      podName: 'arthur',
+      email: 'arthur@example.ai',
+      password: 't',
+      confirmPassword: 't',
+      submit: '',
+    }),
   });
 }
 
 describe('A quota server with', (): void => {
+  // The allowed quota depends on what filesystem/OS you are using.
+  // For example: an empty folder is reported as
+  //  0KB on NTFS (most of the times, milage may vary)
+  //  300-700KB on APFS (depending on its contents and settings)
+  //  4O96KB on FAT
+  // While I am running these tests on a macBook, Github runs them on a
+  // mounted FAT drive and you might be running them on Windows/NTFS.
+  let folderSizeTest: Stats;
+  beforeAll(async(): Promise<void> => {
+    folderSizeTest = await fsPromises.stat(process.cwd());
+  });
+
   /** Test the general functionality of the server using pod quota */
   describe('pod quota enabled', (): void => {
     const port = getPort('PodQuota');
@@ -54,7 +83,6 @@ describe('A quota server with', (): void => {
 
     beforeAll(async(): Promise<void> => {
       // Calculate the allowed quota depending on file system used
-      const folderSizeTest = await fsPromises.stat(process.cwd());
       const size = (folderSizeTest.size * 2) + 4000;
 
       const instances = await instantiateFromConfig(
@@ -93,7 +121,7 @@ describe('A quota server with', (): void => {
     });
 
     // Test if writing in another pod is still possible
-    it('should allow writing in a pod that isnt full yet.', async(): Promise<void> => {
+    it('should allow writing in a pod that is not full yet.', async(): Promise<void> => {
       const testFile1 = `${pod2}/profile/test1.txt`;
 
       const response1 = performSimplePutWithLength(testFile1, 500);
@@ -128,7 +156,6 @@ describe('A quota server with', (): void => {
 
     beforeAll(async(): Promise<void> => {
       // Calculate the allowed quota depending on file system used
-      const folderSizeTest = await fsPromises.stat(process.cwd());
       const size = (folderSizeTest.size * 6) + 6000;
 
       const instances = await instantiateFromConfig(
