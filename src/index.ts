@@ -128,7 +128,6 @@ export * from './identity/configuration/ProviderFactory';
 
 // Identity/Interaction/Email-Password/Handler
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
-export * from './identity/interaction/email-password/handler/InteractionHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
 export * from './identity/interaction/email-password/handler/RegistrationHandler';
 export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
