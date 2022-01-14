@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Generates resources based on the templates stored in the template folder.",
+      "@id": "urn:solid-server:default:ResourcesGenerator",
+      "@type": "TemplatedResourcesGenerator",
+      "templateFolder": "@css:templates/pod-oak",
+      "factory": {
+        "@type": "ExtensionBasedMapperFactory"
+      },
+      "templateEngine": {
+        "@type": "HandlebarsTemplateEngine"
+      }
+    }
+  ]
+}
