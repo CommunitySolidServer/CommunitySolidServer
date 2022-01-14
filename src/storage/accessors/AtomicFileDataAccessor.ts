@@ -48,8 +48,12 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
       await fsPromises.rename(tempFilePath, link.filePath);
     } catch (error: unknown) {
       // Delete the data already written
-      if ((await this.getStats(tempFilePath)).isFile()) {
-        await fsPromises.unlink(tempFilePath);
+      try {
+        if ((await this.getStats(tempFilePath)).isFile()) {
+          await fsPromises.unlink(tempFilePath);
+        }
+      } catch {
+        throw error;
       }
       throw error;
     }

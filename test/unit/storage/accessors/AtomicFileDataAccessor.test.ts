@@ -65,7 +65,7 @@ describe('AtomicFileDataAccessor', (): void => {
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
-    it('should throw when renameing / moving the file goes wrong.', async(): Promise<void> => {
+    it('should throw when renaming / moving the file goes wrong.', async(): Promise<void> => {
       jest.requireMock('fs').promises.rename = jest.fn((): any => {
         throw new Error('error');
       });
@@ -84,5 +84,14 @@ describe('AtomicFileDataAccessor', (): void => {
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
+
+    it('should throw when renaming / moving the file goes wrong and the temp file does not exist.',
+      async(): Promise<void> => {
+        jest.requireMock('fs').promises.rename = jest.fn((): any => {
+          throw new Error('error');
+        });
+        jest.requireMock('fs').promises.stat = jest.fn();
+        await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
+      });
   });
 });
