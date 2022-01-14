@@ -1,7 +1,4 @@
-/* eslint-disable import/no-unresolved */
-// import/no-unresolved can't handle jose imports
-import { fromKeyLike } from 'jose/jwk/from_key_like';
-import { generateKeyPair } from 'jose/util/generate_key_pair';
+import { generateKeyPair, exportJWK } from 'jose';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { JwksKeyGenerator } from './JwksKeyGenerator';
 
@@ -40,8 +37,8 @@ export class BasicJwksKeyGenerator implements JwksKeyGenerator {
   private async generateAndSaveKeys(keyName: string): Promise<{ public: { keys: any[] }; private: { keys: any[] }}> {
     // If they are not, generate and save them
     const { privateKey, publicKey } = await generateKeyPair('RS256');
-    const jwkPrivate = await fromKeyLike(privateKey);
-    const jwkPublic = await fromKeyLike(publicKey);
+    const jwkPrivate = await exportJWK(privateKey);
+    const jwkPublic = await exportJWK(publicKey);
     // Required for Solid authn client
     jwkPrivate.alg = 'RS256';
     jwkPublic.alg = 'RS256';

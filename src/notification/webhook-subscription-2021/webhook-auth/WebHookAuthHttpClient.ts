@@ -2,10 +2,7 @@ import type { RequestOptions, IncomingMessage } from 'http';
 import { request as httpRequest } from 'http';
 import { request as httpsRequest } from 'https';
 import { URL } from 'url';
-// eslint-disable-next-line import/no-unresolved
-import { parseJwk } from 'jose/jwk/parse';
-// eslint-disable-next-line import/no-unresolved
-import { SignJWT } from 'jose/jwt/sign';
+import { importJWK, SignJWT } from 'jose';
 import type { HttpClient } from '../../../http/client/HttpClient';
 import type { JwksKeyGenerator } from '../../../identity/configuration/JwksKeyGenerator';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
@@ -40,7 +37,7 @@ export class WebHookAuthHttpClient implements HttpClient {
         if (!jwk) {
           throw new InternalServerError('No jwk available.');
         }
-        parseJwk(jwk, 'RS256')
+        importJWK(jwk, 'RS256')
           .then((jwkKeyLike): void => {
             const jwtRaw = {
               htu: parsedUrl.toString(),
