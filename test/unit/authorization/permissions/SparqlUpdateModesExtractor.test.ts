@@ -1,25 +1,21 @@
 import { Factory } from 'sparqlalgebrajs';
 import { AccessMode } from '../../../../src/authorization/permissions/Permissions';
-import { SparqlPatchModesExtractor } from '../../../../src/authorization/permissions/SparqlPatchModesExtractor';
+import { SparqlUpdateModesExtractor } from '../../../../src/authorization/permissions/SparqlUpdateModesExtractor';
 import type { Operation } from '../../../../src/http/Operation';
 import type { SparqlUpdatePatch } from '../../../../src/http/representation/SparqlUpdatePatch';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
-describe('A SparqlPatchModesExtractor', (): void => {
-  const extractor = new SparqlPatchModesExtractor();
+describe('A SparqlUpdateModesExtractor', (): void => {
+  const extractor = new SparqlUpdateModesExtractor();
   const factory = new Factory();
 
-  it('can only handle (composite) SPARQL DELETE/INSERT PATCH operations.', async(): Promise<void> => {
+  it('can only handle (composite) SPARQL DELETE/INSERT operations.', async(): Promise<void> => {
     const operation = { method: 'PATCH', body: { algebra: factory.createDeleteInsert() }} as unknown as Operation;
     await expect(extractor.canHandle(operation)).resolves.toBeUndefined();
     (operation.body as SparqlUpdatePatch).algebra = factory.createCompositeUpdate([ factory.createDeleteInsert() ]);
     await expect(extractor.canHandle(operation)).resolves.toBeUndefined();
 
-    let result = extractor.canHandle({ ...operation, method: 'GET' });
-    await expect(result).rejects.toThrow(NotImplementedHttpError);
-    await expect(result).rejects.toThrow('Cannot determine permissions of GET, only PATCH.');
-
-    result = extractor.canHandle({ ...operation, body: {} as SparqlUpdatePatch });
+    let result = extractor.canHandle({ ...operation, body: {} as SparqlUpdatePatch });
     await expect(result).rejects.toThrow(NotImplementedHttpError);
     await expect(result).rejects.toThrow('Cannot determine permissions of non-SPARQL patches.');
 

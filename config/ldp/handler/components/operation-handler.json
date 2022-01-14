@@ -28,6 +28,10 @@
         {
           "@type": "PatchOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" }
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
         }
       ]
     }

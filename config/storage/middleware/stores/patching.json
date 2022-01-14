@@ -22,6 +22,10 @@
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
               "intermediateType": "internal/quads",
               "defaultType": "text/turtle"
+            },
+            {
+              "@type": "StaticThrowHandler",
+              "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }
           ]
         }
