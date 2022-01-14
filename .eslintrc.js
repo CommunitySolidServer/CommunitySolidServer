@@ -32,10 +32,6 @@ module.exports = {
         // even it doesn't contain any source code, like `@types/rdf-js`
         alwaysTryTypes: true,
       },
-      node: {
-        extensions: [ '.js', '.ts' ],
-        paths: [ 'src' ]
-      }
     },
   },
   rules: {
