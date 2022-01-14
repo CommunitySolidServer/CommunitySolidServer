@@ -21,7 +21,7 @@
     "files-scs:config/ldp/metadata-writer/default.json",
     "files-scs:config/ldp/modes/default.json",
     "files-scs:config/notification/default.json",
-    "files-scs:config/storage/backend/file.json",
+    "files-scs:config/storage/backend/memory.json",
     "files-scs:config/storage/key-value/resource-store.json",
     "files-scs:config/storage/middleware/default.json",
     "files-scs:config/util/auxiliary/acl.json",
