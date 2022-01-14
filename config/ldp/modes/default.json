@@ -6,9 +6,34 @@
       "@id": "urn:solid-server:default:ModesExtractor",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@type": "MethodModesExtractor" },
-        { "@type": "SparqlPatchModesExtractor" }
+        {
+          "comment": "Extract access modes for PATCH requests based on the request body.",
+          "@id": "urn:solid-server:default:PatchModesExtractor"
+        },
+        {
+          "comment": "Extract access modes based on the HTTP method.",
+          "@type": "MethodModesExtractor"
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
+        }
       ]
+    },
+    {
+      "@id": "urn:solid-server:default:PatchModesExtractor",
+      "@type": "MethodFilterHandler",
+      "methods": [ "PATCH" ],
+      "source": {
+        "@type": "WaterfallHandler",
+        "handlers": [
+          { "@type": "SparqlUpdateModesExtractor" },
+          {
+            "@type": "StaticThrowHandler",
+            "error": { "@type": "UnsupportedMediaTypeHttpError" }
+          }
+        ]
+      }
     }
   ]
 }

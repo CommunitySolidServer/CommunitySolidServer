@@ -6,11 +6,13 @@ import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpErr
 import { ModesExtractor } from './ModesExtractor';
 import { AccessMode } from './Permissions';
 
-export class SparqlPatchModesExtractor extends ModesExtractor {
-  public async canHandle({ method, body }: Operation): Promise<void> {
-    if (method !== 'PATCH') {
-      throw new NotImplementedHttpError(`Cannot determine permissions of ${method}, only PATCH.`);
-    }
+/**
+ * Generates permissions for a SPARQL DELETE/INSERT body.
+ * Updates with only an INSERT can be done with just append permissions,
+ * while DELETEs require write permissions as well.
+ */
+export class SparqlUpdateModesExtractor extends ModesExtractor {
+  public async canHandle({ body }: Operation): Promise<void> {
     if (!this.isSparql(body)) {
       throw new NotImplementedHttpError('Cannot determine permissions of non-SPARQL patches.');
     }

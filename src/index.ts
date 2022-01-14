@@ -18,7 +18,7 @@ export * from './authorization/access/AgentGroupAccessChecker';
 export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
-export * from './authorization/permissions/SparqlPatchModesExtractor';
+export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
 export * from './authorization/AllStaticReader';
@@ -359,9 +359,12 @@ export * from './util/errors/UnsupportedMediaTypeHttpError';
 export * from './util/handlers/AsyncHandler';
 export * from './util/handlers/BooleanHandler';
 export * from './util/handlers/ConditionalHandler';
+export * from './util/handlers/HandlerUtil';
+export * from './util/handlers/MethodFilterHandler';
 export * from './util/handlers/ParallelHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/StaticHandler';
+export * from './util/handlers/StaticThrowHandler';
 export * from './util/handlers/UnionHandler';
 export * from './util/handlers/UnsupportedAsyncHandler';
 export * from './util/handlers/WaterfallHandler';
