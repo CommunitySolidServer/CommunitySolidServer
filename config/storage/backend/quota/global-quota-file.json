@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/backend/quota/quota-file.json"
+  ],
+  "comment": "Configuration of a GlobalQuotaStrategy to enforce quota globally on the server.",
+  "@graph": [
+    {
+      "comment": "Enforces quota globally for all data on the server",
+      "@id": "urn:solid-server:default:QuotaStrategy",
+      "@type": "GlobalQuotaStrategy",
+      "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
+      "base": { "@id": "urn:solid-server:default:variable:baseUrl" }
+    }
+  ]
+}
