@@ -30,7 +30,7 @@ describe('ValidatingDataAccessor', (): void => {
   });
 
   describe('writeDocument()', (): void => {
-    it('should call the validator\'s handle() function.', async(): Promise<void> => {
+    it('should call the validator\'s handleSafe() function.', async(): Promise<void> => {
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
       expect(validator.handleSafe).toHaveBeenCalledTimes(1);
       expect(validator.handleSafe).toHaveBeenCalledWith({
