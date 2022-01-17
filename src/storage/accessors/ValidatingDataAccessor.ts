@@ -24,7 +24,7 @@ export class ValidatingDataAccessor extends PassthroughDataAccessor {
     data: Guarded<Readable>,
     metadata: RepresentationMetadata,
   ): Promise<void> {
-    const pipedRep = await this.validator.handle({
+    const pipedRep = await this.validator.handleSafe({
       representation: new BasicRepresentation(data, metadata),
       identifier,
     });

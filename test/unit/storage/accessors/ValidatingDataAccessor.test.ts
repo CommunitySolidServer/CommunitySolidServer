@@ -24,7 +24,7 @@ describe('ValidatingDataAccessor', (): void => {
     } as any;
     childAccessor.getChildren = jest.fn();
     validator = {
-      handle: jest.fn(async(input: ValidatorInput): Promise<Representation> => input.representation),
+      handleSafe: jest.fn(async(input: ValidatorInput): Promise<Representation> => input.representation),
     } as any;
     validatingAccessor = new ValidatingDataAccessor(childAccessor, validator);
   });
@@ -32,8 +32,11 @@ describe('ValidatingDataAccessor', (): void => {
   describe('writeDocument()', (): void => {
     it('should call the validator\'s handle() function.', async(): Promise<void> => {
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
-      expect(validator.handle).toHaveBeenCalledTimes(1);
-      expect(validator.handle).toHaveBeenCalledWith({ representation: mockRepresentation, identifier: mockIdentifier });
+      expect(validator.handleSafe).toHaveBeenCalledTimes(1);
+      expect(validator.handleSafe).toHaveBeenCalledWith({
+        representation: mockRepresentation,
+        identifier: mockIdentifier,
+      });
     });
     it('should call the accessors writeDocument() function.', async(): Promise<void> => {
       await validatingAccessor.writeDocument(mockIdentifier, mockData, mockMetadata);
