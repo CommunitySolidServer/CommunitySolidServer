@@ -59,7 +59,7 @@ describe('A quota server with', (): void => {
   // The allowed quota depends on what filesystem/OS you are using.
   // For example: an empty folder is reported as
   //  0KB on NTFS (most of the times, milage may vary)
-  //  300-700KB on APFS (depending on its contents and settings)
+  //  0-...KB on APFS (depending on its contents and settings)
   //  4O96KB on FAT
   // While I am running these tests on a macBook, Github runs them on a
   // mounted FAT drive and you might be running them on Windows/NTFS.
