@@ -5,6 +5,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
 import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
+import { mockFs } from '../../../util/Util';
 
 describe('A FileSizeReporter', (): void => {
   const mapper: jest.Mocked<FileIdentifierMapper> = {
@@ -23,6 +24,7 @@ describe('A FileSizeReporter', (): void => {
   );
 
   beforeAll(async(): Promise<void> => {
+    mockFs(fileRoot, new Date());
     await fsPromises.mkdir(fileRoot, { recursive: true });
   });
   afterAll(async(): Promise<void> => {
@@ -99,7 +101,7 @@ describe('A FileSizeReporter', (): void => {
     await fsPromises.unlink(testFile);
   });
 
-  it('getUnit() should return \'bytes\'.', (): void => {
+  it('getUnit() should return UNIT_BYTES.', (): void => {
     expect(fileSizeReporter.getUnit()).toBe(UNIT_BYTES);
   });
 
