@@ -4,6 +4,7 @@ import { RepresentationMetadata } from '../../../../src/http/representation/Repr
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
+import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
 
 describe('A FileSizeReporter', (): void => {
   const mapper: jest.Mocked<FileIdentifierMapper> = {
@@ -93,13 +94,13 @@ describe('A FileSizeReporter', (): void => {
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
-    expect((await result).unit).toBe('bytes');
+    expect((await result).unit).toBe(UNIT_BYTES);
 
     await fsPromises.unlink(testFile);
   });
 
   it('getUnit() should return \'bytes\'.', (): void => {
-    expect(fileSizeReporter.getUnit()).toBe('bytes');
+    expect(fileSizeReporter.getUnit()).toBe(UNIT_BYTES);
   });
 
   it('should return 0 when the size of a non existent file is requested.', async(): Promise<void> => {

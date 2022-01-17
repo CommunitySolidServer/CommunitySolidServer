@@ -25,7 +25,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
     this.accessor = accessor;
   }
 
-  public async getAvailableSpace(identifier: ResourceIdentifier): Promise<Size> {
+  protected async getTotalSpaceUsed(identifier: ResourceIdentifier): Promise<Size> {
     const pimStorage = await this.searchPimStorage(identifier);
 
     // No storage was found containing this identifier, so we assume this identifier points to an internal location.
@@ -34,13 +34,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
       return { amount: Number.MAX_SAFE_INTEGER, unit: this.limit.unit };
     }
 
-    let used = (await this.reporter.getSize(pimStorage)).amount;
-
-    // When a file is overwritten the space the file takes up right now should also
-    // be counted as available space as it will disappear/be overwritten
-    used -= (await this.reporter.getSize(identifier)).amount;
-
-    return { amount: this.limit.amount - used, unit: this.limit.unit };
+    return this.reporter.getSize(pimStorage);
   }
 
   /** Finds the closest parent container that has pim:storage as metadata */

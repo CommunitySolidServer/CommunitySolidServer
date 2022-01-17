@@ -2,6 +2,7 @@ import { RepresentationMetadata } from '../../../src/http/representation/Represe
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { PodQuotaStrategy } from '../../../src/storage/quota/PodQuotaStrategy';
+import { UNIT_BYTES } from '../../../src/storage/size-reporter/Size';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
 import type { IdentifierStrategy } from '../../../src/util/identifiers/IdentifierStrategy';
@@ -23,7 +24,7 @@ describe('PodQuotaStrategy', (): void => {
   beforeEach((): void => {
     jest.restoreAllMocks();
     mockFs(rootFilePath, new Date());
-    mockSize = { amount: 2000, unit: 'bytes' };
+    mockSize = { amount: 2000, unit: UNIT_BYTES };
     identifierStrategy = new SingleRootIdentifierStrategy(base);
     mockReporter = {
       getSize: jest.fn().mockResolvedValue({ unit: mockSize.unit, amount: 50 }),

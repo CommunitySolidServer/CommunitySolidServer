@@ -36,7 +36,32 @@ export abstract class QuotaStrategy {
    * @param identifier - the identifier of the resource of which you want the available space
    * @returns the available space and the unit of the space as a Size object
    */
-  public abstract getAvailableSpace(identifier: ResourceIdentifier): Promise<Size>;
+  public async getAvailableSpace(identifier: ResourceIdentifier): Promise<Size> {
+    const totalUsed = await this.getTotalSpaceUsed(identifier);
+
+    // Ignore identifiers where quota does not apply
+    if (totalUsed.amount === Number.MAX_SAFE_INTEGER) {
+      return totalUsed;
+    }
+
+    // When a file is overwritten the space the file takes up right now should also
+    // be counted as available space as it will disappear/be overwritten
+    totalUsed.amount -= (await this.reporter.getSize(identifier)).amount;
+
+    return {
+      amount: this.limit.amount - totalUsed.amount,
+      unit: this.limit.unit,
+    };
+  }
+
+  /**
+   * Get the currently used/occupied space
+   *
+   * @param identifier - the identifier that should be used to calculate the total
+   * @returns a Size object containing the the requested value.
+   * If quota is not relevant for this identifier, Size.amount should be Number.MAX_SAFE_INTEGER
+   */
+  protected abstract getTotalSpaceUsed(identifier: ResourceIdentifier): Promise<Size>;
 
   /**
    * Get an estimated size of the resource

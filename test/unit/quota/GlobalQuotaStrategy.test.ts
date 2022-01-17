@@ -1,5 +1,6 @@
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { GlobalQuotaStrategy } from '../../../src/storage/quota/GlobalQuotaStrategy';
+import { UNIT_BYTES } from '../../../src/storage/size-reporter/Size';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
 
@@ -10,7 +11,7 @@ describe('GlobalQuotaStrategy', (): void => {
   let mockBase: string;
 
   beforeEach((): void => {
-    mockSize = { amount: 2000, unit: 'bytes' };
+    mockSize = { amount: 2000, unit: UNIT_BYTES };
     mockBase = '';
     mockReporter = {
       getSize: jest.fn(async(identifier: ResourceIdentifier): Promise<Size> => ({

@@ -1,5 +1,6 @@
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import { QuotaStrategy } from '../../../src/storage/quota/QuotaStrategy';
+import { UNIT_BYTES } from '../../../src/storage/size-reporter/Size';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
 import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
@@ -12,7 +13,8 @@ class QuotaStrategyWrapper extends QuotaStrategy {
     super(reporter, limit);
   }
 
-  public getAvailableSpace = async(): Promise<Size> => ({ unit: 'bytes', amount: 5 });
+  public getAvailableSpace = async(): Promise<Size> => ({ unit: UNIT_BYTES, amount: 5 });
+  protected getTotalSpaceUsed = async(): Promise<Size> => ({ unit: UNIT_BYTES, amount: 5 });
 }
 
 describe('A QuotaStrategy', (): void => {
@@ -25,7 +27,7 @@ describe('A QuotaStrategy', (): void => {
   beforeEach((): void => {
     jest.restoreAllMocks();
     mockFs(rootFilePath, new Date());
-    mockSize = { amount: 2000, unit: 'bytes' };
+    mockSize = { amount: 2000, unit: UNIT_BYTES };
     mockReporter = {
       getSize: jest.fn().mockResolvedValue({ unit: mockSize.unit, amount: 50 }),
       getUnit: jest.fn().mockReturnValue(mockSize.unit),

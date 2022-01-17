@@ -5,6 +5,7 @@ import { BasicRepresentation } from '../../../../src/http/representation/BasicRe
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { QuotaStrategy } from '../../../../src/storage/quota/QuotaStrategy';
+import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../../src/storage/size-reporter/SizeReporter';
 import { QuotaValidator } from '../../../../src/storage/validators/QuotaValidator';
 import { guardStream } from '../../../../src/util/GuardedStream';
@@ -37,18 +38,18 @@ describe('QuotaValidator', (): void => {
     };
     mockedStrategy = {
       reporter: mockReporter,
-      limit: { unit: 'bytes', amount: 8 },
-      getAvailableSpace: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 10 }),
-      estimateSize: jest.fn().mockResolvedValue({ unit: 'bytes', amount: 8 }),
+      limit: { unit: UNIT_BYTES, amount: 8 },
+      getAvailableSpace: jest.fn().mockResolvedValue({ unit: UNIT_BYTES, amount: 10 }),
+      estimateSize: jest.fn().mockResolvedValue({ unit: UNIT_BYTES, amount: 8 }),
       createQuotaGuard: jest.fn().mockResolvedValue(guardStream(new PassThrough())),
-    };
+    } as any;
     validator = new QuotaValidator(mockedStrategy);
   });
 
   describe('handle()', (): void => {
     // Step 2
     it('should destroy the stream when estimated size is larger than the available size.', async(): Promise<void> => {
-      mockedStrategy.estimateSize.mockResolvedValueOnce({ unit: 'bytes', amount: 11 });
+      mockedStrategy.estimateSize.mockResolvedValueOnce({ unit: UNIT_BYTES, amount: 11 });
 
       const result = validator.handle(mockInput);
       await expect(result).resolves.toBeDefined();
@@ -94,7 +95,7 @@ describe('QuotaValidator', (): void => {
 
       // Putting this after the handle / before consuming the stream will only effect
       // this function in the flush part of the code.
-      mockedStrategy.getAvailableSpace.mockResolvedValueOnce({ unit: 'bytes', amount: -100 });
+      mockedStrategy.getAvailableSpace.mockResolvedValueOnce({ unit: UNIT_BYTES, amount: -100 });
 
       await expect(result).resolves.toBeDefined();
       const awaitedResult = await result;
