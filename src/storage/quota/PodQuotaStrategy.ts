@@ -1,5 +1,6 @@
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { RDF, PIM } from '../../util/Vocabularies';
 import type { DataAccessor } from '../accessors/DataAccessor';
@@ -48,9 +49,12 @@ export class PodQuotaStrategy extends QuotaStrategy {
 
     try {
       metadata = await this.accessor.getMetadata(identifier);
-    } catch {
-      // Resource and/or its metadata do not exist
-      return this.searchPimStorage(parent);
+    } catch (error: unknown) {
+      if (error instanceof NotFoundHttpError) {
+        // Resource and/or its metadata do not exist
+        return this.searchPimStorage(parent);
+      }
+      throw error;
     }
 
     const hasPimStorageMetadata = metadata!.getAll(RDF.type)

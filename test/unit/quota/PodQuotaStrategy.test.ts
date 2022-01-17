@@ -5,6 +5,7 @@ import { PodQuotaStrategy } from '../../../src/storage/quota/PodQuotaStrategy';
 import { UNIT_BYTES } from '../../../src/storage/size-reporter/Size';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
+import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../../../src/util/identifiers/IdentifierStrategy';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { PIM, RDF } from '../../../src/util/Vocabularies';
@@ -53,19 +54,24 @@ describe('PodQuotaStrategy', (): void => {
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: Number.MAX_SAFE_INTEGER }));
     });
     it('should ignore the size of the existing resource when writing inside a pod.', async(): Promise<void> => {
-      const getSizeSpy = jest.spyOn(mockReporter, 'getSize');
       const result = strategy.getAvailableSpace({ path: `${base}nested/nested2/file.txt` });
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
-      expect(getSizeSpy).toHaveBeenCalledTimes(2);
+      expect(mockReporter.getSize).toHaveBeenCalledTimes(2);
     });
     it('should return a Size containing the available space when writing inside a pod.', async(): Promise<void> => {
-      const getSizeSpy = jest.spyOn(mockReporter, 'getSize');
+      accessor.getMetadata.mockImplementationOnce((): any => {
+        throw new NotFoundHttpError();
+      });
+      const result = strategy.getAvailableSpace({ path: `${base}nested/nested2/file.txt` });
+      await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
+      expect(mockReporter.getSize).toHaveBeenCalledTimes(2);
+    });
+    it('should throw when looking for pimStorage errors.', async(): Promise<void> => {
       accessor.getMetadata.mockImplementationOnce((): any => {
         throw new Error('error');
       });
       const result = strategy.getAvailableSpace({ path: `${base}nested/nested2/file.txt` });
-      await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
-      expect(getSizeSpy).toHaveBeenCalledTimes(2);
+      await expect(result).rejects.toThrow('error');
     });
   });
 });
