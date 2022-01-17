@@ -49,7 +49,12 @@ async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<
     const fileList = await fsPromises.readdir(join(rootFilePath, pod));
     for (const file of fileList) {
       if (file !== '.meta') {
-        await fsPromises.rmdir(join(rootFilePath, pod, file), { recursive: true });
+        const path = join(rootFilePath, pod, file);
+        if ((await fsPromises.stat(path)).isDirectory()) {
+          await fsPromises.rmdir(path, { recursive: true });
+        } else {
+          await fsPromises.unlink(path);
+        }
       }
     }
   }
