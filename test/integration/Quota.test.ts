@@ -49,7 +49,7 @@ async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<
     const fileList = await fsPromises.readdir(join(rootFilePath, pod));
     for (const file of fileList) {
       if (file !== '.meta') {
-        await fsPromises.rm(join(rootFilePath, pod, file), { recursive: true });
+        await fsPromises.rmdir(join(rootFilePath, pod, file), { recursive: true });
       }
     }
   }
@@ -69,7 +69,7 @@ describe('A quota server with', (): void => {
     const tempFolder = join(process.cwd(), 'tempFolderForTest');
     await fsPromises.mkdir(tempFolder);
     folderSizeTest = await fsPromises.stat(tempFolder);
-    await fsPromises.rm(tempFolder, { recursive: true });
+    await fsPromises.rmdir(tempFolder, { recursive: true });
   });
   const podName1 = 'arthur';
   const podName2 = 'abel';
