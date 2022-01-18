@@ -16,9 +16,9 @@ export class FileSizeReporter implements SizeReporter<string> {
   private readonly ignoreFolders: RegExp[];
   private readonly rootFilePath: string;
 
-  public constructor(fileIdentifierMapper: FileIdentifierMapper, rootFilePath: string, ignoreFolders: string[]) {
+  public constructor(fileIdentifierMapper: FileIdentifierMapper, rootFilePath: string, ignoreFolders?: string[]) {
     this.fileIdentifierMapper = fileIdentifierMapper;
-    this.ignoreFolders = ignoreFolders.map((folder: string): RegExp => new RegExp(folder, 'u'));
+    this.ignoreFolders = ignoreFolders ? ignoreFolders.map((folder: string): RegExp => new RegExp(folder, 'u')) : [];
     this.rootFilePath = normalizeFilePath(rootFilePath);
   }
 

@@ -16,7 +16,7 @@
       "@id": "urn:solid-server:default:SizeReporter",
       "@type": "FileSizeReporter",
       "fileIdentifierMapper": { "@id": "urn:solid-server:default:FileIdentifierMapper" },
-      "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" },
+      "rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
     },
 
     {

@@ -48,10 +48,6 @@
       "PodQuotaStrategy:_limit_unit": "bytes"
     },
     {
-      "@id": "urn:solid-server:default:SizeReporter",
-      "FileSizeReporter:_ignoreFolders": [ "^/\\.internal$" ]
-    },
-    {
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
       "record": [

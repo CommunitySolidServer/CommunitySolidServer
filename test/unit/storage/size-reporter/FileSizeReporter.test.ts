@@ -31,6 +31,22 @@ describe('A FileSizeReporter', (): void => {
     await fsPromises.rmdir(fileRoot, { recursive: true });
   });
 
+  it('should work without the ignoreFolders constructor parameter.', async(): Promise<void> => {
+    const tempFileSizeReporter = new FileSizeReporter(
+      mapper,
+      fileRoot,
+    );
+
+    const testFile = join(fileRoot, './test.txt');
+    await fsPromises.writeFile(testFile, 'Test file for file size!');
+
+    const result = tempFileSizeReporter.getSize({ path: testFile });
+    await expect(result).resolves.toBeDefined();
+    expect((await result).amount).toBe((await fsPromises.stat(testFile)).size);
+
+    await fsPromises.unlink(testFile);
+  });
+
   it('should report the right file size.', async(): Promise<void> => {
     const testFile = join(fileRoot, './test.txt');
     await fsPromises.writeFile(testFile, 'Test file for file size!');
