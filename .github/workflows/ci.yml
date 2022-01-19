@@ -145,6 +145,8 @@ jobs:
       - test-unit
       - test-integration
       - validate-components
+    # Only run on tags for now
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
