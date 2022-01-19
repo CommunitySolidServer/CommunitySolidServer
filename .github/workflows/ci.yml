@@ -140,6 +140,11 @@ jobs:
           parallel-finished: true
 
   docker:
+    needs:
+      - lint
+      - test-unit
+      - test-integration
+      - validate-components
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -148,10 +153,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          # list of Docker images to use as base name for tags
           images: |
-            name/app
-          # generate Docker tags based on the following events/attributes
+            solidproject/community-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
