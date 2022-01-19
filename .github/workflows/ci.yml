@@ -145,8 +145,8 @@ jobs:
       - test-unit
       - test-integration
       - validate-components
-    # Only run on tags for now
-    if: ${{ github.ref_type == 'tag' }}
+    # Only run on tags starting with v prefix for now
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
