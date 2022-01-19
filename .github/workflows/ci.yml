@@ -145,7 +145,7 @@ jobs:
       - test-unit
       - test-integration
       - validate-components
-    # Only run on tags starting with v prefix for now
+    # Only run on tags starting with v prefix for now -- extra push need for triggering CI again
     # if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
