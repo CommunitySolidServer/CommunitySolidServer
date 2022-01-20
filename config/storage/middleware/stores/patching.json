@@ -14,11 +14,11 @@
             {
               "comment": "Makes sure PATCH operations on containers target the metadata.",
               "@type": "ContainerPatcher",
-              "patcher": { "@type": "SparqlUpdatePatcher" }
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" }
             },
             {
               "@type": "ConvertingPatcher",
-              "patcher": { "@type": "SparqlUpdatePatcher" },
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
               "intermediateType": "internal/quads",
               "defaultType": "text/turtle"
@@ -30,6 +30,15 @@
           ]
         }
       }
+    },
+    {
+      "comment": "Dedicated handlers that apply specific types of patch documents",
+      "@id": "urn:solid-server:default:PatchHandler_RDF",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@type": "N3Patcher" },
+        { "@type": "SparqlUpdatePatcher" }
+      ]
     }
   ]
 }

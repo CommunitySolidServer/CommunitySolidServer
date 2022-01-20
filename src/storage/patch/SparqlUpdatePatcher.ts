@@ -4,7 +4,6 @@ import { newEngine } from '@comunica/actor-init-sparql';
 import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
 import { defaultGraph } from '@rdfjs/data-model';
 import { Store } from 'n3';
-import type { BaseQuad } from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Patch } from '../../http/representation/Patch';
@@ -48,6 +47,10 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
       return representation ?? new BasicRepresentation([], identifier, INTERNAL_QUADS, false);
+    }
+
+    if (representation && representation.metadata.contentType !== INTERNAL_QUADS) {
+      throw new InternalServerError('Quad stream was expected for patching.');
     }
 
     this.validateUpdate(op);
@@ -116,20 +119,8 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
    * Apply the given algebra operation to the given identifier.
    */
   private async patch({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
-    let result: Store<BaseQuad>;
-    let metadata: RepresentationMetadata;
-
-    if (representation) {
-      ({ metadata } = representation);
-      if (metadata.contentType !== INTERNAL_QUADS) {
-        throw new InternalServerError('Quad stream was expected for patching.');
-      }
-      result = await readableToQuads(representation.data);
-      this.logger.debug(`${result.size} quads in ${identifier.path}.`);
-    } else {
-      metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
-      result = new Store<BaseQuad>();
-    }
+    const result = representation ? await readableToQuads(representation.data) : new Store();
+    this.logger.debug(`${result.size} quads in ${identifier.path}.`);
 
     // Run the query through Comunica
     const sparql = await readableToString(patch.data);
@@ -139,6 +130,7 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
+    const metadata = representation?.metadata ?? new RepresentationMetadata(identifier, INTERNAL_QUADS);
     return new BasicRepresentation(result.match() as unknown as Readable, metadata, false);
   }
 }

@@ -11,7 +11,7 @@ describe('A MethodFilterHandler', (): void => {
   const result = 'RESULT';
   let operation: Operation;
   let source: jest.Mocked<AsyncHandler<Operation, string>>;
-  let handler: MethodFilterHandler<Operation, string>;
+  let handler: MethodFilterHandler<any, string>;
 
   beforeEach(async(): Promise<void> => {
     operation = {
@@ -43,6 +43,17 @@ describe('A MethodFilterHandler', (): void => {
     source.canHandle.mockRejectedValueOnce(new Error('not supported'));
     await expect(handler.canHandle(operation)).rejects.toThrow('not supported');
     expect(source.canHandle).toHaveBeenLastCalledWith(operation);
+  });
+
+  it('supports multiple object formats.', async(): Promise<void> => {
+    let input: any = { method: 'PATCH' };
+    await expect(handler.canHandle(input)).resolves.toBeUndefined();
+    input = { operation: { method: 'PATCH' }};
+    await expect(handler.canHandle(input)).resolves.toBeUndefined();
+    input = { request: { method: 'PATCH' }};
+    await expect(handler.canHandle(input)).resolves.toBeUndefined();
+    input = { unknown: { method: 'PATCH' }};
+    await expect(handler.canHandle(input)).rejects.toThrow('Could not find method in input object.');
   });
 
   it('calls the source extractor.', async(): Promise<void> => {

@@ -11,6 +11,7 @@ const portNames = [
   'LpdHandlerWithAuth',
   'LpdHandlerWithoutAuth',
   'Middleware',
+  'N3Patch',
   'PodCreation',
   'RedisResourceLocker',
   'RestrictedIdentity',

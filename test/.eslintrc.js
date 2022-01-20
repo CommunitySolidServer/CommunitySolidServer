@@ -11,6 +11,9 @@ module.exports = {
     'unicorn/no-useless-undefined': 'off',
     'no-process-env': 'off',
 
+    // Rule is not smart enough to check called function in the test
+    'jest/expect-expect': 'off',
+
     // We are not using Mocha
     'mocha/no-exports': 'off',
     'mocha/no-nested-tests': 'off',

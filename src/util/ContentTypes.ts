@@ -5,6 +5,7 @@ export const APPLICATION_SPARQL_UPDATE = 'application/sparql-update';
 export const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 export const TEXT_HTML = 'text/html';
 export const TEXT_MARKDOWN = 'text/markdown';
+export const TEXT_N3 = 'text/n3';
 export const TEXT_TURTLE = 'text/turtle';
 
 // Internal content types (not exposed over HTTP)

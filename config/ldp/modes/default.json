@@ -27,6 +27,7 @@
       "source": {
         "@type": "WaterfallHandler",
         "handlers": [
+          { "@type": "N3PatchModesExtractor" },
           { "@type": "SparqlUpdateModesExtractor" },
           {
             "@type": "StaticThrowHandler",

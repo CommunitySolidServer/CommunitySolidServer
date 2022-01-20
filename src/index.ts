@@ -18,6 +18,7 @@ export * from './authorization/access/AgentGroupAccessChecker';
 export * from './authorization/permissions/Permissions';
 export * from './authorization/permissions/ModesExtractor';
 export * from './authorization/permissions/MethodModesExtractor';
+export * from './authorization/permissions/N3PatchModesExtractor';
 export * from './authorization/permissions/SparqlUpdateModesExtractor';
 
 // Authorization
@@ -45,6 +46,7 @@ export * from './http/auxiliary/Validator';
 
 // HTTP/Input/Body
 export * from './http/input/body/BodyParser';
+export * from './http/input/body/N3PatchBodyParser';
 export * from './http/input/body/RawBodyParser';
 export * from './http/input/body/SparqlUpdateBodyParser';
 
@@ -295,6 +297,7 @@ export * from './storage/mapping/SubdomainExtensionBasedMapper';
 // Storage/Patch
 export * from './storage/patch/ContainerPatcher';
 export * from './storage/patch/ConvertingPatcher';
+export * from './storage/patch/N3Patcher';
 export * from './storage/patch/PatchHandler';
 export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
