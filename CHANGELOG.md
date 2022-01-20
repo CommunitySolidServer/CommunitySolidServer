@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v2.0.2"></a>
+## [v2.0.2](https://github.com/solid/community-server/compare/v2.0.1...v2.0.2) - 2022-01-20
+
+### Added
+* [feat: Offical Docker image build](https://github.com/solid/community-server/commit/48bb9c2cca43e683d66f6a3eff921b59787bfb9d)
+
 <a name="v2.0.1"></a>
 ## [v2.0.1](https://github.com/solid/community-server/compare/v2.0.0...v2.0.1) - 2021-11-02
 
