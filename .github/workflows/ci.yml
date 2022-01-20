@@ -147,7 +147,7 @@ jobs:
       - test-integration-windows
       - validate-components
     # Only run on tags starting with v prefix for now -- extra push need for triggering CI again
-    # if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -159,10 +159,6 @@ jobs:
           images: |
             solidproject/community-server
           tags: |
-            type=raw,value=2.0.1
-            type=raw,value=2.0
-            type=raw,value=2
-            type=raw,value=latest
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
