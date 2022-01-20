@@ -69,20 +69,19 @@ npm start -- # add parameters if needed
 ```
 
 ### 📦 Running via Docker
-Docker allows you to run the server without having Node.js installed:
+Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted on [Docker Hub](https://hub.docker.com/r/solidproject/community-server). 
+
 ```shell
+# Clone the repo to get access to the configs
 git clone https://github.com/solid/community-server.git
 cd community-server
-# Build the Docker image
-docker build --rm -f Dockerfile -t css:latest .
 # Run the image, serving your `~/Solid` directory on `http://localhost:3000`
-docker run --rm -v ~/Solid:/data -p 3000:3000 -it css:latest
+docker run --rm -v ~/Solid:/data -p 3000:3000 -it solidproject/community-server:latest
 # Or use one of the built-in configurations
-docker run --rm -p 3000:3000 -it css:latest -c config/default.json
+docker run --rm -p 3000:3000 -it solidproject/community-server -c config/default.json
 # Or use your own configuration mapped to the right directory
-docker run --rm -v ~/solid-config:/config -p 3000:3000 -it css:latest -c /config/my-config.json
+docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/community-server -c /config/my-config.json
 ```
-
 
 ## 🔧 Configuring the server
 The Community Solid Server is designed to be flexible
