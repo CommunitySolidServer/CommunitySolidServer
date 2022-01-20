@@ -10,6 +10,7 @@ import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplemen
 import { PayloadHttpError } from '../../../../src/util/errors/PayloadHttpError';
 import { PreconditionFailedHttpError } from '../../../../src/util/errors/PreconditionFailedHttpError';
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
+import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
 
 // Only used to make typings easier in the tests
@@ -30,6 +31,7 @@ describe('HttpError', (): void => {
     [ 'PreconditionFailedHttpError', 412, PreconditionFailedHttpError ],
     [ 'PayloadHttpError', 413, PayloadHttpError ],
     [ 'UnsupportedMediaTypeHttpError', 415, UnsupportedMediaTypeHttpError ],
+    [ 'UnprocessableEntityHttpError', 422, UnprocessableEntityHttpError ],
     [ 'InternalServerError', 500, InternalServerError ],
     [ 'NotImplementedHttpError', 501, NotImplementedHttpError ],
   ];

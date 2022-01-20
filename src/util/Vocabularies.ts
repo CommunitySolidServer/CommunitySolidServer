@@ -124,9 +124,14 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
 );
 
 export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
+  'deletes',
+  'inserts',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
   'oidcRegistration',
+  'where',
+
+  'InsertDeletePatch',
 );
 
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',

@@ -8,7 +8,7 @@
       "headers": [
         {
           "ConstantMetadataWriter:_headers_key": "Accept-Patch",
-          "ConstantMetadataWriter:_headers_value": "application/sparql-update"
+          "ConstantMetadataWriter:_headers_value": "application/sparql-update, text/n3"
         },
         {
           "ConstantMetadataWriter:_headers_key": "Allow",
