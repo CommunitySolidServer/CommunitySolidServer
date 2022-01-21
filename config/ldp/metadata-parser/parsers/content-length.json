@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts content-length headers into RDF metadata.",
+      "@id": "urn:solid-server:default:ContentLengthParser",
+      "@type": "ContentLengthParser"
+    }
+  ]
+}

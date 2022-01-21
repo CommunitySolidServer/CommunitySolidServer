@@ -19,6 +19,8 @@ const portNames = [
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
+  'PodQuota',
+  'GlobalQuota',
   // Unit
   'BaseHttpServerFactory',
 ] as const;
@@ -122,7 +124,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
           isFile: (): boolean => typeof folder[name] === 'string',
           isDirectory: (): boolean => typeof folder[name] === 'object',
           isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
-          size: typeof folder[name] === 'string' ? folder[name].length : 0,
+          size: typeof folder[name] === 'string' ? folder[name].length : 4,
           mtime: time,
         } as Stats;
       },
@@ -198,6 +200,21 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
       async writeFile(path: string, data: string): Promise<void> {
         const { folder, name } = getFolder(path);
         folder[name] = data;
+      },
+      async rename(path: string, destination: string): Promise<void> {
+        const { folder, name } = getFolder(path);
+        if (!folder[name]) {
+          throwSystemError('ENOENT');
+        }
+        if (!(await this.lstat(path)).isFile()) {
+          throwSystemError('EISDIR');
+        }
+
+        const { folder: folderDest, name: nameDest } = getFolder(destination);
+        folderDest[nameDest] = folder[name];
+
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete folder[name];
       },
     },
   };

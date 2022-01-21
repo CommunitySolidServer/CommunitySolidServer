@@ -21,10 +21,10 @@ export * from './authorization/permissions/MethodModesExtractor';
 export * from './authorization/permissions/SparqlPatchModesExtractor';
 
 // Authorization
-export * from './authorization/OwnerPermissionReader';
 export * from './authorization/AllStaticReader';
 export * from './authorization/Authorizer';
 export * from './authorization/AuxiliaryReader';
+export * from './authorization/OwnerPermissionReader';
 export * from './authorization/PathBasedReader';
 export * from './authorization/PermissionBasedAuthorizer';
 export * from './authorization/PermissionReader';
@@ -57,6 +57,7 @@ export * from './http/input/identifier/OriginalUrlExtractor';
 export * from './http/input/identifier/TargetExtractor';
 
 // HTTP/Input/Metadata
+export * from './http/input/metadata/ContentLengthParser';
 export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
@@ -248,10 +249,14 @@ export * from './server/util/RedirectAllHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors
+export * from './storage/accessors/AtomicDataAccessor';
+export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
+export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
+export * from './storage/accessors/ValidatingDataAccessor';
 
 // Storage/Conversion
 export * from './storage/conversion/BaseTypedRepresentationConverter';
@@ -295,12 +300,25 @@ export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';
 
+// Storage/Quota
+export * from './storage/quota/GlobalQuotaStrategy';
+export * from './storage/quota/PodQuotaStrategy';
+export * from './storage/quota/QuotaStrategy';
+
 // Storage/Routing
 export * from './storage/routing/BaseUrlRouterRule';
 export * from './storage/routing/ConvertingRouterRule';
 export * from './storage/routing/PreferenceSupport';
 export * from './storage/routing/RegexRouterRule';
 export * from './storage/routing/RouterRule';
+
+// Storage/Size-Reporter
+export * from './storage/size-reporter/FileSizeReporter';
+export * from './storage/size-reporter/Size';
+export * from './storage/size-reporter/SizeReporter';
+
+// Storage/Validators
+export * from './storage/validators/QuotaValidator';
 
 // Storage
 export * from './storage/AtomicResourceStore';
