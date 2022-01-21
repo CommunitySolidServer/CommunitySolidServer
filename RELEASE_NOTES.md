@@ -4,6 +4,7 @@
 ### New features
 - The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
 - The `VoidLocker` can be used to disable locking for development/testing purposes. This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
+- Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
 
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.

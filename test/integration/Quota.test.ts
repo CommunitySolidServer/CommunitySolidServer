@@ -1,8 +1,8 @@
 import { promises as fsPromises } from 'fs';
 import type { Stats } from 'fs';
-import { join } from 'path';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
+import { joinFilePath, joinUrl } from '../../src';
 import type { App } from '../../src';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
@@ -44,12 +44,13 @@ async function registerTestPods(baseUrl: string, pods: string[]): Promise<void> 
   }
 }
 
+/* We just want a container with the correct metadata, everything else can be removed */
 async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<void> {
   for (const pod of pods) {
-    const fileList = await fsPromises.readdir(join(rootFilePath, pod));
+    const fileList = await fsPromises.readdir(joinFilePath(rootFilePath, pod));
     for (const file of fileList) {
       if (file !== '.meta') {
-        const path = join(rootFilePath, pod, file);
+        const path = joinFilePath(rootFilePath, pod, file);
         if ((await fsPromises.stat(path)).isDirectory()) {
           await fsPromises.rmdir(path, { recursive: true });
         } else {
@@ -60,31 +61,30 @@ async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<
   }
 }
 
-describe('A quota server with', (): void => {
+describe('A quota server', (): void => {
   // The allowed quota depends on what filesystem/OS you are using.
   // For example: an empty folder is reported as
-  //  0KB on NTFS (most of the times, milage may vary)
-  //  0-...KB on APFS (depending on its contents and settings)
-  //  4O96KB on FAT
-  // While I am running these tests on a macBook, Github runs them on a
-  // mounted FAT drive and you might be running them on Windows/NTFS.
+  //  - 0KB on NTFS (most of the time, mileage may vary)
+  //  - 0-...KB on APFS (depending on its contents and settings)
+  //  - 4O96KB on FAT
+  // This is why we need to determine the size of a folder on the current system.
   let folderSizeTest: Stats;
   beforeAll(async(): Promise<void> => {
     // We want to use an empty folder as on APFS/Mac folder sizes vary a lot
-    const tempFolder = join(process.cwd(), 'tempFolderForTest');
+    const tempFolder = getTestFolder('quota-temp');
     await fsPromises.mkdir(tempFolder);
     folderSizeTest = await fsPromises.stat(tempFolder);
-    await fsPromises.rmdir(tempFolder, { recursive: true });
+    await removeFolder(tempFolder);
   });
   const podName1 = 'arthur';
   const podName2 = 'abel';
 
   /** Test the general functionality of the server using pod quota */
-  describe('pod quota enabled', (): void => {
+  describe('with pod quota enabled', (): void => {
     const port = getPort('PodQuota');
     const baseUrl = `http://localhost:${port}/`;
-    const pod1 = `${baseUrl}${podName1}`;
-    const pod2 = `${baseUrl}${podName2}`;
+    const pod1 = joinUrl(baseUrl, podName1);
+    const pod2 = joinUrl(baseUrl, podName2);
     const rootFilePath = getTestFolder('quota-pod');
 
     let app: App;
@@ -124,7 +124,7 @@ describe('A quota server with', (): void => {
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(201);
 
-      const response2 = performSimplePutWithLength(testFile2, 2000);
+      const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
@@ -143,18 +143,18 @@ describe('A quota server with', (): void => {
       const testFile1 = `${pod1}/test2.txt`;
       const testFile2 = `${pod2}/test2.txt`;
 
-      const response1 = performSimplePutWithLength(testFile1, 2000);
+      const response1 = performSimplePutWithLength(testFile1, 2500);
       await expect(response1).resolves.toBeDefined();
       expect((await response1).status).toEqual(413);
 
-      const response2 = performSimplePutWithLength(testFile2, 2000);
+      const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toEqual(413);
     });
   });
 
   /** Test the general functionality of the server using global quota */
-  describe('global quota enabled', (): void => {
+  describe('with global quota enabled', (): void => {
     const port = getPort('GlobalQuota');
     const baseUrl = `http://localhost:${port}/`;
     const pod1 = `${baseUrl}${podName1}`;
@@ -198,7 +198,7 @@ describe('A quota server with', (): void => {
       const awaitedRes1 = await response1;
       expect(awaitedRes1.status).toEqual(201);
 
-      const response2 = performSimplePutWithLength(testFile2, 2000);
+      const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       const awaitedRes2 = await response2;
       expect(awaitedRes2.status).toEqual(413);
@@ -208,12 +208,12 @@ describe('A quota server with', (): void => {
       const testFile1 = `${pod1}/test3.txt`;
       const testFile2 = `${pod2}/test4.txt`;
 
-      const response1 = performSimplePutWithLength(testFile1, 2000);
+      const response1 = performSimplePutWithLength(testFile1, 2500);
       await expect(response1).resolves.toBeDefined();
       const awaitedRes1 = await response1;
       expect(awaitedRes1.status).toEqual(413);
 
-      const response2 = performSimplePutWithLength(testFile2, 2000);
+      const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       const awaitedRes2 = await response2;
       expect(awaitedRes2.status).toEqual(413);

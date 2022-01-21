@@ -1,10 +1,10 @@
 import { mkdirSync, promises as fsPromises } from 'fs';
-import { join } from 'path';
 import type { Readable } from 'stream';
 import { v4 } from 'uuid';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Guarded } from '../../util/GuardedStream';
+import { joinFilePath } from '../../util/PathUtil';
 import type { FileIdentifierMapper } from '../mapping/FileIdentifierMapper';
 import type { AtomicDataAccessor } from './AtomicDataAccessor';
 import { FileDataAccessor } from './FileDataAccessor';
@@ -19,7 +19,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
 
   public constructor(resourceMapper: FileIdentifierMapper, rootFilePath: string, tempFilePath: string) {
     super(resourceMapper);
-    this.tempFilePath = join(rootFilePath, tempFilePath);
+    this.tempFilePath = joinFilePath(rootFilePath, tempFilePath);
     // Cannot use fsPromises in constructor
     mkdirSync(this.tempFilePath, { recursive: true });
   }
@@ -36,7 +36,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false, metadata.contentType);
 
     // Generate temporary file name
-    const tempFilePath = join(this.tempFilePath, `temp-${v4()}.txt`);
+    const tempFilePath = joinFilePath(this.tempFilePath, `temp-${v4()}.txt`);
 
     try {
       await this.writeDataFile(tempFilePath, data);

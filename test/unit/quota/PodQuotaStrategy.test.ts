@@ -66,7 +66,7 @@ describe('PodQuotaStrategy', (): void => {
       await expect(result).resolves.toEqual(expect.objectContaining({ amount: mockSize.amount }));
       expect(mockReporter.getSize).toHaveBeenCalledTimes(2);
     });
-    it('should throw when looking for pimStorage errors.', async(): Promise<void> => {
+    it('should throw when looking for pim:Storage errors.', async(): Promise<void> => {
       accessor.getMetadata.mockImplementationOnce((): any => {
         throw new Error('error');
       });

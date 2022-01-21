@@ -55,10 +55,10 @@ export abstract class QuotaStrategy {
   }
 
   /**
-   * Get the currently used/occupied space
+   * Get the currently used/occupied space.
    *
    * @param identifier - the identifier that should be used to calculate the total
-   * @returns a Size object containing the the requested value.
+   * @returns a Size object containing the requested value.
    * If quota is not relevant for this identifier, Size.amount should be Number.MAX_SAFE_INTEGER
    */
   protected abstract getTotalSpaceUsed(identifier: ResourceIdentifier): Promise<Size>;
@@ -80,8 +80,6 @@ export abstract class QuotaStrategy {
    * Like other Passthrough instances this will simply pass on the chunks, when the quota isn't exceeded.
    *
    * @param identifier - the identifier of the resource in question
-   * @param data - the Readable stream that belongs to the identifier
-   * @param metadata - the RepresentationMetadata that belongs to the identifier
    * @returns a Passthrough instance that errors when quota is exceeded
    */
   public async createQuotaGuard(identifier: ResourceIdentifier): Promise<Guarded<PassThrough>> {

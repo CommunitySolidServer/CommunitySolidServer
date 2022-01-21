@@ -124,7 +124,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
           isFile: (): boolean => typeof folder[name] === 'string',
           isDirectory: (): boolean => typeof folder[name] === 'object',
           isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
-          size: typeof folder[name] === 'string' ? folder[name].length : 0,
+          size: typeof folder[name] === 'string' ? folder[name].length : 4,
           mtime: time,
         } as Stats;
       },

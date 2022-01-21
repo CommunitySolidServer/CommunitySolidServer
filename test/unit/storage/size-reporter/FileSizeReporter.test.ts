@@ -1,13 +1,17 @@
 import { promises as fsPromises } from 'fs';
-import { join } from 'path';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
 import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
+import { joinFilePath } from '../../../../src/util/PathUtil';
 import { mockFs } from '../../../util/Util';
 
+jest.mock('fs');
+
 describe('A FileSizeReporter', (): void => {
+  // Folder size is fixed to 4 in the mock
+  const folderSize = 4;
   const mapper: jest.Mocked<FileIdentifierMapper> = {
     mapFilePathToUrl: jest.fn(),
     mapUrlToFilePath: jest.fn().mockImplementation((id: ResourceIdentifier): ResourceLink => ({
@@ -16,19 +20,15 @@ describe('A FileSizeReporter', (): void => {
       isMetadata: false,
     })),
   };
-  const fileRoot = join(process.cwd(), './test-folder/');
+  const fileRoot = joinFilePath(process.cwd(), '/test-folder/');
   const fileSizeReporter = new FileSizeReporter(
     mapper,
     fileRoot,
     [ '^/\\.internal$' ],
   );
 
-  beforeAll(async(): Promise<void> => {
-    mockFs(fileRoot, new Date());
-    await fsPromises.mkdir(fileRoot, { recursive: true });
-  });
-  afterAll(async(): Promise<void> => {
-    await fsPromises.rmdir(fileRoot, { recursive: true });
+  beforeEach(async(): Promise<void> => {
+    mockFs(fileRoot);
   });
 
   it('should work without the ignoreFolders constructor parameter.', async(): Promise<void> => {
@@ -37,84 +37,67 @@ describe('A FileSizeReporter', (): void => {
       fileRoot,
     );
 
-    const testFile = join(fileRoot, './test.txt');
-    await fsPromises.writeFile(testFile, 'Test file for file size!');
+    const testFile = joinFilePath(fileRoot, '/test.txt');
+    await fsPromises.writeFile(testFile, 'A'.repeat(20));
 
     const result = tempFileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
-    expect((await result).amount).toBe((await fsPromises.stat(testFile)).size);
-
-    await fsPromises.unlink(testFile);
+    expect((await result).amount).toBe(20);
   });
 
   it('should report the right file size.', async(): Promise<void> => {
-    const testFile = join(fileRoot, './test.txt');
-    await fsPromises.writeFile(testFile, 'Test file for file size!');
+    const testFile = joinFilePath(fileRoot, '/test.txt');
+    await fsPromises.writeFile(testFile, 'A'.repeat(20));
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
-    expect((await result).amount).toBe((await fsPromises.stat(testFile)).size);
-
-    await fsPromises.unlink(testFile);
+    expect((await result).amount).toBe(20);
   });
 
   it('should work recursively.', async(): Promise<void> => {
-    const containerFile = join(fileRoot, './test-folder-1/');
+    const containerFile = joinFilePath(fileRoot, '/test-folder-1/');
     await fsPromises.mkdir(containerFile, { recursive: true });
-    const testFile = join(containerFile, './test.txt');
-    await fsPromises.writeFile(testFile, 'Test file for file size!');
+    const testFile = joinFilePath(containerFile, '/test.txt');
+    await fsPromises.writeFile(testFile, 'A'.repeat(20));
 
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
 
-    const expectedFileSize = (await fsPromises.stat(testFile)).size;
-    const expectedContainerSize = expectedFileSize + (await fsPromises.stat(containerFile)).size;
-
-    await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
-    await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
-
-    await fsPromises.unlink(testFile);
-    await fsPromises.rmdir(containerFile);
+    await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: 20 }));
+    await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: 20 + folderSize }));
   });
 
   it('should not count files located in an ignored folder.', async(): Promise<void> => {
-    const containerFile = join(fileRoot, './test-folder-2/');
+    const containerFile = joinFilePath(fileRoot, '/test-folder-2/');
     await fsPromises.mkdir(containerFile, { recursive: true });
-    const testFile = join(containerFile, './test.txt');
-    await fsPromises.writeFile(testFile, 'Test file for file size!');
+    const testFile = joinFilePath(containerFile, '/test.txt');
+    await fsPromises.writeFile(testFile, 'A'.repeat(20));
 
-    const internalContainerFile = join(fileRoot, './.internal/');
+    const internalContainerFile = joinFilePath(fileRoot, '/.internal/');
     await fsPromises.mkdir(internalContainerFile, { recursive: true });
-    const internalTestFile = join(internalContainerFile, './test.txt');
-    await fsPromises.writeFile(internalTestFile, 'Test file for file size!');
+    const internalTestFile = joinFilePath(internalContainerFile, '/test.txt');
+    await fsPromises.writeFile(internalTestFile, 'A'.repeat(30));
 
     const fileSize = fileSizeReporter.getSize({ path: testFile });
     const containerSize = fileSizeReporter.getSize({ path: containerFile });
     const rootSize = fileSizeReporter.getSize({ path: fileRoot });
 
-    const expectedFileSize = (await fsPromises.stat(testFile)).size;
-    const expectedContainerSize = expectedFileSize + (await fsPromises.stat(containerFile)).size;
-    const expectedRootSize = expectedContainerSize + (await fsPromises.stat(fileRoot)).size;
+    const expectedFileSize = 20;
+    const expectedContainerSize = 20 + folderSize;
+    const expectedRootSize = expectedContainerSize + folderSize;
 
     await expect(fileSize).resolves.toEqual(expect.objectContaining({ amount: expectedFileSize }));
     await expect(containerSize).resolves.toEqual(expect.objectContaining({ amount: expectedContainerSize }));
     await expect(rootSize).resolves.toEqual(expect.objectContaining({ amount: expectedRootSize }));
-
-    await fsPromises.unlink(testFile);
-    await fsPromises.unlink(internalTestFile);
-    await fsPromises.rmdir(internalContainerFile);
-    await fsPromises.rmdir(containerFile);
   });
 
   it('should have the unit in its return value.', async(): Promise<void> => {
-    const testFile = join(fileRoot, './test2.txt');
-    await fsPromises.writeFile(testFile, 'Test file for file size!');
+    const testFile = joinFilePath(fileRoot, '/test2.txt');
+    await fsPromises.writeFile(testFile, 'A'.repeat(20));
 
     const result = fileSizeReporter.getSize({ path: testFile });
     await expect(result).resolves.toBeDefined();
     expect((await result).unit).toBe(UNIT_BYTES);
-
-    await fsPromises.unlink(testFile);
   });
 
   it('getUnit() should return UNIT_BYTES.', (): void => {
@@ -122,7 +105,7 @@ describe('A FileSizeReporter', (): void => {
   });
 
   it('should return 0 when the size of a non existent file is requested.', async(): Promise<void> => {
-    const result = fileSizeReporter.getSize({ path: join(fileRoot, './test.txt') });
+    const result = fileSizeReporter.getSize({ path: joinFilePath(fileRoot, '/test.txt') });
     await expect(result).resolves.toEqual(expect.objectContaining({ amount: 0 }));
   });
 
