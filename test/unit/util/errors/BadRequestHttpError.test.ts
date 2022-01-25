@@ -4,14 +4,14 @@ describe('An BadRequestHttpError', (): void => {
   it('has status code 400.', async(): Promise<void> => {
     const error = new BadRequestHttpError('test');
 
-    expect(error.statusCode).toEqual(400);
-    expect(error.message).toEqual('test');
-    expect(error.name).toEqual('BadRequestHttpError');
+    expect(error.statusCode).toBe(400);
+    expect(error.message).toBe('test');
+    expect(error.name).toBe('BadRequestHttpError');
   });
 
   it('has a default message if none was provided.', async(): Promise<void> => {
     const error = new BadRequestHttpError();
 
-    expect(error.message).toEqual('The given input is not supported by the server configuration.');
+    expect(error.message).toBe('The given input is not supported by the server configuration.');
   });
 });

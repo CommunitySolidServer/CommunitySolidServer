@@ -122,11 +122,11 @@ describe('A quota server', (): void => {
 
       const response1 = performSimplePutWithLength(testFile1, 2000);
       await expect(response1).resolves.toBeDefined();
-      expect((await response1).status).toEqual(201);
+      expect((await response1).status).toBe(201);
 
       const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
-      expect((await response2).status).toEqual(413);
+      expect((await response2).status).toBe(413);
     });
 
     // Test if writing in another pod is still possible
@@ -135,7 +135,7 @@ describe('A quota server', (): void => {
 
       const response1 = performSimplePutWithLength(testFile1, 2000);
       await expect(response1).resolves.toBeDefined();
-      expect((await response1).status).toEqual(201);
+      expect((await response1).status).toBe(201);
     });
 
     // Both pods should not accept this request anymore
@@ -145,11 +145,11 @@ describe('A quota server', (): void => {
 
       const response1 = performSimplePutWithLength(testFile1, 2500);
       await expect(response1).resolves.toBeDefined();
-      expect((await response1).status).toEqual(413);
+      expect((await response1).status).toBe(413);
 
       const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
-      expect((await response2).status).toEqual(413);
+      expect((await response2).status).toBe(413);
     });
   });
 
@@ -196,12 +196,12 @@ describe('A quota server', (): void => {
       const response1 = performSimplePutWithLength(testFile1, 2000);
       await expect(response1).resolves.toBeDefined();
       const awaitedRes1 = await response1;
-      expect(awaitedRes1.status).toEqual(201);
+      expect(awaitedRes1.status).toBe(201);
 
       const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       const awaitedRes2 = await response2;
-      expect(awaitedRes2.status).toEqual(413);
+      expect(awaitedRes2.status).toBe(413);
     });
 
     it('should return 413 when trying to write to any pod when global quota is exceeded.', async(): Promise<void> => {
@@ -211,12 +211,12 @@ describe('A quota server', (): void => {
       const response1 = performSimplePutWithLength(testFile1, 2500);
       await expect(response1).resolves.toBeDefined();
       const awaitedRes1 = await response1;
-      expect(awaitedRes1.status).toEqual(413);
+      expect(awaitedRes1.status).toBe(413);
 
       const response2 = performSimplePutWithLength(testFile2, 2500);
       await expect(response2).resolves.toBeDefined();
       const awaitedRes2 = await response2;
-      expect(awaitedRes2.status).toEqual(413);
+      expect(awaitedRes2.status).toBe(413);
     });
   });
 });

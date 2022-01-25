@@ -35,7 +35,7 @@ describe('A RepresentationMetadata', (): void => {
   describe('constructor', (): void => {
     it('creates a blank node if no identifier was given.', async(): Promise<void> => {
       metadata = new RepresentationMetadata();
-      expect(metadata.identifier.termType).toEqual('BlankNode');
+      expect(metadata.identifier.termType).toBe('BlankNode');
       expect(metadata.quads()).toHaveLength(0);
     });
 
@@ -51,19 +51,19 @@ describe('A RepresentationMetadata', (): void => {
 
     it('converts string to content type.', async(): Promise<void> => {
       metadata = new RepresentationMetadata('text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
 
       metadata = new RepresentationMetadata({ path: 'identifier' }, 'text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
 
       metadata = new RepresentationMetadata(new RepresentationMetadata(), 'text/turtle');
-      expect(metadata.contentType).toEqual('text/turtle');
+      expect(metadata.contentType).toBe('text/turtle');
     });
 
     it('stores the content-length correctly.', async(): Promise<void> => {
       metadata = new RepresentationMetadata();
       metadata.contentLength = 50;
-      expect(metadata.contentLength).toEqual(50);
+      expect(metadata.contentLength).toBe(50);
 
       metadata = new RepresentationMetadata();
       metadata.contentLength = undefined;
@@ -285,7 +285,7 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.contentType).toBeUndefined();
       metadata.contentType = 'a/b';
       expect(metadata.get(CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
-      expect(metadata.contentType).toEqual('a/b');
+      expect(metadata.contentType).toBe('a/b');
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
     });

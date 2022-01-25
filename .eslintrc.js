@@ -83,6 +83,10 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 'off',
     'unicorn/no-object-as-default-parameter': 'off',
     'unicorn/numeric-separators-style': 'off',
+    // At function only supported in Node v16.6.0
+    'unicorn/prefer-at': 'off',
+    // Does not make sense for more complex cases
+    'unicorn/prefer-object-from-entries': 'off',
     // Can get ugly with large single statements
     'unicorn/prefer-ternary': 'off',
     'yield-star-spacing': [ 'error', 'after' ],

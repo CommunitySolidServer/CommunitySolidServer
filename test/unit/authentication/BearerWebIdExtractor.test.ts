@@ -62,6 +62,21 @@ describe('A BearerWebIdExtractor', (): void => {
     });
   });
 
+  describe('on a request with Authorization and a lowercase Bearer token', (): void => {
+    const request = {
+      method: 'GET',
+      headers: {
+        authorization: 'bearer token-1234',
+      },
+    } as any as HttpRequest;
+
+    it('calls the Bearer verifier with the correct parameters.', async(): Promise<void> => {
+      await webIdExtractor.handleSafe(request);
+      expect(solidTokenVerifier).toHaveBeenCalledTimes(1);
+      expect(solidTokenVerifier).toHaveBeenCalledWith('bearer token-1234');
+    });
+  });
+
   describe('when verification throws an error', (): void => {
     const request = {
       method: 'GET',
