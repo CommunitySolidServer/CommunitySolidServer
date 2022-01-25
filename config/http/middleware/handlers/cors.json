@@ -23,8 +23,7 @@
         "Location",
         "MS-Author-Via",
         "Updates-Via",
-        "WAC-Allow",
-        "Access-Control-Allow-Origin: *"
+        "WAC-Allow"
       ]
     }
   ]
