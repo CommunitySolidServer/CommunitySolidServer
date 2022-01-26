@@ -364,11 +364,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
     addResourceMetadata(representation.metadata, isContainer);
 
-    // Validate container data
-    if (isContainer) {
-      await this.handleContainerData(representation);
-    }
-
     // Validate auxiliary data
     if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       await this.auxiliaryStrategy.validate(representation);
