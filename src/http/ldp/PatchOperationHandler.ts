@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
@@ -36,6 +37,21 @@ export class PatchOperationHandler extends OperationHandler {
     if (!operation.body.metadata.contentType) {
       this.logger.warn('PATCH requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
+    }
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // It must not be possible to create .meta.meta files
+    if (operation.target.path.endsWith('.meta.meta')) {
+      throw new ConflictHttpError('Not allowed to create files with the metadata extension about a metadata file.');
+    }
+
+    // Cannot create metadata without corresponding file
+    if (operation.target.path.endsWith('.meta')) {
+      // -5 as .meta is 5 long | NOTE: should not be hardcoded
+      const resourceIdentifierPath = operation.target.path.slice(0, -5);
+      const resourceExists = await this.store.resourceExists({ path: resourceIdentifierPath });
+      if (!resourceExists) {
+        throw new ConflictHttpError('Not allowed to create a metadata file without a corresponding resource file.');
+      }
     }
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/solid/community-server/issues/632

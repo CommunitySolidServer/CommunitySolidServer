@@ -2,7 +2,6 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import {
@@ -41,12 +40,6 @@ export class BaseFileIdentifierMapper implements FileIdentifierMapper {
    */
   public async mapUrlToFilePath(identifier: ResourceIdentifier, isMetadata: boolean, contentType?: string):
   Promise<ResourceLink> {
-    // Technically we could allow paths ending on .meta as long as we make sure there is never a mixup.
-    // But this can lead to potential issues.
-    // This also immediately stops users that expect they can update metadata like this.
-    if (this.isMetadataPath(identifier.path)) {
-      throw new ConflictHttpError('Not allowed to create files with the metadata extension.');
-    }
     let path = this.getRelativePath(identifier);
     if (isMetadata) {
       path += '.meta';

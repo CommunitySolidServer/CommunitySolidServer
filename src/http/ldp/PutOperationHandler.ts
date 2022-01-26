@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
@@ -36,6 +37,13 @@ export class PutOperationHandler extends OperationHandler {
       this.logger.warn('PUT requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PUT requests require the Content-Type header to be set');
     }
+
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // PUT is not allowed on metadata
+    if (operation.target.path.endsWith('.meta')) {
+      throw new ConflictHttpError('Not allowed to create or edit files with the metadata extension using PUT.');
+    }
+
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/solid/community-server/issues/632
     const exists = await this.store.resourceExists(operation.target, operation.conditions);

@@ -1,7 +1,11 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { serializeQuads } from '../../util/QuadUtil';
+import { readableToString } from '../../util/StreamUtil';
+import { SOLID_HTTP } from '../../util/Vocabularies';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -35,6 +39,13 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // POST is not allowed on metadata
+    if (operation.body.metadata.get(SOLID_HTTP.slug) &&
+            operation.body.metadata.get(SOLID_HTTP.slug)?.value.endsWith('.meta')) {
+      throw new ConflictHttpError('Not allowed to create files with the metadata extension using POST.');
+    }
+    this.logger.info(await readableToString(serializeQuads(operation.body.metadata.quads(null, null, null, null))));
     const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
     return new CreatedResponseDescription(identifier);
   }
