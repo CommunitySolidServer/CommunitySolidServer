@@ -3,6 +3,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { ComposedAuxiliaryStrategy } from '../auxiliary/ComposedAuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
@@ -18,10 +19,12 @@ export class PatchOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
+  private readonly metaStrategy: ComposedAuxiliaryStrategy;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, metaStrategy: ComposedAuxiliaryStrategy) {
     super();
     this.store = store;
+    this.metaStrategy = metaStrategy;
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -38,21 +41,22 @@ export class PatchOperationHandler extends OperationHandler {
       this.logger.warn('PATCH requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PATCH requests require the Content-Type header to be set');
     }
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
-    // It must not be possible to create .meta.meta files
-    if (operation.target.path.endsWith('.meta.meta')) {
-      throw new ConflictHttpError('Not allowed to create files with the metadata extension about a metadata file.');
-    }
 
-    // Cannot create metadata without corresponding file
-    if (operation.target.path.endsWith('.meta')) {
-      // -5 as .meta is 5 long | NOTE: should not be hardcoded
-      const resourceIdentifierPath = operation.target.path.slice(0, -5);
-      const resourceExists = await this.store.resourceExists({ path: resourceIdentifierPath });
-      if (!resourceExists) {
+    if (this.metaStrategy.isAuxiliaryIdentifier(operation.target)) {
+      const correspondingResourceIdentifier = this.metaStrategy.getSubjectIdentifier(operation.target);
+
+      // Cannot create metadata without corresponding file
+      if (!await this.store.resourceExists(correspondingResourceIdentifier)) {
         throw new ConflictHttpError('Not allowed to create a metadata file without a corresponding resource file.');
       }
+
+      // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+      // It must not be possible to create .meta.meta files
+      if (this.metaStrategy.isAuxiliaryIdentifier(correspondingResourceIdentifier)) {
+        throw new ConflictHttpError('Not allowed to create files with the metadata extension about a metadata file.');
+      }
     }
+
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/solid/community-server/issues/632
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the

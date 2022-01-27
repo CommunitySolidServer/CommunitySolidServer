@@ -3,6 +3,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { ComposedAuxiliaryStrategy } from '../auxiliary/ComposedAuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
@@ -17,10 +18,12 @@ export class PutOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
+  private readonly metaStrategy: ComposedAuxiliaryStrategy;
 
-  public constructor(store: ResourceStore) {
+  public constructor(store: ResourceStore, metaStrategy: ComposedAuxiliaryStrategy) {
     super();
     this.store = store;
+    this.metaStrategy = metaStrategy;
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -40,7 +43,7 @@ export class PutOperationHandler extends OperationHandler {
 
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // PUT is not allowed on metadata
-    if (operation.target.path.endsWith('.meta')) {
+    if (this.metaStrategy.isAuxiliaryIdentifier(operation.target)) {
       throw new ConflictHttpError('Not allowed to create or edit files with the metadata extension using PUT.');
     }
 

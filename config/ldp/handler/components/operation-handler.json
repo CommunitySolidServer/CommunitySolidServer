@@ -11,15 +11,18 @@
         },
         {
           "@type": "PostOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore"  }
+          "store": { "@id": "urn:solid-server:default:ResourceStore"  },
+          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "PutOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "DeleteOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "HeadOperationHandler",
@@ -27,7 +30,8 @@
         },
         {
           "@type": "PatchOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         }
       ]
     }
