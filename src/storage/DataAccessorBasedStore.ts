@@ -203,6 +203,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
+    if (isContainer && Boolean(oldMetadata)) {
+      throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
+    }
+
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
     if (!isContainer) {
