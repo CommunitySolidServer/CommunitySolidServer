@@ -1,58 +1,65 @@
-/* eslint-disable func-style */
-import type { IncomingHttpHeaders, IncomingMessage, Server } from 'http';
+import { URL } from 'url';
 import { BaseHttpClient } from '../../../../src/http/client/BaseHttpClient';
-import { BaseHttpServerFactory } from '../../../../src/server/BaseHttpServerFactory';
-import { HttpHandler } from '../../../../src/server/HttpHandler';
-import type { HttpHandlerInput } from '../../../../src/server/HttpHandler';
 
-class MockHttpHandler extends HttpHandler {
-  public headers?: IncomingHttpHeaders;
-  public data?: any;
-  public async handle(input: HttpHandlerInput): Promise<void> {
-    const { request, response } = input;
-    const { headers, readableLength } = request;
-    const data = request.read(readableLength);
-
-    if (headers) {
-      this.headers = headers;
-      this.data = data;
-      response.statusCode = 200;
-      response.write('DUMMY');
-      response.end();
+let errorListener: any;
+let responseListener: any;
+const on = jest.fn(
+  (event: string, listener: any): any => {
+    if (event === 'error') {
+      errorListener = listener;
+    } else if (event === 'response') {
+      responseListener = listener;
     }
-  }
-}
+  },
+);
+const write = jest.fn();
+const end = jest.fn();
+const request = {
+  on,
+  write,
+  end,
+};
+jest.mock('http', (): any => ({
+  request: (): any => request,
+}));
+jest.mock('https', (): any => ({
+  request: (): any => request,
+}));
 
 describe('A base http client', (): void => {
-  const httpHandler = new MockHttpHandler();
-  const port = 9898;
-  const url = `http://localhost:${port}`;
-  let server: Server;
-  beforeAll(async(): Promise<void> => {
-    server = new BaseHttpServerFactory(httpHandler, { https: false }).startServer(port);
-  });
-  afterAll((): void => {
-    try {
-      server.close();
-    } catch {
-      // Ignored
-    }
-  });
-  it('shoud send headers to the server.', async(): Promise<void> => {
+  it('should throw for unsupported protocols.', async(): Promise<void> => {
     const client = new BaseHttpClient();
-    const callback: (res: IncomingMessage) => void = (res: IncomingMessage): void => {
-      expect(res.statusCode).toEqual(200);
-    };
-    const seconds: (duration: number) => Promise<void> = async function(duration: number): Promise<void> {
-      return new Promise<void>((resolve): void => {
-        setTimeout((): void => resolve(), duration * 1000);
-      });
-    };
-    client.call(url, { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA', callback);
-    await seconds(1);
-    expect(httpHandler.headers).toEqual(
-      { accept: 'text/plain', connection: 'close', host: `localhost:${port}`, 'transfer-encoding': 'chunked' },
-    );
-    expect((httpHandler.data as Buffer).toString()).toEqual(Buffer.from('DATA').toString());
+    const response = client.call('file://path/foo/bar', { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA');
+    await expect(response).rejects.toThrow(new Error(`Protocol file: not supported.`));
+  });
+  it('should throw for unsupported protocols when given as URL.', async(): Promise<void> => {
+    const client = new BaseHttpClient();
+    const response = client.call(new URL('file://path/foo/bar'), { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA');
+    await expect(response).rejects.toThrow(new Error(`Protocol file: not supported.`));
+  });
+  it('can errors on bad requests.', async(): Promise<void> => {
+    const client = new BaseHttpClient();
+    end.mockImplementationOnce((): any => {
+      errorListener({ message: 'error' });
+      return { statusCode: 400 };
+    });
+    const promise = client.call('http://server/foo/bar', { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA');
+    await expect(promise).rejects.toThrow(new Error(`Fetch error: error`));
+  });
+  it('can send http requests.', async(): Promise<void> => {
+    const client = new BaseHttpClient();
+    end.mockImplementationOnce((): any => {
+      responseListener({ statusCode: 200 });
+    });
+    const promise = client.call('http://server/foo/bar', { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA');
+    await expect(promise).resolves.toStrictEqual({ statusCode: 200 });
+  });
+  it('can send https requests.', async(): Promise<void> => {
+    const client = new BaseHttpClient();
+    end.mockImplementationOnce((): any => {
+      responseListener({ statusCode: 200 });
+    });
+    const promise = client.call('https://server/foo/bar', { method: 'POST', headers: { accept: 'text/plain' }}, 'DATA');
+    await expect(promise).resolves.toStrictEqual({ statusCode: 200 });
   });
 });

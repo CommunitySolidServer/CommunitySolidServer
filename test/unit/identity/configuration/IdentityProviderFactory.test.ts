@@ -1,7 +1,9 @@
 import type { Configuration } from 'oidc-provider';
+import { BasicJwksKeyGenerator } from '../../../../src';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type { JwksKeyGenerator } from '../../../../src/identity/configuration/JwksKeyGenerator';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
@@ -36,6 +38,7 @@ describe('An IdentityProviderFactory', (): void => {
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
+  let jwksKeyGenerator: JwksKeyGenerator;
 
   beforeEach(async(): Promise<void> => {
     baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}};
@@ -44,10 +47,10 @@ describe('An IdentityProviderFactory', (): void => {
       createStorageAdapter: jest.fn().mockReturnValue('adapter!'),
     };
 
-    const map = new Map();
+    const storageMap = new Map();
     storage = {
-      get: jest.fn((id: string): any => map.get(id)),
-      set: jest.fn((id: string, value: any): any => map.set(id, value)),
+      get: jest.fn((id: string): any => storageMap.get(id)),
+      set: jest.fn((id: string, value: any): any => storageMap.set(id, value)),
     } as any;
 
     errorHandler = {
@@ -56,6 +59,8 @@ describe('An IdentityProviderFactory', (): void => {
 
     responseWriter = { handleSafe: jest.fn() } as any;
 
+    jwksKeyGenerator = new BasicJwksKeyGenerator({ storage });
+
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
@@ -63,6 +68,7 @@ describe('An IdentityProviderFactory', (): void => {
       storage,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     });
   });
 
@@ -74,6 +80,7 @@ describe('An IdentityProviderFactory', (): void => {
       storage,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     })).toThrow('idpPath needs to start with a /');
   });
 
@@ -131,6 +138,7 @@ describe('An IdentityProviderFactory', (): void => {
       storage,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator,
     });
     const { config } = await factory.getProvider() as unknown as { issuer: string; config: Configuration };
     expect(config.cookies?.long?.signed).toBe(true);
@@ -145,6 +153,7 @@ describe('An IdentityProviderFactory', (): void => {
   it('uses cached keys in case they already exist.', async(): Promise<void> => {
     const result1 = await factory.getProvider() as unknown as { issuer: string; config: Configuration };
     // Create a new factory that is not cached yet
+    const jwksKeyGenerator2 = new BasicJwksKeyGenerator({ storage });
     const factory2 = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
@@ -152,13 +161,14 @@ describe('An IdentityProviderFactory', (): void => {
       storage,
       errorHandler,
       responseWriter,
+      jwksKeyGenerator: jwksKeyGenerator2,
     });
     const result2 = await factory2.getProvider() as unknown as { issuer: string; config: Configuration };
     expect(result1.config.cookies).toEqual(result2.config.cookies);
     expect(result1.config.jwks).toEqual(result2.config.jwks);
     expect(storage.get).toHaveBeenCalledTimes(4);
-    expect(storage.set).toHaveBeenCalledTimes(2);
-    expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
+    expect(storage.set).toHaveBeenCalledTimes(3);
+    expect(storage.set).toHaveBeenCalledWith('jwks:private', result1.config.jwks);
     expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
   });
 });
