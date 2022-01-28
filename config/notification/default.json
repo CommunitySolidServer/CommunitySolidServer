@@ -112,6 +112,7 @@
       "args_httpClient": {
         "@id": "urn:solid-server:default:WebHook2021HttpClient",
         "@type": "WebHookAuthHttpClient",
+        "args_httpClient": { "@id": "urn:solid-server:default:BaseHttpClient" },
         "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
         "args_jwksKeyGenerator": { "@id": "urn:solid-server:default:JwksKeyGenerator" }
       },
