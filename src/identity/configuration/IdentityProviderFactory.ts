@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention, tsdoc/syntax */
-// import/no-unresolved can't handle jose imports
 // tsdoc/syntax can't handle {json} parameter
 import { randomBytes } from 'crypto';
-import type { JWK } from 'jose';
-import { exportJWK, generateKeyPair } from 'jose';
 import type { AnyObject,
   CanBePromise,
   KoaContextWithOIDC,
@@ -132,36 +129,13 @@ export class IdentityProviderFactory implements ProviderFactory {
     };
 
     // Cast necessary due to typing conflict between jose 2.x and 3.x
-    config.jwks = await this.jwksKeyGenerator.getPrivateJwks(JWKS_KEY) as any;
+    config.jwks = await this.jwksKeyGenerator.getPrivateJwks(JWKS_KEY);
     config.cookies = {
       ...config.cookies ?? {},
       keys: await this.generateCookieKeys(),
     };
 
     return config;
-  }
-
-  /**
-   * Generates a JWKS using a single RS256 JWK..
-   * The JWKS will be cached so subsequent calls return the same key.
-   */
-  private async generateJwks(): Promise<{ keys: JWK[] }> {
-    // Check to see if the keys are already saved
-    const jwks = await this.storage.get(JWKS_KEY) as { keys: JWK[] } | undefined;
-    if (jwks) {
-      return jwks;
-    }
-    // If they are not, generate and save them
-    const { privateKey } = await generateKeyPair('RS256');
-    const jwk = await exportJWK(privateKey);
-    // Required for Solid authn client
-    jwk.alg = 'RS256';
-    // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
-    // which is why we convert it into a plain object here.
-    // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
-    const newJwks = { keys: [{ ...jwk }]};
-    await this.storage.set(JWKS_KEY, newJwks);
-    return newJwks;
   }
 
   /**
