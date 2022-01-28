@@ -5,6 +5,5 @@ import type { URL } from 'url';
  * An HTTP client
  */
 export interface HttpClient {
-  call: (url: string | URL,
-    options: RequestOptions, data: any, callback?: (res: IncomingMessage) => void) => void;
+  call: (url: string | URL, options: RequestOptions, data: any) => Promise<IncomingMessage>;
 }
