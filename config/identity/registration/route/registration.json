@@ -16,7 +16,7 @@
       },
       "controls": {
         "BasicInteractionRoute:_controls_key": "register",
-        "BasicInteractionRoute:_controls_value": "/register"
+        "BasicInteractionRoute:_controls_value": "/register/"
       },
       "handler": {
         "@type": "RegistrationHandler",

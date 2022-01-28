@@ -53,7 +53,7 @@ describe('A BasicRequestParser with simple input parsers', (): void => {
         metadata: expect.any(RepresentationMetadata),
       },
     });
-    expect(result.body?.metadata.contentType).toEqual('text/turtle');
+    expect(result.body?.metadata.contentType).toBe('text/turtle');
 
     await expect(arrayifyStream(result.body.data)).resolves.toEqual(
       [ '<http://test.com/s> <http://test.com/p> <http://test.com/o>.' ],

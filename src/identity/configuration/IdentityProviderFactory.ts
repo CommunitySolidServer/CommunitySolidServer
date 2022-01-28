@@ -131,7 +131,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Cast necessary due to typing conflict between jose 2.x and 3.x
     config.jwks = await this.jwksKeyGenerator.getPrivateJwks(JWKS_KEY);
     config.cookies = {
-      ...config.cookies ?? {},
+      ...config.cookies,
       keys: await this.generateCookieKeys(),
     };
 
