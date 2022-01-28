@@ -30,32 +30,30 @@ export class WebHookAuthHttpClient implements HttpClient {
     data: any,
   ): Promise<IncomingMessage> {
     const parsedUrl = url instanceof URL ? url : new URL(url);
-    {
-      const jwks = await this.jwksKeyGenerator.getPrivateJwks(POD_JWKS_KEY);
-      const jwk = jwks.keys[0];
-      if (!jwk) {
-        throw new InternalServerError('No jwk available.');
-      }
-      const jwkKeyLike = await importJWK(jwk, 'RS256');
-      const jwtRaw = {
-        htu: parsedUrl.toString(),
-        htm: 'POST',
-      };
-      const signJwt = new SignJWT(jwtRaw);
-      const signedJwt = await signJwt
-        .setProtectedHeader({ alg: 'RS256' })
-        .setIssuedAt()
-        .setIssuer(trimTrailingSlashes(this.baseUrl))
-        .setExpirationTime('20m')
-        .sign(jwkKeyLike);
-      const augmentedOptions: RequestOptions = {
-        ...options,
-        headers: {
-          ...options.headers,
-          authorization: signedJwt,
-        },
-      };
-      return this.httpClient.call(parsedUrl, augmentedOptions, data);
+    const jwks = await this.jwksKeyGenerator.getPrivateJwks(POD_JWKS_KEY);
+    const jwk = jwks.keys[0];
+    if (!jwk) {
+      throw new InternalServerError('No jwk available.');
     }
+    const jwkKeyLike = await importJWK(jwk, 'RS256');
+    const jwtRaw = {
+      htu: parsedUrl.toString(),
+      htm: 'POST',
+    };
+    const signJwt = new SignJWT(jwtRaw);
+    const signedJwt = await signJwt
+      .setProtectedHeader({ alg: 'RS256' })
+      .setIssuedAt()
+      .setIssuer(trimTrailingSlashes(this.baseUrl))
+      .setExpirationTime('20m')
+      .sign(jwkKeyLike);
+    const augmentedOptions: RequestOptions = {
+      ...options,
+      headers: {
+        ...options.headers,
+        authorization: signedJwt,
+      },
+    };
+    return this.httpClient.call(parsedUrl, augmentedOptions, data);
   }
 }

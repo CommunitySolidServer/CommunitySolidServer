@@ -25,9 +25,9 @@ class WhateverSubscriptionHandler implements SubscriptionHandler {
     return { type: 'WhateverSubscriptionHandler' };
   };
 
-  public onResourcesChanged: (resources: ModifiedResource[], subscription: Subscription) => Promise<void> =
+  public onResourcesChanged: (resources: ModifiedResource[], subscription: Subscription)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async function(): Promise<void> {};
+  => Promise<void> = async function(): Promise<void> {};
 }
 
 describe('A NotificationWellKnownHttpHandler', (): void => {
@@ -43,14 +43,17 @@ describe('A NotificationWellKnownHttpHandler', (): void => {
     subscriptionHandler: notificationSubscriptionHandler,
   };
   const handler = new NotificationGatewayHttpHandler(gatewayArgs);
+
   it('handles POST requests.', async(): Promise<void> => {
     await expect(handler.canHandle({ operation: { method: 'POST' } as any }))
       .resolves.not.toThrow(NotImplementedHttpError);
   });
+
   it('disallow GET requests.', async(): Promise<void> => {
     await expect(handler.canHandle({ operation: { method: 'GET' } as any }))
       .rejects.toThrow(NotImplementedHttpError);
   });
+
   it('shoud not handle unconfigured notification types.', async(): Promise<void> => {
     const json = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],
@@ -63,6 +66,7 @@ describe('A NotificationWellKnownHttpHandler', (): void => {
     const promise = handler.handle({ operation: { method: 'POST' }, request: { read: readFn }} as any);
     await expect(promise).rejects.toThrow(NotImplementedHttpError);
   });
+
   it('shoud handle configured notification types.', async(): Promise<void> => {
     const expectedJson = {
       '@context': [ 'https://www.w3.org/ns/solid/notification/v1' ],

@@ -20,7 +20,7 @@ describe('A WebHookSubscription2021Handler', (): void => {
 
   it('should return the implemented notification type.', (): void => {
     const type = handler.getType();
-    expect(type).toEqual('WebHookSubscription2021');
+    expect(type).toBe('WebHookSubscription2021');
   });
   it('should return the expected subscription when subscribed to.', (): void => {
     const subscriptionRequest = {

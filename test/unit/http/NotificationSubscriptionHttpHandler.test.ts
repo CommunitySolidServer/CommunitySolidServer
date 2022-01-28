@@ -36,8 +36,8 @@ class WhateverSubscriptionHandler implements SubscriptionHandler {
     return { type: 'WhateverSubscriptionHandler' };
   };
 
-  public onResourcesChanged: (resources: ModifiedResource[], subscription: Subscription) => Promise<void> =
-  async(resources: ModifiedResource[]): Promise<void> => this.subscriptionHandeled(resources);
+  public onResourcesChanged: (resources: ModifiedResource[], subscription: Subscription)
+  => Promise<void> = async(resources: ModifiedResource[]): Promise<void> => this.subscriptionHandeled(resources);
 }
 
 class MockCredentialsExtractor extends CredentialsExtractor {
