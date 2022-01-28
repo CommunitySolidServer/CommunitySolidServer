@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+import type { IncomingMessage } from 'http';
 import { Readable } from 'stream';
 import { v4 } from 'uuid';
 import type { HttpClient } from '../../http/client/HttpClient';
@@ -87,31 +87,31 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler {
     resource: ResourceIdentifier,
     subscription: Subscription,
   ): Promise<void> {
-    this.logger.info(`Resource created ${resource.path}`);
-    this.sendNotification('Create', resource, subscription);
+    this.logger.debug(`Resource created ${resource.path}`);
+    return this.sendNotification('Create', resource, subscription);
   }
 
   public async onResourceChanged(
     resource: ResourceIdentifier,
     subscription: Subscription,
   ): Promise<void> {
-    this.logger.info(`Resource changed ${resource.path}`);
-    this.sendNotification('Update', resource, subscription);
+    this.logger.debug(`Resource changed ${resource.path}`);
+    return this.sendNotification('Update', resource, subscription);
   }
 
   public async onResourceDeleted(
     resource: ResourceIdentifier,
     subscription: Subscription,
   ): Promise<void> {
-    this.logger.info(`Resource deleted ${resource.path}`);
-    this.sendNotification('Delete', resource, subscription);
+    this.logger.debug(`Resource deleted ${resource.path}`);
+    return this.sendNotification('Delete', resource, subscription);
   }
 
-  private sendNotification(
+  private async sendNotification(
     type: string,
     resource: ResourceIdentifier,
     subscription: Subscription,
-  ): void {
+  ): Promise<void> {
     const { target, id } = subscription as WebHookSubscription2021;
 
     const payload = {
@@ -141,16 +141,9 @@ export class WebHookSubscription2021Handler extends BaseSubscriptionHandler {
       },
     };
 
-    this.httpClient.call(target, reqOptions, requestBody, (res): void => {
-      console.log(`STATUS: ${res.statusCode}`);
-      console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-      res.setEncoding('utf8');
-      res.on('data', (chunk): void => {
-        console.log(`BODY: ${chunk}`);
-      });
-      res.on('end', (): void => {
-        console.log('No more data in response.');
-      });
-    });
+    this.logger.debug(`Calling ${target} ...`);
+    const response: IncomingMessage = await this.httpClient.call(target, reqOptions, requestBody);
+    this.logger.debug(`Response code: ${response.statusCode}`);
+    this.logger.debug(`Received headers: ${JSON.stringify(response.headers)}`);
   }
 }
