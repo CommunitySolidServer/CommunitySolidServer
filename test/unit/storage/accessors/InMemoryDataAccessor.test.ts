@@ -96,8 +96,8 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(2);
-      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
-      expect(children[1].identifier.value).toEqual(`${base}container/container2/`);
+      expect(children[0].identifier.value).toBe(`${base}container/resource`);
+      expect(children[1].identifier.value).toBe(`${base}container/container2/`);
     });
 
     it('adds stored metadata when requesting document metadata.', async(): Promise<void> => {
@@ -148,7 +148,7 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(1);
-      expect(children[0].identifier.value).toEqual(`${base}container/resource`);
+      expect(children[0].identifier.value).toBe(`${base}container/resource`);
 
       await expect(accessor.getMetadata({ path: `${base}container/resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);
@@ -175,7 +175,7 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(1);
-      expect(children[0].identifier.value).toEqual(`${base}resource`);
+      expect(children[0].identifier.value).toBe(`${base}resource`);
 
       await expect(accessor.getMetadata({ path: `${base}resource` }))
         .resolves.toBeInstanceOf(RepresentationMetadata);

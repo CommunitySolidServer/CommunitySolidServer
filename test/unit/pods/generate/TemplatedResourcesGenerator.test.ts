@@ -66,7 +66,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
     expect(representation.binary).toBe(true);
     expect(representation.metadata.contentType).toBe('text/turtle');
     await expect(readableToString(representation.data)).resolves
-      .toEqual(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
+      .toBe(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
   });
 
   it('creates the necessary containers.', async(): Promise<void> => {
@@ -83,7 +83,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
 
     const { representation } = result[3];
     await expect(readableToString(representation.data)).resolves
-      .toEqual(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
+      .toBe(`<${webId}> a <http://xmlns.com/foaf/0.1/Person>.`);
   });
 
   it('copies the file stream directly if no template extension is found.', async(): Promise<void> => {
