@@ -1,4 +1,4 @@
-import { namedNode, triple } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import rdfSerializer from 'rdf-serialize';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
@@ -9,6 +9,7 @@ import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdf
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
+const { namedNode, triple } = DataFactory;
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();

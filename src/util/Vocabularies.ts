@@ -1,5 +1,5 @@
 /* eslint-disable function-paren-newline */
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import type { NamedNode } from 'rdf-js';
 
 type RecordOf<TKey extends any[], TValue> = Record<TKey[number], TValue>;
@@ -41,7 +41,7 @@ Namespace<typeof localNames, string> {
  */
 export function createTermNamespace<T extends string>(baseUri: string, ...localNames: T[]):
 Namespace<typeof localNames, NamedNode> {
-  return createNamespace(baseUri, namedNode, ...localNames);
+  return createNamespace(baseUri, DataFactory.namedNode, ...localNames);
 }
 
 /**

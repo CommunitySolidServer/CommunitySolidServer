@@ -1,4 +1,4 @@
-import { namedNode, quad } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { CredentialSet } from '../../../src/authentication/Credentials';
 import type { AccessChecker } from '../../../src/authorization/access/AccessChecker';
@@ -15,7 +15,7 @@ import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 
-const nn = namedNode;
+const { namedNode: nn, quad } = DataFactory;
 
 const acl = 'http://www.w3.org/ns/auth/acl#';
 const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
