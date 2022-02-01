@@ -347,8 +347,9 @@ describe('AppRunner', (): void => {
         setImmediate(resolve);
       });
 
-      expect(error).toHaveBeenCalledWith('Unsupported positional arguments: "foo", "bar", "foo.txt", "bar.txt"');
-      expect(exit).toHaveBeenCalledTimes(1);
+      expect(error).toHaveBeenCalledWith('Unknown arguments: foo, bar, foo.txt, bar.txt');
+      // Yargs also calls process.exit in this case
+      expect(exit).toHaveBeenCalledTimes(2);
       expect(exit).toHaveBeenCalledWith(1);
     });
 
