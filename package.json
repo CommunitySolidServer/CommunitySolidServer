@@ -148,7 +148,7 @@
     "eslint-config-es": "4.1.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-jest": "^26.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^10.0.0",
