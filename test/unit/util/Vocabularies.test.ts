@@ -1,4 +1,4 @@
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import { LDP } from '../../../src/util/Vocabularies';
 
 describe('Vocabularies', (): void => {
@@ -8,7 +8,7 @@ describe('Vocabularies', (): void => {
     });
 
     it('contains its own URI as a term.', (): void => {
-      expect(LDP.terms.namespace).toEqual(namedNode('http://www.w3.org/ns/ldp#'));
+      expect(LDP.terms.namespace).toEqual(DataFactory.namedNode('http://www.w3.org/ns/ldp#'));
     });
 
     it('exposes ldp:contains.', (): void => {
@@ -16,7 +16,7 @@ describe('Vocabularies', (): void => {
     });
 
     it('exposes ldp:contains as a term.', (): void => {
-      expect(LDP.terms.contains).toEqual(namedNode('http://www.w3.org/ns/ldp#contains'));
+      expect(LDP.terms.contains).toEqual(DataFactory.namedNode('http://www.w3.org/ns/ldp#contains'));
     });
   });
 });

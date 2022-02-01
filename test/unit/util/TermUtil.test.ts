@@ -1,5 +1,5 @@
 import 'jest-rdf';
-import { literal, namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import {
   toCachedNamedNode,
   toNamedTerm,
@@ -9,6 +9,7 @@ import {
   isTerm,
 } from '../../../src/util/TermUtil';
 import { CONTENT_TYPE_TERM, XSD } from '../../../src/util/Vocabularies';
+const { literal, namedNode } = DataFactory;
 
 describe('TermUtil', (): void => {
   describe('isTerm function', (): void => {
