@@ -1,15 +1,15 @@
-import { AssetPathResolver } from '../../../../../src/init/variables/computers/AssetPathResolver';
+import { AssetPathExtractor } from '../../../../../src/init/variables/extractors/AssetPathExtractor';
 import { joinFilePath } from '../../../../../src/util/PathUtil';
 
-describe('An AssetPathResolver', (): void => {
-  let resolver: AssetPathResolver;
+describe('An AssetPathExtractor', (): void => {
+  let resolver: AssetPathExtractor;
 
   beforeEach(async(): Promise<void> => {
-    resolver = new AssetPathResolver('path');
+    resolver = new AssetPathExtractor('path');
   });
 
   it('resolves the asset path.', async(): Promise<void> => {
-    await expect(resolver.handle({ path: '/var/data' })).resolves.toEqual('/var/data');
+    await expect(resolver.handle({ path: '/var/data' })).resolves.toBe('/var/data');
   });
 
   it('errors if the path is not a string.', async(): Promise<void> => {
@@ -22,7 +22,7 @@ describe('An AssetPathResolver', (): void => {
   });
 
   it('defaults to the given path if none is provided.', async(): Promise<void> => {
-    resolver = new AssetPathResolver('path', '/root');
-    await expect(resolver.handle({ otherPath: '/var/data' })).resolves.toEqual('/root');
+    resolver = new AssetPathExtractor('path', '/root');
+    await expect(resolver.handle({ otherPath: '/var/data' })).resolves.toBe('/root');
   });
 });

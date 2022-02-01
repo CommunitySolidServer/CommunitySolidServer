@@ -1,13 +1,13 @@
-import { ComputerResolver } from '../../../../src/init/variables/ComputerResolver';
-import type { ValueComputer } from '../../../../src/init/variables/computers/ValueComputer';
+import { CombinedSettingsResolver } from '../../../../src/init/variables/CombinedSettingsResolver';
+import type { SettingsExtractor } from '../../../../src/init/variables/extractors/SettingsExtractor';
 
-describe('A ComputerResolver', (): void => {
+describe('A CombinedSettingsResolver', (): void => {
   const values = { test: 'data' };
   const varPort = 'urn:solid-server:default:variable:port';
   const varLog = 'urn:solid-server:default:variable:loggingLevel';
-  let computerPort: jest.Mocked<ValueComputer>;
-  let computerLog: jest.Mocked<ValueComputer>;
-  let resolver: ComputerResolver;
+  let computerPort: jest.Mocked<SettingsExtractor>;
+  let computerLog: jest.Mocked<SettingsExtractor>;
+  let resolver: CombinedSettingsResolver;
 
   beforeEach(async(): Promise<void> => {
     computerPort = {
@@ -18,7 +18,7 @@ describe('A ComputerResolver', (): void => {
       handleSafe: jest.fn().mockResolvedValue('info'),
     } as any;
 
-    resolver = new ComputerResolver({
+    resolver = new CombinedSettingsResolver({
       [varPort]: computerPort,
       [varLog]: computerLog,
     });

@@ -1,14 +1,14 @@
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
-import type { ValueComputer } from './computers/ValueComputer';
-import { VariableResolver } from './VariableResolver';
+import type { SettingsExtractor } from './extractors/SettingsExtractor';
+import { SettingsResolver } from './SettingsResolver';
 
 /**
- * Generates variable values by running a set of {@link ValueComputer}s on the input.
+ * Generates variable values by running a set of {@link SettingsExtractor}s on the input.
  */
-export class ComputerResolver extends VariableResolver {
-  public readonly computers: Record<string, ValueComputer>;
+export class CombinedSettingsResolver extends SettingsResolver {
+  public readonly computers: Record<string, SettingsExtractor>;
 
-  public constructor(computers: Record<string, ValueComputer>) {
+  public constructor(computers: Record<string, SettingsExtractor>) {
     super();
     this.computers = computers;
   }

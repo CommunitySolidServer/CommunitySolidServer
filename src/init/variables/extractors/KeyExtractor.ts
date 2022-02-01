@@ -1,10 +1,11 @@
-import { ValueComputer } from './ValueComputer';
+import type { Settings } from '../Types';
+import { SettingsExtractor } from './SettingsExtractor';
 
 /**
- * A simple {@link ValueComputer} that extracts a single value from the input map.
+ * A simple {@link SettingsExtractor} that extracts a single value from the input map.
  * Returns the default value if it was defined in case no value was found in the map.
  */
-export class ArgExtractor extends ValueComputer {
+export class KeyExtractor extends SettingsExtractor {
   private readonly key: string;
   private readonly defaultValue: unknown;
 
@@ -14,7 +15,7 @@ export class ArgExtractor extends ValueComputer {
     this.defaultValue = defaultValue;
   }
 
-  public async handle(args: Record<string, unknown>): Promise<unknown> {
+  public async handle(args: Settings): Promise<unknown> {
     return typeof args[this.key] === 'undefined' ? this.defaultValue : args[this.key];
   }
 }

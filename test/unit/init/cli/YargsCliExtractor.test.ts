@@ -80,18 +80,4 @@ describe('A YargsCliExtractor', (): void => {
     extractor = new YargsCliExtractor(parameters, { loadFromEnv: true });
     await extractor.handle(argv);
   });
-
-  it('errors when positional arguments are passed.', async(): Promise<void> => {
-    const argv = [ 'node', 'script', 'unsupported.txt' ];
-    await extractor.handle(argv);
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith('Unsupported positional arguments: "unsupported.txt"');
-  });
-
-  it('errors when there are multiple values for the same argument.', async(): Promise<void> => {
-    const argv = [ 'node', 'script', '-p', '3000', '-p', '2000' ];
-    await extractor.handle(argv);
-    expect(exit).toHaveBeenCalledTimes(1);
-    expect(error).toHaveBeenCalledWith('Multiple values were provided for: "p": "3000", "2000"');
-  });
 });

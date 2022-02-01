@@ -39,10 +39,7 @@ export class YargsCliExtractor extends CliExtractor {
   }
 
   public async handle(argv: readonly string[]): Promise<Arguments> {
-    let yArgv = this.createYArgv(argv);
-    yArgv = this.validateArguments(yArgv);
-
-    return yArgv.parse();
+    return this.createYArgv(argv).parse();
   }
 
   /**
@@ -60,23 +57,5 @@ export class YargsCliExtractor extends CliExtractor {
       yArgv = yArgv.env(this.yargvOptions.envVarPrefix ?? '');
     }
     return yArgv.options(this.yargsArgOptions);
-  }
-
-  /**
-   * Makes sure there are no positional arguments or multiple values for the same key.
-   */
-  private validateArguments(yArgv: Argv): Argv {
-    return yArgv.check((args): boolean => {
-      if (args._.length > 0) {
-        throw new Error(`Unsupported positional arguments: "${args._.join('", "')}"`);
-      }
-      for (const [ key, val ] of Object.entries(args)) {
-        // We have no options that allow for arrays
-        if (key !== '_' && Array.isArray(val)) {
-          throw new Error(`Multiple values were provided for: "${key}": "${val.join('", "')}"`);
-        }
-      }
-      return true;
-    });
   }
 }

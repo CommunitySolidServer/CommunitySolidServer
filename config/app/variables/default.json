@@ -6,23 +6,11 @@
     ],
     "@graph": [
         {
-            "comment": "Combines a CliExtractor and VariableResolver to be used by the AppRunner.",
+            "comment": "Combines a CliExtractor and SettingsResolver to be used by the AppRunner.",
             "@id": "urn:solid-server-app-setup:default:CliResolver",
-            "@type": "RecordObject",
-            "record": [
-                {
-                    "RecordObject:_record_key": "extractor",
-                    "RecordObject:_record_value": {
-                        "@id": "urn:solid-server-app-setup:default:CliExtractor"
-                    }
-                },
-                {
-                    "RecordObject:_record_key": "resolver",
-                    "RecordObject:_record_value": {
-                        "@id": "urn:solid-server-app-setup:default:VariableResolver"
-                    }
-                }
-            ]
+            "@type": "CliResolver",
+            "cliExtractor": { "@id": "urn:solid-server-app-setup:default:CliExtractor" },
+            "settingsResolver": { "@id": "urn:solid-server-app-setup:default:SettingsResolver" }
         }
     ]
 }

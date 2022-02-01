@@ -3,58 +3,58 @@
   "@graph": [
     {
       "comment": "Converts an input key/value object into an object mapping values to Components.js variables",
-      "@id": "urn:solid-server-app-setup:default:VariableResolver",
-      "@type": "ComputerResolver",
+      "@id": "urn:solid-server-app-setup:default:SettingsResolver",
+      "@type": "CombinedSettingsResolver",
       "computers": [
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:baseUrl",
-          "ComputerResolver:_computers_value": {
-            "@type": "BaseUrlComputer"
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:baseUrl",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "BaseUrlExtractor"
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:loggingLevel",
-          "ComputerResolver:_computers_value": {
-            "@type": "ArgExtractor",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:loggingLevel",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "KeyExtractor",
             "key": "loggingLevel",
             "defaultValue": "info"
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:port",
-          "ComputerResolver:_computers_value": {
-            "@type": "ArgExtractor",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:port",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "KeyExtractor",
             "key": "port",
             "defaultValue": 3000
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:rootFilePath",
-          "ComputerResolver:_computers_value": {
-            "@type": "AssetPathResolver",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:rootFilePath",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "AssetPathExtractor",
             "key": "rootFilePath",
             "defaultPath": "./"
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:sparqlEndpoint",
-          "ComputerResolver:_computers_value": {
-            "@type": "ArgExtractor",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:sparqlEndpoint",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "KeyExtractor",
             "key": "sparqlEndpoint"
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:showStackTrace",
-          "ComputerResolver:_computers_value": {
-            "@type": "ArgExtractor",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:showStackTrace",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "KeyExtractor",
             "key": "showStackTrace",
             "defaultValue": false
           }
         },
         {
-          "ComputerResolver:_computers_key": "urn:solid-server:default:variable:AssetPathResolver",
-          "ComputerResolver:_computers_value": {
-            "@type": "AssetPathResolver",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:AssetPathResolver",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "AssetPathExtractor",
             "key": "podConfigJson",
             "defaultPath": "./pod-config.json"
           }
