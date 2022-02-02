@@ -32,7 +32,7 @@ jobs:
       - name: Create the necessary folders
         run: mkdir -p reports/css
       - name: Pull the conformance harness docker
-        run: docker pull solidconformancetestbeta/conformance-test-harness
+        run: docker pull solidproject/conformance-test-harness
       - name: Wait until the server has started
         run: |
           until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
