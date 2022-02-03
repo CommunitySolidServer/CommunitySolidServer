@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Start the server in the background
-        run: npm start &
+        run: npm start > server-output.log  &
       - name: Create the necessary folders
         run: mkdir -p reports/css
       - name: Pull the conformance harness docker
@@ -57,3 +57,8 @@ jobs:
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
           path: reports
+      - name: Save the server output
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
+          path: server-output.log
