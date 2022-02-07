@@ -47,17 +47,21 @@ jobs:
           solidproject/conformance-test-harness
           --output=/reports
           --target=https://github.com/solid/conformance-test-harness/css
+      # Steps below use `always()` to make sure logs get uploaded in case the CTH errors
       - name: Sanitize branch name for artifact upload
         id: sanitize
+        if: always()
         uses: yeouchien/sanitize-branch-name-action@v1
         with:
           branch-name: ${{ matrix.branch }}
       - name: Save the reports
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
           path: reports
       - name: Save the server output
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
