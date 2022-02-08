@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/registration/route/registration.json"
+    "css:config/identity/registration/route/registration.json"
   ],
   "@graph": [
     {

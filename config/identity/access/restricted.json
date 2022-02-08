@@ -1,8 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/access/initializers/idp.json",
-    "files-scs:config/identity/access/initializers/well-known.json"
+    "css:config/identity/access/initializers/idp.json",
+    "css:config/identity/access/initializers/well-known.json"
   ],
   "@graph": [
     {

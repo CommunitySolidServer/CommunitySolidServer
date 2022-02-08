@@ -1,8 +1,8 @@
 {
     "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
     "import": [
-        "files-scs:config/app/variables/cli/cli.json",
-        "files-scs:config/app/variables/resolver/resolver.json"
+        "css:config/app/variables/cli/cli.json",
+        "css:config/app/variables/resolver/resolver.json"
     ],
     "@graph": [
         {

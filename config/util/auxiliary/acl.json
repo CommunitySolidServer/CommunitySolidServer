@@ -1,7 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/util/auxiliary/strategies/acl.json"
+    "css:config/util/auxiliary/strategies/acl.json"
   ],
   "@graph": [
     {

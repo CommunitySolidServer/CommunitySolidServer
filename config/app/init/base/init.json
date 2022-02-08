@@ -1,11 +1,11 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/init/initializers/base-url.json",
-    "files-scs:config/app/init/initializers/logger.json",
-    "files-scs:config/app/init/initializers/server.json",
-    "files-scs:config/app/init/initializers/seeded-pod.json",
-    "files-scs:config/app/init/initializers/version.json"
+    "css:config/app/init/initializers/base-url.json",
+    "css:config/app/init/initializers/logger.json",
+    "css:config/app/init/initializers/server.json",
+    "css:config/app/init/initializers/seeded-pod.json",
+    "css:config/app/init/initializers/version.json"
   ],
   "@graph": [
     {
