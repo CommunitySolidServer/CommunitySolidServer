@@ -120,6 +120,7 @@ export class AppRunner {
       mainModulePath: resolveAssetPath(params.mainModulePath),
       dumpErrorState: true,
       logLevel: params.loggingLevel,
+      typeChecking: false,
     };
 
     const config = resolveAssetPath(params.config);
