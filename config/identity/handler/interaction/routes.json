@@ -1,15 +1,15 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/handler/interaction/routes/consent.json",
-    "files-scs:config/identity/handler/interaction/routes/credentials.json",
-    "files-scs:config/identity/handler/interaction/routes/forgot-password.json",
-    "files-scs:config/identity/handler/interaction/routes/index.json",
-    "files-scs:config/identity/handler/interaction/routes/login.json",
-    "files-scs:config/identity/handler/interaction/routes/prompt.json",
-    "files-scs:config/identity/handler/interaction/routes/reset-password.json",
-    "files-scs:config/identity/handler/interaction/views/controls.json",
-    "files-scs:config/identity/handler/interaction/views/html.json"
+    "css:config/identity/handler/interaction/routes/consent.json",
+    "css:config/identity/handler/interaction/routes/credentials.json",
+    "css:config/identity/handler/interaction/routes/forgot-password.json",
+    "css:config/identity/handler/interaction/routes/index.json",
+    "css:config/identity/handler/interaction/routes/login.json",
+    "css:config/identity/handler/interaction/routes/prompt.json",
+    "css:config/identity/handler/interaction/routes/reset-password.json",
+    "css:config/identity/handler/interaction/views/controls.json",
+    "css:config/identity/handler/interaction/views/html.json"
   ],
   "@graph": [
     {

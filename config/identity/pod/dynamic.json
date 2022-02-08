@@ -1,8 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/pod/pod-generators/templated.json",
-    "files-scs:config/identity/pod/resource-generators/templated.json"
+    "css:config/identity/pod/pod-generators/templated.json",
+    "css:config/identity/pod/resource-generators/templated.json"
   ],
   "comment": "Besides the PodManager, also exports a RouterRule that will need to be added to a RoutingStore.",
   "@graph": [

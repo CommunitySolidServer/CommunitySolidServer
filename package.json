@@ -40,7 +40,7 @@
   "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
-    "build:components": "componentsjs-generator -s src -c dist/components -r scs -i .componentsignore",
+    "build:components": "componentsjs-generator -s src -c dist/components -r css -i .componentsignore",
     "build:ts": "tsc",
     "docker": "npm run docker:setup && npm run docker:start",
     "docker:clean": "./test/docker/docker-clean.sh",
