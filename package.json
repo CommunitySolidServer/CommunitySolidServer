@@ -153,7 +153,7 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^10.0.0",
-    "husky": "^4.3.8",
+    "husky": "^7.0.0",
     "jest": "^27.0.6",
     "jest-rdf": "^1.6.0",
     "manual-git-changelog": "^1.0.1",
