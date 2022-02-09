@@ -42,14 +42,16 @@
     },
     {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "GlobalQuotaStrategy:_limit_amount": {
+      "@type": "GlobalQuotaStrategy",
+      "limit_amount": {
         "@id": "urn:solid-server:default:variable:GlobalQuota"
       },
-      "GlobalQuotaStrategy:_limit_unit": "bytes"
+      "limit_unit": "bytes"
     },
     {
       "@id": "urn:solid-server:default:SizeReporter",
-      "FileSizeReporter:_ignoreFolders": [ "^/\\.internal$" ]
+      "@type": "FileSizeReporter",
+      "ignoreFolders": [ "^/\\.internal$" ]
     },
     {
       "@id": "urn:solid-server:test:Instances",

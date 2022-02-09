@@ -6,7 +6,8 @@
   "@graph": [
     {
       "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
-      "WaterfallHandler:_handlers": [
+      "@type": "WaterfallHandler",
+      "handlers": [
         {
           "comment": [
             "This handler is required to prevent Components.js issues with arrays.",
@@ -19,7 +20,8 @@
     },
     {
       "@id": "urn:solid-server:auth:password:ControlHandler",
-      "ControlHandler:_controls": [
+      "@type": "ControlHandler",
+      "controls": [
         {
           "ControlHandler:_controls_key": "register",
           "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
@@ -28,7 +30,8 @@
     },
     {
       "@id": "urn:solid-server:auth:password:HtmlViewHandler",
-      "HtmlViewHandler:_templates": [
+      "@type": "HtmlViewHandler",
+      "templates": [
         {
           "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/register.html.ejs",
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }

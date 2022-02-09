@@ -14,7 +14,8 @@
     {
       "comment": "Makes sure the redis connection is closed when the application needs to stop. Also deletes still-existing locks and counters.",
       "@id": "urn:solid-server:default:Finalizer",
-      "ParallelFinalizer:_finalizers": [
+      "@type": "ParallelFinalizer",
+      "finalizers": [
         {
           "@id": "urn:solid-server:default:RedisLocker"
         }

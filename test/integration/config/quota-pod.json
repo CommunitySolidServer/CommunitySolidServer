@@ -42,10 +42,11 @@
     },
     {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "PodQuotaStrategy:_limit_amount": {
+      "@type": "PodQuotaStrategy",
+      "limit_amount": {
         "@id": "urn:solid-server:default:variable:PodQuota"
       },
-      "PodQuotaStrategy:_limit_unit": "bytes"
+      "limit_unit": "bytes"
     },
     {
       "@id": "urn:solid-server:test:Instances",
