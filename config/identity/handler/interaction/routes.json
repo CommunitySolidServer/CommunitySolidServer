@@ -23,7 +23,8 @@
         {
           "comment": "Adds controls and API version to JSON responses.",
           "@id": "urn:solid-server:auth:password:ControlHandler",
-          "ControlHandler:_source" : { "@id": "urn:solid-server:auth:password:LocationInteractionHandler" }
+          "@type": "ControlHandler",
+          "source" : { "@id": "urn:solid-server:auth:password:LocationInteractionHandler" }
         }
       ]
     },
@@ -31,7 +32,7 @@
       "comment": "Converts 3xx redirects to 200 JSON responses for consumption by browser scripts.",
       "@id": "urn:solid-server:auth:password:LocationInteractionHandler",
       "@type": "LocationInteractionHandler",
-      "LocationInteractionHandler:_source" : { "@id": "urn:solid-server:auth:password:InteractionRouteHandler" }
+      "source" : { "@id": "urn:solid-server:auth:password:InteractionRouteHandler" }
     },
     {
       "comment": "Handles every interaction based on their route.",

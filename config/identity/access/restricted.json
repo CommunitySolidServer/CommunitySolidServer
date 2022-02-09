@@ -8,12 +8,14 @@
     {
       "comment": "Use the same authorization for IDP components as is used for LDP, such that for instance registration can be restricted to certain agents.",
       "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
-      "AuthorizingHttpHandler:_args_permissionReader": { "@id": "urn:solid-server:default:PermissionReader" }
+      "@type": "AuthorizingHttpHandler",
+      "args_permissionReader": { "@id": "urn:solid-server:default:PermissionReader" }
     },
     {
       "comment": "IDP-related containers require initialized resources to support authorization.",
       "@id": "urn:solid-server:default:ParallelInitializer",
-      "ParallelHandler:_handlers": [
+      "@type": "ParallelHandler",
+      "handlers": [
         { "@id": "urn:solid-server:default:IdpContainerInitializer" },
         { "@id": "urn:solid-server:default:WellKnownContainerInitializer" }
       ]

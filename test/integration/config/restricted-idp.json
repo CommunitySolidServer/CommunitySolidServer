@@ -35,7 +35,7 @@
     {
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
-      "RecordObject:_record": [
+      "record": [
         {
           "RecordObject:_record_key": "app",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }

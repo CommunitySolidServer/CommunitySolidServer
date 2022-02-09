@@ -25,7 +25,8 @@
     {
       "comment": "Add to the list of initializers.",
       "@id": "urn:solid-server:default:ParallelInitializer",
-      "ParallelHandler:_handlers": [
+      "@type": "ParallelHandler",
+      "handlers": [
         {
           "comment": "Initializer that instantiates all the dynamic pods.",
           "@type": "ConfigPodInitializer",

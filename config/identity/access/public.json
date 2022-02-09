@@ -4,7 +4,8 @@
     {
       "comment": "Allow everyone to register new pods.",
       "@id": "urn:solid-server:default:IdentityProviderAuthorizingHandler",
-      "AuthorizingHttpHandler:_args_permissionReader": {
+      "@type": "AuthorizingHttpHandler",
+      "args_permissionReader": {
         "@type": "AllStaticReader",
         "allow": true
       }

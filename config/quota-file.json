@@ -38,12 +38,14 @@
     },
     {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "PodQuotaStrategy:_limit_amount": 7000,
-      "PodQuotaStrategy:_limit_unit": "bytes"
+      "@type": "PodQuotaStrategy",
+      "limit_amount": 7000,
+      "limit_unit": "bytes"
     },
     {
       "@id": "urn:solid-server:default:SizeReporter",
-      "FileSizeReporter:_ignoreFolders": [ "^/\\.internal$" ]
+      "@type": "FileSizeReporter",
+      "ignoreFolders": [ "^/\\.internal$" ]
     }
   ]
 }
