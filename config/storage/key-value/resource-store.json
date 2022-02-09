@@ -48,6 +48,14 @@
       "container": "/.internal/accounts/"
     },
     {
+      "comment": "Storage used for ForgotPassword records",
+      "@id": "urn:solid-server:default:ForgotPasswordStorage",
+      "@type":"JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/forgot-password/"
+    },
+    {
       "comment": "Storage used by setup components.",
       "@id": "urn:solid-server:default:SetupStorage",
       "@type": "JsonResourceStorage",
