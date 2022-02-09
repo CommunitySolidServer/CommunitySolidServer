@@ -25,12 +25,15 @@ and then add the following in your root config:
 ```json
     {
       "@id": "urn:solid-server:default:MetadataParser",
-      "ParallelHandler:_handlers": [
+      "@type": "ParallelHandler",
+      "handlers": [
         { "@type": "MyNewParser" }
       ]
     }
 ```
 This will add the new parser to the list of metadata parsers.
+The `@id` value is needed so Components.js knows which object to add the values to,
+and the `@type` is needed so it can interpret the other fields (`handlers` in this case).
 
 Note that generally it is only advised to append to ParallelHandlers or key/value maps.
 In case the order is important this can not be guaranteed over separate files.
