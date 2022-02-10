@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention, import/no-unresolved, tsdoc/syntax */
+/* eslint-disable @typescript-eslint/naming-convention, tsdoc/syntax */
 // import/no-unresolved can't handle jose imports
 // tsdoc/syntax can't handle {json} parameter
 import { randomBytes } from 'crypto';
-import type { JWK } from 'jose/jwk/from_key_like';
-import { fromKeyLike } from 'jose/jwk/from_key_like';
-import { generateKeyPair } from 'jose/util/generate_key_pair';
+import type { JWK } from 'jose';
+import { exportJWK, generateKeyPair } from 'jose';
 import type { AnyObject,
   CanBePromise,
   KoaContextWithOIDC,
@@ -129,7 +128,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Cast necessary due to typing conflict between jose 2.x and 3.x
     config.jwks = await this.generateJwks() as any;
     config.cookies = {
-      ...config.cookies ?? {},
+      ...config.cookies,
       keys: await this.generateCookieKeys(),
     };
 
@@ -148,7 +147,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     }
     // If they are not, generate and save them
     const { privateKey } = await generateKeyPair('RS256');
-    const jwk = await fromKeyLike(privateKey);
+    const jwk = await exportJWK(privateKey);
     // Required for Solid authn client
     jwk.alg = 'RS256';
     // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,

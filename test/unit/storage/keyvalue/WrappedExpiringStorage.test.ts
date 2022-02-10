@@ -43,7 +43,7 @@ describe('A WrappedExpiringStorage', (): void => {
 
   it('returns data if it has not expired.', async(): Promise<void> => {
     source.get.mockResolvedValueOnce(createExpires('data!', tomorrow));
-    await expect(storage.get('key')).resolves.toEqual('data!');
+    await expect(storage.get('key')).resolves.toBe('data!');
   });
 
   it('deletes expired data when trying to get it.', async(): Promise<void> => {

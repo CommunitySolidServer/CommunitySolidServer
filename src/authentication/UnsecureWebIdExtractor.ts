@@ -13,13 +13,13 @@ export class UnsecureWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !authorization.startsWith('WebID ')) {
+    if (!authorization || !/^WebID /ui.test(authorization)) {
       throw new NotImplementedHttpError('No WebID Authorization header specified.');
     }
   }
 
   public async handle({ headers }: HttpRequest): Promise<CredentialSet> {
-    const webId = /^WebID\s+(.*)/u.exec(headers.authorization!)![1];
+    const webId = /^WebID\s+(.*)/ui.exec(headers.authorization!)![1];
     this.logger.info(`Agent unsecurely claims to be ${webId}`);
     return { [CredentialGroup.agent]: { webId }};
   }

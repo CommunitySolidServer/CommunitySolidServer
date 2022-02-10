@@ -19,7 +19,7 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !authorization.startsWith('Bearer ')) {
+    if (!authorization || !/^Bearer /ui.test(authorization)) {
       throw new NotImplementedHttpError('No Bearer Authorization header specified.');
     }
   }

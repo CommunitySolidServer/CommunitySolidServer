@@ -13,7 +13,7 @@ describe('WinstonLoggerFactory', (): void => {
     const logger = factory.createLogger('MyLabel');
     expect(logger).toBeInstanceOf(WinstonLogger);
     const innerLogger: Logger = (logger as any).logger;
-    expect(innerLogger.level).toEqual('debug');
+    expect(innerLogger.level).toBe('debug');
     expect(innerLogger.format).toBeTruthy();
     expect(innerLogger.transports).toHaveLength(1);
   });

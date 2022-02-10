@@ -23,8 +23,8 @@ describe('A ChainedConverter', (): void => {
       identifier: { path: 'path' },
     });
 
-    await expect(readableToString(result.data)).resolves.toEqual('<http://test.com/s> <http://test.com/p> <http://test.com/o>.\n');
-    expect(result.metadata.contentType).toEqual('text/turtle');
+    await expect(readableToString(result.data)).resolves.toBe('<http://test.com/s> <http://test.com/p> <http://test.com/o>.\n');
+    expect(result.metadata.contentType).toBe('text/turtle');
   });
 
   it('can convert from turtle to JSON-LD.', async(): Promise<void> => {
@@ -42,6 +42,6 @@ describe('A ChainedConverter', (): void => {
     expect(JSON.parse(await readableToString(result.data))).toEqual(
       [{ '@id': 'http://test.com/s', 'http://test.com/p': [{ '@id': 'http://test.com/o' }]}],
     );
-    expect(result.metadata.contentType).toEqual('application/ld+json');
+    expect(result.metadata.contentType).toBe('application/ld+json');
   });
 });

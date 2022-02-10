@@ -182,7 +182,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: true });
       expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
-      expect(result.metadata.contentType).toEqual('text/plain');
+      expect(result.metadata.contentType).toBe('text/plain');
       expect(result.metadata.get('AUXILIARY')?.value).toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
@@ -722,7 +722,7 @@ describe('A DataAccessorBasedStore', (): void => {
         createModifiedResource(createResourceIdentifier(root), ModificationType.changed),
       ]);
       expect(accessor.data[`${root}resource`]).toBeUndefined();
-      expect(accessor.data[`${root}resource.dummy`]).not.toBeUndefined();
+      expect(accessor.data[`${root}resource.dummy`]).toBeDefined();
       expect(logger.error).toHaveBeenCalledTimes(1);
       expect(logger.error).toHaveBeenLastCalledWith(
         'Error deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',

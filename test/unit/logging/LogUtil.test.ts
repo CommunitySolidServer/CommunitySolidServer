@@ -11,12 +11,12 @@ describe('LogUtil', (): void => {
 
   it('allows creating a lazy logger for a string label.', async(): Promise<void> => {
     expect(getLoggerFor('MyLabel')).toBeInstanceOf(LazyLogger);
-    expect((getLoggerFor('MyLabel') as any).label).toEqual('MyLabel');
+    expect((getLoggerFor('MyLabel') as any).label).toBe('MyLabel');
   });
 
   it('allows creating a lazy logger for a class instance.', async(): Promise<void> => {
     expect(getLoggerFor(new VoidLogger())).toBeInstanceOf(LazyLogger);
-    expect((getLoggerFor(new VoidLogger()) as any).label).toEqual('VoidLogger');
+    expect((getLoggerFor(new VoidLogger()) as any).label).toBe('VoidLogger');
   });
 
   it('allows setting the global logger factory.', async(): Promise<void> => {
