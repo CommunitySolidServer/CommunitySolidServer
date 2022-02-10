@@ -1,5 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 import type { Response } from 'cross-fetch';
-import { fetch } from 'cross-fetch';
+import rdfDereferencer from 'rdf-dereference';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -9,6 +10,23 @@ import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { parseContentType } from './HeaderUtil';
 
 const logger = getLoggerFor('FetchUtil');
+
+/**
+ * Add all RDF.Quads of a RDF.Stream to an array.
+ * @param quads- RDF.Stream of RDF.Quads
+ * @returns A Promise
+ */
+async function unrollQuads(quads: RDF.Stream<RDF.Quad>): Promise<RDF.Quad[]> {
+  return new Promise((resolve, reject): void => {
+    const arr: RDF.Quad[] = [];
+    quads
+      .on('data', (quad): void => {
+        arr.push(quad);
+      })
+      .on('error', (err): void => reject(err))
+      .on('end', (): void => resolve(arr));
+  });
+}
 
 /**
  * Fetches an RDF dataset from the given URL.
@@ -24,27 +42,31 @@ export async function fetchDataset(response: Response, converter: Representation
 Promise<Representation>;
 export async function fetchDataset(input: string | Response, converter: RepresentationConverter, body?: string):
 Promise<Representation> {
-  let response: Response;
   if (typeof input === 'string') {
-    response = await fetch(input);
-  } else {
-    response = input;
+    // Try content negotiation to parse quads from uri
+    const quadArray = await unrollQuads((await rdfDereferencer.dereference(input)).quads);
+    // Make Representation object
+    const representation = new BasicRepresentation(quadArray, INTERNAL_QUADS);
+    // Return as Promise<Representation>
+    return Promise.resolve(representation);
   }
+
+  // Type of input == Response
   if (!body) {
-    body = await response.text();
+    body = await input.text();
   }
 
   // Keeping the error message the same everywhere to prevent leaking possible information about intranet.
-  const error = new BadRequestHttpError(`Unable to access data at ${response.url}`);
+  const error = new BadRequestHttpError(`Unable to access data at ${input.url}`);
 
-  if (response.status !== 200) {
-    logger.warn(`Cannot fetch ${response.url}: ${body}`);
+  if (input.status !== 200) {
+    logger.warn(`Cannot fetch ${input.url}: ${body}`);
     throw error;
   }
 
-  const contentType = response.headers.get('content-type');
+  const contentType = input.headers.get('content-type');
   if (!contentType) {
-    logger.warn(`Missing content-type header from ${response.url}`);
+    logger.warn(`Missing content-type header from ${input.url}`);
     throw error;
   }
   const contentTypeValue = parseContentType(contentType).type;
@@ -52,5 +74,5 @@ Promise<Representation> {
   // Try to convert to quads
   const representation = new BasicRepresentation(body, contentTypeValue);
   const preferences = { type: { [INTERNAL_QUADS]: 1 }};
-  return converter.handleSafe({ representation, identifier: { path: response.url }, preferences });
+  return converter.handleSafe({ representation, identifier: { path: input.url }, preferences });
 }
