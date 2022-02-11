@@ -20,12 +20,18 @@ const logger = getLoggerFor('FetchUtil');
  */
 export async function fetchDataset(url: string): Promise<Representation> {
   // Try content negotiation to parse quads from uri
-  const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
-  const quadArray = await arrayifyStream(quadStream) as Quad[];
-  // Make Representation object
-  const representation = new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
-  // Return as Promise<Representation>
-  return Promise.resolve(representation);
+  return new Promise(async (resolve, reject) => {
+    try {
+      const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
+      const quadArray = await arrayifyStream(quadStream) as Quad[];
+      // Make Representation object
+      const representation = new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
+      // Return as Promise<Representation>
+      resolve(representation);
+    } catch (err) {
+      reject(new Error(`Could not parse resource at URL (${url})!`));
+    }
+  })
 }
 
 /**
