@@ -65,7 +65,7 @@ export class AgentGroupAccessChecker extends AccessChecker {
     let result = await this.cache.get(url);
     if (!result) {
       const prom = (async(): Promise<Store> => {
-        const representation = await fetchDataset(url, this.converter);
+        const representation = await fetchDataset(url);
         return readableToQuads(representation.data);
       })();
       await this.cache.set(url, prom, this.expiration);

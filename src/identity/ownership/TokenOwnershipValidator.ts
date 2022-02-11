@@ -66,7 +66,7 @@ export class TokenOwnershipValidator extends OwnershipValidator {
    * Fetches data from the WebID to determine if the token is present.
    */
   private async hasToken(webId: string, token: string): Promise<boolean> {
-    const representation = await fetchDataset(webId, this.converter);
+    const representation = await fetchDataset(webId);
     const expectedQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
     for await (const data of representation.data) {
       const triple = data as Quad;
