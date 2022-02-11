@@ -8,7 +8,7 @@
       "@type": "Variable"
     },
     {
-      "comment": "Needs to be set to the base URL of the server for authnetication and authorization to function.",
+      "comment": "Needs to be set to the base URL of the server for authentication and authorization to function.",
       "@id": "urn:solid-server:default:variable:baseUrl",
       "@type": "Variable"
     },

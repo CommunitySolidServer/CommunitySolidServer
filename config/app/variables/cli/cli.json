@@ -1,0 +1,67 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Extracts CLI arguments into a key/value object. Config and mainModulePath are only defined here so their description is returned.",
+      "@id": "urn:solid-server-app-setup:default:CliExtractor",
+      "@type": "YargsCliExtractor",
+      "parameters": {
+        "config": {
+          "alias": "c",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "The configuration for the server. The default only stores data in memory; to persist to your filesystem, use @css:config/file.json."
+        },
+        "mainModulePath": {
+          "alias": "m",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "Path from where Components.js will start its lookup when initializing configurations."
+        },
+        "loggingLevel": {
+          "alias": "l",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "The detail level of logging; useful for debugging problems."
+        },
+        "baseUrl": {
+          "alias": "b",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "The public URL of your server."
+        },
+        "port": {
+          "alias": "p",
+          "requiresArg": true,
+          "type": "number",
+          "describe": "The TCP port on which the server runs."
+        },
+        "rootFilePath": {
+          "alias": "f",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "Root folder of the server, when using a file-based configuration."
+        },
+        "showStackTrace": {
+          "alias": "t",
+          "type": "boolean",
+          "describe": "Enables detailed logging on error pages."
+        },
+        "sparqlEndpoint": {
+          "alias": "s",
+          "requiresArg": true,
+          "type": "string",
+          "describe": "URL of the SPARQL endpoint, when using a quadstore-based configuration."
+        },
+        "podConfigJson": {
+          "requiresArg": true,
+          "type": "string",
+          "describe": "Path to the file that keeps track of dynamic Pod configurations."
+        }
+      },
+      "options": {
+        "usage": "node ./bin/server.js [args]"
+      }
+    }
+  ]
+}

@@ -3,16 +3,23 @@
 ## v3.0.0
 ### New features
 - The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
-- The `VoidLocker` can be used to disable locking for development/testing purposes. This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
+- The `VoidLocker` can be used to disable locking for development/testing purposes. 
+  This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
 - Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
 - An official docker image is now built on each version tag and published at https://hub.docker.com/r/solidproject/community-server.
 - Added support for N3 Patch.
+- It is now possible to customize arguments to the `community-solid-server` command, 
+  which enables passing custom variables to configurations and setting new default values.
+- The AppRunner functions have changed to require Components.js variables. 
+  This is important for anyone who starts the server from code.
 
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
 
 The following changes pertain to the imports in the default configs:
-- ...
+- A new configuration option needs to be imported:
+  - `/app/variables/default/json` contains everything related to parsing CLI arguments 
+    and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.
 - Conversion has been simplified so most converters are part of the conversion chain:
