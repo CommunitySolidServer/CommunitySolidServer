@@ -1,8 +1,9 @@
 import 'jest-rdf';
-import { defaultGraph, literal, namedNode, quad } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
 function getQuads(quads: Quad[], subject?: string, predicate?: string, object?: string, graph?: string): Quad[] {

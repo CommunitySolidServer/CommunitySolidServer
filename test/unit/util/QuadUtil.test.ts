@@ -1,7 +1,8 @@
 import 'jest-rdf';
-import { literal, namedNode, quad } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import { parseQuads, serializeQuads, uniqueQuads } from '../../../src/util/QuadUtil';
 import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
+const { literal, namedNode, quad } = DataFactory;
 
 describe('QuadUtil', (): void => {
   describe('#serializeQuads', (): void => {

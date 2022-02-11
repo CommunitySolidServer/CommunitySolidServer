@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import { Readable } from 'stream';
-import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import rdfParser from 'rdf-parse';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
@@ -11,6 +11,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+const { namedNode, triple } = DataFactory;
 
 describe('A RdfToQuadConverter', (): void => {
   const converter = new RdfToQuadConverter();

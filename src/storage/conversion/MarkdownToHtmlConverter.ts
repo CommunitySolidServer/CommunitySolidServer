@@ -1,4 +1,4 @@
-import marked from 'marked';
+import { marked } from 'marked';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { TEXT_HTML, TEXT_MARKDOWN } from '../../util/ContentTypes';

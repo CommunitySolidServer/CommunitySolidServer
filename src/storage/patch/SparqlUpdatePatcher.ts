@@ -2,8 +2,7 @@ import type { Readable } from 'stream';
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import { defaultGraph } from '@rdfjs/data-model';
-import { Store } from 'n3';
+import { DataFactory, Store } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Patch } from '../../http/representation/Patch';
@@ -89,7 +88,7 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
    * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
    */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
-    const def = defaultGraph();
+    const def = DataFactory.defaultGraph();
     const deletes = op.delete ?? [];
     const inserts = op.insert ?? [];
     if (!deletes.every((pattern): boolean => pattern.graph.equals(def))) {

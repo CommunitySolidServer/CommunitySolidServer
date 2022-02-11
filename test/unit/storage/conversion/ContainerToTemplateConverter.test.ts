@@ -1,10 +1,11 @@
-import { namedNode as nn, quad } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ContainerToTemplateConverter } from '../../../../src/storage/conversion/ContainerToTemplateConverter';
 import { SingleRootIdentifierStrategy } from '../../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
+const { namedNode: nn, quad } = DataFactory;
 
 describe('A ContainerToTemplateConverter', (): void => {
   const preferences = {};

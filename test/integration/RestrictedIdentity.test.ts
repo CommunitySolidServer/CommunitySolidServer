@@ -112,5 +112,7 @@ describe('A server with restricted IDP access', (): void => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.webId).toBe(joinUrl(baseUrl, 'bob/profile/card#me'));
+
+    await state.session.logout();
   });
 });

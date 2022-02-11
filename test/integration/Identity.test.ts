@@ -133,6 +133,10 @@ describe('A Solid server with IDP', (): void => {
       });
     });
 
+    afterAll(async(): Promise<void> => {
+      await state.session.logout();
+    });
+
     it('initializes the session and logs in.', async(): Promise<void> => {
       const url = await state.startSession();
       const res = await state.fetchIdp(url);
@@ -221,6 +225,10 @@ describe('A Solid server with IDP', (): void => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
     });
 
+    afterAll(async(): Promise<void> => {
+      await state.session.logout();
+    });
+
     it('can not log in with the old password anymore.', async(): Promise<void> => {
       const url = await state.startSession();
       nextUrl = url;
@@ -291,6 +299,10 @@ describe('A Solid server with IDP', (): void => {
 
     const formBody = stringify({
       email: newMail, password, confirmPassword: password, podName, createWebId: 'ok', register: 'ok', createPod: 'ok',
+    });
+
+    afterAll(async(): Promise<void> => {
+      await state.session.logout();
     });
 
     it('sends the form to create the WebID and register.', async(): Promise<void> => {
