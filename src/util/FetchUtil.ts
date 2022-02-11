@@ -1,8 +1,8 @@
-import type { Quad, Stream } from '@rdfjs/types';
+import type { Readable } from 'stream';
+import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
 import rdfDereferencer from 'rdf-dereference';
-import { Readable } from 'stream';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -20,18 +20,18 @@ const logger = getLoggerFor('FetchUtil');
  */
 export async function fetchDataset(url: string): Promise<Representation> {
   // Try content negotiation to parse quads from uri
-  return new Promise(async (resolve, reject) => {
+  return (async(): Promise<Representation> => {
     try {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
       const quadArray = await arrayifyStream(quadStream) as Quad[];
       // Make Representation object
       const representation = new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
       // Return as Promise<Representation>
-      resolve(representation);
-    } catch (err) {
-      reject(new Error(`Could not parse resource at URL (${url})!`));
+      return representation;
+    } catch {
+      throw new Error(`Could not parse resource at URL (${url})!`);
     }
-  })
+  })();
 }
 
 /**
@@ -42,7 +42,8 @@ export async function fetchDataset(url: string): Promise<Representation> {
  *
  * Response will be a Representation with content-type internal/quads.
  */
-export async function responseToDataset(response: Response, converter: RepresentationConverter, body?: string): Promise<Representation> {
+export async function responseToDataset(response: Response, converter: RepresentationConverter, body?: string):
+Promise<Representation> {
   if (!body) {
     body = await response.text();
   }
