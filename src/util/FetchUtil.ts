@@ -3,7 +3,6 @@ import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
 import rdfDereferencer from 'rdf-dereference';
 import { Readable } from 'stream';
-import { ResourceIdentifier } from '..';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -24,8 +23,7 @@ export async function fetchDataset(url: string): Promise<Representation> {
   const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
   const quadArray = await arrayifyStream(quadStream) as Quad[];
   // Make Representation object
-  const identifier: ResourceIdentifier = { path: url };
-  const representation = new BasicRepresentation(quadArray, identifier, INTERNAL_QUADS, false);
+  const representation = new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
   // Return as Promise<Representation>
   return Promise.resolve(representation);
 }
