@@ -1,6 +1,9 @@
-import type * as RDF from '@rdfjs/types';
+import type { Quad, Stream } from '@rdfjs/types';
+import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
 import rdfDereferencer from 'rdf-dereference';
+import { Readable } from 'stream';
+import { ResourceIdentifier } from '..';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Representation } from '../http/representation/Representation';
 import { getLoggerFor } from '../logging/LogUtil';
@@ -10,23 +13,6 @@ import { BadRequestHttpError } from './errors/BadRequestHttpError';
 import { parseContentType } from './HeaderUtil';
 
 const logger = getLoggerFor('FetchUtil');
-
-/**
- * Add all RDF.Quads of a RDF.Stream to an array.
- * @param quads- RDF.Stream of RDF.Quads
- * @returns A Promise
- */
-async function unrollQuads(quads: RDF.Stream<RDF.Quad>): Promise<RDF.Quad[]> {
-  return new Promise((resolve, reject): void => {
-    const arr: RDF.Quad[] = [];
-    quads
-      .on('data', (quad): void => {
-        arr.push(quad);
-      })
-      .on('error', (err): void => reject(err))
-      .on('end', (): void => resolve(arr));
-  });
-}
 
 /**
  * Fetches an RDF dataset from the given URL.
@@ -44,9 +30,11 @@ export async function fetchDataset(input: string | Response, converter: Represen
 Promise<Representation> {
   if (typeof input === 'string') {
     // Try content negotiation to parse quads from uri
-    const quadArray = await unrollQuads((await rdfDereferencer.dereference(input)).quads);
+    const quadStream = (await rdfDereferencer.dereference(input)).quads as Readable;
+    const quadArray = await arrayifyStream(quadStream) as Quad[];
     // Make Representation object
-    const representation = new BasicRepresentation(quadArray, INTERNAL_QUADS);
+    const identifier: ResourceIdentifier = { path: input };
+    const representation = new BasicRepresentation(quadArray, identifier, INTERNAL_QUADS, false);
     // Return as Promise<Representation>
     return Promise.resolve(representation);
   }
