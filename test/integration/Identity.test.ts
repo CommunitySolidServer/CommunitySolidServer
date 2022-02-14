@@ -176,6 +176,83 @@ describe('A Solid server with IDP', (): void => {
     });
   });
 
+  describe('authenticating a client with a WebID', (): void => {
+    const clientId = joinUrl(baseUrl, 'client-id');
+    const badClientId = joinUrl(baseUrl, 'bad-client-id');
+    /* eslint-disable @typescript-eslint/naming-convention */
+    const clientJson = {
+      '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
+
+      client_id: clientId,
+      client_name: 'Solid Application Name',
+      redirect_uris: [ redirectUrl ],
+      post_logout_redirect_uris: [ 'https://app.example/logout' ],
+      client_uri: 'https://app.example/',
+      logo_uri: 'https://app.example/logo.png',
+      tos_uri: 'https://app.example/tos.html',
+      scope: 'openid profile offline_access webid',
+      grant_types: [ 'refresh_token', 'authorization_code' ],
+      response_types: [ 'code' ],
+      default_max_age: 3600,
+      require_auth_time: true,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+    let state: IdentityTestState;
+
+    beforeAll(async(): Promise<void> => {
+      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
+
+      await fetch(clientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/ld+json' },
+        body: JSON.stringify(clientJson),
+      });
+
+      // This client will always reject requests since there is no valid redirect
+      clientJson.client_id = badClientId;
+      clientJson.redirect_uris = [];
+      await fetch(badClientId, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/ld+json' },
+        body: JSON.stringify(clientJson),
+      });
+    });
+
+    afterAll(async(): Promise<void> => {
+      await state.session.logout();
+    });
+
+    it('initializes the session and logs in.', async(): Promise<void> => {
+      const url = await state.startSession(clientId);
+      const res = await state.fetchIdp(url);
+      expect(res.status).toBe(200);
+      await state.login(url, email, password);
+      expect(state.session.info?.webId).toBe(webId);
+    });
+
+    it('rejects requests in case the redirect URL is not accepted.', async(): Promise<void> => {
+      // This test allows us to make sure the server actually uses the client WebID.
+      // If it did not, it would not see the invalid redirect_url array.
+
+      let nextUrl = '';
+      await state.session.login({
+        redirectUrl,
+        oidcIssuer,
+        clientId: badClientId,
+        handleRedirect(data): void {
+          nextUrl = data;
+        },
+      });
+      expect(nextUrl.length > 0).toBeTruthy();
+      expect(nextUrl.startsWith(oidcIssuer)).toBeTruthy();
+
+      // Redirect will error due to invalid client WebID
+      const res = await state.fetchIdp(nextUrl);
+      expect(res.status).toBe(400);
+      await expect(res.text()).resolves.toContain('invalid_redirect_uri');
+    });
+  });
+
   describe('resetting password', (): void => {
     let nextUrl: string;
 
