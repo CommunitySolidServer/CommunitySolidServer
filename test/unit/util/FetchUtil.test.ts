@@ -1,4 +1,4 @@
-import { PassThrough } from 'stream';
+import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { fetch } from 'cross-fetch';
 import { DataFactory } from 'n3';
@@ -16,24 +16,16 @@ describe('FetchUtil', (): void => {
   describe('#fetchDataset', (): void => {
     const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
 
-    function mockDereference(body: string): any {
-      rdfDereferenceMock.dereference.mockImplementation((): any => {
-        const mockStream = new PassThrough();
-        if (body.length > 0) {
-          const parts = body.slice(1, -1).split(' ').map((term): string => term.slice(1, -1));
-          mockStream.emit('data', quad(namedNode(parts[0]), namedNode(parts[1]), namedNode(parts[2])));
-        }
-        mockStream.end();
-        return {
-          url,
-          quads: mockStream,
-          exists: true,
-        };
-      });
+    function mockDereference(quads?: Quad[]): any {
+      rdfDereferenceMock.dereference.mockImplementation((): any => ({
+        url,
+        quads,
+        exists: true,
+      }));
     }
 
     it('errors if the status code is not 200.', async(): Promise<void> => {
-      mockDereference('');
+      mockDereference([]);
       await expect(fetchDataset(url)).rejects.toThrow(`Could not parse resource at URL (${url})!`);
       expect(rdfDereferenceMock).toHaveBeenCalledWith(url);
     });
@@ -45,7 +37,8 @@ describe('FetchUtil', (): void => {
     // });
 
     it('returns a Representation with quads.', async(): Promise<void> => {
-      mockDereference('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
+      const quads = [ quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')) ];
+      mockDereference(quads);
       const representation = await fetchDataset(url);
       await expect(arrayifyStream(representation.data)).resolves.toEqual([
         quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
