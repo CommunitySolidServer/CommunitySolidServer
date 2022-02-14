@@ -3,11 +3,16 @@
   "@graph": [
     {
       "comment": "Handles the login interaction",
-      "@id": "urn:solid-server:auth:password:LoginRoute",
-      "@type": "RelativeInteractionRoute",
-      "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
-      "relativePath": "/login/",
+      "@id": "urn:solid-server:auth:password:LoginRouteHandler",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:auth:password:LoginRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+        "relativePath": "/login/"
+      },
       "source": {
+        "@id": "urn:solid-server:auth:password:LoginHandler",
         "@type": "LoginHandler",
         "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
         "interactionCompleter": { "@type": "BaseInteractionCompleter" }

@@ -145,9 +145,10 @@ export * from './identity/interaction/email-password/util/RegistrationManager';
 export * from './identity/interaction/email-password/EmailPasswordUtil';
 
 // Identity/Interaction/Routing
-export * from './identity/interaction/routing/BasicInteractionRoute';
+export * from './identity/interaction/routing/AbsolutePathInteractionRoute';
 export * from './identity/interaction/routing/InteractionRoute';
-export * from './identity/interaction/routing/RelativeInteractionRoute';
+export * from './identity/interaction/routing/InteractionRouteHandler';
+export * from './identity/interaction/routing/RelativePathInteractionRoute';
 
 // Identity/Interaction/Util
 export * from './identity/interaction/util/BaseEmailSender';
