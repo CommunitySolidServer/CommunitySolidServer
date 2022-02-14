@@ -74,11 +74,12 @@ export class IdentityTestState {
    * Initializes an authentication session and stores the relevant cookies for later re-use.
    * All te relevant links from the login page get extracted.
    */
-  public async startSession(): Promise<string> {
+  public async startSession(clientId?: string): Promise<string> {
     let nextUrl = '';
     await this.session.login({
       redirectUrl: this.redirectUrl,
       oidcIssuer: this.oidcIssuer,
+      clientId,
       handleRedirect(data): void {
         nextUrl = data;
       },
