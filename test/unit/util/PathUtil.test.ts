@@ -39,7 +39,7 @@ describe('PathUtil', (): void => {
     });
 
     it('joins Windows paths.', async(): Promise<void> => {
-      expect(joinFilePath('c:\\foo\\bar\\', '..', '/baz')).toEqual(`c:/foo/baz`);
+      expect(joinFilePath('c:\\foo\\bar\\', '..', '/baz')).toBe(`c:/foo/baz`);
     });
   });
 

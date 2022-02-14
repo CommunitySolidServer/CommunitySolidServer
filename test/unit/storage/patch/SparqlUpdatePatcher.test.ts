@@ -1,6 +1,6 @@
 import 'jest-rdf';
-import { namedNode, quad } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
@@ -12,6 +12,7 @@ import type { RepresentationPatcherInput } from '../../../../src/storage/patch/R
 import { SparqlUpdatePatcher } from '../../../../src/storage/patch/SparqlUpdatePatcher';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
+const { namedNode, quad } = DataFactory;
 
 function getPatch(query: string): SparqlUpdatePatch {
   const prefixedQuery = `prefix : <http://test.com/>\n${query}`;

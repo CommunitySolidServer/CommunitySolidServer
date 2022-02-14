@@ -211,7 +211,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = await store.getRepresentation(resourceID);
       const contains = result.metadata.getAll(LDP.terms.contains);
       expect(contains).toHaveLength(1);
-      expect(contains[0].value).toEqual(`${resourceID.path}resource`);
+      expect(contains[0].value).toBe(`${resourceID.path}resource`);
     });
   });
 
