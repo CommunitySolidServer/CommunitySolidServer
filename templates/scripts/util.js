@@ -72,7 +72,9 @@ async function addPostListener(formId, errorId, apiTarget, callback) {
 
     try {
       const json = await postJsonForm(formId, apiTarget);
-      callback(json);
+      if (json) {
+        callback(json);
+      }
     } catch (error) {
       errorBlock.innerText = error.message;
     }
