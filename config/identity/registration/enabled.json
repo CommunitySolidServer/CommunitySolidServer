@@ -5,7 +5,7 @@
   ],
   "@graph": [
     {
-      "@id": "urn:solid-server:auth:password:RouteInteractionHandler",
+      "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
       "WaterfallHandler:_handlers": [
         {
           "comment": [
@@ -14,7 +14,7 @@
           ],
           "@type": "UnsupportedAsyncHandler"
         },
-        { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
+        { "@id": "urn:solid-server:auth:password:RegistrationRouteHandler" }
       ]
     },
     {
@@ -32,14 +32,6 @@
         {
           "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/register.html.ejs",
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
-        },
-        {
-          "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/reset-password-response.html.ejs",
-          "HtmlViewHandler:_templates_value": {
-            "@type": "RelativeInteractionRoute",
-            "base": { "@id": "urn:solid-server:auth:password:ResetPasswordRoute" },
-            "relativePath": "/response/"
-          }
         }
       ]
     }

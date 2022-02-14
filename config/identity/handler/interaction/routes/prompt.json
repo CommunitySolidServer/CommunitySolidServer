@@ -3,10 +3,14 @@
   "@graph": [
     {
       "comment": "Handles OIDC redirects containing a prompt, such as login or consent.",
-      "@id": "urn:solid-server:auth:password:PromptRoute",
-      "@type": "RelativeInteractionRoute",
-      "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
-      "relativePath": "/prompt/",
+      "@id": "urn:solid-server:auth:password:PromptRouteHandler",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:auth:password:PromptRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+        "relativePath": "/prompt/"
+      },
       "source": {
         "@type": "PromptHandler",
         "@id": "urn:solid-server:auth:password:PromptHandler",
