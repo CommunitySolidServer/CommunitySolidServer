@@ -35,7 +35,7 @@ export async function fetchDataset(url: string): Promise<Representation> {
 }
 
 /**
- * Converts a gifven Response (from a request that was alrady made) to  an RDF dataset.
+ * Converts a given Response (from a request that was alrady made) to  an RDF dataset.
  * In case the given Response object was already parsed its body can be passed along as a string.
  *
  * The converter will be used to convert the response body to RDF.
