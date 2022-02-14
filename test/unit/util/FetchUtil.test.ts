@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { fetch } from 'cross-fetch';
@@ -8,7 +9,9 @@ import { fetchDataset, responseToDataset } from '../../../src/util/FetchUtil';
 const { namedNode, quad } = DataFactory;
 
 jest.mock('cross-fetch');
-jest.mock('rdf-dereference');
+jest.mock('rdf-dereference', (): any => ({
+  dereference: jest.fn<string, any>(),
+}));
 
 describe('FetchUtil', (): void => {
   const url = 'http://test.com/foo';
@@ -17,24 +20,23 @@ describe('FetchUtil', (): void => {
     const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
 
     function mockDereference(quads?: Quad[]): any {
-      rdfDereferenceMock.dereference.mockImplementation((): any => ({
-        url,
-        quads,
-        exists: true,
-      }));
+      rdfDereferenceMock.dereference.mockImplementation((uri: string): any => {
+        if (!quads) {
+          throw new Error('Throws error because url does not exist');
+        }
+        return {
+          uri,
+          quads: Readable.from(quads),
+          exists: true,
+        };
+      });
     }
 
-    it('errors if the status code is not 200.', async(): Promise<void> => {
-      mockDereference([]);
+    it('errors if the URL does not exist.', async(): Promise<void> => {
+      mockDereference();
       await expect(fetchDataset(url)).rejects.toThrow(`Could not parse resource at URL (${url})!`);
-      expect(rdfDereferenceMock).toHaveBeenCalledWith(url);
+      expect(rdfDereferenceMock.dereference).toHaveBeenCalledWith(url);
     });
-
-    // It('errors if there is no content-type.', async (): Promise<void> => {
-    //   fetchMock.mockResolvedValueOnce({ url, text: (): any => '', status: 200, headers: { get: jest.fn() } });
-    //   await expect(fetchDataset(url)).rejects.toThrow(`Unable to access data at ${url}`);
-    //   expect(rdfDereferenceMock).toHaveBeenCalledWith(url);
-    // });
 
     it('returns a Representation with quads.', async(): Promise<void> => {
       const quads = [ quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')) ];
@@ -67,6 +69,18 @@ describe('FetchUtil', (): void => {
       await expect(arrayifyStream(representation.data)).resolves.toEqual([
         quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
       ]);
+    });
+
+    it('errors if the status code is not 200.', async(): Promise<void> => {
+      mockFetch('Incorrect status!', 400);
+      await expect(responseToDataset(await fetch(url), converter)).rejects.toThrow(`Unable to access data at ${url}`);
+      expect(fetchMock).toHaveBeenCalledWith(url);
+    });
+
+    it('errors if there is no content-type.', async(): Promise<void> => {
+      fetchMock.mockResolvedValueOnce({ url, text: (): any => '', status: 200, headers: { get: jest.fn() }});
+      await expect(responseToDataset(await fetch(url), converter)).rejects.toThrow(`Unable to access data at ${url}`);
+      expect(fetchMock).toHaveBeenCalledWith(url);
     });
   });
 });
