@@ -24,18 +24,16 @@ export async function fetchDataset(url: string): Promise<Representation> {
     try {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
       const quadArray = await arrayifyStream(quadStream) as Quad[];
-      // Make Representation object
-      const representation = new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
       // Return as Promise<Representation>
-      return representation;
+      return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch {
-      throw new Error(`Could not parse resource at URL (${url})!`);
+      throw new BadRequestHttpError(`Could not parse resource at URL (${url})!`);
     }
   })();
 }
 
 /**
- * Converts a given Response (from a request that was alrady made) to  an RDF dataset.
+ * Converts a given Response (from a request that was already made) to  an RDF dataset.
  * In case the given Response object was already parsed its body can be passed along as a string.
  *
  * The converter will be used to convert the response body to RDF.
