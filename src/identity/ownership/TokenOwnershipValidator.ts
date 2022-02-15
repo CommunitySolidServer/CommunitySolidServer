@@ -2,7 +2,6 @@ import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
 import { v4 } from 'uuid';
 import { getLoggerFor } from '../../logging/LogUtil';
-import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import type { ExpiringStorage } from '../../storage/keyvalue/ExpiringStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { fetchDataset } from '../../util/FetchUtil';
@@ -17,13 +16,11 @@ const { literal, namedNode, quad } = DataFactory;
 export class TokenOwnershipValidator extends OwnershipValidator {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly converter: RepresentationConverter;
   private readonly storage: ExpiringStorage<string, string>;
   private readonly expiration: number;
 
-  public constructor(converter: RepresentationConverter, storage: ExpiringStorage<string, string>, expiration = 30) {
+  public constructor(storage: ExpiringStorage<string, string>, expiration = 30) {
     super();
-    this.converter = converter;
     this.storage = storage;
     // Convert minutes to milliseconds
     this.expiration = expiration * 60 * 1000;

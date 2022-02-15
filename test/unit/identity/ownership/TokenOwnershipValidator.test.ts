@@ -4,14 +4,13 @@ import type { Quad } from 'n3';
 import rdfDereferencer from 'rdf-dereference';
 import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
-import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { SOLID } from '../../../../src/util/Vocabularies';
 const { literal, namedNode, quad } = DataFactory;
 
 jest.mock('uuid');
 jest.mock('rdf-dereference', (): any => ({
-  dereference: jest.fn<string, any>(),
+  dereference: jest.fn(),
 }));
 
 function quadToString(qq: Quad): string {
@@ -28,7 +27,6 @@ describe('A TokenOwnershipValidator', (): void => {
   const token = 'randomlyGeneratedToken';
   const tokenTriple = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
   const tokenString = `${quadToString(tokenTriple)}.`;
-  const converter = new RdfToQuadConverter();
   let storage: ExpiringStorage<string, string>;
   let validator: TokenOwnershipValidator;
 
@@ -54,7 +52,7 @@ describe('A TokenOwnershipValidator', (): void => {
 
     mockDereference();
 
-    validator = new TokenOwnershipValidator(converter, storage);
+    validator = new TokenOwnershipValidator(storage);
   });
 
   it('errors if no token is stored in the storage.', async(): Promise<void> => {
