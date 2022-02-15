@@ -17,7 +17,7 @@
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "config": {
         "claims": {
-          "openid": [ "client_id" ],
+          "openid": [ "azp" ],
           "webid": [ "webid" ]
         },
         "cookies": {
@@ -27,22 +27,24 @@
         "features": {
           "claimsParameter": { "enabled": true },
           "devInteractions": { "enabled": false },
-          "dPoP": { "enabled": true, "ack": "draft-01" },
+          "dPoP": { "enabled": true, "ack": "draft-03" },
           "introspection": { "enabled": true },
           "registration": { "enabled": true },
-          "revocation": { "enabled": true }
-        },
-        "formats": {
-          "AccessToken": "jwt"
+          "revocation": { "enabled": true },
+          "userinfo": { "enabled": false }
         },
         "scopes": [ "openid", "profile", "offline_access", "webid" ],
         "subjectTypes": [ "public" ],
         "ttl": {
           "AccessToken": 3600,
           "AuthorizationCode": 600,
+          "BackchannelAuthenticationRequest": 600,
           "DeviceCode": 600,
+          "Grant": 1209600,
           "IdToken": 3600,
-          "RefreshToken": 86400
+          "Interaction": 3600,
+          "RefreshToken": 86400,
+          "Session": 1209600
         }
       }
     }

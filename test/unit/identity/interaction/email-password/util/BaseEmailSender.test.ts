@@ -1,6 +1,6 @@
-import type { EmailSenderArgs } from '../../../../../src/identity/interaction/util/BaseEmailSender';
-import { BaseEmailSender } from '../../../../../src/identity/interaction/util/BaseEmailSender';
-import type { EmailArgs } from '../../../../../src/identity/interaction/util/EmailSender';
+import type { EmailSenderArgs } from '../../../../../../src/identity/interaction/email-password/util/BaseEmailSender';
+import { BaseEmailSender } from '../../../../../../src/identity/interaction/email-password/util/BaseEmailSender';
+import type { EmailArgs } from '../../../../../../src/identity/interaction/email-password/util/EmailSender';
 jest.mock('nodemailer');
 
 describe('A BaseEmailSender', (): void => {

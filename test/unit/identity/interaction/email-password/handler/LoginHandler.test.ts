@@ -4,22 +4,23 @@ import type {
   Interaction,
   InteractionHandlerInput,
 } from '../../../../../../src/identity/interaction/InteractionHandler';
-import type {
-  InteractionCompleter,
-} from '../../../../../../src/identity/interaction/util/InteractionCompleter';
 import { FoundHttpError } from '../../../../../../src/util/errors/FoundHttpError';
 import { createPostJsonOperation } from './Util';
 
 describe('A LoginHandler', (): void => {
   const webId = 'http://alice.test.com/card#me';
   const email = 'alice@test.email';
-  const oidcInteraction: Interaction = {} as any;
+  let oidcInteraction: jest.Mocked<Interaction>;
   let input: Required<InteractionHandlerInput>;
   let accountStore: jest.Mocked<AccountStore>;
-  let interactionCompleter: jest.Mocked<InteractionCompleter>;
   let handler: LoginHandler;
 
   beforeEach(async(): Promise<void> => {
+    oidcInteraction = {
+      exp: 123456,
+      save: jest.fn(),
+    } as any;
+
     input = { oidcInteraction } as any;
 
     accountStore = {
@@ -27,11 +28,18 @@ describe('A LoginHandler', (): void => {
       getSettings: jest.fn().mockResolvedValue({ useIdp: true }),
     } as any;
 
-    interactionCompleter = {
-      handleSafe: jest.fn().mockResolvedValue('http://test.com/redirect'),
-    } as any;
+    handler = new LoginHandler(accountStore);
+  });
+  it('errors if no oidcInteraction is defined on POST requests.', async(): Promise<void> => {
+    const error = expect.objectContaining({
+      statusCode: 400,
+      message: 'This action can only be performed as part of an OIDC authentication flow.',
+      errorCode: 'E0002',
+    });
+    await expect(handler.canHandle({ operation: createPostJsonOperation({}) })).rejects.toThrow(error);
 
-    handler = new LoginHandler(accountStore, interactionCompleter);
+    await expect(handler.canHandle({ operation: createPostJsonOperation({}), oidcInteraction }))
+      .resolves.toBeUndefined();
   });
 
   it('errors on invalid emails.', async(): Promise<void> => {
@@ -61,13 +69,13 @@ describe('A LoginHandler', (): void => {
       .rejects.toThrow('This server is not an identity provider for this account.');
   });
 
-  it('returns the correct completion parameters.', async(): Promise<void> => {
+  it('returns the generated redirect URL.', async(): Promise<void> => {
     input.operation = createPostJsonOperation({ email, password: 'password!' });
     await expect(handler.handle(input)).rejects.toThrow(FoundHttpError);
 
     expect(accountStore.authenticate).toHaveBeenCalledTimes(1);
     expect(accountStore.authenticate).toHaveBeenLastCalledWith(email, 'password!');
-    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ oidcInteraction, webId, shouldRemember: false });
+    expect(oidcInteraction.save).toHaveBeenCalledTimes(1);
+    expect(oidcInteraction.result).toEqual({ login: { accountId: webId, remember: false }});
   });
 });

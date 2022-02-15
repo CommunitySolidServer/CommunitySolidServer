@@ -8,8 +8,8 @@ import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
 import { BaseInteractionHandler } from '../../BaseInteractionHandler';
 import type { InteractionHandlerInput } from '../../InteractionHandler';
 import type { InteractionRoute } from '../../routing/InteractionRoute';
-import type { EmailSender } from '../../util/EmailSender';
 import type { AccountStore } from '../storage/AccountStore';
+import type { EmailSender } from '../util/EmailSender';
 
 const forgotPasswordView = {
   required: {
