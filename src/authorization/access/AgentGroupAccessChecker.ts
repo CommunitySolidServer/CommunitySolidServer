@@ -21,8 +21,7 @@ export class AgentGroupAccessChecker extends AccessChecker {
   private readonly cache: ExpiringStorage<string, Promise<Store>>;
   private readonly expiration: number;
 
-  public constructor(cache: ExpiringStorage<string, Promise<Store>>,
-    expiration = 3600) {
+  public constructor(cache: ExpiringStorage<string, Promise<Store>>, expiration = 3600) {
     super();
     this.cache = cache;
     this.expiration = expiration * 1000;

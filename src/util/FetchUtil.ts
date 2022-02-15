@@ -19,12 +19,11 @@ const logger = getLoggerFor('FetchUtil');
  * Response will be a Representation with content-type internal/quads.
  */
 export async function fetchDataset(url: string): Promise<Representation> {
-  // Try content negotiation to parse quads from uri
+  // Try content negotiation to parse quads from the URL
   return (async(): Promise<Representation> => {
     try {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
       const quadArray = await arrayifyStream(quadStream) as Quad[];
-      // Return as Promise<Representation>
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch {
       throw new BadRequestHttpError(`Could not parse resource at URL (${url})!`);
