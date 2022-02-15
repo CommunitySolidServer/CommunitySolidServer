@@ -129,7 +129,7 @@ describe('An IdentityProviderFactory', (): void => {
 
     // Test the renderError function
     const response = { } as HttpResponse;
-    await expect((config.renderError as any)({ res: response }, null, 'error!')).resolves.toBeUndefined();
+    await expect((config.renderError as any)({ res: response }, {}, 'error!')).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
       .toHaveBeenLastCalledWith({ error: 'error!', preferences: { type: { 'text/plain': 1 }}});
@@ -190,5 +190,23 @@ describe('An IdentityProviderFactory', (): void => {
     expect(storage.set).toHaveBeenCalledTimes(2);
     expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
     expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
+  });
+
+  it('updates errors if there is more information.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+    const response = { } as HttpResponse;
+
+    const error = new Error('bad data');
+    const out = { error_description: 'more info' };
+
+    await expect((config.renderError as any)({ res: response }, out, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+    expect(error.message).toBe('bad data - more info');
+    expect(error.stack).toContain('Error: bad data - more info');
   });
 });
