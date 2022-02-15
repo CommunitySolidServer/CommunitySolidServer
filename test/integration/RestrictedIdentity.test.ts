@@ -94,10 +94,11 @@ describe('A server with restricted IDP access', (): void => {
   it('can still access registration with the correct credentials.', async(): Promise<void> => {
     // Logging into session
     const state = new IdentityTestState(baseUrl, 'http://mockedredirect/', baseUrl);
-    const url = await state.startSession();
+    let url = await state.startSession();
     let res = await state.fetchIdp(url);
     expect(res.status).toBe(200);
-    await state.login(url, settings.email, settings.password);
+    url = await state.login(url, settings.email, settings.password);
+    await state.consent(url);
     expect(state.session.info?.webId).toBe(webId);
 
     // Registration still works for this WebID

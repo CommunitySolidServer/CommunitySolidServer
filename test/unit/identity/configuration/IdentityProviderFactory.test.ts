@@ -16,7 +16,7 @@ jest.mock('oidc-provider', (): any => ({
 
 const routes = {
   authorization: '/foo/oidc/auth',
-  check_session: '/foo/oidc/session/check',
+  backchannel_authentication: '/foo/oidc/backchannel',
   code_verification: '/foo/oidc/device',
   device_authorization: '/foo/oidc/device/auth',
   end_session: '/foo/oidc/session/end',
@@ -100,23 +100,32 @@ describe('An IdentityProviderFactory', (): void => {
     expect(adapterFactory.createStorageAdapter).toHaveBeenLastCalledWith('test!');
 
     expect(config.cookies?.keys).toEqual([ expect.any(String) ]);
-    expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ kty: 'RSA' }) ]});
+    expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ alg: 'ES256' }) ]});
     expect(config.routes).toEqual(routes);
+    expect(config.pkce?.methods).toEqual([ 'S256' ]);
+    expect((config.pkce!.required as any)()).toBe(true);
+    expect(config.clientDefaults?.id_token_signed_response_alg).toBe('ES256');
 
     await expect((config.interactions?.url as any)(ctx, oidcInteraction)).resolves.toBe(redirectUrl);
-    expect((config.audiences as any)(null, null, {}, 'access_token')).toBe('solid');
-    expect((config.audiences as any)(null, null, { clientId: 'clientId' }, 'client_credentials')).toBe('clientId');
 
-    const findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
+    let findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
     expect(findResult?.accountId).toBe(webId);
+    await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId, azp: 'clientId' });
+    findResult = await config.findAccount?.({ oidc: {}} as any, webId);
     await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId });
 
-    expect((config.extraAccessTokenClaims as any)({}, {})).toEqual({});
-    expect((config.extraAccessTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
-      .toEqual({
-        webid: webId,
-        client_id: 'clientId',
-      });
+    expect((config.extraTokenClaims as any)({}, {})).toEqual({});
+    expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
+      .toEqual({ webid: webId });
+
+    expect(config.features?.resourceIndicators?.enabled).toBe(true);
+    expect((config.features?.resourceIndicators?.defaultResource as any)()).toBe('http://example.com/');
+    expect((config.features?.resourceIndicators?.getResourceServerInfo as any)()).toEqual({
+      scope: '',
+      audience: 'solid',
+      accessTokenFormat: 'jwt',
+      jwt: { sign: { alg: 'ES256' }},
+    });
 
     // Test the renderError function
     const response = { } as HttpResponse;

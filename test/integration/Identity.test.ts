@@ -138,10 +138,11 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
-      const url = await state.startSession();
+      let url = await state.startSession();
       const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
-      await state.login(url, email, password);
+      url = await state.login(url, email, password);
+      await state.consent(url);
       expect(state.session.info?.webId).toBe(webId);
     });
 
@@ -162,16 +163,12 @@ describe('A Solid server with IDP', (): void => {
     it('can log in again.', async(): Promise<void> => {
       const url = await state.startSession();
 
-      let res = await state.fetchIdp(url);
+      const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
 
       // Will receive confirm screen here instead of login screen
-      res = await state.fetchIdp(url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
-      const json = await res.json();
-      const nextUrl = json.location;
-      expect(typeof nextUrl).toBe('string');
+      await state.consent(url);
 
-      await state.handleLoginRedirect(nextUrl);
       expect(state.session.info?.webId).toBe(webId);
     });
   });
@@ -223,10 +220,11 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
-      const url = await state.startSession(clientId);
+      let url = await state.startSession(clientId);
       const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
-      await state.login(url, email, password);
+      url = await state.login(url, email, password);
+      await state.consent(url);
       expect(state.session.info?.webId).toBe(webId);
     });
 
@@ -318,7 +316,8 @@ describe('A Solid server with IDP', (): void => {
     });
 
     it('can log in with the new password.', async(): Promise<void> => {
-      await state.login(nextUrl, email, password2);
+      const url = await state.login(nextUrl, email, password2);
+      await state.consent(url);
       expect(state.session.info?.webId).toBe(webId);
     });
   });
@@ -397,10 +396,11 @@ describe('A Solid server with IDP', (): void => {
 
     it('initializes the session and logs in.', async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-      const url = await state.startSession();
+      let url = await state.startSession();
       const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
-      await state.login(url, newMail, password);
+      url = await state.login(url, newMail, password);
+      await state.consent(url);
       expect(state.session.info?.webId).toBe(newWebId);
     });
 

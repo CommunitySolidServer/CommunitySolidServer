@@ -3,8 +3,8 @@ import {
   ForgotPasswordHandler,
 } from '../../../../../../src/identity/interaction/email-password/handler/ForgotPasswordHandler';
 import type { AccountStore } from '../../../../../../src/identity/interaction/email-password/storage/AccountStore';
+import type { EmailSender } from '../../../../../../src/identity/interaction/email-password/util/EmailSender';
 import type { InteractionRoute } from '../../../../../../src/identity/interaction/routing/InteractionRoute';
-import type { EmailSender } from '../../../../../../src/identity/interaction/util/EmailSender';
 import { readJsonStream } from '../../../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../../../src/util/templates/TemplateEngine';
 import { createPostJsonOperation } from './Util';

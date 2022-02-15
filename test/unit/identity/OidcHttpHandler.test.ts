@@ -13,7 +13,7 @@ describe('An OidcHttpHandler', (): void => {
 
   beforeEach(async(): Promise<void> => {
     provider = {
-      callback: jest.fn(),
+      callback: jest.fn().mockReturnValue(jest.fn()),
     } as any;
 
     providerFactory = {
@@ -26,6 +26,7 @@ describe('An OidcHttpHandler', (): void => {
   it('sends all requests to the OIDC library.', async(): Promise<void> => {
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(provider.callback).toHaveBeenCalledTimes(1);
-    expect(provider.callback).toHaveBeenLastCalledWith(request, response);
+    expect(provider.callback.mock.results[0].value).toHaveBeenCalledTimes(1);
+    expect(provider.callback.mock.results[0].value).toHaveBeenLastCalledWith(request, response);
   });
 });

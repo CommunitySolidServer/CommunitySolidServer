@@ -21,7 +21,7 @@
           },
           {
             "PromptHandler:_promptRoutes_key": "consent",
-            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:auth:password:ExistingLoginRoute" }
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:auth:password:ConsentRoute" }
           }
         ]
       }

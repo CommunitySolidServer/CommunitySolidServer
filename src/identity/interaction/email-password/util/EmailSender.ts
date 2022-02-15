@@ -1,4 +1,4 @@
-import { AsyncHandler } from '../../../util/handlers/AsyncHandler';
+import { AsyncHandler } from '../../../../util/handlers/AsyncHandler';
 
 export interface EmailArgs {
   recipient: string;

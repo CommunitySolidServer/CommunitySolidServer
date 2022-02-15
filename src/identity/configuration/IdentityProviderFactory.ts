@@ -4,13 +4,14 @@
 import { randomBytes } from 'crypto';
 import type { JWK } from 'jose';
 import { exportJWK, generateKeyPair } from 'jose';
-import type { AnyObject,
+import type { Account,
+  Adapter,
   CanBePromise,
-  KoaContextWithOIDC,
   Configuration,
-  Account,
   ErrorOut,
-  Adapter } from 'oidc-provider';
+  KoaContextWithOIDC,
+  ResourceServer,
+  UnknownObject } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
@@ -75,6 +76,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly errorHandler!: ErrorHandler;
   private readonly responseWriter!: ResponseWriter;
 
+  private readonly jwtAlg = 'ES256';
   private provider?: Provider;
 
   /**
@@ -139,11 +141,23 @@ export class IdentityProviderFactory implements ProviderFactory {
       keys: await this.generateCookieKeys(),
     };
 
+    // Solid OIDC requires pkce https://solid.github.io/solid-oidc/#concepts
+    config.pkce = {
+      methods: [ 'S256' ],
+      required: (): true => true,
+    };
+
+    // Default client settings that might not be defined.
+    // Mostly relevant for WebID clients.
+    config.clientDefaults = {
+      id_token_signed_response_alg: this.jwtAlg,
+    };
+
     return config;
   }
 
   /**
-   * Generates a JWKS using a single RS256 JWK..
+   * Generates a JWKS using a single JWK.
    * The JWKS will be cached so subsequent calls return the same key.
    */
   private async generateJwks(): Promise<{ keys: JWK[] }> {
@@ -153,10 +167,10 @@ export class IdentityProviderFactory implements ProviderFactory {
       return jwks;
     }
     // If they are not, generate and save them
-    const { privateKey } = await generateKeyPair('RS256');
+    const { privateKey } = await generateKeyPair(this.jwtAlg);
     const jwk = await exportJWK(privateKey);
     // Required for Solid authn client
-    jwk.alg = 'RS256';
+    jwk.alg = this.jwtAlg;
     // In node v15.12.0 the JWKS does not get accepted because the JWK is not a plain object,
     // which is why we convert it into a plain object here.
     // Potentially this can be changed at a later point in time to `{ keys: [ jwk ]}`.
@@ -190,28 +204,51 @@ export class IdentityProviderFactory implements ProviderFactory {
   }
 
   /**
-   * Adds the necessary claims the to id token and access token based on the Solid OIDC spec.
+   * Adds the necessary claims the to id and access tokens based on the Solid OIDC spec.
    */
   private configureClaims(config: Configuration): void {
-    // Access token audience is 'solid', ID token audience is the client_id
-    config.audiences = (ctx, sub, token, use): string =>
-      use === 'access_token' ? 'solid' : token.clientId!;
-
     // Returns the id_token
     // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-id
+    // Some fields are still missing, see https://github.com/solid/community-server/issues/1154#issuecomment-1040233385
     config.findAccount = async(ctx: KoaContextWithOIDC, sub: string): Promise<Account> => ({
       accountId: sub,
-      claims: async(): Promise<{ sub: string; [key: string]: any }> =>
-        ({ sub, webid: sub }),
+      async claims(): Promise<{ sub: string; [key: string]: any }> {
+        return { sub, webid: sub, azp: ctx.oidc.client?.clientId };
+      },
     });
 
     // Add extra claims in case an AccessToken is being issued.
     // Specifically this sets the required webid and client_id claims for the access token
-    // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-access
-    config.extraAccessTokenClaims = (ctx, token): CanBePromise<AnyObject | void> =>
+    // See https://solid.github.io/solid-oidc/#resource-access-validation
+    config.extraTokenClaims = (ctx, token): CanBePromise<UnknownObject> =>
       this.isAccessToken(token) ?
-        { webid: token.accountId, client_id: token.clientId } :
+        { webid: token.accountId } :
         {};
+
+    config.features = {
+      ...config.features,
+      resourceIndicators: {
+        defaultResource(): string {
+          // This value is irrelevant, but is necessary to trigger the `getResourceServerInfo` call below,
+          // where it will be an input parameter in case the client provided no value.
+          // Note that an empty string is not a valid value.
+          return 'http://example.com/';
+        },
+        enabled: true,
+        // This call is necessary to force the OIDC library to return a JWT access token.
+        // See https://github.com/panva/node-oidc-provider/discussions/959#discussioncomment-524757
+        getResourceServerInfo: (): ResourceServer => ({
+          // The scopes of the Resource Server.
+          // Since this is irrelevant at the moment, an empty string is fine.
+          scope: '',
+          audience: 'solid',
+          accessTokenFormat: 'jwt',
+          jwt: {
+            sign: { alg: this.jwtAlg },
+          },
+        }),
+      },
+    };
   }
 
   /**
@@ -230,6 +267,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // When oidc-provider cannot fulfill the authorization request for any of the possible reasons
     // (missing user session, requested ACR not fulfilled, prompt requested, ...)
     // it will resolve the interactions.url helper function and redirect the User-Agent to that url.
+    // Another requirement is that `features.userinfo` is disabled in the configuration.
     config.interactions = {
       url: async(ctx, oidcInteraction): Promise<string> => {
         const operation: Operation = {
@@ -255,7 +293,7 @@ export class IdentityProviderFactory implements ProviderFactory {
 
     config.routes = {
       authorization: this.createRoute('auth'),
-      check_session: this.createRoute('session/check'),
+      backchannel_authentication: this.createRoute('backchannel'),
       code_verification: this.createRoute('device'),
       device_authorization: this.createRoute('device/auth'),
       end_session: this.createRoute('session/end'),

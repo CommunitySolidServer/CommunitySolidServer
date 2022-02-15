@@ -14,8 +14,7 @@
       "source": {
         "@id": "urn:solid-server:auth:password:LoginHandler",
         "@type": "LoginHandler",
-        "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-        "interactionCompleter": { "@type": "BaseInteractionCompleter" }
+        "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" }
       }
     }
   ]
