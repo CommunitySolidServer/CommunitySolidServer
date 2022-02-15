@@ -5,12 +5,11 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { createResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
-import type { ModifiedResource, ResourceStore } from '../../../../src/storage/ResourceStore';
-import { ModificationType, createModifiedResource } from '../../../../src/storage/ResourceStore';
+import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { AS, SOLID_AS, SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A PostOperationHandler', (): void => {
   let operation: Operation;
@@ -24,11 +23,9 @@ describe('A PostOperationHandler', (): void => {
     operation = { method: 'POST', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
       addResource: jest.fn(
-        async(): Promise<ModifiedResource> =>
-          createModifiedResource(
-            createResourceIdentifier('newPath'),
-            ModificationType.created,
-          ),
+        async(): Promise<RepresentationMetadata[]> => [
+          new RepresentationMetadata(createResourceIdentifier('newPath')).add(SOLID_AS.Activity, AS.Create),
+        ],
       ),
     } as unknown as ResourceStore;
     handler = new PostOperationHandler(store);

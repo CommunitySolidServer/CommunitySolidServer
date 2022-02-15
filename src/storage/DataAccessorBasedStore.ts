@@ -2,12 +2,11 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
-import { ModificationType } from '..';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -30,8 +29,10 @@ import {
 import { parseQuads } from '../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import {
+  AS,
   CONTENT_TYPE,
   DC,
+  SOLID_AS,
   SOLID_HTTP,
   LDP,
   POSIX,
@@ -43,8 +44,7 @@ import {
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
-import type { ModifiedResource, ResourceStore } from './ResourceStore';
-import { createModifiedResource } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * ResourceStore which uses a DataAccessor for backend access.
@@ -140,7 +140,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation, conditions?: Conditions):
-  Promise<ModifiedResource> {
+  Promise<RepresentationMetadata[]> {
     this.validateIdentifier(container);
 
     const parentMetadata = await this.getSafeNormalizedMetadata(container);
@@ -176,13 +176,13 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Write the data. New containers should never be made for a POST request.
-    await this.writeData(newID, representation, isContainer, false, false);
+    const changes = await this.writeData(newID, representation, isContainer, false, false);
 
-    return createModifiedResource(newID, ModificationType.created);
+    return changes;
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     this.validateIdentifier(identifier);
 
     // Check if the resource already exists
@@ -218,7 +218,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     if (conditions) {
       let metadata: RepresentationMetadata | undefined;
       try {
@@ -235,7 +235,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     throw new NotImplementedHttpError('Patches are not supported by the default store.');
   }
 
-  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ModifiedResource[]> {
+  public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions):
+  Promise<RepresentationMetadata[]> {
     this.validateIdentifier(identifier);
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
@@ -267,23 +268,27 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.4: "When a contained resource is deleted,
     // the server MUST also delete the associated auxiliary resources"
     // https://solid.github.io/specification/protocol#deleting-resources
-    const modfied = [ createModifiedResource(identifier, ModificationType.deleted) ];
+    const changes: RepresentationMetadata[] = [];
+    changes.push(new RepresentationMetadata(identifier).add(SOLID_AS.Activity, AS.Delete));
     if (!this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier)) {
       const auxiliaries = this.auxiliaryStrategy.getAuxiliaryIdentifiers(identifier);
-      modfied.push(...(await this.safelyDeleteAuxiliaryResources(auxiliaries))
-        .map((id: ResourceIdentifier): ModifiedResource => createModifiedResource(id, ModificationType.deleted)));
+      const deletedIdentifiers = await this.safelyDeleteAuxiliaryResources(auxiliaries);
+      const deleted = deletedIdentifiers.map((deletedIdentifier): RepresentationMetadata =>
+        new RepresentationMetadata(deletedIdentifier).add(SOLID_AS.Activity, AS.Delete));
+      changes.push(...deleted);
     }
 
     if (!this.identifierStrategy.isRootContainer(identifier)) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      modfied.push(createModifiedResource(container, ModificationType.changed));
+      changes.push(new RepresentationMetadata(container).add(SOLID_AS.Activity, AS.Update));
 
       // Update modified date of parent
       await this.updateContainerModifiedDate(container);
     }
 
     await this.accessor.deleteResource(identifier);
-    return modfied;
+
+    return changes;
   }
 
   /**
@@ -363,7 +368,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @returns Identifiers of resources that were possibly modified.
    */
   protected async writeData(identifier: ResourceIdentifier, representation: Representation, isContainer: boolean,
-    createContainers: boolean, exists: boolean): Promise<ModifiedResource[]> {
+    createContainers: boolean, exists: boolean): Promise<RepresentationMetadata[]> {
     // Make sure the metadata has the correct identifier and correct type quads
     // Need to do this before handling container data to have the correct identifier
     representation.metadata.identifier = DataFactory.namedNode(identifier.path);
@@ -386,19 +391,18 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Solid, §5.3: "Servers MUST create intermediate containers and include corresponding containment triples
     // in container representations derived from the URI path component of PUT and PATCH requests."
     // https://solid.github.io/specification/protocol#writing-resources
-    const modified: ModifiedResource[] = [];
+    const changes: RepresentationMetadata[] = [];
     if (!this.identifierStrategy.isRootContainer(identifier) && !exists) {
       const container = this.identifierStrategy.getParentContainer(identifier);
-      if (!createContainers) {
-        modified.push(createModifiedResource(container, ModificationType.changed));
+      if (createContainers) {
+        const createdContainers = await this.createRecursiveContainers(container);
+        changes.push(...createdContainers);
+
+        if (createdContainers.length === 0) {
+          changes.push(new RepresentationMetadata(container).add(SOLID_AS.Activity, AS.Update));
+        }
       } else {
-        const createdResources = await this.createRecursiveContainers(container);
-        // The parent container is marked 'changed'
-        modified.push(
-          ...createdResources.length === 0 ?
-            [ createModifiedResource(container, ModificationType.changed) ] :
-            createdResources,
-        );
+        changes.push(new RepresentationMetadata(container).add(SOLID_AS.Activity, AS.Update));
       }
 
       // Parent container is also modified
@@ -412,12 +416,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       this.accessor.writeContainer(identifier, representation.metadata) :
       this.accessor.writeDocument(identifier, representation.data, representation.metadata));
 
-    return [
-      ...modified,
-      exists ?
-        createModifiedResource(identifier, ModificationType.changed) :
-        createModifiedResource(identifier, ModificationType.created),
-    ];
+    changes.push(new RepresentationMetadata(identifier).add(SOLID_AS.Activity, exists ? AS.Update : AS.Create));
+
+    return changes;
   }
 
   /**
@@ -603,7 +604,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Will throw errors if the identifier of the last existing "container" corresponds to an existing document.
    * @param container - Identifier of the container which will need to exist.
    */
-  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<ModifiedResource[]> {
+  protected async createRecursiveContainers(container: ResourceIdentifier): Promise<RepresentationMetadata[]> {
     // Verify whether the container already exists
     try {
       const metadata = await this.getNormalizedMetadata(container);
@@ -623,10 +624,17 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Create the container, starting with its parent
-    const ancestors = this.identifierStrategy.isRootContainer(container) ?
+    const changedAncestors = this.identifierStrategy.isRootContainer(container) ?
       [] :
       await this.createRecursiveContainers(this.identifierStrategy.getParentContainer(container));
-    await this.writeData(container, new BasicRepresentation([], container), true, false, false);
-    return [ ...ancestors, createModifiedResource(container, ModificationType.created) ];
+    let changes: RepresentationMetadata[] = await this.writeData(
+      container,
+      new BasicRepresentation([], container),
+      true,
+      false,
+      false,
+    );
+    changes = changes.filter((change): boolean => change.get(SOLID_AS.Activity)?.value === AS.Create);
+    return [ ...changedAncestors, ...changes ];
   }
 }

@@ -1,5 +1,6 @@
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
@@ -80,7 +81,7 @@ export interface ResourceStore {
     identifier: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ModifiedResource[]>;
+  ) => Promise<RepresentationMetadata[]>;
 
   /**
    * Creates a new resource in the container.
@@ -94,7 +95,7 @@ export interface ResourceStore {
     container: ResourceIdentifier,
     representation: Representation,
     conditions?: Conditions,
-  ) => Promise<ModifiedResource>;
+  ) => Promise<RepresentationMetadata[]>;
 
   /**
    * Deletes a resource.
@@ -106,7 +107,7 @@ export interface ResourceStore {
   deleteResource: (
     identifier: ResourceIdentifier,
     conditions?: Conditions,
-  ) => Promise<ModifiedResource[]>;
+  ) => Promise<RepresentationMetadata[]>;
 
   /**
    * Sets or updates the representation of a resource,
@@ -121,5 +122,5 @@ export interface ResourceStore {
     identifier: ResourceIdentifier,
     patch: Patch,
     conditions?: Conditions,
-  ) => Promise<ModifiedResource[]>;
+  ) => Promise<RepresentationMetadata[]>;
 }

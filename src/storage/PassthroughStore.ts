@@ -1,9 +1,10 @@
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
-import type { ModifiedResource, ResourceStore } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * Store that calls the corresponding functions of the source Store.
@@ -27,22 +28,22 @@ export class PassthroughStore<T extends ResourceStore = ResourceStore> implement
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ModifiedResource> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     return this.source.addResource(container, representation, conditions);
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     return this.source.deleteResource(identifier, conditions);
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     return this.source.modifyResource(identifier, patch, conditions);
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
     return this.source.setRepresentation(identifier, representation, conditions);
   }
 }

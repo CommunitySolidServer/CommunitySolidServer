@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
+import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
-import type { ModifiedResource, ResourceStore } from './ResourceStore';
-import { ModificationType, createModifiedResource } from './ResourceStore';
+import type { ResourceStore } from './ResourceStore';
 
 /**
  * Store that notifies listeners of changes to its source
@@ -30,36 +30,43 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
   }
 
   public async addResource(container: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ModifiedResource> {
-    const identifier = await this.source.addResource(container, representation, conditions);
-    this.emitChanged([ createModifiedResource(container, ModificationType.changed), identifier ]);
-    return identifier;
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
+    const changes = await this.source.addResource(container, representation, conditions);
+
+    this.emitChanged(changes);
+
+    return changes;
   }
 
   public async deleteResource(identifier: ResourceIdentifier,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
-    return this.emitChanged(await this.source.deleteResource(identifier, conditions));
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
+    const changes = await this.source.deleteResource(identifier, conditions);
+
+    this.emitChanged(changes);
+
+    return changes;
   }
 
   public async setRepresentation(identifier: ResourceIdentifier, representation: Representation,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
-    return this.emitChanged(await this.source.setRepresentation(identifier, representation, conditions));
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
+    const changes = await this.source.setRepresentation(identifier, representation, conditions);
+
+    this.emitChanged(changes);
+
+    return changes;
   }
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
-    conditions?: Conditions): Promise<ModifiedResource[]> {
-    return this.emitChanged(await this.source.modifyResource(identifier, patch, conditions));
+    conditions?: Conditions): Promise<RepresentationMetadata[]> {
+    const changes = await this.source.deleteResource(identifier, conditions);
+
+    this.emitChanged(changes);
+
+    return changes;
   }
 
-  private emitChanged(modified: ModifiedResource[]): ModifiedResource[] {
-    // Don't emit 'changed' event for internal resources
-    if (!this.isInternalResource(modified)) {
-      this.emit('changed', modified);
-    }
-    return modified;
-  }
-
-  private isInternalResource(result: ModifiedResource[]): boolean {
-    return result.some((modified: ModifiedResource): boolean => modified.resource.path.includes('/.internal'));
+  private emitChanged(changes: RepresentationMetadata[]): RepresentationMetadata[] {
+    this.emit('changed', changes);
+    return changes;
   }
 }
