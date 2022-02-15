@@ -3,7 +3,6 @@ import type { AccessCheckerArgs } from '../../../../src/authorization/access/Acc
 import { AgentGroupAccessChecker } from '../../../../src/authorization/access/AgentGroupAccessChecker';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
-import type { RepresentationConverter } from '../../../../src/storage/conversion/RepresentationConverter';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import * as fetchUtil from '../../../../src/util/FetchUtil';
@@ -18,7 +17,6 @@ describe('An AgentGroupAccessChecker', (): void => {
   acl.addQuad(namedNode('noMatch'), ACL.terms.agentGroup, namedNode('badGroup'));
   let fetchMock: jest.SpyInstance;
   let representation: Representation;
-  const converter: RepresentationConverter = {} as any;
   let cache: ExpiringStorage<string, Promise<Store>>;
   let checker: AgentGroupAccessChecker;
 
@@ -31,7 +29,7 @@ describe('An AgentGroupAccessChecker', (): void => {
 
     cache = new Map() as any;
 
-    checker = new AgentGroupAccessChecker(converter, cache);
+    checker = new AgentGroupAccessChecker(cache);
   });
 
   it('can handle all requests.', async(): Promise<void> => {

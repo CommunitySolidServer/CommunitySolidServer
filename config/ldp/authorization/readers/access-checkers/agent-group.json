@@ -5,7 +5,6 @@
       "comment": "Checks if the agent belongs to a group that has access.",
       "@id": "urn:solid-server:default:AgentGroupAccessChecker",
       "@type": "AgentGroupAccessChecker",
-      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
       "cache": {
         "@id": "urn:solid-server:default:ExpiringAclCache",
         "@type": "WrappedExpiringStorage",

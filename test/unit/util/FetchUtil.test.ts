@@ -1,55 +1,81 @@
+import { Readable } from 'stream';
+import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
-import { fetch } from 'cross-fetch';
+import type { Response } from 'cross-fetch';
 import { DataFactory } from 'n3';
+import rdfDereferencer from 'rdf-dereference';
 import { RdfToQuadConverter } from '../../../src/storage/conversion/RdfToQuadConverter';
-import { fetchDataset } from '../../../src/util/FetchUtil';
+import { fetchDataset, responseToDataset } from '../../../src/util/FetchUtil';
 const { namedNode, quad } = DataFactory;
 
-jest.mock('cross-fetch');
+jest.mock('rdf-dereference', (): any => ({
+  dereference: jest.fn<string, any>(),
+}));
 
 describe('FetchUtil', (): void => {
-  describe('#fetchDataset', (): void => {
-    const fetchMock: jest.Mock = fetch as any;
-    const url = 'http://test.com/foo';
-    const converter = new RdfToQuadConverter();
+  const url = 'http://test.com/foo';
 
-    function mockFetch(body: string, status = 200): void {
-      fetchMock.mockImplementation((input: string): any => ({
-        text: (): any => body,
-        url: input,
-        status,
-        headers: { get: (): any => 'text/turtle' },
-      }));
+  function mockResponse(body: string, contentType: string | null, status = 200): Response {
+    return ({
+      text: (): any => body,
+      url,
+      status,
+      headers: { get: (): any => contentType },
+    }) as any;
+  }
+
+  describe('#fetchDataset', (): void => {
+    const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
+
+    function mockDereference(quads?: Quad[]): any {
+      rdfDereferenceMock.dereference.mockImplementation((uri: string): any => {
+        if (!quads) {
+          throw new Error('Throws error because url does not exist');
+        }
+        return {
+          uri,
+          quads: Readable.from(quads),
+          exists: true,
+        };
+      });
     }
 
-    it('errors if the status code is not 200.', async(): Promise<void> => {
-      mockFetch('Invalid URL!', 404);
-      await expect(fetchDataset(url, converter)).rejects.toThrow(`Unable to access data at ${url}`);
-      expect(fetchMock).toHaveBeenCalledWith(url);
-    });
-
-    it('errors if there is no content-type.', async(): Promise<void> => {
-      fetchMock.mockResolvedValueOnce({ url, text: (): any => '', status: 200, headers: { get: jest.fn() }});
-      await expect(fetchDataset(url, converter)).rejects.toThrow(`Unable to access data at ${url}`);
-      expect(fetchMock).toHaveBeenCalledWith(url);
+    it('errors if the URL does not exist.', async(): Promise<void> => {
+      mockDereference();
+      await expect(fetchDataset(url)).rejects.toThrow(`Could not parse resource at URL (${url})!`);
+      expect(rdfDereferenceMock.dereference).toHaveBeenCalledWith(url);
     });
 
     it('returns a Representation with quads.', async(): Promise<void> => {
-      mockFetch('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
-      const representation = await fetchDataset(url, converter);
+      const quads = [ quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')) ];
+      mockDereference(quads);
+      const representation = await fetchDataset(url);
+      await expect(arrayifyStream(representation.data)).resolves.toEqual([
+        quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
+      ]);
+    });
+  });
+
+  describe('#responseToDataset', (): void => {
+    const converter = new RdfToQuadConverter();
+
+    it('accepts Response objects as input.', async(): Promise<void> => {
+      const response = mockResponse('<http://test.com/s> <http://test.com/p> <http://test.com/o>.', 'text/turtle');
+      const body = await response.text();
+      const representation = await responseToDataset(response, converter, body);
       await expect(arrayifyStream(representation.data)).resolves.toEqual([
         quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
       ]);
     });
 
-    it('accepts Response objects as input.', async(): Promise<void> => {
-      mockFetch('<http://test.com/s> <http://test.com/p> <http://test.com/o>.');
-      const response = await fetch(url);
-      const body = await response.text();
-      const representation = await fetchDataset(response, converter, body);
-      await expect(arrayifyStream(representation.data)).resolves.toEqual([
-        quad(namedNode('http://test.com/s'), namedNode('http://test.com/p'), namedNode('http://test.com/o')),
-      ]);
+    it('errors if the status code is not 200.', async(): Promise<void> => {
+      const response = mockResponse('Incorrect status!', null, 400);
+      await expect(responseToDataset(response, converter)).rejects.toThrow(`Unable to access data at ${url}`);
+    });
+
+    it('errors if there is no content-type.', async(): Promise<void> => {
+      const response = mockResponse('No content-type!', null);
+      await expect(responseToDataset(response, converter)).rejects.toThrow(`Unable to access data at ${url}`);
     });
   });
 });
