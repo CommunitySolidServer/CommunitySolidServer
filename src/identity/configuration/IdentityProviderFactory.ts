@@ -314,6 +314,12 @@ export class IdentityProviderFactory implements ProviderFactory {
     config.renderError = async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
       // This allows us to stream directly to the response object, see https://github.com/koajs/koa/issues/944
       ctx.respond = false;
+
+      // OIDC library hides extra details in this field
+      if (out.error_description) {
+        error.message += ` - ${out.error_description}`;
+      }
+
       const result = await this.errorHandler.handleSafe({ error, preferences: { type: { 'text/plain': 1 }}});
       await this.responseWriter.handleSafe({ response: ctx.res, result });
     };
