@@ -58,7 +58,7 @@ export class MonitoringStore<T extends ResourceStore = ResourceStore>
 
   public async modifyResource(identifier: ResourceIdentifier, patch: Patch,
     conditions?: Conditions): Promise<RepresentationMetadata[]> {
-    const changes = await this.source.deleteResource(identifier, conditions);
+    const changes = await this.source.modifyResource(identifier, patch, conditions);
 
     this.emitChanged(changes);
 
