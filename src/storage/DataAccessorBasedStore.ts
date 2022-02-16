@@ -503,6 +503,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Get all values needed for naming the resource
     const isContainer = this.isNewContainer(metadata);
     const slug = metadata.get(SOLID_HTTP.slug)?.value;
+    // Error if slug ends on slash, but no ContainerType Link header is present
+    if (slug && isContainerPath(slug) && !this.hasContainerType(metadata.getAll(RDF.type))) {
+      throw new BadRequestHttpError(`Slugs cannot end with '/' without an HTTP Link header with rel="type" targeting ` +
+      `a valid LDP container type.`);
+    }
     metadata.removeAll(SOLID_HTTP.slug);
 
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);

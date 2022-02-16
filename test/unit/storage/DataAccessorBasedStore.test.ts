@@ -299,6 +299,18 @@ describe('A DataAccessorBasedStore', (): void => {
       });
     });
 
+    it('errors on a slug ending on / without Link rel:type container.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(SOLID_HTTP.slug, 'noContainer/');
+      representation.data = guardedStreamFrom([ `` ]);
+      const result = store.addResource(resourceID, representation);
+
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow(`Slugs cannot end with '/' without an HTTP Link header with rel="type" ` +
+      `targeting a valid LDP container type.`);
+    });
+
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(SOLID_HTTP.slug, 'newName');
