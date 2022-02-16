@@ -1,19 +1,41 @@
 <h1>Authorize</h1>
-<p>You are authorizing an application to access your Pod.</p>
+<p>The following client wants to do authorized requests in your name:</p>
+<ul id="clientInfo">
+</ul>
 <form method="post" id="mainForm">
   <p class="error" id="error"></p>
 
   <fieldset>
     <ol>
       <li class="checkbox">
-        <label><input type="checkbox" name="remember" value="yes" checked>Stay logged in</label>
+        <label><input type="checkbox" name="remember" value="yes" checked>Remember this client</label>
       </li>
     </ol>
   </fieldset>
 
-  <p class="actions"><button autofocus type="submit" name="submit">Continue</button></p>
+  <p class="actions"><button autofocus type="submit" name="submit">Consent</button></p>
 </form>
 
 <script>
+  const clientInfo = document.getElementById('clientInfo');
+  function addClientInfo(text, value) {
+    if (value) {
+      const li = document.createElement('li');
+      const strong = document.createElement('strong')
+      strong.appendChild(document.createTextNode(value));
+      li.appendChild(document.createTextNode(`${text}: `));
+      li.appendChild(strong);
+      clientInfo.appendChild(li);
+    }
+  }
+
+  // Update the client information
+  (async() => {
+    const res = await fetch('', { headers: { accept: 'application/json' } })
+    const { client } = await res.json();
+    addClientInfo('Name', client.client_name);
+    addClientInfo('ID', client.client_id);
+  })()
+
   addPostListener('mainForm', 'error', '', () => { throw new Error('Expected a location field in the response.') });
 </script>

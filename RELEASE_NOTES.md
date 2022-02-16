@@ -12,6 +12,7 @@
   which enables passing custom variables to configurations and setting new default values.
 - The AppRunner functions have changed to require Components.js variables. 
   This is important for anyone who starts the server from code.
+- When logging in, a consent screen will now provide information about the client.
 
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
