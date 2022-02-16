@@ -1,4 +1,12 @@
-import type { InteractionResults, KoaContextWithOIDC, UnknownObject } from 'oidc-provider';
+import type {
+  AllClientMetadata,
+  InteractionResults,
+  KoaContextWithOIDC,
+  UnknownObject,
+} from 'oidc-provider';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
+import { APPLICATION_JSON } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { FoundHttpError } from '../../util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
@@ -11,6 +19,8 @@ type Grant = NonNullable<KoaContextWithOIDC['oidc']['entities']['Grant']>;
 
 /**
  * Handles the OIDC consent prompts where the user confirms they want to log in for the given client.
+ *
+ * Returns all the relevant Client metadata on GET requests.
  */
 export class ConsentHandler extends BaseInteractionHandler {
   private readonly providerFactory: ProviderFactory;
@@ -28,6 +38,27 @@ export class ConsentHandler extends BaseInteractionHandler {
         { errorCode: 'E0002' },
       );
     }
+  }
+
+  protected async handleGet(input: Required<InteractionHandlerInput>): Promise<Representation> {
+    const { operation, oidcInteraction } = input;
+    const provider = await this.providerFactory.getProvider();
+    const client = await provider.Client.find(oidcInteraction.params.client_id as string);
+    const metadata: AllClientMetadata = client?.metadata() ?? {};
+
+    // Only extract specific fields to prevent leaking information
+    // Based on https://www.w3.org/ns/solid/oidc-context.jsonld
+    const keys = [ 'client_id', 'client_uri', 'logo_uri', 'policy_uri',
+      'client_name', 'contacts', 'grant_types', 'scope' ];
+
+    const jsonLd = Object.fromEntries(
+      keys.filter((key): boolean => key in metadata)
+        .map((key): [ string, unknown ] => [ key, metadata[key] ]),
+    );
+    jsonLd['@context'] = 'https://www.w3.org/ns/solid/oidc-context.jsonld';
+    const json = { client: jsonLd };
+
+    return new BasicRepresentation(JSON.stringify(json), operation.target, APPLICATION_JSON);
   }
 
   protected async handlePost({ operation, oidcInteraction }: InteractionHandlerInput): Promise<never> {

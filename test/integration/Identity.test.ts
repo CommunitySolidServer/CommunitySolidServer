@@ -193,6 +193,12 @@ describe('A Solid server with IDP', (): void => {
       default_max_age: 3600,
       require_auth_time: true,
     };
+    // This client will always reject requests since there is no valid redirect
+    const badClientJson = {
+      ...clientJson,
+      client_id: badClientId,
+      redirect_uris: [],
+    };
     /* eslint-enable @typescript-eslint/naming-convention */
     let state: IdentityTestState;
 
@@ -205,13 +211,10 @@ describe('A Solid server with IDP', (): void => {
         body: JSON.stringify(clientJson),
       });
 
-      // This client will always reject requests since there is no valid redirect
-      clientJson.client_id = badClientId;
-      clientJson.redirect_uris = [];
       await fetch(badClientId, {
         method: 'PUT',
         headers: { 'content-type': 'application/ld+json' },
-        body: JSON.stringify(clientJson),
+        body: JSON.stringify(badClientJson),
       });
     });
 
@@ -224,6 +227,14 @@ describe('A Solid server with IDP', (): void => {
       const res = await state.fetchIdp(url);
       expect(res.status).toBe(200);
       url = await state.login(url, email, password);
+
+      // Verify the client information the server discovered
+      const consentRes = await state.fetchIdp(url, 'GET');
+      expect(consentRes.status).toBe(200);
+      const { client } = await consentRes.json();
+      expect(client.client_id).toBe(clientJson.client_id);
+      expect(client.client_name).toBe(clientJson.client_name);
+
       await state.consent(url);
       expect(state.session.info?.webId).toBe(webId);
     });

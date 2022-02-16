@@ -4,6 +4,7 @@ import { ConsentHandler } from '../../../../src/identity/interaction/ConsentHand
 import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { readJsonStream } from '../../../../src/util/StreamUtil';
 import { createPostJsonOperation } from './email-password/handler/Util';
 
 const newGrantId = 'newGrantId';
@@ -45,6 +46,10 @@ class DummyGrant {
 describe('A ConsentHandler', (): void => {
   const accountId = 'http://example.com/id#me';
   const clientId = 'clientId';
+  const clientMetadata = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    client_id: 'clientId',
+  };
   let grantFn: jest.Mock<DummyGrant> & { find: jest.Mock<DummyGrant> };
   let knownGrant: DummyGrant;
   let oidcInteraction: Interaction;
@@ -66,8 +71,12 @@ describe('A ConsentHandler', (): void => {
     grantFn = jest.fn((props): DummyGrant => new DummyGrant(props)) as any;
     grantFn.find = jest.fn((grantId: string): any => grantId ? knownGrant : undefined);
     provider = {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+      /* eslint-disable @typescript-eslint/naming-convention */
       Grant: grantFn,
+      Client: {
+        find: (id: string): any => (id ? { metadata: jest.fn().mockReturnValue(clientMetadata) } : undefined),
+      },
+      /* eslint-enable @typescript-eslint/naming-convention */
     } as any;
 
     providerFactory = {
@@ -87,6 +96,28 @@ describe('A ConsentHandler', (): void => {
 
     await expect(handler.canHandle({ operation: createPostJsonOperation({}), oidcInteraction }))
       .resolves.toBeUndefined();
+  });
+
+  it('returns the client metadata on a GET request.', async(): Promise<void> => {
+    const operation = { method: 'GET', target: { path: 'http://example.com/foo' }} as any;
+    const representation = await handler.handle({ operation, oidcInteraction });
+    await expect(readJsonStream(representation.data)).resolves.toEqual({
+      client: {
+        ...clientMetadata,
+        '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
+      },
+    });
+  });
+
+  it('returns an empty object if no client was found.', async(): Promise<void> => {
+    delete oidcInteraction.params.client_id;
+    const operation = { method: 'GET', target: { path: 'http://example.com/foo' }} as any;
+    const representation = await handler.handle({ operation, oidcInteraction });
+    await expect(readJsonStream(representation.data)).resolves.toEqual({
+      client: {
+        '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
+      },
+    });
   });
 
   it('requires an oidcInteraction with a defined session.', async(): Promise<void> => {
