@@ -10,7 +10,7 @@ it is always possible to not choose any of them and create your own custom versi
 
 # How to use
 The easiest way to create a new config is by creating a JSON-LD file
-that imports one option from every component subfolder 
+that imports one option from every component subfolder
 (such as either `allow-all.json` or `webacl.json` from `ldp/authorization`).
 In case none of the available options suffice, there are 2 other ways to handle this:
 
@@ -53,3 +53,20 @@ but instead have the following in your root config:
 ```
 Don't forget that in some cases you would also have to copy some imports!
 The existing options can be used as inspiration.
+
+# How to seed Accounts/Pods
+If you need to seed accounts and pods, use the `file-seeded.json` config
+via `-c config/file-seeded.json` when starting your server. The config will by
+default read `./seeded-pod-config.json` to set your desired accounts and pods.
+You can modify the name and path of the seed file by setting the `--seededPodConfigJson`
+option. `./seeded-pod-config.json` should be a JSON object whose values include
+`podName`, `email`, and `password`. For example:
+```json
+    {
+      "example": {
+        "podName": "example",
+        "email": "hello@example.com",
+        "password": "abc123"
+      }
+    }
+```

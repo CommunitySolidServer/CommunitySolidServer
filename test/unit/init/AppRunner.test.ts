@@ -62,6 +62,7 @@ describe('AppRunner', (): void => {
         'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
         'urn:solid-server:default:variable:showStackTrace': false,
         'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
       };
       const createdApp = await new AppRunner().create(
         {
@@ -99,6 +100,7 @@ describe('AppRunner', (): void => {
         'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
         'urn:solid-server:default:variable:showStackTrace': false,
         'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
       };
       await new AppRunner().run(
         {
@@ -166,6 +168,7 @@ describe('AppRunner', (): void => {
         '-s', 'http://localhost:5000/sparql',
         '-t',
         '--podConfigJson', '/different-path.json',
+        '--seededPodConfigJson', '/different-path.json',
       ];
       process.argv = argvParameters;
 

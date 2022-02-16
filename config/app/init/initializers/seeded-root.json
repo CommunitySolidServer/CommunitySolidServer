@@ -1,0 +1,50 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Makes sure the root container exists and contains the necessary resources.",
+      "@id": "urn:solid-server:default:RootInitializer",
+      "@type": "ConditionalHandler",
+      "storageKey": "rootInitialized",
+      "storageValue": true,
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" },
+      "source": {
+        "@type": "ContainerInitializer",
+        "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+        "args_path": "/",
+        "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
+        "args_generator": {
+          "@type": "TemplatedResourcesGenerator",
+          "templateFolder": "@css:templates/root/prefilled",
+          "factory": { "@type": "ExtensionBasedMapperFactory" },
+          "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+        },
+        "args_storageKey": "rootInitialized",
+        "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }
+      }
+    },
+    {
+      "comment": "This is where the pod configurations will be stored.",
+      "@id": "urn:solid-server:default:SeededPodConfigurationStorage",
+      "@type": "JsonFileStorage",
+      "filePath": { "@id": "urn:solid-server:default:variable:seededPodConfigJson" },
+      "locker": { "@id": "urn:solid-server:default:ResourceLocker" }
+    },
+    {
+      "comment": "Add to the list of initializers.",
+      "@id": "urn:solid-server:default:ParallelInitializer",
+      "ParallelHandler:_handlers": [
+        {
+          "comment": "Initializer that instantiates all the seeded accounts and pods.",
+          "@type": "SeededPodInitializer",
+          "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+          "args_webIdSuffix": "/profile/card#me",
+          "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+          "args_configStorage": { "@id": "urn:solid-server:default:SeededPodConfigurationStorage" },
+          "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+          "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
+        }
+      ]
+    },
+  ]
+}
