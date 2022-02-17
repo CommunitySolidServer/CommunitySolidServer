@@ -1,0 +1,13 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Logs a warning if the base URL changes.",
+      "@id": "urn:solid-server:default:BaseUrlVerifier",
+      "@type": "BaseUrlVerifier",
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "storageKey": "current-base-url",
+      "storage": { "@id": "urn:solid-server:default:SetupStorage" }
+    }
+  ]
+}
