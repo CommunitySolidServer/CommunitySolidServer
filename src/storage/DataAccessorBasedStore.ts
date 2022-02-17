@@ -196,12 +196,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    const isContainer = this.isNewContainer(representation.metadata, identifier.path);
+    const isContainer = this.isNewContainer(representation.metadata);
     // Solid, §3.1: "Paths ending with a slash denote a container resource."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
-    if (isContainer !== isContainerIdentifier(identifier)) {
-      throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
-    }
+    this.validateSlug(isContainer, identifier.path);
 
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
@@ -473,10 +471,24 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param slug - Slug to use for the new URI.
    */
   protected createURI(container: ResourceIdentifier, isContainer: boolean, slug?: string): ResourceIdentifier {
+    this.validateSlug(isContainer, slug);
     const base = ensureTrailingSlash(container.path);
     const name = (slug && this.cleanSlug(slug)) ?? uuid();
     const suffix = isContainer ? '/' : '';
     return { path: `${base}${name}${suffix}` };
+  }
+
+  /**
+   * Validates if the slug and headers are valid.
+   * Errors if slug exists, ends on slash, but ContainerType Link header is NOT present
+   * OR if slug exists, does not end on slash, but a ContainerType Link header IS present
+   * @param isContainer - Is the slug supposed to represent a container?
+   * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required (the slug).
+   */
+  protected validateSlug(isContainer: boolean, suffix?: string): void {
+    if (suffix && (isContainer !== isContainerPath(suffix))) {
+      throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
+    }
   }
 
   /**
@@ -503,11 +515,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Get all values needed for naming the resource
     const isContainer = this.isNewContainer(metadata);
     const slug = metadata.get(SOLID_HTTP.slug)?.value;
-    // Error if slug ends on slash, but no ContainerType Link header is present
-    if (slug && isContainerPath(slug) && !this.hasContainerType(metadata.getAll(RDF.type))) {
-      throw new BadRequestHttpError(`Slugs cannot end with '/' without an HTTP Link header with rel="type" targeting ` +
-      `a valid LDP container type.`);
-    }
     metadata.removeAll(SOLID_HTTP.slug);
 
     let newID: ResourceIdentifier = this.createURI(container, isContainer, slug);
@@ -531,16 +538,11 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   /**
    * Checks if the given metadata represents a (potential) container,
-   * both based on the metadata and the URI.
+   * based on the metadata.
    * @param metadata - Metadata of the (new) resource.
-   * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required.
    */
-  protected isNewContainer(metadata: RepresentationMetadata, suffix?: string): boolean {
-    if (this.hasContainerType(metadata.getAll(RDF.type))) {
-      return true;
-    }
-    const slug = suffix ?? metadata.get(SOLID_HTTP.slug)?.value;
-    return Boolean(slug && isContainerPath(slug));
+  protected isNewContainer(metadata: RepresentationMetadata): boolean {
+    return this.hasContainerType(metadata.getAll(RDF.type));
   }
 
   /**

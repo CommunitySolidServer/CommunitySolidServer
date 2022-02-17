@@ -307,8 +307,21 @@ describe('A DataAccessorBasedStore', (): void => {
       const result = store.addResource(resourceID, representation);
 
       await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects.toThrow(`Slugs cannot end with '/' without an HTTP Link header with rel="type" ` +
-      `targeting a valid LDP container type.`);
+      await expect(result).rejects
+        .toThrow('Containers should have a `/` at the end of their path, resources should not.');
+    });
+
+    it('errors on a slug not ending on / with Link rel:type container.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(SOLID_HTTP.slug, 'noContainer');
+      representation.data = guardedStreamFrom([ `` ]);
+      const result = store.addResource(resourceID, representation);
+
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects
+        .toThrow('Containers should have a `/` at the end of their path, resources should not.');
     });
 
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
@@ -376,6 +389,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: root };
       const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
+      representation.metadata.set(RDF.type, DataFactory.namedNode(LDP.Container));
       await expect(store.setRepresentation(resourceID, representation, conditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
@@ -390,6 +404,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const resourceID = { path: `${root}` };
       representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
@@ -438,6 +453,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
@@ -502,6 +518,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'internal/quads';
       representation.data = guardedStreamFrom(
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
@@ -556,6 +573,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
+      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
