@@ -3,7 +3,7 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { Representation } from '../../http/representation/Representation';
 import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
-import { modulePathPlaceholder } from '../../util/PathUtil';
+import { resolveModulePath } from '../../util/PathUtil';
 import { getSingleItem } from '../../util/StreamUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
@@ -18,8 +18,8 @@ export interface TemplateOptions {
 }
 
 const DEFAULT_TEMPLATE_OPTIONS: TemplateOptions = {
-  mainTemplatePath: `${modulePathPlaceholder}templates/error/main.md.hbs`,
-  codeTemplatesPath: `${modulePathPlaceholder}templates/error/descriptions/`,
+  mainTemplatePath: resolveModulePath('templates/error/main.md.hbs'),
+  codeTemplatesPath: resolveModulePath('templates/error/descriptions/'),
   extension: '.md.hbs',
   contentType: 'text/markdown',
 };
