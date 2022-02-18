@@ -6,12 +6,12 @@ import yargs from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
-import { modulePathPlaceholder, resolveAssetPath } from '../util/PathUtil';
+import { resolveModulePath, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
 import type { CliResolver } from './CliResolver';
 import type { CliArgv, VariableBindings } from './variables/Types';
 
-const DEFAULT_CONFIG = `${modulePathPlaceholder}config/default.json`;
+const DEFAULT_CONFIG = resolveModulePath('config/default.json');
 
 const DEFAULT_CLI_RESOLVER = 'urn:solid-server-app-setup:default:CliResolver';
 const DEFAULT_APP = 'urn:solid-server:default:App';
