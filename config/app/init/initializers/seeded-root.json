@@ -24,11 +24,22 @@
       }
     },
     {
-      "comment": "This is where the pod configurations will be stored.",
+      "comment": "This is where the seeded pod configurations will be stored.",
       "@id": "urn:solid-server:default:SeededPodConfigurationStorage",
       "@type": "JsonFileStorage",
       "filePath": { "@id": "urn:solid-server:default:variable:seededPodConfigJson" },
       "locker": { "@id": "urn:solid-server:default:ResourceLocker" }
+    },
+    {
+      "comment": "Separate manager from the RegistrationHandler in case registration is disabled.",
+      "@id": "urn:solid-server:default:SeededPodRegistrationManager",
+      "@type": "RegistrationManager",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_webIdSuffix": "/profile/card#me",
+      "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+      "args_ownershipValidator": { "@id": "urn:solid-server:auth:password:OwnershipValidator" },
+      "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+      "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
     },
     {
       "comment": "Add to the list of initializers.",
@@ -37,12 +48,8 @@
         {
           "comment": "Initializer that instantiates all the seeded accounts and pods.",
           "@type": "SeededPodInitializer",
-          "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-          "args_webIdSuffix": "/profile/card#me",
-          "args_identifierGenerator": { "@id": "urn:solid-server:default:IdentifierGenerator" },
+          "args_registrationManager": { "@id": "urn:solid-server:default:SeededPodRegistrationManager" },
           "args_configStorage": { "@id": "urn:solid-server:default:SeededPodConfigurationStorage" },
-          "args_accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
-          "args_podManager": { "@id": "urn:solid-server:default:PodManager" }
         }
       ]
     },
