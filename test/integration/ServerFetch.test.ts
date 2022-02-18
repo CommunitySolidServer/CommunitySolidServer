@@ -75,6 +75,7 @@ describe('A Solid server', (): void => {
       method: 'PUT',
       headers: {
         'content-type': 'text/turtle',
+        'link': `<${LDP.Container}>; rel="type"`,
       },
       body: '<a:b> <a:b> <a:b>.',
     });
@@ -140,6 +141,7 @@ describe('A Solid server', (): void => {
       method: 'PUT',
       headers: {
         'content-type': 'text/turtle',
+        'link': `<${LDP.Container}>; rel="type"`,
       },
       body: '<a:b> <a:b> <a:b>.',
     });
@@ -185,6 +187,7 @@ describe('A Solid server', (): void => {
       method: 'PUT',
       headers: {
         'content-type': 'text/turtle',
+        'link': `<${LDP.Container}>; rel="type"`,
       },
       body: '<a:b> <a:b> <a:b>.',
     });
