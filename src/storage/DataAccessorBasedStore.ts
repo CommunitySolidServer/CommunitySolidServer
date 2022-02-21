@@ -196,10 +196,13 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    const isContainer = this.isNewContainer(representation.metadata);
+    const isContainer = isContainerIdentifier(identifier);
     // Solid, §3.1: "Paths ending with a slash denote a container resource."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
-    this.validateSlug(isContainer, identifier.path);
+    const potentialSlug = representation.metadata.get(SOLID_HTTP.slug)?.value;
+    if (potentialSlug && (isContainerPath(potentialSlug) !== isContainerIdentifier(identifier))) {
+      throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
+    }
 
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
@@ -513,7 +516,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   protected async createSafeUri(container: ResourceIdentifier, metadata: RepresentationMetadata):
   Promise<ResourceIdentifier> {
     // Get all values needed for naming the resource
-    const isContainer = this.isNewContainer(metadata);
+    const isContainer = this.isContainerType(metadata);
     const slug = metadata.get(SOLID_HTTP.slug)?.value;
     metadata.removeAll(SOLID_HTTP.slug);
 
@@ -541,7 +544,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * based on the metadata.
    * @param metadata - Metadata of the (new) resource.
    */
-  protected isNewContainer(metadata: RepresentationMetadata): boolean {
+  protected isContainerType(metadata: RepresentationMetadata): boolean {
     return this.hasContainerType(metadata.getAll(RDF.type));
   }
 
