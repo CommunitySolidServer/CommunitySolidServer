@@ -419,6 +419,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(SOLID_HTTP.slug, `${root}resource/`);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
       );

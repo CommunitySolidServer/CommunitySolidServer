@@ -265,14 +265,14 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   });
 
   it('can create a container with a diamond identifier in the data.', async(): Promise<void> => {
-    const slug = 'my-container';
+    const slug = 'my-container/';
 
     const body = '<> <http://www.w3.org/2000/01/rdf-schema#label> "My Container" .';
     let response = await postResource(baseUrl, { isContainer: true, contentType: 'text/turtle', slug, body });
-    expect(response.headers.get('location')).toBe(`${baseUrl}${slug}/`);
+    expect(response.headers.get('location')).toBe(`${baseUrl}${slug}`);
 
     // GET
-    const containerUrl = `${baseUrl}${slug}/`;
+    const containerUrl = `${baseUrl}${slug}`;
     response = await getResource(containerUrl);
 
     await expectQuads(response, [
