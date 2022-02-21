@@ -299,7 +299,7 @@ describe('A DataAccessorBasedStore', (): void => {
       });
     });
 
-    it('errors on a slug ending on / without Link rel:type container.', async(): Promise<void> => {
+    it('errors on a slug ending on / without Link rel:type Container header.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
       representation.metadata.add(SOLID_HTTP.slug, 'noContainer/');
@@ -308,20 +308,20 @@ describe('A DataAccessorBasedStore', (): void => {
 
       await expect(result).rejects.toThrow(BadRequestHttpError);
       await expect(result).rejects
-        .toThrow('Containers should have a `/` at the end of their path, resources should not.');
+        .toThrow('Only slugs used to create containers can end with a `/`.');
     });
 
-    it('errors on a slug not ending on / with Link rel:type container.', async(): Promise<void> => {
+    it('creates a URI when the incoming slug does not end with /, ' +
+      'but has a Link rel:type Container header.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.type);
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.add(SOLID_HTTP.slug, 'noContainer');
+      representation.metadata.add(SOLID_HTTP.slug, 'newContainer');
       representation.data = guardedStreamFrom([ `` ]);
-      const result = store.addResource(resourceID, representation);
-
-      await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects
-        .toThrow('Containers should have a `/` at the end of their path, resources should not.');
+      const result = await store.addResource(resourceID, representation);
+      expect(result).toEqual({
+        path: `${root}newContainer/`,
+      });
     });
 
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
@@ -416,10 +416,17 @@ describe('A DataAccessorBasedStore', (): void => {
       mock.mockRestore();
     });
 
-    it('will error if the ending slash does not match its resource type.', async(): Promise<void> => {
+    it('will error if path does not end in slash and does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.add(SOLID_HTTP.slug, `${root}resource/`);
+      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
+        new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
+      );
+    });
+
+    it('will error if path does end in slash and does not match its resource type.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource/` };
+      representation.metadata.removeAll(RDF.type);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
       );

@@ -115,7 +115,7 @@ describe('A Solid server', (): void => {
         slug: 'containerPOST/',
         link: `<${LDP.Container}>; rel="type"`,
       },
-      body: `<a:b> <a:b> <a:b>.`,
+      body: '<a:b> <a:b> <a:b>.',
     });
     expect(res.status).toBe(201);
     expect(res.headers.get('location')).toBe(`${baseUrl}containerPOST/`);

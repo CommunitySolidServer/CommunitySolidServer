@@ -196,11 +196,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    const isContainer = isContainerIdentifier(identifier);
+    const isContainer = this.isContainerType(representation.metadata);
     // Solid, §3.1: "Paths ending with a slash denote a container resource."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
-    const potentialSlug = representation.metadata.get(SOLID_HTTP.slug)?.value;
-    if (potentialSlug && (isContainerPath(potentialSlug) !== isContainerIdentifier(identifier))) {
+    if (isContainer !== isContainerIdentifier(identifier)) {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
@@ -484,13 +483,12 @@ export class DataAccessorBasedStore implements ResourceStore {
   /**
    * Validates if the slug and headers are valid.
    * Errors if slug exists, ends on slash, but ContainerType Link header is NOT present
-   * OR if slug exists, does not end on slash, but a ContainerType Link header IS present
    * @param isContainer - Is the slug supposed to represent a container?
-   * @param suffix - Suffix of the URI. Can be the full URI, but only the last part is required (the slug).
+   * @param slug - Is the requested slug (if any).
    */
-  protected validateSlug(isContainer: boolean, suffix?: string): void {
-    if (suffix && (isContainer !== isContainerPath(suffix))) {
-      throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
+  protected validateSlug(isContainer: boolean, slug?: string): void {
+    if (slug && isContainerPath(slug) && !isContainer) {
+      throw new BadRequestHttpError('Only slugs used to create containers can end with a `/`.');
     }
   }
 
