@@ -17,6 +17,9 @@
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
 
+The `@context` needs to be updated to 
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld`.
+
 The following changes pertain to the imports in the default configs:
 - A new configuration option needs to be imported:
   - `/app/variables/default/json` contains everything related to parsing CLI arguments 
