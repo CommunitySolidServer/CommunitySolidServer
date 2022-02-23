@@ -66,7 +66,7 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
     const modes = await this.modesExtractor.handleSafe(operation);
     this.logger.verbose(`Required modes are read: ${[ ...modes ].join(',')}`);
 
-    const permissionSet = await this.permissionReader.handleSafe({ credentials, identifier: operation.target });
+    const permissionSet = await this.permissionReader.handleSafe({ credentials, identifier: operation.target, modes });
     this.logger.verbose(`Available permissions are ${JSON.stringify(permissionSet)}`);
 
     try {

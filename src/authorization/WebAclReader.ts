@@ -64,7 +64,8 @@ export class WebAclReader extends PermissionReader {
     const isAcl = this.aclStrategy.isAuxiliaryIdentifier(identifier);
     const mainIdentifier = isAcl ? this.aclStrategy.getSubjectIdentifier(identifier) : identifier;
 
-    // Determine the full authorization for the agent granted by the applicable ACL
+    // Determine the full authorization for the agent granted by the applicable ACL.
+    // Note that we don't filter on input modes as all results are needed for the WAC-Allow header.
     const acl = await this.getAclRecursive(mainIdentifier);
     return this.createPermissions(credentials, acl, isAcl);
   }
