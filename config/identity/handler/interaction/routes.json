@@ -27,7 +27,7 @@
       ]
     },
     {
-      "comment": "Converts redirect errors to location JSON responses.",
+      "comment": "Converts 3xx redirects to 200 JSON responses for consumption by browser scripts.",
       "@id": "urn:solid-server:auth:password:LocationInteractionHandler",
       "@type": "LocationInteractionHandler",
       "LocationInteractionHandler:_source" : { "@id": "urn:solid-server:auth:password:InteractionRouteHandler" }
