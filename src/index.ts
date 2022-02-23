@@ -358,6 +358,7 @@ export * from './storage/PassthroughStore';
 export * from './storage/PatchingStore';
 export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
+export * from './storage/ResourceSet';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 

@@ -3,6 +3,7 @@ import type { Representation } from '../http/representation/Representation';
 import type { RepresentationPreferences } from '../http/representation/RepresentationPreferences';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import type { Conditions } from './Conditions';
+import type { ResourceSet } from './ResourceSet';
 
 /**
  * A ResourceStore represents a collection of resources.
@@ -15,16 +16,7 @@ import type { Conditions } from './Conditions';
  * ResourceStores are also responsible for taking auxiliary resources into account
  * should those be relevant to the store.
  */
-export interface ResourceStore {
-
-  /**
-   * Check if a resource exists.
-   * @param identifier - Identifier of resource to check.
-   *
-   * @returns A promise resolving if the resource already exists
-   */
-  resourceExists: (identifier: ResourceIdentifier, conditions?: Conditions) => Promise<boolean>;
-
+export interface ResourceStore extends ResourceSet {
   /**
    * Retrieves a representation of a resource.
    * @param identifier - Identifier of the resource to read.

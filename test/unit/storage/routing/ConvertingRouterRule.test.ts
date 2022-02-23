@@ -39,18 +39,18 @@ describe('A ConvertingRouterRule', (): void => {
   });
 
   it('checks if the stores contain the identifier if there is no data.', async(): Promise<void> => {
-    store1.resourceExists = jest.fn().mockImplementationOnce((): any => true);
+    store1.hasResource = jest.fn().mockImplementationOnce((): any => true);
     await expect(rule.handle({ identifier: { path: 'identifier' }})).resolves.toBe(store1);
-    expect(store1.resourceExists).toHaveBeenCalledTimes(1);
+    expect(store1.hasResource).toHaveBeenCalledTimes(1);
   });
 
   it('returns the defaultStore if no other store has the resource.', async(): Promise<void> => {
-    store1.resourceExists = jest.fn().mockImplementationOnce((): any => false);
+    store1.hasResource = jest.fn().mockImplementationOnce((): any => false);
     await expect(rule.handle({ identifier: { path: 'identifier' }})).resolves.toBe(defaultStore);
   });
 
   it('throws the error if a store had a non-404 error.', async(): Promise<void> => {
-    store1.resourceExists = jest.fn().mockRejectedValueOnce(new InternalServerError());
+    store1.hasResource = jest.fn().mockRejectedValueOnce(new InternalServerError());
     await expect(rule.handle({ identifier: { path: 'identifier' }})).rejects.toThrow(InternalServerError);
   });
 });

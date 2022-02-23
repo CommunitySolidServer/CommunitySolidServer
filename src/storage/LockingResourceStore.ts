@@ -34,9 +34,9 @@ export class LockingResourceStore implements AtomicResourceStore {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
+  public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     return this.locks.withReadLock(this.getLockIdentifier(identifier),
-      async(): Promise<boolean> => this.source.resourceExists(identifier, conditions));
+      async(): Promise<boolean> => this.source.hasResource(identifier));
   }
 
   public async getRepresentation(identifier: ResourceIdentifier, preferences: RepresentationPreferences,

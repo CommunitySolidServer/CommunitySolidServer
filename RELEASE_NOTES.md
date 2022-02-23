@@ -21,6 +21,8 @@ The following changes are relevant for v3 custom configs that replaced certain f
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - The output of `parseContentType` in `HeaderUtil` was changed to include parameters.
 - `PermissionReader`s take an additional `modes` parameter as input.
+- The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
+  and has been moved to a separate `ResourceSet` interface.
 
 ## v3.0.0
 ### New features

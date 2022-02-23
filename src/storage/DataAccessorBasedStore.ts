@@ -81,7 +81,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.auxiliaryStrategy = auxiliaryStrategy;
   }
 
-  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+  public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     try {
       this.validateIdentifier(identifier);
       await this.accessor.getMetadata(identifier);
@@ -530,7 +530,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
     const withSlash = { path: ensureTrailingSlash(newID.path) };
     const withoutSlash = { path: trimTrailingSlashes(newID.path) };
-    if (await this.resourceExists(withSlash) || await this.resourceExists(withoutSlash)) {
+    if (await this.hasResource(withSlash) || await this.hasResource(withoutSlash)) {
       newID = this.createURI(container, isContainer);
     }
 
