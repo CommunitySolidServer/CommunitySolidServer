@@ -424,14 +424,6 @@ describe('A DataAccessorBasedStore', (): void => {
       );
     });
 
-    it('will error if path does end in slash and does not match its resource type.', async(): Promise<void> => {
-      const resourceID = { path: `${root}resource/` };
-      representation.metadata.removeAll(RDF.type);
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
-        new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
-      );
-    });
-
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
@@ -462,6 +454,24 @@ describe('A DataAccessorBasedStore', (): void => {
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
       representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.contentType = 'text/turtle';
+      representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
+        { path: root },
+        { path: `${root}container/` },
+      ]);
+      expect(accessor.data[resourceID.path]).toBeTruthy();
+      expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
+      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
+      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
+    });
+
+    it('can write containers (path ending in slash, but type missing).', async(): Promise<void> => {
+      const resourceID = { path: `${root}container/` };
+
+      // Generate based on URI
+      representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
