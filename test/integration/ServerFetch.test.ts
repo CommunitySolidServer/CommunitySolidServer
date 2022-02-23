@@ -1,5 +1,6 @@
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
+import { LDP } from '../../src/util/Vocabularies';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
@@ -112,6 +113,7 @@ describe('A Solid server', (): void => {
       headers: {
         'content-type': 'text/turtle',
         slug: 'containerPOST/',
+        link: `<${LDP.Container}>; rel="type"`,
       },
       body: '<a:b> <a:b> <a:b>.',
     });
