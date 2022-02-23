@@ -1,5 +1,25 @@
 # Community Solid Server release notes
 
+## v4.0.0
+### New features
+- ...
+
+### Configuration changes
+You might need to make changes to your v3 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v3 custom configs that replaced certain features.
+- ...
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- ...
+
 ## v3.0.0
 ### New features
 - The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
