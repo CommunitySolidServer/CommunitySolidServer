@@ -451,25 +451,6 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: root },
-        { path: `${root}container/` },
-      ]);
-      expect(accessor.data[resourceID.path]).toBeTruthy();
-      expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
-      expect(accessor.data[resourceID.path].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
-      expect(accessor.data[root].metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
-      expect(accessor.data[root].metadata.get(GENERATED_PREDICATE)).toBeUndefined();
-    });
-
-    it('can write containers (path ending in slash, but type missing).', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-
-      // Generate based on URI
-      representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
