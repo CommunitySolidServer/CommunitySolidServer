@@ -20,6 +20,7 @@ The following changes are relevant for v3 custom configs that replaced certain f
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - The output of `parseContentType` in `HeaderUtil` was changed to include parameters.
+- `PermissionReader`s take an additional `modes` parameter as input.
 
 ## v3.0.0
 ### New features

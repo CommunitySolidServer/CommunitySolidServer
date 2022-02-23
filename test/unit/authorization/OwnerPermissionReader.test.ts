@@ -1,6 +1,8 @@
 import type { CredentialSet } from '../../../src/authentication/Credentials';
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { OwnerPermissionReader } from '../../../src/authorization/OwnerPermissionReader';
+import { AclMode } from '../../../src/authorization/permissions/AclPermission';
+import type { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import type {
@@ -13,6 +15,7 @@ describe('An OwnerPermissionReader', (): void => {
   const podBaseUrl = 'http://test.com/alice/';
   let credentials: CredentialSet;
   let identifier: ResourceIdentifier;
+  let modes: Set<AccessMode>;
   let settings: AccountSettings;
   let accountStore: jest.Mocked<AccountStore>;
   let aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy>;
@@ -22,6 +25,8 @@ describe('An OwnerPermissionReader', (): void => {
     credentials = { [CredentialGroup.agent]: { webId: owner }};
 
     identifier = { path: `${podBaseUrl}.acl` };
+
+    modes = new Set<AccessMode | AclMode>([ AclMode.control ]) as Set<AccessMode>;
 
     settings = {
       useIdp: true,
@@ -46,31 +51,31 @@ describe('An OwnerPermissionReader', (): void => {
 
   it('returns empty permissions for non-ACL resources.', async(): Promise<void> => {
     identifier.path = podBaseUrl;
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({});
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
   });
 
   it('returns empty permissions if there is no agent WebID.', async(): Promise<void> => {
     credentials = {};
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({});
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
   });
 
   it('returns empty permissions if the agent has no account.', async(): Promise<void> => {
     credentials.agent!.webId = 'http://test.com/someone/else';
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({});
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
   });
 
   it('returns empty permissions if the account has no pod.', async(): Promise<void> => {
     delete settings.podBaseUrl;
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({});
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
   });
 
   it('returns empty permissions if the target identifier is not in the pod.', async(): Promise<void> => {
     identifier.path = 'http://somewhere.else/.acl';
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({});
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({});
   });
 
   it('returns full permissions if the owner is accessing an ACL resource in their pod.', async(): Promise<void> => {
-    await expect(reader.handle({ credentials, identifier })).resolves.toEqual({
+    await expect(reader.handle({ credentials, identifier, modes })).resolves.toEqual({
       [CredentialGroup.agent]: {
         read: true,
         write: true,

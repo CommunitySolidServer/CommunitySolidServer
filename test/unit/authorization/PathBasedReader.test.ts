@@ -15,6 +15,7 @@ describe('A PathBasedReader', (): void => {
     input = {
       identifier: { path: `${baseUrl}first` },
       credentials: {},
+      modes: new Set(),
     };
 
     readers = [

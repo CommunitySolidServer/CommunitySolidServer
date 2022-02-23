@@ -1,7 +1,7 @@
 import { CredentialGroup } from '../../../src/authentication/Credentials';
 import { AuxiliaryReader } from '../../../src/authorization/AuxiliaryReader';
 import type { PermissionReader } from '../../../src/authorization/PermissionReader';
-import type { PermissionSet } from '../../../src/authorization/permissions/Permissions';
+import type { AccessMode, PermissionSet } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
 import { NotImplementedHttpError } from '../../../src/util/errors/NotImplementedHttpError';
@@ -9,6 +9,7 @@ import { NotImplementedHttpError } from '../../../src/util/errors/NotImplemented
 describe('An AuxiliaryReader', (): void => {
   const suffix = '.dummy';
   const credentials = {};
+  const modes = new Set<AccessMode>();
   const subjectIdentifier = { path: 'http://test.com/foo' };
   const auxiliaryIdentifier = { path: 'http://test.com/foo.dummy' };
   const permissionSet: PermissionSet = { [CredentialGroup.agent]: { read: true }};
@@ -33,50 +34,50 @@ describe('An AuxiliaryReader', (): void => {
   });
 
   it('can handle auxiliary resources if the source supports the subject resource.', async(): Promise<void> => {
-    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
       .resolves.toBeUndefined();
     expect(source.canHandle).toHaveBeenLastCalledWith(
-      { identifier: subjectIdentifier, credentials },
+      { identifier: subjectIdentifier, credentials, modes },
     );
-    await expect(reader.canHandle({ identifier: subjectIdentifier, credentials }))
+    await expect(reader.canHandle({ identifier: subjectIdentifier, credentials, modes }))
       .rejects.toThrow(NotImplementedHttpError);
 
     strategy.usesOwnAuthorization.mockReturnValueOnce(true);
-    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
       .rejects.toThrow(NotImplementedHttpError);
 
     source.canHandle.mockRejectedValue(new Error('no source support'));
-    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
       .rejects.toThrow('no source support');
   });
 
   it('handles resources by sending the updated parameters to the source.', async(): Promise<void> => {
-    await expect(reader.handle({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.handle({ identifier: auxiliaryIdentifier, credentials, modes }))
       .resolves.toBe(permissionSet);
     expect(source.handle).toHaveBeenLastCalledWith(
-      { identifier: subjectIdentifier, credentials },
+      { identifier: subjectIdentifier, credentials, modes },
     );
     // Safety checks are not present when calling `handle`
-    await expect(reader.handle({ identifier: subjectIdentifier, credentials }))
+    await expect(reader.handle({ identifier: subjectIdentifier, credentials, modes }))
       .rejects.toThrow(NotImplementedHttpError);
   });
 
   it('combines both checking and handling when calling handleSafe.', async(): Promise<void> => {
-    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials, modes }))
       .resolves.toBe(permissionSet);
     expect(source.handleSafe).toHaveBeenLastCalledWith(
-      { identifier: subjectIdentifier, credentials },
+      { identifier: subjectIdentifier, credentials, modes },
     );
 
-    await expect(reader.handleSafe({ identifier: subjectIdentifier, credentials }))
+    await expect(reader.handleSafe({ identifier: subjectIdentifier, credentials, modes }))
       .rejects.toThrow(NotImplementedHttpError);
 
     strategy.usesOwnAuthorization.mockReturnValueOnce(true);
-    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.canHandle({ identifier: auxiliaryIdentifier, credentials, modes }))
       .rejects.toThrow(NotImplementedHttpError);
 
     source.handleSafe.mockRejectedValue(new Error('no source support'));
-    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials }))
+    await expect(reader.handleSafe({ identifier: auxiliaryIdentifier, credentials, modes }))
       .rejects.toThrow('no source support');
   });
 });

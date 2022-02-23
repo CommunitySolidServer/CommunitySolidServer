@@ -1,7 +1,10 @@
 import { DataFactory } from 'n3';
-import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { CredentialSet } from '../../../src/authentication/Credentials';
+import { CredentialGroup } from '../../../src/authentication/Credentials';
 import type { AccessChecker } from '../../../src/authorization/access/AccessChecker';
+import type { PermissionReaderInput } from '../../../src/authorization/PermissionReader';
+import { AclMode } from '../../../src/authorization/permissions/AclPermission';
+import { AccessMode } from '../../../src/authorization/permissions/Permissions';
 import { WebAclReader } from '../../../src/authorization/WebAclReader';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
@@ -31,11 +34,19 @@ describe('A WebAclReader', (): void => {
   const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
   let credentials: CredentialSet;
   let identifier: ResourceIdentifier;
+  let modes: Set<AccessMode>;
+  let input: PermissionReaderInput;
   let accessChecker: jest.Mocked<AccessChecker>;
 
   beforeEach(async(): Promise<void> => {
     credentials = { [CredentialGroup.public]: {}, [CredentialGroup.agent]: {}};
     identifier = { path: 'http://test.com/foo' };
+
+    modes = new Set<AccessMode | AclMode>([
+      AccessMode.read, AccessMode.write, AccessMode.append, AccessMode.create, AccessMode.delete, AclMode.control,
+    ]) as Set<AccessMode>;
+
+    input = { credentials, identifier, modes };
 
     store = {
       getRepresentation: jest.fn().mockResolvedValue(new BasicRepresentation([
@@ -55,8 +66,8 @@ describe('A WebAclReader', (): void => {
   });
 
   it('returns undefined permissions for undefined credentials.', async(): Promise<void> => {
-    credentials = {};
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    input.credentials = {};
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: {},
       [CredentialGroup.agent]: {},
     });
@@ -69,7 +80,7 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { read: true },
       [CredentialGroup.agent]: { read: true },
     });
@@ -82,7 +93,7 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn('somewhereElse')),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: {},
       [CredentialGroup.agent]: {},
     });
@@ -96,7 +107,7 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}fakeMode1`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { read: true },
       [CredentialGroup.agent]: { read: true },
     });
@@ -114,7 +125,7 @@ describe('A WebAclReader', (): void => {
         quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
       ], INTERNAL_QUADS);
     });
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { read: true },
       [CredentialGroup.agent]: { read: true },
     });
@@ -122,14 +133,14 @@ describe('A WebAclReader', (): void => {
 
   it('re-throws ResourceStore errors as internal errors.', async(): Promise<void> => {
     store.getRepresentation.mockRejectedValue(new Error('TEST!'));
-    const promise = reader.handle({ identifier, credentials });
+    const promise = reader.handle(input);
     await expect(promise).rejects.toThrow(`Error reading ACL for ${identifier.path}: TEST!`);
     await expect(promise).rejects.toThrow(InternalServerError);
   });
 
   it('errors if the root container has no corresponding acl document.', async(): Promise<void> => {
     store.getRepresentation.mockRejectedValue(new NotFoundHttpError());
-    const promise = reader.handle({ identifier, credentials });
+    const promise = reader.handle(input);
     await expect(promise).rejects.toThrow('No ACL document found for root container');
     await expect(promise).rejects.toThrow(ForbiddenHttpError);
   });
@@ -140,7 +151,7 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Write`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { write: true, append: true, create: true, delete: true },
       [CredentialGroup.agent]: { write: true, append: true, create: true, delete: true },
     });
@@ -152,7 +163,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Control`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier: { path: `${identifier.path}.acl` }, credentials })).resolves.toEqual({
+    input.identifier = { path: `${identifier.path}.acl` };
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { read: true, write: true, append: true, create: true, delete: true, control: true },
       [CredentialGroup.agent]: { read: true, write: true, append: true, create: true, delete: true, control: true },
     });
@@ -164,7 +176,8 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth'), nn(`${acl}accessTo`), nn(identifier.path)),
       quad(nn('auth'), nn(`${acl}mode`), nn(`${acl}Read`)),
     ]) } as Representation);
-    await expect(reader.handle({ identifier: { path: `${identifier.path}.acl` }, credentials })).resolves.toEqual({
+    input.identifier = { path: `${identifier.path}.acl` };
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: {},
       [CredentialGroup.agent]: {},
     });
@@ -185,7 +198,7 @@ describe('A WebAclReader', (): void => {
       quad(nn('auth2'), nn(`${acl}mode`), nn(`${acl}Control`)),
     ]) } as Representation);
 
-    await expect(reader.handle({ identifier, credentials })).resolves.toEqual({
+    await expect(reader.handle(input)).resolves.toEqual({
       [CredentialGroup.public]: { read: true },
       [CredentialGroup.agent]: { control: true },
     });
