@@ -14,7 +14,7 @@ describe('A PassthroughStore', (): void => {
       setRepresentation: jest.fn(async(): Promise<any> => 'set'),
       deleteResource: jest.fn(async(): Promise<any> => 'delete'),
       modifyResource: jest.fn(async(): Promise<any> => 'modify'),
-      resourceExists: jest.fn(async(): Promise<any> => 'exists'),
+      hasResource: jest.fn(async(): Promise<any> => 'exists'),
     };
 
     store = new PassthroughStore(source);
@@ -50,9 +50,9 @@ describe('A PassthroughStore', (): void => {
     expect(source.modifyResource).toHaveBeenLastCalledWith({ path: 'modifyPath' }, {}, undefined);
   });
 
-  it('calls resourceExists directly from the source.', async(): Promise<void> => {
-    await expect(store.resourceExists({ path: 'existsPath' })).resolves.toBe('exists');
-    expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith({ path: 'existsPath' }, undefined);
+  it('calls hasResource directly from the source.', async(): Promise<void> => {
+    await expect(store.hasResource({ path: 'existsPath' })).resolves.toBe('exists');
+    expect(source.hasResource).toHaveBeenCalledTimes(1);
+    expect(source.hasResource).toHaveBeenLastCalledWith({ path: 'existsPath' });
   });
 });

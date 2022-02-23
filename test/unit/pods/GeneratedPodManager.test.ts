@@ -20,7 +20,7 @@ describe('A GeneratedPodManager', (): void => {
     };
     store = {
       setRepresentation: jest.fn(),
-      resourceExists: jest.fn(),
+      hasResource: jest.fn(),
     } as any;
     generatorData = [
       { identifier: { path: '/path/' }, representation: '/' as any },
@@ -36,7 +36,7 @@ describe('A GeneratedPodManager', (): void => {
   });
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     const result = manager.createPod({ path: `${base}user/` }, settings, false);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);
@@ -52,7 +52,7 @@ describe('A GeneratedPodManager', (): void => {
   });
 
   it('allows overwriting when enabled.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     await expect(manager.createPod({ path: `${base}${settings.login}/` }, settings, true)).resolves.toBeUndefined();
 
     expect(store.setRepresentation).toHaveBeenCalledTimes(3);

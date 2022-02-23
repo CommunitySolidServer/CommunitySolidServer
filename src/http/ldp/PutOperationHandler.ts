@@ -38,7 +38,7 @@ export class PutOperationHandler extends OperationHandler {
     }
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/solid/community-server/issues/632
-    const exists = await this.store.resourceExists(operation.target, operation.conditions);
+    const exists = await this.store.hasResource(operation.target);
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();

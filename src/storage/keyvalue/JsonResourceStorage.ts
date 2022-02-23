@@ -42,7 +42,7 @@ export class JsonResourceStorage implements KeyValueStorage<string, unknown> {
 
   public async has(key: string): Promise<boolean> {
     const identifier = this.createIdentifier(key);
-    return await this.source.resourceExists(identifier);
+    return await this.source.hasResource(identifier);
   }
 
   public async set(key: string, value: unknown): Promise<this> {

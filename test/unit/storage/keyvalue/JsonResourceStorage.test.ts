@@ -19,7 +19,7 @@ describe('A JsonResourceStorage', (): void => {
   beforeEach(async(): Promise<void> => {
     const data: Record<string, string> = { };
     store = {
-      async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+      async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
         return Boolean(data[identifier.path]);
       },
       async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {

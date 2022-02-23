@@ -39,7 +39,7 @@ describe('A LockingResourceStore', (): void => {
       setRepresentation: jest.fn((): any => addOrder('setRepresentation')),
       deleteResource: jest.fn((): any => addOrder('deleteResource')),
       modifyResource: jest.fn((): any => addOrder('modifyResource')),
-      resourceExists: jest.fn((): any => addOrder('resourceExists')),
+      hasResource: jest.fn((): any => addOrder('hasResource')),
     };
 
     timeoutTrigger = new EventEmitter();
@@ -287,12 +287,12 @@ describe('A LockingResourceStore', (): void => {
     expect(order).toEqual([ 'lock read', 'useless get', 'timeout', 'unlock read' ]);
   });
 
-  it('resourceExists should only acquire and release the read lock.', async(): Promise<void> => {
-    await store.resourceExists(subjectId);
+  it('hasResource should only acquire and release the read lock.', async(): Promise<void> => {
+    await store.hasResource(subjectId);
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
     expect(locker.withWriteLock).toHaveBeenCalledTimes(0);
-    expect(source.resourceExists).toHaveBeenCalledTimes(1);
-    expect(source.resourceExists).toHaveBeenLastCalledWith(subjectId, undefined);
-    expect(order).toEqual([ 'lock read', 'resourceExists', 'unlock read' ]);
+    expect(source.hasResource).toHaveBeenCalledTimes(1);
+    expect(source.hasResource).toHaveBeenLastCalledWith(subjectId);
+    expect(order).toEqual([ 'lock read', 'hasResource', 'unlock read' ]);
   });
 });
