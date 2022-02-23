@@ -86,6 +86,10 @@ export const FOAF = createUriAndTermNamespace('http://xmlns.com/foaf/0.1/',
   'Agent',
 );
 
+export const HH = createUriAndTermNamespace('http://www.w3.org/2011/http-headers#',
+  'content-length',
+);
+
 export const HTTP = createUriAndTermNamespace('http://www.w3.org/2011/http#',
   'statusCodeNumber',
 );
@@ -120,9 +124,14 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
 );
 
 export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
+  'deletes',
+  'inserts',
   'oidcIssuer',
   'oidcIssuerRegistrationToken',
   'oidcRegistration',
+  'where',
+
+  'InsertDeletePatch',
 );
 
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
@@ -155,6 +164,7 @@ export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#'
 );
 
 // Alias for commonly used types
+export const CONTENT_LENGTH_TERM = HH.terms['content-length'];
 export const CONTENT_TYPE = MA.format;
 export const CONTENT_TYPE_TERM = MA.terms.format;
 export const PREFERRED_PREFIX = VANN.preferredNamespacePrefix;

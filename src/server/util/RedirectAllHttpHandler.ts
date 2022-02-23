@@ -1,6 +1,7 @@
 import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
 import { RedirectResponseDescription } from '../../http/output/response/RedirectResponseDescription';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
+import { FoundHttpError } from '../../util/errors/FoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { getRelativeUrl, joinUrl } from '../../util/PathUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
@@ -40,7 +41,7 @@ export class RedirectAllHttpHandler extends HttpHandler {
   }
 
   public async handle({ response }: HttpHandlerInput): Promise<void> {
-    const result = new RedirectResponseDescription(joinUrl(this.baseUrl, this.target));
+    const result = new RedirectResponseDescription(new FoundHttpError(joinUrl(this.baseUrl, this.target)));
     await this.responseWriter.handleSafe({ response, result });
   }
 }

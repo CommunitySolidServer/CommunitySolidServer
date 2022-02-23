@@ -1,21 +1,18 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles all functionality on the Login Page",
-      "@id": "urn:solid-server:auth:password:LoginRoute",
-      "@type": "BasicInteractionRoute",
-      "route": "^/login/$",
-      "prompt": "login",
-      "viewTemplates": {
-        "BasicInteractionRoute:_viewTemplates_key": "text/html",
-        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/login.html.ejs"
+      "comment": "Handles the login interaction",
+      "@id": "urn:solid-server:auth:password:LoginRouteHandler",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:auth:password:LoginRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+        "relativePath": "/login/"
       },
-      "controls": {
-        "BasicInteractionRoute:_controls_key": "login",
-        "BasicInteractionRoute:_controls_value": "/login/"
-      },
-      "handler": {
+      "source": {
+        "@id": "urn:solid-server:auth:password:LoginHandler",
         "@type": "LoginHandler",
         "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" }
       }

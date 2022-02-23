@@ -61,6 +61,16 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.contentType).toBe('text/turtle');
     });
 
+    it('stores the content-length correctly.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = 50;
+      expect(metadata.contentLength).toBe(50);
+
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = undefined;
+      expect(metadata.contentLength).toBeUndefined();
+    });
+
     it('copies an other metadata object.', async(): Promise<void> => {
       const other = new RepresentationMetadata({ path: 'otherId' }, { 'test:pred': 'objVal' });
       metadata = new RepresentationMetadata(other);

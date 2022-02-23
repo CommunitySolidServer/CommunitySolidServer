@@ -197,18 +197,33 @@ export function getModuleRoot(): string {
 
 /**
  * A placeholder for the path to the `@solid/community-server` module root.
- * The resolveAssetPath function will replace this string with the actual path.
+ * The `resolveAssetPath` function will replace this string with the actual path.
  */
 export const modulePathPlaceholder = '@css:';
+
+/**
+ * Creates a path starting from the `@solid/community-server` module root,
+ * to be resolved by the `resolveAssetPath` function.
+ */
+export function modulePath(relativePath = ''): string {
+  return `${modulePathPlaceholder}${relativePath}`;
+}
+
+/**
+ * Creates an absolute path starting from the `@solid/community-server` module root.
+ */
+export function resolveModulePath(relativePath = ''): string {
+  return joinFilePath(getModuleRoot(), relativePath);
+}
 
 /**
  * Converts file path inputs into absolute paths.
  * Works similar to `absoluteFilePath` but paths that start with the `modulePathPlaceholder`
  * will be relative to the module directory instead of the cwd.
  */
-export function resolveAssetPath(path: string = modulePathPlaceholder): string {
+export function resolveAssetPath(path = modulePathPlaceholder): string {
   if (path.startsWith(modulePathPlaceholder)) {
-    return joinFilePath(getModuleRoot(), path.slice(modulePathPlaceholder.length));
+    return resolveModulePath(path.slice(modulePathPlaceholder.length));
   }
   return absoluteFilePath(path);
 }

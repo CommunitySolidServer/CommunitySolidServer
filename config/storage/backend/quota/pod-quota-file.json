@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "comment": "Configuration of a PodQuotaStrategy to enforce pod quotas on the server.",
+  "@graph": [
+    {
+      "comment": "Enforces quota for all data per pod on the server",
+      "@id": "urn:solid-server:default:QuotaStrategy",
+      "@type": "PodQuotaStrategy",
+      "reporter": { "@id": "urn:solid-server:default:SizeReporter" },
+      "accessor": { "@id": "urn:solid-server:default:AtomicFileDataAccessor" },
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
+    }
+  ]
+}

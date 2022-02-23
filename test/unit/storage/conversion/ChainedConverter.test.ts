@@ -4,28 +4,20 @@ import type {
   RepresentationPreferences,
   ValuePreferences,
 } from '../../../../src/http/representation/RepresentationPreferences';
+import { BaseTypedRepresentationConverter } from '../../../../src/storage/conversion/BaseTypedRepresentationConverter';
 import { ChainedConverter } from '../../../../src/storage/conversion/ChainedConverter';
 import { matchesMediaType } from '../../../../src/storage/conversion/ConversionUtil';
 import type { RepresentationConverterArgs } from '../../../../src/storage/conversion/RepresentationConverter';
-import { TypedRepresentationConverter } from '../../../../src/storage/conversion/TypedRepresentationConverter';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
-class DummyConverter extends TypedRepresentationConverter {
+class DummyConverter extends BaseTypedRepresentationConverter {
   private readonly inTypes: ValuePreferences;
   private readonly outTypes: ValuePreferences;
 
   public constructor(inTypes: ValuePreferences, outTypes: ValuePreferences) {
-    super();
+    super(inTypes, outTypes);
     this.inTypes = inTypes;
     this.outTypes = outTypes;
-  }
-
-  public async getInputTypes(): Promise<ValuePreferences> {
-    return this.inTypes;
-  }
-
-  public async getOutputTypes(): Promise<ValuePreferences> {
-    return this.outTypes;
   }
 
   public async handle(input: RepresentationConverterArgs): Promise<Representation> {
@@ -78,17 +70,27 @@ describe('A ChainedConverter', (): void => {
 
     args.representation.metadata.contentType = 'b/b';
     await expect(converter.handle(args)).rejects
-      .toThrow('No conversion path could be made from b/b to x/x,x/*,internal/*.');
+      .toThrow('No conversion path could be made from b/b to x/x:1,x/*:0.8,internal/*:0.');
   });
 
   it('can handle situations where no conversion is required.', async(): Promise<void> => {
-    const converters = [ new DummyConverter({ 'a/a': 1 }, { 'x/x': 1 }) ];
+    const converters = [ new DummyConverter({ 'b/b': 1 }, { 'x/x': 1 }) ];
     args.representation.metadata.contentType = 'b/b';
-    args.preferences.type = { 'b/*': 0.5 };
+    args.preferences.type = { 'b/*': 1, 'x/x': 0.5 };
     const converter = new ChainedConverter(converters);
 
     const result = await converter.handle(args);
     expect(result.metadata.contentType).toBe('b/b');
+  });
+
+  it('converts input matching the output preferences if a better output can be found.', async(): Promise<void> => {
+    const converters = [ new DummyConverter({ 'b/b': 1 }, { 'x/x': 1 }) ];
+    args.representation.metadata.contentType = 'b/b';
+    args.preferences.type = { 'b/*': 0.5, 'x/x': 1 };
+    const converter = new ChainedConverter(converters);
+
+    const result = await converter.handle(args);
+    expect(result.metadata.contentType).toBe('x/x');
   });
 
   it('interprets no preferences as */*.', async(): Promise<void> => {
@@ -217,5 +219,16 @@ describe('A ChainedConverter', (): void => {
     await converter.handleSafe(args);
     expect(converter.handle).toHaveBeenCalledTimes(1);
     expect(converter.handle).toHaveBeenLastCalledWith(args);
+  });
+
+  it('does not get stuck in infinite conversion loops.', async(): Promise<void> => {
+    const converters = [
+      new DummyConverter({ 'a/a': 1 }, { 'b/b': 1 }),
+      new DummyConverter({ 'b/b': 1 }, { 'a/a': 1 }),
+    ];
+    const converter = new ChainedConverter(converters);
+
+    await expect(converter.handle(args)).rejects
+      .toThrow('No conversion path could be made from a/a to x/x:1,x/*:0.8,internal/*:0.');
   });
 });

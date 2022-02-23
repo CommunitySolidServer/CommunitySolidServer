@@ -58,7 +58,10 @@ export class ComposedAuxiliaryStrategy implements AuxiliaryStrategy {
 
   public async validate(representation: Representation): Promise<void> {
     if (this.validator) {
-      return this.validator.handleSafe(representation);
+      await this.validator.handleSafe({
+        representation,
+        identifier: { path: representation.metadata.identifier.value },
+      });
     }
   }
 }

@@ -386,4 +386,14 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();
   });
+
+  it('returns 405 for unsupported methods.', async(): Promise<void> => {
+    const response = await fetch(baseUrl, { method: 'TRACE' });
+    expect(response.status).toBe(405);
+  });
+
+  it('returns 415 for unsupported PATCH types.', async(): Promise<void> => {
+    const response = await fetch(baseUrl, { method: 'PATCH', headers: { 'content-type': 'text/plain' }, body: 'abc' });
+    expect(response.status).toBe(415);
+  });
 });

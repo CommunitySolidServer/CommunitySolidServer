@@ -1,15 +1,12 @@
 import type { Provider } from 'oidc-provider';
 import type { Operation } from '../../../src/http/Operation';
-import type { ErrorHandler, ErrorHandlerArgs } from '../../../src/http/output/error/ErrorHandler';
-import type { ResponseDescription } from '../../../src/http/output/response/ResponseDescription';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../src/http/representation/RepresentationMetadata';
 import type { ProviderFactory } from '../../../src/identity/configuration/ProviderFactory';
 import type { IdentityProviderHttpHandlerArgs } from '../../../src/identity/IdentityProviderHttpHandler';
 import { IdentityProviderHttpHandler } from '../../../src/identity/IdentityProviderHttpHandler';
-import type { InteractionRoute } from '../../../src/identity/interaction/routing/InteractionRoute';
-import type { InteractionCompleter } from '../../../src/identity/interaction/util/InteractionCompleter';
+import type { Interaction, InteractionHandler } from '../../../src/identity/interaction/InteractionHandler';
 import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { getBestPreference } from '../../../src/storage/conversion/ConversionUtil';
@@ -17,25 +14,20 @@ import type {
   RepresentationConverter,
   RepresentationConverterArgs,
 } from '../../../src/storage/conversion/RepresentationConverter';
-import { joinUrl } from '../../../src/util/PathUtil';
-import { guardedStreamFrom, readableToString } from '../../../src/util/StreamUtil';
-import { CONTENT_TYPE, SOLID_HTTP, SOLID_META } from '../../../src/util/Vocabularies';
+import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../../src/util/ContentTypes';
+import { CONTENT_TYPE } from '../../../src/util/Vocabularies';
 
 describe('An IdentityProviderHttpHandler', (): void => {
-  const apiVersion = '0.2';
-  const baseUrl = 'http://test.com/';
-  const idpPath = '/idp';
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
+  const oidcInteraction: Interaction = {} as any;
   let operation: Operation;
+  let representation: Representation;
   let providerFactory: jest.Mocked<ProviderFactory>;
-  let routes: Record<'response' | 'complete' | 'error', jest.Mocked<InteractionRoute>>;
-  let controls: Record<string, string>;
-  let interactionCompleter: jest.Mocked<InteractionCompleter>;
   let converter: jest.Mocked<RepresentationConverter>;
-  let errorHandler: jest.Mocked<ErrorHandler>;
   let provider: jest.Mocked<Provider>;
-  let handler: IdentityProviderHttpHandler;
+  let handler: jest.Mocked<InteractionHandler>;
+  let idpHandler: IdentityProviderHttpHandler;
 
   beforeEach(async(): Promise<void> => {
     operation = {
@@ -46,44 +38,12 @@ describe('An IdentityProviderHttpHandler', (): void => {
     };
 
     provider = {
-      callback: jest.fn(),
-      interactionDetails: jest.fn(),
+      interactionDetails: jest.fn().mockReturnValue(oidcInteraction),
     } as any;
 
     providerFactory = {
       getProvider: jest.fn().mockResolvedValue(provider),
     };
-
-    routes = {
-      response: {
-        getControls: jest.fn().mockReturnValue({ response: '/routeResponse' }),
-        supportsPath: jest.fn((path: string): boolean => /^\/routeResponse$/u.test(path)),
-        handleOperation: jest.fn().mockResolvedValue({
-          type: 'response',
-          details: { key: 'val' },
-          templateFiles: { 'text/html': '/response' },
-        }),
-      },
-      complete: {
-        getControls: jest.fn().mockReturnValue({}),
-        supportsPath: jest.fn((path: string): boolean => /^\/routeComplete$/u.test(path)),
-        handleOperation: jest.fn().mockResolvedValue({
-          type: 'complete',
-          details: { webId: 'webId' },
-          templateFiles: {},
-        }),
-      },
-      error: {
-        getControls: jest.fn().mockReturnValue({}),
-        supportsPath: jest.fn((path: string): boolean => /^\/routeError$/u.test(path)),
-        handleOperation: jest.fn().mockResolvedValue({
-          type: 'error',
-          error: new Error('test error'),
-          templateFiles: { 'text/html': '/response' },
-        }),
-      },
-    };
-    controls = { response: 'http://test.com/idp/routeResponse' };
 
     converter = {
       handleSafe: jest.fn((input: RepresentationConverterArgs): Representation => {
@@ -94,130 +54,50 @@ describe('An IdentityProviderHttpHandler', (): void => {
       }),
     } as any;
 
-    interactionCompleter = { handleSafe: jest.fn().mockResolvedValue('http://test.com/idp/auth') } as any;
-
-    errorHandler = { handleSafe: jest.fn(({ error }: ErrorHandlerArgs): ResponseDescription => ({
-      statusCode: 400,
-      data: guardedStreamFrom(`{ "name": "${error.name}", "message": "${error.message}" }`),
-    })) } as any;
+    representation = new BasicRepresentation();
+    handler = {
+      handleSafe: jest.fn().mockResolvedValue(representation),
+    } as any;
 
     const args: IdentityProviderHttpHandlerArgs = {
-      baseUrl,
-      idpPath,
       providerFactory,
-      interactionRoutes: Object.values(routes),
       converter,
-      interactionCompleter,
-      errorHandler,
+      handler,
     };
-    handler = new IdentityProviderHttpHandler(args);
+    idpHandler = new IdentityProviderHttpHandler(args);
   });
 
-  it('calls the provider if there is no matching route.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, 'invalid');
-    await expect(handler.handle({ request, response, operation })).resolves.toBeUndefined();
-    expect(provider.callback).toHaveBeenCalledTimes(1);
-    expect(provider.callback).toHaveBeenLastCalledWith(request, response);
-  });
-
-  it('creates Representations for InteractionResponseResults.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeResponse');
-    operation.method = 'POST';
-    operation.body = new BasicRepresentation('value', 'text/plain');
-    const result = (await handler.handle({ request, response, operation }))!;
-    expect(result).toBeDefined();
-    expect(routes.response.handleOperation).toHaveBeenCalledTimes(1);
-    expect(routes.response.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
-    expect(operation.body?.metadata.contentType).toBe('application/json');
-
-    expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, key: 'val', authenticating: false, controls });
+  it('returns the handler result as 200 response.', async(): Promise<void> => {
+    const result = await idpHandler.handle({ operation, request, response });
     expect(result.statusCode).toBe(200);
-    expect(result.metadata?.contentType).toBe('text/html');
-    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
+    expect(result.data).toBe(representation.data);
+    expect(result.metadata).toBe(representation.metadata);
+    expect(handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(handler.handleSafe).toHaveBeenLastCalledWith({ operation, oidcInteraction });
   });
 
-  it('creates Representations for InteractionErrorResults.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeError');
-    operation.method = 'POST';
-    operation.preferences = { type: { 'text/html': 1 }};
-
-    const result = (await handler.handle({ request, response, operation }))!;
-    expect(result).toBeDefined();
-    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
-    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
-
-    expect(JSON.parse(await readableToString(result.data!)))
-      .toEqual({ apiVersion, name: 'Error', message: 'test error', authenticating: false, controls });
-    expect(result.statusCode).toBe(400);
-    expect(result.metadata?.contentType).toBe('text/html');
-    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
+  it('passes no interaction if the provider call failed.', async(): Promise<void> => {
+    provider.interactionDetails.mockRejectedValueOnce(new Error('no interaction'));
+    const result = await idpHandler.handle({ operation, request, response });
+    expect(result.statusCode).toBe(200);
+    expect(result.data).toBe(representation.data);
+    expect(result.metadata).toBe(representation.metadata);
+    expect(handler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(handler.handleSafe).toHaveBeenLastCalledWith({ operation });
   });
 
-  it('adds a prefilled field in case error requests had a body.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeError');
-    operation.method = 'POST';
-    operation.preferences = { type: { 'text/html': 1 }};
-    operation.body = new BasicRepresentation('{ "key": "val" }', 'application/json');
-
-    const result = (await handler.handle({ request, response, operation }))!;
-    expect(result).toBeDefined();
-    expect(routes.error.handleOperation).toHaveBeenCalledTimes(1);
-    expect(routes.error.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
-    expect(operation.body?.metadata.contentType).toBe('application/json');
-
-    expect(JSON.parse(await readableToString(result.data!))).toEqual(
-      { apiVersion, name: 'Error', message: 'test error', authenticating: false, controls, prefilled: { key: 'val' }},
+  it('converts input bodies to JSON.', async(): Promise<void> => {
+    operation.body.metadata.contentType = APPLICATION_X_WWW_FORM_URLENCODED;
+    const result = await idpHandler.handle({ operation, request, response });
+    expect(result.statusCode).toBe(200);
+    expect(result.data).toBe(representation.data);
+    expect(result.metadata).toBe(representation.metadata);
+    expect(handler.handleSafe).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { body, ...partialOperation } = operation;
+    expect(handler.handleSafe).toHaveBeenLastCalledWith(
+      { operation: expect.objectContaining(partialOperation), oidcInteraction },
     );
-    expect(result.statusCode).toBe(400);
-    expect(result.metadata?.contentType).toBe('text/html');
-    expect(result.metadata?.get(SOLID_META.template)?.value).toBe('/response');
-  });
-
-  it('indicates to the templates if the request is part of an auth flow.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeResponse');
-    operation.method = 'POST';
-    const oidcInteraction = { session: { accountId: 'account' }, prompt: {}} as any;
-    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
-    routes.response.handleOperation
-      .mockResolvedValueOnce({ type: 'response', templateFiles: { 'text/html': '/response' }});
-
-    const result = (await handler.handle({ request, response, operation }))!;
-    expect(result).toBeDefined();
-    expect(JSON.parse(await readableToString(result.data!))).toEqual({ apiVersion, authenticating: true, controls });
-  });
-
-  it('errors for InteractionCompleteResults if no oidcInteraction is defined.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeComplete');
-    operation.method = 'POST';
-
-    const error = expect.objectContaining({
-      statusCode: 400,
-      message: 'This action can only be performed as part of an OIDC authentication flow.',
-      errorCode: 'E0002',
-    });
-    await expect(handler.handle({ request, response, operation })).rejects.toThrow(error);
-    expect(routes.complete.handleOperation).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handleOperation).toHaveBeenLastCalledWith(operation, undefined);
-    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('calls the interactionCompleter for InteractionCompleteResults and redirects.', async(): Promise<void> => {
-    operation.target.path = joinUrl(baseUrl, '/idp/routeComplete');
-    operation.method = 'POST';
-    operation.body = new BasicRepresentation('value', 'text/plain');
-    const oidcInteraction = { session: { accountId: 'account' }, prompt: {}} as any;
-    provider.interactionDetails.mockResolvedValueOnce(oidcInteraction);
-    const result = (await handler.handle({ request, response, operation }))!;
-    expect(result).toBeDefined();
-    expect(routes.complete.handleOperation).toHaveBeenCalledTimes(1);
-    expect(routes.complete.handleOperation).toHaveBeenLastCalledWith(operation, oidcInteraction);
-    expect(operation.body?.metadata.contentType).toBe('application/json');
-
-    expect(interactionCompleter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(interactionCompleter.handleSafe).toHaveBeenLastCalledWith({ request, webId: 'webId' });
-    const location = await interactionCompleter.handleSafe.mock.results[0].value;
-    expect(result.statusCode).toBe(302);
-    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(location);
+    expect(handler.handleSafe.mock.calls[0][0].operation.body.metadata.contentType).toBe(APPLICATION_JSON);
   });
 });

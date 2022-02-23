@@ -20,19 +20,14 @@ describe('A QuadToRdfConverter', (): void => {
     metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
   });
 
-  it('supports parsing quads.', async(): Promise<void> => {
-    await expect(new QuadToRdfConverter().getInputTypes())
-      .resolves.toEqual({ [INTERNAL_QUADS]: 1 });
-  });
-
   it('defaults to rdfSerializer preferences when given no output preferences.', async(): Promise<void> => {
-    await expect(new QuadToRdfConverter().getOutputTypes())
+    await expect(new QuadToRdfConverter().getOutputTypes(INTERNAL_QUADS))
       .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
   });
 
   it('supports overriding output preferences.', async(): Promise<void> => {
     const outputPreferences = { 'text/turtle': 1 };
-    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
+    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes(INTERNAL_QUADS))
       .resolves.toEqual(outputPreferences);
   });
 

@@ -58,7 +58,7 @@ export class AuthorizingHttpHandler extends OperationHttpHandler {
     this.operationHandler = args.operationHandler;
   }
 
-  public async handle(input: OperationHttpHandlerInput): Promise<ResponseDescription | undefined> {
+  public async handle(input: OperationHttpHandlerInput): Promise<ResponseDescription> {
     const { request, operation } = input;
     const credentials: CredentialSet = await this.credentialsExtractor.handleSafe(request);
     this.logger.verbose(`Extracted credentials: ${JSON.stringify(credentials)}`);

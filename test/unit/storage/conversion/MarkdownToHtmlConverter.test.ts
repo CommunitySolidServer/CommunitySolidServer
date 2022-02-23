@@ -17,8 +17,7 @@ describe('A MarkdownToHtmlConverter', (): void => {
   });
 
   it('supports going from markdown to html.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'text/markdown': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'text/html': 1 });
+    await expect(converter.getOutputTypes('text/markdown')).resolves.toEqual({ 'text/html': 1 });
   });
 
   it('converts markdown and inserts it in the template.', async(): Promise<void> => {

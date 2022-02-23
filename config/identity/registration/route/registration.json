@@ -1,24 +1,18 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Handles all functionality on the register page",
-      "@id": "urn:solid-server:auth:password:RegistrationRoute",
-      "@type": "BasicInteractionRoute",
-      "route": "^/register/$",
-      "viewTemplates": {
-        "BasicInteractionRoute:_viewTemplates_key": "text/html",
-        "BasicInteractionRoute:_viewTemplates_value": "@css:templates/identity/email-password/register.html.ejs"
+      "comment": "Handles the register interaction",
+      "@id": "urn:solid-server:auth:password:RegistrationRouteHandler",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:auth:password:RegistrationRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:auth:password:IndexRoute" },
+        "relativePath": "/register/"
       },
-      "responseTemplates": {
-        "BasicInteractionRoute:_responseTemplates_key": "text/html",
-        "BasicInteractionRoute:_responseTemplates_value": "@css:templates/identity/email-password/register-response.html.ejs"
-      },
-      "controls": {
-        "BasicInteractionRoute:_controls_key": "register",
-        "BasicInteractionRoute:_controls_value": "/register/"
-      },
-      "handler": {
+      "source": {
+        "@id": "urn:solid-server:auth:password:RegistrationHandler",
         "@type": "RegistrationHandler",
         "registrationManager": {
           "@type": "RegistrationManager",

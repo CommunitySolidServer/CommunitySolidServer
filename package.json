@@ -1,6 +1,6 @@
 {
   "name": "@solid/community-server",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Community Solid Server: an open and modular implementation of the Solid specifications",
   "keywords": [
     "solid",
@@ -20,13 +20,13 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server",
   "lsd:components": "dist/components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld": "dist/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld": "dist/components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/": "dist/components/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/config/": "config/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/dist/": "dist/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/templates/config/": "templates/config/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/": "dist/components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/config/": "config/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/dist/": "dist/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/templates/config/": "templates/config/"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -82,12 +82,14 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/end-of-stream": "^1.4.1",
+    "@types/fs-extra": "^9.0.13",
     "@types/lodash.orderby": "^4.6.6",
     "@types/marked": "^4.0.2",
     "@types/mime-types": "^2.1.1",
     "@types/n3": "^1.10.4",
     "@types/node": "^14.18.0",
     "@types/nodemailer": "^6.4.4",
+    "@types/oidc-provider": "^7.8.1",
     "@types/pump": "^1.1.1",
     "@types/punycode": "^2.1.0",
     "@types/redis": "^2.8.30",
@@ -107,6 +109,7 @@
     "end-of-stream": "^1.4.4",
     "escape-string-regexp": "^4.0.0",
     "fetch-sparql-endpoint": "^2.4.0",
+    "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
     "jose": "^4.4.0",
     "lodash.orderby": "^4.6.0",
@@ -114,11 +117,13 @@
     "mime-types": "^2.1.34",
     "n3": "^1.13.0",
     "nodemailer": "^6.7.2",
-    "oidc-provider": "^6.31.1",
+    "oidc-provider": "^7.10.6",
     "pump": "^3.0.0",
     "punycode": "^2.1.1",
+    "rdf-dereference": "^1.9.0",
     "rdf-parse": "^1.9.1",
     "rdf-serialize": "^1.2.0",
+    "rdf-terms": "^1.7.1",
     "redis": "^3.1.2",
     "redlock": "^4.2.0",
     "sparqlalgebrajs": "^4.0.2",
@@ -131,12 +136,11 @@
     "yargs": "^17.3.1"
   },
   "devDependencies": {
-    "@inrupt/solid-client-authn-node": "^1.11.3",
+    "@inrupt/solid-client-authn-node": "^1.11.5",
     "@microsoft/tsdoc-config": "^0.15.2",
     "@tsconfig/node12": "^1.0.9",
     "@types/cheerio": "^0.22.30",
     "@types/ejs": "^3.1.0",
-    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.4.0",
     "@types/set-cookie-parser": "^2.4.2",
     "@types/supertest": "^2.0.11",
@@ -151,7 +155,6 @@
     "eslint-plugin-jest": "^26.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unused-imports": "^2.0.0",
-    "fs-extra": "^10.0.0",
     "husky": "^4.3.8",
     "jest": "^27.4.7",
     "jest-rdf": "^1.7.0",

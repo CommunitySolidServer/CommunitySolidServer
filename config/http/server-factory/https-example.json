@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "An example of how to set up a server with HTTPS",
