@@ -196,10 +196,10 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError(`${identifier.path} conflicts with existing path ${oldMetadata.identifier.value}`);
     }
 
-    const isContainer = this.isContainerType(representation.metadata);
     // Solid, §3.1: "Paths ending with a slash denote a container resource."
     // https://solid.github.io/specification/protocol#uri-slash-semantics
-    if (isContainer !== isContainerIdentifier(identifier)) {
+    const isContainer = isContainerIdentifier(identifier);
+    if (!isContainer && this.isContainerType(representation.metadata)) {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
