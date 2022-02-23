@@ -389,7 +389,6 @@ describe('A DataAccessorBasedStore', (): void => {
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
       const resourceID = { path: root };
       const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
-      representation.metadata.set(RDF.type, DataFactory.namedNode(LDP.Container));
       await expect(store.setRepresentation(resourceID, representation, conditions))
         .rejects.toThrow(PreconditionFailedHttpError);
     });
@@ -404,7 +403,6 @@ describe('A DataAccessorBasedStore', (): void => {
 
       const resourceID = { path: `${root}` };
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
@@ -536,7 +534,6 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'internal/quads';
       representation.data = guardedStreamFrom(
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
@@ -591,7 +588,6 @@ describe('A DataAccessorBasedStore', (): void => {
 
       // Generate based on URI
       representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
