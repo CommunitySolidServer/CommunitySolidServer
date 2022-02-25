@@ -3,11 +3,20 @@ import { AccessMode } from '../../../../src/authorization/permissions/Permission
 import { SparqlUpdateModesExtractor } from '../../../../src/authorization/permissions/SparqlUpdateModesExtractor';
 import type { Operation } from '../../../../src/http/Operation';
 import type { SparqlUpdatePatch } from '../../../../src/http/representation/SparqlUpdatePatch';
+import type { ResourceSet } from '../../../../src/storage/ResourceSet';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 describe('A SparqlUpdateModesExtractor', (): void => {
-  const extractor = new SparqlUpdateModesExtractor();
+  let resourceSet: jest.Mocked<ResourceSet>;
+  let extractor: SparqlUpdateModesExtractor;
   const factory = new Factory();
+
+  beforeEach(async(): Promise<void> => {
+    resourceSet = {
+      hasResource: jest.fn().mockResolvedValue(true),
+    };
+    extractor = new SparqlUpdateModesExtractor(resourceSet);
+  });
 
   it('can only handle (composite) SPARQL DELETE/INSERT operations.', async(): Promise<void> => {
     const operation = { method: 'PATCH', body: { algebra: factory.createDeleteInsert() }} as unknown as Operation;
@@ -43,7 +52,18 @@ describe('A SparqlUpdateModesExtractor', (): void => {
     await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append ]));
   });
 
-  it('requires write for DELETE operations.', async(): Promise<void> => {
+  it('requires create for INSERT operations if the resource does not exist.', async(): Promise<void> => {
+    resourceSet.hasResource.mockResolvedValueOnce(false);
+    const operation = {
+      method: 'PATCH',
+      body: { algebra: factory.createDeleteInsert(undefined, [
+        factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
+      ]) },
+    } as unknown as Operation;
+    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append, AccessMode.create ]));
+  });
+
+  it('requires read and write for DELETE operations.', async(): Promise<void> => {
     const operation = {
       method: 'PATCH',
       body: { algebra: factory.createDeleteInsert([
@@ -51,20 +71,22 @@ describe('A SparqlUpdateModesExtractor', (): void => {
       ]) },
     } as unknown as Operation;
     await expect(extractor.handle(operation))
-      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
+      .resolves.toEqual(new Set([ AccessMode.read, AccessMode.write ]));
   });
 
-  it('requires append for composite operations with an insert.', async(): Promise<void> => {
+  it('requires read and append for composite operations with an insert and conditions.', async(): Promise<void> => {
     const operation = {
       method: 'PATCH',
       body: { algebra: factory.createCompositeUpdate([ factory.createDeleteInsert(undefined, [
         factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
-      ]) ]) },
+      ], factory.createBgp([
+        factory.createPattern(factory.createTerm('<s>'), factory.createTerm('<p>'), factory.createTerm('<o>')),
+      ])) ]) },
     } as unknown as Operation;
-    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append ]));
+    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append, AccessMode.read ]));
   });
 
-  it('requires write for composite operations with a delete.', async(): Promise<void> => {
+  it('requires read, write and append for composite operations with a delete and insert.', async(): Promise<void> => {
     const operation = {
       method: 'PATCH',
       body: { algebra: factory.createCompositeUpdate([ factory.createDeleteInsert(undefined, [
@@ -75,6 +97,6 @@ describe('A SparqlUpdateModesExtractor', (): void => {
       ]) ]) },
     } as unknown as Operation;
     await expect(extractor.handle(operation))
-      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ]));
+      .resolves.toEqual(new Set([ AccessMode.append, AccessMode.read, AccessMode.write ]));
   });
 });

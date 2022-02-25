@@ -1,7 +1,7 @@
 import type { Quad, Term } from 'n3';
 import { Store } from 'n3';
-import { CredentialGroup } from '../authentication/Credentials';
 import type { Credential, CredentialSet } from '../authentication/Credentials';
+import { CredentialGroup } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
@@ -20,14 +20,15 @@ import type { PermissionReaderInput } from './PermissionReader';
 import { PermissionReader } from './PermissionReader';
 import type { AclPermission } from './permissions/AclPermission';
 import { AclMode } from './permissions/AclPermission';
-import { AccessMode } from './permissions/Permissions';
 import type { PermissionSet } from './permissions/Permissions';
+import { AccessMode } from './permissions/Permissions';
 
-const modesMap: Record<string, keyof AclPermission> = {
-  [ACL.Read]: AccessMode.read,
-  [ACL.Write]: AccessMode.write,
-  [ACL.Append]: AccessMode.append,
-  [ACL.Control]: AclMode.control,
+// Maps ACL modes to their associated general modes.
+const modesMap: Record<string, Readonly<(keyof AclPermission)[]>> = {
+  [ACL.Read]: [ AccessMode.read ],
+  [ACL.Write]: [ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ],
+  [ACL.Append]: [ AccessMode.append ],
+  [ACL.Control]: [ AclMode.control ],
 } as const;
 
 /**
@@ -106,17 +107,14 @@ export class WebAclReader extends PermissionReader {
       if (hasAccess) {
         // Set all allowed modes to true
         const modes = acl.getObjects(rule, ACL.mode, null);
-        for (const { value: mode } of modes) {
-          if (mode in modesMap) {
-            aclPermissions[modesMap[mode]] = true;
+        for (const { value: aclMode } of modes) {
+          if (aclMode in modesMap) {
+            for (const mode of modesMap[aclMode]) {
+              aclPermissions[mode] = true;
+            }
           }
         }
       }
-    }
-
-    if (aclPermissions.write) {
-      // Write permission implies Append permission
-      aclPermissions.append = true;
     }
 
     return aclPermissions;
