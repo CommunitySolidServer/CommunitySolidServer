@@ -5,6 +5,7 @@ import { AccessMode } from '../../../../src/authorization/permissions/Permission
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { N3Patch } from '../../../../src/http/representation/N3Patch';
+import type { ResourceSet } from '../../../../src/storage/ResourceSet';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 
 const { quad, namedNode } = DataFactory;
@@ -13,7 +14,8 @@ describe('An N3PatchModesExtractor', (): void => {
   const triple: Quad = quad(namedNode('a'), namedNode('b'), namedNode('c'));
   let patch: N3Patch;
   let operation: Operation;
-  const extractor = new N3PatchModesExtractor();
+  let resourceSet: jest.Mocked<ResourceSet>;
+  let extractor: N3PatchModesExtractor;
 
   beforeEach(async(): Promise<void> => {
     patch = new BasicRepresentation() as N3Patch;
@@ -27,6 +29,12 @@ describe('An N3PatchModesExtractor', (): void => {
       preferences: {},
       target: { path: 'http://example.com/foo' },
     };
+
+    resourceSet = {
+      hasResource: jest.fn().mockResolvedValue(true),
+    };
+
+    extractor = new N3PatchModesExtractor(resourceSet);
   });
 
   it('can only handle N3 Patch documents.', async(): Promise<void> => {
@@ -45,6 +53,12 @@ describe('An N3PatchModesExtractor', (): void => {
   it('requires append access when there are inserts.', async(): Promise<void> => {
     patch.inserts = [ triple ];
     await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append ]));
+  });
+
+  it('requires create access when there are inserts and the resource does not exist.', async(): Promise<void> => {
+    resourceSet.hasResource.mockResolvedValueOnce(false);
+    patch.inserts = [ triple ];
+    await expect(extractor.handle(operation)).resolves.toEqual(new Set([ AccessMode.append, AccessMode.create ]));
   });
 
   it('requires read and write access when there are inserts.', async(): Promise<void> => {
