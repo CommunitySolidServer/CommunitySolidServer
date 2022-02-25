@@ -349,6 +349,7 @@ export * from './storage/validators/QuotaValidator';
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
 export * from './storage/BasicConditions';
+export * from './storage/CachedResourceSet';
 export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';
