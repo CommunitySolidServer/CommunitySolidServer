@@ -22,7 +22,7 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 - A new configuration option needs to be imported:
-  - `/app/variables/default/json` contains everything related to parsing CLI arguments 
+  - `/app/variables/default.json` contains everything related to parsing CLI arguments 
     and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.
