@@ -1,9 +1,7 @@
-import type { Quad, Term } from 'n3';
 import { Store } from 'n3';
 import type { Credential, CredentialSet } from '../authentication/Credentials';
 import { CredentialGroup } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
-import type { Representation } from '../http/representation/Representation';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
@@ -23,13 +21,15 @@ import { AclMode } from './permissions/AclPermission';
 import type { PermissionSet } from './permissions/Permissions';
 import { AccessMode } from './permissions/Permissions';
 
-// Maps ACL modes to their associated general modes.
+// Maps WebACL-specific modes to generic access modes.
 const modesMap: Record<string, Readonly<(keyof AclPermission)[]>> = {
   [ACL.Read]: [ AccessMode.read ],
-  [ACL.Write]: [ AccessMode.append, AccessMode.write, AccessMode.create, AccessMode.delete ],
+  [ACL.Write]: [ AccessMode.append, AccessMode.write ],
   [ACL.Append]: [ AccessMode.append ],
   [ACL.Control]: [ AclMode.control ],
 } as const;
+
+type AclSet = { targetAcl: Store; parentAcl?: Store };
 
 /**
  * Handles permissions according to the WAC specification.
@@ -57,28 +57,54 @@ export class WebAclReader extends PermissionReader {
    * Will throw an error if this is not the case.
    * @param input - Relevant data needed to check if access can be granted.
    */
-  public async handle({ identifier, credentials }: PermissionReaderInput):
+  public async handle({ identifier, credentials, modes }: PermissionReaderInput):
   Promise<PermissionSet> {
     // Determine the required access modes
     this.logger.debug(`Retrieving permissions of ${credentials.agent?.webId} for ${identifier.path}`);
 
-    const isAcl = this.aclStrategy.isAuxiliaryIdentifier(identifier);
-    const mainIdentifier = isAcl ? this.aclStrategy.getSubjectIdentifier(identifier) : identifier;
+    const isAclResource = this.aclStrategy.isAuxiliaryIdentifier(identifier);
+    const mainIdentifier = isAclResource ? this.aclStrategy.getSubjectIdentifier(identifier) : identifier;
 
-    // Determine the full authorization for the agent granted by the applicable ACL.
-    // Note that we don't filter on input modes as all results are needed for the WAC-Allow header.
-    const acl = await this.getAclRecursive(mainIdentifier);
-    return this.createPermissions(credentials, acl, isAcl);
+    // Adding or removing resources changes the container listing
+    const requiresContainerCheck = modes.has(AccessMode.create) || modes.has(AccessMode.delete);
+
+    // Rather than restricting the search to only the required modes,
+    // we collect all modes in order to have complete metadata (for instance, for the WAC-Allow header).
+    const acl = await this.getAcl(mainIdentifier, requiresContainerCheck);
+    const permissions = await this.findPermissions(acl.targetAcl, credentials, isAclResource);
+
+    if (requiresContainerCheck) {
+      this.logger.debug(`Determining ${identifier.path} permissions requires verifying parent container permissions`);
+      const parentPermissions = acl.targetAcl === acl.parentAcl ?
+        permissions :
+        await this.findPermissions(acl.parentAcl!, credentials, false);
+
+      // https://solidproject.org/TR/2021/wac-20210711:
+      // When an operation requests to create a resource as a member of a container resource,
+      // the server MUST match an Authorization allowing the acl:Append or acl:Write access privilege
+      // on the container for new members.
+      permissions[CredentialGroup.agent]!.create = parentPermissions[CredentialGroup.agent]!.append;
+      permissions[CredentialGroup.public]!.create = parentPermissions[CredentialGroup.public]!.append;
+
+      // https://solidproject.org/TR/2021/wac-20210711:
+      // When an operation requests to delete a resource,
+      // the server MUST match Authorizations allowing the acl:Write access privilege
+      // on the resource and the containing container.
+      permissions[CredentialGroup.agent]!.delete =
+        permissions[CredentialGroup.agent]!.write && parentPermissions[CredentialGroup.agent]!.write;
+      permissions[CredentialGroup.public]!.delete =
+        permissions[CredentialGroup.public]!.write && parentPermissions[CredentialGroup.public]!.write;
+    }
+    return permissions;
   }
 
   /**
-   * Creates an Authorization object based on the quads found in the ACL.
-   * @param credentials - Credentials to check permissions for.
+   * Finds the permissions in the provided WebACL quads.
    * @param acl - Store containing all relevant authorization triples.
+   * @param credentials - Credentials to check permissions for.
    * @param isAcl - If the target resource is an acl document.
    */
-  private async createPermissions(credentials: CredentialSet, acl: Store, isAcl: boolean):
-  Promise<PermissionSet> {
+  private async findPermissions(acl: Store, credentials: CredentialSet, isAcl: boolean): Promise<PermissionSet> {
     const publicPermissions = await this.determinePermissions(acl, credentials.public);
     const agentPermissions = await this.determinePermissions(acl, credentials.agent);
 
@@ -146,67 +172,114 @@ export class WebAclReader extends PermissionReader {
   }
 
   /**
-   * Returns the ACL triples that are relevant for the given identifier.
-   * These can either be from a corresponding ACL document or an ACL document higher up with defaults.
-   * Rethrows any non-NotFoundHttpErrors thrown by the ResourceStore.
-   * @param id - ResourceIdentifier of which we need the ACL triples.
-   * @param recurse - Only used internally for recursion.
+   * Finds the ACL data relevant for its resource, and potentially its parent if required.
+   * All quads in the resulting store(s) can be interpreted as being relevant ACL rules for their target.
    *
-   * @returns A store containing the relevant ACL triples.
+   * @param target - Target to find ACL data for.
+   * @param includeParent - If parent ACL data is also needed.
+   *
+   * @returns The relevant triples.
    */
-  private async getAclRecursive(id: ResourceIdentifier, recurse?: boolean): Promise<Store> {
+  private async getAcl(target: ResourceIdentifier, includeParent: boolean): Promise<AclSet> {
+    this.logger.debug(`Searching ACL data for ${target.path}${includeParent ? 'and its parent' : ''}`);
+    const to = includeParent ? this.identifierStrategy.getParentContainer(target) : target;
+    const acl = await this.getAclRecursive(target, to);
+
+    // The only possible case where `acl` has 2 values instead of 1
+    // is when the `target` has an acl, and `includeParent` is true.
+    const keys = Object.keys(acl);
+    if (keys.length === 2) {
+      const result: AclSet = { targetAcl: await this.filterStore(acl[target.path], target.path, true) };
+      // The other key will be the parent
+      const parentKey = keys.find((key): boolean => key !== target.path)!;
+      result.parentAcl = await this.filterStore(acl[parentKey], parentKey, parentKey === to.path);
+
+      return result;
+    }
+
+    // Only 1 key: no parent was requested, target had no direct acl resource, or both
+    const [ path, store ] = Object.entries(acl)[0];
+    const result: AclSet = { targetAcl: await this.filterStore(store, path, path === target.path) };
+    if (includeParent) {
+      // In case the path is not the parent, it will also just use the defaults just like the target
+      result.parentAcl = path === to.path ? await this.filterStore(store, path, true) : result.targetAcl;
+    }
+
+    return result;
+  }
+
+  /**
+   * Finds the ACL resources from all resources in the path between the two (inclusive) identifiers.
+   * It is important that `from` is a child path of `to`, otherwise behaviour is undefined.
+   *
+   * The result is a key/value object with the keys being the identifiers of resources in the path
+   * that had a corresponding ACL resource, and the value being the contents of that ACL resource.
+   *
+   * The function stops after it finds an ACL resource relevant for the `to` identifier.
+   * This is either its corresponding ACL resource, or one if its parent containers if such a resource does not exist.
+   *
+   * Rethrows any non-NotFoundHttpErrors thrown by the ResourceStore.
+   * @param from - First resource in the path for which ACL data is needed.
+   * @param to - Last resource in the path for which ACL data is needed.
+   *
+   * @returns A map with the key being the actual identifier of which the ACL was found
+   * and a list of all data found within.
+   */
+  private async getAclRecursive(from: ResourceIdentifier, to: ResourceIdentifier): Promise<Record<string, Store>> {
     // Obtain the direct ACL document for the resource, if it exists
-    this.logger.debug(`Trying to read the direct ACL document of ${id.path}`);
+    this.logger.debug(`Trying to read the direct ACL document of ${from.path}`);
+    const result: Record<string, Store> = {};
     try {
-      const acl = this.aclStrategy.getAuxiliaryIdentifier(id);
+      const acl = this.aclStrategy.getAuxiliaryIdentifier(from);
       this.logger.debug(`Trying to read the ACL document ${acl.path}`);
       const data = await this.aclStore.getRepresentation(acl, { type: { [INTERNAL_QUADS]: 1 }});
       this.logger.info(`Reading ACL statements from ${acl.path}`);
 
-      return await this.filterData(data, recurse ? ACL.default : ACL.accessTo, id.path);
+      result[from.path] = await readableToQuads(data.data);
+
+      if (from.path.length <= to.path.length) {
+        return result;
+      }
     } catch (error: unknown) {
       if (NotFoundHttpError.isInstance(error)) {
-        this.logger.debug(`No direct ACL document found for ${id.path}`);
+        this.logger.debug(`No direct ACL document found for ${from.path}`);
       } else {
-        const message = `Error reading ACL for ${id.path}: ${createErrorMessage(error)}`;
+        const message = `Error reading ACL for ${from.path}: ${createErrorMessage(error)}`;
         this.logger.error(message);
         throw new InternalServerError(message, { cause: error });
       }
     }
 
     // Obtain the applicable ACL of the parent container
-    this.logger.debug(`Traversing to the parent of ${id.path}`);
-    if (this.identifierStrategy.isRootContainer(id)) {
-      this.logger.error(`No ACL document found for root container ${id.path}`);
+    this.logger.debug(`Traversing to the parent of ${from.path}`);
+    if (this.identifierStrategy.isRootContainer(from)) {
+      this.logger.error(`No ACL document found for root container ${from.path}`);
       // Solid, §10.1: "In the event that a server can’t apply an ACL to a resource, it MUST deny access."
       // https://solid.github.io/specification/protocol#web-access-control
       throw new ForbiddenHttpError('No ACL document found for root container');
     }
-    const parent = this.identifierStrategy.getParentContainer(id);
-    return this.getAclRecursive(parent, true);
+    const parent = this.identifierStrategy.getParentContainer(from);
+    return {
+      ...result,
+      ...await this.getAclRecursive(parent, to),
+    };
   }
 
   /**
-   * Finds all triples in the data stream of the given representation that use the given predicate and object.
-   * Then extracts the unique subjects from those triples,
-   * and returns a Store containing all triples from the data stream that have such a subject.
+   * Extracts all rules from the store that are relevant for the given target,
+   * based on either the `acl:accessTo` or `acl:default` predicates.
+   * @param store - Store to filter.
+   * @param target - The identifier of which the acl rules need to be known.
+   * @param directAcl - If the store contains triples from the direct acl resource of the target or not.
+   *                    Determines if `acl:accessTo` or `acl:default` are used.
    *
-   * This can be useful for finding the `acl:Authorization` objects corresponding to a specific URI
-   * and returning all relevant information on them.
-   * @param data - Representation with data stream of internal/quads.
-   * @param predicate - Predicate to match.
-   * @param object - Object to match.
-   *
-   * @returns A store containing the relevant triples.
+   * @returns A store containing the relevant triples for the given target.
    */
-  private async filterData(data: Representation, predicate: string, object: string): Promise<Store> {
-    // Import all triples from the representation into a queryable store
-    const quads = await readableToQuads(data.data);
-
+  private async filterStore(store: Store, target: string, directAcl: boolean): Promise<Store> {
     // Find subjects that occur with a given predicate/object, and collect all their triples
     const subjectData = new Store();
-    const subjects = quads.getQuads(null, predicate, object, null).map((quad: Quad): Term => quad.subject);
-    subjects.forEach((subject): any => subjectData.addQuads(quads.getQuads(subject, null, null, null)));
+    const subjects = store.getSubjects(directAcl ? ACL.terms.accessTo : ACL.terms.default, target, null);
+    subjects.forEach((subject): any => subjectData.addQuads(store.getQuads(subject, null, null, null)));
     return subjectData;
   }
 }
