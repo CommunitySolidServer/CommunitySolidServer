@@ -23,7 +23,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `PermissionReader`s take an additional `modes` parameter as input.
 - The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
   and has been moved to a separate `ResourceSet` interface.
-- Several `ModesExtractor`s now take a `ResourceSet` as constructor parameter.
+- Several `ModesExtractor`s `PermissionBasedAuthorizer` now take a `ResourceSet` as constructor parameter.
 
 ## v3.0.0
 ### New features

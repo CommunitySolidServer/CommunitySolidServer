@@ -4,7 +4,8 @@
     {
       "comment": "Matches requested permissions with those available.",
       "@id": "urn:solid-server:default:Authorizer",
-      "@type": "PermissionBasedAuthorizer"
+      "@type": "PermissionBasedAuthorizer",
+      "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
     }
   ]
 }
