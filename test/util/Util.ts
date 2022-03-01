@@ -7,12 +7,15 @@ const portNames = [
   'Conditions',
   'ContentNegotiation',
   'DynamicPods',
+  'GlobalQuota',
   'Identity',
   'LpdHandlerWithAuth',
   'LpdHandlerWithoutAuth',
   'Middleware',
   'N3Patch',
+  'PermissionTable',
   'PodCreation',
+  'PodQuota',
   'RedisResourceLocker',
   'RestrictedIdentity',
   'ServerFetch',
@@ -20,8 +23,7 @@ const portNames = [
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
-  'PodQuota',
-  'GlobalQuota',
+
   // Unit
   'BaseHttpServerFactory',
 ] as const;
