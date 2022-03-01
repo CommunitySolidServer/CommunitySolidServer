@@ -8,12 +8,7 @@
       "comment": "These handlers are called whenever the server is started, and can be used to ensure that all necessary resources for booting are available.",
       "@id": "urn:solid-server:default:ParallelInitializer",
       "@type": "ParallelHandler",
-      "handlers": [
-        {
-          "comment": "This handler is here because having this array empty gives Components.js errors.",
-          "@type": "StaticHandler"
-        }
-      ]
+      "handlers": [ ]
     }
   ]
 }

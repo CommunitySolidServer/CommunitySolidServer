@@ -8,13 +8,6 @@
       "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
       "@type": "WaterfallHandler",
       "handlers": [
-        {
-          "comment": [
-            "This handler is required to prevent Components.js issues with arrays.",
-            "This might be fixed in the next Components.js release after which this can be removed."
-          ],
-          "@type": "UnsupportedAsyncHandler"
-        },
         { "@id": "urn:solid-server:auth:password:RegistrationRouteHandler" }
       ]
     },
