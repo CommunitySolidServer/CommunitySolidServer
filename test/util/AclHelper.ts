@@ -2,6 +2,14 @@ import type { ResourceStore } from '../../src/';
 import { BasicRepresentation } from '../../src/';
 import type { AclPermission } from '../../src/authorization/permissions/AclPermission';
 
+export type AclHelperInput = {
+  permissions: AclPermission;
+  agentClass?: 'agent' | 'authenticated';
+  agent?: string;
+  accessTo?: boolean;
+  default?: boolean;
+};
+
 export class AclHelper {
   public readonly store: ResourceStore;
 
@@ -11,50 +19,49 @@ export class AclHelper {
 
   public async setSimpleAcl(
     resource: string,
-    options: {
-      permissions: AclPermission;
-      agentClass?: 'agent' | 'authenticated';
-      agent?: string;
-      accessTo?: boolean;
-      default?: boolean;
-    },
+    options: AclHelperInput | AclHelperInput[],
   ): Promise<void> {
-    if (!options.agentClass && !options.agent) {
-      throw new Error('At least one of agentClass or agent have to be provided.');
-    }
-    if (!options.accessTo && !options.default) {
-      throw new Error('At least one of accessTo or default have to be true.');
-    }
+    options = Array.isArray(options) ? options : [ options ];
 
     const acl: string[] = [
       '@prefix   acl:  <http://www.w3.org/ns/auth/acl#>.\n',
       '@prefix  foaf:  <http://xmlns.com/foaf/0.1/>.\n',
-      '<http://test.com/#auth> a acl:Authorization',
     ];
 
-    for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
-      if (options.permissions[perm.toLowerCase() as keyof AclPermission]) {
-        acl.push(`;\n acl:mode acl:${perm}`);
-      }
-    }
-    if (options.accessTo) {
-      acl.push(`;\n acl:accessTo <${resource}>`);
-    }
-    if (options.default) {
-      acl.push(`;\n acl:default <${resource}>`);
-    }
-    if (options.agentClass) {
-      acl.push(
-        `;\n acl:agentClass ${
-          options.agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'
-        }`,
-      );
-    }
-    if (options.agent) {
-      acl.push(`;\n acl:agent ${options.agent}`);
-    }
+    for (const [ i, option ] of options.entries()) {
+      acl.push(`\n<http://test.com/#auth${i}> a acl:Authorization`);
 
-    acl.push('.');
+      if (!option.agentClass && !option.agent) {
+        throw new Error('At least one of agentClass or agent have to be provided.');
+      }
+      if (!option.accessTo && !option.default) {
+        throw new Error('At least one of accessTo or default have to be true.');
+      }
+
+      for (const perm of [ 'Read', 'Append', 'Write', 'Control' ]) {
+        if (option.permissions[perm.toLowerCase() as keyof AclPermission]) {
+          acl.push(`;\n acl:mode acl:${perm}`);
+        }
+      }
+      if (option.accessTo) {
+        acl.push(`;\n acl:accessTo <${resource}>`);
+      }
+      if (option.default) {
+        acl.push(`;\n acl:default <${resource}>`);
+      }
+      if (option.agentClass) {
+        acl.push(
+          `;\n acl:agentClass ${
+            option.agentClass === 'agent' ? 'foaf:Agent' : 'foaf:AuthenticatedAgent'
+          }`,
+        );
+      }
+      if (option.agent) {
+        acl.push(`;\n acl:agent ${option.agent}`);
+      }
+
+      acl.push('.');
+    }
 
     await this.store.setRepresentation({ path: `${resource}.acl` }, new BasicRepresentation(acl, 'text/turtle'));
   }
