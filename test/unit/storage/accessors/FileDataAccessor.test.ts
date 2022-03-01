@@ -6,7 +6,6 @@ import { RepresentationMetadata } from '../../../../src/http/representation/Repr
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
@@ -213,10 +212,9 @@ describe('A FileDataAccessor', (): void => {
         .rejects.toThrow(NotFoundHttpError);
     });
 
-    it('throws an error when writing to a metadata path.', async(): Promise<void> => {
-      const result = accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata);
-      await expect(result).rejects.toThrow(ConflictHttpError);
-      await expect(result).rejects.toThrow('Not allowed to create files with the metadata extension.');
+    it('writes the data to the corresponding a metadata file.', async(): Promise<void> => {
+      await expect(accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata)).resolves.toBeUndefined();
+      expect(cache.data['resource.meta$.bin']).toBe('data');
     });
 
     it('writes the data to the corresponding file.', async(): Promise<void> => {

@@ -1,7 +1,7 @@
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import type { ComposedAuxiliaryStrategy } from '../auxiliary/ComposedAuxiliaryStrategy';
+import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -13,9 +13,9 @@ import { OperationHandler } from './OperationHandler';
  */
 export class DeleteOperationHandler extends OperationHandler {
   private readonly store: ResourceStore;
-  private readonly metaStrategy: ComposedAuxiliaryStrategy;
+  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(store: ResourceStore, metaStrategy: ComposedAuxiliaryStrategy) {
+  public constructor(store: ResourceStore, metaStrategy: AuxiliaryStrategy) {
     super();
     this.store = store;
     this.metaStrategy = metaStrategy;
@@ -31,7 +31,7 @@ export class DeleteOperationHandler extends OperationHandler {
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // DELETE is not allowed on metadata
     if (this.metaStrategy.isAuxiliaryIdentifier(operation.target)) {
-      throw new ConflictHttpError('Not allowed to delete files with the metadata extension.');
+      throw new ConflictHttpError('Not allowed to delete resources with the metadata extension.');
     }
 
     await this.store.deleteResource(operation.target, operation.conditions);

@@ -4,7 +4,9 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import { getLoggerFor } from '../../logging/LogUtil';
 import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
+import { isContainerIdentifier } from '../../util/PathUtil';
 import { cloneRepresentation } from '../../util/ResourceUtil';
 import { readableToQuads } from '../../util/StreamUtil';
 import { LDP, PIM, RDF } from '../../util/Vocabularies';
@@ -52,6 +54,13 @@ export class RepresentationPatchHandler extends PatchHandler {
     }
     // Patch it
     const patched = await this.patcher.handleSafe({ patch, identifier, representation });
+
+    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s resource metadata
+    // statements; if the server receives such a request, it MUST respond with a 409 status code.
+    // https://solid.github.io/specification/protocol#contained-resource-metadata-statements
+    if (isContainerIdentifier(identifier)) {
+      throw new ConflictHttpError('Not allowed to execute PATCH request on containers.');
+    }
 
     if (identifier.path.endsWith('.meta')) {
       // Convert RDF representation to N3

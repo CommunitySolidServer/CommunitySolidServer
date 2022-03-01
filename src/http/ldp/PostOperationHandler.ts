@@ -4,7 +4,7 @@ import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../util/Vocabularies';
-import type { ComposedAuxiliaryStrategy } from '../auxiliary/ComposedAuxiliaryStrategy';
+import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -18,9 +18,9 @@ export class PostOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
-  private readonly metaStrategy: ComposedAuxiliaryStrategy;
+  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(store: ResourceStore, metaStrategy: ComposedAuxiliaryStrategy) {
+  public constructor(store: ResourceStore, metaStrategy: AuxiliaryStrategy) {
     super();
     this.store = store;
     this.metaStrategy = metaStrategy;
@@ -40,12 +40,13 @@ export class PostOperationHandler extends OperationHandler {
       this.logger.warn('POST requests require the Content-Type header to be set');
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
+
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // POST is not allowed on metadata
     if (operation.body.metadata.get(SOLID_HTTP.slug)) {
       const slug = operation.body.metadata.get(SOLID_HTTP.slug)!.value;
       if (this.metaStrategy.isAuxiliaryIdentifier({ path: slug })) {
-        throw new ConflictHttpError('Not allowed to create files with the metadata extension using POST.');
+        throw new ConflictHttpError('Not allowed to create resources with the metadata extension using POST.');
       }
     }
     const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);

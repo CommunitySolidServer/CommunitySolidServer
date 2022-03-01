@@ -1,3 +1,4 @@
+import { ConflictHttpError } from '../../../../dist';
 import { PutOperationHandler } from '../../../../src/http/ldp/PutOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -7,6 +8,7 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A PutOperationHandler', (): void => {
   let operation: Operation;
@@ -14,6 +16,8 @@ describe('A PutOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: jest.Mocked<ResourceStore>;
   let handler: PutOperationHandler;
+  const metaStrategy = new SimpleSuffixStrategy('.meta');
+
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PUT', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
@@ -22,7 +26,7 @@ describe('A PutOperationHandler', (): void => {
       setRepresentation: jest.fn(),
     } as any;
 
-    handler = new PutOperationHandler(store);
+    handler = new PutOperationHandler(store, metaStrategy);
   });
 
   it('only supports PUT operations.', async(): Promise<void> => {
@@ -53,5 +57,20 @@ describe('A PutOperationHandler', (): void => {
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();
+  });
+
+  it('error if the target is a metadata resource.', async(): Promise<void> => {
+    operation.target.path = 'http://test.com/foo.meta';
+    await expect(handler.handle({ operation })).rejects.toThrow(
+      new ConflictHttpError('Not allowed to create or edit resources with the metadata extension using PUT.'),
+    );
+  });
+
+  it('error if the target is a container that already exists.', async(): Promise<void> => {
+    store.resourceExists.mockResolvedValueOnce(true);
+    operation.target.path = 'http://test.com/';
+    await expect(handler.handle({ operation })).rejects.toThrow(
+      new ConflictHttpError('Not allowed to PUT on already existing containers.'),
+    );
   });
 });

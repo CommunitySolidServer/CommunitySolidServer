@@ -1,3 +1,4 @@
+import { ConflictHttpError } from '../../../../src';
 import { PatchOperationHandler } from '../../../../src/http/ldp/PatchOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -7,6 +8,7 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A PatchOperationHandler', (): void => {
   let operation: Operation;
@@ -14,6 +16,8 @@ describe('A PatchOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: jest.Mocked<ResourceStore>;
   let handler: PatchOperationHandler;
+  const metaStrategy = new SimpleSuffixStrategy('.meta');
+
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PATCH', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
@@ -23,7 +27,7 @@ describe('A PatchOperationHandler', (): void => {
       modifyResource: jest.fn(),
     } as any;
 
-    handler = new PatchOperationHandler(store);
+    handler = new PatchOperationHandler(store, metaStrategy);
   });
 
   it('only supports PATCH operations.', async(): Promise<void> => {
@@ -54,5 +58,21 @@ describe('A PatchOperationHandler', (): void => {
     expect(result.statusCode).toBe(205);
     expect(result.metadata).toBeUndefined();
     expect(result.data).toBeUndefined();
+  });
+
+  it('errors if there is no corresponding resource when trying to patch metadata.', async(): Promise<void> => {
+    store.resourceExists.mockResolvedValueOnce(false);
+    operation.target.path = 'http://test.com/foo.meta';
+    await expect(handler.handle({ operation })).rejects.toThrow(
+      new ConflictHttpError('Not allowed to create a metadata resource without a corresponding resource.'),
+    );
+  });
+
+  it('errors when patching metadata of a metadata resource.', async(): Promise<void> => {
+    store.resourceExists.mockResolvedValueOnce(true);
+    operation.target.path = 'http://test.com/foo.meta.meta';
+    await expect(handler.handle({ operation })).rejects.toThrow(
+      new ConflictHttpError('Not allowed to create resources with the metadata extension about a metadata resource.'),
+    );
   });
 });

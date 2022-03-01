@@ -3,7 +3,7 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import type { ComposedAuxiliaryStrategy } from '../auxiliary/ComposedAuxiliaryStrategy';
+import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
@@ -19,9 +19,9 @@ export class PatchOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
-  private readonly metaStrategy: ComposedAuxiliaryStrategy;
+  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(store: ResourceStore, metaStrategy: ComposedAuxiliaryStrategy) {
+  public constructor(store: ResourceStore, metaStrategy: AuxiliaryStrategy) {
     super();
     this.store = store;
     this.metaStrategy = metaStrategy;
@@ -47,13 +47,13 @@ export class PatchOperationHandler extends OperationHandler {
 
       // Cannot create metadata without corresponding file
       if (!await this.store.resourceExists(correspondingResourceIdentifier)) {
-        throw new ConflictHttpError('Not allowed to create a metadata file without a corresponding resource file.');
+        throw new ConflictHttpError('Not allowed to create a metadata resource without a corresponding resource.');
       }
 
       // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
       // It must not be possible to create .meta.meta files
       if (this.metaStrategy.isAuxiliaryIdentifier(correspondingResourceIdentifier)) {
-        throw new ConflictHttpError('Not allowed to create files with the metadata extension about a metadata file.');
+        throw new ConflictHttpError('Not allowed to create resources with the metadata extension about a metadata resource.');
       }
     }
 

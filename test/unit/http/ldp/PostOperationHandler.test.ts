@@ -1,3 +1,4 @@
+import { ConflictHttpError } from '../../../../dist';
 import { PostOperationHandler } from '../../../../src/http/ldp/PostOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -9,6 +10,7 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A PostOperationHandler', (): void => {
   let operation: Operation;
@@ -16,6 +18,7 @@ describe('A PostOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: ResourceStore;
   let handler: PostOperationHandler;
+  const metaStrategy = new SimpleSuffixStrategy('.meta');
 
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
@@ -23,7 +26,7 @@ describe('A PostOperationHandler', (): void => {
     store = {
       addResource: jest.fn(async(): Promise<ResourceIdentifier> => ({ path: 'newPath' } as ResourceIdentifier)),
     } as unknown as ResourceStore;
-    handler = new PostOperationHandler(store);
+    handler = new PostOperationHandler(store, metaStrategy);
   });
 
   it('only supports POST operations.', async(): Promise<void> => {
@@ -45,5 +48,13 @@ describe('A PostOperationHandler', (): void => {
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
     expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
+  });
+
+  it('error if the slug is a metadata resource.', async(): Promise<void> => {
+    operation.body.metadata.set(SOLID_HTTP.slug, 'foo.meta');
+    operation.target.path = 'http://test.com/';
+    await expect(handler.handle({ operation })).rejects.toThrow(
+      new ConflictHttpError('Not allowed to create resources with the metadata extension using POST.'),
+    );
   });
 });
