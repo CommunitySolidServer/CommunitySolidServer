@@ -1,4 +1,3 @@
-import { ConflictHttpError } from '../../../../src';
 import { PatchOperationHandler } from '../../../../src/http/ldp/PatchOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -6,6 +5,7 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
@@ -70,16 +70,12 @@ describe('A PatchOperationHandler', (): void => {
   it('errors if there is no corresponding resource when trying to patch metadata.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(false);
     operation.target.path = 'http://test.com/foo.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(
-      new ConflictHttpError('Not allowed to create a metadata resource without a corresponding resource.'),
-    );
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 
   it('errors when patching metadata of a metadata resource.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/foo.meta.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(
-      new ConflictHttpError('Not allowed to create resources with the metadata extension about a metadata resource.'),
-    );
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 });

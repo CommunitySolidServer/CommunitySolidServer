@@ -1,4 +1,3 @@
-import { ConflictHttpError } from '../../../../dist';
 import { PostOperationHandler } from '../../../../src/http/ldp/PostOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -8,6 +7,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
@@ -53,9 +53,7 @@ describe('A PostOperationHandler', (): void => {
   it('error if the slug is a metadata resource.', async(): Promise<void> => {
     operation.body.metadata.set(SOLID_HTTP.slug, 'foo.meta');
     operation.target.path = 'http://test.com/';
-    await expect(handler.handle({ operation })).rejects.toThrow(
-      new ConflictHttpError('Not allowed to create resources with the metadata extension using POST.'),
-    );
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 
   it('returns the correct response if the slug indicates no metadata resource.', async(): Promise<void> => {

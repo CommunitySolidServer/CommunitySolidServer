@@ -53,7 +53,9 @@ export class PatchOperationHandler extends OperationHandler {
       // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
       // It must not be possible to create .meta.meta files
       if (this.metaStrategy.isAuxiliaryIdentifier(correspondingResourceIdentifier)) {
-        throw new ConflictHttpError('Not allowed to create resources with the metadata extension about a metadata resource.');
+        throw new ConflictHttpError(
+          'Not allowed to create resources with the metadata extension about a metadata resource.',
+        );
       }
     }
 

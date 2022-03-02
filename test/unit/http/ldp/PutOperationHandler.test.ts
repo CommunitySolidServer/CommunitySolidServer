@@ -1,4 +1,3 @@
-import { ConflictHttpError } from '../../../../dist';
 import { PutOperationHandler } from '../../../../src/http/ldp/PutOperationHandler';
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -6,6 +5,7 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
@@ -61,16 +61,12 @@ describe('A PutOperationHandler', (): void => {
 
   it('error if the target is a metadata resource.', async(): Promise<void> => {
     operation.target.path = 'http://test.com/foo.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(
-      new ConflictHttpError('Not allowed to create or edit resources with the metadata extension using PUT.'),
-    );
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 
   it('error if the target is a container that already exists.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/';
-    await expect(handler.handle({ operation })).rejects.toThrow(
-      new ConflictHttpError('Not allowed to PUT on already existing containers.'),
-    );
+    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
 });
