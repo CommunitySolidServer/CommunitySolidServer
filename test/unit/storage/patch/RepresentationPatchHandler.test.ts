@@ -1,4 +1,3 @@
-import { ConflictHttpError } from '../../../../dist';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import type { PatchHandlerInput } from '../../../../src/storage/patch/PatchHandler';
@@ -6,6 +5,7 @@ import type { RepresentationPatcher } from '../../../../src/storage/patch/Repres
 import { RepresentationPatchHandler } from '../../../../src/storage/patch/RepresentationPatchHandler';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 
 describe('A RepresentationPatchHandler', (): void => {
@@ -64,9 +64,7 @@ describe('A RepresentationPatchHandler', (): void => {
 
   it('errors if the target is a container.', async(): Promise<void> => {
     identifier.path = 'http://test.com/';
-    await expect(handler.handle(input)).rejects.toThrow(
-      new ConflictHttpError('Not allowed to execute PATCH request on containers.'),
-    );
+    await expect(handler.handle(input)).rejects.toThrow(ConflictHttpError);
   });
 
   it('errors if pim storage is deleted (when it was present) to the metadata of a resource.',

@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "@id": "urn:solid-server:default:OperationHandler",
@@ -7,7 +7,7 @@
       "handlers": [
         {
           "@type": "GetOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PostOperationHandler",
@@ -26,7 +26,7 @@
         },
         {
           "@type": "HeadOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PatchOperationHandler",
