@@ -5,7 +5,9 @@ Options related to how data and resources are stored.
 The final part of the ResourceStore chain that handles data access.
 * *dynamic*: The routing store used here is needed when using dynamic pod creation.
 * *file*: Default setup with a file backend.
+* *global-quota-file*: File backend with a global quota over the entire server.
 * *memory*: Default setup with a memory backend.
+* *pod-quota-file*: File backend with a max quota per pod.
 * *regex*: Uses a different backend based on the container that is being used.
 * *sparql*: Default setup with a SPARQL endpoint backend.
   Also updates the converting store so all incoming data is transformed into quads.

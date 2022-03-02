@@ -1,0 +1,18 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Routes all OIDC related requests to the OIDC library.",
+      "@id": "urn:solid-server:default:OidcHandler",
+      "@type": "RouterHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_allowedMethods": [ "*" ],
+      "args_allowedPathNames": [ "^/.oidc/.*", "^/\\.well-known/openid-configuration" ],
+      "args_handler": {
+        "@type": "OidcHttpHandler",
+        "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+      }
+    }
+  ]
+}

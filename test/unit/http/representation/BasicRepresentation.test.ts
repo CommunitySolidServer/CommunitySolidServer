@@ -1,12 +1,13 @@
 import 'jest-rdf';
 import { Readable } from 'stream';
-import { namedNode } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+const { namedNode } = DataFactory;
 
 describe('BasicRepresentation', (): void => {
   it('creates a representation with (data, metadata, binary).', (): void => {

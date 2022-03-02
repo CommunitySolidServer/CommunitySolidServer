@@ -32,6 +32,10 @@
           "@type": "PatchOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" },
           "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
         }
       ]
     }

@@ -164,3 +164,13 @@ export function matchesMediaType(mediaA: string, mediaB: string): boolean {
 export function isInternalContentType(contentType?: string): boolean {
   return typeof contentType !== 'undefined' && matchesMediaType(contentType, INTERNAL_ALL);
 }
+
+/**
+ * Serializes a preferences object to a string for display purposes.
+ * @param preferences - Preferences to serialize
+ */
+export function preferencesToString(preferences: ValuePreferences): string {
+  return Object.entries(preferences)
+    .map(([ type, weight ]): string => `${type}:${weight}`)
+    .join(',');
+}

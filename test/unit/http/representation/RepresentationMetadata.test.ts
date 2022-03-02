@@ -1,8 +1,9 @@
 import 'jest-rdf';
-import { defaultGraph, literal, namedNode, quad } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
 function getQuads(quads: Quad[], subject?: string, predicate?: string, object?: string, graph?: string): Quad[] {
@@ -58,6 +59,16 @@ describe('A RepresentationMetadata', (): void => {
 
       metadata = new RepresentationMetadata(new RepresentationMetadata(), 'text/turtle');
       expect(metadata.contentType).toBe('text/turtle');
+    });
+
+    it('stores the content-length correctly.', async(): Promise<void> => {
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = 50;
+      expect(metadata.contentLength).toBe(50);
+
+      metadata = new RepresentationMetadata();
+      metadata.contentLength = undefined;
+      expect(metadata.contentLength).toBeUndefined();
     });
 
     it('copies an other metadata object.', async(): Promise<void> => {

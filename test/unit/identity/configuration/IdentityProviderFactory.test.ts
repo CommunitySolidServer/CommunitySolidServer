@@ -1,10 +1,13 @@
-import type { Configuration } from 'oidc-provider';
+import type { Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
+import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 jest.mock('oidc-provider', (): any => ({
@@ -12,25 +15,29 @@ jest.mock('oidc-provider', (): any => ({
 }));
 
 const routes = {
-  authorization: '/foo/idp/auth',
-  check_session: '/foo/idp/session/check',
-  code_verification: '/foo/idp/device',
-  device_authorization: '/foo/idp/device/auth',
-  end_session: '/foo/idp/session/end',
-  introspection: '/foo/idp/token/introspection',
-  jwks: '/foo/idp/jwks',
-  pushed_authorization_request: '/foo/idp/request',
-  registration: '/foo/idp/reg',
-  revocation: '/foo/idp/token/revocation',
-  token: '/foo/idp/token',
-  userinfo: '/foo/idp/me',
+  authorization: '/foo/oidc/auth',
+  backchannel_authentication: '/foo/oidc/backchannel',
+  code_verification: '/foo/oidc/device',
+  device_authorization: '/foo/oidc/device/auth',
+  end_session: '/foo/oidc/session/end',
+  introspection: '/foo/oidc/token/introspection',
+  jwks: '/foo/oidc/jwks',
+  pushed_authorization_request: '/foo/oidc/request',
+  registration: '/foo/oidc/reg',
+  revocation: '/foo/oidc/token/revocation',
+  token: '/foo/oidc/token',
+  userinfo: '/foo/oidc/me',
 };
 
 describe('An IdentityProviderFactory', (): void => {
   let baseConfig: Configuration;
-  const baseUrl = 'http://test.com/foo/';
-  const idpPath = '/idp';
-  const webId = 'http://alice.test.com/card#me';
+  const baseUrl = 'http://example.com/foo/';
+  const oidcPath = '/oidc';
+  const webId = 'http://alice.example.com/card#me';
+  const redirectUrl = 'http://example.com/login/';
+  const oidcInteraction: Interaction = {} as any;
+  let ctx: KoaContextWithOIDC;
+  let interactionHandler: jest.Mocked<InteractionHandler>;
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
   let errorHandler: jest.Mocked<ErrorHandler>;
@@ -39,6 +46,17 @@ describe('An IdentityProviderFactory', (): void => {
 
   beforeEach(async(): Promise<void> => {
     baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}};
+
+    ctx = {
+      method: 'GET',
+      request: {
+        href: 'http://example.com/idp/',
+      },
+    } as any;
+
+    interactionHandler = {
+      handleSafe: jest.fn().mockRejectedValue(new FoundHttpError(redirectUrl)),
+    } as any;
 
     adapterFactory = {
       createStorageAdapter: jest.fn().mockReturnValue('adapter!'),
@@ -59,22 +77,12 @@ describe('An IdentityProviderFactory', (): void => {
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
-      idpPath,
+      oidcPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
     });
-  });
-
-  it('errors if the idpPath parameter does not start with a slash.', async(): Promise<void> => {
-    expect((): any => new IdentityProviderFactory(baseConfig, {
-      adapterFactory,
-      baseUrl,
-      idpPath: 'idp',
-      storage,
-      errorHandler,
-      responseWriter,
-    })).toThrow('idpPath needs to start with a /');
   });
 
   it('creates a correct configuration.', async(): Promise<void> => {
@@ -92,32 +100,52 @@ describe('An IdentityProviderFactory', (): void => {
     expect(adapterFactory.createStorageAdapter).toHaveBeenLastCalledWith('test!');
 
     expect(config.cookies?.keys).toEqual([ expect.any(String) ]);
-    expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ kty: 'RSA' }) ]});
+    expect(config.jwks).toEqual({ keys: [ expect.objectContaining({ alg: 'ES256' }) ]});
     expect(config.routes).toEqual(routes);
+    expect(config.pkce?.methods).toEqual([ 'S256' ]);
+    expect((config.pkce!.required as any)()).toBe(true);
+    expect(config.clientDefaults?.id_token_signed_response_alg).toBe('ES256');
 
-    expect((config.interactions?.url as any)()).toBe('/idp/');
-    expect((config.audiences as any)(null, null, {}, 'access_token')).toBe('solid');
-    expect((config.audiences as any)(null, null, { clientId: 'clientId' }, 'client_credentials')).toBe('clientId');
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).resolves.toBe(redirectUrl);
 
-    const findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
+    let findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
     expect(findResult?.accountId).toBe(webId);
+    await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId, azp: 'clientId' });
+    findResult = await config.findAccount?.({ oidc: {}} as any, webId);
     await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId });
 
-    expect((config.extraAccessTokenClaims as any)({}, {})).toEqual({});
-    expect((config.extraAccessTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
-      .toEqual({
-        webid: webId,
-        client_id: 'clientId',
-      });
+    expect((config.extraTokenClaims as any)({}, {})).toEqual({});
+    expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
+      .toEqual({ webid: webId });
+
+    expect(config.features?.resourceIndicators?.enabled).toBe(true);
+    expect((config.features?.resourceIndicators?.defaultResource as any)()).toBe('http://example.com/');
+    expect((config.features?.resourceIndicators?.getResourceServerInfo as any)()).toEqual({
+      scope: '',
+      audience: 'solid',
+      accessTokenFormat: 'jwt',
+      jwt: { sign: { alg: 'ES256' }},
+    });
 
     // Test the renderError function
     const response = { } as HttpResponse;
-    await expect((config.renderError as any)({ res: response }, null, 'error!')).resolves.toBeUndefined();
+    await expect((config.renderError as any)({ res: response }, {}, 'error!')).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
       .toHaveBeenLastCalledWith({ error: 'error!', preferences: { type: { 'text/plain': 1 }}});
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+  });
+
+  it('errors if there is no valid interaction redirect.', async(): Promise<void> => {
+    interactionHandler.handleSafe.mockRejectedValueOnce(new Error('bad data'));
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).rejects.toThrow('bad data');
+
+    interactionHandler.handleSafe.mockResolvedValueOnce(new BasicRepresentation());
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction))
+      .rejects.toThrow('Could not correctly redirect for the given interaction.');
   });
 
   it('copies a field from the input config if values need to be added to it.', async(): Promise<void> => {
@@ -127,7 +155,8 @@ describe('An IdentityProviderFactory', (): void => {
     factory = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
-      idpPath,
+      oidcPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
@@ -148,7 +177,8 @@ describe('An IdentityProviderFactory', (): void => {
     const factory2 = new IdentityProviderFactory(baseConfig, {
       adapterFactory,
       baseUrl,
-      idpPath,
+      oidcPath,
+      interactionHandler,
       storage,
       errorHandler,
       responseWriter,
@@ -160,5 +190,23 @@ describe('An IdentityProviderFactory', (): void => {
     expect(storage.set).toHaveBeenCalledTimes(2);
     expect(storage.set).toHaveBeenCalledWith('jwks', result1.config.jwks);
     expect(storage.set).toHaveBeenCalledWith('cookie-secret', result1.config.cookies?.keys);
+  });
+
+  it('updates errors if there is more information.', async(): Promise<void> => {
+    const provider = await factory.getProvider() as any;
+    const { config } = provider as { config: Configuration };
+    const response = { } as HttpResponse;
+
+    const error = new Error('bad data');
+    const out = { error_description: 'more info' };
+
+    await expect((config.renderError as any)({ res: response }, out, error)).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe)
+      .toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+    expect(error.message).toBe('bad data - more info');
+    expect(error.stack).toContain('Error: bad data - more info');
   });
 });

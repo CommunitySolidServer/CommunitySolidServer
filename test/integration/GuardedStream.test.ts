@@ -1,6 +1,5 @@
 import {
   RepresentationMetadata,
-  TypedRepresentationConverter,
   readableToString,
   ChainedConverter,
   guardedStreamFrom,
@@ -12,6 +11,7 @@ import {
 import type { Representation,
   RepresentationConverterArgs,
   Logger } from '../../src';
+import { BaseTypedRepresentationConverter } from '../../src/storage/conversion/BaseTypedRepresentationConverter';
 
 jest.mock('../../src/logging/LogUtil', (): any => {
   const logger: Logger =
@@ -20,17 +20,9 @@ jest.mock('../../src/logging/LogUtil', (): any => {
 });
 const logger: jest.Mocked<Logger> = getLoggerFor('GuardedStream') as any;
 
-class DummyConverter extends TypedRepresentationConverter {
+class DummyConverter extends BaseTypedRepresentationConverter {
   public constructor() {
-    super('*/*', 'custom/type');
-  }
-
-  public async getInputTypes(): Promise<Record<string, number>> {
-    return { [INTERNAL_QUADS]: 1 };
-  }
-
-  public async getOutputTypes(): Promise<Record<string, number>> {
-    return { 'x/x': 1 };
+    super(INTERNAL_QUADS, 'x/x');
   }
 
   public async handle({ representation }: RepresentationConverterArgs): Promise<Representation> {

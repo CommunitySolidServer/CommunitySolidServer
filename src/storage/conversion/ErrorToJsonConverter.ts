@@ -3,13 +3,13 @@ import type { Representation } from '../../http/representation/Representation';
 import { APPLICATION_JSON, INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { getSingleItem } from '../../util/StreamUtil';
+import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
-import { TypedRepresentationConverter } from './TypedRepresentationConverter';
 
 /**
  * Converts an Error object to JSON by copying its fields.
  */
-export class ErrorToJsonConverter extends TypedRepresentationConverter {
+export class ErrorToJsonConverter extends BaseTypedRepresentationConverter {
   public constructor() {
     super(INTERNAL_ERROR, APPLICATION_JSON);
   }

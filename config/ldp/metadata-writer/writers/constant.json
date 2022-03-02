@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Adds fixed headers to the response.",
@@ -8,7 +8,7 @@
       "headers": [
         {
           "ConstantMetadataWriter:_headers_key": "Accept-Patch",
-          "ConstantMetadataWriter:_headers_value": "application/sparql-update"
+          "ConstantMetadataWriter:_headers_value": "application/sparql-update, text/n3"
         },
         {
           "ConstantMetadataWriter:_headers_key": "Allow",

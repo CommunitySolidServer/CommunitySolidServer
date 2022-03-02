@@ -1,14 +1,40 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Determines required modes based on HTTP methods.",
       "@id": "urn:solid-server:default:ModesExtractor",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@type": "MethodModesExtractor" },
-        { "@type": "SparqlPatchModesExtractor" }
+        {
+          "comment": "Extract access modes for PATCH requests based on the request body.",
+          "@id": "urn:solid-server:default:PatchModesExtractor"
+        },
+        {
+          "comment": "Extract access modes based on the HTTP method.",
+          "@type": "MethodModesExtractor"
+        },
+        {
+          "@type": "StaticThrowHandler",
+          "error": { "@type": "MethodNotAllowedHttpError" }
+        }
       ]
+    },
+    {
+      "@id": "urn:solid-server:default:PatchModesExtractor",
+      "@type": "MethodFilterHandler",
+      "methods": [ "PATCH" ],
+      "source": {
+        "@type": "WaterfallHandler",
+        "handlers": [
+          { "@type": "N3PatchModesExtractor" },
+          { "@type": "SparqlUpdateModesExtractor" },
+          {
+            "@type": "StaticThrowHandler",
+            "error": { "@type": "UnsupportedMediaTypeHttpError" }
+          }
+        ]
+      }
     }
   ]
 }

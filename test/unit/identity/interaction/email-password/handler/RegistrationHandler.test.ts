@@ -5,6 +5,7 @@ import {
 import type {
   RegistrationManager, RegistrationParams, RegistrationResponse,
 } from '../../../../../../src/identity/interaction/email-password/util/RegistrationManager';
+import { readJsonStream } from '../../../../../../src/util/StreamUtil';
 import { createPostJsonOperation } from './Util';
 
 describe('A RegistrationHandler', (): void => {
@@ -41,10 +42,9 @@ describe('A RegistrationHandler', (): void => {
   it('converts the stream to json and sends it to the registration manager.', async(): Promise<void> => {
     const params = { email: 'alice@test.email', password: 'superSecret' };
     operation = createPostJsonOperation(params);
-    await expect(handler.handle({ operation })).resolves.toEqual({
-      type: 'response',
-      details,
-    });
+    const result = await handler.handle({ operation });
+    await expect(readJsonStream(result.data)).resolves.toEqual(details);
+    expect(result.metadata.contentType).toBe('application/json');
 
     expect(registrationManager.validateInput).toHaveBeenCalledTimes(1);
     expect(registrationManager.validateInput).toHaveBeenLastCalledWith(params, false);

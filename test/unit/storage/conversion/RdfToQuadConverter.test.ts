@@ -1,7 +1,7 @@
 import 'jest-rdf';
 import { Readable } from 'stream';
-import { namedNode, triple } from '@rdfjs/data-model';
 import arrayifyStream from 'arrayify-stream';
+import { DataFactory } from 'n3';
 import rdfParser from 'rdf-parse';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
@@ -11,17 +11,17 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+const { namedNode, triple } = DataFactory;
 
 describe('A RdfToQuadConverter', (): void => {
   const converter = new RdfToQuadConverter();
   const identifier: ResourceIdentifier = { path: 'path' };
 
-  it('supports parsing the same types as rdfParser.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual(await rdfParser.getContentTypesPrioritized());
-  });
-
   it('supports serializing as quads.', async(): Promise<void> => {
-    await expect(converter.getOutputTypes()).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    const types = await rdfParser.getContentTypes();
+    for (const type of types) {
+      await expect(converter.getOutputTypes(type)).resolves.toEqual({ [INTERNAL_QUADS]: 1 });
+    }
   });
 
   it('can handle turtle to quad conversions.', async(): Promise<void> => {

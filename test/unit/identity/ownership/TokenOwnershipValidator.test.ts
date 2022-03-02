@@ -1,15 +1,17 @@
-import { fetch } from 'cross-fetch';
+import { Readable } from 'stream';
 import { DataFactory } from 'n3';
 import type { Quad } from 'n3';
+import rdfDereferencer from 'rdf-dereference';
 import { v4 } from 'uuid';
 import { TokenOwnershipValidator } from '../../../../src/identity/ownership/TokenOwnershipValidator';
-import { RdfToQuadConverter } from '../../../../src/storage/conversion/RdfToQuadConverter';
 import type { ExpiringStorage } from '../../../../src/storage/keyvalue/ExpiringStorage';
 import { SOLID } from '../../../../src/util/Vocabularies';
 const { literal, namedNode, quad } = DataFactory;
 
-jest.mock('cross-fetch');
 jest.mock('uuid');
+jest.mock('rdf-dereference', (): any => ({
+  dereference: jest.fn(),
+}));
 
 function quadToString(qq: Quad): string {
   const subPred = `<${qq.subject.value}> <${qq.predicate.value}>`;
@@ -20,21 +22,19 @@ function quadToString(qq: Quad): string {
 }
 
 describe('A TokenOwnershipValidator', (): void => {
-  const fetchMock: jest.Mock = fetch as any;
+  const rdfDereferenceMock: jest.Mocked<typeof rdfDereferencer> = rdfDereferencer as any;
   const webId = 'http://alice.test.com/#me';
   const token = 'randomlyGeneratedToken';
   const tokenTriple = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal(token));
   const tokenString = `${quadToString(tokenTriple)}.`;
-  const converter = new RdfToQuadConverter();
   let storage: ExpiringStorage<string, string>;
   let validator: TokenOwnershipValidator;
 
-  function mockFetch(body: string): void {
-    fetchMock.mockImplementation((url: string): any => ({
-      text: (): any => body,
-      url,
-      status: 200,
-      headers: { get: (): any => 'text/turtle' },
+  function mockDereference(qq?: Quad): any {
+    rdfDereferenceMock.dereference.mockImplementation((uri: string): any => ({
+      uri,
+      quads: Readable.from(qq ? [ qq ] : []),
+      exists: true,
     }));
   }
 
@@ -50,32 +50,32 @@ describe('A TokenOwnershipValidator', (): void => {
       delete: jest.fn().mockImplementation((key: string): any => map.delete(key)),
     } as any;
 
-    mockFetch('');
+    mockDereference();
 
-    validator = new TokenOwnershipValidator(converter, storage);
+    validator = new TokenOwnershipValidator(storage);
   });
 
   it('errors if no token is stored in the storage.', async(): Promise<void> => {
     // Even if the token is in the WebId, it will error since it's not in the storage
-    mockFetch(tokenString);
+    mockDereference(tokenTriple);
     await expect(validator.handle({ webId })).rejects.toThrow(expect.objectContaining({
       message: expect.stringContaining(tokenString),
       details: { quad: tokenString },
     }));
-    expect(fetch).toHaveBeenCalledTimes(0);
+    expect(rdfDereferenceMock.dereference).toHaveBeenCalledTimes(0);
   });
 
   it('errors if the expected triple is missing.', async(): Promise<void> => {
     // First call will add the token to the storage
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
-    expect(fetch).toHaveBeenCalledTimes(0);
+    expect(rdfDereferenceMock.dereference).toHaveBeenCalledTimes(0);
     // Second call will fetch the WebId
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(rdfDereferenceMock.dereference).toHaveBeenCalledTimes(1);
   });
 
   it('resolves if the WebId contains the verification triple.', async(): Promise<void> => {
-    mockFetch(tokenString);
+    mockDereference(tokenTriple);
     // First call will add the token to the storage
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
     // Second call will succeed since it has the verification triple
@@ -84,7 +84,7 @@ describe('A TokenOwnershipValidator', (): void => {
 
   it('fails if the WebId contains the wrong verification triple.', async(): Promise<void> => {
     const wrongQuad = quad(namedNode(webId), SOLID.terms.oidcIssuerRegistrationToken, literal('wrongToken'));
-    mockFetch(`${quadToString(wrongQuad)} .`);
+    mockDereference(wrongQuad);
     // First call will add the token to the storage
     await expect(validator.handle({ webId })).rejects.toThrow(tokenString);
     // Second call will fail since it has the wrong verification triple

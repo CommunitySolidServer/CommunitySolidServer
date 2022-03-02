@@ -1,11 +1,31 @@
-<h1>Sign up</h1>
-<form method="post" id="mainForm">
+<div id="input-partial">
+  <h1>Sign up</h1>
+  <form method="post" id="mainForm">
+    <p class="error" id="error"></p>
 
-  <% if (locals.message) { %>
-    <p class="error">Error: <%= message %></p>
-  <% } %>
+    <%- include('./register-partial.html.ejs', { allowRoot: false }) %>
 
-  <%- include('./register-partial.html.ejs', { allowRoot: false }) %>
+    <p class="actions"><button type="submit" name="submit">Sign up</button></p>
+  </form>
+</div>
+<div id="response-partial">
+  <h1>You've been signed up</h1>
+  <p>
+    <strong>Welcome to Solid.</strong>
+    We wish you an exciting experience!
+  </p>
 
-  <p class="actions"><button type="submit" name="submit">Sign up</button></p>
-</form>
+  <%- include('./register-response-partial.html.ejs') %>
+</div>
+
+<script>
+  setVisibility('response-partial', false);
+  function updateResponse(json) {
+    // Swap visibility
+    setVisibility('input-partial', false);
+    setVisibility('response-partial', true);
+
+    updateResponseFields(json);
+  }
+  addPostListener('mainForm', 'error', '', updateResponse);
+</script>

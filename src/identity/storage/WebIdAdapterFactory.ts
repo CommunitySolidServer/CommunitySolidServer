@@ -5,7 +5,7 @@ import type { Adapter, AdapterPayload } from 'oidc-provider';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
-import { fetchDataset } from '../../util/FetchUtil';
+import { responseToDataset } from '../../util/FetchUtil';
 import { OIDC } from '../../util/Vocabularies';
 import type { AdapterFactory } from './AdapterFactory';
 
@@ -91,7 +91,7 @@ export class WebIdAdapter implements Adapter {
    * @param response - Response object from the request.
    */
   private async parseRdfWebId(data: string, id: string, response: Response): Promise<AdapterPayload> {
-    const representation = await fetchDataset(response, this.converter, data);
+    const representation = await responseToDataset(response, this.converter, data);
 
     // Find the valid redirect URIs
     const redirectUris: string[] = [];

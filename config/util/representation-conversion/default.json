@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/util/representation-conversion/converters/content-type-replacer.json",
     "files-scs:config/util/representation-conversion/converters/dynamic-json-template.json",
@@ -15,18 +15,13 @@
       "@id": "urn:solid-server:default:RepresentationConverter",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:MarkdownToHtmlConverter" },
         { "@id": "urn:solid-server:default:DynamicJsonToTemplateConverter" },
-        {
-          "@type": "IfNeededConverter",
-          "comment": "Only continue converting if the requester cannot accept the available content type"
-        },
-        { "@id": "urn:solid-server:default:ContentTypeReplacer" },
         {
           "comment": "Automatically finds a path through a set of converters from one type to another.",
           "@id": "urn:solid-server:default:ChainedConverter",
           "@type": "ChainedConverter",
           "converters": [
+            { "@id": "urn:solid-server:default:ContentTypeReplacer" },
             { "@id": "urn:solid-server:default:RdfToQuadConverter" },
             { "@id": "urn:solid-server:default:QuadToRdfConverter" },
             { "@id": "urn:solid-server:default:ContainerToTemplateConverter" },

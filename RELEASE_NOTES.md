@@ -1,5 +1,68 @@
 # Community Solid Server release notes
 
+## v4.0.0
+### New features
+- ...
+
+### Configuration changes
+You might need to make changes to your v3 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v3 custom configs that replaced certain features.
+- ...
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- ...
+
+## v3.0.0
+### New features
+- The Identity Provider now uses the `webid` scope as required for Solid-OIDC.
+- The `VoidLocker` can be used to disable locking for development/testing purposes. 
+  This can be enabled by changing the `/config/util/resource-locker/` import to `debug-void.json`
+- Added support for setting a quota on the server. See the `config/quota-file.json` config for an example.
+- An official docker image is now built on each version tag and published at https://hub.docker.com/r/solidproject/community-server.
+- Added support for N3 Patch.
+- It is now possible to customize arguments to the `community-solid-server` command, 
+  which enables passing custom variables to configurations and setting new default values.
+- The AppRunner functions have changed to require Components.js variables. 
+  This is important for anyone who starts the server from code.
+- When logging in, a consent screen will now provide information about the client.
+
+### Configuration changes
+You might need to make changes to your v2 configuration if you use a custom config.
+
+The `@context` needs to be updated to 
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- A new configuration option needs to be imported:
+  - `/app/variables/default/json` contains everything related to parsing CLI arguments 
+    and assigning values to variables.
+
+The following changes are relevant for v2 custom configs that replaced certain features.
+- Conversion has been simplified so most converters are part of the conversion chain:
+  - `/util/representation-conversion/default.json`
+- The IDP settings have changed to support the latest Solid-OIDC draft.
+  - `/identity/handler/provider-factory/identity.json`
+- Requests targeting the OIDC library now use a separate handler.
+  - `/http/handler/default.json`
+  - `/identity/handler/default.json`
+- The architecture of IDP interaction handlers has completely changed to improve modularity
+  - `/identity/handler/interaction/*`
+  - `/identity/registration/*`
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- `TypedRepresentationConverter` function signatures changed 
+  and base functionality moved to `BaseTypedRepresentationConverter`.
+- Many changes to several components related to the IDP. This includes the HTML templates.
+
 ## v2.0.0
 ### New features
 - Pod owners always have Control access to resources stored in their Pod.

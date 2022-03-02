@@ -100,7 +100,7 @@ to some commonly used settings:
 | parameter name         | default value              | description                                                                                                                          |
 | --------------         | -------------              | -----------                                                                                                                          |
 | `--port, -p`           | `3000`                     | The TCP port on which the server runs.                                                                                               |
-| `--baseUrl. -b`        | `http://localhost:$PORT/`  | The public URL of your server.                                                                                                       |
+| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The public URL of your server.                                                                                                       |
 | `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems.                                                                          |
 | `--config, -c`         | `@css:config/default.json` | The configuration for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json` |
 | `--rootFilePath, -f`   | `./`                       | Root folder of the server, when using a file-based configuration.                                                                    |

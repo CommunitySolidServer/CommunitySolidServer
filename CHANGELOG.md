@@ -1,6 +1,47 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v3.0.0"></a>
+## [v3.0.0](https://github.com/solid/community-server/compare/v2.0.1...v3.0.0) - 2022-02-23
+
+### Added
+* [feat: Determine Typed Converter output based on input type](https://github.com/solid/community-server/commit/fa94c7d4bb0d67b0cde264f9515260293b3b904a)
+* [feat: Add ContentTypeReplacer to conversion chain](https://github.com/solid/community-server/commit/fdd42bb7b3efda8bfac535ef4ff07f45ea4a524a)
+* [feat: Add "no conversion" as possible path in ChainedConverter](https://github.com/solid/community-server/commit/d52aa94e535768c183589179462af95814b51094)
+* [feat: Support redirection through errors](https://github.com/solid/community-server/commit/7163a0317b80535ba85e636495cb48b61bb6e6f3)
+* [feat: Move redirect support from IDP handler to specific handlers](https://github.com/solid/community-server/commit/4241c5348df880646ac39d34d0f733a0743fcb24)
+* [feat: Create VoidLocker to disable locking resources](https://github.com/solid/community-server/commit/9a1f324685216bd6346fb19e626dcca5145053df)
+* [chore: Build and push official docker image in CI](https://github.com/solid/community-server/commit/65d1eeb0a2f3ab253efca50d98d6a14c3fa3103c)
+* [feat: Add support for quota limits](https://github.com/solid/community-server/commit/0cb4d7b16114ce9d0d4c5ae0766b4e4e944af9cf)
+* [feat: Add support for N3 Patch](https://github.com/solid/community-server/commit/a9941ebe7880cc9bb136786d721c1ba76bda888a)
+* [feat: Allow for custom CLI and variable options](https://github.com/solid/community-server/commit/c216efd62fcc05aa1db5a0046c3dbc512e7f2d62)
+* [feat: Send reset password recordId as query parameter](https://github.com/solid/community-server/commit/8f8e8e6df4a4a5d8759c95c2a07e457050830ed6)
+* [feat: Split up IDP HTML, routing, and handler behaviour](https://github.com/solid/community-server/commit/bc0eeb1012e15e9e9ee0f9085be209f6a9229ccd)
+* [feat: Update IDP templates to work with new API format](https://github.com/solid/community-server/commit/a684b2ead7365b9409d7f2f4cfa6755e8b951958)
+* [feat: Simplify setup to be more in line with IDP behaviour](https://github.com/solid/community-server/commit/95777914729890debe0d4815c084029864afaf23)
+* [feat: Return client information from consent handler](https://github.com/solid/community-server/commit/e604c0c2e427f7cf426cda6e3a52c2d72b997057)
+* [feat: Warn users when they change the base URL](https://github.com/solid/community-server/commit/62e22100238f1b9dfb13b9f350fccf12184f728b)
+* [feat: Store the server version on start](https://github.com/solid/community-server/commit/2dc20fe3bc63da1d0a39720410da07f316b253ac)
+
+### Changed
+* [refactor: Create BaseTypedRepresentationConverter](https://github.com/solid/community-server/commit/27306d6e3f6f3dda09914e078151a8d07e111869)
+* [feat: Update IDP parameters to latest Solid-OIDC version](https://github.com/solid/community-server/commit/fc60b5c161853845d1f3e6405e1182948cca421b)
+* [feat: Move OIDC library behaviour to separate path](https://github.com/solid/community-server/commit/520e4fe42fe14ec80ef0718c7f1214620fdae218)
+* [fix: Update OIDC provider dependency to v7](https://github.com/solid/community-server/commit/c9ed90aeebaabca957ae1980738f732e5472ee9d)
+
+### Fixed
+* [fix: Prefer all inputs equally when generating quads](https://github.com/solid/community-server/commit/c6544fac1db432d1e0ce323bf439c48a7ed5dc52)
+* [fix: Handle JSON preferences correctly in dynamic converter](https://github.com/solid/community-server/commit/4d319d2564e953514c94cbadf93e28fefc501e86)
+* [fix: Make UnionCredentialsExtractor tolerate failures.](https://github.com/solid/community-server/commit/c13456c2259538e502a59ce73a226bab2c99c395)
+* [fix: Accept lowercase Authorization tokens.](https://github.com/solid/community-server/commit/9c52011addde6cbdfd22efeb9485841c640363be)
+* [feat: Return correct status codes for invalid requests](https://github.com/solid/community-server/commit/1afed65368f98f4fda7bdd8f9fc5071f51d4dc5b)
+* [fix: Split AccountStorage and ForgotPasswordStorage (expiring now)](https://github.com/solid/community-server/commit/d067165b68a824143ff65f289d8a1e5e53d15103)
+* [fix: Add content-negotiation when fetching dataset from url](https://github.com/solid/community-server/commit/ce754c119fb87dc8a4f79c639e316bd04d40109b)
+* [fix: Prevent login page from showing error before redirect](https://github.com/solid/community-server/commit/1ed45c8903e8750b818885cb6e48183e4c36f22a)
+* [fix: Make IDP routes independent of handlers](https://github.com/solid/community-server/commit/1769b799df090a036f2d2925c06ba8d9f7130e6b)
+* [fix: Improve OIDC error descriptions](https://github.com/solid/community-server/commit/e9e3c6df3c945e187ae351f15bfe1a6df75e47a9)
+
+
 <a name="v2.0.1"></a>
 ## [v2.0.1](https://github.com/solid/community-server/compare/v2.0.0...v2.0.1) - 2021-11-02
 

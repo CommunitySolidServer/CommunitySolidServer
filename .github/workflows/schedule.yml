@@ -28,11 +28,11 @@ jobs:
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Start the server in the background
-        run: npm start &
+        run: npm start > server-output.log  &
       - name: Create the necessary folders
         run: mkdir -p reports/css
       - name: Pull the conformance harness docker
-        run: docker pull solidconformancetestbeta/conformance-test-harness
+        run: docker pull solidproject/conformance-test-harness
       - name: Wait until the server has started
         run: |
           until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
@@ -47,3 +47,22 @@ jobs:
           solidproject/conformance-test-harness
           --output=/reports
           --target=https://github.com/solid/conformance-test-harness/css
+      # Steps below use `always()` to make sure logs get uploaded in case the CTH errors
+      - name: Sanitize branch name for artifact upload
+        id: sanitize
+        if: always()
+        uses: yeouchien/sanitize-branch-name-action@v1
+        with:
+          branch-name: ${{ matrix.branch }}
+      - name: Save the reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
+          path: reports
+      - name: Save the server output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
+          path: server-output.log

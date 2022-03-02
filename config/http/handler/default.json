@@ -1,7 +1,7 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/init/initializers/root.json"
+    "files-scs:config/http/handler/handlers/oidc.json"
   ],
   "@graph": [
     {
@@ -15,6 +15,7 @@
           "handlers": [
             { "@id": "urn:solid-server:default:StaticAssetHandler" },
             { "@id": "urn:solid-server:default:SetupHandler" },
+            { "@id": "urn:solid-server:default:OidcHandler" },
             { "@id": "urn:solid-server:default:AuthResourceHttpHandler" },
             { "@id": "urn:solid-server:default:IdentityProviderHandler" },
             { "@id": "urn:solid-server:default:LdpHandler" }

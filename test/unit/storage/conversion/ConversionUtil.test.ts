@@ -6,7 +6,7 @@ import {
   getTypeWeight,
   getWeightedPreferences, isInternalContentType,
   matchesMediaPreferences,
-  matchesMediaType,
+  matchesMediaType, preferencesToString,
 } from '../../../../src/storage/conversion/ConversionUtil';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 
@@ -151,6 +151,13 @@ describe('ConversionUtil', (): void => {
 
       expect(isInternalContentType()).toBeFalsy();
       expect(isInternalContentType('text/turtle')).toBeFalsy();
+    });
+  });
+
+  describe('#preferencesToString', (): void => {
+    it('returns a string serialization.', async(): Promise<void> => {
+      const preferences: ValuePreferences = { 'a/*': 1, 'b/b': 0.8, 'c/c': 0 };
+      expect(preferencesToString(preferences)).toBe('a/*:1,b/b:0.8,c/c:0');
     });
   });
 });

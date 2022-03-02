@@ -1,49 +1,55 @@
 import assert from 'assert';
+import { BasicRepresentation } from '../../../../http/representation/BasicRepresentation';
+import type { Representation } from '../../../../http/representation/Representation';
 import { getLoggerFor } from '../../../../logging/LogUtil';
-import { ensureTrailingSlash, joinUrl } from '../../../../util/PathUtil';
+import { APPLICATION_JSON } from '../../../../util/ContentTypes';
 import { readJsonStream } from '../../../../util/StreamUtil';
 import type { TemplateEngine } from '../../../../util/templates/TemplateEngine';
-import type { EmailSender } from '../../util/EmailSender';
+import { BaseInteractionHandler } from '../../BaseInteractionHandler';
+import type { InteractionHandlerInput } from '../../InteractionHandler';
+import type { InteractionRoute } from '../../routing/InteractionRoute';
 import type { AccountStore } from '../storage/AccountStore';
-import { InteractionHandler } from './InteractionHandler';
-import type { InteractionResponseResult, InteractionHandlerInput } from './InteractionHandler';
+import type { EmailSender } from '../util/EmailSender';
+
+const forgotPasswordView = {
+  required: {
+    email: 'string',
+  },
+} as const;
 
 export interface ForgotPasswordHandlerArgs {
   accountStore: AccountStore;
-  baseUrl: string;
-  idpPath: string;
   templateEngine: TemplateEngine<{ resetLink: string }>;
   emailSender: EmailSender;
+  resetRoute: InteractionRoute;
 }
 
 /**
  * Handles the submission of the ForgotPassword form
  */
-export class ForgotPasswordHandler extends InteractionHandler {
+export class ForgotPasswordHandler extends BaseInteractionHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly accountStore: AccountStore;
-  private readonly baseUrl: string;
-  private readonly idpPath: string;
   private readonly templateEngine: TemplateEngine<{ resetLink: string }>;
   private readonly emailSender: EmailSender;
+  private readonly resetRoute: InteractionRoute;
 
   public constructor(args: ForgotPasswordHandlerArgs) {
-    super();
+    super(forgotPasswordView);
     this.accountStore = args.accountStore;
-    this.baseUrl = ensureTrailingSlash(args.baseUrl);
-    this.idpPath = args.idpPath;
     this.templateEngine = args.templateEngine;
     this.emailSender = args.emailSender;
+    this.resetRoute = args.resetRoute;
   }
 
-  public async handle({ operation }: InteractionHandlerInput): Promise<InteractionResponseResult<{ email: string }>> {
+  public async handlePost({ operation }: InteractionHandlerInput): Promise<Representation> {
     // Validate incoming data
     const { email } = await readJsonStream(operation.body.data);
     assert(typeof email === 'string' && email.length > 0, 'Email required');
 
     await this.resetPassword(email);
-    return { type: 'response', details: { email }};
+    return new BasicRepresentation(JSON.stringify({ email }), operation.target, APPLICATION_JSON);
   }
 
   /**
@@ -68,7 +74,7 @@ export class ForgotPasswordHandler extends InteractionHandler {
    */
   private async sendResetMail(recordId: string, email: string): Promise<void> {
     this.logger.info(`Sending password reset to ${email}`);
-    const resetLink = joinUrl(this.baseUrl, this.idpPath, `resetpassword/${recordId}`);
+    const resetLink = `${this.resetRoute.getPath()}?rid=${encodeURIComponent(recordId)}`;
     const renderedEmail = await this.templateEngine.render({ resetLink });
     await this.emailSender.handleSafe({
       recipient: email,

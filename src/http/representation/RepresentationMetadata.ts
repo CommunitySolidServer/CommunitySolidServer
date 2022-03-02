@@ -2,8 +2,8 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
-import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
+import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
+import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -315,5 +315,19 @@ export class RepresentationMetadata {
 
   public set contentType(input) {
     this.set(CONTENT_TYPE_TERM, input);
+  }
+
+  /**
+  * Shorthand for the CONTENT_LENGTH predicate.
+  */
+  public get contentLength(): number | undefined {
+    const length = this.get(CONTENT_LENGTH_TERM);
+    return length?.value ? Number(length.value) : undefined;
+  }
+
+  public set contentLength(input) {
+    if (input) {
+      this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
+    }
   }
 }

@@ -1,6 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
@@ -275,7 +275,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('updates the filename if the content-type gets updated.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
-      metadata.identifier = namedNode(`${base}resource`);
+      metadata.identifier = DataFactory.namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
       metadata.add('new', 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -287,7 +287,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
-      metadata.identifier = namedNode(`${base}resource.txt`);
+      metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
       metadata.contentType = 'text/turtle';
       metadata.add('new', 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))

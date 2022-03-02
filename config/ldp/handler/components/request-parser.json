@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Handles everything related to parsing a Request.",
@@ -16,8 +16,21 @@
       "args_bodyParser": {
         "@type": "WaterfallHandler",
         "handlers": [
-          { "@type": "SparqlUpdateBodyParser" },
+          { "@id": "urn:solid-server:default:PatchBodyParser" },
           { "@type": "RawBodyParser" }
+        ]
+      }
+    },
+    {
+      "comment": "Handles body parsing for PATCH requests. Those requests need to generate an interpreted Patch body.",
+      "@id": "urn:solid-server:default:PatchBodyParser",
+      "@type": "MethodFilterHandler",
+      "methods": [ "PATCH" ],
+      "source": {
+        "@type": "WaterfallHandler",
+        "handlers": [
+          { "@type": "N3PatchBodyParser" },
+          { "@type": "SparqlUpdateBodyParser" }
         ]
       }
     }

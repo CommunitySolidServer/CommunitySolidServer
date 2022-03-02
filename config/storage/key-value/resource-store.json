@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^2.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "These storage solutions use the specified container in the ResourceStore to store their data."
@@ -46,6 +46,14 @@
       "source": { "@id": "urn:solid-server:default:ResourceStore" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "container": "/.internal/accounts/"
+    },
+    {
+      "comment": "Storage used for ForgotPassword records",
+      "@id": "urn:solid-server:default:ForgotPasswordStorage",
+      "@type":"JsonResourceStorage",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" },
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "container": "/.internal/forgot-password/"
     },
     {
       "comment": "Storage used by setup components.",

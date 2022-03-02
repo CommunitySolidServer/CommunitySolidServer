@@ -1,6 +1,7 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ErrorToTemplateConverter } from '../../../../src/storage/conversion/ErrorToTemplateConverter';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
+import { resolveModulePath } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import type { TemplateEngine } from '../../../../src/util/templates/TemplateEngine';
 
@@ -24,8 +25,7 @@ describe('An ErrorToTemplateConverter', (): void => {
   });
 
   it('supports going from errors to the given content type.', async(): Promise<void> => {
-    await expect(converter.getInputTypes()).resolves.toEqual({ 'internal/error': 1 });
-    await expect(converter.getOutputTypes()).resolves.toEqual({ 'text/html': 1 });
+    await expect(converter.getOutputTypes('internal/error')).resolves.toEqual({ 'text/html': 1 });
   });
 
   it('works with non-HTTP errors.', async(): Promise<void> => {
@@ -156,9 +156,9 @@ describe('An ErrorToTemplateConverter', (): void => {
     expect(templateEngine.render).toHaveBeenCalledTimes(2);
     expect(templateEngine.render).toHaveBeenNthCalledWith(1,
       { key: 'val' },
-      { templatePath: '@css:templates/error/descriptions/', templateFile: 'E0001.md.hbs' });
+      { templatePath: resolveModulePath('templates/error/descriptions/'), templateFile: 'E0001.md.hbs' });
     expect(templateEngine.render).toHaveBeenNthCalledWith(2,
       { name: 'BadRequestHttpError', message: 'error text', stack: error.stack, description: '<html>' },
-      { templateFile: '@css:templates/error/main.md.hbs' });
+      { templateFile: resolveModulePath('templates/error/main.md.hbs') });
   });
 });

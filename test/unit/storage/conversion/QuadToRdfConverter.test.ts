@@ -1,4 +1,4 @@
-import { namedNode, triple } from '@rdfjs/data-model';
+import { DataFactory } from 'n3';
 import rdfSerializer from 'rdf-serialize';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
@@ -9,6 +9,7 @@ import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdf
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
+const { namedNode, triple } = DataFactory;
 
 describe('A QuadToRdfConverter', (): void => {
   const converter = new QuadToRdfConverter();
@@ -19,19 +20,14 @@ describe('A QuadToRdfConverter', (): void => {
     metadata = new RepresentationMetadata(identifier, INTERNAL_QUADS);
   });
 
-  it('supports parsing quads.', async(): Promise<void> => {
-    await expect(new QuadToRdfConverter().getInputTypes())
-      .resolves.toEqual({ [INTERNAL_QUADS]: 1 });
-  });
-
   it('defaults to rdfSerializer preferences when given no output preferences.', async(): Promise<void> => {
-    await expect(new QuadToRdfConverter().getOutputTypes())
+    await expect(new QuadToRdfConverter().getOutputTypes(INTERNAL_QUADS))
       .resolves.toEqual(await rdfSerializer.getContentTypesPrioritized());
   });
 
   it('supports overriding output preferences.', async(): Promise<void> => {
     const outputPreferences = { 'text/turtle': 1 };
-    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes())
+    await expect(new QuadToRdfConverter({ outputPreferences }).getOutputTypes(INTERNAL_QUADS))
       .resolves.toEqual(outputPreferences);
   });
 
@@ -61,7 +57,7 @@ describe('A QuadToRdfConverter', (): void => {
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toBe('text/turtle');
-    await expect(readableToString(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toBe(
       `<http://test.com/s> <http://test.com/p> <http://test.com/o>.
 `,
     );
@@ -79,7 +75,7 @@ describe('A QuadToRdfConverter', (): void => {
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toBe('text/turtle');
-    await expect(readableToString(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toBe(
       `@prefix dc: <http://purl.org/dc/terms/>.
 @prefix test: <http://test.com/>.
 
@@ -98,7 +94,7 @@ test:s dc:modified test:o.
     const preferences: RepresentationPreferences = { type: { 'text/turtle': 1 }};
     const result = await converter.handle({ identifier, representation, preferences });
     expect(result.metadata.contentType).toBe('text/turtle');
-    await expect(readableToString(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toBe(
       `<> <#abc> <def/ghi>.
 `,
     );
@@ -119,7 +115,7 @@ test:s dc:modified test:o.
       metadata: expect.any(RepresentationMetadata),
     });
     expect(result.metadata.contentType).toBe('application/ld+json');
-    await expect(readableToString(result.data)).resolves.toEqual(
+    await expect(readableToString(result.data)).resolves.toBe(
       `[
   {
     "@id": "http://test.com/s",

@@ -139,15 +139,15 @@ jobs:
           github-token: ${{ secrets.github_token }}
           parallel-finished: true
 
-  docker:
+  docker-main-branch:
     needs:
       - lint
       - test-unit
       - test-integration
       - test-integration-windows
       - validate-components
-    # Only run on tags starting with v prefix for now -- extra push need for triggering CI again
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only run on tag push events starting with v prefix for now OR main branch push events
+    if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -158,10 +158,53 @@ jobs:
         with:
           images: |
             solidproject/community-server
+          # edge will always be executed (without latest tag), semver only on tag push events (with latest tag)
           tags: |
+            type=edge
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+          github-token: ${{ secrets.github_token }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  docker-versions-branch:
+    needs:
+      - lint
+      - test-unit
+      - test-integration
+      - test-integration-windows
+      - validate-components
+    # Only run on push events on a versions/* branch (ASSUMPTION: THERE SHOULD ONLY BE ONE THERE!)
+    if: startsWith(github.ref, 'refs/heads/versions/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with: 
+          ref: ${{ github.ref }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            solidproject/community-server
+          # Just one label: next (no latest here) for the last pushed commit on this branch
+          tags: |
+            type=raw,value=next
           github-token: ${{ secrets.github_token }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
