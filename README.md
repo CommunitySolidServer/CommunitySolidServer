@@ -83,6 +83,9 @@ docker run --rm -p 3000:3000 -it solidproject/community-server -c config/default
 docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/community-server -c /config/my-config.json
 ```
 
+### 🗃️ Helm Chart
+The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained and published on [ArtifactHUB](https://artifacthub.io/packages/helm/idlab-gent/css).
+
 ## 🔧 Configuring the server
 The Community Solid Server is designed to be flexible
 such that people can easily run different configurations.
