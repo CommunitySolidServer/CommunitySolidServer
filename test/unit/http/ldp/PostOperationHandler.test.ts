@@ -57,4 +57,11 @@ describe('A PostOperationHandler', (): void => {
       new ConflictHttpError('Not allowed to create resources with the metadata extension using POST.'),
     );
   });
+
+  it('returns the correct response if the slug indicates no metadata resource.', async(): Promise<void> => {
+    operation.body.metadata.set(SOLID_HTTP.slug, 'foo');
+    operation.target.path = 'http://test.com/';
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(201);
+  });
 });

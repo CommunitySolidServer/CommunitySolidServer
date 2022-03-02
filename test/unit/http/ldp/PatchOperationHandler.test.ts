@@ -60,6 +60,13 @@ describe('A PatchOperationHandler', (): void => {
     expect(result.data).toBeUndefined();
   });
 
+  it('returns the correct response if the resource is metadata.', async(): Promise<void> => {
+    store.resourceExists.mockResolvedValueOnce(true);
+    operation.target.path = 'http://test.com/foo.meta';
+    const result = await handler.handle({ operation });
+    expect(result.statusCode).toBe(201);
+  });
+
   it('errors if there is no corresponding resource when trying to patch metadata.', async(): Promise<void> => {
     store.resourceExists.mockResolvedValueOnce(false);
     operation.target.path = 'http://test.com/foo.meta';
