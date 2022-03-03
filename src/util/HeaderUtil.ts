@@ -99,6 +99,15 @@ export interface AcceptLanguage extends AcceptHeader { }
  */
 export interface AcceptDatetime extends AcceptHeader { }
 
+/**
+ * Contents of a HTTP Content-Type Header.
+ * Optional parameters Record is included.
+ */
+export interface ContentType {
+  value: string;
+  parameters?: Record<string, string>;
+}
+
 // REUSED REGEXES
 const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
 
@@ -425,6 +434,31 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 export function parseContentType(contentType: string): { type: string } {
   const contentTypeValue = /^\s*([^;\s]*)/u.exec(contentType)![1];
   return { type: contentTypeValue };
+}
+
+/**
+ * Parses the Content-Type header and also parses any parameters in the header.
+ *
+ * @param input - The Content-Type header string.
+ *
+ * @throws {@link BadRequestHttpError}
+ * Thrown on invalid header syntax.
+ *
+ * @returns A {@link ContentType} object containing the value and optional parameters.
+ */
+export function parseContentTypeWithParameters(input: string): ContentType {
+  // Quoted strings could prevent split from having correct results
+  const { result, replacements } = transformQuotedStrings(input);
+  const [ value, ...params ] = result.split(';').map((str): string => str.trim());
+  return params.length > 0 ?
+    parseParameters(params, replacements).reduce<ContentType>((prev, cur): ContentType => {
+      if (!prev.parameters) {
+        prev.parameters = {};
+      }
+      prev.parameters[cur.name] = cur.value;
+      return prev;
+    }, { value }) :
+    { value };
 }
 
 /**

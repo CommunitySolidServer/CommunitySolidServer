@@ -2,7 +2,7 @@ import 'jest-rdf';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
@@ -295,6 +295,45 @@ describe('A RepresentationMetadata', (): void => {
       metadata.add(CONTENT_TYPE, 'a/b');
       metadata.add(CONTENT_TYPE, 'c/d');
       expect((): any => metadata.contentType).toThrow();
+    });
+
+    it('has a shorthand for Content-Type with parameters support.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      });
+    });
+
+    it('can properly clear the Content-Type parameters explicitly.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentType = undefined;
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      expect(metadata.quads(null, SOLID_META.terms.ContentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
+    });
+
+    it('can properly clear the Content-Type parameters implicitly.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentType = 'text/plain; charset=utf-8; test=value1';
+      metadata.contentType = 'text/turtle';
+      expect(metadata.contentType).toBe('text/turtle');
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/turtle',
+      });
+      expect(metadata.quads(null, SOLID_META.terms.ContentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
     });
   });
 });

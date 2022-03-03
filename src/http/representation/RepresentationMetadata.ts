@@ -2,8 +2,10 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import type { ContentType } from '../../util/HeaderUtil';
+import { parseContentTypeWithParameters, parseContentType } from '../../util/HeaderUtil';
 import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD } from '../../util/Vocabularies';
+import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -304,6 +306,52 @@ export class RepresentationMetadata {
     return this;
   }
 
+  private setContentTypeParams(input: ContentType | string | undefined): void {
+    if (input === undefined) {
+      this.removeContentTypeParameters();
+      return;
+    }
+    if (typeof input === 'string') {
+      input = parseContentTypeWithParameters(input);
+    }
+
+    // Make sure complete Content-Type RDF structure is gone
+    this.removeContentTypeParameters();
+
+    Object.entries(input.parameters ?? []).forEach(([ paramKey, paramValue ], idx): void => {
+      const paramNode = DataFactory.blankNode(`parameter${idx + 1}`);
+      this.addQuad(this.id, SOLID_META.terms.ContentTypeParameter, paramNode);
+      this.addQuad(paramNode, RDFS.terms.label, paramKey);
+      this.addQuad(paramNode, SOLID_META.terms.value, paramValue);
+    });
+  }
+
+  /**
+   * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
+   * @returns An Record&lt;string,string&gt; object with Content-Type parameters and their values.
+   */
+  private getContentTypeParams(): Record<string, string> | undefined {
+    const params = this.getAll(SOLID_META.terms.ContentTypeParameter);
+    return params.length > 0 ?
+      params.reduce((acc, term): Record<string, string> => {
+        const key = this.store.getObjects(term, RDFS.terms.label, null)[0].value;
+        const { value } = this.store.getObjects(term, SOLID_META.terms.value, null)[0];
+        return { ...acc, [key]: value };
+      }, {}) :
+      undefined;
+  }
+
+  private removeContentTypeParameters(): void {
+    const params = this.store.getQuads(this.id, SOLID_META.terms.ContentTypeParameter, null, null);
+    params.forEach((quad): void => {
+      const labels = this.store.getQuads(quad.object, RDFS.terms.label, null, null);
+      const values = this.store.getQuads(quad.object, SOLID_META.terms.value, null, null);
+      this.store.removeQuads(labels);
+      this.store.removeQuads(values);
+    });
+    this.store.removeQuads(params);
+  }
+
   // Syntactic sugar for common predicates
 
   /**
@@ -315,6 +363,7 @@ export class RepresentationMetadata {
 
   public set contentType(input) {
     this.set(CONTENT_TYPE_TERM, input);
+    this.setContentTypeParams(input);
   }
 
   /**
@@ -329,5 +378,17 @@ export class RepresentationMetadata {
     if (input) {
       this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
     }
+  }
+
+  /**
+   * Shorthand for the ContentType as an object (with parameters)
+   */
+  public get contentTypeObject(): ContentType | undefined {
+    return this.contentType ?
+      {
+        value: parseContentType(this.contentType).type,
+        parameters: this.getContentTypeParams(),
+      } :
+      undefined;
   }
 }

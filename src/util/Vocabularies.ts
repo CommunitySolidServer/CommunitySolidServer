@@ -123,6 +123,10 @@ export const RDF = createUriAndTermNamespace('http://www.w3.org/1999/02/22-rdf-s
   'type',
 );
 
+export const RDFS = createUriAndTermNamespace('http://www.w3.org/2000/01/rdf-schema#',
+  'label',
+);
+
 export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms#',
   'deletes',
   'inserts',
@@ -148,6 +152,9 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
   'ResponseMetadata',
   // This is used to identify templates that can be used for the representation of a resource
   'template',
+  // This is used to store Content-Type Parameters
+  'ContentTypeParameter',
+  'value',
 );
 
 export const VANN = createUriAndTermNamespace('http://purl.org/vocab/vann/',
