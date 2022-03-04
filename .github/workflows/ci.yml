@@ -232,7 +232,7 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run docs
       - name: Save docs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: docs
           path: docs
