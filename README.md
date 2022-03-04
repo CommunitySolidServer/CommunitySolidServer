@@ -16,7 +16,7 @@ This Pod acts as your own personal storage space
 so you can share data with people and Solid applications.**
 
 As an open and modular implementation of the
-[Solid specifications](https://solid.github.io/specification/),
+[Solid specifications](https://solidproject.org/TR/),
 the Community Solid Server is a great companion:
 
 - 🧑🏽 **for people** who want to try out having their own Pod
@@ -107,16 +107,16 @@ These parameters give you direct access
 to some commonly used settings:
 
 | parameter name         | default value              | description                                                                                                                          |
-| --------------         | -------------              | -----------                                                                                                                          |
-| `--port, -p`           | `3000`                     | The TCP port on which the server runs.                                                                                               |
-| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The public URL of your server.                                                                                                       |
-| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems.                                                                          |
+|------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `--port, -p`           | `3000`                     | The TCP port on which the server should listen.                                                                                      |
+| `--baseUrl, -b`        | `http://localhost:$PORT/`  | The base URL used internally to generate URLs. Change this if your server does not run on `http://localhost:$PORT/`.                 |
+| `--loggingLevel, -l`   | `info`                     | The detail level of logging; useful for debugging problems. Use `debug` for full information.                                        |
 | `--config, -c`         | `@css:config/default.json` | The configuration for the server. The default only stores data in memory; to persist to your filesystem, use `@css:config/file.json` |
-| `--rootFilePath, -f`   | `./`                       | Root folder of the server, when using a file-based configuration.                                                                    |
+| `--rootFilePath, -f`   | `./`                       | Root folder where the server stores data, when using a file-based configuration.                                                     |
 | `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
-| `--showStackTrace, -t` | false                      | Enables detailed logging on error pages.                                                                                             |
-| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations.                                                                     |
-| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.
+| `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                            |
+| `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                |
+| `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                |
 
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved
@@ -139,7 +139,7 @@ the [📐 architectural diagram](https://rubenverborgh.github.io/solid-server-a
 can help you find your way.
 
 If you want to help out with server development,
-have a look at the [📓 developer notes](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/guides/developer-notes.md) and
+have a look at the [📓 user documentation](https://github.com/CommunitySolidServer/CommunitySolidServer/blob/main/documentation/) and
 [🛠️ good first issues](https://github.com/CommunitySolidServer/CommunitySolidServer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
 
