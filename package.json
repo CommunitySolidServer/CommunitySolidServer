@@ -120,7 +120,7 @@
     "oidc-provider": "^7.10.6",
     "pump": "^3.0.0",
     "punycode": "^2.1.1",
-    "rdf-dereference": "^1.9.0",
+    "rdf-dereference": "^2.0.0",
     "rdf-parse": "^1.9.1",
     "rdf-serialize": "^1.2.0",
     "rdf-terms": "^1.7.1",
