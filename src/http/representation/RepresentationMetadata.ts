@@ -307,16 +307,16 @@ export class RepresentationMetadata {
   }
 
   private setContentTypeParams(input: ContentType | string | undefined): void {
-    if (input === undefined) {
-      this.removeContentTypeParameters();
+    // Make sure complete Content-Type RDF structure is gone
+    this.removeContentTypeParameters();
+    
+    if (!input) {
       return;
     }
+    
     if (typeof input === 'string') {
       input = parseContentTypeWithParameters(input);
     }
-
-    // Make sure complete Content-Type RDF structure is gone
-    this.removeContentTypeParameters();
 
     Object.entries(input.parameters ?? []).forEach(([ paramKey, paramValue ], idx): void => {
       const paramNode = DataFactory.blankNode(`parameter${idx + 1}`);
