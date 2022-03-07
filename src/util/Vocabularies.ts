@@ -153,7 +153,7 @@ export const SOLID_META = createUriAndTermNamespace('urn:npm:solid:community-ser
   // This is used to identify templates that can be used for the representation of a resource
   'template',
   // This is used to store Content-Type Parameters
-  'ContentTypeParameter',
+  'contentTypeParameter',
   'value',
 );
 
