@@ -306,7 +306,7 @@ export class RepresentationMetadata {
     return this;
   }
 
-  private setContentTypeParams(input: ContentType | string | undefined): void {
+  private setContentTypeParams(input?: ContentType | string): void {
     // Make sure complete Content-Type RDF structure is gone
     this.removeContentTypeParameters();
     
