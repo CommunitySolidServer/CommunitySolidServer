@@ -61,7 +61,7 @@
         "seededPodConfigJson": {
           "requiresArg": true,
           "type": "string",
-          "describe": "Path to the file that keeps track of seeded Pod configurations."
+          "describe": "Path to the file that will be used to seed pods."
         }
       },
       "options": {

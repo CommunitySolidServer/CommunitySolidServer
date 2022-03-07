@@ -1,35 +1,45 @@
+import fs from 'fs';
 import type { RegistrationManager } from '../../../src/identity/interaction/email-password/util/RegistrationManager';
 import { SeededPodInitializer } from '../../../src/init/SeededPodInitializer';
-import type { KeyValueStorage } from '../../../src/storage/keyvalue/KeyValueStorage';
+
+jest.mock('fs');
+const mockFs = fs as jest.Mocked<typeof fs>;
 
 describe('A SeededPodInitializer', (): void => {
-  let configStorage: KeyValueStorage<string, unknown>;
+  const dummyConfig = JSON.stringify([
+    {
+      podName: 'example',
+      email: 'hello@example.com',
+      password: 'abc123',
+    },
+    {
+      podName: 'example2',
+      email: 'hello2@example.com',
+      password: '123abc',
+    },
+  ]);
   let registrationManager: RegistrationManager;
-  let initializer: SeededPodInitializer;
-
-  const identifierA = 'A';
-  const identifierB = 'B';
-  const configA = { podName: 'A', email: 'a@test.com', password: 'abc123' };
-  const configB = { podName: 'B', email: 'b@test.com', password: '123abc' };
+  let configFilePath: string | null;
 
   beforeEach(async(): Promise<void> => {
-    configStorage = new Map<string, unknown>() as any;
-    await configStorage.set(identifierA, configA);
-    await configStorage.set(identifierB, configB);
-
+    configFilePath = './seeded-pod-config.json';
     registrationManager = {
       validateInput: jest.fn((input): any => input),
       register: jest.fn(),
     } as any;
 
-    initializer = new SeededPodInitializer({
-      registrationManager,
-      configStorage,
-    });
+    (mockFs.promises as unknown) = { readFile: jest.fn().mockResolvedValue(dummyConfig) };
+  });
+
+  it('does not generate any accounts or pods if no config file is specified.', async(): Promise<void> => {
+    configFilePath = null;
+    await new SeededPodInitializer(registrationManager, configFilePath).handle();
+    expect(registrationManager.validateInput).not.toHaveBeenCalled();
+    expect(registrationManager.register).not.toHaveBeenCalled();
   });
 
   it('generates an account and a pod for every entry in the seeded pod configuration.', async(): Promise<void> => {
-    await initializer.handle();
+    await new SeededPodInitializer(registrationManager, configFilePath).handle();
     expect(registrationManager.validateInput).toHaveBeenCalledTimes(2);
     expect(registrationManager.register).toHaveBeenCalledTimes(2);
   });

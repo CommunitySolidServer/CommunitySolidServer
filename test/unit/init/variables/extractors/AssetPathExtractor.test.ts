@@ -25,4 +25,9 @@ describe('An AssetPathExtractor', (): void => {
     resolver = new AssetPathExtractor('path', '/root');
     await expect(resolver.handle({ otherPath: '/var/data' })).resolves.toBe('/root');
   });
+
+  it('returns null if not default value or default is provided.', async(): Promise<void> => {
+    resolver = new AssetPathExtractor('path');
+    await expect(resolver.handle({ otherPath: '/var/data' })).resolves.toBeNull();
+  });
 });

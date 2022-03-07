@@ -63,8 +63,7 @@
           "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:seededPodConfigJson",
           "CombinedSettingsResolver:_computers_value": {
             "@type": "AssetPathExtractor",
-            "key": "seededPodConfigJson",
-            "defaultPath": "./seeded-pod-config.json"
+            "key": "seededPodConfigJson"
           }
         }
       ]

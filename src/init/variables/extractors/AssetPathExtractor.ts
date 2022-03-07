@@ -18,9 +18,14 @@ export class AssetPathExtractor extends SettingsExtractor {
 
   public async handle(args: Settings): Promise<unknown> {
     const path = args[this.key] ?? this.defaultPath;
-    if (typeof path !== 'string') {
-      throw new Error(`Invalid ${this.key} argument`);
+    if (path) {
+      if (typeof path !== 'string') {
+        throw new Error(`Invalid ${this.key} argument`);
+      }
+
+      return resolveAssetPath(path);
     }
-    return resolveAssetPath(path);
+
+    return null;
   }
 }

@@ -4,6 +4,7 @@
     "files-scs:config/app/init/initializers/base-url.json",
     "files-scs:config/app/init/initializers/logger.json",
     "files-scs:config/app/init/initializers/server.json",
+    "files-scs:config/app/init/initializers/seeded-pod.json",
     "files-scs:config/app/init/initializers/version.json"
   ],
   "@graph": [
@@ -15,6 +16,7 @@
         { "@id": "urn:solid-server:default:LoggerInitializer" },
         { "@id": "urn:solid-server:default:BaseUrlVerifier" },
         { "@id": "urn:solid-server:default:ParallelInitializer" },
+        { "@id": "urn:solid-server:default:SeededPodInitializer" },
         { "@id": "urn:solid-server:default:ServerInitializer" },
         { "@id": "urn:solid-server:default:ModuleVersionVerifier" }
       ]
