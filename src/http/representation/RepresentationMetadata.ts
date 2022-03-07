@@ -318,12 +318,12 @@ export class RepresentationMetadata {
       input = parseContentTypeWithParameters(input);
     }
 
-    Object.entries(input.parameters ?? []).forEach(([ paramKey, paramValue ], idx): void => {
-      const paramNode = DataFactory.blankNode(`parameter${idx + 1}`);
-      this.addQuad(this.id, SOLID_META.terms.ContentTypeParameter, paramNode);
-      this.addQuad(paramNode, RDFS.terms.label, paramKey);
-      this.addQuad(paramNode, SOLID_META.terms.value, paramValue);
-    });
+    for (const [ key, value ] of Object.entries(input.parameters ?? [])) {
+      const node = DataFactory.blankNode();
+      this.addQuad(this.id, SOLID_META.terms.ContentTypeParameter, node);
+      this.addQuad(node, RDFS.terms.label, key);
+      this.addQuad(node, SOLID_META.terms.value, value);
+    );
   }
 
   /**
