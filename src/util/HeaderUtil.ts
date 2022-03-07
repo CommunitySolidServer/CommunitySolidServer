@@ -425,18 +425,6 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 }
 
 /**
- * Parses the Content-Type header.
- *
- * @param contentType - The media type of the content-type header
- *
- * @returns The parsed media type of the content-type
- */
-// export function parseContentType(contentType: string): { type: string } {
-//   const contentTypeValue = /^\s*([^;\s]*)/u.exec(contentType)![1];
-//   return { type: contentTypeValue };
-// }
-
-/**
  * Parses the Content-Type header and also parses any parameters in the header.
  *
  * @param input - The Content-Type header string.
