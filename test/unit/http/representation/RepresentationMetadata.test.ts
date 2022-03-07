@@ -297,7 +297,7 @@ describe('A RepresentationMetadata', (): void => {
       expect((): any => metadata.contentType).toThrow();
     });
 
-    it('has a shorthand for Content-Type with parameters support.', async(): Promise<void> => {
+    it('has a shorthand for Content-Type as string.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
       metadata.contentType = 'text/plain; charset=utf-8; test=value1';
@@ -310,6 +310,26 @@ describe('A RepresentationMetadata', (): void => {
       });
     });
 
+    it('has a shorthand for Content-Type as object.', async(): Promise<void> => {
+      expect(metadata.contentType).toBeUndefined();
+      expect(metadata.contentTypeObject).toBeUndefined();
+      metadata.contentTypeObject = {
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      };
+      expect(metadata.contentTypeObject).toEqual({
+        value: 'text/plain',
+        parameters: {
+          charset: 'utf-8',
+          test: 'value1',
+        },
+      });
+      expect(metadata.contentType).toBe('text/plain');
+    });
+
     it('can properly clear the Content-Type parameters explicitly.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
@@ -317,7 +337,7 @@ describe('A RepresentationMetadata', (): void => {
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
       expect(metadata.contentTypeObject).toBeUndefined();
-      expect(metadata.quads(null, SOLID_META.terms.ContentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.contentTypeParameter, null, null)).toHaveLength(0);
       expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
       expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
     });
@@ -330,8 +350,9 @@ describe('A RepresentationMetadata', (): void => {
       expect(metadata.contentType).toBe('text/turtle');
       expect(metadata.contentTypeObject).toEqual({
         value: 'text/turtle',
+        parameters: {},
       });
-      expect(metadata.quads(null, SOLID_META.terms.ContentTypeParameter, null, null)).toHaveLength(0);
+      expect(metadata.quads(null, SOLID_META.terms.contentTypeParameter, null, null)).toHaveLength(0);
       expect(metadata.quads(null, SOLID_META.terms.value, null, null)).toHaveLength(0);
       expect(metadata.quads(null, RDFS.terms.label, null, null)).toHaveLength(0);
     });

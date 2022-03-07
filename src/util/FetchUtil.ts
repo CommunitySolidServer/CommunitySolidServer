@@ -58,7 +58,7 @@ Promise<Representation> {
     logger.warn(`Missing content-type header from ${response.url}`);
     throw error;
   }
-  const contentTypeValue = parseContentType(contentType).type;
+  const contentTypeValue = parseContentType(contentType).value;
 
   // Try to convert to quads
   const representation = new BasicRepresentation(body, contentTypeValue);

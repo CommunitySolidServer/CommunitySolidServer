@@ -11,7 +11,7 @@ export class ContentTypeParser extends MetadataParser {
   public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
     const contentType = input.request.headers['content-type'];
     if (contentType) {
-      input.metadata.contentType = parseContentType(contentType).type;
+      input.metadata.contentType = parseContentType(contentType).value;
     }
   }
 }

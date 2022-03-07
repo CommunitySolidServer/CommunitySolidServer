@@ -7,7 +7,6 @@ import {
   parseAcceptEncoding,
   parseAcceptLanguage,
   parseContentType,
-  parseContentTypeWithParameters,
   parseForwarded,
 } from '../../../src/util/HeaderUtil';
 
@@ -191,18 +190,6 @@ describe('HeaderUtil', (): void => {
 
   describe('#parseContentType', (): void => {
     const contentTypeTurtle = 'text/turtle';
-    it('handles single content-type parameter (with leading and trailing whitespaces).', (): void => {
-      expect(parseContentType('text/turtle').type).toEqual(contentTypeTurtle);
-      expect(parseContentType('text/turtle ').type).toEqual(contentTypeTurtle);
-      expect(parseContentType(' text/turtle').type).toEqual(contentTypeTurtle);
-    });
-
-    it('handles multiple content-type parameters.', (): void => {
-      expect(parseContentType('text/turtle; charset=UTF-8').type).toEqual(contentTypeTurtle);
-    });
-  });
-
-  describe('#parseContentTypeWithParameters', (): void => {
     const contentTypePlain: any = {
       value: 'text/plain',
       parameters: {
@@ -210,17 +197,21 @@ describe('HeaderUtil', (): void => {
       },
     };
     it('handles single content-type parameter (with leading and trailing whitespaces).', (): void => {
-      expect(parseContentTypeWithParameters('text/plain; charset=utf-8')).toEqual(contentTypePlain);
-      expect(parseContentTypeWithParameters(' text/plain; charset=utf-8')).toEqual(contentTypePlain);
-      expect(parseContentTypeWithParameters('text/plain ; charset=utf-8')).toEqual(contentTypePlain);
-      expect(parseContentTypeWithParameters(' text/plain ; charset=utf-8')).toEqual(contentTypePlain);
-      expect(parseContentTypeWithParameters(' text/plain ; charset="utf-8"')).toEqual(contentTypePlain);
-      expect(parseContentTypeWithParameters(' text/plain ; charset = "utf-8"')).toEqual(contentTypePlain);
+      expect(parseContentType('text/turtle').value).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/turtle ').value).toEqual(contentTypeTurtle);
+      expect(parseContentType(' text/turtle').value).toEqual(contentTypeTurtle);
+      expect(parseContentType('text/plain; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType('text/plain ; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset=utf-8')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset="utf-8"')).toEqual(contentTypePlain);
+      expect(parseContentType(' text/plain ; charset = "utf-8"')).toEqual(contentTypePlain);
     });
 
     it('handles multiple content-type parameters.', (): void => {
+      expect(parseContentType('text/turtle; charset=UTF-8').value).toEqual(contentTypeTurtle);
       contentTypePlain.parameters.test = 'value1';
-      expect(parseContentTypeWithParameters('text/plain; charset=utf-8;test="value1"')).toEqual(contentTypePlain);
+      expect(parseContentType('text/plain; charset=utf-8;test="value1"')).toEqual(contentTypePlain);
     });
   });
 

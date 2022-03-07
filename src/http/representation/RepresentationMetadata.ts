@@ -3,7 +3,7 @@ import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rd
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ContentType } from '../../util/HeaderUtil';
-import { parseContentTypeWithParameters, parseContentType } from '../../util/HeaderUtil';
+import { parseContentType } from '../../util/HeaderUtil';
 import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
@@ -306,49 +306,56 @@ export class RepresentationMetadata {
     return this;
   }
 
-  private setContentTypeParams(input?: ContentType | string): void {
+  private setContentType(input?: ContentType | string): void {
     // Make sure complete Content-Type RDF structure is gone
-    this.removeContentTypeParameters();
-    
+    this.removeContentType();
+
     if (!input) {
       return;
     }
-    
+
     if (typeof input === 'string') {
-      input = parseContentTypeWithParameters(input);
+      input = parseContentType(input);
     }
 
-    for (const [ key, value ] of Object.entries(input.parameters ?? [])) {
+    for (const [ key, value ] of Object.entries(input.parameters)) {
       const node = DataFactory.blankNode();
-      this.addQuad(this.id, SOLID_META.terms.ContentTypeParameter, node);
+      this.addQuad(this.id, SOLID_META.terms.contentTypeParameter, node);
       this.addQuad(node, RDFS.terms.label, key);
       this.addQuad(node, SOLID_META.terms.value, value);
-    );
+    }
+
+    // Set base content type string
+    this.set(CONTENT_TYPE_TERM, input.value);
   }
 
   /**
    * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
    * @returns An Record&lt;string,string&gt; object with Content-Type parameters and their values.
    */
-  private getContentTypeParams(): Record<string, string> | undefined {
-    const params = this.getAll(SOLID_META.terms.ContentTypeParameter);
-    return params.length > 0 ?
-      params.reduce((acc, term): Record<string, string> => {
-        const key = this.store.getObjects(term, RDFS.terms.label, null)[0].value;
-        const { value } = this.store.getObjects(term, SOLID_META.terms.value, null)[0];
-        return { ...acc, [key]: value };
-      }, {}) :
-      undefined;
+  private getContentType(): ContentType | undefined {
+    const value = this.get(CONTENT_TYPE_TERM)?.value;
+    if (!value) {
+      return;
+    }
+    const params = this.getAll(SOLID_META.terms.contentTypeParameter);
+    return {
+      value,
+      parameters: Object.fromEntries(params.map((param): [string, string] => [
+        this.store.getObjects(param, RDFS.terms.label, null)[0].value,
+        this.store.getObjects(param, SOLID_META.terms.value, null)[0].value,
+      ])),
+    };
   }
 
-  private removeContentTypeParameters(): void {
-    const params = this.store.getQuads(this.id, SOLID_META.terms.ContentTypeParameter, null, null);
-    params.forEach((quad): void => {
+  private removeContentType(): void {
+    this.removeAll(CONTENT_TYPE_TERM);
+    const params = this.store.getQuads(this.id, SOLID_META.terms.contentTypeParameter, null, null);
+    for (const quad of params) {
       const labels = this.store.getQuads(quad.object, RDFS.terms.label, null, null);
       const values = this.store.getQuads(quad.object, SOLID_META.terms.value, null, null);
-      this.store.removeQuads(labels);
-      this.store.removeQuads(values);
-    });
+      this.store.removeQuads([ ...labels, ...values ]);
+    }
     this.store.removeQuads(params);
   }
 
@@ -362,8 +369,18 @@ export class RepresentationMetadata {
   }
 
   public set contentType(input) {
-    this.set(CONTENT_TYPE_TERM, input);
-    this.setContentTypeParams(input);
+    this.setContentType(input);
+  }
+
+  /**
+   * Shorthand for the ContentType as an object (with parameters)
+   */
+  public get contentTypeObject(): ContentType | undefined {
+    return this.getContentType();
+  }
+
+  public set contentTypeObject(contentType) {
+    this.setContentType(contentType);
   }
 
   /**
@@ -378,17 +395,5 @@ export class RepresentationMetadata {
     if (input) {
       this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
     }
-  }
-
-  /**
-   * Shorthand for the ContentType as an object (with parameters)
-   */
-  public get contentTypeObject(): ContentType | undefined {
-    return this.contentType ?
-      {
-        value: parseContentType(this.contentType).type,
-        parameters: this.getContentTypeParams(),
-      } :
-      undefined;
   }
 }

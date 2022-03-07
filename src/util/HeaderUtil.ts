@@ -105,7 +105,7 @@ export interface AcceptDatetime extends AcceptHeader { }
  */
 export interface ContentType {
   value: string;
-  parameters?: Record<string, string>;
+  parameters: Record<string, string>;
 }
 
 // REUSED REGEXES
@@ -431,10 +431,10 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
  *
  * @returns The parsed media type of the content-type
  */
-export function parseContentType(contentType: string): { type: string } {
-  const contentTypeValue = /^\s*([^;\s]*)/u.exec(contentType)![1];
-  return { type: contentTypeValue };
-}
+// export function parseContentType(contentType: string): { type: string } {
+//   const contentTypeValue = /^\s*([^;\s]*)/u.exec(contentType)![1];
+//   return { type: contentTypeValue };
+// }
 
 /**
  * Parses the Content-Type header and also parses any parameters in the header.
@@ -446,19 +446,18 @@ export function parseContentType(contentType: string): { type: string } {
  *
  * @returns A {@link ContentType} object containing the value and optional parameters.
  */
-export function parseContentTypeWithParameters(input: string): ContentType {
+export function parseContentType(input: string): ContentType {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
   const [ value, ...params ] = result.split(';').map((str): string => str.trim());
-  return params.length > 0 ?
-    parseParameters(params, replacements).reduce<ContentType>((prev, cur): ContentType => {
-      if (!prev.parameters) {
-        prev.parameters = {};
-      }
+  return parseParameters(params, replacements)
+    .reduce<ContentType>(
+    (prev, cur): ContentType => {
       prev.parameters[cur.name] = cur.value;
       return prev;
-    }, { value }) :
-    { value };
+    },
+    { value, parameters: {}},
+  );
 }
 
 /**
