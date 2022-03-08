@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 16.x
       - name: Check out the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ matrix.branch }}
       - name: Install dependencies and run build scripts
