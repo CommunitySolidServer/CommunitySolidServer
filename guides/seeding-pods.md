@@ -18,8 +18,3 @@ To use a pre-existing wedId:
   createWebId: false,
   webId: "https://pod.inrupt.com/example/profile/card#me"
 ```
-
-To use a specific pod template:
-```json
-  template: "./templates/custom_pod_template"
-```

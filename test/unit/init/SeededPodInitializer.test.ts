@@ -1,9 +1,9 @@
-import fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import type { RegistrationManager } from '../../../src/identity/interaction/email-password/util/RegistrationManager';
 import { SeededPodInitializer } from '../../../src/init/SeededPodInitializer';
+import { mockFs } from '../../util/Util';
 
 jest.mock('fs');
-const mockFs = fs as jest.Mocked<typeof fs>;
 
 describe('A SeededPodInitializer', (): void => {
   const dummyConfig = JSON.stringify([
@@ -28,7 +28,8 @@ describe('A SeededPodInitializer', (): void => {
       register: jest.fn(),
     } as any;
 
-    (mockFs.promises as unknown) = { readFile: jest.fn().mockResolvedValue(dummyConfig) };
+    mockFs('/');
+    await fsPromises.writeFile(configFilePath, dummyConfig);
   });
 
   it('does not generate any accounts or pods if no config file is specified.', async(): Promise<void> => {
