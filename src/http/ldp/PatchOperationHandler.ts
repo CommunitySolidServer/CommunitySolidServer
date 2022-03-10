@@ -55,7 +55,7 @@ export class PatchOperationHandler extends OperationHandler {
       // It must not be possible to create .meta.meta resources
       if (this.metaStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
         throw new ConflictHttpError(
-          'Not allowed to create resources with the metadata extension about a metadata resource.',
+          'Not allowed to create metadata resources on a metadata resource.',
         );
       }
     }
