@@ -73,12 +73,14 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
+  private readonly metaStrategy: AuxiliaryStrategy;
 
   public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy) {
+    auxiliaryStrategy: AuxiliaryStrategy, metaStrategy: AuxiliaryStrategy) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
     this.auxiliaryStrategy = auxiliaryStrategy;
+    this.metaStrategy = metaStrategy;
   }
 
   public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
@@ -258,6 +260,12 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Auxiliary resources are not counted when deleting a container since they will also be deleted.
     if (isContainerIdentifier(identifier) && await this.hasProperChildren(identifier)) {
       throw new ConflictHttpError('Can only delete empty containers.');
+    }
+
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // DELETE is not allowed on metadata
+    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+      throw new ConflictHttpError('Not allowed to delete resources directly.');
     }
 
     this.validateConditions(conditions, metadata);

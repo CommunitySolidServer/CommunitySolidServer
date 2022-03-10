@@ -11,8 +11,7 @@
         },
         {
           "@type": "PostOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore"  },
-          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore"  }
         },
         {
           "@type": "PutOperationHandler",
@@ -21,8 +20,7 @@
         },
         {
           "@type": "DeleteOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "HeadOperationHandler",

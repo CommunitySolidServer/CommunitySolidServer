@@ -1,10 +1,7 @@
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { SOLID_HTTP } from '../../util/Vocabularies';
-import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import type { ResponseDescription } from '../output/response/ResponseDescription';
 import type { OperationHandlerInput } from './OperationHandler';
@@ -18,12 +15,10 @@ export class PostOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
-  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(store: ResourceStore, metaStrategy: AuxiliaryStrategy) {
+  public constructor(store: ResourceStore) {
     super();
     this.store = store;
-    this.metaStrategy = metaStrategy;
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -41,14 +36,6 @@ export class PostOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('POST requests require the Content-Type header to be set');
     }
 
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
-    // POST is not allowed on metadata
-    if (operation.body.metadata.get(SOLID_HTTP.slug)) {
-      const slug = operation.body.metadata.get(SOLID_HTTP.slug)!.value;
-      if (this.metaStrategy.isAuxiliaryIdentifier({ path: slug })) {
-        throw new ConflictHttpError('Not allowed to create resources with the metadata extension using POST.');
-      }
-    }
     const identifier = await this.store.addResource(operation.target, operation.body, operation.conditions);
     return new CreatedResponseDescription(identifier);
   }
