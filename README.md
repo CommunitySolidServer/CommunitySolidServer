@@ -69,7 +69,7 @@ npm start -- # add parameters if needed
 ```
 
 ### 📦 Running via Docker
-Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted on [Docker Hub](https://hub.docker.com/r/solidproject/community-server). 
+Docker allows you to run the server without having Node.js installed. Images are built on each tagged version and hosted on [Docker Hub](https://hub.docker.com/r/solidproject/community-server).
 
 ```shell
 # Clone the repo to get access to the configs
@@ -110,6 +110,7 @@ to some commonly used settings:
 | `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
 | `--showStackTrace, -t` | false                      | Enables detailed logging on error pages.                                                                                             |
 | `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations.                                                                     |
+| `--seededPodConfigJson` |                           | Path to the file that keeps track of seeded Pod configurations. |
 | `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.
 
 ### 🧶 Custom configurations

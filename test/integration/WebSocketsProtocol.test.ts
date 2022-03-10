@@ -17,6 +17,7 @@ describe('A server with the Solid WebSockets API behind a proxy', (): void => {
       getTestConfigPath('server-without-auth.json'),
       getDefaultVariables(port, 'https://example.pod/'),
     ) as App;
+
     await app.start();
   });
 

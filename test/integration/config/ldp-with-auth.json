@@ -10,6 +10,8 @@
     "files-scs:config/http/static/default.json",
     "files-scs:config/identity/access/public.json",
     "files-scs:config/identity/handler/default.json",
+    "files-scs:config/identity/ownership/token.json",
+    "files-scs:config/identity/pod/static.json",
     "files-scs:config/ldp/authentication/debug-auth-header.json",
     "files-scs:config/ldp/authorization/webacl.json",
     "files-scs:config/ldp/handler/default.json",

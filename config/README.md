@@ -10,7 +10,7 @@ it is always possible to not choose any of them and create your own custom versi
 
 # How to use
 The easiest way to create a new config is by creating a JSON-LD file
-that imports one option from every component subfolder 
+that imports one option from every component subfolder
 (such as either `allow-all.json` or `webacl.json` from `ldp/authorization`).
 In case none of the available options suffice, there are 2 other ways to handle this:
 
