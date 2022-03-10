@@ -205,6 +205,21 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
+    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+      const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
+      // Cannot create metadata without a corresponding resource
+      if (!await this.resourceExists(subjectIdentifier)) {
+        throw new ConflictHttpError('Metadata resources can not be created directly.');
+      }
+
+      // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+      // It must not be possible to create .meta.meta resources
+      if (this.metaStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
+        throw new ConflictHttpError(
+          'Not allowed to create metadata resources on a metadata resource.',
+        );
+      }
+    }
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
     if (!isContainer) {
@@ -265,7 +280,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // DELETE is not allowed on metadata
     if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
-      throw new ConflictHttpError('Not allowed to delete resources directly.');
+      throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
     }
 
     this.validateConditions(conditions, metadata);

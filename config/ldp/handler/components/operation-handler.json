@@ -28,8 +28,7 @@
         },
         {
           "@type": "PatchOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "StaticThrowHandler",
