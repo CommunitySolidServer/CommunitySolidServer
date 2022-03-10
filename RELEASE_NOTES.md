@@ -2,7 +2,8 @@
 
 ## v4.0.0
 ### New features
-- ...
+- The server can be started with a new parameter to automatically generate accounts and pods, 
+  for more info see [here](guides/seeding-pods.md).
 
 ### Configuration changes
 You might need to make changes to your v3 configuration if you use a custom config.
