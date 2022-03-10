@@ -7,6 +7,7 @@ export interface RepresentationPatcherInput {
   identifier: ResourceIdentifier;
   patch: Patch;
   representation?: Representation;
+  metadata?: boolean;
 }
 
 /**

@@ -18,17 +18,24 @@
             },
             {
               "@type": "ConvertingPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck" },
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
               "intermediateType": "internal/quads",
               "defaultType": "text/turtle"
+            },
+            {
+              "comment": "Makes sure PATCH operations MUST NOT update certain triples.",
+              "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
+              "@type": "RdfImmutableCheckPatcher",
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" }
             },
             {
               "@type": "StaticThrowHandler",
               "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }
           ]
-        }
+        },
+        "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
       }
     },
     {

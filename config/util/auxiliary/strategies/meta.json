@@ -8,7 +8,7 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" },
       "metadataGenerator": {
         "@type": "LinkMetadataGenerator",
-        "link": "describedby",
+        "link": "http://purl.org/dc/terms/description",
         "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" }
       },
       "validator": {

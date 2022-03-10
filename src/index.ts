@@ -1,4 +1,5 @@
 // Authentication
+
 export * from './authentication/BearerWebIdExtractor';
 export * from './authentication/Credentials';
 export * from './authentication/CredentialsExtractor';
@@ -323,6 +324,7 @@ export * from './storage/patch/PatchHandler';
 export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';
+export * from './storage/patch/RdfImmutableCheckPatcher';
 
 // Storage/Quota
 export * from './storage/quota/GlobalQuotaStrategy';
