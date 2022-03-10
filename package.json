@@ -77,7 +77,6 @@
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.22.3",
     "@solid/access-token-verifier": "^1.1.3",
-    "@types/arrayify-stream": "^1.0.0",
     "@types/async-lock": "^1.1.3",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
@@ -99,7 +98,7 @@
     "@types/uuid": "^8.3.4",
     "@types/ws": "^8.2.2",
     "@types/yargs": "^17.0.8",
-    "arrayify-stream": "^1.0.0",
+    "arrayify-stream": "^2.0.0",
     "async-lock": "^1.3.0",
     "bcrypt": "^5.0.1",
     "componentsjs": "^4.5.0",

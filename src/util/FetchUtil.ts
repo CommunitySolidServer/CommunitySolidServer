@@ -23,7 +23,7 @@ export async function fetchDataset(url: string): Promise<Representation> {
   return (async(): Promise<Representation> => {
     try {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
-      const quadArray = await arrayifyStream(quadStream) as Quad[];
+      const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch {
       throw new BadRequestHttpError(`Could not parse resource at URL (${url})!`);

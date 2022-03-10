@@ -283,7 +283,7 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
 
       const { data, metadata } = await store.getRepresentation(result);
-      const quads: Quad[] = await arrayifyStream(data);
+      const quads = await arrayifyStream<Quad>(data);
       expect(metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
       expect(quads.some((entry): boolean => entry.subject.value === result.path &&
         entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
