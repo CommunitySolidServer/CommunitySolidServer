@@ -348,7 +348,7 @@ export class RepresentationMetadata {
           this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
           return [ 'invalid', '' ];
         }
-        return [ labels[0], values[0] ];
+        return [ labels[0].value, values[0].value ];
       })),
     };
   }
@@ -357,7 +357,7 @@ export class RepresentationMetadata {
     this.removeAll(CONTENT_TYPE_TERM);
     const params = this.quads(this.id, SOLID_META.terms.contentTypeParameter);
     for (const quad of params) {
-      const paramEntries = this.quads(quad.object);
+      const paramEntries = this.quads(quad.object.value);
       this.store.removeQuads(paramEntries);
     }
     this.store.removeQuads(params);
