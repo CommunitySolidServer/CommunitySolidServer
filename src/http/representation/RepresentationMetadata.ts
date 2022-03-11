@@ -331,7 +331,7 @@ export class RepresentationMetadata {
 
   /**
    * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
-   * @returns An Record&lt;string,string&gt; object with Content-Type parameters and their values.
+   * @returns A {@link ContentType} object containing the value and optional parameters if there is one.
    */
   private getContentType(): ContentType | undefined {
     const value = this.get(CONTENT_TYPE_TERM)?.value;
