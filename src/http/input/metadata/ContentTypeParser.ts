@@ -1,5 +1,4 @@
 import type { HttpRequest } from '../../../server/HttpRequest';
-import { parseContentType } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
 import { MetadataParser } from './MetadataParser';
 

@@ -5,7 +5,7 @@ import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ContentType } from '../../util/HeaderUtil';
 import { parseContentType } from '../../util/HeaderUtil';
 import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
+import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -89,9 +89,10 @@ export class RepresentationMetadata {
 
     if (overrides) {
       if (typeof overrides === 'string') {
-        overrides = { [CONTENT_TYPE]: overrides };
+        this.contentType = overrides;
+      } else {
+        this.setOverrides(overrides);
       }
-      this.setOverrides(overrides);
     }
   }
 
@@ -357,7 +358,7 @@ export class RepresentationMetadata {
     this.removeAll(CONTENT_TYPE_TERM);
     const params = this.quads(this.id, SOLID_META.terms.contentTypeParameter);
     for (const quad of params) {
-      const paramEntries = this.quads(quad.object.value);
+      const paramEntries = this.quads(quad.object as BlankNode);
       this.store.removeQuads(paramEntries);
     }
     this.store.removeQuads(params);

@@ -20,7 +20,13 @@ describe('A ContentTypeParser', (): void => {
   it('sets the given content-type as metadata.', async(): Promise<void> => {
     request.headers['content-type'] = 'text/plain;charset=UTF-8';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
-    expect(metadata.quads()).toHaveLength(1);
+    expect(metadata.quads()).toHaveLength(4);
     expect(metadata.contentType).toBe('text/plain');
+    expect(metadata.contentTypeObject).toEqual({
+      value: 'text/plain',
+      parameters: {
+        charset: 'UTF-8',
+      },
+    });
   });
 });
