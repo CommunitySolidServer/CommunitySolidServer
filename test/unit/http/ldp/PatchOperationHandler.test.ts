@@ -5,10 +5,8 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { BasicConditions } from '../../../../src/storage/BasicConditions';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
-import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
-import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A PatchOperationHandler', (): void => {
   let operation: Operation;
@@ -16,7 +14,6 @@ describe('A PatchOperationHandler', (): void => {
   const conditions = new BasicConditions({});
   let store: jest.Mocked<ResourceStore>;
   let handler: PatchOperationHandler;
-  const metaStrategy = new SimpleSuffixStrategy('.meta');
 
   beforeEach(async(): Promise<void> => {
     body = new BasicRepresentation('', 'text/turtle');
@@ -27,7 +24,7 @@ describe('A PatchOperationHandler', (): void => {
       modifyResource: jest.fn(),
     } as any;
 
-    handler = new PatchOperationHandler(store, metaStrategy);
+    handler = new PatchOperationHandler(store);
   });
 
   it('only supports PATCH operations.', async(): Promise<void> => {
@@ -61,21 +58,12 @@ describe('A PatchOperationHandler', (): void => {
   });
 
   it('returns the correct response if the resource is metadata.', async(): Promise<void> => {
+    // Note: Currently, for every resource a corresponding meta resource is present.
+    //  When https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1217#issuecomment-1065143263 is fixed
+    //  the statusCode MUST BE 201
     store.resourceExists.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/foo.meta';
     const result = await handler.handle({ operation });
-    expect(result.statusCode).toBe(201);
-  });
-
-  it('errors if there is no corresponding resource when trying to patch metadata.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(false);
-    operation.target.path = 'http://test.com/foo.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('errors when patching metadata of a metadata resource.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
-    operation.target.path = 'http://test.com/foo.meta.meta';
-    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
+    expect(result.statusCode).toBe(205);
   });
 });

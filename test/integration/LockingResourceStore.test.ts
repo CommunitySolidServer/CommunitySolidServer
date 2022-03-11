@@ -16,6 +16,7 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
+import { SimpleSuffixStrategy } from '../util/SimpleSuffixStrategy';
 jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
@@ -31,6 +32,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Not relevant for these tests
     const strategy = new RoutingAuxiliaryStrategy([]);
+    const metaStrategy = new SimpleSuffixStrategy('.meta');
 
     const base = 'http://test.com/';
     path = `${base}path`;
@@ -39,6 +41,7 @@ describe('A LockingResourceStore', (): void => {
       new InMemoryDataAccessor(idStrategy),
       idStrategy,
       strategy,
+      metaStrategy,
     );
 
     // Initialize store

@@ -137,6 +137,10 @@ export class SparqlDataAccessor implements DataAccessor {
     return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent, triples));
   }
 
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    // Todo
+  }
+
   /**
    * Removes all graph data relevant to the given identifier.
    */

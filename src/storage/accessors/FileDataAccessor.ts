@@ -84,7 +84,7 @@ export class FileDataAccessor implements DataAccessor {
     // Check if we already have a corresponding file with a different extension
     await this.verifyExistingExtension(link);
 
-    const wroteMetadata = await this.writeMetadata(link, metadata);
+    const wroteMetadata = await this.writeMetadataOld(link, metadata);
 
     try {
       await this.writeDataFile(link.filePath, data);
@@ -112,7 +112,30 @@ export class FileDataAccessor implements DataAccessor {
       }
     }
 
-    await this.writeMetadata(link, metadata);
+    await this.writeMetadataOld(link, metadata);
+  }
+
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, false);
+    // Todo: Can I use the old method?
+    const quads = metadata.quads();
+    // Write metadata to file if there are quads remaining
+    if (quads.length > 0) {
+      // Determine required content-type based on mapper
+      const serializedMetadata = serializeQuads(quads, metadataLink.contentType);
+      await this.writeDataFile(metadataLink.filePath, serializedMetadata);
+
+      // Delete (potentially) existing metadata file if no metadata needs to be stored
+    } else {
+      try {
+        await fsPromises.unlink(metadataLink.filePath);
+      } catch (error: unknown) {
+        // Metadata file doesn't exist so nothing needs to be removed
+        if (!isSystemError(error) || error.code !== 'ENOENT') {
+          throw error;
+        }
+      }
+    }
   }
 
   /**
@@ -192,7 +215,7 @@ export class FileDataAccessor implements DataAccessor {
    *
    * @returns True if data was written to a file.
    */
-  protected async writeMetadata(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
+  protected async writeMetadataOld(link: ResourceLink, metadata: RepresentationMetadata): Promise<boolean> {
     // These are stored by file system conventions
     metadata.remove(RDF.terms.type, LDP.terms.Resource);
     metadata.remove(RDF.terms.type, LDP.terms.Container);

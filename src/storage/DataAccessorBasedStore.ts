@@ -6,7 +6,7 @@ import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
 import type { Patch } from '../http/representation/Patch';
 import type { Representation } from '../http/representation/Representation';
-import type { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
+import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import { INTERNAL_QUADS } from '../util/ContentTypes';
@@ -26,8 +26,9 @@ import {
   trimTrailingSlashes,
   toCanonicalUriPath,
 } from '../util/PathUtil';
-import { parseQuads } from '../util/QuadUtil';
+import { parseQuads, serializeQuads } from '../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
+import { readableToQuads } from '../util/StreamUtil';
 import {
   CONTENT_TYPE,
   DC,
@@ -42,6 +43,7 @@ import {
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
+import { RdfToQuadConverter } from './conversion/RdfToQuadConverter';
 import type { ResourceStore } from './ResourceStore';
 
 /**
@@ -99,6 +101,9 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     this.validateIdentifier(identifier);
 
+    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+      return this.getMetadata(identifier);
+    }
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     const metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
@@ -206,19 +211,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
-      const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
-      // Cannot create metadata without a corresponding resource
-      if (!await this.resourceExists(subjectIdentifier)) {
-        throw new ConflictHttpError('Metadata resources can not be created directly.');
-      }
-
-      // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
-      // It must not be possible to create .meta.meta resources
-      if (this.metaStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
-        throw new ConflictHttpError(
-          'Not allowed to create metadata resources on a metadata resource.',
-        );
-      }
+      return await this.writeMetadata(identifier, representation);
     }
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
@@ -367,6 +360,47 @@ export class DataAccessorBasedStore implements ResourceStore {
         throw error;
       }
     }
+  }
+
+  protected async getMetadata(identifier: ResourceIdentifier): Promise<Representation> {
+    const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
+
+    const metadata = await this.accessor.getMetadata(parentIdentifier);
+    this.removeResponseMetadata(metadata);
+    const serialized = serializeQuads(metadata.quads(null, null, null, null));
+    const contentType = metadata.contentType ? metadata.contentType : 'text/turtle';
+    return new BasicRepresentation(serialized, contentType);
+  }
+
+  protected async writeMetadata(identifier: ResourceIdentifier, representation: Representation):
+  Promise<ResourceIdentifier[]> {
+    const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
+
+    // Cannot create metadata without a corresponding resource
+    if (!await this.resourceExists(subjectIdentifier)) {
+      throw new ConflictHttpError('Metadata resources can not be created directly.');
+    }
+
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // It must not be possible to create .meta.meta resources
+    if (this.metaStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
+      throw new ConflictHttpError(
+        'Not allowed to create metadata resources on a metadata resource.',
+      );
+    }
+
+    const metadata = new RepresentationMetadata(identifier);
+    const rdfConverter = new RdfToQuadConverter();
+    const rdf = await rdfConverter.handleSafe({
+      identifier,
+      representation,
+      preferences: { type: { [INTERNAL_QUADS]: 1 }},
+    });
+    const store = await readableToQuads(rdf.data);
+    const quads = store.getQuads(null, null, null, null);
+    metadata.addQuads(quads);
+    await this.accessor.writeMetadata(identifier, metadata);
+    return [ identifier ];
   }
 
   /**
