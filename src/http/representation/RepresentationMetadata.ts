@@ -341,10 +341,15 @@ export class RepresentationMetadata {
     const params = this.getAll(SOLID_META.terms.contentTypeParameter);
     return {
       value,
-      parameters: Object.fromEntries(params.map((param): [string, string] => [
-        this.store.getObjects(param, RDFS.terms.label, null)[0].value,
-        this.store.getObjects(param, SOLID_META.terms.value, null)[0].value,
-      ])),
+      parameters: Object.fromEntries(params.map((param): [string, string] => {
+        const labels = this.store.getObjects(param, RDFS.terms.label, null);
+        const values = this.store.getObjects(param, SOLID_META.terms.value, null);
+        if (labels.length !== 1 || values.length !== 1) {
+          this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
+          return [ 'invalid', '' ];
+        }
+        return [ labels[0], values[0] ];
+      })),
     };
   }
 
