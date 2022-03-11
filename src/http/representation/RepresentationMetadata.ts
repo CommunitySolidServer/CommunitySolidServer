@@ -355,7 +355,7 @@ export class RepresentationMetadata {
 
   private removeContentType(): void {
     this.removeAll(CONTENT_TYPE_TERM);
-    const params = this.store.getQuads(this.id, SOLID_META.terms.contentTypeParameter, null, null);
+    const params = this.quads(this.id, SOLID_META.terms.contentTypeParameter);
     for (const quad of params) {
       const paramEntries = this.quads(quad.object);
       this.store.removeQuads(paramEntries);
