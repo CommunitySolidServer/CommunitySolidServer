@@ -357,9 +357,8 @@ export class RepresentationMetadata {
     this.removeAll(CONTENT_TYPE_TERM);
     const params = this.store.getQuads(this.id, SOLID_META.terms.contentTypeParameter, null, null);
     for (const quad of params) {
-      const labels = this.store.getQuads(quad.object, RDFS.terms.label, null, null);
-      const values = this.store.getQuads(quad.object, SOLID_META.terms.value, null, null);
-      this.store.removeQuads([ ...labels, ...values ]);
+      const paramEntries = this.quads(quad.object);
+      this.store.removeQuads(paramEntries);
     }
     this.store.removeQuads(params);
   }
