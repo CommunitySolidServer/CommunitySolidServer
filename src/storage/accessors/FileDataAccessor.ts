@@ -116,26 +116,8 @@ export class FileDataAccessor implements DataAccessor {
   }
 
   public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, false);
-    // Todo: Can I use the old method?
-    const quads = metadata.quads();
-    // Write metadata to file if there are quads remaining
-    if (quads.length > 0) {
-      // Determine required content-type based on mapper
-      const serializedMetadata = serializeQuads(quads, metadataLink.contentType);
-      await this.writeDataFile(metadataLink.filePath, serializedMetadata);
-
-      // Delete (potentially) existing metadata file if no metadata needs to be stored
-    } else {
-      try {
-        await fsPromises.unlink(metadataLink.filePath);
-      } catch (error: unknown) {
-        // Metadata file doesn't exist so nothing needs to be removed
-        if (!isSystemError(error) || error.code !== 'ENOENT') {
-          throw error;
-        }
-      }
-    }
+    const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
+    await this.writeMetadataOld(metadataLink, metadata);
   }
 
   /**

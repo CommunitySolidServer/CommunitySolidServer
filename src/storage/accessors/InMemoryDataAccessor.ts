@@ -85,8 +85,8 @@ export class InMemoryDataAccessor implements DataAccessor {
   }
 
   public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    const parent = this.getParentEntry(identifier);
-    parent.metadata = metadata;
+    const entry = this.getEntry(identifier);
+    entry.metadata = metadata;
   }
 
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {

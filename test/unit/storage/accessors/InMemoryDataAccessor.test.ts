@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
+import { DataFactory } from 'n3';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { InMemoryDataAccessor } from '../../../../src/storage/accessors/InMemoryDataAccessor';
@@ -9,6 +10,7 @@ import type { Guarded } from '../../../../src/util/GuardedStream';
 import { BaseIdentifierStrategy } from '../../../../src/util/identifiers/BaseIdentifierStrategy';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { LDP, RDF } from '../../../../src/util/Vocabularies';
+const { namedNode } = DataFactory;
 
 class DummyStrategy extends BaseIdentifierStrategy {
   public supportsIdentifier(): boolean {
@@ -199,6 +201,18 @@ describe('An InMemoryDataAccessor', (): void => {
         children.push(child);
       }
       expect(children).toHaveLength(0);
+    });
+
+    it('writes metadata.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [RDF.type]: LDP.terms.Resource });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier);
+      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      await expect(accessor.getMetadata(resourceIdentifier)).resolves.toStrictEqual(extraMetadata);
     });
   });
 

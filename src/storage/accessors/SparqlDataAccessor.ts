@@ -138,8 +138,7 @@ export class SparqlDataAccessor implements DataAccessor {
   }
 
   public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    const subjectIdentifier = { path: metadata.identifier.value };
-    const { name, parent } = this.getRelatedNames(subjectIdentifier);
+    const { name, parent } = this.getRelatedNames(identifier);
     const triples = metadata.quads();
 
     const def = defaultGraph();

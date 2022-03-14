@@ -408,7 +408,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const store = await readableToQuads(rdf.data);
     const quads = store.getQuads(null, null, null, null);
     metadata.addQuads(quads);
-    await this.accessor.writeMetadata(identifier, metadata);
+    await this.accessor.writeMetadata(subjectIdentifier, metadata);
     return [ identifier ];
   }
 
