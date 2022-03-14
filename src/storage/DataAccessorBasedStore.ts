@@ -89,7 +89,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     try {
       this.validateIdentifier(identifier);
       if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
-        this.logger.info(this.metaStrategy.getSubjectIdentifier(identifier).path);
         await this.accessor.getMetadata(this.metaStrategy.getSubjectIdentifier(identifier));
         return true;
       }
@@ -369,9 +368,9 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   protected async getMetadata(identifier: ResourceIdentifier): Promise<Representation> {
-    const parentIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
+    const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
 
-    const metadata = await this.accessor.getMetadata(parentIdentifier);
+    const metadata = await this.accessor.getMetadata(subjectIdentifier);
     this.removeResponseMetadata(metadata);
     const serialized = serializeQuads(metadata.quads(null, null, null, null));
     const contentType = metadata.contentType ? metadata.contentType : TEXT_TURTLE;
@@ -396,12 +395,16 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     const metadata = new RepresentationMetadata(subjectIdentifier);
-    const rdfConverter = new RdfToQuadConverter();
-    const rdf = await rdfConverter.handleSafe({
-      identifier,
-      representation,
-      preferences: { type: { [INTERNAL_QUADS]: 1 }},
-    });
+    let rdf = representation;
+    if (representation.metadata.contentType && representation.metadata.contentType !== INTERNAL_QUADS) {
+      const rdfConverter = new RdfToQuadConverter();
+      rdf = await rdfConverter.handleSafe({
+        identifier,
+        representation,
+        preferences: { type: { [INTERNAL_QUADS]: 1 }},
+      });
+    }
+
     const store = await readableToQuads(rdf.data);
     const quads = store.getQuads(null, null, null, null);
     metadata.addQuads(quads);

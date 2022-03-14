@@ -138,7 +138,19 @@ export class SparqlDataAccessor implements DataAccessor {
   }
 
   public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
-    // Todo
+    const subjectIdentifier = { path: metadata.identifier.value };
+    const { name, parent } = this.getRelatedNames(subjectIdentifier);
+    const triples = metadata.quads();
+
+    const def = defaultGraph();
+    if (triples.some((triple): boolean => !def.equals(triple.graph))) {
+      throw new NotImplementedHttpError('Only triples in the default graph are supported.');
+    }
+
+    // Not relevant since all content is triples
+    metadata.removeAll(CONTENT_TYPE);
+
+    return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent));
   }
 
   /**
