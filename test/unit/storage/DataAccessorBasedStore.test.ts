@@ -62,6 +62,11 @@ class SimpleDataAccessor implements DataAccessor {
     return metadata;
   }
 
+  public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
+    this.checkExists({ path: metadata.identifier.value });
+    this.data[metadata.identifier.value].metadata = metadata;
+  }
+
   public async* getChildren(identifier: ResourceIdentifier): AsyncIterableIterator<RepresentationMetadata> {
     // Find all keys that look like children of the container
     const children = Object.keys(this.data).filter((name): boolean =>
@@ -104,7 +109,9 @@ describe('A DataAccessorBasedStore', (): void => {
     accessor = new SimpleDataAccessor();
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
-    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy);
+    const metaStrategy = new SimpleSuffixStrategy('.meta');
+
+    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy, metaStrategy);
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [

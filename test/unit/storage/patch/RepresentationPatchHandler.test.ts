@@ -7,6 +7,7 @@ import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 
 describe('A RepresentationPatchHandler', (): void => {
   const identifier = { path: 'http://test.com/foo' };
@@ -17,7 +18,7 @@ describe('A RepresentationPatchHandler', (): void => {
   let source: jest.Mocked<ResourceStore>;
   let patcher: jest.Mocked<RepresentationPatcher>;
   let handler: RepresentationPatchHandler;
-
+  let metaStrategy: SimpleSuffixStrategy;
   beforeEach(async(): Promise<void> => {
     source = {
       getRepresentation: jest.fn().mockResolvedValue(representation),
@@ -29,8 +30,9 @@ describe('A RepresentationPatchHandler', (): void => {
     patcher = {
       handleSafe: jest.fn().mockResolvedValue(patchResult),
     } as any;
+    metaStrategy = new SimpleSuffixStrategy('.meta');
 
-    handler = new RepresentationPatchHandler(patcher);
+    handler = new RepresentationPatchHandler(patcher, metaStrategy);
   });
 
   it('calls the patcher with the representation from the store.', async(): Promise<void> => {
@@ -88,7 +90,7 @@ describe('A RepresentationPatchHandler', (): void => {
     patcher = {
       handleSafe: jest.fn().mockResolvedValue(patchResult1),
     } as any;
-    handler = new RepresentationPatchHandler(patcher);
+    handler = new RepresentationPatchHandler(patcher, metaStrategy);
     await expect(handler.handle(input)).rejects.toThrow(
       BadRequestHttpError,
     );
@@ -104,7 +106,7 @@ describe('A RepresentationPatchHandler', (): void => {
       patcher = {
         handleSafe: jest.fn().mockResolvedValue(patchResult1),
       } as any;
-      handler = new RepresentationPatchHandler(patcher);
+      handler = new RepresentationPatchHandler(patcher, metaStrategy);
       await expect(handler.handle(input)).rejects.toThrow(
         BadRequestHttpError,
       );
@@ -118,7 +120,7 @@ describe('A RepresentationPatchHandler', (): void => {
     patcher = {
       handleSafe: jest.fn().mockResolvedValue(patchResult1),
     } as any;
-    handler = new RepresentationPatchHandler(patcher);
+    handler = new RepresentationPatchHandler(patcher, metaStrategy);
     await expect(handler.handle(input)).rejects.toThrow(
       BadRequestHttpError,
     );
