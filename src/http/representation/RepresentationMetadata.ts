@@ -2,8 +2,10 @@ import { DataFactory, Store } from 'n3';
 import type { BlankNode, DefaultGraph, Literal, NamedNode, Quad, Term } from 'rdf-js';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import type { ContentType } from '../../util/HeaderUtil';
+import { parseContentType } from '../../util/HeaderUtil';
 import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD } from '../../util/Vocabularies';
+import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
 
@@ -87,9 +89,10 @@ export class RepresentationMetadata {
 
     if (overrides) {
       if (typeof overrides === 'string') {
-        overrides = { [CONTENT_TYPE]: overrides };
+        this.contentType = overrides;
+      } else {
+        this.setOverrides(overrides);
       }
-      this.setOverrides(overrides);
     }
   }
 
@@ -304,6 +307,63 @@ export class RepresentationMetadata {
     return this;
   }
 
+  private setContentType(input?: ContentType | string): void {
+    // Make sure complete Content-Type RDF structure is gone
+    this.removeContentType();
+
+    if (!input) {
+      return;
+    }
+
+    if (typeof input === 'string') {
+      input = parseContentType(input);
+    }
+
+    for (const [ key, value ] of Object.entries(input.parameters)) {
+      const node = DataFactory.blankNode();
+      this.addQuad(this.id, SOLID_META.terms.contentTypeParameter, node);
+      this.addQuad(node, RDFS.terms.label, key);
+      this.addQuad(node, SOLID_META.terms.value, value);
+    }
+
+    // Set base content type string
+    this.set(CONTENT_TYPE_TERM, input.value);
+  }
+
+  /**
+   * Parse the internal RDF structure to retrieve the Record with ContentType Parameters.
+   * @returns A {@link ContentType} object containing the value and optional parameters if there is one.
+   */
+  private getContentType(): ContentType | undefined {
+    const value = this.get(CONTENT_TYPE_TERM)?.value;
+    if (!value) {
+      return;
+    }
+    const params = this.getAll(SOLID_META.terms.contentTypeParameter);
+    return {
+      value,
+      parameters: Object.fromEntries(params.map((param): [string, string] => {
+        const labels = this.store.getObjects(param, RDFS.terms.label, null);
+        const values = this.store.getObjects(param, SOLID_META.terms.value, null);
+        if (labels.length !== 1 || values.length !== 1) {
+          this.logger.error(`Detected invalid content-type metadata for ${this.id.value}`);
+          return [ 'invalid', '' ];
+        }
+        return [ labels[0].value, values[0].value ];
+      })),
+    };
+  }
+
+  private removeContentType(): void {
+    this.removeAll(CONTENT_TYPE_TERM);
+    const params = this.quads(this.id, SOLID_META.terms.contentTypeParameter);
+    for (const quad of params) {
+      const paramEntries = this.quads(quad.object as BlankNode);
+      this.store.removeQuads(paramEntries);
+    }
+    this.store.removeQuads(params);
+  }
+
   // Syntactic sugar for common predicates
 
   /**
@@ -314,7 +374,18 @@ export class RepresentationMetadata {
   }
 
   public set contentType(input) {
-    this.set(CONTENT_TYPE_TERM, input);
+    this.setContentType(input);
+  }
+
+  /**
+   * Shorthand for the ContentType as an object (with parameters)
+   */
+  public get contentTypeObject(): ContentType | undefined {
+    return this.getContentType();
+  }
+
+  public set contentTypeObject(contentType) {
+    this.setContentType(contentType);
   }
 
   /**
