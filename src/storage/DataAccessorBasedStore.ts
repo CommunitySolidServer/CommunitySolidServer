@@ -9,7 +9,7 @@ import type { Representation } from '../http/representation/Representation';
 import { RepresentationMetadata } from '../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
-import { INTERNAL_QUADS } from '../util/ContentTypes';
+import { INTERNAL_QUADS, TEXT_TURTLE } from '../util/ContentTypes';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
@@ -88,6 +88,11 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
     try {
       this.validateIdentifier(identifier);
+      if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+        this.logger.info(this.metaStrategy.getSubjectIdentifier(identifier).path);
+        await this.accessor.getMetadata(this.metaStrategy.getSubjectIdentifier(identifier));
+        return true;
+      }
       await this.accessor.getMetadata(identifier);
       return true;
     } catch (error: unknown) {
@@ -245,6 +250,13 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
+
+    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // DELETE is not allowed on metadata
+    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+      throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
+    }
+
     const metadata = await this.accessor.getMetadata(identifier);
     // Solid, §5.4: "When a DELETE request targets storage’s root container or its associated ACL resource,
     // the server MUST respond with the 405 status code."
@@ -268,12 +280,6 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Auxiliary resources are not counted when deleting a container since they will also be deleted.
     if (isContainerIdentifier(identifier) && await this.hasProperChildren(identifier)) {
       throw new ConflictHttpError('Can only delete empty containers.');
-    }
-
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
-    // DELETE is not allowed on metadata
-    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
-      throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
     }
 
     this.validateConditions(conditions, metadata);
@@ -363,12 +369,12 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   protected async getMetadata(identifier: ResourceIdentifier): Promise<Representation> {
-    const parentIdentifier = this.identifierStrategy.getParentContainer(identifier);
+    const parentIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
 
     const metadata = await this.accessor.getMetadata(parentIdentifier);
     this.removeResponseMetadata(metadata);
     const serialized = serializeQuads(metadata.quads(null, null, null, null));
-    const contentType = metadata.contentType ? metadata.contentType : 'text/turtle';
+    const contentType = metadata.contentType ? metadata.contentType : TEXT_TURTLE;
     return new BasicRepresentation(serialized, contentType);
   }
 
@@ -389,7 +395,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       );
     }
 
-    const metadata = new RepresentationMetadata(identifier);
+    const metadata = new RepresentationMetadata(subjectIdentifier);
     const rdfConverter = new RdfToQuadConverter();
     const rdf = await rdfConverter.handleSafe({
       identifier,
