@@ -286,4 +286,31 @@ describe('A SparqlDataAccessor', (): void => {
 
     updateError = undefined;
   });
+
+  it('overwrites the metadata when writing metadata.', async(): Promise<void> => {
+    const resourceIdentifier = { path: `${base}resource` };
+
+    const newMetadata = new RepresentationMetadata(resourceIdentifier);
+    newMetadata.addQuad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`));
+    await expect(accessor.writeMetadata(resourceIdentifier, newMetadata)).resolves.toBeUndefined();
+
+    expect(fetchUpdate).toHaveBeenCalledTimes(1);
+    expect(fetchUpdate.mock.calls[0][0]).toBe(endpoint);
+    expect(simplifyQuery(fetchUpdate.mock.calls[0][1])).toBe(simplifyQuery([
+      'DELETE WHERE { GRAPH <meta:http://test.com/resource> { ?s ?p ?o. } };',
+      'INSERT DATA {',
+      '  GRAPH <meta:http://test.com/resource> { <http://test.com/a> <http://test.com/b> <http://test.com/c>. }',
+      '  GRAPH <http://test.com/> { <http://test.com/> <http://www.w3.org/ns/ldp#contains> <http://test.com/resource>. }',
+      '}',
+    ]));
+  });
+
+  it('errors when writing triples to metadata in a non-default graph.', async(): Promise<void> => {
+    const resourceIdentifier = { path: `${base}resource` };
+
+    const newMetadata = new RepresentationMetadata(resourceIdentifier);
+    newMetadata
+      .addQuad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`), namedNode(`${base}/graph`));
+    await expect(accessor.writeMetadata(resourceIdentifier, newMetadata)).rejects.toThrow(NotImplementedHttpError);
+  });
 });

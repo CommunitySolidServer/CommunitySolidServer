@@ -15,6 +15,8 @@ import { guardedStreamFrom, readableToString } from '../../../../src/util/Stream
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFs } from '../../../util/Util';
+import namedNode = DataFactory.namedNode;
+import quad = DataFactory.quad;
 
 jest.mock('fs');
 
@@ -193,11 +195,11 @@ describe('A FileDataAccessor', (): void => {
     it('adds stored metadata when requesting metadata.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': '<http://this> <http://is> <http://metadata>.' };
       metadata = await accessor.getMetadata({ path: `${base}resource` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
 
       cache.data = { container: { '.meta': '<http://this> <http://is> <http://metadata>.' }};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.quads().some((quad): boolean => quad.subject.value === 'http://this')).toBe(true);
+      expect(metadata.quads().some((qd): boolean => qd.subject.value === 'http://this')).toBe(true);
     });
 
     it('throws an error if there is a problem with the internal metadata.', async(): Promise<void> => {
@@ -362,6 +364,22 @@ describe('A FileDataAccessor', (): void => {
       metadata = new RepresentationMetadata({ path: `${base}` }, { likes: 'apples' });
       await expect(accessor.writeContainer({ path: `${base}` }, metadata)).resolves.toBeUndefined();
       expect(cache.data).toEqual({ '.meta': expect.stringMatching(`<${base}> <likes> "apples".`) });
+    });
+  });
+
+  describe('writing metadata', (): void => {
+    it('writes metadata to the metadata resource.', async(): Promise<void> => {
+      const resourceIdentifier = { path: `${base}resource` };
+      const inputMetadata = new RepresentationMetadata(resourceIdentifier, { [RDF.type]: LDP.terms.Resource });
+      await accessor.writeDocument(resourceIdentifier, data, inputMetadata);
+
+      const extraMetadata = new RepresentationMetadata(resourceIdentifier);
+      extraMetadata.addQuad(namedNode('a'), namedNode('b'), namedNode('c'));
+      await expect(accessor.writeMetadata(resourceIdentifier, extraMetadata)).resolves.toBeUndefined();
+
+      const outputMetadata = await accessor.getMetadata(resourceIdentifier);
+      expect(outputMetadata.quads(`${base}a`))
+        .toStrictEqual([ quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}c`)) ]);
     });
   });
 
