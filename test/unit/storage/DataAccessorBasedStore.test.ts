@@ -3,6 +3,7 @@ import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
+import { serializeQuads } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -11,7 +12,7 @@ import type { ResourceIdentifier } from '../../../src/http/representation/Resour
 import type { DataAccessor } from '../../../src/storage/accessors/DataAccessor';
 import { BasicConditions } from '../../../src/storage/BasicConditions';
 import { DataAccessorBasedStore } from '../../../src/storage/DataAccessorBasedStore';
-import { INTERNAL_QUADS } from '../../../src/util/ContentTypes';
+import { INTERNAL_QUADS, TEXT_TURTLE } from '../../../src/util/ContentTypes';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 import { ForbiddenHttpError } from '../../../src/util/errors/ForbiddenHttpError';
@@ -176,6 +177,23 @@ describe('A DataAccessorBasedStore', (): void => {
       const contains = result.metadata.getAll(LDP.terms.contains);
       expect(contains).toHaveLength(1);
       expect(contains[0].value).toBe(`${resourceID.path}resource`);
+    });
+
+    it('will return the stored representation for metadata resources.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const metaResourceID = { path: `${root}resource.meta` };
+      representation.metadata.identifier = DataFactory.namedNode(resourceID.path);
+
+      accessor.data[resourceID.path] = representation;
+
+      const result = await store.getRepresentation(metaResourceID);
+      expect(result).toMatchObject({ binary: true });
+      expect(await arrayifyStream(result.data)).toEqual(
+        [ '<http://test.com/resource> <http://www.w3.org/ns/ma-ont#format> "text/plain"',
+          ';\n    a <http://www.w3.org/ns/ldp#Resource>',
+          '.\n' ],
+      );
+      expect(result.metadata.contentType).toBe(TEXT_TURTLE);
     });
   });
 
@@ -544,6 +562,63 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(Object.keys(accessor.data)).toHaveLength(1);
       expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
     });
+
+    it('can write to metadata resource.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const metaResourceID = { path: `${root}resource.meta` };
+
+      accessor.data[resourceID.path] = representation;
+      const metaRepresentation = new BasicRepresentation([ quad(
+        DataFactory.namedNode(resourceID.path),
+        DataFactory.namedNode(DC.description),
+        DataFactory.literal('something'),
+      ) ], resourceID);
+
+      await expect(store.setRepresentation(metaResourceID, metaRepresentation)).resolves.toEqual([ metaResourceID ]);
+      expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic([
+        quad(
+          DataFactory.namedNode(resourceID.path),
+          DataFactory.namedNode(DC.description),
+          DataFactory.literal('something'),
+        ),
+      ]);
+    });
+
+    it('can write to metadata resource when using Readable as representation data.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const metaResourceID = { path: `${root}resource.meta` };
+
+      accessor.data[resourceID.path] = representation;
+      const readable = serializeQuads([ quad(
+        DataFactory.namedNode(resourceID.path),
+        DataFactory.namedNode(DC.description),
+        DataFactory.literal('something'),
+      ) ], TEXT_TURTLE);
+      const metaRepresentation = new BasicRepresentation(readable, resourceID);
+      metaRepresentation.metadata.contentType = TEXT_TURTLE;
+
+      await expect(store.setRepresentation(metaResourceID, metaRepresentation)).resolves.toEqual([ metaResourceID ]);
+      expect(accessor.data[resourceID.path].metadata.quads()).toBeRdfIsomorphic([
+        quad(
+          DataFactory.namedNode(resourceID.path),
+          DataFactory.namedNode(DC.description),
+          DataFactory.literal('something'),
+        ),
+      ]);
+    });
+
+    it('can not write to metadata resource when corresponding resource does not exist.', async(): Promise<void> => {
+      const metaResourceID = { path: `${root}resource.meta` };
+      await expect(store.setRepresentation(metaResourceID, representation)).rejects.toThrow(ConflictHttpError);
+    });
+
+    it('can not write to metadata resource of a metadata resource.', async(): Promise<void> => {
+      const metametaResourceID = { path: `${root}resource.meta.meta` };
+      const resourceID = { path: `${root}resource` };
+
+      accessor.data[resourceID.path] = representation;
+      await expect(store.setRepresentation(metametaResourceID, representation)).rejects.toThrow(ConflictHttpError);
+    });
   });
 
   describe('modifying a Representation', (): void => {
@@ -687,6 +762,12 @@ describe('A DataAccessorBasedStore', (): void => {
         'Error deleting auxiliary resource http://test.com/resource.dummy: auxiliary error!',
       );
     });
+
+    it('rejects deleting a metadata resource.', async(): Promise<void> => {
+      const metaResourceID = { path: `${root}resource.meta` };
+
+      await expect(store.deleteResource(metaResourceID)).rejects.toThrow(ConflictHttpError);
+    });
   });
 
   describe('resource Exists', (): void => {
@@ -709,6 +790,19 @@ describe('A DataAccessorBasedStore', (): void => {
       });
       await expect(store.resourceExists(resourceID)).rejects.toThrow('error');
       accessor.getMetadata = originalMetaData;
+    });
+
+    it('should return false when the metadata resource does not exist.', async(): Promise<void> => {
+      const metaResourceID = { path: `${root}resource.meta` };
+      await expect(store.resourceExists(metaResourceID)).resolves.toBeFalsy();
+    });
+
+    it('should return true when the metadata resource exists.', async(): Promise<void> => {
+      const resourceID = { path: `${root}resource` };
+      const metaResourceID = { path: `${root}resource.meta` };
+
+      accessor.data[resourceID.path] = representation;
+      await expect(store.resourceExists(metaResourceID)).resolves.toBeTruthy();
     });
   });
 });
