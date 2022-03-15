@@ -27,15 +27,15 @@
               "comment": "Makes sure PATCH operations MUST NOT update certain triples.",
               "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
               "@type": "RdfImmutableCheckPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" }
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
+              "metaStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
             },
             {
               "@type": "StaticThrowHandler",
               "error": { "@type": "UnsupportedMediaTypeHttpError" }
             }
           ]
-        },
-        "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+        }
       }
     },
     {

@@ -1,6 +1,9 @@
 import type { Quad } from 'rdf-js';
+import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
+import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import { getLoggerFor } from '../../logging/LogUtil';
+import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { serializeQuads, uniqueQuads } from '../../util/QuadUtil';
 import { cloneRepresentation } from '../../util/ResourceUtil';
@@ -13,24 +16,25 @@ export class RdfImmutableCheckPatcher extends RepresentationPatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly patcher: RepresentationPatcher;
+  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(patcher: RepresentationPatcher) {
+  public constructor(patcher: RepresentationPatcher, metaStrategy: AuxiliaryStrategy) {
     super();
     this.patcher = patcher;
+    this.metaStrategy = metaStrategy;
   }
 
   public async handle(input: RepresentationPatcherInput): Promise<Representation> {
-    const { representation, metadata } = input;
+    let { representation } = input;
+    const { identifier } = input;
 
-    if (!representation) {
-      return await this.patcher.handleSafe(input);
-    }
-
+    representation = representation ?? new BasicRepresentation([], INTERNAL_QUADS);
     const immutableTriples: [string, string | undefined][] = [];
     immutableTriples.push([ RDF.type, PIM.Storage ]);
     immutableTriples.push([ LDP.contains, undefined ]);
+
     let patched: Representation;
-    if (metadata) {
+    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
       const clonedRepresentation = await cloneRepresentation(representation);
       patched = await this.patcher.handleSafe(input);
       const clonedPatchedRepresentation = await cloneRepresentation(patched);

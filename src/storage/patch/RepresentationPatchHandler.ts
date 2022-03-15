@@ -1,4 +1,3 @@
-import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -20,12 +19,10 @@ export class RepresentationPatchHandler extends PatchHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly patcher: RepresentationPatcher;
-  private readonly metaStrategy: AuxiliaryStrategy;
 
-  public constructor(patcher: RepresentationPatcher, metaStrategy: AuxiliaryStrategy) {
+  public constructor(patcher: RepresentationPatcher) {
     super();
     this.patcher = patcher;
-    this.metaStrategy = metaStrategy;
   }
 
   public async handle({ source, patch, identifier }: PatchHandlerInput): Promise<ResourceIdentifier[]> {
@@ -43,9 +40,8 @@ export class RepresentationPatchHandler extends PatchHandler {
       this.logger.debug(`Patching new resource ${identifier.path}`);
     }
 
-    const metadata = this.metaStrategy.isAuxiliaryIdentifier(identifier);
     // Patch it
-    const patched = await this.patcher.handleSafe({ patch, identifier, representation, metadata });
+    const patched = await this.patcher.handleSafe({ patch, identifier, representation });
 
     // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s resource metadata
     // statements; if the server receives such a request, it MUST respond with a 409 status code.

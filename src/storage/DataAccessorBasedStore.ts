@@ -372,9 +372,8 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     const metadata = await this.accessor.getMetadata(subjectIdentifier);
     this.removeResponseMetadata(metadata);
-    const serialized = serializeQuads(metadata.quads(null, null, null, null));
-    const contentType = metadata.contentType ? metadata.contentType : TEXT_TURTLE;
-    return new BasicRepresentation(serialized, contentType);
+    const serialized = serializeQuads(metadata.quads(null, null, null, null), TEXT_TURTLE);
+    return new BasicRepresentation(serialized, TEXT_TURTLE);
   }
 
   protected async writeMetadata(identifier: ResourceIdentifier, representation: Representation):
