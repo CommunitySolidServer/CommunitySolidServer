@@ -17,7 +17,7 @@ const { literal, namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
 const baseUrl = `http://localhost:${port}/`;
-
+const metaSuffix = '.meta';
 const rootFilePath = getTestFolder('full-config-no-auth');
 const stores: [string, any][] = [
   [ 'in-memory storage', {
@@ -388,5 +388,109 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
   it('returns 415 for unsupported PATCH types.', async(): Promise<void> => {
     const response = await fetch(baseUrl, { method: 'PATCH', headers: { 'content-type': 'text/plain' }, body: 'abc' });
     expect(response.status).toBe(415);
+  });
+
+  it('can not delete metadata resources directly.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}document.txt`;
+
+    // PUT
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
+
+    // DELETE metadata attempt
+    const response = await fetch(documentUrl + metaSuffix, { method: 'DELETE' });
+    expect(response.status).toBe(409);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can not create metadata directly.', async(): Promise<void> => {
+    const slug = `document.txt${metaSuffix}`;
+    const documentMetaURL = `${baseUrl}${slug}`;
+
+    // POST
+    const postResponse = await fetch(baseUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'text/turtle', slug },
+      body: '<a> <b> <c>.',
+    });
+    expect(postResponse.status).toBe(403);
+
+    // PUT
+    const putResponse = await fetch(documentMetaURL, {
+      method: 'PUT',
+      headers: { 'content-type': 'text/turtle' },
+      body: '<a> <b> <c>.',
+    });
+    expect(putResponse.status).toBe(409);
+
+    // PATCH
+    const patchResponse = await fetch(documentMetaURL, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: 'INSERT DATA {<a> <b> <c>.}',
+    });
+    expect(patchResponse.status).toBe(409);
+  });
+
+  it('can update metadata triples using PATCH.', async(): Promise<void> => {
+    const documentUrl = `${baseUrl}document.txt`;
+    const documentMetaURL = `${documentUrl}${metaSuffix}`;
+
+    // PUT
+    await putResource(documentUrl, { contentType: 'text/plain', body: 'TESTFILE0' });
+
+    // PATCH
+    const patchResponse = await fetch(documentMetaURL, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: 'INSERT DATA {<a> <b> <c>.}',
+    });
+    expect(patchResponse.status).toBe(205);
+
+    // GET
+    const response = await fetch(documentMetaURL);
+    await expectQuads(response, [ quad(namedNode(`${baseUrl}a`), namedNode(`${baseUrl}b`), namedNode(`${baseUrl}c`)) ]);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can not update metadata triples that are deemed immutable.', async(): Promise<void> => {
+    const metaUrl = baseUrl + metaSuffix;
+    const pimResponse = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: `INSERT DATA {<a> <${RDF.type}> <${PIM.Storage}>.}`,
+    });
+    expect(pimResponse.status).toBe(409);
+
+    const ldpResponse = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: `INSERT DATA {<a> <${LDP.contains}> <b>.}`,
+    });
+    expect(ldpResponse.status).toBe(409);
+  });
+
+  it('can not create metadata resource of a metadata resource.', async(): Promise<void> => {
+    const metaUrl = baseUrl + metaSuffix + metaSuffix;
+    const response = await fetch(metaUrl, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/sparql-update' },
+      body: `INSERT DATA {<a> <b> <c>.}`,
+    });
+    expect(response.status).toBe(409);
+  });
+
+  it('returns metadata resource location in link header.', async(): Promise<void> => {
+    const response = await fetch(baseUrl, { method: 'HEAD' });
+    expect(response.headers.get('link')).toContain(`<${baseUrl}${metaSuffix}>; rel="describedby"`);
+  });
+
+  it('can read metadata.', async(): Promise<void> => {
+    const response = await fetch(baseUrl + metaSuffix);
+    expect(response.status).toBe(200);
+    await expectQuads(response, [ quad(namedNode(baseUrl), namedNode(RDF.type), namedNode(PIM.Storage)) ]);
   });
 });
