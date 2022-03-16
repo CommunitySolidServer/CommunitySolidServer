@@ -30,6 +30,9 @@
       },
       "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
+      },
+      "metaStrategy": {
+        "@id": "urn:solid-server:default:MetadataStrategy"
       }
     },
 
