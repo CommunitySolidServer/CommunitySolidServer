@@ -5,6 +5,7 @@ import Describe = jest.Describe;
 
 const portNames = [
   // Integration
+  'Accounts',
   'AcpServer',
   'Conditions',
   'ContentNegotiation',
@@ -48,7 +49,9 @@ export function getPort(name: typeof portNames[number]): number {
   if (idx < 0) {
     throw new Error(`Unknown port name ${name}`);
   }
-  return 6000 + idx;
+  // 6000 is a bad port, causing node v18+ to block fetch requests targeting such a URL
+  // https://fetch.spec.whatwg.org/#port-blocking
+  return 6000 + idx + 1;
 }
 
 export function getSocket(name: typeof socketNames[number]): string {

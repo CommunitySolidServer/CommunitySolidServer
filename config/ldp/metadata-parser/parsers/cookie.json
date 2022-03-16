@@ -1,0 +1,21 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "The name of the cookie to identify being logged in with a CSS account.",
+      "@id": "urn:solid-server:default:value:accountCookieName",
+      "valueRaw": "css-account"
+    },
+    {
+      "comment": "Converts cookies into RDF metadata.",
+      "@id": "urn:solid-server:default:CookieParser",
+      "@type": "CookieParser",
+      "cookieMap": [
+        {
+          "CookieParser:_cookieMap_key": { "@id": "urn:solid-server:default:value:accountCookieName" },
+          "CookieParser:_cookieMap_value": "urn:npm:solid:community-server:http:accountCookie",
+        }
+      ]
+    }
+  ]
+}

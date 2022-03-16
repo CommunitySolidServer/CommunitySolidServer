@@ -11,9 +11,9 @@
     "css:config/identity/access/public.json",
     "css:config/identity/email/default.json",
     "css:config/identity/handler/default.json",
+    "css:config/identity/interaction/default.json",
     "css:config/identity/ownership/unsafe-no-check.json",
     "css:config/identity/pod/dynamic.json",
-    "css:config/identity/registration/enabled.json",
     "css:config/ldp/authentication/debug-auth-header.json",
     "css:config/ldp/authorization/webacl.json",
     "css:config/ldp/handler/default.json",
@@ -29,7 +29,7 @@
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
-    "css:config/util/resource-locker/memory.json",
+    "css:config/util/resource-locker/debug-void.json",
     "css:config/util/variables/default.json"
   ],
   "@graph": [

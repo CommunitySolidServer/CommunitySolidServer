@@ -3,23 +3,27 @@ import { exportJWK, generateKeyPair } from 'jose';
 import type * as Koa from 'koa';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
-import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
 import type { JwkGenerator } from '../../../../src/identity/configuration/JwkGenerator';
+import type { PromptFactory } from '../../../../src/identity/configuration/PromptFactory';
 import type {
-  ClientCredentials,
-} from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
-import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
+  ClientCredentialsStore,
+} from '../../../../src/identity/interaction/client-credentials/util/ClientCredentialsStore';
+import type { Interaction } from '../../../../src/identity/interaction/InteractionHandler';
+import type { InteractionRoute } from '../../../../src/identity/interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
-import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import { extractErrorTerms } from '../../../../src/util/errors/HttpErrorUtil';
 import { OAuthHttpError } from '../../../../src/util/errors/OAuthHttpError';
 import type { errors, Configuration, KoaContextWithOIDC } from '../../../../templates/types/oidc-provider';
 
 /* eslint-disable @typescript-eslint/naming-convention */
-jest.mock('oidc-provider', (): any =>
-  jest.fn().mockImplementation((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() })));
+jest.mock('oidc-provider', (): any => {
+  const fn = jest.fn((issuer: string, config: Configuration): any => ({ issuer, config, use: jest.fn() }));
+  // The base export is the Provider class, but we also need some of the deeper exports like interactionPolicy
+  (fn as any).interactionPolicy = jest.requireActual('oidc-provider').interactionPolicy;
+  return fn;
+});
 
 const routes = {
   authorization: '/foo/oidc/auth',
@@ -43,21 +47,22 @@ describe('An IdentityProviderFactory', (): void => {
   const baseUrl = 'http://example.com/foo/';
   const oidcPath = '/oidc';
   const webId = 'http://alice.example.com/card#me';
-  const redirectUrl = 'http://example.com/login/';
-  const oidcInteraction: Interaction = {} as any;
+  let oidcInteraction: Interaction;
+  let interactionRoute: InteractionRoute;
   let ctx: KoaContextWithOIDC;
-  let interactionHandler: jest.Mocked<InteractionHandler>;
+  let promptFactory: jest.Mocked<PromptFactory>;
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
   let jwkGenerator: jest.Mocked<JwkGenerator>;
-  let credentialStorage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
+  let clientCredentialsStore: jest.Mocked<ClientCredentialsStore>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
 
   beforeAll(async(): Promise<void> => {
     // We need to fool the IDP factory into thinking we are not in a test run,
-    // otherwise we can't mock the oidc-provider library due to the workaround in the code there.
+    // otherwise we can't mock the oidc-provider library,
+    // as the `importOidcProvider` utility function always calls `jest.requireActual`.
     jestWorkerId = process.env.JEST_WORKER_ID;
     nodeEnv = process.env.NODE_ENV;
     delete process.env.JEST_WORKER_ID;
@@ -74,6 +79,12 @@ describe('An IdentityProviderFactory', (): void => {
     // where we use the actual library instead of a mock.
     baseConfig = { claims: { webid: [ 'webid', 'client_webid' ]}, features: { devInteractions: { enabled: false }}};
 
+    oidcInteraction = { prompt: { name: 'account' }} as any;
+
+    interactionRoute = {
+      getPath: jest.fn().mockReturnValue('http://example.com/interaction/'),
+    } as any;
+
     ctx = {
       method: 'GET',
       req: Readable.from('data'),
@@ -88,8 +99,8 @@ describe('An IdentityProviderFactory', (): void => {
       accepts: jest.fn().mockReturnValue('type'),
     } as any;
 
-    interactionHandler = {
-      handleSafe: jest.fn().mockRejectedValue(new FoundHttpError(redirectUrl)),
+    promptFactory = {
+      handleSafe: jest.fn(),
     } as any;
 
     adapterFactory = {
@@ -109,9 +120,8 @@ describe('An IdentityProviderFactory', (): void => {
       getPublicKey: jest.fn().mockResolvedValue({ ...await exportJWK(publicKey), alg: 'ES256' }),
     };
 
-    credentialStorage = {
-      get: jest.fn((id: string): any => map.get(id)),
-      set: jest.fn((id: string, value: any): any => map.set(id, value)),
+    clientCredentialsStore = {
+      get: jest.fn(),
     } as any;
 
     errorHandler = {
@@ -121,13 +131,14 @@ describe('An IdentityProviderFactory', (): void => {
     responseWriter = { handleSafe: jest.fn() } as any;
 
     factory = new IdentityProviderFactory(baseConfig, {
+      promptFactory,
       adapterFactory,
       baseUrl,
       oidcPath,
-      interactionHandler,
+      interactionRoute,
       storage,
       jwkGenerator,
-      credentialStorage,
+      clientCredentialsStore,
       showStackTrace: true,
       errorHandler,
       responseWriter,
@@ -155,7 +166,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect((config.pkce!.required as any)()).toBe(true);
     expect(config.clientDefaults?.id_token_signed_response_alg).toBe('ES256');
 
-    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).resolves.toBe(redirectUrl);
+    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).resolves.toBe(interactionRoute.getPath());
 
     let findResult = await config.findAccount?.({ oidc: { client: { clientId: 'clientId' }}} as any, webId);
     expect(findResult?.accountId).toBe(webId);
@@ -166,7 +177,7 @@ describe('An IdentityProviderFactory', (): void => {
     await expect((config.extraTokenClaims as any)({}, {})).resolves.toEqual({});
     const client = { clientId: 'my_id' };
     await expect((config.extraTokenClaims as any)({}, { client })).resolves.toEqual({});
-    await credentialStorage.set('my_id', { webId: 'http://example.com/foo', secret: 'my-secret' });
+    clientCredentialsStore.get.mockResolvedValueOnce({ accountId: 'id', webId: 'http://example.com/foo', secret: 'my-secret' });
     await expect((config.extraTokenClaims as any)({}, { client }))
       .resolves.toEqual({ webid: 'http://example.com/foo' });
     await expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
@@ -175,7 +186,7 @@ describe('An IdentityProviderFactory', (): void => {
     expect(config.features?.resourceIndicators?.enabled).toBe(true);
     expect((config.features?.resourceIndicators?.defaultResource as any)()).toBe('http://example.com/');
     expect((config.features?.resourceIndicators?.getResourceServerInfo as any)()).toEqual({
-      scope: 'webid',
+      scope: '',
       audience: 'solid',
       accessTokenFormat: 'jwt',
       jwt: { sign: { alg: 'ES256' }},
@@ -189,17 +200,9 @@ describe('An IdentityProviderFactory', (): void => {
       .toHaveBeenLastCalledWith({ error, request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
-  });
 
-  it('errors if there is no valid interaction redirect.', async(): Promise<void> => {
-    interactionHandler.handleSafe.mockRejectedValueOnce(new Error('bad data'));
-    const provider = await factory.getProvider() as any;
-    const { config } = provider as { config: Configuration };
-    await expect((config.interactions?.url as any)(ctx, oidcInteraction)).rejects.toThrow('bad data');
-
-    interactionHandler.handleSafe.mockResolvedValueOnce(new BasicRepresentation());
-    await expect((config.interactions?.url as any)(ctx, oidcInteraction))
-      .rejects.toThrow('Could not correctly redirect for the given interaction.');
+    // Test that the Prompt was added
+    expect(promptFactory.handleSafe).toHaveBeenCalledTimes(1);
   });
 
   it('copies a field from the input config if values need to be added to it.', async(): Promise<void> => {
@@ -207,13 +210,14 @@ describe('An IdentityProviderFactory', (): void => {
       long: { signed: true },
     };
     factory = new IdentityProviderFactory(baseConfig, {
+      promptFactory,
       adapterFactory,
       baseUrl,
       oidcPath,
-      interactionHandler,
+      interactionRoute,
       storage,
       jwkGenerator,
-      credentialStorage,
+      clientCredentialsStore,
       showStackTrace: true,
       errorHandler,
       responseWriter,
@@ -232,13 +236,14 @@ describe('An IdentityProviderFactory', (): void => {
     const result1 = await factory.getProvider() as unknown as { issuer: string; config: Configuration };
     // Create a new factory that is not cached yet
     const factory2 = new IdentityProviderFactory(baseConfig, {
+      promptFactory,
       adapterFactory,
       baseUrl,
       oidcPath,
-      interactionHandler,
+      interactionRoute,
       storage,
       jwkGenerator,
-      credentialStorage,
+      clientCredentialsStore,
       showStackTrace: true,
       errorHandler,
       responseWriter,

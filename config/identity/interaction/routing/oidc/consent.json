@@ -1,0 +1,66 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the interaction that occurs when a logged in user wants to authenticate with a new app.",
+      "@id": "urn:solid-server:default:OidcConsentRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:OidcConsentRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:OidcRoute" },
+        "relativePath": "consent/"
+      },
+      "source": {
+        "@id": "urn:solid-server:default:ConsentHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [
+          {
+            "@type": "MethodFilterHandler",
+            "methods": [ "GET" ],
+            "source": {
+              "@type": "ClientInfoHandler",
+              "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+            }
+          },
+          {
+            "@type": "MethodFilterHandler",
+            "methods": [ "POST" ],
+            "source": {
+              "@type": "ConsentHandler",
+              "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:OidcConsentRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "OidcControlHandler",
+      "controls": [
+        {
+          "OidcControlHandler:_controls_key": "consent",
+          "OidcControlHandler:_controls_value": { "@id": "urn:solid-server:default:OidcConsentRoute" }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:OidcConsentHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/oidc/consent.html.ejs",
+        "route": { "@id": "urn:solid-server:default:OidcConsentRoute" }
+      }]
+    }
+  ]
+}

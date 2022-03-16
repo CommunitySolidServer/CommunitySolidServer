@@ -1,6 +1,6 @@
 import type { Operation } from '../../../../src/http/Operation';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
-import { HtmlViewHandler } from '../../../../src/identity/interaction/HtmlViewHandler';
+import { HtmlViewEntry, HtmlViewHandler } from '../../../../src/identity/interaction/HtmlViewHandler';
 import type { InteractionRoute } from '../../../../src/identity/interaction/routing/InteractionRoute';
 import { TEXT_HTML } from '../../../../src/util/ContentTypes';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
@@ -13,14 +13,15 @@ describe('An HtmlViewHandler', (): void => {
   const idpIndex = 'http://example.com/idp/';
   let index: InteractionRoute;
   let operation: Operation;
-  let templates: Record<string, jest.Mocked<InteractionRoute>>;
+  let templates: HtmlViewEntry[];
   let templateEngine: TemplateEngine;
   let handler: HtmlViewHandler;
 
   beforeEach(async(): Promise<void> => {
     index = {
       getPath: jest.fn().mockReturnValue(idpIndex),
-    } as any;
+      matchPath: jest.fn().mockReturnValue({}),
+    };
 
     operation = {
       method: 'GET',
@@ -29,10 +30,16 @@ describe('An HtmlViewHandler', (): void => {
       body: new BasicRepresentation(),
     };
 
-    templates = {
-      '/templates/login.html.ejs': { getPath: jest.fn().mockReturnValue('http://example.com/idp/login/') } as any,
-      '/templates/register.html.ejs': { getPath: jest.fn().mockReturnValue('http://example.com/idp/register/') } as any,
-    };
+    templates = [
+      new HtmlViewEntry({
+        getPath: jest.fn().mockReturnValue('http://example.com/idp/login/'),
+        matchPath: jest.fn().mockReturnValue({}),
+      }, '/templates/login.html.ejs'),
+      new HtmlViewEntry({
+        getPath: jest.fn().mockReturnValue('http://example.com/idp/register/'),
+        matchPath: jest.fn().mockReturnValue({}),
+      }, '/templates/register.html.ejs'),
+    ];
 
     templateEngine = {
       handleSafe: jest.fn().mockReturnValue(Promise.resolve('<html>')),
@@ -47,7 +54,9 @@ describe('An HtmlViewHandler', (): void => {
   });
 
   it('rejects unsupported paths.', async(): Promise<void> => {
-    operation.target.path = 'http://example.com/idp/otherPath/';
+    for (const template of templates) {
+      (template.route as jest.Mocked<InteractionRoute>).matchPath.mockReturnValue(undefined);
+    }
     await expect(handler.canHandle({ operation })).rejects.toThrow(NotFoundHttpError);
   });
 

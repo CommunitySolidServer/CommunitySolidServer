@@ -1,0 +1,12 @@
+<script>
+  // Redirect to the account page if logged in, if not: redirect to the login page
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    if (<%= authenticating %>) {
+      const body = await fetchJson(controls.oidc.prompt);
+      location.href = body.location;
+    } else {
+      location.href = controls.html?.account?.account ?? controls.html.main.login;
+    }
+  })();
+</script>

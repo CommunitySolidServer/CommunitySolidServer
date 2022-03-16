@@ -266,6 +266,9 @@ export const SOLID_ERROR_TERM = createVocabulary('urn:npm:solid:community-server
 );
 
 export const SOLID_HTTP = createVocabulary('urn:npm:solid:community-server:http:',
+  'accountCookie',
+  // When the above cookie expires, expects an ISO date string
+  'accountCookieExpiration',
   // Unit, start, and end are used for range headers
   'end',
   'location',

@@ -1,0 +1,72 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Returns the links of the HTML pages that can be used to log in with specific methods.",
+      "@id": "urn:solid-server:default:LoginRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:LoginRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:IndexRoute" },
+        "relativePath": "login/"
+      },
+      "source": {
+        "@type": "MethodFilterHandler",
+        "methods": [ "GET" ],
+        "source": {
+          "@type": "ControlHandler",
+          "controls": [
+            {
+              "ControlHandler:_controls_key": "logins",
+              "ControlHandler:_controls_value": {
+                "comment": "New login methods should add a link to their HTML login page here. This list can be used when multiple login methods exist to make a choice.",
+                "@id": "urn:solid-server:default:LoginHandler",
+                "@type": "ControlHandler",
+                "controls": []
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:LoginRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:MainControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "logins",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:LoginRoute" }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:LoginHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/login.html.ejs",
+        "route": { "@id": "urn:solid-server:default:LoginRoute" }
+      }]
+    },
+    {
+      "@id": "urn:solid-server:default:MainHtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "login",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:LoginRoute" }
+        }
+      ]
+    }
+  ]
+}

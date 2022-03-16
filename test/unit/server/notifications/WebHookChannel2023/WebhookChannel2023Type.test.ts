@@ -37,7 +37,7 @@ describe('A WebhookChannel2023Type', (): void => {
   let data: Store;
   let channel: WebhookChannel2023;
   const route = new AbsolutePathInteractionRoute('http://example.com/webhooks/');
-  const webIdRoute = new RelativePathInteractionRoute(route, '/webid');
+  const webIdRoute = new RelativePathInteractionRoute(route, '/webid', false);
   let stateHandler: jest.Mocked<StateHandler>;
   let channelType: WebhookChannel2023Type;
 

@@ -30,6 +30,22 @@ export function isValidFileName(name: string): boolean {
 }
 
 /**
+ * Checks if the given string is a valid URL.
+ *
+ * @param url - String to check.
+ * @returns True if the string is a valid URL.
+ */
+export function isUrl(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Converts milliseconds to an ISO 8601 duration string.
  * The only categories used are days, hours, minutes, and seconds,
  * because months have no fixed size in milliseconds.

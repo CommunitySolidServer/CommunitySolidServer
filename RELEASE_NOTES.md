@@ -5,13 +5,26 @@
 ### New features
 
 - The minimum supported Node version is now v18.
+- Account management and everything related to it have been drastically changed,
+  see the [usage documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/identity-provider/)
+  for an overview of the new features,
+  and the [architecture documentation](http://communitysolidserver.github.io/CommunitySolidServer/7.x/architecture/features/accounts/overview/)
+  for an overview of the new structure.
+  Creating an account now requires multiple steps, but allows you to have multiple pods or WebIDs for 1 account.
+  The architecture has been updated to be more easily extensible.
+- Pod seeding has been updated to account for the new account management, with an update CLI parameter `--seedConfig`,
+  see the [updated documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/seeding-pods/)
+  for more details.
+- Due to the changes in account management, setup has been removed completely.
+  The `*-no-setup.json` configurations have been renamed to `*-root.json` to indicate their focus on the root container.
 - The `StaticAssetHandler` can now be used to link static pages to containers.
   This can be used to set a static page for the root container of a server.
   See the `/config/app/init/static-root.json` config for an example.
 
 ### Data migration
 
-No actions are required to migrate data.
+Old account data will need to be migrated as described in the
+[documentation](https://communitysolidserver.github.io/CommunitySolidServer/7.x/usage/account/migration/).
 
 ### Configuration changes
 
@@ -23,16 +36,21 @@ The `@context` needs to be updated to
 The following changes pertain to the imports in the default configs:
 
 - There is a new `static-root.json` import option for `app/init`, setting a static page for the root container.
+- There is a new set of imports `identity/interaction` to determine the IDP features.
+- There is a new set of imports `storage/location` to determine where the root storage of the server is located.
+- The `app/setup`and `identity/registration` imports have been removed.
 
 The following changes are relevant for v6 custom configs that replaced certain features.
 
+- All configurations that had a reference to setup have been updated.
 - `/app/init/*` imports have changed. Functionality remained the same though.
 - All imports that define storages have been updated with new storage classes.
     - `/http/notifications/base/storage.json`
-    - `/identity/*`
     - `/storage/keyvalue/storages/storages.json`
 - All identifiers containing the string "WebHook" have been renamed to instead use "Webhook"
   to be consistent with the notification type.
+- `/identity/*` configurations have drastically changed due to the account management update.
+- `/http/static/default.json` has been updated to allow easier overriding of the static resources.
 
 ### Interface changes
 
@@ -45,6 +63,10 @@ These changes are relevant if you wrote custom modules for the server that depen
   `HashEncodingPathStorage` has similarly been replaced by introducing `HashEncodingStorage`.
 - All classes with the name `WebHook*` have been renamed to `Webhook*`
   to be consistent with the corresponding notification type.
+- Most classes related to the IDP have been changed.
+- All classes related to setup have been removed.
+- The `StaticAssetHandler` has bene updated to support the new functionality.
+- `SeededPodInitializer` has been renamed to `SeededAccountInitializer`.
 
 ## v6.1.0
 

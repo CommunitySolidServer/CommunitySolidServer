@@ -1,0 +1,57 @@
+<h1>Log in</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>Your account</legend>
+    <ol>
+      <li>
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="true" checked>Stay logged in</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions">
+    <button type="submit" name="submit">Log in</button>
+    <button class="hidden" type="button" id="cancel">Cancel</button>
+  </p>
+
+  <ul class="actions">
+    <li><a id="register-link" href="" class="link">Sign up</a></li>
+    <li><a id="forgot-link"  href="" class="link">Forgot password</a></li>
+  </ul>
+</form>
+
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    // Only show the cancel button if there is an OIDC interaction
+    setVisibility('cancel', <%= authenticating %>);
+    getElements('cancel').cancel.addEventListener('click', async() => {
+      const res = await fetch(controls.oidc.cancel, { method: 'POST' });
+      location.href = (await res.json()).location;
+    });
+
+    addPostListener(async() => {
+      const json = await postJsonForm(controls.password.login, false,
+        (json) => Object.assign(json, { remember: Boolean(json.remember) }));
+      // In case there was no forced OIDC redirect, just go to the main account page
+      if (json) {
+        location.href = json.resource;
+      }
+    })
+
+    updateElement('register-link', controls.html.password.register, { href: true });
+    updateElement('forgot-link', controls.html.password.forgot, { href: true });
+  })();
+</script>

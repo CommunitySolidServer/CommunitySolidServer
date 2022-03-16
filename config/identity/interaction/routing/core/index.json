@@ -1,0 +1,49 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Root API entry. Returns an empty body so we can add controls pointing to other interaction routes.",
+      "@id": "urn:solid-server:default:IndexRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:IndexRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": {
+          "@type": "AbsolutePathInteractionRoute",
+          "path": { "@id": "urn:solid-server:default:variable:baseUrl" }
+        },
+        "relativePath": ".account/"
+      },
+      "source": {
+        "@type": "StaticInteractionHandler",
+        "response": {}
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:IndexRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:MainControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "index",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:IndexRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:IndexHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/index.html.ejs",
+        "route": { "@id": "urn:solid-server:default:IndexRoute" }
+      }]
+    }
+  ]
+}

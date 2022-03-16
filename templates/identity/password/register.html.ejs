@@ -1,0 +1,67 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose the credentials you want to use to log in to this server in the future</p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions">
+    <button type="submit" name="submit">Register</button>
+    <button type="button" id="login-link">Back</button>
+  </p>
+</form>
+
+
+<script>
+  let accountResource;
+  let passwordCreateUrl;
+  let oidcLocation;
+
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    setRedirectClick('login-link', controls.html.password.login);
+
+    addPostListener(async() => {
+      validatePasswordConfirmation('password');
+
+      // Caching account in case there is an error adding the password login
+      if (!accountResource || !passwordCreateUrl) {
+        const res = await fetch(controls.account.create, {method: 'POST'});
+        const json = await res.json();
+        accountResource = json.resource;
+        // Will only be defined if we are in a OIDC interaction
+        oidcLocation = json.location;
+
+        passwordCreateUrl = (await fetchJson(accountResource)).controls.password.create;
+      }
+
+      await postJsonForm(passwordCreateUrl);
+
+      // In case there is an OIDC location, we need to fetch it to force the OIDC library to go to the next step
+      if (oidcLocation) {
+        // Doing this after creating the password login to prevent incomplete accounts
+        await fetch(oidcLocation);
+      }
+
+      // We go to the account page even if we are in a OIDC interaction
+      // as the user would need to link a WebID anyway before an interaction can be completed.
+      location.href = accountResource;
+    });
+  })();
+</script>

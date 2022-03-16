@@ -11,7 +11,7 @@
       "source": {
         "@type": "ContainerInitializer",
         "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-        "args_path": "/idp/",
+        "args_path": "/.account/",
         "args_store": { "@id": "urn:solid-server:default:ResourceStore" },
         "args_generator": {
           "@type": "StaticFolderGenerator",

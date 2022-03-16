@@ -1,0 +1,45 @@
+<div id="input-partial">
+  <h1>Reset password</h1>
+  <form method="post" id="mainForm">
+    <p class="error" id="error"></p>
+
+    <fieldset>
+      <ol>
+        <li>
+          <label for="password">New password</label>
+          <input id="password" type="password" name="password" placeholder="">
+        </li>
+        <li>
+          <label for="confirmPassword">Confirm new password</label>
+          <input id="confirmPassword" type="password" name="confirmPassword" placeholder="">
+        </li>
+      </ol>
+    </fieldset>
+
+    <p class="actions"><button type="submit" name="submit">Reset password</button></p>
+  </form>
+</div>
+<div id="response-partial">
+  <h1>Password reset</h1>
+  <p>Your password was successfully reset.</p>
+  <p class="actions"><button type="button" id="response-login-link">Log in</button></p>
+</div>
+
+<script>
+  setVisibility('response-partial', false);
+
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    setRedirectClick('response-login-link', controls.html.password.login);
+
+    const recordId = new URLSearchParams(location.search).get('rid');
+
+    addPostListener(async() => {
+      validatePasswordConfirmation('password');
+      await postJsonForm(controls.password.reset, false, (json) => Object.assign(json, { recordId }));
+      setVisibility('input-partial', false);
+      setVisibility('response-partial', true);
+    });
+  })();
+</script>

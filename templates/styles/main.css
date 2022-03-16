@@ -246,23 +246,23 @@ input:focus, button:focus {
   outline: var(--solid-blue) solid 1.5px;
 }
 
-form p.actions {
-  margin: .5em 0 1em 11em;
-}
-
-form p.error {
+p.error {
   color: #ad0f0f;
   font-weight: 600;
 }
-form p.error:empty {
+p.error:empty {
   display :none;
 }
 
-form ul.actions {
+p.actions {
+  margin: .5em 0 1em 11em;
+}
+
+ul.actions {
   padding: 0;
   margin: 0 0 1em 11em;
 }
-form ul.actions > li {
+ul.actions > li {
   list-style-type: none;
   display: inline;
   margin-right: 1em;
@@ -278,7 +278,7 @@ form.loaded * {
   max-height: 1000px;
   transition: max-height .2s;
 }
-form .hidden {
+form .hidden:not(button) {
   display: block;
   max-height: 0;
   overflow: hidden;

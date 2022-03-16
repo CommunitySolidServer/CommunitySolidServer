@@ -1,0 +1,25 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles credential tokens. These can be used to automate clients. See documentation for more info.",
+      "@id": "urn:solid-server:default:AccountClientCredentialsRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountClientCredentialsRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:AccountIdRoute" },
+        "relativePath": "client-credentials/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:CreateClientCredentialsHandler",
+          "@type": "CreateClientCredentialsHandler",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" }
+        }
+      }
+    }
+  ]
+}

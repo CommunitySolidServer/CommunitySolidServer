@@ -1,0 +1,78 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:AccountStore",
+      "@type": "BaseAccountStore",
+      "storage": {
+        "@id": "urn:solid-server:default:AccountStorage",
+        "@type": "WrappedExpiringStorage",
+        "source": {
+          "@type": "Base64EncodingStorage",
+          "source": {
+            "@type": "ContainerPathStorage",
+            "relativePath": "/accounts/data/",
+            "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+          }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:WebIdStore",
+      "@type": "BaseWebIdStore",
+      "webIdRoute": { "@id": "urn:solid-server:default:AccountWebIdLinkRoute" },
+      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+      "storage": {
+        "@id": "urn:solid-server:default:WebIdStorage",
+        "@type": "Base64EncodingStorage",
+        "source": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/accounts/webIds/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:CookieStore",
+      "@type": "BaseCookieStore",
+      "storage": {
+        "@id": "urn:solid-server:default:CookieStorage",
+        "@type": "WrappedExpiringStorage",
+        "source": {
+          "@type": "Base64EncodingStorage",
+          "source": {
+            "@type": "ContainerPathStorage",
+            "relativePath": "/accounts/cookies/",
+            "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+          }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:PodStore",
+      "@type": "BasePodStore",
+      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+      "podRoute": { "@id": "urn:solid-server:default:AccountPodIdRoute" },
+      "manager": { "@id": "urn:solid-server:default:PodManager" }
+    },
+
+    {
+      "@id": "urn:solid-server:default:ClientCredentialsStore",
+      "@type": "BaseClientCredentialsStore",
+      "clientCredentialsRoute": { "@id": "urn:solid-server:default:AccountClientCredentialsIdRoute" },
+      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+      "storage": {
+        "@id": "urn:solid-server:default:ClientCredentialsStorage",
+        "@type": "Base64EncodingStorage",
+        "source": {
+          "@type": "ContainerPathStorage",
+          "relativePath": "/accounts/client-credentials/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
+      }
+    }
+  ]
+}

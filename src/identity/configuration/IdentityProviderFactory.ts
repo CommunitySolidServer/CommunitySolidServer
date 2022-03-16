@@ -12,27 +12,29 @@ import type { Account,
   UnknownObject,
   errors } from '../../../templates/types/oidc-provider';
 import type Provider from '../../../templates/types/oidc-provider';
-import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../http/output/ResponseWriter';
-import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import type { HttpError } from '../../util/errors/HttpError';
 import { errorTermsToMetadata } from '../../util/errors/HttpErrorUtil';
-import { InternalServerError } from '../../util/errors/InternalServerError';
 import { OAuthHttpError } from '../../util/errors/OAuthHttpError';
-import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import { joinUrl } from '../../util/PathUtil';
-import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
-import type { InteractionHandler } from '../interaction/InteractionHandler';
+import { importOidcProvider } from '../IdentityUtil';
+import type { ClientCredentialsStore } from '../interaction/client-credentials/util/ClientCredentialsStore';
+import type { InteractionRoute } from '../interaction/routing/InteractionRoute';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { AlgJwk, JwkGenerator } from './JwkGenerator';
+import type { PromptFactory } from './PromptFactory';
 import type { ProviderFactory } from './ProviderFactory';
 
 export interface IdentityProviderFactoryArgs {
+  /**
+   * Used to generate new prompt that are needed in addition to the defaults prompts.
+   */
+  promptFactory: PromptFactory;
   /**
    * Factory that creates the adapter used for OIDC data storage.
    */
@@ -46,13 +48,13 @@ export interface IdentityProviderFactoryArgs {
    */
   oidcPath: string;
   /**
-   * The handler responsible for redirecting interaction requests to the correct URL.
+   * The route where requests should be redirected to in case of an OIDC interaction.
    */
-  interactionHandler: InteractionHandler;
+  interactionRoute: InteractionRoute;
   /**
-   * Storage containing the generated client credentials with their associated WebID.
+   * Store containing the generated client credentials with their associated WebID.
    */
-  credentialStorage: KeyValueStorage<string, ClientCredentials>;
+  clientCredentialsStore: ClientCredentialsStore;
   /**
    * Storage used to store cookie keys so they can be re-used in case of multithreading.
    */
@@ -87,12 +89,13 @@ const COOKIES_KEY = 'cookie-secret';
 export class IdentityProviderFactory implements ProviderFactory {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly promptFactory: PromptFactory;
   private readonly config: Configuration;
   private readonly adapterFactory: AdapterFactory;
   private readonly baseUrl: string;
   private readonly oidcPath: string;
-  private readonly interactionHandler: InteractionHandler;
-  private readonly credentialStorage: KeyValueStorage<string, ClientCredentials>;
+  private readonly interactionRoute: InteractionRoute;
+  private readonly clientCredentialsStore: ClientCredentialsStore;
   private readonly storage: KeyValueStorage<string, unknown>;
   private readonly jwkGenerator: JwkGenerator;
   private readonly showStackTrace: boolean;
@@ -108,11 +111,12 @@ export class IdentityProviderFactory implements ProviderFactory {
   public constructor(config: Configuration, args: IdentityProviderFactoryArgs) {
     this.config = config;
 
+    this.promptFactory = args.promptFactory;
     this.adapterFactory = args.adapterFactory;
     this.baseUrl = args.baseUrl;
     this.oidcPath = args.oidcPath;
-    this.interactionHandler = args.interactionHandler;
-    this.credentialStorage = args.credentialStorage;
+    this.interactionRoute = args.interactionRoute;
+    this.clientCredentialsStore = args.clientCredentialsStore;
     this.storage = args.storage;
     this.jwkGenerator = args.jwkGenerator;
     this.showStackTrace = args.showStackTrace;
@@ -145,21 +149,14 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Render errors with our own error handler
     this.configureErrors(config);
 
-    // As oidc-provider is an ESM package and CSS is CJS, we have to use a dynamic import here.
-    // Unfortunately, there is a Node/Jest bug that causes segmentation faults when doing such an import in Jest:
-    // https://github.com/nodejs/node/issues/35889
-    // To work around that, we do the import differently, in case we are in a Jest test run.
-    // This can be detected via the env variables: https://jestjs.io/docs/environment-variables.
-    // There have been reports of `JEST_WORKER_ID` being undefined, so to be sure we check both.
-    let ctr: { default: new(issuer: string, configuration?: Configuration) => Provider };
-    // eslint-disable-next-line no-process-env
-    if (process.env.JEST_WORKER_ID ?? process.env.NODE_ENV === 'test') {
-      // eslint-disable-next-line no-undef
-      ctr = jest.requireActual('oidc-provider');
-    } else {
-      ctr = await import('oidc-provider');
-    }
-    const provider = new ctr.default(this.baseUrl, config);
+    const oidcImport = await importOidcProvider();
+
+    // Adds new prompts
+    const policy = oidcImport.interactionPolicy.base();
+    await this.promptFactory.handleSafe(policy);
+    config.interactions!.policy = policy;
+
+    const provider = new oidcImport.default(this.baseUrl, config);
 
     // Allow provider to interpret reverse proxy headers.
     provider.proxy = true;
@@ -283,7 +280,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     config.extraTokenClaims = async(ctx, token): Promise<UnknownObject> =>
       this.isAccessToken(token) ?
         { webid: token.accountId } :
-        { webid: token.client && (await this.credentialStorage.get(token.client.clientId))?.webId };
+        { webid: token.client && (await this.clientCredentialsStore.get(token.client.clientId))?.webId };
 
     config.features = {
       ...config.features,
@@ -300,7 +297,7 @@ export class IdentityProviderFactory implements ProviderFactory {
         getResourceServerInfo: (): ResourceServer => ({
           // The scopes of the Resource Server.
           // These get checked when requesting client credentials.
-          scope: 'webid',
+          scope: '',
           audience: 'solid',
           accessTokenFormat: 'jwt',
           jwt: {
@@ -329,26 +326,7 @@ export class IdentityProviderFactory implements ProviderFactory {
     // it will resolve the interactions.url helper function and redirect the User-Agent to that url.
     // Another requirement is that `features.userinfo` is disabled in the configuration.
     config.interactions = {
-      url: async(ctx, oidcInteraction): Promise<string> => {
-        const operation: Operation = {
-          method: ctx.method,
-          target: { path: ctx.request.href },
-          preferences: {},
-          body: new BasicRepresentation(),
-        };
-
-        // Instead of sending a 3xx redirect to the client (via a RedirectHttpError),
-        // we need to pass the location URL to the OIDC library
-        try {
-          await this.interactionHandler.handleSafe({ operation, oidcInteraction });
-        } catch (error: unknown) {
-          if (RedirectHttpError.isInstance(error)) {
-            return error.location;
-          }
-          throw error;
-        }
-        throw new InternalServerError('Could not correctly redirect for the given interaction.');
-      },
+      url: async(): Promise<string> => this.interactionRoute.getPath(),
     };
 
     config.routes = {

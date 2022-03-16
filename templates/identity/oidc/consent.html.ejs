@@ -1,0 +1,111 @@
+<h1>An application is requesting access</h1>
+<p class="error" id="error"></p>
+<p>
+  Do you trust this application
+  to read and write data on your behalf?
+</p>
+<dl id="client"></dl>
+<form method="post" id="mainForm">
+  <fieldset>
+    <legend>Choose your WebID to authorize</legend>
+    <ol id="webIdList">
+    </ol>
+  </fieldset>
+
+  <fieldset>
+    <ol>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="true" checked>Remember this client</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions">
+    <button id="authorize" type="submit" autofocus>Authorize</button>
+    <button id="cancel" type="button">Cancel</button>
+    <button id="edit-account" type="button" class="alternate">Edit account</button>
+    <button id="switch-account" type="button" class="alternate">Use a different account</button>
+  </p>
+</form>
+
+<script>
+  // Wire up elements
+  const elements = getElements();
+
+  // Retrieve and display client information
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    wireButtons(controls);
+
+    const { webIds } = await fetchJson(controls.oidc.webId);
+    if (webIds.length === 0) {
+      setError('No WebIDs are assigned to this account. Edit the account to add one.');
+    }
+    setVisibility('authorize', webIds.length > 0);
+
+    // List WebIDs on page
+    for (const webId of webIds) {
+      webIdList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label for="${webId}">
+            <input id="${webId}" type="radio" name="webId" value="${webId}" ${webIds.length === 1 ? 'checked' : ''}>
+            ${webId}
+          </label>
+        </li>`);
+    }
+
+    const { client } = await fetchJson(controls.oidc.consent);
+    showClientInfo('Name', client.client_name);
+    showClientInfo('ID', client.client_id);
+
+    addPostListener(() => consent(controls));
+  })();
+
+  function wireButtons(controls) {
+    elements.cancel.addEventListener('click', async() => {
+      const res = await fetch(controls.oidc.cancel, { method: 'POST' });
+      location.href = (await res.json()).location;
+    });
+    setRedirectClick('edit-account', controls.account.account);
+    elements['switch-account'].addEventListener('click', async() => {
+      await fetch(controls.account.logout, { method: 'POST' });
+      location.href = controls.html.main.login;
+    });
+  }
+
+  // Adds client info to the UI
+  function showClientInfo(label, value) {
+    if (value) {
+      elements.client.insertAdjacentHTML('beforeend', `<dt>${label}</dt><dd>${value}</dd>`);
+    }
+  }
+
+  async function consent(controls) {
+    // The OIDC provider does not allow us to login and consent at the same time, so these have to be separate calls
+    const formData = new FormData(elements.mainForm);
+    let res = await postJson(controls.oidc.webId, { webId: formData.get('webId') });
+    let json = await res.json();
+    if (res.status !== 200) {
+      elements.error.innerText = json.message;
+      return;
+    }
+
+    // This is required to update the OIDC interaction
+    res = await fetch(json.location);
+    if (res.status !== 200) {
+      json = await res.json();
+      elements.error.innerText = json.message;
+      return;
+    }
+
+    // Submit to the consent API
+    res = await postJson(controls.oidc.consent, { remember: Boolean(formData.get('remember')) });
+    json = await res.json();
+    if (res.status !== 200) {
+      elements.error.innerText = json.message;
+      return;
+    }
+    location.href = json.location;
+  }
+</script>

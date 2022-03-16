@@ -1,0 +1,47 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allows the picked WebID to be forgotten in an OIDC interaction so the user can pick again.",
+      "@id": "urn:solid-server:default:OidcForgetWebIdRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:OidcForgetWebIDRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:OidcRoute" },
+        "relativePath": "forget-webid/"
+      },
+      "source": {
+        "@id": "urn:solid-server:default:ForgetWebIdHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [
+          {
+            "@type": "MethodFilterHandler",
+            "methods": [ "POST" ],
+            "source": {
+              "@type": "ForgetWebIdHandler",
+              "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:OidcForgetWebIdRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "OidcControlHandler",
+      "controls": [
+        {
+          "OidcControlHandler:_controls_key": "forgetWebId",
+          "OidcControlHandler:_controls_value": { "@id": "urn:solid-server:default:OidcForgetWebIDRoute" }
+        }
+      ]
+    }
+  ]
+}

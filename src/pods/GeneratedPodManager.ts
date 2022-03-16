@@ -1,4 +1,3 @@
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { ResourceStore } from '../storage/ResourceStore';
 import { ConflictHttpError } from '../util/errors/ConflictHttpError';
@@ -26,13 +25,13 @@ export class GeneratedPodManager implements PodManager {
    * Creates a new pod, pre-populating it with the resources created by the data generator.
    * Will throw an error if the given identifier already has a resource.
    */
-  public async createPod(identifier: ResourceIdentifier, settings: PodSettings, overwrite: boolean): Promise<void> {
-    this.logger.info(`Creating pod ${identifier.path}`);
-    if (!overwrite && await this.store.hasResource(identifier)) {
-      throw new ConflictHttpError(`There already is a resource at ${identifier.path}`);
+  public async createPod(settings: PodSettings, overwrite: boolean): Promise<void> {
+    this.logger.info(`Creating pod ${settings.base.path}`);
+    if (!overwrite && await this.store.hasResource(settings.base)) {
+      throw new ConflictHttpError(`There already is a resource at ${settings.base.path}`);
     }
 
-    const count = await addGeneratedResources(identifier, settings, this.resourcesGenerator, this.store);
-    this.logger.info(`Added ${count} resources to ${identifier.path}`);
+    const count = await addGeneratedResources(settings, this.resourcesGenerator, this.store);
+    this.logger.info(`Added ${count} resources to ${settings.base.path}`);
   }
 }

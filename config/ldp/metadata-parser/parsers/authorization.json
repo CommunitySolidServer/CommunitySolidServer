@@ -1,0 +1,16 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts the authorization header into RDF metadata",
+      "@id": "urn:solid-server:default:AuthorizationParser",
+      "@type": "AuthorizationParser",
+      "authMap": [
+        {
+          "AuthorizationParser:_authMap_key": "CSS-Account-Cookie",
+          "AuthorizationParser:_authMap_value": "urn:npm:solid:community-server:http:accountCookie"
+        }
+      ]
+    }
+  ]
+}

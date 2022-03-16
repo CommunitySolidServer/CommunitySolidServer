@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Converts all triples with the given predicates to cookies.",
+      "@id": "urn:solid-server:default:MetadataWriter_Cookie",
+      "@type": "CookieMetadataWriter",
+      "cookieMap": [
+        {
+          "CookieMetadataWriter:_cookieMap_key": "urn:npm:solid:community-server:http:accountCookie",
+          "CookieMetadataWriter:_name": { "@id": "urn:solid-server:default:value:accountCookieName" },
+          "CookieMetadataWriter:_expirationUri": "urn:npm:solid:community-server:http:accountCookieExpiration"
+        }
+      ]
+    }
+  ]
+}

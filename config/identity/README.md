@@ -27,8 +27,15 @@ Necessary for sending e-mail when using IDP.
 
 Contains everything needed for setting up the Identity Provider.
 
-* *default*: As of writing there is not much customization possible.
-  This contains everything needed.
+* *default*: Contains all the core components of the IDP.
+
+## Interaction
+
+Everything related to the JSON API and its routing.
+
+* *default*: Everything enabled.
+* *no-accounts*: Disables the creation of new accounts.
+* *no-pods*: Disables the creation of new pods.
 
 ## Ownership
 
@@ -44,10 +51,3 @@ What to use for pod creation.
 * *dynamic*: Every created pod has its own Components.js config for its ResourceStore,
   which can differ from the others.
 * *static*: All pod data is stored in separate containers in the same ResourceStore.
-
-## Registration
-
-If users should be able to register on the server.
-
-* *enabled*: Enables registration.
-* *disabled*: Disables registration.

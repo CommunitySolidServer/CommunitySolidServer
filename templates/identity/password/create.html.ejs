@@ -1,0 +1,44 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose the credentials you want to use to log in to this server in the future</p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Add login</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+
+
+<script>
+  (async() => {
+    let res = await fetch('<%= idpIndex %>', { headers: { accept: 'application/json' } });
+
+    const { controls } = await res.json();
+    setRedirectClick('account-link', controls.html.account.account);
+
+    addPostListener(async(event) => {
+      validatePasswordConfirmation('password');
+
+      await postJsonForm(controls.password.create);
+      location.href = controls.html.account.account;
+    });
+  })();
+</script>

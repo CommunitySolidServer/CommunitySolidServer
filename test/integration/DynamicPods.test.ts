@@ -2,6 +2,8 @@ import { mkdirSync } from 'fs';
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
 import { joinFilePath } from '../../src/util/PathUtil';
+import { register } from '../util/AccountUtil';
+import type { User } from '../util/AccountUtil';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -12,6 +14,7 @@ const podConfigJson = joinFilePath(rootFilePath, 'config-pod.json');
 
 const configs: [string, any][] = [
   [ 'memory.json', {
+  // Need to remove the config-pod.json
     teardown: async(): Promise<void> => removeFolder(rootFilePath),
   }],
   [ 'filesystem.json', {
@@ -23,16 +26,18 @@ const configs: [string, any][] = [
 // Tests are very similar to subdomain/pod tests. Would be nice if they can be combined
 describe.each(configs)('A dynamic pod server with template config %s', (template, { teardown }): void => {
   let app: App;
-  const settings = {
+  const user: User = {
     podName: 'alice',
-    webId: 'http://test.com/#alice',
+    webId: 'http://example.com/#alice',
     email: 'alice@test.email',
     password: 'password',
-    confirmPassword: 'password',
-    template,
-    createPod: true,
+    settings: {
+      template,
+    },
   };
-  const podUrl = `${baseUrl}${settings.podName}/`;
+  const podUrl = `${baseUrl}${user.podName}/`;
+  let controls: any;
+  let authorization: string;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
@@ -61,13 +66,9 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('creates a pod with the given config.', async(): Promise<void> => {
-    const res = await fetch(`${baseUrl}idp/register/`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(settings),
-    });
-    expect(res.status).toBe(200);
-    await expect(res.text()).resolves.toContain(podUrl);
+    const result = await register(baseUrl, user);
+    ({ controls, authorization } = result);
+    expect(result.pod).toBe(podUrl);
   });
 
   it('can fetch the created pod.', async(): Promise<void> => {
@@ -83,7 +84,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   it('should be able to read acl file with the correct credentials.', async(): Promise<void> => {
     const res = await fetch(`${podUrl}.acl`, {
       headers: {
-        authorization: `WebID ${settings.webId}`,
+        authorization: `WebID ${user.webId}`,
       },
     });
     expect(res.status).toBe(200);
@@ -92,7 +93,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   it('should be able to write to the pod now as the owner.', async(): Promise<void> => {
     let res = await fetch(`${podUrl}test`, {
       headers: {
-        authorization: `WebID ${settings.webId}`,
+        authorization: `WebID ${user.webId}`,
       },
     });
     expect(res.status).toBe(404);
@@ -100,7 +101,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
     res = await fetch(`${podUrl}test`, {
       method: 'PUT',
       headers: {
-        authorization: `WebID ${settings.webId}`,
+        authorization: `WebID ${user.webId}`,
         'content-type': 'text/plain',
       },
       body: 'this is new data!',
@@ -110,7 +111,7 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
 
     res = await fetch(`${podUrl}test`, {
       headers: {
-        authorization: `WebID ${settings.webId}`,
+        authorization: `WebID ${user.webId}`,
       },
     });
     expect(res.status).toBe(200);
@@ -118,13 +119,12 @@ describe.each(configs)('A dynamic pod server with template config %s', (template
   });
 
   it('should not be able to create a pod with the same name.', async(): Promise<void> => {
-    const newSettings = { ...settings, webId: 'http://test.com/#bob', email: 'bob@test.email' };
-    const res = await fetch(`${baseUrl}idp/register/`, {
+    const res = await fetch(controls.account.pod, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(newSettings),
+      headers: { authorization, 'content-type': 'application/json' },
+      body: JSON.stringify({ name: user.podName, settings: { template }}),
     });
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(400);
     await expect(res.text()).resolves.toContain(`There already is a pod at ${podUrl}`);
   });
 });

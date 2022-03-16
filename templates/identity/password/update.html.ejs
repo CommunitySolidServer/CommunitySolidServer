@@ -1,0 +1,42 @@
+<h1>Change password</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <ol>
+      <li>
+        <label for="oldPassword">Old password:</label>
+        <input id="oldPassword" type="password" name="oldPassword">
+      </li>
+      <li>
+        <label for="newPassword">New password:</label>
+        <input id="newPassword" type="password" name="newPassword">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Change password</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    setRedirectClick('account-link', controls.html.account.account);
+
+    addPostListener(async() => {
+      validatePasswordConfirmation('newPassword');
+
+      await postJsonForm('');
+      location.href = controls.html.account.account;
+    });
+  })();
+</script>

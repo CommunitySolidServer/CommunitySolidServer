@@ -11,6 +11,8 @@ const baseUrl = `http://localhost:${port}/`;
 
 // Some tests with real Requests/Responses until the mocking library has been removed from the tests
 describe('A Solid server', (): void => {
+  const document = `${baseUrl}document`;
+  const container = `${baseUrl}container/`;
   let app: App;
 
   beforeAll(async(): Promise<void> => {
@@ -31,74 +33,68 @@ describe('A Solid server', (): void => {
     await app.stop();
   });
 
+  it('can PUT to containers.', async(): Promise<void> => {
+    const res = await fetch(container, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+      body: '<a:b> <a:b> <a:b>.',
+    });
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(container);
+  });
+
+  it('can PUT to documents.', async(): Promise<void> => {
+    const res = await fetch(document, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+      body: '<a:b> <a:b> <a:b>.',
+    });
+    expect(res.status).toBe(201);
+    expect(res.headers.get('location')).toBe(document);
+  });
+
   it('can do a successful HEAD request to a container.', async(): Promise<void> => {
-    const res = await fetch(baseUrl, { method: 'HEAD' });
+    const res = await fetch(container, { method: 'HEAD' });
     expect(res.status).toBe(200);
   });
 
   it('can do a successful HEAD request to a container without accept headers.', async(): Promise<void> => {
-    const res = await fetch(baseUrl, { method: 'HEAD', headers: { accept: '' }});
+    const res = await fetch(container, { method: 'HEAD', headers: { accept: '' }});
     expect(res.status).toBe(200);
   });
 
   it('can do a successful HEAD request to a document.', async(): Promise<void> => {
-    const url = `${baseUrl}.acl`;
-    const res = await fetch(url, { method: 'HEAD' });
+    const res = await fetch(document, { method: 'HEAD' });
     expect(res.status).toBe(200);
   });
 
   it('can do a successful HEAD request to a document without accept headers.', async(): Promise<void> => {
-    const url = `${baseUrl}.acl`;
-    const res = await fetch(url, { method: 'HEAD', headers: { accept: '' }});
+    const res = await fetch(document, { method: 'HEAD', headers: { accept: '' }});
     expect(res.status).toBe(200);
   });
 
   it('can do a successful GET request to a container.', async(): Promise<void> => {
-    const res = await fetch(baseUrl);
+    const res = await fetch(container);
     expect(res.status).toBe(200);
   });
 
   it('can do a successful GET request to a container without accept headers.', async(): Promise<void> => {
-    const res = await fetch(baseUrl, { headers: { accept: '' }});
+    const res = await fetch(container, { headers: { accept: '' }});
     expect(res.status).toBe(200);
   });
 
   it('can do a successful GET request to a document.', async(): Promise<void> => {
-    const url = `${baseUrl}.acl`;
-    const res = await fetch(url);
+    const res = await fetch(document);
     expect(res.status).toBe(200);
   });
 
   it('can do a successful GET request to a document without accept headers.', async(): Promise<void> => {
-    const url = `${baseUrl}.acl`;
-    const res = await fetch(url, { headers: { accept: '' }});
+    const res = await fetch(document, { headers: { accept: '' }});
     expect(res.status).toBe(200);
-  });
-
-  it('can PUT to containers.', async(): Promise<void> => {
-    const url = `${baseUrl}containerPUT/`;
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'text/turtle',
-      },
-      body: '<a:b> <a:b> <a:b>.',
-    });
-    expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(url);
-  });
-
-  it('can PUT to resources.', async(): Promise<void> => {
-    const url = `${baseUrl}resourcePUT`;
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'text/turtle',
-      },
-      body: '<a:b> <a:b> <a:b>.',
-    });
-    expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(url);
   });
 
   it('can handle PUT errors.', async(): Promise<void> => {
@@ -116,7 +112,7 @@ describe('A Solid server', (): void => {
   });
 
   it('can POST to create a container.', async(): Promise<void> => {
-    const res = await fetch(baseUrl, {
+    const res = await fetch(container, {
       method: 'POST',
       headers: {
         'content-type': 'text/turtle',
@@ -126,58 +122,41 @@ describe('A Solid server', (): void => {
       body: '<a:b> <a:b> <a:b>.',
     });
     expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(`${baseUrl}containerPOST/`);
+    expect(res.headers.get('location')).toBe(`${container}containerPOST/`);
   });
 
   it('can POST to create a document.', async(): Promise<void> => {
-    const res = await fetch(baseUrl, {
+    const res = await fetch(container, {
       method: 'POST',
       headers: {
         'content-type': 'text/turtle',
-        slug: 'resourcePOST',
+        slug: 'documentPOST',
       },
       body: '<a:b> <a:b> <a:b>.',
     });
     expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(`${baseUrl}resourcePOST`);
+    expect(res.headers.get('location')).toBe(`${container}documentPOST`);
   });
 
   it('can DELETE containers.', async(): Promise<void> => {
-    const url = `${baseUrl}containerDELETE/`;
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'text/turtle',
-      },
-      body: '<a:b> <a:b> <a:b>.',
-    });
-    const res = await fetch(url, { method: 'DELETE' });
+    const res = await fetch(`${container}containerPOST/`, { method: 'DELETE' });
     expect(res.status).toBe(205);
   });
 
   it('can DELETE documents.', async(): Promise<void> => {
-    const url = `${baseUrl}resourceDELETE`;
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'text/turtle',
-      },
-      body: '<a:b> <a:b> <a:b>.',
-    });
-    const res = await fetch(url, { method: 'DELETE' });
+    const res = await fetch(`${container}documentPOST`, { method: 'DELETE' });
     expect(res.status).toBe(205);
   });
 
   it('can PATCH documents.', async(): Promise<void> => {
-    const url = `${baseUrl}resourcePATCH`;
-    await fetch(url, {
+    await fetch(document, {
       method: 'PUT',
       headers: {
         'content-type': 'text/turtle',
       },
       body: '<a:b> <a:b> <a:b>.',
     });
-    const res = await fetch(url, {
+    const res = await fetch(document, {
       method: 'PATCH',
       headers: {
         'content-type': 'application/sparql-update',
@@ -188,14 +167,13 @@ describe('A Solid server', (): void => {
   });
 
   it('can not PATCH containers.', async(): Promise<void> => {
-    const url = `${baseUrl}containerPATCH/`;
-    await fetch(url, {
+    await fetch(container, {
       method: 'PUT',
       headers: {
         'content-type': 'text/turtle',
       },
     });
-    const res = await fetch(url, {
+    const res = await fetch(container, {
       method: 'PATCH',
       headers: {
         'content-type': 'application/sparql-update',
@@ -206,15 +184,7 @@ describe('A Solid server', (): void => {
   });
 
   it('can PATCH metadata resources.', async(): Promise<void> => {
-    const url = `${baseUrl}resourcePATCH`;
-    await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'text/turtle',
-      },
-      body: '<a:b> <a:b> <a:b>.',
-    });
-    const res = await fetch(`${url}.meta`, {
+    const res = await fetch(`${document}.meta`, {
       method: 'PATCH',
       headers: {
         'content-type': 'application/sparql-update',

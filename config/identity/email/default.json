@@ -4,7 +4,8 @@
     {
       "comment": "The default configuration does not contain credentials for an email client. In production systems, you likely want to set up your own.",
       "@id": "urn:solid-server:default:EmailSender",
-      "@type": "UnsupportedAsyncHandler"
+      "@type": "UnsupportedAsyncHandler",
+      "errorMessage": "No email server is configured."
     }
   ]
 }

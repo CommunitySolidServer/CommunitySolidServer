@@ -1,0 +1,51 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the interaction that occurs when a logged in user wants to authenticate with a new app.",
+      "@id": "urn:solid-server:default:OidcPromptRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:OidcPromptRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:OidcRoute" },
+        "relativePath": "prompt/"
+      },
+      "source": {
+        "@id": "urn:solid-server:default:PromptHandler",
+        "@type": "PromptHandler",
+        "promptRoutes": [
+          {
+            "PromptHandler:_promptRoutes_key": "account",
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:default:LoginRoute" }
+          },
+          {
+            "PromptHandler:_promptRoutes_key": "login",
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:default:OidcConsentRoute" }
+          },
+          {
+            "PromptHandler:_promptRoutes_key": "consent",
+            "PromptHandler:_promptRoutes_value": { "@id": "urn:solid-server:default:OidcConsentRoute" }
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:OidcPromptRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "OidcControlHandler",
+      "controls": [
+        {
+          "OidcControlHandler:_controls_key": "prompt",
+          "OidcControlHandler:_controls_value": { "@id": "urn:solid-server:default:OidcPromptRoute" }
+        }
+      ]
+    }
+  ]
+}
