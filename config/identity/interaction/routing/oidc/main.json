@@ -1,0 +1,35 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/oidc/cancel.json",
+    "css:config/identity/interaction/routing/oidc/consent.json",
+    "css:config/identity/interaction/routing/oidc/forget-webid.json",
+    "css:config/identity/interaction/routing/oidc/prompt.json",
+    "css:config/identity/interaction/routing/oidc/pick-webid.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Main OIDC route others can extend.",
+      "@id": "urn:solid-server:default:OidcRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:IndexRoute" },
+      "relativePath": "oidc/"
+    },
+
+    {
+      "@id": "urn:solid-server:default:ControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "oidc",
+          "ControlHandler:_controls_value": {
+            "comment": "Contains all OIDC controls.",
+            "@id": "urn:solid-server:default:OidcControlHandler",
+            "@type": "OidcControlHandler",
+            "controls": []
+          }
+        }
+      ]
+    }
+  ]
+}

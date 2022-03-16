@@ -1,0 +1,85 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/account/main.json",
+    "css:config/identity/interaction/routing/client-credentials/create.json",
+    "css:config/identity/interaction/routing/client-credentials/resource.json",
+    "css:config/identity/interaction/routing/core/main.json",
+    "css:config/identity/interaction/routing/oidc/main.json",
+    "css:config/identity/interaction/routing/password/main.json",
+    "css:config/identity/interaction/routing/pod/create.json",
+    "css:config/identity/interaction/routing/pod/resource.json",
+    "css:config/identity/interaction/routing/webid/link.json",
+    "css:config/identity/interaction/routing/webid/resource.json",
+
+    "css:config/identity/interaction/routing/views/html.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:InteractionHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        {
+          "comment": "Returns the relevant HTML pages for the interactions when needed.",
+          "@id": "urn:solid-server:default:HtmlViewHandler"
+        },
+        {
+          "comment": "Ensures locks on authenticated requests.",
+          "@id": "urn:solid-server:default:LockingInteractionHandler",
+          "@type": "LockingInteractionHandler",
+          "locker": { "@id": "urn:solid-server:default:ResourceLocker" },
+          "accountRoute": { "@id": "urn:solid-server:default:AccountIdRoute" },
+          "source": { "@id": "urn:solid-server:default:JsonConversionHandler" }
+        }
+      ]
+    },
+    {
+      "comment": "Convert incoming requests to JSON operations.",
+      "@id": "urn:solid-server:default:JsonConversionHandler",
+      "@type": "JsonConversionHandler",
+      "source": { "@id": "urn:solid-server:default:VersionHandler" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+    },
+    {
+      "comment": "Adds the API version to the JSON response.",
+      "@id": "urn:solid-server:default:VersionHandler",
+      "@type": "VersionHandler",
+      "source" : { "@id": "urn:solid-server:default:CookieInteractionHandler" }
+    },
+    {
+      "comment": "Updates the cookie values as necessary.",
+      "@id": "urn:solid-server:default:CookieInteractionHandler",
+      "@type": "CookieInteractionHandler",
+      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+      "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
+      "source": { "@id": "urn:solid-server:default:RootControlHandler" }
+    },
+    {
+      "comment": "Adds controls to the JSON response.",
+      "@id": "urn:solid-server:default:RootControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "controls",
+        "ControlHandler:_controls_value": {
+          "comment": "The main controls object. All other controls should be added to this one.",
+          "@id": "urn:solid-server:default:ControlHandler",
+          "@type": "ControlHandler",
+          "controls": []
+        }
+      }],
+      "source" : { "@id": "urn:solid-server:default:LocationInteractionHandler" }
+    },
+    {
+      "comment": "Converts 3xx redirects to 200 JSON responses for consumption by browser scripts.",
+      "@id": "urn:solid-server:default:LocationInteractionHandler",
+      "@type": "LocationInteractionHandler",
+      "source" : { "@id": "urn:solid-server:default:InteractionRouteHandler" }
+    },
+    {
+      "comment": "Contains all JsonInteractionHandlers that can potentially handle the input request.",
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": []
+    }
+  ]
+}

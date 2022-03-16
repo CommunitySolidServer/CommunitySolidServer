@@ -8,12 +8,12 @@
     "css:config/http/notifications/websockets.json",
     "css:config/http/server-factory/http.json",
     "css:config/http/static/default.json",
-
-
-
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/default.json",
+    "css:config/identity/interaction/no-accounts.json",
     "css:config/identity/ownership/unsafe-no-check.json",
     "css:config/identity/pod/static.json",
-    "css:config/identity/registration/disabled.json",
     "css:config/ldp/authentication/dpop-bearer.json",
     "css:config/ldp/authorization/allow-all.json",
     "css:config/ldp/handler/default.json",
@@ -30,9 +30,7 @@
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
     "css:config/util/resource-locker/memory.json",
-    "css:config/util/variables/default.json",
-
-    "css:config/identity/handler/account-store/default.json"
+    "css:config/util/variables/default.json"
   ],
   "@graph": [
   ]

@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/password/create.json",
+    "css:config/identity/interaction/routing/password/forgot.json",
+    "css:config/identity/interaction/routing/password/login.json",
+    "css:config/identity/interaction/routing/password/reset.json",
+    "css:config/identity/interaction/routing/password/resource.json"
+  ],
+  "@graph": []
+}

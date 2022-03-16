@@ -11,7 +11,8 @@
       "@id": "urn:solid-server:default:WebHookWebIdRoute",
       "@type": "RelativePathInteractionRoute",
       "base": { "@id": "urn:solid-server:default:WebHookRoute" },
-      "relativePath": "/webId"
+      "relativePath": "/webId",
+      "ensureSlash": false
     },
 
     {

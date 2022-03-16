@@ -3,6 +3,7 @@
   "import": [
     "css:config/ldp/metadata-writer/writers/allow-accept.json",
     "css:config/ldp/metadata-writer/writers/content-type.json",
+    "css:config/ldp/metadata-writer/writers/cookie.json",
     "css:config/ldp/metadata-writer/writers/link-rel.json",
     "css:config/ldp/metadata-writer/writers/link-rel-metadata.json",
     "css:config/ldp/metadata-writer/writers/mapped.json",
@@ -20,6 +21,7 @@
         { "@id": "urn:solid-server:default:MetadataWriter_ContentType" },
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRel" },
         { "@id": "urn:solid-server:default:MetadataWriter_LinkRelMetadata" },
+        { "@id": "urn:solid-server:default:MetadataWriter_Cookie" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },
         { "@id": "urn:solid-server:default:MetadataWriter_StorageDescription" },

@@ -1,17 +1,15 @@
-import { stringify } from 'querystring';
-import { URL } from 'url';
 import type { KeyPair } from '@inrupt/solid-client-authn-core';
 import {
   buildAuthenticatedFetch,
   createDpopHeader,
   generateDpopKeyPair,
 } from '@inrupt/solid-client-authn-core';
-import { load } from 'cheerio';
-import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
+import { parse, splitCookiesString } from 'set-cookie-parser';
 import type { App } from '../../src/init/App';
-import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
+import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
+import { register } from '../util/AccountUtil';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 import { IdentityTestState } from './IdentityTestState';
@@ -31,19 +29,8 @@ const stores: [string, any][] = [
   }],
 ];
 
-// Don't send actual e-mails
-jest.mock('nodemailer');
-
 // Prevent panva/node-openid-client from emitting DraftWarning
 jest.spyOn(process, 'emitWarning').mockImplementation();
-
-async function postForm(url: string, formBody: string): Promise<Response> {
-  return fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
-    body: formBody,
-  });
-}
 
 // No way around the cookies https://github.com/panva/node-oidc-provider/issues/552 .
 // They will be simulated by storing the values and passing them along.
@@ -54,23 +41,20 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
   const redirectUrl = 'http://mockedredirect/';
   const container = new URL('secret/', baseUrl).href;
   const oidcIssuer = baseUrl;
-  const card = joinUrl(baseUrl, 'profile/card');
-  const webId = `${card}#me`;
-  const webId2 = `${card}#someoneElse`;
-  let webId3: string;
-  const email = 'test@test.com';
-  const email2 = 'bob@test.email';
-  const email3 = 'alice@test.email';
+  const indexUrl = joinUrl(baseUrl, '.account/');
+  let webId: string;
+  let webId2: string;
+  const email = 'test@example.com';
+  const email2 = 'otherMail@example.com';
   const password = 'password!';
-  const password2 = 'password2!';
-  let sendMail: jest.Mock;
+  let controls: {
+    oidc: { webId: string; consent: string; forgetWebId: string; prompt: string };
+    main: { index: string };
+    account: { create: string; pod: string; logout: string };
+    password: { create: string; login: string };
+  };
 
   beforeAll(async(): Promise<void> => {
-    // Needs to happen before Components.js instantiation
-    sendMail = jest.fn();
-    const nodemailer = jest.requireMock('nodemailer');
-    Object.assign(nodemailer, { createTransport: (): any => ({ sendMail }) });
-
     const instances = await instantiateFromConfig(
       'urn:solid-server:test:Instances',
       getTestConfigPath(config),
@@ -82,13 +66,9 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     ({ app } = instances);
     await app.start();
 
-    // Create a simple webId
-    const webIdTurtle = `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${baseUrl}> .`;
-    await fetch(card, {
-      method: 'PUT',
-      headers: { 'content-type': 'text/turtle' },
-      body: webIdTurtle,
-    });
+    // Create accounts
+    ({ webId, controls } = await register(baseUrl, { email, password, podName: 'test' }));
+    ({ webId: webId2 } = await register(baseUrl, { email: email2, password, podName: 'otherTest' }));
 
     // Create container where only webId can write
     const aclTurtle = `
@@ -114,43 +94,6 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     await app.stop();
   });
 
-  describe('doing registration', (): void => {
-    let formBody: string;
-    let registrationTriple: string;
-
-    beforeAll(async(): Promise<void> => {
-      // We will need this twice
-      formBody = stringify({ email, webId, password, confirmPassword: password, register: 'ok' });
-    });
-
-    it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register/`, formBody);
-      expect(res.status).toBe(400);
-      const json = await res.json();
-      registrationTriple = json.details.quad;
-    });
-
-    it('updates the webId with the registration token.', async(): Promise<void> => {
-      const patchBody = `INSERT DATA { ${registrationTriple} }`;
-      const res = await fetch(webId, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/sparql-update' },
-        body: patchBody,
-      });
-      expect(res.status).toBe(205);
-    });
-
-    it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register/`, formBody);
-      expect(res.status).toBe(200);
-      await expect(res.json()).resolves.toEqual(expect.objectContaining({
-        webId,
-        email,
-        oidcIssuer: baseUrl,
-      }));
-    });
-  });
-
   describe('authenticating', (): void => {
     let state: IdentityTestState;
 
@@ -162,16 +105,70 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       await state.session.logout();
     });
 
-    it('initializes the session and logs in.', async(): Promise<void> => {
-      let url = await state.startSession();
+    it('initializes the session.', async(): Promise<void> => {
+      // This is the auth URL with all the relevant query parameters
+      let url = await state.initSession();
+      expect(url.startsWith(oidcIssuer)).toBeTruthy();
+
+      // Always redirect to our index page
+      url = await state.handleRedirect(url);
+
+      // Compare received URL with login URL in our controls
+      expect(controls.main.index).toBe(url);
+
+      // Add the OIDC controls to the object
       const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      url = await state.login(url, email, password);
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId);
+      controls = {
+        ...(await res.json()).controls,
+        ...controls,
+      };
     });
 
-    it('can only access the container when using the logged in session.', async(): Promise<void> => {
+    it('logs in.', async(): Promise<void> => {
+      // Log in using email/password
+      const res = await state.fetchIdp(controls.password.login, 'POST', JSON.stringify({ email, password }));
+
+      // Redirect to WebID picker
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+    });
+
+    it('sends a token for the chosen WebID.', async(): Promise<void> => {
+      // See the available WebIDs
+      let res = await state.fetchIdp(controls.oidc.webId);
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.webIds).toEqual([ webId ]);
+
+      // Pick the WebID
+      // Errors if the WebID is not registered to the account
+      res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId: 'http://example.com/wrong' });
+      expect(res.status).toBe(400);
+      res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId, remember: true });
+
+      // Redirect to the consent page
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+    });
+
+    it('consents and redirects back to the client.', async(): Promise<void> => {
+      let res = await state.fetchIdp(controls.oidc.consent);
+      const json = await res.json();
+      expect(json.webId).toBe(webId);
+      expect(json.client.grant_types).toContain('authorization_code');
+      expect(json.client.grant_types).toContain('refresh_token');
+
+      res = await state.fetchIdp(controls.oidc.consent, 'POST');
+
+      // Redirect back to the client
+      const url = await state.handleLocationRedirect(res);
+      expect(url.startsWith(redirectUrl)).toBe(true);
+
+      // Handle the redirect
+      const info = await state.session.handleIncomingRedirect(url);
+      expect(info?.isLoggedIn).toBe(true);
+      expect(info?.webId).toBe(webId);
+    });
+
+    it('can only access the profile container when using the logged in session.', async(): Promise<void> => {
       let res = await fetch(container);
       expect(res.status).toBe(401);
 
@@ -185,16 +182,73 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       expect(res.status).toBe(401);
     });
 
-    it('can log in again.', async(): Promise<void> => {
-      const url = await state.startSession();
+    it('immediately gets redirect to the consent page in the next session.', async(): Promise<void> => {
+      const url = await state.initSession();
+      await state.handleRedirect(url);
 
-      const res = await state.fetchIdp(url);
+      const res = await state.fetchIdp(controls.oidc.prompt);
+      expect(res.status).toBe(200);
+      await expect(res.json()).resolves.toEqual(expect.objectContaining({ prompt: 'consent' }));
+    });
+
+    it('can forget the stored WebID.', async(): Promise<void> => {
+      let res = await state.fetchIdp(controls.oidc.forgetWebId, 'POST');
       expect(res.status).toBe(200);
 
-      // Will receive confirm screen here instead of login screen
-      await state.consent(url);
+      // We have to pick a WebID again
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+      res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId });
 
-      expect(state.session.info?.webId).toBe(webId);
+      // Redirect back to the consent page
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+    });
+
+    it('can consent again.', async(): Promise<void> => {
+      let res = await state.fetchIdp(controls.oidc.consent, 'POST');
+
+      // Redirect back to the client
+      const url = await state.handleLocationRedirect(res);
+      expect(url.startsWith(redirectUrl)).toBe(true);
+
+      // Handle the callback
+      const info = await state.session.handleIncomingRedirect(url);
+      expect(info?.isLoggedIn).toBe(true);
+      expect(info?.webId).toBe(webId);
+
+      // Verify by accessing the private container
+      res = await state.session.fetch(container);
+      expect(res.status).toBe(200);
+    });
+
+    it('can log out.', async(): Promise<void> => {
+      // Log out
+      let res = await state.fetchIdp(controls.account.logout, 'POST');
+      expect(res.status).toBe(200);
+
+      // Log out of the previous session and start a new one
+      await state.session.logout();
+      let url = await state.initSession();
+      await state.handleRedirect(url);
+
+      // Log in
+      res = await state.fetchIdp(controls.password.login, 'POST', { email: email2, password });
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+
+      // Pick the new WebID
+      res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId: webId2 });
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+
+      // Consent again
+      res = await state.fetchIdp(controls.oidc.consent, 'POST');
+
+      // Redirect back to the client
+      url = await state.handleLocationRedirect(res);
+      expect(url.startsWith(redirectUrl)).toBe(true);
+
+      // Handle the callback
+      const info = await state.session.handleIncomingRedirect(url);
+      expect(info?.isLoggedIn).toBe(true);
+      expect(info?.webId).toBe(webId2);
     });
   });
 
@@ -248,20 +302,43 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
 
     it('initializes the session and logs in.', async(): Promise<void> => {
-      let url = await state.startSession(clientId);
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      url = await state.login(url, email, password);
+      const url = await state.initSession(clientId);
+
+      // Redirect to our login page
+      await state.handleRedirect(url);
+
+      // Log in using email/password
+      let res = await state.fetchIdp(controls.password.login, 'POST', { email, password });
+
+      // Redirect to WebID picker
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
+
+      // Pick the WebID
+      res = await state.fetchIdp(controls.oidc.webId, 'POST', { webId, remember: true });
+
+      // Redirect to the consent page
+      await expect(state.handleLocationRedirect(res)).resolves.toBe(indexUrl);
 
       // Verify the client information the server discovered
-      const consentRes = await state.fetchIdp(url, 'GET');
-      expect(consentRes.status).toBe(200);
-      const { client } = await consentRes.json();
-      expect(client.client_id).toBe(clientJson.client_id);
-      expect(client.client_name).toBe(clientJson.client_name);
+      res = await state.fetchIdp(controls.oidc.consent);
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.webId).toBe(webId);
+      expect(json.client.client_id).toBe(clientJson.client_id);
+      expect(json.client.client_name).toBe(clientJson.client_name);
+      expect(json.client.grant_types).toContain('authorization_code');
+      expect(json.client.grant_types).toContain('refresh_token');
 
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId);
+      res = await state.fetchIdp(controls.oidc.consent, 'POST');
+
+      // Redirect back to the client
+      const redirect = await state.handleLocationRedirect(res);
+      expect(redirect.startsWith(redirectUrl)).toBe(true);
+
+      // Handle the redirect
+      const info = await state.session.handleIncomingRedirect(redirect);
+      expect(info?.isLoggedIn).toBe(true);
+      expect(info?.webId).toBe(webId);
     });
 
     it('rejects requests in case the redirect URL is not accepted.', async(): Promise<void> => {
@@ -288,7 +365,6 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
   });
 
   describe('using client_credentials', (): void => {
-    const credentialsUrl = joinUrl(baseUrl, '/idp/credentials/');
     const tokenUrl = joinUrl(baseUrl, '.oidc/token');
     let dpopKey: KeyPair;
     let id: string | undefined;
@@ -300,18 +376,26 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
     });
 
     it('can request a credentials token.', async(): Promise<void> => {
+      // Login and save cookie
+      const loginResponse = await fetch(controls.password.login, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const cookies = parse(splitCookiesString(loginResponse.headers.get('set-cookie')!));
+      const cookie = `${cookies[0].name}=${cookies[0].value}`;
+
+      // Request token
+      const accountJson = await (await fetch(indexUrl, { headers: { cookie }})).json();
+      const credentialsUrl = accountJson.controls.account.clientCredentials;
       const res = await fetch(credentialsUrl, {
         method: 'POST',
-        headers: {
-          'content-type': APPLICATION_JSON,
-        },
-        body: JSON.stringify({ email, password, name: 'token' }),
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ name: 'token', webId }),
       });
+
       expect(res.status).toBe(200);
       ({ id, secret } = await res.json());
-      expect(typeof id).toBe('string');
-      expect(typeof secret).toBe('string');
-      expect(id).toMatch(/^token/u);
     });
 
     it('can request an access token using the credentials.', async(): Promise<void> => {
@@ -338,288 +422,6 @@ describe.each(stores)('A Solid server with IDP using %s', (name, { config, teard
       expect(res.status).toBe(401);
       res = await authFetch(container);
       expect(res.status).toBe(200);
-    });
-
-    it('can see all credentials.', async(): Promise<void> => {
-      const res = await fetch(credentialsUrl, {
-        method: 'POST',
-        headers: {
-          'content-type': APPLICATION_JSON,
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      expect(res.status).toBe(200);
-      await expect(res.json()).resolves.toEqual([ id ]);
-    });
-
-    it('can delete credentials.', async(): Promise<void> => {
-      let res = await fetch(credentialsUrl, {
-        method: 'POST',
-        headers: {
-          'content-type': APPLICATION_JSON,
-        },
-        body: JSON.stringify({ email, password, delete: id }),
-      });
-      expect(res.status).toBe(200);
-
-      // Client_credentials call should fail now
-      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
-      const authString = `${encodeURIComponent(id!)}:${encodeURIComponent(secret!)}`;
-      res = await fetch(tokenUrl, {
-        method: 'POST',
-        headers: {
-          authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
-          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
-          dpop: dpopHeader,
-        },
-        body: 'grant_type=client_credentials&scope=webid',
-      });
-      expect(res.status).toBe(401);
-    });
-  });
-
-  describe('resetting password', (): void => {
-    let nextUrl: string;
-
-    it('sends the corresponding email address through the form to get a mail.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/forgotpassword/`, stringify({ email }));
-      expect(res.status).toBe(200);
-      const json = await res.json();
-      expect(json.email).toBe(email);
-
-      const mail = sendMail.mock.calls[0][0];
-      expect(mail.to).toBe(email);
-      const match = /(http:.*)$/u.exec(mail.text);
-      expect(match).toBeDefined();
-      nextUrl = match![1];
-      expect(nextUrl).toMatch(/\/resetpassword\/[^/]+$/u);
-    });
-
-    it('resets the password through the given link.', async(): Promise<void> => {
-      // Extract the submit URL from the reset password form
-      let res = await fetch(nextUrl);
-      expect(res.status).toBe(200);
-      const text = await res.text();
-      const relative = load(text)('form').attr('action');
-      // Reset password form has no action causing the current URL to be used
-      expect(relative).toBeUndefined();
-
-      // Extract recordId from URL since JS is used to add it
-      const recordId = /\?rid=([^/]+)$/u.exec(nextUrl)?.[1];
-      expect(typeof recordId).toBe('string');
-
-      // POST the new password to the same URL
-      const formData = stringify({ password: password2, confirmPassword: password2, recordId });
-      res = await fetch(nextUrl, {
-        method: 'POST',
-        headers: { 'content-type': APPLICATION_X_WWW_FORM_URLENCODED },
-        body: formData,
-      });
-      expect(res.status).toBe(200);
-    });
-  });
-
-  describe('logging in after password reset', (): void => {
-    let state: IdentityTestState;
-    let nextUrl: string;
-
-    beforeAll(async(): Promise<void> => {
-      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-    });
-
-    afterAll(async(): Promise<void> => {
-      await state.session.logout();
-    });
-
-    it('can not log in with the old password anymore.', async(): Promise<void> => {
-      const url = await state.startSession();
-      nextUrl = url;
-      let res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      const formData = stringify({ email, password });
-      res = await state.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
-      expect(res.status).toBe(500);
-      expect(await res.text()).toContain('Incorrect password');
-    });
-
-    it('can log in with the new password.', async(): Promise<void> => {
-      const url = await state.login(nextUrl, email, password2);
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId);
-    });
-  });
-
-  describe('creating pods without registering with the IDP', (): void => {
-    let formBody: string;
-    let registrationTriple: string;
-    const podName = 'myPod';
-
-    beforeAll(async(): Promise<void> => {
-      // We will need this twice
-      formBody = stringify({
-        email: email2,
-        webId: webId2,
-        password,
-        confirmPassword: password,
-        podName,
-        createPod: 'ok',
-      });
-    });
-
-    it('sends the form once to receive the registration triple.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register/`, formBody);
-      expect(res.status).toBe(400);
-      const json = await res.json();
-      registrationTriple = json.details.quad;
-    });
-
-    it('updates the webId with the registration token.', async(): Promise<void> => {
-      const patchBody = `INSERT DATA { ${registrationTriple} }`;
-      const res = await fetch(webId2, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/sparql-update' },
-        body: patchBody,
-      });
-      expect(res.status).toBe(205);
-    });
-
-    it('sends the form again to successfully register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register/`, formBody);
-      expect(res.status).toBe(200);
-      await expect(res.json()).resolves.toEqual(expect.objectContaining({
-        email: email2,
-        webId: webId2,
-        podBaseUrl: `${baseUrl}${podName}/`,
-      }));
-    });
-  });
-
-  describe('creating a new WebID', (): void => {
-    const podName = 'alice';
-    let state: IdentityTestState;
-
-    const formBody = stringify({
-      email: email3, password, confirmPassword: password, podName, createWebId: 'ok', register: 'ok', createPod: 'ok',
-    });
-
-    afterAll(async(): Promise<void> => {
-      await state.session.logout();
-    });
-
-    it('sends the form to create the WebID and register.', async(): Promise<void> => {
-      const res = await postForm(`${baseUrl}idp/register/`, formBody);
-      expect(res.status).toBe(200);
-      const json = await res.json();
-      expect(json).toEqual(expect.objectContaining({
-        webId: expect.any(String),
-        email: email3,
-        oidcIssuer: baseUrl,
-        podBaseUrl: `${baseUrl}${podName}/`,
-      }));
-      webId3 = json.webId;
-    });
-
-    it('initializes the session and logs in.', async(): Promise<void> => {
-      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-      let url = await state.startSession();
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      url = await state.login(url, email3, password);
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId3);
-    });
-
-    it('can only write to the new profile when using the logged in session.', async(): Promise<void> => {
-      const patchOptions = {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/sparql-update' },
-        body: `INSERT DATA { <> <http://www.w3.org/2000/01/rdf-schema#label> "A cool WebID." }`,
-      };
-
-      let res = await fetch(webId3, patchOptions);
-      expect(res.status).toBe(401);
-
-      res = await state.session.fetch(webId3, patchOptions);
-      expect(res.status).toBe(205);
-    });
-
-    it('always has control over data in the pod.', async(): Promise<void> => {
-      const podBaseUrl = `${baseUrl}${podName}/`;
-      const brokenAcl = '<#authorization> a <http://www.w3.org/ns/auth/acl#Authorization> .';
-
-      // Make the acl file unusable
-      let res = await state.session.fetch(`${podBaseUrl}.acl`, {
-        method: 'PUT',
-        headers: { 'content-type': 'text/turtle' },
-        body: brokenAcl,
-      });
-      expect(res.status).toBe(205);
-
-      // The owner is locked out of their own pod due to a faulty acl file
-      res = await state.session.fetch(podBaseUrl);
-      expect(res.status).toBe(403);
-
-      const fixedAcl = `@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
-
-<#authorization>
-    a               acl:Authorization;
-    acl:agentClass  foaf:Agent;
-    acl:mode        acl:Read;
-    acl:accessTo    <./>.`;
-      // Owner can still update the acl
-      res = await state.session.fetch(`${podBaseUrl}.acl`, {
-        method: 'PUT',
-        headers: { 'content-type': 'text/turtle' },
-        body: fixedAcl,
-      });
-      expect(res.status).toBe(205);
-
-      // Access is possible again
-      res = await state.session.fetch(podBaseUrl);
-      expect(res.status).toBe(200);
-    });
-  });
-
-  describe('having multiple accounts', (): void => {
-    let state: IdentityTestState;
-    let url: string;
-
-    beforeAll(async(): Promise<void> => {
-      state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-    });
-
-    afterAll(async(): Promise<void> => {
-      await state.session.logout();
-    });
-
-    it('initializes the session and logs in with the first account.', async(): Promise<void> => {
-      url = await state.startSession();
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      url = await state.login(url, email, password2);
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId);
-    });
-
-    it('can log out on the consent page.', async(): Promise<void> => {
-      await state.session.logout();
-
-      url = await state.startSession();
-
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-
-      // Will receive confirm screen here instead of login screen
-      url = await state.logout(url);
-    });
-
-    it('can log in with a different account.', async(): Promise<void> => {
-      const res = await state.fetchIdp(url);
-      expect(res.status).toBe(200);
-      url = await state.login(url, email3, password);
-      await state.consent(url);
-      expect(state.session.info?.webId).toBe(webId3);
     });
   });
 

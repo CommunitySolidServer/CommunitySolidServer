@@ -1,4 +1,3 @@
-import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../storage/ResourceStore';
@@ -40,15 +39,15 @@ export class ConfigPodManager implements PodManager {
     this.store = store;
   }
 
-  public async createPod(identifier: ResourceIdentifier, settings: PodSettings): Promise<void> {
-    this.logger.info(`Creating pod ${identifier.path}`);
+  public async createPod(settings: PodSettings): Promise<void> {
+    this.logger.info(`Creating pod ${settings.base.path}`);
 
     // Will error in case there already is a store for the given identifier
-    const store = await this.podGenerator.generate(identifier, settings);
+    const store = await this.podGenerator.generate(settings);
 
-    await this.routingStorage.set(identifier.path, store);
-    const count = await addGeneratedResources(identifier, settings, this.resourcesGenerator, this.store);
+    await this.routingStorage.set(settings.base.path, store);
+    const count = await addGeneratedResources(settings, this.resourcesGenerator, this.store);
 
-    this.logger.info(`Added ${count} resources to ${identifier.path}`);
+    this.logger.info(`Added ${count} resources to ${settings.base.path}`);
   }
 }

@@ -21,7 +21,11 @@ describe('A TemplatedPodGenerator', (): void => {
   let generator: TemplatedPodGenerator;
 
   beforeEach(async(): Promise<void> => {
-    settings = { template } as any;
+    settings = {
+      base: identifier,
+      webId: 'http://example.com/card#me',
+      template,
+    };
 
     storeFactory = {
       generate: jest.fn().mockResolvedValue('store'),
@@ -38,11 +42,11 @@ describe('A TemplatedPodGenerator', (): void => {
 
   it('only supports settings with a template.', async(): Promise<void> => {
     (settings as any).template = undefined;
-    await expect(generator.generate(identifier, settings)).rejects.toThrow(BadRequestHttpError);
+    await expect(generator.generate(settings)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('generates a store and stores relevant variables.', async(): Promise<void> => {
-    await expect(generator.generate(identifier, settings)).resolves.toBe('store');
+    await expect(generator.generate(settings)).resolves.toBe('store');
     expect(variableHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(variableHandler.handleSafe).toHaveBeenLastCalledWith({ identifier, settings });
     expect(storeFactory.generate).toHaveBeenCalledTimes(1);
@@ -56,18 +60,18 @@ describe('A TemplatedPodGenerator', (): void => {
 
   it('rejects identifiers that already have a config.', async(): Promise<void> => {
     await configStorage.set(identifier.path, {});
-    await expect(generator.generate(identifier, settings)).rejects.toThrow(ConflictHttpError);
+    await expect(generator.generate(settings)).rejects.toThrow(ConflictHttpError);
   });
 
   it('rejects invalid config template names.', async(): Promise<void> => {
     settings.template = '../../secret-file.json';
-    await expect(generator.generate(identifier, settings)).rejects.toThrow(BadRequestHttpError);
+    await expect(generator.generate(settings)).rejects.toThrow(BadRequestHttpError);
   });
 
   it('only stores relevant variables from an agent object.', async(): Promise<void> => {
     settings[TEMPLATE_VARIABLE.rootFilePath] = 'correctFilePath';
     settings.login = 'should not be stored';
-    await expect(generator.generate(identifier, settings)).resolves.toBe('store');
+    await expect(generator.generate(settings)).resolves.toBe('store');
     expect(configStorage.get(identifier.path)).toEqual({
       [TEMPLATE_VARIABLE.templateConfig]: templatePath,
       [TEMPLATE_VARIABLE.rootFilePath]: 'correctFilePath',
@@ -78,7 +82,7 @@ describe('A TemplatedPodGenerator', (): void => {
     generator = new TemplatedPodGenerator(storeFactory, variableHandler, configStorage, baseUrl);
     const defaultPath = joinFilePath(__dirname, '../../../../templates/config/', template);
 
-    await expect(generator.generate(identifier, settings)).resolves.toBe('store');
+    await expect(generator.generate(settings)).resolves.toBe('store');
     expect(storeFactory.generate)
       .toHaveBeenLastCalledWith(defaultPath, TEMPLATE.ResourceStore, {
         [TEMPLATE_VARIABLE.templateConfig]: defaultPath,

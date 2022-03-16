@@ -1,0 +1,9 @@
+<script>
+  // Redirect to the account page if logged in, if not: redirect to the login page
+  // The only reason this page exists, is because it makes sense to have something at /.account/account/.
+  // It is not in the controls though, as you would just use the login or the specific account URL.
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    location.href = controls.html?.account?.account ?? controls.html.main.login;
+  })();
+</script>

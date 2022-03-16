@@ -8,48 +8,18 @@ It is recommended to use the latest version
 of the [Solid authentication client](https://github.com/inrupt/solid-client-authn-js)
 to interact with the server.
 
-The links here assume the server is hosted at `http://localhost:3000/`.
+It also provides account management options for creating pods and WebIDs to be used during authentication,
+which are discussed more in-depth below.
+The links on this page assume the server is hosted at `http://localhost:3000/`.
 
 ## Registering an account
 
-To register an account, you can go to `http://localhost:3000/idp/register/` if this feature is enabled,
-which it is on most configurations we provide.
-Currently our registration page ties 3 features together on the same page:
-
-* Creating an account on the server.
-* Creating or linking a WebID to your account.
-* Creating a pod on the server.
-
-### Account
-
-To create an account you need to provide an email address and password.
+To register an account, you can go to `http://localhost:3000/.account/password/register/`, if this feature is enabled.
+There you can create an account with the email/password login method.
 The password will be salted and hashed before being stored.
-As of now, the account is only used to log in and identify yourself to the IDP
-when you want to do an authenticated request,
-but in future the plan is to also use this for account/pod management.
+Afterwards you will be redirected to the account page where you can create pods and link WebIDs to your account.
 
-### WebID
-
-We require each account to have a corresponding WebID.
-You can either let the server create a WebID for you in a pod,
-which will also need to be created then,
-or you can link an already existing WebID you have on an external server.
-
-In case you try to link your own WebID, you can choose if you want to be able
-to use this server as your IDP for this WebID.
-If not, you can still create a pod,
-but you will not be able to direct the authentication client to this server to identify yourself.
-
-Additionally, if you try to register with an external WebID,
-the first attempt will return an error indicating you need to add an identification triple to your WebID.
-After doing that you can try to register again.
-This is how we verify you are the owner of that WebID.
-After registration the next page will inform you
-that you have to add an additional triple to your WebID if you want to use the server as your IDP.
-
-All of the above is automated if you create the WebID on the server itself.
-
-### Pod
+### Creating a pod
 
 To create a pod you simply have to fill in the name you want your pod to have.
 This will then be used to generate the full URL of your pod.
@@ -57,23 +27,42 @@ For example, if you choose the name `test`,
 your pod would be located at `http://localhost:3000/test/`
 and your generated WebID would be `http://localhost:3000/test/profile/card#me`.
 
+If you fill in a WebID when creating the pod,
+that WebID will be the one that has access to all data in the pod.
+If you don't, a WebID will be created in the pod and immediately linked to your account,
+allowing you to use it for authentication and accessing the data in that pod
+
 The generated name also depends on the configuration you chose for your server.
 If you are using the subdomain feature,
-such as being done in the `config/memory-subdomains.json` configuration,
 the generated pod URL would be `http://test.localhost:3000/`.
+
+### WebIDs
+
+To use Solid authentication,
+you need to link at least one WebID to your account.
+This can happen automatically when creating a pod as mentioned above,
+or can be done manually with external WebIDs.
+
+If you try to link an external WebID,
+the first attempt will return an error indicating you need to add an identification triple to your WebID.
+After doing that you can try to register again.
+This is how we verify you are the owner of that WebID.
+Afterwards the page will inform you
+that you have to add a triple to your WebID if you want to use the server as your IDP.
 
 ## Logging in
 
 When using an authenticating client,
 you will be redirected to a login screen asking for your email and password.
-After that you will be redirected to a page showing some basic information about the client.
-There you need to consent that this client is allowed to identify using your WebID.
+After that you will be redirected to a page showing some basic information about the client
+where you can pick the WebID you want to use.
+There you need to consent that this client is allowed to identify using that WebID.
 As a result the server will send a token back to the client
 that contains all the information needed to use your WebID.
 
 ## Forgot password
 
-If you forgot your password, you can recover it by going to `http://localhost:3000/idp/forgotpassword/`.
+If you forgot your password, you can recover it by going to `http://localhost:3000/.account/login/password/forgot/`.
 There you can enter your email address to get a recovery mail to reset your password.
 This feature only works if a mail server was configured,
 which by default is not the case.
@@ -81,63 +70,11 @@ which by default is not the case.
 ## JSON API
 
 All of the above happens through HTML pages provided by the server.
-By default, the server uses the templates found in `/templates/identity/email-password/`
+By default, the server uses the templates found in `/templates/identity/`
 but different templates can be used through configuration.
 
 These templates all make use of a JSON API exposed by the server.
-For example, when doing a GET request to `http://localhost:3000/idp/register/`
-with a JSON accept header, the following JSON is returned:
-
-```json
-{
-  "required": {
-    "email": "string",
-    "password": "string",
-    "confirmPassword": "string",
-    "createWebId": "boolean",
-    "register": "boolean",
-    "createPod": "boolean",
-    "rootPod": "boolean"
-  },
-  "optional": {
-    "webId": "string",
-    "podName": "string",
-    "template": "string"
-  },
-  "controls": {
-    "register": "http://localhost:3000/idp/register/",
-    "index": "http://localhost:3000/idp/",
-    "prompt": "http://localhost:3000/idp/prompt/",
-    "login": "http://localhost:3000/idp/login/",
-    "forgotPassword": "http://localhost:3000/idp/forgotpassword/"
-  },
-  "apiVersion": "0.3"
-}
-```
-
-The `required` and `optional` fields indicate which input fields are expected by the API.
-These correspond to the fields of the HTML registration page.
-To register a user, you can do a POST request with a JSON body containing the correct fields:
-
-```json
-{
-  "email": "test@example.com",
-  "password": "secret",
-  "confirmPassword": "secret",
-  "createWebId": true,
-  "register": true,
-  "createPod": true,
-  "rootPod": false,
-  "podName": "test"
-}
-```
-
-Two fields here that are not covered on the HTML page above are `rootPod` and `template`.
-`rootPod` tells the server to put the pod in the root of the server instead of a location based on the `podName`.
-By default the server will reject requests where this is `true`.
-`template` is only used by servers running the `config/dynamic.json` configuration,
-which is a very custom setup where every pod can have a different Components.js configuration,
-so this value can usually be ignored.
+A full description of this API can be found [here](account/json-api.md).
 
 ## IDP configuration
 
@@ -175,14 +112,31 @@ which you will need to copy over to your base configuration and then remove the 
 There is only one option here. This import contains all the core components necessary to make the IDP work.
 In case you need to make some changes to core IDP settings, this is where you would have to look.
 
+### interaction
+
+Here you determine which features of account management are available.
+`default.json` allows everything, while `no-accounts.json` and `no-pods.json`
+disable account and pod creation respectively.
+Taking one of those latter options will disable the relevant JSON APIs and HTML pages.
+
 ### pod
 
 The `pod` options determines how pods are created. `static.json` is the expected pod behaviour as described above.
 `dynamic.json` is an experimental feature that allows users
 to have a custom Components.js configuration for their own pod.
-When using such a setup, a JSON file will be written containing all the information of the user pods
+When using such a configuration, a JSON file will be written containing all the information of the user pods,
 so they can be recreated when the server restarts.
 
-### registration
+## Adding a new login method to the server
 
-This setting allows you to enable/disable registration on the server.
+Due to its modular nature,
+it is possible to add new login methods to the server,
+allowing users to log in different ways than just the standard email/password combination.
+More information on what is required can be found [here](account/login-method.md).
+
+## Data migration
+
+Going from v6 to v7 of the server, the account management is completely rewritten,
+including how account data is stored on the server.
+More information about how account data of an existing server can be migrated to the newer version
+can be found [here](account/migration.md).

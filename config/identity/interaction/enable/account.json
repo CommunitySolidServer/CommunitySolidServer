@@ -1,0 +1,56 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Enable account creation."
+    },
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:AccountControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "create",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountRoute" }
+      }]
+    },
+
+    {
+      "comment": "The parts below are specific for password logins, but will not cause issues should password logins be disabled."
+    },
+    {
+      "comment": "Route only used for an HTML page (and its corresponding controls).",
+      "@id": "urn:solid-server:default:RegisterPasswordRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": { "@id": "urn:solid-server:default:LoginPasswordRoute" },
+      "relativePath": "register/"
+    },
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [
+        {
+          "@id": "urn:solid-server:default:RegisterPasswordAccountHtml",
+          "@type": "HtmlViewEntry",
+          "filePath": "@css:templates/identity/password/register.html.ejs",
+          "route": { "@id": "urn:solid-server:default:RegisterPasswordRoute" }
+        }
+      ]
+    },
+    {
+      "@id": "urn:solid-server:default:PasswordHtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "register",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:RegisterPasswordRoute" }
+        }
+      ]
+    }
+  ]
+}
+

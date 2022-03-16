@@ -4,7 +4,7 @@
     "css:config/app/init/initializers/base-url.json",
     "css:config/app/init/initializers/logger.json",
     "css:config/app/init/initializers/server.json",
-    "css:config/app/init/initializers/seeded-pod.json",
+    "css:config/app/init/initializers/seeding.json",
     "css:config/app/init/initializers/version.json",
     "css:config/app/init/initializers/workers.json"
   ],
@@ -33,7 +33,7 @@
           { "@id": "urn:solid-server:default:CleanupInitializer"},
           { "@id": "urn:solid-server:default:BaseUrlVerifier" },
           { "@id": "urn:solid-server:default:PrimaryParallelInitializer" },
-          { "@id": "urn:solid-server:default:SeededPodInitializer" },
+          { "@id": "urn:solid-server:default:SeededAccountInitializer" },
           { "@id": "urn:solid-server:default:ModuleVersionVerifier" },
           { "@id": "urn:solid-server:default:WorkerManager" }
         ]

@@ -44,7 +44,7 @@
     },
     {
       "comment": "Path to the JSON file used to seed pods.",
-      "@id": "urn:solid-server:default:variable:seededPodConfigJson",
+      "@id": "urn:solid-server:default:variable:seedConfig",
       "@type": "Variable"
     },
     {

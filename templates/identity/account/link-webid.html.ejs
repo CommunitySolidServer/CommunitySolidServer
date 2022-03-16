@@ -1,0 +1,47 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose the WebID to link to this account</p>
+    <ol>
+      <li>
+        <label for="webId">WebID</label>
+        <input id="webId" type="text" name="webId" autofocus>
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Link WebID to account</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+<div class="hidden" id="response">
+  <p>
+    You will need to manually add the following triple
+    to your existing WebID document <em id="response-existingWebId"></em>
+    to indicate that you trust this server as a login provider:
+  </p>
+  <p>
+    <strong><code id="oidc-triple"></code></strong>
+  </p>
+
+  <p class="actions"><button type="button" id="response-account-link">Back</button></p>
+</div>
+
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    setRedirectClick('account-link', controls.html.account.account);
+    setRedirectClick('response-account-link', controls.html.account.account);
+
+    addPostListener(async() => {
+      const { webId, oidcIssuer } = await postJsonForm(controls.account.webId);
+      updateElement('oidc-triple', `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${oidcIssuer}>.`, { innerText: true });
+      setVisibility('response', true);
+      setVisibility('mainForm', false);
+    });
+  })();
+</script>

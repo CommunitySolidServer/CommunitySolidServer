@@ -80,10 +80,15 @@ nav:
   - Usage:
     - Example request: usage/example-requests.md
     - Metadata: usage/metadata.md
-    - Identity provider: usage/identity-provider.md
+    - Identity provider:
+        - Overview: usage/identity-provider.md
+        - JSON API: usage/account/json-api.md
+        - New login method: usage/account/login-method.md
+        - Data migration: usage/account/migration.md
     - Client credentials: usage/client-credentials.md
     - Seeding pods: usage/seeding-pods.md
     - Notifications: usage/notifications.md
+    - Development server: usage/dev-configuration.md
   - Architecture:
     - Overview: architecture/overview.md
     - Dependency injection: architecture/dependency-injection.md
@@ -97,6 +102,10 @@ nav:
             - Parsing: architecture/features/protocol/parsing.md
             - Authorization: architecture/features/protocol/authorization.md
             - Resource Store: architecture/features/protocol/resource-store.md
+        - Account management:
+            - Overview: architecture/features/accounts/overview.md
+            - Controls: architecture/features/accounts/controls.md
+            - Routes: architecture/features/accounts/routes.md
         - Notifications: architecture/features/notifications.md
   - Contributing:
     - Pull requests: contributing/making-changes.md

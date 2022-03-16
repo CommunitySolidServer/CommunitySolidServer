@@ -4,20 +4,32 @@
     {
       "comment": [
         "Sets all the relevant Solid-OIDC parameters.",
-        "dPoP is draft-01 since that is the latest version v6 of the OIDC library supports."
+        "dPoP is draft-03 since that is the latest version v7 of the OIDC library supports."
       ],
       "@id": "urn:solid-server:default:IdentityProviderFactory",
       "@type": "IdentityProviderFactory",
+      "promptFactory": {
+        "@id": "urn:solid-server:default:PromptFactory",
+        "@type": "SequenceHandler",
+        "handlers": [
+          {
+            "@type": "AccountPromptFactory",
+            "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+            "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
+            "cookieName": { "@id": "urn:solid-server:default:value:accountCookieName" }
+          }
+        ]
+      },
       "adapterFactory": { "@id": "urn:solid-server:default:IdpAdapterFactory" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "oidcPath": "/.oidc",
-      "interactionHandler": { "@id": "urn:solid-server:auth:password:PromptHandler" },
-      "credentialStorage": { "@id": "urn:solid-server:auth:password:CredentialsStorage" },
+      "clientCredentialsStore": { "@id": "urn:solid-server:default:ClientCredentialsStore" },
       "storage": { "@id": "urn:solid-server:default:KeyStorage" },
       "jwkGenerator": { "@id": "urn:solid-server:default:JwkGenerator" },
       "showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
+      "interactionRoute": { "@id": "urn:solid-server:default:IndexRoute" },
       "config": {
         "claims": {
           "openid": [ "azp" ],

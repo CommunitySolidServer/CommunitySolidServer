@@ -1,9 +1,13 @@
+import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+
 /**
  * Metadata related to pod generation.
- * Although the optional fields are not that relevant since this extends Dict,
- * they give an indication of what is sometimes expected.
  */
-export interface PodSettings extends NodeJS.Dict<string> {
+export interface PodSettings extends NodeJS.Dict<unknown> {
+  /**
+   * The root of the pod. Determines where the pod will be created.
+   */
+  base: ResourceIdentifier;
   /**
    * The WebId of the owner of this pod.
    */
@@ -22,7 +26,7 @@ export interface PodSettings extends NodeJS.Dict<string> {
    */
   email?: string;
   /**
-   * The OIDC issuer of the owner's WebId.
+   * The OIDC issuer of the owner's WebId. Necessary if the WebID in the pod is registered with the IDP.
    */
   oidcIssuer?: string;
 }

@@ -28,37 +28,73 @@ const bob: User = {
 };
 
 /**
- * Registers a user with the server.
+ * Registers a user with the server and provides them with a pod.
  * @param user - The user settings necessary to register a user.
  */
-async function register(user: User): Promise<void> {
-  const body = JSON.stringify({
-    ...user,
-    confirmPassword: user.password,
-    createWebId: true,
-    register: true,
-    createPod: true,
+async function register(user: User): Promise<{ webId: string; cookie: string }> {
+  // Get controls
+  let res = await fetch(urljoin(baseUrl, '.account/'));
+  let { controls } = await res.json();
+
+  // Create account
+  res = await fetch(controls.account.create, { method: 'POST' });
+  if (res.status !== 200) {
+    throw new Error(`Account creation failed: ${await res.text()}`);
+  }
+  const { cookie } = await res.json();
+  const authorization = `CSS-Account-Cookie ${cookie}`;
+
+  // Get account controls
+  res = await fetch(controls.main.index, {
+    headers: { authorization },
   });
-  const res = await fetch(urljoin(baseUrl, '/idp/register/'), {
+  ({ controls } = await res.json());
+
+  // Add login method
+  res = await fetch(controls.password.create, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body,
+    headers: { authorization, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      email: user.email,
+      password: user.password,
+    }),
   });
   if (res.status !== 200) {
-    throw new Error(`Registration failed: ${await res.text()}`);
+    throw new Error(`Login creation failed: ${await res.text()}`);
   }
+
+  // Create pod
+  res = await fetch(controls.account.pod, {
+    method: 'POST',
+    headers: { authorization, 'content-type': 'application/json' },
+    body: JSON.stringify({ name: user.podName }),
+  });
+  if (res.status !== 200) {
+    throw new Error(`Pod creation failed: ${await res.text()}`);
+  }
+  const { webId } = await res.json();
+
+  return { webId, cookie };
 }
 
 /**
  * Requests a client credentials API token.
- * @param user - User for which the token needs to be generated.
+ * @param webId - WebID to create credentials for.
+ * @param cookie - Authoriziation cookie for the account that tries to create credentials.
  * @returns The id/secret for the client credentials request.
  */
-async function createCredentials(user: User): Promise<{ id: string; secret: string }> {
-  const res = await fetch(urljoin(baseUrl, '/idp/credentials/'), {
+async function createCredentials(webId: string, cookie: string): Promise<{ id: string; secret: string }> {
+  // Get account controls
+  const authorization = `CSS-Account-Cookie ${cookie}`;
+  let res = await fetch(urljoin(baseUrl, '.account/'), {
+    headers: { authorization },
+  });
+  const { controls } = await res.json();
+
+  res = await fetch(controls.account.clientCredentials, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email: user.email, password: user.password, name: 'token' }),
+    headers: { authorization, 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'token', webId }),
   });
   if (res.status !== 200) {
     throw new Error(`Token generation failed: ${await res.text()}`);
@@ -74,8 +110,8 @@ async function createCredentials(user: User): Promise<{ id: string; secret: stri
  * @param user - User for which data needs to be generated.
  */
 async function outputCredentials(user: User): Promise<void> {
-  await register(user);
-  const { id, secret } = await createCredentials(user);
+  const { webId, cookie } = await register(user);
+  const { id, secret } = await createCredentials(webId, cookie);
 
   const name = user.podName.toUpperCase();
   console.log(`USERS_${name}_CLIENTID=${id}`);

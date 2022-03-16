@@ -21,26 +21,25 @@
     </p>
 
     <h2 id="users">Getting started as a <em>user</em></h2>
-    <p>
-      <a href="./idp/register/">Sign up for an account</a>
+    <p id="registration-enabled">
+      <a id="registration-link" href="./.account/password/register/">Sign up for an account</a>
       to get started with your own Pod and WebID.
     </p>
-    <p>
-      The default configuration stores data only in memory.
-      If you want to keep data permanently,
-      choose a configuration that saves data to disk instead.
+    <p id="registration-disabled" class="hidden">
+      Registration is disabled on this server.
+      Make sure to update the permissions of the root container to prevent other people from modifying your server.
     </p>
     <p>
       To learn more about how this server can be used,
       have a look at the
-      <a href="https://github.com/CommunitySolidServer/tutorials/blob/main/getting-started.md">getting started tutorial</a>.
+      <a href="https://github.com/CommunitySolidServer/tutorials/blob/main/getting-started.md">getting started tutorial</a>
+      and the server <a href="https://communitysolidserver.github.io/CommunitySolidServer/">documentation</a>.
     </p>
 
     <h2 id="developers">Getting started as a <em>developer</em></h2>
     <p>
-      The default configuration includes
-      the <strong>ready-to-use root Pod</strong> you're currently looking at.
-      <br>
+      You can use any of the configurations in the <code>config</code> folder of the server
+      to set up an of this server with different features.
       Besides the provided configurations,
       you can also fine-tune your own custom configuration using the
       <a href="https://communitysolidserver.github.io/configuration-generator/">configuration generator</a>.
@@ -62,6 +61,20 @@
       to <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/discussions">share your experiences</a>
       and to <a href="https://github.com/CommunitySolidServer/CommunitySolidServer/issues">report any bugs</a> you encounter.
     </p>
+
+    <h2>Replacing this page</h2>
+    <p>
+      This index page is a static page configured to be shown at the root of the server.
+      You can replace this page by adding the following entry to your server configuration:
+    <pre>{
+  "@type": "Override",
+  "overrideInstance": { "@id": "urn:solid-server:default:RootStaticAsset" },
+  "overrideParameters": {
+    "@type": "StaticAssetEntry",
+    "filePath": "/path/to/my/index.html"
+  }
+}</pre>
+    </p>
   </main>
   <footer>
     <p>
@@ -70,4 +83,18 @@
     </p>
   </footer>
 </body>
+<script>
+  (async() => {
+    // Since this page is in the root of the server, we can determine other URLs relative to the current URL
+    const res = await fetch('.account/');
+    const registrationUrl = (await res.json())?.controls?.html?.password?.register;
+    // We specifically want to check if the HTML page that we link to exists
+    const resRegistrationPage = await fetch(registrationUrl, { headers: { accept: 'text/html' } });
+    const registrationEnabled = registrationUrl && resRegistrationPage.status === 200;
+
+    document.getElementById('registration-enabled').classList[registrationEnabled ? 'remove' : 'add']('hidden');
+    document.getElementById('registration-disabled').classList[registrationEnabled ? 'add' : 'remove']('hidden');
+    document.getElementById('registration-link').href = registrationUrl;
+  })();
+</script>
 </html>

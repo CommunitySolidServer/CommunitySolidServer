@@ -4,12 +4,12 @@ import { AclMode } from '../../../src/authorization/permissions/AclPermissionSet
 import type { AccessMap } from '../../../src/authorization/permissions/Permissions';
 import type { AuxiliaryIdentifierStrategy } from '../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
-import type {
-  AccountSettings,
-  AccountStore,
-} from '../../../src/identity/interaction/email-password/storage/AccountStore';
+import type { Account } from '../../../src/identity/interaction/account/util/Account';
+import type { AccountStore } from '../../../src/identity/interaction/account/util/AccountStore';
+import type { WebIdStore } from '../../../src/identity/interaction/webid/util/WebIdStore';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { IdentifierMap, IdentifierSetMultiMap } from '../../../src/util/map/IdentifierMap';
+import { createAccount } from '../../util/AccountUtil';
 import { compareMaps } from '../../util/Util';
 
 describe('An OwnerPermissionReader', (): void => {
@@ -18,8 +18,9 @@ describe('An OwnerPermissionReader', (): void => {
   let credentials: Credentials;
   let identifier: ResourceIdentifier;
   let requestedModes: AccessMap;
-  let settings: AccountSettings;
+  let account: Account;
   let accountStore: jest.Mocked<AccountStore>;
+  let webIdStore: jest.Mocked<WebIdStore>;
   let aclStrategy: jest.Mocked<AuxiliaryIdentifierStrategy>;
   const identifierStrategy = new SingleRootIdentifierStrategy('http://example.com/');
   let reader: OwnerPermissionReader;
@@ -31,26 +32,23 @@ describe('An OwnerPermissionReader', (): void => {
 
     requestedModes = new IdentifierSetMultiMap([[ identifier, AclMode.control ]]) as any;
 
-    settings = {
-      useIdp: true,
-      podBaseUrl,
-      clientCredentials: [],
-    };
+    account = createAccount();
+    account.pods[podBaseUrl] = 'url';
+    account.webIds[owner] = 'url';
+
+    webIdStore = {
+      get: jest.fn().mockResolvedValue([ account.id ]),
+    } as any;
 
     accountStore = {
-      getSettings: jest.fn(async(webId: string): Promise<AccountSettings> => {
-        if (webId === owner) {
-          return settings;
-        }
-        throw new Error('No account');
-      }),
+      get: jest.fn().mockResolvedValue(account),
     } as any;
 
     aclStrategy = {
       isAuxiliaryIdentifier: jest.fn((id): boolean => id.path.endsWith('.acl')),
     } as any;
 
-    reader = new OwnerPermissionReader(accountStore, aclStrategy, identifierStrategy);
+    reader = new OwnerPermissionReader(webIdStore, accountStore, aclStrategy, identifierStrategy);
   });
 
   it('returns empty permissions for non-ACL resources.', async(): Promise<void> => {
@@ -64,12 +62,17 @@ describe('An OwnerPermissionReader', (): void => {
   });
 
   it('returns empty permissions if the agent has no account.', async(): Promise<void> => {
-    credentials.agent!.webId = 'http://example.com/someone/else';
+    webIdStore.get.mockResolvedValueOnce([]);
+    compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
+  });
+
+  it('returns empty permissions if no account was found for the stored ID.', async(): Promise<void> => {
+    accountStore.get.mockResolvedValueOnce(undefined);
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 
   it('returns empty permissions if the account has no pod.', async(): Promise<void> => {
-    delete settings.podBaseUrl;
+    delete account.pods[podBaseUrl];
     compareMaps(await reader.handle({ credentials, requestedModes }), new IdentifierMap());
   });
 

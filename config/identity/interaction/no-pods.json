@@ -1,0 +1,15 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/default.json",
+    "css:config/identity/interaction/enable/account.json",
+    "css:config/identity/interaction/enable/client-credentials.json",
+    "css:config/identity/interaction/enable/password.json",
+    "css:config/identity/interaction/enable/webid.json"
+  ],
+  "@graph": [
+    {
+      "comment": "Disabled pod creation."
+    }
+  ]
+}

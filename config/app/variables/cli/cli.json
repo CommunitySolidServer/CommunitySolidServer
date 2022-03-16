@@ -105,11 +105,11 @@
         },
         {
           "@type": "YargsParameter",
-          "name": "seededPodConfigJson",
+          "name": "seedConfig",
           "options": {
             "requiresArg": true,
             "type": "string",
-            "describe": "Path to the file that will be used to seed pods."
+            "describe": "Path to the file that will be used to seed accounts and pods."
           }
         },
         {

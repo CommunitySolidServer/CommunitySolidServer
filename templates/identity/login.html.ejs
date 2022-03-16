@@ -1,0 +1,49 @@
+<h1>Choose a login method</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>Login methods</legend>
+    <ol id="loginList">
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button id="submit" type="submit" name="submit">Confirm login method</button></p>
+</form>
+
+<script>
+  const { mainForm, loginList } = getElements('mainForm', 'loginList');
+
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    const json = await fetchJson(controls.main.logins);
+
+    const entries = Object.entries(json.logins);
+
+    if (entries.length === 0) {
+      setError('No login methods are configured on this server');
+      setVisibility('submit', false);
+    } else if (entries.length === 1) {
+      // Redirect to matching login page if there is only 1 option
+      location.href = entries[0][1];
+    }
+
+    for (const [ name, url ] of entries) {
+      loginList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label>
+            <input type="radio" name="loginMethod" value=${url}>
+            ${name}
+          </label>
+        </li>`);
+    }
+  })();
+
+  addPostListener(() => {
+    const formData = new FormData(form);
+    const url = formData.get('loginMethod');
+    if (url) {
+      location.href = url;
+    }
+  });
+</script>

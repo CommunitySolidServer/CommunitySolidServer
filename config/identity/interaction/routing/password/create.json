@@ -1,0 +1,62 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allows adding the email/password login method to an account",
+      "@id": "urn:solid-server:default:AccountPasswordRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountPasswordRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:AccountLoginRoute" },
+        "relativePath": "password/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:CreatePasswordHandler",
+          "@type": "CreatePasswordHandler",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" },
+          "passwordRoute": { "@id": "urn:solid-server:default:AccountPasswordIdRoute" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountPasswordRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:PasswordControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+          "ControlHandler:_controls_key": "create",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+          "@id": "urn:solid-server:default:CreatePasswordHtml",
+          "@type": "HtmlViewEntry",
+          "filePath": "@css:templates/identity/password/create.html.ejs",
+          "route": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+      }]
+    },
+    {
+      "ControlHandler:_controls_value": {
+        "@id": "urn:solid-server:default:PasswordHtmlControlHandler",
+        "@type": "ControlHandler",
+        "controls": [{
+          "ControlHandler:_controls_key": "create",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+        }]
+      }
+    }
+  ]
+}

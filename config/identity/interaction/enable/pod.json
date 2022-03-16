@@ -1,0 +1,44 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Enable pod creation."
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AccountPodRouter" }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:AccountControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "pod",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPodRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:CreatePodHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/account/create-pod.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountPodRoute" }
+      }]
+    },
+    {
+      "@id": "urn:solid-server:default:AccountHtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "createPod",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountPodRoute" }
+      }]
+    }
+  ]
+}

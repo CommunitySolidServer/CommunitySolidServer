@@ -1,7 +1,8 @@
 import type { Credentials } from '../authentication/Credentials';
 import type { AuxiliaryIdentifierStrategy } from '../http/auxiliary/AuxiliaryIdentifierStrategy';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
-import type { AccountSettings, AccountStore } from '../identity/interaction/email-password/storage/AccountStore';
+import type { AccountStore } from '../identity/interaction/account/util/AccountStore';
+import type { WebIdStore } from '../identity/interaction/webid/util/WebIdStore';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage } from '../util/errors/ErrorUtil';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
@@ -19,13 +20,15 @@ import type { PermissionMap } from './permissions/Permissions';
 export class OwnerPermissionReader extends PermissionReader {
   protected readonly logger = getLoggerFor(this);
 
+  private readonly webIdStore: WebIdStore;
   private readonly accountStore: AccountStore;
   private readonly authStrategy: AuxiliaryIdentifierStrategy;
   private readonly identifierStrategy: IdentifierStrategy;
 
-  public constructor(accountStore: AccountStore, authStrategy: AuxiliaryIdentifierStrategy,
+  public constructor(webIdStore: WebIdStore, accountStore: AccountStore, authStrategy: AuxiliaryIdentifierStrategy,
     identifierStrategy: IdentifierStrategy) {
     super();
+    this.webIdStore = webIdStore;
     this.accountStore = accountStore;
     this.authStrategy = authStrategy;
     this.identifierStrategy = identifierStrategy;
@@ -40,16 +43,16 @@ export class OwnerPermissionReader extends PermissionReader {
       return result;
     }
 
-    let podBaseUrl: ResourceIdentifier;
+    let podBaseUrls: ResourceIdentifier[];
     try {
-      podBaseUrl = await this.findPodBaseUrl(input.credentials);
+      podBaseUrls = await this.findPodBaseUrls(input.credentials);
     } catch (error: unknown) {
       this.logger.debug(`No pod owner Control permissions: ${createErrorMessage(error)}`);
       return result;
     }
 
     for (const auth of auths) {
-      if (this.identifierStrategy.contains(podBaseUrl, auth, true)) {
+      if (podBaseUrls.some((podBaseUrl): boolean => this.identifierStrategy.contains(podBaseUrl, auth, true))) {
         this.logger.debug(`Granting Control permissions to owner on ${auth.path}`);
         result.set(auth, {
           read: true,
@@ -68,19 +71,26 @@ export class OwnerPermissionReader extends PermissionReader {
    * Find the base URL of the pod the given credentials own.
    * Will throw an error if none can be found.
    */
-  private async findPodBaseUrl(credentials: Credentials): Promise<ResourceIdentifier> {
+  private async findPodBaseUrls(credentials: Credentials): Promise<ResourceIdentifier[]> {
     if (!credentials.agent?.webId) {
       throw new NotImplementedHttpError('Only authenticated agents could be owners');
     }
-    let settings: AccountSettings;
-    try {
-      settings = await this.accountStore.getSettings(credentials.agent.webId);
-    } catch {
-      throw new NotImplementedHttpError('No account registered for this WebID');
+
+    const accountIds = await this.webIdStore.get(credentials.agent.webId);
+    if (accountIds.length === 0) {
+      throw new NotImplementedHttpError('No account is linked to this WebID');
     }
-    if (!settings.podBaseUrl) {
-      throw new NotImplementedHttpError('This agent has no pod on the server');
+
+    const baseUrls: ResourceIdentifier[] = [];
+    for (const accountId of accountIds) {
+      const account = await this.accountStore.get(accountId);
+      if (!account) {
+        this.logger.error(`Found invalid account ID ${accountId} through WebID ${credentials.agent.webId}`);
+        continue;
+      }
+      baseUrls.push(...Object.keys(account.pods).map((pod): ResourceIdentifier => ({ path: pod })));
     }
-    return { path: settings.podBaseUrl };
+
+    return baseUrls;
   }
 }

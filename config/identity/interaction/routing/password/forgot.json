@@ -1,0 +1,68 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the forgot password interaction.",
+      "@id": "urn:solid-server:default:ForgotPasswordRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:ForgotPasswordRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:LoginPasswordRoute" },
+        "relativePath": "forgot/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:ForgotPasswordHandler",
+          "@type": "ForgotPasswordHandler",
+          "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" },
+          "forgotPasswordStore": { "@id": "urn:solid-server:default:ForgotPasswordStore" },
+          "templateEngine": {
+            "@type": "StaticTemplateEngine",
+            "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+            "template": "@css:templates/identity/password/reset-email.html.ejs"
+          },
+          "emailSender": { "@id": "urn:solid-server:default:EmailSender" },
+          "resetRoute": { "@id": "urn:solid-server:default:ResetPasswordRoute" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:ForgotPasswordRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:PasswordControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "forgot",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:ForgotPasswordRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:ForgotPasswordHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/password/forgot.html.ejs",
+        "route": { "@id": "urn:solid-server:default:ForgotPasswordRoute" }
+      }]
+    },
+    {
+      "ControlHandler:_controls_value": {
+        "@id": "urn:solid-server:default:PasswordHtmlControlHandler",
+        "@type": "ControlHandler",
+        "controls": [{
+            "ControlHandler:_controls_key": "forgot",
+            "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:ForgotPasswordRoute" }
+        }]
+      }
+    }
+  ]
+}

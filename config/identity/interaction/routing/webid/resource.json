@@ -1,0 +1,33 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the WebID link details such as deletion.",
+      "@id": "urn:solid-server:default:AccountWebIdLinkRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountWebIdLinkRoute",
+        "@type": "BaseWebIdLinkRoute",
+        "base": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+      },
+      "source": {
+        "@id": "urn:solid-server:default:WebIdLinkHandler",
+        "@type": "MethodFilterHandler",
+        "methods": [ "DELETE" ],
+        "source": {
+          "@type": "UnlinkWebIdHandler",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AccountWebIdLinkRouter" }
+      ]
+    }
+  ]
+}

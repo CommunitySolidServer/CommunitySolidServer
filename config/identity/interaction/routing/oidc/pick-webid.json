@@ -1,0 +1,44 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles picking a WebID during an OIDC interaction.",
+      "@id": "urn:solid-server:default:OidcPickWebIdRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:OidcPickWebIdRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:OidcRoute" },
+        "relativePath": "pick-webid/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@type": "PickWebIdHandler",
+          "@id": "urn:solid-server:default:PickWebIdHandler",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "providerFactory": { "@id": "urn:solid-server:default:IdentityProviderFactory" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:OidcPickWebIdRouter" }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "OidcControlHandler",
+      "controls": [
+        {
+          "OidcControlHandler:_controls_key": "webId",
+          "OidcControlHandler:_controls_value": { "@id": "urn:solid-server:default:OidcPickWebIdRoute" }
+        }
+      ]
+    }
+  ]
+}

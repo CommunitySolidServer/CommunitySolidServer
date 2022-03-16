@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "This route is only used when creating new pod resources as no further interactions are supported.",
+      "@id": "urn:solid-server:default:AccountPodIdRoute",
+      "@type": "BasePodIdRoute",
+      "base": { "@id": "urn:solid-server:default:AccountPodRoute" }
+    }
+  ]
+}

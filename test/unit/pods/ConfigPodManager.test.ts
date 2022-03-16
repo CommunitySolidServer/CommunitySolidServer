@@ -8,7 +8,7 @@ import type { ResourceStore } from '../../../src/storage/ResourceStore';
 
 describe('A ConfigPodManager', (): void => {
   let settings: PodSettings;
-  const base = 'http://test.com/';
+  const base = 'http://example.com/';
   let store: ResourceStore;
   let podGenerator: PodGenerator;
   let routingStorage: KeyValueStorage<string, ResourceStore>;
@@ -19,9 +19,9 @@ describe('A ConfigPodManager', (): void => {
 
   beforeEach(async(): Promise<void> => {
     settings = {
-      login: 'alice',
       template: 'config-template.json',
       webId: 'webId',
+      base: { path: 'http://example.com/alice/' },
     };
 
     store = {
@@ -55,9 +55,9 @@ describe('A ConfigPodManager', (): void => {
 
   it('creates a pod and returns the newly generated identifier.', async(): Promise<void> => {
     const identifier = { path: `${base}alice/` };
-    await expect(manager.createPod(identifier, settings)).resolves.toBeUndefined();
+    await expect(manager.createPod(settings)).resolves.toBeUndefined();
     expect(podGenerator.generate).toHaveBeenCalledTimes(1);
-    expect(podGenerator.generate).toHaveBeenLastCalledWith(identifier, settings);
+    expect(podGenerator.generate).toHaveBeenLastCalledWith(settings);
     expect(resourcesGenerator.generate).toHaveBeenCalledTimes(1);
     expect(resourcesGenerator.generate).toHaveBeenLastCalledWith(identifier, settings);
     expect(initStore.setRepresentation).toHaveBeenCalledTimes(2);

@@ -93,7 +93,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
     this.store = args.store;
   }
 
-  public async* generate(templateFolder: string, location: ResourceIdentifier, options: Dict<string>):
+  public async* generate(templateFolder: string, location: ResourceIdentifier, options: Dict<unknown>):
   AsyncIterable<Resource> {
     templateFolder = resolveAssetPath(templateFolder);
 
@@ -111,7 +111,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
   /**
    * Generates results for all entries in the given folder, including the folder itself.
    */
-  private async* processFolder(folderLink: TemplateResourceLink, mapper: FileIdentifierMapper, options: Dict<string>):
+  private async* processFolder(folderLink: TemplateResourceLink, mapper: FileIdentifierMapper, options: Dict<unknown>):
   AsyncIterable<Resource> {
     // Group resource links with their corresponding metadata links
     const links = await this.groupLinks(folderLink.filePath, mapper);
@@ -175,7 +175,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
    * If a ResourceLink of metadata is provided the corresponding metadata resource
    * will be yielded as a separate resource.
    */
-  private async* generateResource(link: TemplateResourceLink, options: Dict<string>, metaLink?: TemplateResourceLink):
+  private async* generateResource(link: TemplateResourceLink, options: Dict<unknown>, metaLink?: TemplateResourceLink):
   AsyncIterable<Resource> {
     let data: Guarded<Readable> | undefined;
     const metadata = new RepresentationMetadata(link.identifier);
@@ -211,7 +211,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
   /**
    * Generates a RepresentationMetadata using the given template.
    */
-  private async generateMetadata(metaLink: TemplateResourceLink, options: Dict<string>):
+  private async generateMetadata(metaLink: TemplateResourceLink, options: Dict<unknown>):
   Promise<RepresentationMetadata> {
     const metadata = new RepresentationMetadata(metaLink.identifier);
 
@@ -226,7 +226,7 @@ export class BaseResourcesGenerator implements TemplatedResourcesGenerator {
   /**
    * Creates a read stream from the file and applies the template if necessary.
    */
-  private async processFile(link: TemplateResourceLink, contents: Dict<string>): Promise<Guarded<Readable>> {
+  private async processFile(link: TemplateResourceLink, contents: Dict<unknown>): Promise<Guarded<Readable>> {
     if (link.isTemplate) {
       const rendered = await this.templateEngine.handleSafe({ contents, template: { templateFile: link.filePath }});
       return guardedStreamFrom(rendered);

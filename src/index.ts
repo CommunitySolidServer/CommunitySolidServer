@@ -67,8 +67,10 @@ export * from './http/input/identifier/OriginalUrlExtractor';
 export * from './http/input/identifier/TargetExtractor';
 
 // HTTP/Input/Metadata
+export * from './http/input/metadata/AuthorizationParser';
 export * from './http/input/metadata/ContentLengthParser';
 export * from './http/input/metadata/ContentTypeParser';
+export * from './http/input/metadata/CookieParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
 export * from './http/input/metadata/PlainJsonLdFilter';
@@ -102,6 +104,7 @@ export * from './http/output/metadata/AllowAcceptHeaderWriter';
 export * from './http/output/metadata/AuxiliaryLinkMetadataWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
 export * from './http/output/metadata/ContentTypeMetadataWriter';
+export * from './http/output/metadata/CookieMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
 export * from './http/output/metadata/MetadataWriter';
@@ -134,52 +137,107 @@ export * from './http/Operation';
 export * from './http/UnsecureWebSocketsProtocol';
 
 // Identity/Configuration
+export * from './identity/configuration/AccountPromptFactory';
 export * from './identity/configuration/CachedJwkGenerator';
 export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/JwkGenerator';
+export * from './identity/configuration/PromptFactory';
 export * from './identity/configuration/ProviderFactory';
 
-// Identity/Interaction/Email-Password/Credentials
-export * from './identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
-export * from './identity/interaction/email-password/credentials/EmailPasswordAuthorizer';
-export * from './identity/interaction/email-password/credentials/CreateCredentialsHandler';
-export * from './identity/interaction/email-password/credentials/CredentialsHandler';
-export * from './identity/interaction/email-password/credentials/DeleteCredentialsHandler';
-export * from './identity/interaction/email-password/credentials/ListCredentialsHandler';
+// Identity/Interaction/Account/Util
+export * from './identity/interaction/account/util/Account';
+export * from './identity/interaction/account/util/AccountUtil';
+export * from './identity/interaction/account/util/AccountStore';
+export * from './identity/interaction/account/util/BaseAccountStore';
+export * from './identity/interaction/account/util/BaseCookieStore';
+export * from './identity/interaction/account/util/CookieStore';
 
-// Identity/Interaction/Email-Password/Handler
-export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
-export * from './identity/interaction/email-password/handler/LoginHandler';
-export * from './identity/interaction/email-password/handler/RegistrationHandler';
-export * from './identity/interaction/email-password/handler/ResetPasswordHandler';
+// Identity/Interaction/Account
+export * from './identity/interaction/account/AccountIdRoute';
+export * from './identity/interaction/account/AccountDetailsHandler';
+export * from './identity/interaction/account/CreateAccountHandler';
 
-// Identity/Interaction/Email-Password/Storage
-export * from './identity/interaction/email-password/storage/AccountStore';
-export * from './identity/interaction/email-password/storage/BaseAccountStore';
+// Identity/Interaction/Client-Credentials/Util
+export * from './identity/interaction/client-credentials/util/BaseClientCredentialsStore';
+export * from './identity/interaction/client-credentials/util/ClientCredentialsIdRoute';
+export * from './identity/interaction/client-credentials/util/ClientCredentialsStore';
 
-// Identity/Interaction/Email-Password/Util
-export * from './identity/interaction/email-password/util/BaseEmailSender';
-export * from './identity/interaction/email-password/util/EmailSender';
-export * from './identity/interaction/email-password/util/RegistrationManager';
+// Identity/Interaction/Client-Credentials
+export * from './identity/interaction/client-credentials/ClientCredentialsAdapterFactory';
+export * from './identity/interaction/client-credentials/ClientCredentialsDetailsHandler';
+export * from './identity/interaction/client-credentials/CreateClientCredentialsHandler';
+export * from './identity/interaction/client-credentials/DeleteClientCredentialsHandler';
 
-// Identity/Interaction/Email-Password
-export * from './identity/interaction/email-password/EmailPasswordUtil';
+// Identity/Interaction/Login
+export * from './identity/interaction/login/LogoutHandler';
+export * from './identity/interaction/login/ResolveLoginHandler';
+
+// Identity/Interaction/Oidc
+export * from './identity/interaction/oidc/CancelOidcHandler';
+export * from './identity/interaction/oidc/ClientInfoHandler';
+export * from './identity/interaction/oidc/ConsentHandler';
+export * from './identity/interaction/oidc/ForgetWebIdHandler';
+export * from './identity/interaction/oidc/PromptHandler';
+export * from './identity/interaction/oidc/PickWebIdHandler';
+
+// Identity/Interaction/Password/Util
+export * from './identity/interaction/password/util/BaseEmailSender';
+export * from './identity/interaction/password/util/BaseForgotPasswordStore';
+export * from './identity/interaction/password/util/BasePasswordStore';
+export * from './identity/interaction/password/util/EmailSender';
+export * from './identity/interaction/password/util/ForgotPasswordStore';
+export * from './identity/interaction/password/util/PasswordIdRoute';
+export * from './identity/interaction/password/util/PasswordStore';
+
+// Identity/Interaction/Password
+export * from './identity/interaction/password/CreatePasswordHandler';
+export * from './identity/interaction/password/DeletePasswordHandler';
+export * from './identity/interaction/password/ForgotPasswordHandler';
+export * from './identity/interaction/password/PasswordLoginHandler';
+export * from './identity/interaction/password/ResetPasswordHandler';
+export * from './identity/interaction/password/UpdatePasswordHandler';
+
+// Identity/Interaction/Pod/Util
+export * from './identity/interaction/pod/util/BasePodStore';
+export * from './identity/interaction/pod/util/PodStore';
+
+// Identity/Interaction/Pod
+export * from './identity/interaction/pod/CreatePodHandler';
+export * from './identity/interaction/pod/PodIdRoute';
 
 // Identity/Interaction/Routing
 export * from './identity/interaction/routing/AbsolutePathInteractionRoute';
+export * from './identity/interaction/routing/AuthorizedRouteHandler';
+export * from './identity/interaction/routing/IdInteractionRoute';
 export * from './identity/interaction/routing/InteractionRoute';
 export * from './identity/interaction/routing/InteractionRouteHandler';
 export * from './identity/interaction/routing/RelativePathInteractionRoute';
 
+// Identity/Interaction/WebID/Util
+export * from './identity/interaction/webid/util/BaseWebIdStore';
+export * from './identity/interaction/webid/util/WebIdStore';
+
+// Identity/Interaction/WebID
+export * from './identity/interaction/webid/LinkWebIdHandler';
+export * from './identity/interaction/webid/UnlinkWebIdHandler';
+export * from './identity/interaction/webid/WebIdLinkRoute';
+
 // Identity/Interaction
-export * from './identity/interaction/BaseInteractionHandler';
-export * from './identity/interaction/ConsentHandler';
 export * from './identity/interaction/ControlHandler';
-export * from './identity/interaction/FixedInteractionHandler';
+export * from './identity/interaction/CookieInteractionHandler';
 export * from './identity/interaction/HtmlViewHandler';
 export * from './identity/interaction/InteractionHandler';
+export * from './identity/interaction/InteractionUtil';
+export * from './identity/interaction/JsonConversionHandler';
+export * from './identity/interaction/JsonInteractionHandler';
+export * from './identity/interaction/JsonView';
 export * from './identity/interaction/LocationInteractionHandler';
-export * from './identity/interaction/PromptHandler';
+export * from './identity/interaction/LockingInteractionHandler';
+export * from './identity/interaction/OidcControlHandler';
+export * from './identity/interaction/StaticInteractionHandler';
+export * from './identity/interaction/VersionHandler';
+export * from './identity/interaction/ViewInteractionHandler';
+export * from './identity/interaction/YupUtil';
 
 // Identity/Ownership
 export * from './identity/ownership/NoCheckOwnershipValidator';
@@ -232,7 +290,7 @@ export * from './init/InitializableHandler';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
 export * from './init/ModuleVersionVerifier';
-export * from './init/SeededPodInitializer';
+export * from './init/SeededAccountInitializer';
 export * from './init/ServerInitializer';
 
 // Logging

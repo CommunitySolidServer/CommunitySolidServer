@@ -1,53 +1,53 @@
-import type { Operation } from '../../../../../src/http/Operation';
-import { BasicRepresentation } from '../../../../../src/http/representation/BasicRepresentation';
-import type { Representation } from '../../../../../src/http/representation/Representation';
-import type { InteractionHandler } from '../../../../../src/identity/interaction/InteractionHandler';
+import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
+import type { JsonInteractionHandler,
+  JsonInteractionHandlerInput } from '../../../../../src/identity/interaction/JsonInteractionHandler';
 import type { InteractionRoute } from '../../../../../src/identity/interaction/routing/InteractionRoute';
 import { InteractionRouteHandler } from '../../../../../src/identity/interaction/routing/InteractionRouteHandler';
-import { APPLICATION_JSON } from '../../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../../src/util/errors/NotFoundHttpError';
-import { createPostJsonOperation } from '../email-password/handler/Util';
 
 describe('An InteractionRouteHandler', (): void => {
-  const path = 'http://example.com/idp/path/';
-  let operation: Operation;
-  let representation: Representation;
-  let route: InteractionRoute;
-  let source: jest.Mocked<InteractionHandler>;
-  let handler: InteractionRouteHandler;
+  const path = 'http://example.com/foo/';
+  let input: JsonInteractionHandlerInput;
+  let route: jest.Mocked<InteractionRoute<'base'>>;
+  let source: jest.Mocked<JsonInteractionHandler>;
+  let handler: InteractionRouteHandler<InteractionRoute<'base'>>;
 
   beforeEach(async(): Promise<void> => {
-    operation = createPostJsonOperation({}, path);
-
-    representation = new BasicRepresentation(JSON.stringify({}), APPLICATION_JSON);
+    input = {
+      target: { path },
+      json: { data: 'data' },
+      metadata: new RepresentationMetadata(),
+      method: 'GET',
+    };
 
     route = {
       getPath: jest.fn().mockReturnValue(path),
+      matchPath: jest.fn().mockReturnValue({ base: 'base' }),
     };
 
     source = {
       canHandle: jest.fn(),
-      handle: jest.fn().mockResolvedValue(representation),
+      handle: jest.fn().mockResolvedValue('response'),
     } as any;
 
     handler = new InteractionRouteHandler(route, source);
   });
 
   it('rejects other paths.', async(): Promise<void> => {
-    operation = createPostJsonOperation({}, 'http://example.com/idp/otherPath/');
-    await expect(handler.canHandle({ operation })).rejects.toThrow(NotFoundHttpError);
+    route.matchPath.mockReturnValueOnce(undefined);
+    await expect(handler.canHandle(input)).rejects.toThrow(NotFoundHttpError);
   });
 
   it('rejects input its source cannot handle.', async(): Promise<void> => {
     source.canHandle.mockRejectedValueOnce(new Error('bad data'));
-    await expect(handler.canHandle({ operation })).rejects.toThrow('bad data');
+    await expect(handler.canHandle(input)).rejects.toThrow('bad data');
   });
 
   it('can handle requests its source can handle.', async(): Promise<void> => {
-    await expect(handler.canHandle({ operation })).resolves.toBeUndefined();
+    await expect(handler.canHandle(input)).resolves.toBeUndefined();
   });
 
   it('lets its source handle requests.', async(): Promise<void> => {
-    await expect(handler.handle({ operation })).resolves.toBe(representation);
+    await expect(handler.handle(input)).resolves.toBe('response');
   });
 });

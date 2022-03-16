@@ -63,8 +63,8 @@
     "release": "commit-and-tag-version",
     "postrelease": "ts-node ./scripts/finalizeRelease.ts",
     "start": "node ./bin/server.js",
-    "start:file": "node ./bin/server.js -c config/file.json -f ./data",
-    "start:file-root": "node ./bin/server.js -c config/file-root.json -f ./data",
+    "start:file": "node ./bin/server.js -c config/file.json -f ./.data",
+    "start:file-root": "node ./bin/server.js -c config/file-root.json -f ./.data",
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-configs.sh",
     "test:ts": "tsc -p test --noEmit",
@@ -106,6 +106,7 @@
     "@solid/access-token-verifier": "^2.0.5",
     "@types/async-lock": "^1.4.0",
     "@types/bcryptjs": "^2.4.2",
+    "@types/cookie": "^0.4.1",
     "@types/cors": "^2.8.12",
     "@types/ejs": "^3.1.2",
     "@types/end-of-stream": "^1.4.1",
@@ -129,7 +130,8 @@
     "arrayify-stream": "^2.0.1",
     "async-lock": "^1.4.0",
     "bcryptjs": "^2.4.3",
-    "componentsjs": "^5.3.2",
+    "componentsjs": "^5.4.2",
+    "cookie": "^0.4.2",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
     "ejs": "^3.1.9",
@@ -164,7 +166,8 @@
     "winston": "^3.8.2",
     "winston-transport": "^4.5.0",
     "ws": "^8.13.0",
-    "yargs": "^17.7.1"
+    "yargs": "^17.7.1",
+    "yup": "^1.0.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.1",

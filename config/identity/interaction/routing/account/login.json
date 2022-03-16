@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Base account login route that specific login implementations can extend.",
+      "@id": "urn:solid-server:default:AccountLoginRoute",
+      "@type": "RelativePathInteractionRoute",
+      "base": {
+        "@id": "urn:solid-server:default:AccountIdRoute"
+      },
+      "relativePath": "login/"
+    }
+  ]
+}

@@ -2,6 +2,9 @@ import { resolvePromiseOrValue } from '../PromiseUtil';
 import type { PromiseOrValue } from '../PromiseUtil';
 import type { SetMultiMap } from './SetMultiMap';
 
+export type ArrayElement<TArray extends readonly any[]> = TArray[number];
+export type EmptyObject = Record<string, never>;
+
 export type MapKey<T> = T extends Map<infer TKey, any> ? TKey : never;
 export type MapValue<T> = T extends Map<any, infer TValue> ? TValue : never;
 export type MapEntry<T> = T extends Map<any, any> ? [MapKey<T>, MapValue<T>] : never;

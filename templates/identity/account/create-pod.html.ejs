@@ -1,0 +1,99 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose a name for your pod</p>
+    <ol>
+      <li>
+        <label for="name">Name</label>
+        <input id="name" type="text" name="name" autofocus>
+      </li>
+    </ol>
+    <p>Choose which WebID will have initial write permissions on the pod</p>
+    <ol>
+      <li class="radio">
+        <label>
+          <input type="radio" id="internalWebIdOn" name="internalWebId" value="on" checked>
+          Use the WebID in the Pod and register it to your account.
+        </label>
+      </li>
+      <li class="radio">
+        <label>
+          <input type="radio" id="internalWebIdOff" name="internalWebId" value="">
+          Use an external WebID.
+        </label>
+        <ol id="existingWebIdForm">
+          <li>
+            <label for="webId">Existing WebID:</label>
+            <input id="webId" type="text" name="webId">
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Create pod</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+<div class="hidden" id="response">
+  <h2>Your new Pod</h2>
+  <p>
+    Your new Pod is located at <a id="response-podBaseUrl" href="" class="link"></a>.
+    <br>
+    You can store your documents and data there.
+    All WebIDs registered to this account have control access to this pod.
+  </p>
+
+  <div id="response-linkWebId">
+    <h2>Your new WebID</h2>
+    <p>
+      Your new WebID is <a id="response-webId" href="" class="link"></a>.
+      <br>
+      You can use this identifier to interact with Solid pods and apps.
+    </p>
+  </div>
+
+  <p class="actions"><button type="button" id="response-account-link">Back</button></p>
+</div>
+
+
+<script>
+  const { mainForm } = getElements('mainForm');
+
+  (async() => {
+    let res = await fetch('<%= idpIndex %>', { headers: { accept: 'application/json' } });
+
+    const { controls } = await res.json();
+    setRedirectClick('account-link', controls.html.account.account);
+    setRedirectClick('response-account-link', controls.html.account.account);
+
+    addPostListener(async() => {
+      const formData = new FormData(mainForm);
+      const json = {
+        name: formData.get('name'),
+      }
+      if (formData.get('internalWebId') === '') {
+        json.settings = { webId: formData.get('webId') };
+      }
+
+      const res = await postJson(controls.account.pod, json);
+      if (res.status >= 400) {
+        throw new Error((await res.json()).message);
+      }
+
+      const { pod, webId, webIdResource } = await res.json();
+
+      updateElement('response-podBaseUrl', pod, { innerText: true, href: true });
+      if (webIdResource) {
+        updateElement('response-webId', webId, { innerText: true, href: true });
+      }
+
+      setVisibility('response', true);
+      setVisibility('response-linkWebId', Boolean(webIdResource));
+      setVisibility('mainForm', false);
+    });
+  })();
+</script>

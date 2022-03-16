@@ -1,0 +1,44 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allows users to cancel an OIDC interaction, bringing them back to the original client.",
+      "@id": "urn:solid-server:default:OidcCancelRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:OidcCancelRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:OidcRoute" },
+        "relativePath": "cancel/"
+      },
+      "source": {
+        "@id": "urn:solid-server:default:CancelOidcHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [
+          {
+            "@type": "MethodFilterHandler",
+            "methods": [ "POST" ],
+            "source": { "@type": "CancelOidcHandler" }
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:OidcCancelRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "OidcControlHandler",
+      "controls": [
+        {
+          "OidcControlHandler:_controls_key": "cancel",
+          "OidcControlHandler:_controls_value": { "@id": "urn:solid-server:default:OidcCancelRoute" }
+        }
+      ]
+    }
+  ]
+}

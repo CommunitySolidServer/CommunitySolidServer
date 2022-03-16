@@ -1,12 +1,8 @@
-import { stringify } from 'querystring';
-import { URL } from 'url';
 import { Session } from '@inrupt/solid-client-authn-node';
-import { load } from 'cheerio';
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import type { Cookie } from 'set-cookie-parser';
 import { parse, splitCookiesString } from 'set-cookie-parser';
-import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 
 /* eslint-disable jest/no-standalone-expect */
 /**
@@ -34,11 +30,17 @@ export class IdentityTestState {
    * Performs a fetch call while keeping track of the stored cookies and preventing redirects.
    * @param url - URL to call.
    * @param method - Method to use.
-   * @param body - Body to send along.
-   * @param contentType - Content-Type of the body.
+   * @param body - Body to send along. If this is not a string it will be JSONified.
+   * @param contentType - Content-Type of the body. If not defined but there is a body, this will be set to JSON.
    */
-  public async fetchIdp(url: string, method = 'GET', body?: string, contentType?: string): Promise<Response> {
+  public async fetchIdp(url: string, method = 'GET', body?: string | unknown, contentType?: string): Promise<Response> {
     const options = { method, headers: { cookie: this.cookie }, body, redirect: 'manual' } as any;
+    if (body && typeof body !== 'string') {
+      options.body = JSON.stringify(body);
+    }
+    if (body && !contentType) {
+      contentType = 'application/json';
+    }
     if (contentType) {
       options.headers['content-type'] = contentType;
     }
@@ -58,24 +60,11 @@ export class IdentityTestState {
   }
 
   /**
-   * Uses the given jquery command to find a node in the given html body.
-   * The value from the given attribute field then gets extracted and combined with the base url.
-   * @param html - Body to parse.
-   * @param jquery - Query to run on the body.
-   * @param attr - Attribute to extract.
+   * Initializes the OIDC session for the given clientId.
+   * If undefined, dynamic registration will be used.
    */
-  public extractUrl(html: string, jquery: string, attr: string): string {
-    const url = load(html)(jquery).attr(attr);
-    expect(typeof url).toBe('string');
-    return new URL(url!, this.baseUrl).href;
-  }
-
-  /**
-   * Initializes an authentication session and stores the relevant cookies for later re-use.
-   * All te relevant links from the login page get extracted.
-   */
-  public async startSession(clientId?: string): Promise<string> {
-    let nextUrl = '';
+  public async initSession(clientId?: string): Promise<string> {
+    let nextUrl: string;
     await this.session.login({
       redirectUrl: this.redirectUrl,
       oidcIssuer: this.oidcIssuer,
@@ -84,64 +73,30 @@ export class IdentityTestState {
         nextUrl = data;
       },
     });
-    expect(nextUrl.length > 0).toBeTruthy();
-    expect(nextUrl.startsWith(this.oidcIssuer)).toBeTruthy();
-
-    // Need to catch the redirect so we can copy the cookies
-    let res = await this.fetchIdp(nextUrl);
-    expect(res.status).toBe(303);
-    nextUrl = res.headers.get('location')!;
-
-    // Handle redirect
-    res = await this.fetchIdp(nextUrl);
-    expect(res.status).toBe(200);
-
-    // Need to send request to prompt API to get actual location
-    let json = await res.json();
-    res = await this.fetchIdp(json.controls.prompt);
-    json = await res.json();
-    nextUrl = json.location;
-
-    return nextUrl;
+    return nextUrl!;
   }
 
   /**
-   * Logs in by sending the corresponding email and password to the given form action.
-   * The URL should be extracted from the login page.
+   * Handles a URL that is expected to redirect and returns the target it would redirect to.
    */
-  public async login(url: string, email: string, password: string): Promise<string> {
-    const formData = stringify({ email, password });
-    let res = await this.fetchIdp(url, 'POST', formData, APPLICATION_X_WWW_FORM_URLENCODED);
-    expect(res.status).toBe(200);
-    const json = await res.json();
-    res = await this.fetchIdp(json.location);
+  public async handleRedirect(url: string): Promise<string> {
+    const res = await this.fetchIdp(url);
     expect(res.status).toBe(303);
+    expect(res.headers.has('location')).toBe(true);
     return res.headers.get('location')!;
   }
 
   /**
-   * Handles the consent screen at the given URL and the followup redirect back to the client.
+   * Handles a JSON redirect. That is a request that returns a 200,
+   * but has a `location` field in the JSON to indicate what it should redirect to.
+   * That URL is expected to be another redirect, and this returns what it would redirect to.
    */
-  public async consent(url: string): Promise<void> {
-    let res = await this.fetchIdp(url, 'POST', '', APPLICATION_X_WWW_FORM_URLENCODED);
+  public async handleLocationRedirect(res: Response): Promise<string> {
     expect(res.status).toBe(200);
     const json = await res.json();
+    // The OIDC redirect
+    expect(json.location).toBeDefined();
 
-    res = await this.fetchIdp(json.location);
-    expect(res.status).toBe(303);
-    const mockUrl = res.headers.get('location')!;
-    expect(mockUrl.startsWith(this.redirectUrl)).toBeTruthy();
-
-    const info = await this.session.handleIncomingRedirect(mockUrl);
-    expect(info?.isLoggedIn).toBe(true);
-  }
-
-  public async logout(url: string): Promise<string> {
-    let res = await this.fetchIdp(url, 'POST', stringify({ logOut: true }), APPLICATION_X_WWW_FORM_URLENCODED);
-    expect(res.status).toBe(200);
-    const json = await res.json();
-    res = await this.fetchIdp(json.location);
-    expect(res.status).toBe(303);
-    return res.headers.get('location')!;
+    return this.handleRedirect(json.location);
   }
 }

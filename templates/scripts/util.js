@@ -1,7 +1,7 @@
 /**
  * Returns an object that maps IDs to the corresponding element.
  *
- * @param ...ids - IDs of the element (empty to retrieve all elements)
+ * @param ids - IDs of the element (empty to retrieve all elements)
  */
 function getElements(...ids) {
   ids = ids.length ? ids : [...document.querySelectorAll("[id]")].map(e => e.id);
@@ -12,95 +12,55 @@ function getElements(...ids) {
  * Acquires all data from the given form and POSTs it as JSON to the target URL.
  * In case of failure this function will throw an error.
  * In case of success a parsed JSON body of the response will be returned,
- * unless the body contains a `location` field,
- * in that case the page will be redirected to that location.
+ * unless a redirect was expected,
+ * in which case a redirect will happen or an error will be thrown if there is no location field.
  *
- * @param formId - ID of the form.
  * @param target - Target URL to POST to. Defaults to the current URL.
- * @returns {Promise<unknown>} - The response JSON.
+ * @param expectRedirect - If a redirect is expected. Defaults to `false`.
+ * @param transform - A function that gets as input a JSON representation of the form. The output will be POSTed. Defaults to identity function.
+ * @param formId - The ID of the form. Defaults to "mainForm".
  */
-async function postJsonForm(formId, target = '') {
+async function postJsonForm(target = '', expectRedirect = false, transform = (json) => json, formId = 'mainForm') {
   const form = document.getElementById(formId);
   const formData = new FormData(form);
-  const res = await fetch(target, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'accept': 'application/json', 'content-type': 'application/json' },
-    body: JSON.stringify(Object.fromEntries(formData)),
-  });
+  const json = transform(Object.fromEntries(formData));
+  const res = await postJson(target, json);
   if (res.status >= 400) {
     const error = await res.json();
-    throw new Error(`${error.statusCode} - ${error.name}: ${error.message}`)
+    throw new Error(error.message);
   } else if (res.status === 200 || res.status === 201) {
     const body = await res.json();
     if (body.location) {
       location.href = body.location;
     } else {
+      if (expectRedirect) {
+        throw new Error('Expected a location field in the response.');
+      }
       return body;
     }
   }
 }
 
 /**
- * Redirects the page to the given target with the key/value pairs of the JSON body as query parameters.
- * Controls will be deleted from the JSON to prevent very large URLs.
- * `false` values will be deleted to prevent incorrect serializations to "false".
- * @param json - JSON to convert.
- * @param target - URL to redirect to.
- */
-function redirectJsonResponse(json, target) {
-  // These would cause the URL to get very large, can be acquired later if needed
-  delete json.controls;
-
-  // Remove false parameters since these would be converted to "false" strings
-  for (const [key, val] of Object.entries(json)) {
-    if (typeof val === 'boolean' && !val) {
-      delete json[key];
-    }
-  }
-
-  const searchParams = new URLSearchParams(Object.entries(json));
-  location.href = `${target}?${searchParams.toString()}`;
-}
-
-/**
- * Adds a listener to the given form to catch the form submission and do an API call instead.
- * In case of an error, the inner text of the given error block will be updated with the message.
- * In case of success the callback function will be called.
+ * Adds a listener to the given form to prevent the default interaction and instead call the provided callback.
+ * In case of an error, it will be caught and the message will be shown in the error block.
  *
- * @param formId - ID of the form.
- * @param errorId - ID of the error block.
- * @param apiTarget - Target URL to send the POST request to. Defaults to the current URL.
- * @param callback - Callback function that will be called with the response JSON.
+ * @param callback - Callback to call.
+ * @param formId - ID of the form. Defaults to "mainForm".
+ * @param errorId - ID of the error block. Defaults to "error".
  */
-async function addPostListener(formId, errorId, apiTarget, callback) {
+function addPostListener(callback, formId = 'mainForm', errorId = 'error') {
   const form = document.getElementById(formId);
-  const errorBlock = document.getElementById(errorId);
 
   form.addEventListener('submit', async(event) => {
     event.preventDefault();
 
     try {
-      const json = await postJsonForm(formId, apiTarget);
-      if (json) {
-        callback(json);
-      }
+      await callback();
     } catch (error) {
-      errorBlock.innerText = error.message;
+      setError(error.message, errorId);
     }
   });
-}
-
-/**
- * Updates links on a page based on the controls received from the API.
- * @param url - API URL that will return the controls
- * @param controlMap - Key/value map with keys being element IDs and values being the control field names.
- */
-async function addControlLinks(url, controlMap) {
-  const json = await fetchJson(url);
-  for (let [ id, control ] of Object.entries(controlMap)) {
-    updateElement(id, json.controls[control], { href: true });
-  }
 }
 
 /**
@@ -130,12 +90,13 @@ function getDescendants(element) {
 /**
  * Updates the inner text and href field of an element.
  * @param id - ID of the element.
- * @param text - Text to put in the field(s).
+ * @param text - Text to put in the field(s). If this is undefined, instead the element will be hidden.
  * @param options - Indicates which fields should be updated.
  *                  Keys should be `innerText` and/or `href`, values should be booleans.
  */
 function updateElement(id, text, options) {
   const element = document.getElementById(id);
+  setVisibility(id, Boolean(text));
   if (options.innerText) {
     element.innerText = text;
   }
@@ -147,8 +108,64 @@ function updateElement(id, text, options) {
 /**
  * Fetches JSON from the url and converts it to an object.
  * @param url - URL to fetch JSON from.
+ * @param redirectUrl - URL to redirect to in case the response code is >= 400. No redirect happens if undefined.
  */
-async function fetchJson(url) {
+async function fetchJson(url, redirectUrl) {
   const res = await fetch(url, { headers: { accept: 'application/json' } });
+
+  if (redirectUrl && res.status >= 400) {
+    location.href = redirectUrl;
+    return;
+  }
+
   return res.json();
+}
+
+/**
+ * Returns the controls object that can be found accessing the given URL.
+ */
+async function fetchControls(url) {
+  return (await fetchJson(url)).controls;
+}
+
+/**
+ * POSTs JSON to the given URL and returns the response.
+ */
+async function postJson(url, json) {
+  return fetch(url, {
+    method: 'POST',
+    headers: { accept: 'application/json', 'content-type': 'application/json' },
+    body: JSON.stringify(json),
+  });
+}
+
+/**
+ * Sets the contents of the error block to the given error message.
+ * Default ID of the error block is `error`.
+ */
+function setError(message, errorId = 'error') {
+  updateElement(errorId, message, { innerText: true });
+}
+
+/**
+ * Causes the page to redirect to a specific page when a button is clicked.
+ * @param element - The id of the button.
+ * @param url - The URL to redirect to.
+ */
+function setRedirectClick(element, url) {
+  document.getElementById(element).addEventListener('click', () => location.href = url);
+}
+
+/**
+ * Validates a password form to see if the confirmation password matches the password.
+ *
+ * @param passwordId - The id of the password field.
+ * @param formId - ID of the form. Defaults to "mainForm".
+ * @param confirmPasswordId - ID of the password confirmation field. Defaults to "confirmPassword".
+ */
+function validatePasswordConfirmation(passwordId, formId = 'mainForm', confirmPasswordId = 'confirmPassword') {
+  const formData = new FormData(document.getElementById(formId));
+  if (formData.get(passwordId) !== formData.get(confirmPasswordId)) {
+    throw new Error('Password confirmation does not match the password!');
+  }
 }

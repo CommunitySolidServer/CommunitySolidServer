@@ -11,9 +11,9 @@
     "css:config/identity/access/public.json",
 
     "css:config/identity/handler/default.json",
+    "css:config/identity/interaction/no-accounts.json",
     "css:config/identity/ownership/token.json",
     "css:config/identity/pod/static.json",
-    "css:config/identity/registration/disabled.json",
     "css:config/ldp/authentication/debug-auth-header.json",
 
     "css:config/ldp/handler/default.json",

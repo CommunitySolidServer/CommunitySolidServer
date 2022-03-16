@@ -8,8 +8,9 @@ Contains a list of initializer that need to be run when starting the server.
 
 * *default*: The default setup. The ParallelHandler can be used to add custom Initializers.
 * *initialize-root*: Makes sure the root container has the necessary resources to function properly.
-                     This is only relevant if setup is disabled but root container access is still required.
-* *initialize-prefilled-root*: Similar to `initialize-root` but adds some introductory resources to the root container.
+* *initialize-prefilled-root*: Similar to `initialize-root` but adds an index page to the root container.
+* *initialize-intro*: Similar to `initialize-prefilled-root` but adds an index page
+                      specific to the memory-based server of the default configuration.
 * *static-root*: Shows a static introduction page at the server root. This is not a Solid resource.
 
 ## Main

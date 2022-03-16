@@ -1,0 +1,51 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the reset password interaction.",
+      "@id": "urn:solid-server:default:ResetPasswordRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:ResetPasswordRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:LoginPasswordRoute" },
+        "relativePath": "reset/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:ResetPasswordHandler",
+          "@type": "ResetPasswordHandler",
+          "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" },
+          "forgotPasswordStore": { "@id": "urn:solid-server:default:ForgotPasswordStore" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:ResetPasswordRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:PasswordControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "reset",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:ResetPasswordRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:ResetPasswordHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/password/reset.html.ejs",
+        "route": { "@id": "urn:solid-server:default:ResetPasswordRoute" }
+      }]
+    }
+  ]
+}

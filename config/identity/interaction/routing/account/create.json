@@ -1,0 +1,37 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the account creation",
+      "@id": "urn:solid-server:default:AccountRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:IndexRoute" },
+        "relativePath": "account/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@id": "urn:solid-server:default:CreateAccountHandler",
+          "@type": "CreateAccountHandler",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+          "cookieStore": { "@id": "urn:solid-server:default:CookieStore" },
+          "accountRoute": { "@id": "urn:solid-server:default:AccountIdRoute" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:AccountHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/account/account.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountRoute" }
+      }]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ export class StaticFolderGenerator implements ResourcesGenerator {
     this.templateFolder = templateFolder;
   }
 
-  public generate(location: ResourceIdentifier, options: Dict<string>): AsyncIterable<Resource> {
+  public generate(location: ResourceIdentifier, options: Dict<unknown>): AsyncIterable<Resource> {
     return this.resourcesGenerator.generate(this.templateFolder, location, options);
   }
 }

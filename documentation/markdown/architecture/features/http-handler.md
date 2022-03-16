@@ -88,8 +88,9 @@ More on this can be found in the [identity provider](../../../usage/identity-pro
 
 The `urn:solid-server:default:IdentityProviderHttpHandler` handles everything
 related to our custom identity provider API, such as registering, logging in, returning the relevant HTML pages, etc.
-All these requests are identified by being on the `/idp/` subpath.
+All these requests are identified by being on the `/.account/` subpath.
 More information on the API can be found in the [identity provider](../../../usage/identity-provider) documentation
+The architectural overview can be found [here](accounts/overview.md).
 
 ## LdpHandler
 

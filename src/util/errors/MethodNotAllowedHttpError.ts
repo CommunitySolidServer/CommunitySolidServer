@@ -17,7 +17,7 @@ export class MethodNotAllowedHttpError extends BaseHttpError {
   public readonly methods: Readonly<string[]>;
 
   public constructor(methods: string[] = [], message?: string, options?: HttpErrorOptions) {
-    super(message ?? `${methods} are not allowed.`, options);
+    super(message ?? `${methods.join(', ')} ${methods.length === 1 ? 'is' : 'are'} not allowed.`, options);
     this.methods = methods;
   }
 

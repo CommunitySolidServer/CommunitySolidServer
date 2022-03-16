@@ -5,6 +5,7 @@ import type { Response } from 'cross-fetch';
 import { ensureDir, pathExists } from 'fs-extra';
 import { joinFilePath, joinUrl } from '../../src';
 import type { App } from '../../src';
+import { register } from '../util/AccountUtil';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, getTestFolder, instantiateFromConfig, removeFolder } from './Config';
 
@@ -25,23 +26,7 @@ async function performSimplePutWithLength(path: string, length: number): Promise
 /** Registers two test pods on the server matching the 'baseUrl' */
 async function registerTestPods(baseUrl: string, pods: string[]): Promise<void> {
   for (const pod of pods) {
-    await fetch(`${baseUrl}idp/register/`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        createWebId: 'on',
-        webId: '',
-        register: 'on',
-        createPod: 'on',
-        podName: pod,
-        email: `${pod}@example.ai`,
-        password: 't',
-        confirmPassword: 't',
-        submit: '',
-      }),
-    });
+    await register(baseUrl, { podName: pod, email: `${pod}@example.ai`, password: 't' });
   }
 }
 

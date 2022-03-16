@@ -10,7 +10,7 @@ Below is a simplified view of how these handlers are linked.
 
 ```mermaid
 flowchart LR
-  LdpHandler("<strong>LdpHandler</strong><br>ParsingHttphandler")
+  LdpHandler("<strong>LdpHandler</strong><br>ParsingHttpHandler")
   LdpHandler --> AuthorizingHttpHandler("<br>AuthorizingHttpHandler")
   AuthorizingHttpHandler --> OperationHandler("<strong>OperationHandler</strong><br><i>OperationHandler</i>")
   OperationHandler --> ResourceStore("<strong>ResourceStore</strong><br><i>ResourceStore</i>")
