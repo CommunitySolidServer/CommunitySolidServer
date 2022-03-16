@@ -1,7 +1,9 @@
 import {
   sanitizeUrlPart,
   splitCommaSeparated,
-  isValidFileName, msToDuration,
+  isValidFileName,
+  isUrl,
+  msToDuration,
 } from '../../../src/util/StringUtil';
 
 describe('HeaderUtil', (): void => {
@@ -29,6 +31,17 @@ describe('HeaderUtil', (): void => {
     });
     it('returns false if the provided file name is invalid.', (): void => {
       expect(isValidFileName('$%^*')).toBeFalsy();
+    });
+  });
+
+  describe('#isURL', (): void => {
+    it('returns true if the provided string is a valid URL.', (): void => {
+      expect(isUrl('http://localhost/foo')).toBe(true);
+      expect(isUrl('http://foo.localhost:3000/foo')).toBe(true);
+      expect(isUrl('http://example.com/foo')).toBe(true);
+    });
+    it('returns false if the provided string is not a valid URL.', (): void => {
+      expect(isUrl('not valid')).toBe(false);
     });
   });
 

@@ -17,5 +17,5 @@ export interface TemplatedResourcesGenerator {
    *
    * @returns A map where the keys are the identifiers and the values the corresponding representations to store.
    */
-  generate: (templateFolder: string, location: ResourceIdentifier, options: Dict<string>) => AsyncIterable<Resource>;
+  generate: (templateFolder: string, location: ResourceIdentifier, options: Dict<unknown>) => AsyncIterable<Resource>;
 }

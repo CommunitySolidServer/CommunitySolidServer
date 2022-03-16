@@ -12,6 +12,11 @@ import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
 import type { HttpRequest } from '../HttpRequest';
 
+// TODO: write down this breaking change somewhere (have separate section in release notes until finished?)
+//       also note that setup is completely gone (for now?)
+// TODO: note that one of the reasons we had setup is to make sure people were aware of ACLs being written to their disk,
+//       ^ need to ensure default configs still don't do that
+
 /**
  * Handler that serves static resources on specific paths.
  * Relative file paths are assumed to be relative to cwd.

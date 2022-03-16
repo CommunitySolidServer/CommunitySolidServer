@@ -134,7 +134,7 @@ to some commonly used settings:
 | `--sparqlEndpoint, -s`  |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                                       |
 | `--showStackTrace, -t`  | false                      | Enables detailed logging on error output.                                                                                                     |
 | `--podConfigJson`       | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                         |
-| `--seededPodConfigJson` |                            | Path to the file that keeps track of seeded Pod configurations.                                                                               |
+| `--seedConfig`         |                            | Path to the file that keeps track of seeded account configurations.                                                                               |
 | `--mainModulePath, -m`  |                            | Path from where Components.js will start its lookup when initializing configurations.                                                         |
 | `--workers, -w`         | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded). |
 

@@ -1,0 +1,69 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose the credentials you want to use to log in to this server in the future</p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button type="submit" name="submit">Register</button></p>
+</form>
+
+
+<script>
+  // TODO: creating an account does not set the OIDC login flag though, not horrible but would be nice if we can fix
+
+  // TODO: could have base account page redirect to email/password registration page, something like /create/password
+  const form = document.getElementById('mainForm');
+  const errorBlock = document.getElementById('error');
+
+  form.addEventListener('submit', async(event) => {
+    event.preventDefault();
+
+    // TODO: duplication
+    const form = document.getElementById('mainForm');
+    const formData = new FormData(form);
+    if (formData.get('password') !== formData.get('confirmPassword')) {
+      errorBlock.innerText = 'Password confirmation does not match the password!';
+      return;
+    }
+
+    let { controls } = await fetchJson('<%= idpIndex %>');
+
+    // TODO: cache account in case this is second attempt?
+    const accountRes = await fetch(controls.account.create, { method: 'POST' });
+    const { resource } = await accountRes.json();
+
+    ({ controls } = await fetchJson(resource));
+
+    // TODO: back button that brings user back to login page
+    // TODO: way to get back to the login page if this happened during login process
+    try {
+      await postJsonForm(controls.password.create);
+      // The first fetch, that creates the account, potentially has a `location` field if this is an OIDC session.
+      // By not following that location here, this means that after coming back from the account page,
+      // we will be redirected to the login page again, instead of the "pick WebID" page.
+      // We could get around that by following that location URL instead,
+      // but that would force the user to pick a WebID when they just made the account and there is no linked WebID yet.
+      // We could also force the server to update the stored session when coming back from the account page.
+      // But tbh, this doesn't seem like such a big issue that the user has to log in even though they already have a cookie.
+      location.href = resource;
+    } catch (error) {
+      errorBlock.innerText = error.message;
+    }
+  });
+</script>

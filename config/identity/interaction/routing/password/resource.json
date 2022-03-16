@@ -1,0 +1,55 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles the password link details such as update and delete.",
+      "@id": "urn:solid-server:default:AccountPasswordIdRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountPasswordIdRoute",
+        "@type": "BasePasswordIdRoute",
+        "base": { "@id": "urn:solid-server:default:AccountPasswordRoute" }
+      },
+      "source": {
+        "@id": "urn:solid-server:default:PasswordResourceHandler",
+        "@type": "WaterfallHandler",
+        "handlers": [
+          {
+            "@type": "ViewInteractionHandler",
+            "source": {
+              "@type": "UpdatePasswordHandler",
+              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" }
+            }
+          },
+          {
+            "@type": "MethodFilterHandler",
+            "methods": [ "DELETE" ],
+            "source": {
+              "@type": "DeletePasswordHandler",
+              "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
+              "passwordStore": { "@id": "urn:solid-server:default:PasswordStore" }
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountPasswordIdRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:UpdatePasswordHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/password/update.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountPasswordIdRoute" }
+      }]
+    }
+  ]
+}

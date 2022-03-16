@@ -1,0 +1,118 @@
+<h1>Your account</h1>
+<p class="error" id="error"></p>
+<div id="logins">
+  <h2>Logins</h2>
+  <div id="loginEntries"></div>
+</div>
+<div id="pods">
+  <h2>Pods</h2>
+  <a id="createPod" href="" class="link">Create pod</a>
+  <ul id="podEntries"></ul>
+</div>
+<div id="webIds">
+  <h2>Registered Web IDs</h2>
+  <a id="linkWebId" href="" class="link">Link WebID</a>
+  <ul id="webIdEntries"></ul>
+</div>
+<div id="clientCredentials">
+  <h2>Credential tokens</h2>
+  <a id="createCredentials" href="" class="link">Create token</a>
+  <ul id="clientCredentialsEntries"></ul>
+</div>
+<p class="actions">
+  <button class="hidden" type="button" id="oidc" name="logout">Continue authentication</button>
+  <button type="button" id="logout" name="logout">Log out</button>
+</p>
+
+<script>
+  const elements = getElements('loginEntries', 'podEntries', 'webIdEntries', 'clientCredentialsEntries');
+
+  // Retrieve and display client information
+  (async() => {
+    // TODO: split up over functions
+    let res = await fetch('', { headers: { accept: 'application/json' } });
+
+    // TODO: in case we are in an OIDC session, this should have a button to continue the session (in case account was registered during OIDC)
+
+    // TODO: utility that gets the controls from the index and also handles the redirect to the login page if necessary?
+    //       ^ to be used on all pages
+    if (res.status >= 400) {
+      location.href = '<%= idpIndex %>';
+      return;
+    }
+
+    // TODO: assign action to that button
+    setVisibility('oidc', <%= authenticating %>);
+    document.getElementById('oidc').addEventListener('click', async() => {
+      const body = await fetchJson(json.controls.oidc.prompt);
+      location.href = body.location;
+    });
+
+    const json = await res.json();
+
+    // TODO: for each of these, only add if the control exists
+    updateElement('createPod', json.controls.html.account.createPod, { href: true });
+    updateElement('linkWebId', json.controls.html.account.linkWebId, { href: true });
+    // TODO: disable if the account has no WebIDs
+    updateElement('createCredentials', json.controls.html.account.createClientCredentials, { href: true });
+
+    for (const loginMethod of Object.keys(json.logins)) {
+      const url = json.controls.html[loginMethod]?.create;
+
+      elements.loginEntries.insertAdjacentHTML('beforeend', `<h3>${loginMethod}</h3>`);
+
+      // Making the assumption here that login controls use the same keys as those in account and have a create field
+      if (url) {
+        elements.loginEntries.insertAdjacentHTML('beforeend', `<a href="${json.controls.html[loginMethod].create}">Add login</a>`);
+      }
+
+      const ul = document.createElement('ul');
+      elements.loginEntries.append(ul);
+
+      showAccountInfo(ul, loginMethod, json.logins, true, true);
+    }
+    showAccountInfo(elements.podEntries, 'pods', json, false, false);
+    showAccountInfo(elements.webIdEntries, 'webIds', json, false, true,
+      'Make sure to remove the relevant solid:oidcIssuer triple from the WebID to prevent existing access tokens from being used.');
+    showAccountInfo(elements.clientCredentialsEntries, 'clientCredentials', json, false, true);
+
+    document.getElementById('logout').addEventListener('click', async() => {
+      await fetch(json.controls.account.logout, { method: 'POST' });
+      location.href = '<%= idpIndex %>';
+    });
+  })();
+
+  // Adds account info to the UI
+  function showAccountInfo(rootElement, label, data, addLink, addDel, msg) {
+    for (const [ key, url ] of Object.entries(data[label])) {
+      const li = document.createElement('li');
+      if (addLink) {
+        li.insertAdjacentHTML('beforeend', `<a href="${url}">${key}</a>`);
+      } else {
+        li.append(key);
+      }
+
+
+      if (addDel) {
+        const del = document.createElement('a');
+        del.innerText = '(delete)';
+        del.href = '#';
+        del.addEventListener('click', async() => {
+          const res = await fetch(url, { method: 'DELETE' });
+          if (res.status >= 400) {
+            const error = await res.json();
+            document.getElementById('error').innerText = `${error.statusCode} - ${error.name}: ${error.message}`
+          } else {
+            li.remove();
+            if (msg) {
+              document.getElementById('error').innerText = msg;
+            }
+          }
+        });
+        li.append(' ');
+        li.append(del);
+      }
+      rootElement.append(li);
+    }
+  }
+</script>

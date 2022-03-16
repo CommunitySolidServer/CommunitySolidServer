@@ -1,5 +1,7 @@
 import fetch from 'cross-fetch';
 import type { App } from '../../src/init/App';
+import { register } from '../util/AccountUtil';
+import type { User } from '../util/AccountUtil';
 import { getPort } from '../util/Util';
 import {
   getDefaultVariables,
@@ -28,16 +30,16 @@ const stores: [string, any][] = [
 // Simulating subdomains using the forwarded header so no DNS changes are required
 describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardown }): void => {
   let app: App;
-  const settings = {
-    podName: 'alice',
-    webId: 'http://test.com/#alice',
-    email: 'alice@test.email',
+  const user: User = {
+    email: 'alice@example.com',
     password: 'password',
-    confirmPassword: 'password',
-    createPod: true,
+    webId: 'http://example.com/#alice',
+    podName: 'alice',
   };
   const podHost = `alice.localhost:${port}`;
   const podUrl = `http://${podHost}/`;
+  let authorization: string;
+  let controls: any;
 
   beforeAll(async(): Promise<void> => {
     const variables: Record<string, any> = {
@@ -74,7 +76,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       let res = await fetch(`${baseUrl}alice`, {
         method: 'PUT',
         headers: {
-          authorization: `WebID ${settings.webId}`,
+          authorization: `WebID ${user.webId}`,
           'content-type': 'text/plain',
         },
         body: 'this is new data!',
@@ -90,13 +92,9 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
 
   describe('handling pods', (): void => {
     it('creates pods in a subdomain.', async(): Promise<void> => {
-      const res = await fetch(`${baseUrl}idp/register/`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-      expect(res.status).toBe(200);
-      await expect(res.text()).resolves.toContain(podUrl);
+      const result = await register(baseUrl, user);
+      ({ controls, authorization } = result);
+      expect(result.pod).toBe(podUrl);
     });
 
     it('can fetch the created pod in a subdomain.', async(): Promise<void> => {
@@ -113,7 +111,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       const res = await fetch(`${baseUrl}.acl`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${settings.webId}`,
+          authorization: `WebID ${user.webId}`,
         },
       });
       expect(res.status).toBe(200);
@@ -123,7 +121,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       let res = await fetch(`${baseUrl}alice`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${settings.webId}`,
+          authorization: `WebID ${user.webId}`,
         },
       });
       expect(res.status).toBe(404);
@@ -132,7 +130,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
         method: 'PUT',
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${settings.webId}`,
+          authorization: `WebID ${user.webId}`,
           'content-type': 'text/plain',
         },
         body: 'this is new data!',
@@ -143,7 +141,7 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
       res = await fetch(`${baseUrl}alice`, {
         headers: {
           forwarded: `host=${podHost}`,
-          authorization: `WebID ${settings.webId}`,
+          authorization: `WebID ${user.webId}`,
         },
       });
       expect(res.status).toBe(200);
@@ -151,13 +149,12 @@ describe.each(stores)('A subdomain server with %s', (name, { storeConfig, teardo
     });
 
     it('should not be able to create a pod with the same name.', async(): Promise<void> => {
-      const newSettings = { ...settings, webId: 'http://test.com/#bob', email: 'bob@test.email' };
-      const res = await fetch(`${baseUrl}idp/register/`, {
+      const res = await fetch(controls.account.pod, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(newSettings),
+        headers: { authorization, 'content-type': 'application/json' },
+        body: JSON.stringify({ name: user.podName }),
       });
-      expect(res.status).toBe(409);
+      expect(res.status).toBe(400);
       await expect(res.text()).resolves.toContain(`There already is a resource at ${podUrl}`);
     });
   });

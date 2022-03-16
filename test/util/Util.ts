@@ -5,6 +5,7 @@ import Describe = jest.Describe;
 
 const portNames = [
   // Integration
+  'Accounts',
   'AcpServer',
   'Conditions',
   'ContentNegotiation',
@@ -48,7 +49,9 @@ export function getPort(name: typeof portNames[number]): number {
   if (idx < 0) {
     throw new Error(`Unknown port name ${name}`);
   }
-  return 6000 + idx;
+  // 6000 is a bad port, causing node v18+ to block fetch requests targeting such a URL
+  // https://fetch.spec.whatwg.org/#port-blocking
+  return 6000 + idx + 1;
 }
 
 export function getSocket(name: typeof socketNames[number]): string {
@@ -184,7 +187,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
         if (!(await this.lstat(path)).isFile()) {
           throwSystemError('EISDIR');
         }
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
       async symlink(target: string, path: string): Promise<void> {
@@ -207,7 +209,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
         if (!(await this.lstat(path)).isDirectory()) {
           throwSystemError('ENOTDIR');
         }
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
       async readdir(path: string): Promise<string[]> {
@@ -261,7 +262,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
         const { folder: folderDest, name: nameDest } = getFolder(destination);
         folderDest[nameDest] = folder[name];
 
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete folder[name];
       },
     },
@@ -286,7 +286,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
     },
     async remove(path: string): Promise<void> {
       const { folder, name } = getFolder(path);
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete folder[name];
     },
     async pathExists(path: string): Promise<boolean> {

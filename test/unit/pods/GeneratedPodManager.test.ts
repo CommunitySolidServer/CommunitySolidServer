@@ -5,7 +5,7 @@ import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import { ConflictHttpError } from '../../../src/util/errors/ConflictHttpError';
 
 describe('A GeneratedPodManager', (): void => {
-  const base = 'http://test.com/';
+  const base = 'http://example.com/';
   let settings: PodSettings;
   let store: jest.Mocked<ResourceStore>;
   let generatorData: Resource[];
@@ -14,9 +14,9 @@ describe('A GeneratedPodManager', (): void => {
 
   beforeEach(async(): Promise<void> => {
     settings = {
-      login: 'user',
       name: 'first last',
       webId: 'http://secure/webId',
+      base: { path: 'http://example.com/user/' },
     };
     store = {
       setRepresentation: jest.fn(),
@@ -37,13 +37,13 @@ describe('A GeneratedPodManager', (): void => {
 
   it('throws an error if the generate identifier is not available.', async(): Promise<void> => {
     store.hasResource.mockResolvedValueOnce(true);
-    const result = manager.createPod({ path: `${base}user/` }, settings, false);
+    const result = manager.createPod(settings, false);
     await expect(result).rejects.toThrow(`There already is a resource at ${base}user/`);
     await expect(result).rejects.toThrow(ConflictHttpError);
   });
 
   it('generates an identifier and writes containers before writing the resources in them.', async(): Promise<void> => {
-    await expect(manager.createPod({ path: `${base}${settings.login}/` }, settings, false)).resolves.toBeUndefined();
+    await expect(manager.createPod(settings, false)).resolves.toBeUndefined();
 
     expect(store.setRepresentation).toHaveBeenCalledTimes(3);
     expect(store.setRepresentation).toHaveBeenNthCalledWith(1, { path: '/path/' }, '/');
@@ -53,7 +53,7 @@ describe('A GeneratedPodManager', (): void => {
 
   it('allows overwriting when enabled.', async(): Promise<void> => {
     store.hasResource.mockResolvedValueOnce(true);
-    await expect(manager.createPod({ path: `${base}${settings.login}/` }, settings, true)).resolves.toBeUndefined();
+    await expect(manager.createPod(settings, true)).resolves.toBeUndefined();
 
     expect(store.setRepresentation).toHaveBeenCalledTimes(3);
     expect(store.setRepresentation).toHaveBeenNthCalledWith(1, { path: '/path/' }, '/');

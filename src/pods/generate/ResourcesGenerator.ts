@@ -20,5 +20,5 @@ export interface ResourcesGenerator {
    *
    * @returns A map where the keys are the identifiers and the values the corresponding representations to store.
    */
-  generate: (location: ResourceIdentifier, options: Dict<string>) => AsyncIterable<Resource>;
+  generate: (location: ResourceIdentifier, options: Dict<unknown>) => AsyncIterable<Resource>;
 }

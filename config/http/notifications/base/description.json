@@ -21,7 +21,10 @@
       "comment": "The root URL of all Notification subscription routes.",
       "@id": "urn:solid-server:default:NotificationRoute",
       "@type": "RelativePathInteractionRoute",
-      "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "base": {
+        "@type": "AbsolutePathInteractionRoute",
+        "path": { "@id": "urn:solid-server:default:variable:baseUrl" }
+      },
       "relativePath": "/.notifications/"
     }
   ]

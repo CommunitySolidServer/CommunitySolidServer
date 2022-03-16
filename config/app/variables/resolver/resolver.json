@@ -68,10 +68,10 @@
           }
         },
         {
-          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:seededPodConfigJson",
+          "CombinedShorthandResolver:_resolvers_key": "urn:solid-server:default:variable:seedConfig",
           "CombinedShorthandResolver:_resolvers_value": {
             "@type": "AssetPathExtractor",
-            "key": "seededPodConfigJson"
+            "key": "seedConfig"
           }
         },
         {

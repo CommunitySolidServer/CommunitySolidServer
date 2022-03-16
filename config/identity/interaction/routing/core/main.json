@@ -1,0 +1,38 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/core/index.json",
+    "css:config/identity/interaction/routing/core/login.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:ControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "main",
+          "ControlHandler:_controls_value": {
+            "comment": "Contains all general controls.",
+            "@id": "urn:solid-server:default:MainControlHandler",
+            "@type": "ControlHandler",
+            "controls": []
+          }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "main",
+        "ControlHandler:_controls_value": {
+          "comment": "Controls all general HTML page controls.",
+          "@id": "urn:solid-server:default:MainHtmlControlHandler",
+          "@type": "ControlHandler",
+          "controls": []
+        }
+      }]
+    }
+  ]
+}

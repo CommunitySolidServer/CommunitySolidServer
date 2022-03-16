@@ -30,7 +30,7 @@ export class SubfolderResourcesGenerator implements TemplatedResourcesGenerator 
     this.subfolders = subfolders;
   }
 
-  public async* generate(templateFolder: string, location: ResourceIdentifier, options: Dict<string>):
+  public async* generate(templateFolder: string, location: ResourceIdentifier, options: Dict<unknown>):
   AsyncIterable<Resource> {
     const root = resolveAssetPath(templateFolder);
     const templateSubfolders = this.subfolders.map((subfolder): string => joinFilePath(root, subfolder));

@@ -1,0 +1,64 @@
+<h1>Create account</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <p>Choose the credentials you want to use to log in to this server in the future</p>
+    <ol>
+      <li>
+        <label for="email">Email:</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Add login</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+
+
+<script>
+  // TODO: how to handle the case of registering during an OIDC interaction?
+  // TODO: this is very duplicate to the "create account page", should reuse this or use partials
+  // TODO: back button
+  const form = document.getElementById('mainForm');
+  const errorBlock = document.getElementById('error');
+
+  (async() => {
+    let res = await fetch('<%= idpIndex %>', { headers: { accept: 'application/json' } });
+
+    const { controls } = await res.json();
+    document.getElementById('account-link').addEventListener('click', () => location.href = controls.html.account.account);
+  })();
+
+  form.addEventListener('submit', async(event) => {
+    event.preventDefault();
+
+    // TODO: duplication
+    const form = document.getElementById('mainForm');
+    const formData = new FormData(form);
+    if (formData.get('password') !== formData.get('confirmPassword')) {
+      errorBlock.innerText = 'Password confirmation does not match the password!';
+      return;
+    }
+
+    let { controls } = await fetchJson('<%= idpIndex %>');
+
+    try {
+      await postJsonForm('mainForm', controls.password.create);
+      location.href = controls.html.account.account;
+    } catch (error) {
+      errorBlock.innerText = error.message;
+    }
+  });
+</script>

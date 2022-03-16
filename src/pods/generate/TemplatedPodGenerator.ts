@@ -1,4 +1,3 @@
-import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import type { ResourceStore } from '../../storage/ResourceStore';
@@ -48,7 +47,8 @@ export class TemplatedPodGenerator implements PodGenerator {
     this.configTemplatePath = configTemplatePath ?? DEFAULT_CONFIG_PATH;
   }
 
-  public async generate(identifier: ResourceIdentifier, settings: PodSettings): Promise<ResourceStore> {
+  public async generate(settings: PodSettings): Promise<ResourceStore> {
+    const identifier = settings.base;
     if (!settings.template) {
       throw new BadRequestHttpError('Settings require template field.');
     }
@@ -61,7 +61,7 @@ export class TemplatedPodGenerator implements PodGenerator {
     await this.variableHandler.handleSafe({ identifier, settings });
 
     // Filter out irrelevant data in the agent
-    const variables: NodeJS.Dict<string> = {};
+    const variables: NodeJS.Dict<unknown> = {};
     for (const key of Object.keys(settings)) {
       if (isValidVariable(key)) {
         variables[key] = settings[key];
@@ -78,7 +78,7 @@ export class TemplatedPodGenerator implements PodGenerator {
 
     const store: ResourceStore =
       await this.storeFactory.generate(
-        variables[TEMPLATE_VARIABLE.templateConfig]!,
+        variables[TEMPLATE_VARIABLE.templateConfig] as string,
         TEMPLATE.ResourceStore,
         { ...variables, 'urn:solid-server:default:variable:baseUrl': this.baseUrl },
       );

@@ -11,6 +11,7 @@
   "ChangeMap",
   "CredentialSet",
   "Dict",
+  "EmptyObject",
   "Error",
   "EventEmitter",
   "FetchDocumentLoader",

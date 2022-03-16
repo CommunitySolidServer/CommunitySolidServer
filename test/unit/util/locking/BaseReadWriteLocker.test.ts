@@ -28,7 +28,6 @@ class MemoryLocker implements ResourceLocker {
     if (this.locks[path].length > 0) {
       this.locks[path].shift()!();
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete this.locks[path];
     }
   }

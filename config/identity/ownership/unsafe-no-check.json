@@ -6,7 +6,7 @@
         "DO NOT USE IN PRODUCTION. ONLY FOR DEVELOPMENT, TESTING, OR DEBUGGING.",
         "Do no verification to determine WebID ownership."
       ],
-      "@id": "urn:solid-server:auth:password:OwnershipValidator",
+      "@id": "urn:solid-server:default:OwnershipValidator",
       "@type": "NoCheckOwnershipValidator"
     }
   ]

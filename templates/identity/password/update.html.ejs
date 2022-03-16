@@ -1,0 +1,61 @@
+<h1>Change password</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <ol>
+      <li>
+        <label for="oldPassword">Old password:</label>
+        <input id="oldPassword" type="password" name="oldPassword">
+      </li>
+      <li>
+        <label for="newPassword">New password:</label>
+        <input id="newPassword" type="password" name="newPassword">
+      </li>
+      <li>
+        <label for="confirmPassword">Confirm password:</label>
+        <input id="confirmPassword" type="password" name="confirmPassword">
+      </li>
+    </ol>
+  </fieldset>
+
+  <ul class="actions">
+    <li><button type="submit" name="submit">Change password</button></li>
+    <li><button type="button" id="account-link">Back</button></li>
+  </ul>
+</form>
+
+
+<script>
+  const form = document.getElementById('mainForm');
+  const errorBlock = document.getElementById('error');
+  let controls;
+
+  (async() => {
+    ({ controls } = await fetchJson('<%= idpIndex %>'));
+
+    const element = document.getElementById('account-link');
+    element.addEventListener('click', () => location.href = controls.html.account.account);
+  })();
+
+  form.addEventListener('submit', async(event) => {
+    event.preventDefault();
+
+    // TODO: duplication
+    const form = document.getElementById('mainForm');
+    const formData = new FormData(form);
+    if (formData.get('newPassword') !== formData.get('confirmPassword')) {
+      console.log(formData);
+      errorBlock.innerText = 'Password confirmation does not match the password!';
+      return;
+    }
+
+    try {
+      // TODO: example of page that only works if the HTML address matches the resource itself
+      await postJsonForm('mainForm', '');
+      location.href = controls.html.account.account;
+    } catch (error) {
+      errorBlock.innerText = error.message;
+    }
+  });
+</script>

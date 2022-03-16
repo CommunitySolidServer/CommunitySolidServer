@@ -1,0 +1,69 @@
+<h1>An application is requesting access</h1>
+<p>
+  Your WebID is <strong id="webId"></strong>
+</p>
+<p>
+  Do you trust this application
+  to read and write data on your behalf?
+</p>
+<dl id="client"></dl>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <ol>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="true" checked>Remember this client</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions">
+    <button id="authorize" type="submit" autofocus>Authorize</button>
+    <button id="cancel" type="button">Cancel</button>
+    <button id="switch" type="button" class="alternate">Use a different WebID</button>
+  </p>
+</form>
+
+<script>
+  // TODO: logout button (as choosing a different WebID might not work if there is only 1 in the account and will redirect again immediately)
+  // TODO: might make more sense if the cancel button goes back to the original website?
+  // Wire up elements
+  const elements = getElements();
+  elements.cancel.addEventListener('click', logOut);
+  elements.switch.addEventListener('click', logOut);
+
+  // Retrieve and display client information
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+
+    // Make sure the remember field becomes a boolean when POSTing the form
+    const transform = (json) => ({ remember: Boolean(json.remember) });
+    addPostListener(() => postJsonForm(controls.oidc.consent, true, transform));
+
+    const { webId, client } = await fetchJson(controls.oidc.consent);
+    showWebId(webId);
+    showClientInfo('Name', client.client_name);
+    showClientInfo('ID', client.client_id);
+  })();
+
+  // Updates the user's WebID in the UI
+  function showWebId(webId) {
+    elements.webId.innerText = webId;
+  }
+
+  // Adds client info to the UI
+  function showClientInfo(label, value) {
+    if (value) {
+      elements.client.insertAdjacentHTML('beforeend', `<dt>${label}</dt><dd>${value}</dd>`);
+    }
+  }
+
+  // Logs the user out
+  async function logOut(event) {
+    // TODO: controls, this could also be different path then the consent path!
+    const res = await postJson('', { logOut: true });
+    const body = await res.json();
+    location.href = body.location;
+  }
+</script>

@@ -250,11 +250,11 @@ form p.actions {
   margin: .5em 0 1em 11em;
 }
 
-form p.error {
+p.error {
   color: #ad0f0f;
   font-weight: 600;
 }
-form p.error:empty {
+p.error:empty {
   display :none;
 }
 

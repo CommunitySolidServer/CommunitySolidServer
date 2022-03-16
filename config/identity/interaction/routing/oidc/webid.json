@@ -1,0 +1,54 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles picking a WebID during an OIDC interaction.",
+      "@id": "urn:solid-server:default:WebIdRouter",
+      "@type": "InteractionRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:WebIdRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:IndexRoute" },
+        "relativePath": "webid/"
+      },
+      "source": {
+        "@type": "ViewInteractionHandler",
+        "source": {
+          "@type": "WebIdPicker",
+          "@id": "urn:solid-server:default:WebIdPicker",
+          "accountStore": { "@id": "urn:solid-server:default:AccountStore" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:WebIdRouter" }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:OidcControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "webId",
+          "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:WebIdRoute" }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:PickWebIdHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/oidc/pick-webid.html.ejs",
+        "route": { "@id": "urn:solid-server:default:WebIdRoute" }
+      }]
+    }
+  ]
+}

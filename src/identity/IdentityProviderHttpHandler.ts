@@ -3,13 +3,11 @@ import type { ResponseDescription } from '../http/output/response/ResponseDescri
 import { getLoggerFor } from '../logging/LogUtil';
 import type { OperationHttpHandlerInput } from '../server/OperationHttpHandler';
 import { OperationHttpHandler } from '../server/OperationHttpHandler';
-import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
-import { APPLICATION_JSON } from '../util/ContentTypes';
+import { createErrorMessage } from '../util/errors/ErrorUtil';
+import { SOLID_HTTP } from '../util/Vocabularies';
 import type { ProviderFactory } from './configuration/ProviderFactory';
-import type {
-  InteractionHandler,
-  Interaction,
-} from './interaction/InteractionHandler';
+import type { CookieStore } from './interaction/account/util/CookieStore';
+import type { InteractionHandler, Interaction } from './interaction/InteractionHandler';
 
 export interface IdentityProviderHttpHandlerArgs {
   /**
@@ -17,9 +15,9 @@ export interface IdentityProviderHttpHandlerArgs {
    */
   providerFactory: ProviderFactory;
   /**
-   * Used for converting the input data.
+   * Used to determine the account of the requesting agent.
    */
-  converter: RepresentationConverter;
+  cookieStore: CookieStore;
   /**
    * Handles the requests.
    */
@@ -27,24 +25,22 @@ export interface IdentityProviderHttpHandlerArgs {
 }
 
 /**
- * Generates the active Interaction object if there is an ongoing OIDC interaction
- * and sends it to the {@link InteractionHandler}.
+ * Generates the active Interaction object if there is an ongoing OIDC interaction.
+ * Finds the account ID if there is cookie metadata.
  *
- * Input data will first be converted to JSON.
- *
- * Only GET and POST methods are accepted.
+ * Calls the stored {@link InteractionHandler} with that information and returns the result.
  */
 export class IdentityProviderHttpHandler extends OperationHttpHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly providerFactory: ProviderFactory;
-  private readonly converter: RepresentationConverter;
+  private readonly cookieStore: CookieStore;
   private readonly handler: InteractionHandler;
 
   public constructor(args: IdentityProviderHttpHandlerArgs) {
     super();
     this.providerFactory = args.providerFactory;
-    this.converter = args.converter;
+    this.cookieStore = args.cookieStore;
     this.handler = args.handler;
   }
 
@@ -55,27 +51,18 @@ export class IdentityProviderHttpHandler extends OperationHttpHandler {
       const provider = await this.providerFactory.getProvider();
       oidcInteraction = await provider.interactionDetails(request, response);
       this.logger.debug('Found an active OIDC interaction.');
-    } catch {
-      this.logger.debug('No active OIDC interaction found.');
+    } catch (error: unknown) {
+      this.logger.debug(`No active OIDC interaction found: ${createErrorMessage(error)}`);
     }
 
-    // Convert input data to JSON
-    // Allows us to still support form data
-    const { contentType } = operation.body.metadata;
-    if (contentType && contentType !== APPLICATION_JSON) {
-      this.logger.debug(`Converting input ${contentType} to ${APPLICATION_JSON}`);
-      const args = {
-        representation: operation.body,
-        preferences: { type: { [APPLICATION_JSON]: 1 }},
-        identifier: operation.target,
-      };
-      operation = {
-        ...operation,
-        body: await this.converter.handleSafe(args),
-      };
+    // Determine account
+    let accountId: string | undefined;
+    const cookie = operation.body.metadata.get(SOLID_HTTP.terms.accountCookie)?.value;
+    if (cookie) {
+      accountId = await this.cookieStore.get(cookie);
     }
 
-    const representation = await this.handler.handleSafe({ operation, oidcInteraction });
+    const representation = await this.handler.handleSafe({ operation, oidcInteraction, accountId });
     return new OkResponseDescription(representation.metadata, representation.data);
   }
 }

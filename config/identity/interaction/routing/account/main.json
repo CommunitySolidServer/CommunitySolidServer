@@ -1,0 +1,42 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "import": [
+    "css:config/identity/interaction/routing/account/create.json",
+    "css:config/identity/interaction/routing/account/login.json",
+    "css:config/identity/interaction/routing/account/logout.json",
+    "css:config/identity/interaction/routing/account/resource.json"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:solid-server:default:ControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "account",
+          "ControlHandler:_controls_value": {
+            "comment": "All controls related to account management.",
+            "@id": "urn:solid-server:default:AccountControlHandler",
+            "@type": "ControlHandler",
+            "controls": []
+          }
+        }
+      ]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "account",
+          "ControlHandler:_controls_value": {
+            "comment": "Controls linking to account-related HTML pages.",
+            "@id": "urn:solid-server:default:AccountHtmlControlHandler",
+            "@type": "ControlHandler",
+            "controls": []
+          }
+        }
+      ]
+    }
+  ]
+}

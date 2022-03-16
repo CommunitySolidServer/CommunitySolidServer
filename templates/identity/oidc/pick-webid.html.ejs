@@ -1,0 +1,65 @@
+<h1>Choose a WebID</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>WebIDs</legend>
+    <ol id="webIdList">
+    </ol>
+    <ol>
+      <li class="checkbox">
+        <label><input type="checkbox" name="remember" value="true" checked>Remember WebID</label>
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button type="submit" name="submit">Choose WebID</button></p>
+
+  <ul class="actions">
+    <li><a id="register-link" href="" class="link">Sign up</a></li>
+  </ul>
+</form>
+
+<script>
+  // TODO: button to go to account so a WebID can be linked
+
+  // TODO: need log out button on both this and the consent page
+  const webIdList = document.getElementById('webIdList');
+
+  (async() => {
+    // TODO: logout button
+    const controls = await fetchControls('<%= idpIndex %>');
+    // GET on the JSON API will return all the WebIDs
+    const webIds = (await fetchJson(controls.oidc.webId)).webIds;
+
+    if (webIds.length === 0) {
+      setError('There are no WebIDs registered to this account.');
+      // TODO: also hide confirm button/checkbox in this case
+      // TODO: we might want to have a button to send the user to the account page so they can create a pod/link a WebID
+    } else if (webIds.length === 1) {
+      // Redirect to matching login page if there is only 1 option
+      // TODO: use control here
+      const res = await postJson('', { webId: webIds[0], remember: true });
+      const body = await res.json();
+      location.href = body.location;
+    }
+
+    // Make sure the remember field becomes a boolean when POSTing the form
+    const transform = (json) => {
+      json.remember = Boolean(json.remember);
+      return json;
+    };
+    addPostListener(() => postJsonForm(controls.oidc.webId, true, transform));
+
+    // TODO: identical to login page
+    for (const webId of webIds) {
+      webIdList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label for="${webId}">
+            <input id="${webId}" type="radio" name="webId" value="${webId}" ${webIds.length === 1 ? 'checked' : ''}>
+            ${webId}
+          </label>
+        </li>`);
+    }
+  })();
+</script>

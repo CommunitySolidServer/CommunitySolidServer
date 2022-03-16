@@ -5,7 +5,8 @@
       "comment": "Allows pod owners to always edit permissions on the data.",
       "@id": "urn:solid-server:default:OwnerPermissionReader",
       "@type": "OwnerPermissionReader",
-      "accountStore": { "@id": "urn:solid-server:auth:password:AccountStore" },
+      "webIdStore": { "@id": "urn:solid-server:default:WebIdStore" },
+      "accountStore": { "@id": "urn:solid-server:default:AccountStore" },
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
     }
   ]

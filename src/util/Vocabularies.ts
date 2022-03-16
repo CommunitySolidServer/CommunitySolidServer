@@ -258,6 +258,7 @@ export const SOLID_ERROR = createVocabulary('urn:npm:solid:community-server:erro
 );
 
 export const SOLID_HTTP = createVocabulary('urn:npm:solid:community-server:http:',
+  'accountCookie',
   'location',
   'slug',
 );

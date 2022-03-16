@@ -1,9 +1,9 @@
-import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
-import type { Representation } from '../../http/representation/Representation';
-import { APPLICATION_JSON } from '../../util/ContentTypes';
+import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
-import type { InteractionHandlerInput } from './InteractionHandler';
-import { InteractionHandler } from './InteractionHandler';
+import { SOLID_HTTP } from '../../util/Vocabularies';
+import type { JsonRepresentation } from './InteractionUtil';
+import type { JsonInteractionHandlerInput } from './JsonInteractionHandler';
+import { JsonInteractionHandler } from './JsonInteractionHandler';
 
 /**
  * Transforms an HTTP redirect into a hypermedia document with a redirection link,
@@ -22,25 +22,26 @@ import { InteractionHandler } from './InteractionHandler';
  * with an explicit link to the next page,
  * enabling the script to move the user to the next page.
  */
-export class LocationInteractionHandler extends InteractionHandler {
-  private readonly source: InteractionHandler;
+export class LocationInteractionHandler extends JsonInteractionHandler {
+  private readonly source: JsonInteractionHandler;
 
-  public constructor(source: InteractionHandler) {
+  public constructor(source: JsonInteractionHandler) {
     super();
     this.source = source;
   }
 
-  public async canHandle(input: InteractionHandlerInput): Promise<void> {
+  public async canHandle(input: JsonInteractionHandlerInput): Promise<void> {
     await this.source.canHandle(input);
   }
 
-  public async handle(input: InteractionHandlerInput): Promise<Representation> {
+  public async handle(input: JsonInteractionHandlerInput): Promise<JsonRepresentation> {
     try {
       return await this.source.handle(input);
     } catch (error: unknown) {
       if (RedirectHttpError.isInstance(error)) {
-        const body = JSON.stringify({ location: error.location });
-        return new BasicRepresentation(body, input.operation.target, APPLICATION_JSON);
+        const metadata = new RepresentationMetadata(input.target);
+        metadata.set(SOLID_HTTP.terms.location, error.location);
+        return { json: { location: error.location }, metadata };
       }
       throw error;
     }

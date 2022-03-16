@@ -38,6 +38,8 @@ module.exports = {
     // There are valid typing reasons to have one or the other
     '@typescript-eslint/consistent-type-definitions': 'off',
     '@typescript-eslint/lines-between-class-members': [ 'error', { exceptAfterSingleLine: true }],
+    // We almost exclusively do dynamic deletes
+    '@typescript-eslint/no-dynamic-delete': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     // Breaks with default void in AsyncHandler 2nd generic
     '@typescript-eslint/no-invalid-void-type': 'off',

@@ -1,0 +1,40 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Handles logging a user out.",
+      "@id": "urn:solid-server:default:AccountLogoutRouter",
+      "@type": "AuthorizedRouteHandler",
+      "route": {
+        "@id": "urn:solid-server:default:AccountLogoutRoute",
+        "@type": "RelativePathInteractionRoute",
+        "base": { "@id": "urn:solid-server:default:AccountIdRoute" },
+        "relativePath": "logout/"
+      },
+      "source": {
+        "@type": "MethodFilterHandler",
+        "methods": [ "POST" ],
+        "source": {
+          "@id": "urn:solid-server:default:LogoutHandler",
+          "@type": "LogoutHandler",
+          "cookieStore": { "@id": "urn:solid-server:default:CookieStore" }
+        }
+      }
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [{ "@id": "urn:solid-server:default:AccountLogoutRouter" }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:AccountControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "logout",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountLogoutRoute" }
+      }]
+    }
+  ]
+}

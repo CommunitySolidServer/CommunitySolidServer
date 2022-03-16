@@ -1,0 +1,45 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Returns HTML pages if the URL matches and HTML is preferred.",
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "index": { "@id": "urn:solid-server:default:IndexRoute" },
+      "templateEngine": {
+        "comment": "Renders the specific page and embeds it into the main HTML body.",
+        "@type": "ChainedTemplateEngine",
+        "renderedName": "htmlBody",
+        "engines": [
+          {
+            "comment": "Will be called with specific templates to generate HTML snippets.",
+            "@id": "urn:solid-server:default:TemplateEngine"
+          },
+          {
+            "comment": "Will embed the result of the first engine into the main HTML template.",
+            "@type": "StaticTemplateEngine",
+            "templateEngine": { "@id": "urn:solid-server:default:TemplateEngine" },
+            "template": "@css:templates/main.html.ejs"
+          }
+        ]
+      },
+      "templates": []
+    },
+
+    {
+      "@id": "urn:solid-server:default:ControlHandler",
+      "@type": "ControlHandler",
+      "controls": [
+        {
+          "ControlHandler:_controls_key": "html",
+          "ControlHandler:_controls_value": {
+            "comment": "Controls linking to HTML pages. These can be the same URLs as the JSON APIs, but can also be different.",
+            "@id": "urn:solid-server:default:HtmlControlHandler",
+            "@type": "ControlHandler",
+            "controls": []
+          }
+        }
+      ]
+    }
+  ]
+}

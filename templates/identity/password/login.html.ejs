@@ -1,0 +1,49 @@
+<h1>Log in</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>Your account</legend>
+    <ol>
+      <li>
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" autofocus>
+      </li>
+      <li>
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password">
+      </li>
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button type="submit" name="submit">Log in</button></p>
+
+  <ul class="actions">
+    <li id="register"><a id="register-link" href="" class="link">Sign up</a></li>
+    <li id="forgot"><a id="forgot-link"  href="" class="link">Forgot password</a></li>
+  </ul>
+</form>
+
+
+<script>
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    addPostListener(async() => {
+      const json = await postJsonForm(controls.password.login);
+      // In case there was no forced OIDC redirect, just go to the main account page
+      location.href = json.resource;
+    })
+
+    // TODO: generalize this pattern
+    if (controls.html.password.register) {
+      updateElement('register-link', controls.html.password.register, {href: true});
+    } else {
+      document.getElementById('register').remove();
+    }
+    if (controls.html.password.forgot) {
+      updateElement('forgot-link', controls.html.password.forgot, {href: true});
+    } else {
+      document.getElementById('forgot').remove();
+    }
+  })();
+</script>

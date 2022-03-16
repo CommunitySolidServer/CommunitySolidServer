@@ -30,7 +30,7 @@ describe('A WebHookEmitter', (): void => {
   const fetchMock: jest.Mock = fetch as any;
   const baseUrl = 'http://example.com/';
   const serverWebId = 'http://example.com/.notifcations/webhooks/webid';
-  const webIdRoute = new AbsolutePathInteractionRoute(serverWebId);
+  const webIdRoute = new AbsolutePathInteractionRoute(serverWebId, false);
   const notification: Notification = {
     '@context': [
       'https://www.w3.org/ns/activitystreams',

@@ -1,0 +1,53 @@
+<h1>Choose a login method</h1>
+<form method="post" id="mainForm">
+  <p class="error" id="error"></p>
+
+  <fieldset>
+    <legend>Login methods</legend>
+    <ol id="loginList">
+    </ol>
+  </fieldset>
+
+  <p class="actions"><button type="submit" name="submit">Confirm login method</button></p>
+</form>
+
+<script>
+  const form = document.getElementById('mainForm');
+  const loginList = document.getElementById('loginList');
+
+  (async() => {
+    const controls = await fetchControls('<%= idpIndex %>');
+    const json = await fetchJson(controls.main.logins);
+
+    const entries = Object.entries(json.logins);
+
+    // TODO: similar to pick WebID case
+    if (entries.length === 0) {
+      setError('No login methods are configured on this server');
+      // TODO: also hide confirm button in this case
+    } else if (entries.length === 1) {
+      // Redirect to matching login page if there is only 1 option
+      location.href = entries[0][1];
+    }
+
+    for (const [ name, url ] of entries) {
+      loginList.insertAdjacentHTML('beforeend', `
+        <li class="radio">
+          <label>
+            <input type="radio" name="loginMethod" value=${url}>
+            ${name}
+          </label>
+        </li>`);
+    }
+  })();
+
+  form.addEventListener('submit', async(event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const url = formData.get('loginMethod');
+    if (url) {
+      location.href = url;
+    }
+  });
+</script>

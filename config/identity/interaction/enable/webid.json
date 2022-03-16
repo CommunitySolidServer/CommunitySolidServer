@@ -1,0 +1,45 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Enable WebIDs to be linked to an account."
+    },
+
+    {
+      "@id": "urn:solid-server:default:InteractionRouteHandler",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:AccountWebIdRouter" }
+      ]
+    },
+
+    {
+      "comment": "All controls related to account management.",
+      "@id": "urn:solid-server:default:AccountControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "webId",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+      }]
+    },
+
+    {
+      "@id": "urn:solid-server:default:HtmlViewHandler",
+      "@type": "HtmlViewHandler",
+      "templates": [{
+        "@id": "urn:solid-server:default:LinkWebIdHtml",
+        "@type": "HtmlViewEntry",
+        "filePath": "@css:templates/identity/account/link-webId.html.ejs",
+        "route": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+      }]
+    },
+    {
+      "@id": "urn:solid-server:default:AccountHtmlControlHandler",
+      "@type": "ControlHandler",
+      "controls": [{
+        "ControlHandler:_controls_key": "linkWebId",
+        "ControlHandler:_controls_value": { "@id": "urn:solid-server:default:AccountWebIdRoute" }
+      }]
+    }
+  ]
+}

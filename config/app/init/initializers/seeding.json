@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^6.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Initializer that instantiates all the seeded accounts and pods.",
+      "@id": "urn:solid-server:default:SeededAccountInitializer",
+      "@type": "SeededAccountInitializer",
+      "accountHandler": { "@id": "urn:solid-server:default:CreateAccountHandler" },
+      "passwordHandler": { "@id": "urn:solid-server:default:CreatePasswordHandler" },
+      "podHandler": { "@id": "urn:solid-server:default:CreatePodHandler" },
+      "configFilePath": { "@id": "urn:solid-server:default:variable:seedConfig" }
+    }
+  ]
+}

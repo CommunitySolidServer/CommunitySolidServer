@@ -1,24 +1,22 @@
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import type {
-  InteractionHandler,
-  InteractionHandlerInput,
-} from '../../../../src/identity/interaction/InteractionHandler';
+  JsonInteractionHandler,
+  JsonInteractionHandlerInput,
+} from '../../../../src/identity/interaction/JsonInteractionHandler';
 import { LocationInteractionHandler } from '../../../../src/identity/interaction/LocationInteractionHandler';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { readJsonStream } from '../../../../src/util/StreamUtil';
 
 describe('A LocationInteractionHandler', (): void => {
   const representation = new BasicRepresentation();
-  const input: InteractionHandlerInput = {
-    operation: {
-      target: { path: 'http://example.com/target' },
-      preferences: {},
-      method: 'GET',
-      body: new BasicRepresentation(),
-    },
+  const input: JsonInteractionHandlerInput = {
+    target: { path: 'http://example.com/target' },
+    method: 'GET',
+    json: { input: 'data' },
+    metadata: new RepresentationMetadata(),
   };
-  let source: jest.Mocked<InteractionHandler>;
+  let source: jest.Mocked<JsonInteractionHandler>;
   let handler: LocationInteractionHandler;
 
   beforeEach(async(): Promise<void> => {
@@ -50,8 +48,8 @@ describe('A LocationInteractionHandler', (): void => {
     source.handle.mockRejectedValueOnce(new FoundHttpError(location));
 
     const response = await handler.handle(input);
-    expect(response.metadata.identifier.value).toEqual(input.operation.target.path);
-    await expect(readJsonStream(response.data)).resolves.toEqual({ location });
+    expect(response.metadata?.identifier.value).toEqual(input.target.path);
+    expect(response.json).toEqual({ location });
   });
 
   it('rethrows non-redirect errors.', async(): Promise<void> => {
