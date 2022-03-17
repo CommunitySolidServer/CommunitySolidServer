@@ -44,10 +44,9 @@ const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
 /* eslint-disable no-multi-spaces */
 const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
-  // We currently handle OPTIONS before authorization
-  // [ 'OPTIONS', 'C/R', [],                     undefined,              '',     '',  401, 401 ],
-  // [ 'OPTIONS', 'C/R', [],                     [ AM.read ],            '',     '',  200, 404 ],
-  // [ 'OPTIONS', 'C/R', [ AM.read ],            undefined,              '',     '',  200, 404 ],
+  [ 'OPTIONS', 'C/R', [],                     undefined,              '',     '',  401, 401 ],
+  [ 'OPTIONS', 'C/R', [],                     [ AM.read ],            '',     '',  204, 404 ],
+  [ 'OPTIONS', 'C/R', [ AM.read ],            undefined,              '',     '',  204, 404 ],
 
   [ 'HEAD',    'C/R', [],                     undefined,              '',     '',  401, 401 ],
   [ 'HEAD',    'C/R', [],                     [ AM.read ],            '',     '',  200, 404 ],
