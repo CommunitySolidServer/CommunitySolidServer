@@ -1,0 +1,54 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Used for internal storage by the locker.",
+      "@id": "urn:solid-server:default:LockStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/locks/",
+      "source": { "@id": "urn:solid-server:default:BackendKeyValueStorage" }
+    },
+    {
+      "comment": "Storage used by the IDP adapter.",
+      "@id": "urn:solid-server:default:IdpAdapterStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/idp/adapter/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "comment": "Storage used for the IDP keys.",
+      "@id": "urn:solid-server:default:IdpKeyStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/idp/keys/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "comment": "Storage used for IDP ownership tokens.",
+      "@id": "urn:solid-server:default:IdpTokenStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/idp/tokens/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "comment": "Storage used for account management.",
+      "@id": "urn:solid-server:default:AccountStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/idp/accounts/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "comment": "Storage used for ForgotPassword records",
+      "@id": "urn:solid-server:default:ForgotPasswordStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/forgot-password/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    },
+    {
+      "comment": "Storage used by setup components.",
+      "@id": "urn:solid-server:default:SetupStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/setup/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    }
+  ]
+}
