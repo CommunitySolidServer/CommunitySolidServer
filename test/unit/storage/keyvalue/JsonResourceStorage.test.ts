@@ -5,6 +5,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
 
@@ -14,7 +15,7 @@ describe('A JsonResourceStorage', (): void => {
   const identifier1 = 'http://test.com/foo';
   const identifier2 = 'http://test.com/bar';
   let store: ResourceStore;
-  let storage: JsonResourceStorage;
+  let storage: JsonResourceStorage<unknown>;
 
   beforeEach(async(): Promise<void> => {
     const data: Record<string, string> = { };
@@ -52,14 +53,13 @@ describe('A JsonResourceStorage', (): void => {
     await expect(storage.get(identifier1)).resolves.toBeUndefined();
   });
 
-  it('returns no entry data if the container does not exist yet.', async(): Promise<void> => {
-    await expect(storage.entries().next()).resolves.toEqual({ done: true });
+  it('errors when trying to request entries.', async(): Promise<void> => {
+    expect((): never => storage.entries()).toThrow(NotImplementedHttpError);
   });
 
   it('returns data if it was set beforehand.', async(): Promise<void> => {
     await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
     await expect(storage.get(identifier1)).resolves.toBe('apple');
-    await expect(storage.entries().next()).resolves.toEqual({ done: false, value: [ identifier1, 'apple' ]});
   });
 
   it('can check if data is present.', async(): Promise<void> => {
@@ -89,7 +89,6 @@ describe('A JsonResourceStorage', (): void => {
   it('re-throws errors thrown by the store.', async(): Promise<void> => {
     store.getRepresentation = jest.fn().mockRejectedValue(new Error('bad GET'));
     await expect(storage.get(identifier1)).rejects.toThrow('bad GET');
-    await expect(storage.entries().next()).rejects.toThrow('bad GET');
 
     store.deleteResource = jest.fn().mockRejectedValueOnce(new Error('bad DELETE'));
     await expect(storage.delete(identifier1)).rejects.toThrow('bad DELETE');
