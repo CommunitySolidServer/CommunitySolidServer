@@ -6,8 +6,12 @@
       "@type": "WaterfallHandler",
       "handlers": [
         {
+          "@type": "OptionsOperationHandler",
+          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
+        },
+        {
           "@type": "GetOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PostOperationHandler",
@@ -23,7 +27,7 @@
         },
         {
           "@type": "HeadOperationHandler",
-          "store": { "@id": "urn:solid-server:default:ResourceStore" },
+          "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },
         {
           "@type": "PatchOperationHandler",

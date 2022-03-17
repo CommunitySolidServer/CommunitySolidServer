@@ -5,7 +5,7 @@ import { isContainerIdentifier } from '../../util/PathUtil';
 import { ModesExtractor } from './ModesExtractor';
 import { AccessMode } from './Permissions';
 
-const READ_METHODS = new Set([ 'GET', 'HEAD' ]);
+const READ_METHODS = new Set([ 'OPTIONS', 'GET', 'HEAD' ]);
 const SUPPORTED_METHODS = new Set([ ...READ_METHODS, 'PUT', 'POST', 'DELETE' ]);
 
 /**

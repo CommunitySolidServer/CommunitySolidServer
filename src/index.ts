@@ -82,6 +82,7 @@ export * from './http/ldp/DeleteOperationHandler';
 export * from './http/ldp/GetOperationHandler';
 export * from './http/ldp/HeadOperationHandler';
 export * from './http/ldp/OperationHandler';
+export * from './http/ldp/OptionsOperationHandler';
 export * from './http/ldp/PatchOperationHandler';
 export * from './http/ldp/PostOperationHandler';
 export * from './http/ldp/PutOperationHandler';
@@ -103,6 +104,7 @@ export * from './http/output/metadata/WwwAuthMetadataWriter';
 
 // HTTP/Output/Response
 export * from './http/output/response/CreatedResponseDescription';
+export * from './http/output/response/NoContentResponseDescription';
 export * from './http/output/response/OkResponseDescription';
 export * from './http/output/response/ResetResponseDescription';
 export * from './http/output/response/ResponseDescription';
