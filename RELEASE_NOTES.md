@@ -15,7 +15,8 @@ The following changes pertain to the imports in the default configs:
 - ...
 
 The following changes are relevant for v3 custom configs that replaced certain features.
-- ...
+- The key/value storage configs in `config/storage/key-value/*` have been changed to reduce config duplication.
+  All storages there that were only relevant for 1 class have been moved to the config of that class.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

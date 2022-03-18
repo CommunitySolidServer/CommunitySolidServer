@@ -7,7 +7,11 @@
       "@type": "WebIdAdapterFactory",
       "source": {
         "@type": "ExpiringAdapterFactory",
-        "storage": { "@id": "urn:solid-server:default:IdpAdapterStorage" }
+        "storage": {
+          "@type": "EncodingPathStorage",
+          "relativePath": "/idp/adapter/",
+          "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+        }
       },
       "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     }

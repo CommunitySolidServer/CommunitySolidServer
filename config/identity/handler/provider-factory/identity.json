@@ -12,7 +12,11 @@
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_oidcPath": "/.oidc",
       "args_interactionHandler": { "@id": "urn:solid-server:auth:password:PromptHandler" },
-      "args_storage": { "@id": "urn:solid-server:default:IdpKeyStorage" },
+      "args_storage": {
+        "@type": "EncodingPathStorage",
+        "relativePath": "/idp/keys/",
+        "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+      },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "config": {
