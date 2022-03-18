@@ -209,7 +209,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private configureClaims(config: Configuration): void {
     // Returns the id_token
     // See https://solid.github.io/authentication-panel/solid-oidc/#tokens-id
-    // Some fields are still missing, see https://github.com/solid/community-server/issues/1154#issuecomment-1040233385
+    // Some fields are still missing, see https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1154#issuecomment-1040233385
     config.findAccount = async(ctx: KoaContextWithOIDC, sub: string): Promise<Account> => ({
       accountId: sub,
       async claims(): Promise<{ sub: string; [key: string]: any }> {

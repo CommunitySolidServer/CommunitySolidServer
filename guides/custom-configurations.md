@@ -1,6 +1,6 @@
 By default, the server will start with a set of preconfigured components.
-These components are configured in [`config/default.json`](https://github.com/solid/community-server/tree/master/config/default.json).
-Learn more about the structure of this config file in the [notes for developers](https://github.com/solid/community-server/wiki/Notes-for-developers#add-components-to-configuration).
+These components are configured in [`config/default.json`](https://github.com/CommunitySolidServer/CommunitySolidServer/tree/master/config/default.json).
+Learn more about the structure of this config file in the [notes for developers](https://github.com/CommunitySolidServer/CommunitySolidServer/wiki/Notes-for-developers#add-components-to-configuration).
 
 ## Local development environment
 
