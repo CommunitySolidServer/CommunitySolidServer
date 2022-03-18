@@ -96,7 +96,7 @@ export class LockingResourceStore implements AtomicResourceStore {
     // Note that we can't just return the result of `withReadLock` since that promise only
     // resolves when the stream is finished, while we want `lockedRepresentationRun` to resolve
     // once we have the Representation.
-    // See https://github.com/solid/community-server/pull/536#discussion_r562467957
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/pull/536#discussion_r562467957
     return new Promise((resolve, reject): void => {
       let representation: Representation;
       // Make the resource time out to ensure that the lock is always released eventually.

@@ -33,11 +33,11 @@
   "bin": {
     "community-solid-server": "bin/server.js"
   },
-  "repository": "git@github.com:solid/community-server.git",
+  "repository": "git@github.com:CommunitySolidServer/CommunitySolidServer.git",
   "bugs": {
-    "url": "https://github.com/solid/community-server/issues"
+    "url": "https://github.com/CommunitySolidServer/CommunitySolidServer/issues"
   },
-  "homepage": "https://github.com/solid/community-server#readme",
+  "homepage": "https://github.com/CommunitySolidServer/CommunitySolidServer#readme",
   "scripts": {
     "build": "npm run build:ts && npm run build:components",
     "build:components": "componentsjs-generator -s src -c dist/components -r scs -i .componentsignore --typeScopedContexts",
