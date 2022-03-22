@@ -176,6 +176,7 @@ describe('A FileDataAccessor', (): void => {
       for (const child of children.filter(({ identifier }): boolean => !identifier.value.endsWith('/'))) {
         const types = child.getAll(RDF.type).map((term): string => term.value);
         expect(types).toContain(LDP.Resource);
+        expect(types).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
         expect(types).not.toContain(LDP.Container);
         expect(types).not.toContain(LDP.BasicContainer);
       }
