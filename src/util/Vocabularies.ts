@@ -94,6 +94,8 @@ export const HTTP = createUriAndTermNamespace('http://www.w3.org/2011/http#',
   'statusCodeNumber',
 );
 
+export const IANA = createUriAndTermNamespace('http://www.w3.org/ns/iana/media-types/');
+
 export const LDP = createUriAndTermNamespace('http://www.w3.org/ns/ldp#',
   'contains',
 

@@ -13,8 +13,8 @@ import type { Guarded } from '../../util/GuardedStream';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
-import { toLiteral } from '../../util/TermUtil';
-import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
+import { toLiteral, toNamedTerm } from '../../util/TermUtil';
+import { CONTENT_TYPE, DC, IANA, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -297,10 +297,16 @@ export class FileDataAccessor implements DataAccessor {
         continue;
       }
 
-      // Generate metadata of this specific child
+      // Generate metadata of this specific child as described in
+      // https://solidproject.org/TR/2021/protocol-20211217#contained-resource-metadata
       const metadata = new RepresentationMetadata(childLink.identifier);
       addResourceMetadata(metadata, childStats.isDirectory());
       this.addPosixMetadata(metadata, childStats);
+      // Containers will not have a content-type
+      if (childLink.contentType) {
+        metadata.add(RDF.terms.type, toNamedTerm(`${IANA.namespace}${childLink.contentType}#Resource`));
+      }
+
       yield metadata;
     }
   }
