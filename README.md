@@ -84,7 +84,13 @@ docker run --rm -v ~/solid-config:/config -p 3000:3000 -it solidproject/communit
 ```
 
 ### 🗃️ Helm Chart
-The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained and published on [ArtifactHUB](https://artifacthub.io/packages/helm/idlab-gent/css).
+The official [Helm](https://helm.sh/) Chart for Kubernetes deployment is maintained at [CommunitySolidServer/css-helm-chart](https://github.com/CommunitySolidServer/css-helm-chart) and published on [ArtifactHUB](https://artifacthub.io/packages/helm/community-solid-server/community-solid-server). There you will find complete installation instructions.
+
+```
+# TL;DR
+helm repo add community-solid-server https://communitysolidserver.github.io/css-helm-chart/charts/
+helm install my-css community-solid-server/community-solid-server
+```
 
 ## 🔧 Configuring the server
 The Community Solid Server is designed to be flexible
