@@ -1,0 +1,14 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Adds Allow and Accept-[Method] headers.",
+      "@id": "urn:solid-server:default:MetadataWriter_AllowAccept",
+      "@type": "AllowAcceptHeaderWriter",
+      "supportedMethods": [ "OPTIONS", "HEAD", "GET", "PATCH", "POST", "PUT", "DELETE" ],
+      "acceptTypes_patch": [ "text/n3", "application/sparql-update" ],
+      "acceptTypes_put": [ "*/*" ],
+      "acceptTypes_post": [ "*/*" ]
+    }
+  ]
+}

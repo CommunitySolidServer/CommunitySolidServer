@@ -7,14 +7,6 @@
       "@type": "ConstantMetadataWriter",
       "headers": [
         {
-          "ConstantMetadataWriter:_headers_key": "Accept-Patch",
-          "ConstantMetadataWriter:_headers_value": "application/sparql-update, text/n3"
-        },
-        {
-          "ConstantMetadataWriter:_headers_key": "Allow",
-          "ConstantMetadataWriter:_headers_value": "OPTIONS, HEAD, GET, PATCH, POST, PUT, DELETE"
-        },
-        {
           "ConstantMetadataWriter:_headers_key": "MS-Author-Via",
           "ConstantMetadataWriter:_headers_value": "SPARQL"
         }

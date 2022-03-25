@@ -258,6 +258,20 @@ export class RepresentationMetadata {
   }
 
   /**
+   * Verifies if a specific triple can be found in the metadata.
+   * Undefined parameters are interpreted as wildcards.
+   */
+  public has(
+    predicate: NamedNode | string | null = null,
+    object: NamedNode | BlankNode | Literal | string | null = null,
+    graph: MetadataGraph | null = null,
+  ): boolean {
+    // This works with N3.js but at the time of writing the typings have not been updated yet.
+    // If you see this line of code check if the typings are already correct and update this if so.
+    return (this.store.has as any)(this.id, predicate, object, graph);
+  }
+
+  /**
    * Finds all object values matching the given predicate and/or graph.
    * @param predicate - Optional predicate to get the values for.
    * @param graph - Optional graph where to get from.
