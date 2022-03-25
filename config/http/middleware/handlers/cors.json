@@ -18,6 +18,9 @@
       "options_preflightContinue": true,
       "options_exposedHeaders": [
         "Accept-Patch",
+        "Accept-Post",
+        "Accept-Put",
+        "Allow",
         "ETag",
         "Last-Modified",
         "Link",

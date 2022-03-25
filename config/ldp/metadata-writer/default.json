@@ -1,6 +1,7 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "import": [
+    "files-scs:config/ldp/metadata-writer/writers/allow-accept.json",
     "files-scs:config/ldp/metadata-writer/writers/constant.json",
     "files-scs:config/ldp/metadata-writer/writers/link-rel.json",
     "files-scs:config/ldp/metadata-writer/writers/mapped.json",
@@ -14,6 +15,7 @@
       "@id": "urn:solid-server:default:MetadataWriter",
       "@type": "ParallelHandler",
       "handlers": [
+        { "@id": "urn:solid-server:default:MetadataWriter_AllowAccept" },
         { "@id": "urn:solid-server:default:MetadataWriter_Constant" },
         { "@id": "urn:solid-server:default:MetadataWriter_Mapped" },
         { "@id": "urn:solid-server:default:MetadataWriter_Modified" },

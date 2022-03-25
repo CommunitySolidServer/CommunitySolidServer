@@ -248,6 +248,13 @@ describe('A RepresentationMetadata', (): void => {
       );
     });
 
+    it('can check the existence of a triple.', async(): Promise<void> => {
+      expect(metadata.has(namedNode('has'), literal('data'))).toBe(true);
+      expect(metadata.has(namedNode('has'))).toBe(true);
+      expect(metadata.has(undefined, literal('data'))).toBe(true);
+      expect(metadata.has(namedNode('has'), literal('wrongData'))).toBe(false);
+    });
+
     it('can get all values for a predicate.', async(): Promise<void> => {
       expect(metadata.getAll(namedNode('has'))).toEqualRdfTermArray(
         [ literal('data'), literal('moreData'), literal('data') ],
