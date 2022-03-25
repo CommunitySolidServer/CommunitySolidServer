@@ -1,14 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(409, 'ConflictHttpError');
+
 /**
  * An error thrown when a request conflict with current state of the server.
  */
-export class ConflictHttpError extends HttpError {
+export class ConflictHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(409, 'ConflictHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is ConflictHttpError {
-    return HttpError.isInstance(error) && error.statusCode === 409;
+    super(message, options);
   }
 }

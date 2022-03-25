@@ -1,15 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(412, 'PreconditionFailedHttpError');
 
 /**
  * An error thrown when access was denied due to the conditions on the request.
  */
-export class PreconditionFailedHttpError extends HttpError {
+export class PreconditionFailedHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(412, 'PreconditionFailedHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is PreconditionFailedHttpError {
-    return HttpError.isInstance(error) && error.statusCode === 412;
+    super(message, options);
   }
 }
