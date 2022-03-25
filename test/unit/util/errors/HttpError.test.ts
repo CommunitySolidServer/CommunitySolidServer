@@ -1,8 +1,10 @@
+import 'jest-rdf';
+import { DataFactory } from 'n3';
 import { BadRequestHttpError } from '../../../../src/util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { ForbiddenHttpError } from '../../../../src/util/errors/ForbiddenHttpError';
-import type { HttpErrorOptions } from '../../../../src/util/errors/HttpError';
-import { HttpError } from '../../../../src/util/errors/HttpError';
+import { generateHttpErrorUri } from '../../../../src/util/errors/HttpError';
+import type { HttpErrorClass } from '../../../../src/util/errors/HttpError';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { MethodNotAllowedHttpError } from '../../../../src/util/errors/MethodNotAllowedHttpError';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
@@ -12,16 +14,11 @@ import { PreconditionFailedHttpError } from '../../../../src/util/errors/Precond
 import { UnauthorizedHttpError } from '../../../../src/util/errors/UnauthorizedHttpError';
 import { UnprocessableEntityHttpError } from '../../../../src/util/errors/UnprocessableEntityHttpError';
 import { UnsupportedMediaTypeHttpError } from '../../../../src/util/errors/UnsupportedMediaTypeHttpError';
-
-// Only used to make typings easier in the tests
-class FixedHttpError extends HttpError {
-  public constructor(message?: string, options?: HttpErrorOptions) {
-    super(0, '', message, options);
-  }
-}
+import { SOLID_ERROR } from '../../../../src/util/Vocabularies';
+const { literal, namedNode, quad } = DataFactory;
 
 describe('HttpError', (): void => {
-  const errors: [string, number, typeof FixedHttpError][] = [
+  const errors: [string, number, HttpErrorClass][] = [
     [ 'BadRequestHttpError', 400, BadRequestHttpError ],
     [ 'UnauthorizedHttpError', 401, UnauthorizedHttpError ],
     [ 'ForbiddenHttpError', 403, ForbiddenHttpError ],
@@ -46,6 +43,10 @@ describe('HttpError', (): void => {
 
     it(`is an instance of ${name}.`, (): void => {
       expect(constructor.isInstance(instance)).toBeTruthy();
+    });
+
+    it('has a URI.', (): void => {
+      expect(constructor.uri).toEqualRdfTerm(generateHttpErrorUri(statusCode));
     });
 
     it(`has name ${name}.`, (): void => {
@@ -74,6 +75,13 @@ describe('HttpError', (): void => {
 
     it('sets the details.', (): void => {
       expect(instance.details).toBe(options.details);
+    });
+
+    it('generates metadata.', (): void => {
+      const subject = namedNode('subject');
+      expect(instance.generateMetadata(subject)).toBeRdfIsomorphic([
+        quad(subject, SOLID_ERROR.terms.errorResponse, constructor.uri),
+      ]);
     });
   });
 });

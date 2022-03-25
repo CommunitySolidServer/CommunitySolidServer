@@ -1,14 +1,15 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(404, 'NotFoundHttpError');
+
 /**
  * An error thrown when no data was found for the requested identifier.
  */
-export class NotFoundHttpError extends HttpError {
+export class NotFoundHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(404, 'NotFoundHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is NotFoundHttpError {
-    return HttpError.isInstance(error) && error.statusCode === 404;
+    super(message, options);
   }
 }
+

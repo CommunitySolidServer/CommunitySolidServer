@@ -141,6 +141,7 @@ export const SOLID = createUriAndTermNamespace('http://www.w3.org/ns/solid/terms
 );
 
 export const SOLID_ERROR = createUriAndTermNamespace('urn:npm:solid:community-server:error:',
+  'errorResponse',
   'stack',
 );
 

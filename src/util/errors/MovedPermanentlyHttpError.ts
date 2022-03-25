@@ -1,15 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { RedirectHttpError } from './RedirectHttpError';
+import { generateRedirectHttpErrorClass } from './RedirectHttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateRedirectHttpErrorClass(301, 'MovedPermanentlyHttpError');
 
 /**
  * Error used for resources that have been moved permanently.
  */
-export class MovedPermanentlyHttpError extends RedirectHttpError {
+export class MovedPermanentlyHttpError extends BaseHttpError {
   public constructor(location: string, message?: string, options?: HttpErrorOptions) {
-    super(301, location, 'MovedPermanentlyHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is MovedPermanentlyHttpError {
-    return RedirectHttpError.isInstance(error) && error.statusCode === 301;
+    super(location, message, options);
   }
 }

@@ -1,15 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { RedirectHttpError } from './RedirectHttpError';
+import { generateRedirectHttpErrorClass } from './RedirectHttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateRedirectHttpErrorClass(302, 'FoundHttpError');
 
 /**
  * Error used for resources that have been moved temporarily.
  */
-export class FoundHttpError extends RedirectHttpError {
+export class FoundHttpError extends BaseHttpError {
   public constructor(location: string, message?: string, options?: HttpErrorOptions) {
-    super(302, location, 'FoundHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is FoundHttpError {
-    return RedirectHttpError.isInstance(error) && error.statusCode === 302;
+    super(location, message, options);
   }
 }

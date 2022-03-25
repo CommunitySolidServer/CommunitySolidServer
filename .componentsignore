@@ -1,5 +1,6 @@
 [
   "Adapter",
+  "BaseHttpError",
   "BasicConditions",
   "BasicRepresentation",
   "Error",
