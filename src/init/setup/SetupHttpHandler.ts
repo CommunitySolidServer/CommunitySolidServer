@@ -68,7 +68,7 @@ export class SetupHttpHandler extends OperationHttpHandler {
     switch (operation.method) {
       case 'GET': return this.handleGet(operation);
       case 'POST': return this.handlePost(operation);
-      default: throw new MethodNotAllowedHttpError();
+      default: throw new MethodNotAllowedHttpError([ operation.method ]);
     }
   }
 

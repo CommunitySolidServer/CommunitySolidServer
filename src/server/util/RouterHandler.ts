@@ -47,7 +47,7 @@ export class RouterHandler extends HttpHandler {
       throw new BadRequestHttpError('Cannot handle request without a method');
     }
     if (!this.allMethods && !this.allowedMethods.includes(request.method)) {
-      throw new MethodNotAllowedHttpError(`${request.method} is not allowed.`);
+      throw new MethodNotAllowedHttpError([ request.method ], `${request.method} is not allowed.`);
     }
     const pathName = await getRelativeUrl(this.baseUrl, request, this.targetExtractor);
     if (!this.allowedPathNamesRegEx.some((regex): boolean => regex.test(pathName))) {

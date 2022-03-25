@@ -39,7 +39,7 @@ export class HtmlViewHandler extends InteractionHandler {
 
   public async canHandle({ operation }: InteractionHandlerInput): Promise<void> {
     if (operation.method !== 'GET') {
-      throw new MethodNotAllowedHttpError();
+      throw new MethodNotAllowedHttpError([ operation.method ]);
     }
     if (!this.templates[operation.target.path]) {
       throw new NotFoundHttpError();

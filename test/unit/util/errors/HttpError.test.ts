@@ -23,7 +23,6 @@ describe('HttpError', (): void => {
     [ 'UnauthorizedHttpError', 401, UnauthorizedHttpError ],
     [ 'ForbiddenHttpError', 403, ForbiddenHttpError ],
     [ 'NotFoundHttpError', 404, NotFoundHttpError ],
-    [ 'MethodNotAllowedHttpError', 405, MethodNotAllowedHttpError ],
     [ 'ConflictHttpError', 409, ConflictHttpError ],
     [ 'PreconditionFailedHttpError', 412, PreconditionFailedHttpError ],
     [ 'PayloadHttpError', 413, PayloadHttpError ],
@@ -81,6 +80,34 @@ describe('HttpError', (): void => {
       const subject = namedNode('subject');
       expect(instance.generateMetadata(subject)).toBeRdfIsomorphic([
         quad(subject, SOLID_ERROR.terms.errorResponse, constructor.uri),
+      ]);
+    });
+  });
+
+  // Separate test due to different constructor
+  describe('MethodNotAllowedHttpError', (): void => {
+    const options = {
+      cause: new Error('cause'),
+      errorCode: 'E1234',
+      details: { some: 'detail' },
+    };
+    const instance = new MethodNotAllowedHttpError([ 'GET' ], 'my message', options);
+
+    it('is valid.', async(): Promise<void> => {
+      expect(new MethodNotAllowedHttpError().methods).toHaveLength(0);
+      expect(MethodNotAllowedHttpError.isInstance(instance)).toBe(true);
+      expect(MethodNotAllowedHttpError.uri).toEqualRdfTerm(generateHttpErrorUri(405));
+      expect(instance.name).toBe('MethodNotAllowedHttpError');
+      expect(instance.statusCode).toBe(405);
+      expect(instance.message).toBe('my message');
+      expect(instance.cause).toBe(options.cause);
+      expect(instance.errorCode).toBe(options.errorCode);
+      expect(new MethodNotAllowedHttpError([ 'GET' ]).errorCode).toBe(`H${405}`);
+
+      const subject = namedNode('subject');
+      expect(instance.generateMetadata(subject)).toBeRdfIsomorphic([
+        quad(subject, SOLID_ERROR.terms.errorResponse, MethodNotAllowedHttpError.uri),
+        quad(subject, SOLID_ERROR.terms.disallowedMethod, literal('GET')),
       ]);
     });
   });

@@ -155,7 +155,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // that are not supported by the target resource."
     // https://solid.github.io/specification/protocol#reading-writing-resources
     if (!isContainerPath(parentMetadata.identifier.value)) {
-      throw new MethodNotAllowedHttpError('The given path is not a container.');
+      throw new MethodNotAllowedHttpError([ 'POST' ], 'The given path is not a container.');
     }
 
     this.validateConditions(conditions, parentMetadata);
@@ -240,14 +240,15 @@ export class DataAccessorBasedStore implements ResourceStore {
     // the server MUST respond with the 405 status code."
     // https://solid.github.io/specification/protocol#deleting-resources
     if (this.isRootStorage(metadata)) {
-      throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
+      throw new MethodNotAllowedHttpError([ 'DELETE' ], 'Cannot delete a root storage container.');
     }
     if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
       this.auxiliaryStrategy.isRequiredInRoot(identifier)) {
       const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
       const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
-        throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
+        throw new MethodNotAllowedHttpError([ 'DELETE' ],
+          `Cannot delete ${identifier.path} from a root storage container.`);
       }
     }
 

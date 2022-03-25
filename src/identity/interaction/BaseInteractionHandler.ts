@@ -22,7 +22,7 @@ export abstract class BaseInteractionHandler extends InteractionHandler {
     await super.canHandle(input);
     const { method } = input.operation;
     if (method !== 'GET' && method !== 'POST') {
-      throw new MethodNotAllowedHttpError('Only GET/POST requests are supported.');
+      throw new MethodNotAllowedHttpError([ method ], 'Only GET/POST requests are supported.');
     }
   }
 
@@ -30,7 +30,7 @@ export abstract class BaseInteractionHandler extends InteractionHandler {
     switch (input.operation.method) {
       case 'GET': return this.handleGet(input);
       case 'POST': return this.handlePost(input);
-      default: throw new MethodNotAllowedHttpError();
+      default: throw new MethodNotAllowedHttpError([ input.operation.method ]);
     }
   }
 
