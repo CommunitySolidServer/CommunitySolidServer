@@ -22,16 +22,6 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run lint
 
-  validate-components:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-      - run: npm ci
-      - run: npm run validate
-
   test-unit:
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -145,7 +135,6 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
-      - validate-components
     # Only run on tag push events starting with v prefix for now OR main branch push events
     if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
@@ -187,14 +176,13 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
-      - validate-components
     # Only run on push events on a versions/* branch (ASSUMPTION: THERE SHOULD ONLY BE ONE THERE!)
     if: startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with: 
+        with:
           ref: ${{ github.ref }}
       - name: Docker meta
         id: meta
@@ -221,7 +209,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-        
+
   docs:
     runs-on: ubuntu-latest
     steps:
@@ -244,7 +232,6 @@ jobs:
       - lint
       - test-unit
       - test-integration
-      - validate-components
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
