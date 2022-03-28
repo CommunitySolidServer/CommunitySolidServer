@@ -16,7 +16,7 @@ describe('A BasicRequestParser', (): void => {
   let requestParser: BasicRequestParser;
 
   beforeEach(async(): Promise<void> => {
-    targetExtractor = new StaticAsyncHandler(true, 'target' as any);
+    targetExtractor = new StaticAsyncHandler(true, { path: 'target' });
     preferenceParser = new StaticAsyncHandler(true, 'preference' as any);
     metadataParser = new StaticAsyncHandler(true, undefined);
     conditionsParser = new StaticAsyncHandler(true, 'conditions' as any);
@@ -39,10 +39,10 @@ describe('A BasicRequestParser', (): void => {
     bodyParser.handle = ({ metadata }): any => ({ data: 'body', metadata });
     await expect(requestParser.handle({ url: 'url', method: 'GET' } as any)).resolves.toEqual({
       method: 'GET',
-      target: 'target',
+      target: { path: 'target' },
       preferences: 'preference',
       conditions: 'conditions',
-      body: { data: 'body', metadata: new RepresentationMetadata('target') },
+      body: { data: 'body', metadata: new RepresentationMetadata({ path: 'target' }) },
     });
   });
 });

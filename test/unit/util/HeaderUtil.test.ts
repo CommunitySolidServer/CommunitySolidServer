@@ -1,4 +1,5 @@
 import type { HttpResponse } from '../../../src/server/HttpResponse';
+import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import {
   addHeader,
   parseAccept,
@@ -212,6 +213,10 @@ describe('HeaderUtil', (): void => {
       expect(parseContentType('text/turtle; charset=UTF-8').value).toEqual(contentTypeTurtle);
       contentTypePlain.parameters.test = 'value1';
       expect(parseContentType('text/plain; charset=utf-8;test="value1"')).toEqual(contentTypePlain);
+    });
+
+    it('errors on invalid content-types.', (): void => {
+      expect((): any => parseContentType('invalid type')).toThrow(BadRequestHttpError);
     });
   });
 
