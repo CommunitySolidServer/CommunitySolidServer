@@ -10,7 +10,7 @@ describe('ResourceUtil', (): void => {
   let representation: Representation;
 
   beforeEach(async(): Promise<void> => {
-    representation = new BasicRepresentation('data', 'metadata');
+    representation = new BasicRepresentation('data', 'meta/data');
   });
 
   describe('#updateModifiedDate', (): void => {
@@ -55,7 +55,7 @@ describe('ResourceUtil', (): void => {
 
     it('ensures that original representation does not update when the clone is updated.', async(): Promise<void> => {
       const res = await cloneRepresentation(representation);
-      res.metadata.contentType = 'typetype';
+      res.metadata.contentType = 'type/type';
       expect(representation.metadata.contentType).not.toBe(res.metadata.contentType);
     });
   });

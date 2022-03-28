@@ -109,7 +109,9 @@ export interface ContentType {
 }
 
 // REUSED REGEXES
-const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
+const tchar = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
+const token = new RegExp(`^${tchar.source}+$`, 'u');
+const mediaRange = new RegExp(`${tchar.source}+/${tchar.source}+`, 'u');
 
 // HELPER FUNCTIONS
 /**
@@ -218,8 +220,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
-  const [ type, subtype ] = range.split('/');
-  if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
+  if (!mediaRange.test(range)) {
     logger.warn(`Invalid Accept range: ${range}`);
     throw new BadRequestHttpError(
       `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
@@ -438,6 +439,11 @@ export function parseContentType(input: string): ContentType {
   // Quoted strings could prevent split from having correct results
   const { result, replacements } = transformQuotedStrings(input);
   const [ value, ...params ] = result.split(';').map((str): string => str.trim());
+  if (!mediaRange.test(value)) {
+    logger.warn(`Invalid content-type: ${value}`);
+    throw new BadRequestHttpError(`Invalid content-type: ${value} does not match ( token "/" token )`);
+  }
+
   return parseParameters(params, replacements)
     .reduce<ContentType>(
     (prev, cur): ContentType => {

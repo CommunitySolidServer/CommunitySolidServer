@@ -5,11 +5,13 @@ import type { Quad } from 'rdf-js';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import { getLoggerFor } from '../../logging/LogUtil';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { isSystemError } from '../../util/errors/SystemError';
 import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMediaTypeHttpError';
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
+import { parseContentType } from '../../util/HeaderUtil';
 import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
@@ -22,6 +24,8 @@ import type { DataAccessor } from './DataAccessor';
  * DataAccessor that uses the file system to store documents as files and containers as folders.
  */
 export class FileDataAccessor implements DataAccessor {
+  protected readonly logger = getLoggerFor(this);
+
   protected readonly resourceMapper: FileIdentifierMapper;
 
   public constructor(resourceMapper: FileIdentifierMapper) {
@@ -303,8 +307,15 @@ export class FileDataAccessor implements DataAccessor {
       addResourceMetadata(metadata, childStats.isDirectory());
       this.addPosixMetadata(metadata, childStats);
       // Containers will not have a content-type
-      if (childLink.contentType) {
-        metadata.add(RDF.terms.type, toNamedTerm(`${IANA.namespace}${childLink.contentType}#Resource`));
+      const { contentType, identifier } = childLink;
+      if (contentType) {
+        // Make sure we don't generate invalid URIs
+        try {
+          const { value } = parseContentType(contentType);
+          metadata.add(RDF.terms.type, toNamedTerm(`${IANA.namespace}${value}#Resource`));
+        } catch {
+          this.logger.warn(`Detected an invalid content-type "${contentType}" for ${identifier.path}`);
+        }
       }
 
       yield metadata;
