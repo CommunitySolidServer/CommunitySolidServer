@@ -49,7 +49,7 @@
     "docker:stop": "./test/docker/docker-stop.sh",
     "docs": "typedoc",
     "jest": "jest --coverageReporters text-summary --",
-    "lint": "eslint . --cache --ignore-path .gitignore",
+    "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
     "prepare": "npm run build",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
