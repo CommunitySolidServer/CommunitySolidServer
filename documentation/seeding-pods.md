@@ -1,20 +1,34 @@
 # How to seed Accounts and Pods
-If you need to seed accounts and pods, set the `--seededPodConfigJson` option to a file such as `./seeded-pod-config.json` to set your desired accounts and pods. The contents of `./seeded-pod-config.json` (or whatever file name you choose) should be a JSON array whose entries are objects which include
-`podName`, `email`, and `password`. For example:
+
+If you need to seed accounts and pods, 
+the `--seededPodConfigJson` command line option can be used
+with as value the path to a JSON file containing configurations for every required pod.
+The file needs to contain an array of JSON objects, 
+with each object containing at least a `podName`, `email`, and `password` field. 
+
+For example:
 ```json
-    [
-      {
-        "podName": "example",
-        "email": "hello@example.com",
-        "password": "abc123"
-        }
-    ]
+[
+  {
+    "podName": "example",
+    "email": "hello@example.com",
+    "password": "abc123"
+  }
+]
 ```
 
-You may optionally specify other parameters accepted by the `register` method of [RegistrationManager](https://github.com/solid/community-server/blob/3b353affb1f0919fdcb66172364234eb59c2e3f6/src/identity/interaction/email-password/util/RegistrationManager.ts#L173). For example:
+You may optionally specify other parameters 
+as described in the [Identity Provider documentation](./identity-provider.md#json-api).
 
-To use a pre-existing wedId:
+For example, to use a pre-existing WebID:
 ```json
-  createWebId: false,
-  webId: "https://pod.inrupt.com/example/profile/card#me"
+[
+  {
+    "podName": "example",
+    "email": "hello@example.com",
+    "password": "abc123",
+    "webId": "https://pod.inrupt.com/example/profile/card#me",
+    "createWebId": false
+  }
+]
 ```
