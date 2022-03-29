@@ -23,8 +23,7 @@ export class PlainJsonLdFilter extends MetadataParser {
     const entries: string[] = Array.isArray(link) ? link : [ link ];
     // Throw error on content-type application/json AND a link header that refers to a JSON-LD context.
     if (contentType === 'application/json' && this.linkHasContextRelation(entries)) {
-      throw new BadRequestHttpError(`Conflict detected: 
-      The Link header indicates a JSON-LD context, while the content-type is set to application/json.`);
+      throw new NotImplementedError('JSON-LD is only supported with the application/ld+json content type.');
     }
   }
 
