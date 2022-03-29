@@ -133,6 +133,7 @@ module.exports = {
     }],
     'import/no-duplicates': 'error',
     'import/no-extraneous-dependencies': 'error',
+    'import/no-named-as-default': 'off',
     // Doesn't work with type imports
     'no-duplicate-imports': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
