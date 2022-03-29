@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Checks for JSON-LD posted with plain application/json contentType and errors if so.",
+      "@id": "urn:solid-server:default:PlainJsonLdFilter",
+      "@type": "PlainJsonLdFilter"
+    }
+  ]
+}

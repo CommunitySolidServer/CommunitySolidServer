@@ -4,7 +4,8 @@
     "files-scs:config/ldp/metadata-parser/parsers/content-type.json",
     "files-scs:config/ldp/metadata-parser/parsers/content-length.json",
     "files-scs:config/ldp/metadata-parser/parsers/slug.json",
-    "files-scs:config/ldp/metadata-parser/parsers/link.json"
+    "files-scs:config/ldp/metadata-parser/parsers/link.json",
+    "files-scs:config/ldp/metadata-parser/parsers/plain-json-ld-filter.json"
   ],
   "@graph": [
     {
@@ -15,7 +16,8 @@
         { "@id": "urn:solid-server:default:ContentTypeParser" },
         { "@id": "urn:solid-server:default:ContentLengthParser" },
         { "@id": "urn:solid-server:default:SlugParser" },
-        { "@id": "urn:solid-server:default:LinkRelParser" }
+        { "@id": "urn:solid-server:default:LinkRelParser" },
+        { "@id": "urn:solid-server:default:PlainJsonLdFilter" }
       ]
     }
   ]
