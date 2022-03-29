@@ -25,7 +25,7 @@ describe('A RawBodyparser', (): void => {
     await expect(arrayifyStream(result.data)).resolves.toEqual([]);
   });
 
-  // https://github.com/solid/community-server/issues/498
+  // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/498
   it('returns empty output if the content length is 0 and there is no content type.', async(): Promise<void> => {
     input.request = guardedStreamFrom([ 'data' ]) as HttpRequest;
     input.request.headers = { 'content-length': '0' };

@@ -64,7 +64,7 @@ type ConversionPath = {
  * Most of these decrease computation time at the cost of more memory.
  *  - The algorithm could start on both ends of a possible path and work towards the middle.
  *  - When creating a path, store the list of unused converters instead of checking every step.
- *  - Caching: https://github.com/solid/community-server/issues/832
+ *  - Caching: https://github.com/CommunitySolidServer/CommunitySolidServer/issues/832
  *  - Making sure each intermediate type is only used once.
  *  - The TypedRepresentationConverter interface could potentially be updated
  *    so paths only differing in intermediate types can be combined.

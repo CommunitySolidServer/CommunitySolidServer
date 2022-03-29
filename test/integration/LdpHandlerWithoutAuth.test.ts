@@ -283,7 +283,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
-  // https://github.com/solid/community-server/issues/498
+  // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/498
   it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
     // PUT
     const documentUrl = `${baseUrl}foo/bar`;

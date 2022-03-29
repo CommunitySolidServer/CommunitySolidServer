@@ -32,7 +32,7 @@ export function isGuarded<T extends NodeJS.EventEmitter>(stream: T): stream is G
  *
  * It is important that this listener always remains attached for edge cases where an error listener gets removed
  * and the number of error listeners is checked immediately afterwards.
- * See https://github.com/solid/community-server/pull/462#issuecomment-758013492 .
+ * See https://github.com/CommunitySolidServer/CommunitySolidServer/pull/462#issuecomment-758013492 .
  */
 function guardingErrorListener(this: Guarded, error: Error): void {
   // Only fall back to this if no new listeners are attached since guarding started.

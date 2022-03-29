@@ -37,7 +37,7 @@ export class PutOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('PUT requests require the Content-Type header to be set');
     }
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
-    // See https://github.com/solid/community-server/issues/632
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
     const exists = await this.store.hasResource(operation.target);
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {
