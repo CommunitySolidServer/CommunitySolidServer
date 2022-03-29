@@ -108,6 +108,11 @@ export interface ContentType {
   parameters: Record<string, string>;
 }
 
+export interface LinkEntry {
+  link: string;
+  params: Record<string, string>;
+}
+
 // REUSED REGEXES
 const tchar = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
 const token = new RegExp(`^${tchar.source}+$`, 'u');
@@ -494,4 +499,29 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
     }
   }
   return forwarded;
+}
+
+/**
+ * Parses the link header(s) and returns an array of LinkEntry objects.
+ * @param linkHeaders - Either an array of linkHeaders (can be one header wrapped in an array)
+ * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
+ */
+export function parseLinkHeader(linkHeaders: string[]): LinkEntry[] {
+  const links: LinkEntry[] = [];
+  for (const entry of linkHeaders) {
+    const { result, replacements } = transformQuotedStrings(entry);
+    for (const part of splitAndClean(result)) {
+      const [ link, ...parameters ] = part.split(/\s*;\s*/u);
+      if (/^[^<]|[^>]$/u.test(link)) {
+        logger.warn(`Invalid link header ${part}.`);
+        continue;
+      }
+      const linkEntry: LinkEntry = { link: link.slice(1, -1), params: {}};
+      for (const { name, value } of parseParameters(parameters, replacements)) {
+        linkEntry.params[name] = value;
+      }
+      links.push(linkEntry);
+    }
+  }
+  return links;
 }
