@@ -7,6 +7,7 @@ import {
   createSubdomainRegexp,
   decodeUriPathComponents,
   encodeUriPathComponents,
+  ensureLeadingSlash,
   ensureTrailingSlash,
   extractScheme,
   getExtension,
@@ -74,6 +75,15 @@ describe('PathUtil', (): void => {
       expect(trimTrailingSlashes('http://test.com/')).toBe('http://test.com');
       expect(trimTrailingSlashes('http://test.com//')).toBe('http://test.com');
       expect(trimTrailingSlashes('http://test.com///')).toBe('http://test.com');
+    });
+  });
+
+  describe('#ensureLeadingSlash', (): void => {
+    it('makes sure there is always exactly 1 slash.', (): void => {
+      expect(ensureLeadingSlash('test')).toBe('/test');
+      expect(ensureLeadingSlash('/test')).toBe('/test');
+      expect(ensureLeadingSlash('//test')).toBe('/test');
+      expect(ensureLeadingSlash('///test')).toBe('/test');
     });
   });
 

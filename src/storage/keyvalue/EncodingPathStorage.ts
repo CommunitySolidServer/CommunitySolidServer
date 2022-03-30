@@ -41,6 +41,10 @@ export class EncodingPathStorage<T> implements KeyValueStorage<string, T> {
 
   public async* entries(): AsyncIterableIterator<[string, T]> {
     for await (const [ path, value ] of this.source.entries()) {
+      // The only relevant entries for this storage are those that start with the base path
+      if (!path.startsWith(this.basePath)) {
+        continue;
+      }
       const key = this.pathToKey(path);
       yield [ key, value ];
     }
