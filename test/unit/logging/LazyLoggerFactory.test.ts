@@ -1,65 +1,89 @@
-import { LazyLogger } from '../../../src/logging/LazyLogger';
 import { LazyLoggerFactory } from '../../../src/logging/LazyLoggerFactory';
+import type { Logger } from '../../../src/logging/Logger';
+import type { LoggerFactory } from '../../../src/logging/LoggerFactory';
 
 describe('LazyLoggerFactory', (): void => {
-  let dummyLogger: any;
-  let dummyLoggerFactory: any;
+  let lazyLoggerFactory: LazyLoggerFactory;
+  let dummyLoggerFactory: jest.Mocked<LoggerFactory>;
+
   beforeEach(async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().resetLoggerFactory();
-    dummyLogger = {
-      log: jest.fn((): any => dummyLogger),
-    };
+    lazyLoggerFactory = new LazyLoggerFactory();
     dummyLoggerFactory = {
-      createLogger: jest.fn((): any => dummyLogger),
-    };
+      createLogger: jest.fn((): jest.Mocked<Logger> => ({
+        log: jest.fn((): any => null),
+      }) as any),
+    } as any;
   });
 
-  it('is a singleton.', async(): Promise<void> => {
-    expect(LazyLoggerFactory.getInstance()).toBeInstanceOf(LazyLoggerFactory);
+  it('does not allow reading the internal factory before it is set.', (): void => {
+    expect((): void => {
+      expect(lazyLoggerFactory.loggerFactory).toBeNull();
+    }).toThrow('Logger factory not yet set.');
   });
 
-  it('allows LazyLoggers to be created before an inner factory was set.', async(): Promise<void> => {
-    const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    expect(logger).toBeInstanceOf(LazyLogger);
+  it('allows setting the internal factory.', (): void => {
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
+    expect(lazyLoggerFactory.loggerFactory).toBe(dummyLoggerFactory);
   });
 
-  it('allows LazyLoggers to be created after an inner factory was set.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
-    const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    expect(logger).toBeInstanceOf(LazyLogger);
+  it('creates loggers with the right labels.', (): void => {
+    lazyLoggerFactory.createLogger('LoggerA');
+    lazyLoggerFactory.createLogger('LoggerB');
+
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
+
+    expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(2);
+    expect(dummyLoggerFactory.createLogger).toHaveBeenNthCalledWith(1, 'LoggerA');
+    expect(dummyLoggerFactory.createLogger).toHaveBeenNthCalledWith(2, 'LoggerB');
+
+    lazyLoggerFactory.createLogger('LoggerC');
+    expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(3);
+    expect(dummyLoggerFactory.createLogger).toHaveBeenNthCalledWith(3, 'LoggerC');
   });
 
-  it('throws when retrieving the inner factory if none has been set.', async(): Promise<void> => {
-    expect((): any => LazyLoggerFactory.getInstance().loggerFactory)
-      .toThrow('No logger factory has been set. Can be caused by logger invocation during initialization.');
+  it('emits logged messages after a logger is set.', (): void => {
+    const loggerA = lazyLoggerFactory.createLogger('LoggerA');
+    const loggerB = lazyLoggerFactory.createLogger('LoggerB');
+    loggerA.warn('message1');
+    loggerB.warn('message2');
+    loggerB.error('message3');
+    loggerA.error('message4');
+
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
+
+    const wrappedA = dummyLoggerFactory.createLogger.mock.results[0].value as jest.Mocked<Logger>;
+    expect(wrappedA.log).toHaveBeenCalledTimes(2);
+    expect(wrappedA.log).toHaveBeenNthCalledWith(1, 'warn', 'message1');
+    expect(wrappedA.log).toHaveBeenNthCalledWith(2, 'error', 'message4');
+
+    const wrappedB = dummyLoggerFactory.createLogger.mock.results[1].value as jest.Mocked<Logger>;
+    expect(wrappedB.log).toHaveBeenCalledTimes(2);
+    expect(wrappedB.log).toHaveBeenNthCalledWith(1, 'warn', 'message2');
+    expect(wrappedB.log).toHaveBeenNthCalledWith(2, 'error', 'message3');
   });
 
-  it('Returns the inner factory if one has been set.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
-    expect(LazyLoggerFactory.getInstance().loggerFactory).toBe(dummyLoggerFactory);
-  });
+  it('does not store more messages than the buffer limit.', (): void => {
+    lazyLoggerFactory = new LazyLoggerFactory({ bufferSize: 100 });
+    const loggerA = lazyLoggerFactory.createLogger('LoggerA');
+    const loggerB = lazyLoggerFactory.createLogger('LoggerB');
 
-  it('allows LazyLoggers to be invoked if a factory has been set beforehand.', async(): Promise<void> => {
-    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
-    const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    logger.log('debug', 'my message', { abc: true });
+    for (let i = 0; i < 50; i++) {
+      loggerA.info('info');
+    }
+    for (let i = 0; i < 50; i++) {
+      loggerB.info('info');
+    }
 
-    expect(dummyLogger.log).toHaveBeenCalledTimes(1);
-    expect(dummyLogger.log).toHaveBeenCalledWith('debug', 'my message', { abc: true });
-  });
+    lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
 
-  it('allows LazyLoggers to be invoked if a factory has been after lazy logger creation.', async(): Promise<void> => {
-    const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    LazyLoggerFactory.getInstance().loggerFactory = dummyLoggerFactory;
-    logger.log('debug', 'my message', { abc: true });
+    expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(3);
+    const wrappedA = dummyLoggerFactory.createLogger.mock.results[0].value as jest.Mocked<Logger>;
+    const wrappedB = dummyLoggerFactory.createLogger.mock.results[1].value as jest.Mocked<Logger>;
+    const warningLogger = dummyLoggerFactory.createLogger.mock.results[2].value as jest.Mocked<Logger>;
 
-    expect(dummyLogger.log).toHaveBeenCalledTimes(1);
-    expect(dummyLogger.log).toHaveBeenCalledWith('debug', 'my message', { abc: true });
-  });
-
-  it('errors on invoking LazyLoggers if a factory has not been set yet.', async(): Promise<void> => {
-    const logger = LazyLoggerFactory.getInstance().createLogger('MyLabel');
-    expect((): any => logger.log('debug', 'my message', { abc: true }))
-      .toThrow('No logger factory has been set. Can be caused by logger invocation during initialization.');
+    expect(wrappedA.log).toHaveBeenCalledTimes(50);
+    expect(wrappedB.log).toHaveBeenCalledTimes(49);
+    expect(warningLogger.log).toHaveBeenCalledTimes(1);
+    expect(warningLogger.log).toHaveBeenCalledWith('warn', 'Memory-buffered logging limit of 100 reached');
   });
 });
