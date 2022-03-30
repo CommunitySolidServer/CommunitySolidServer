@@ -30,4 +30,22 @@ describe('An EncodingPathStorage', (): void => {
     await expect(storage.delete(key)).resolves.toBe(true);
     expect([ ...map.keys() ]).toHaveLength(0);
   });
+
+  it('only returns entries from the source storage matching the relative path.', async(): Promise<void> => {
+    // Base 64 encoding of 'key'
+    const encodedKey = 'a2V5';
+    const generatedPath = `${relativePath}${encodedKey}`;
+    const otherPath = `/otherContainer/${encodedKey}`;
+    const data = 'data';
+
+    map.set(generatedPath, data);
+    map.set(otherPath, data);
+
+    const results = [];
+    for await (const entry of storage.entries()) {
+      results.push(entry);
+    }
+    expect(results).toHaveLength(1);
+    expect(results[0]).toEqual([ 'key', data ]);
+  });
 });

@@ -5,92 +5,125 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { isContainerIdentifier } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
 
 describe('A JsonResourceStorage', (): void => {
   const baseUrl = 'http://test.com/';
   const container = '/data/';
-  const identifier1 = 'http://test.com/foo';
-  const identifier2 = 'http://test.com/bar';
-  let store: ResourceStore;
+  const path1 = '/foo';
+  const path2 = '/bar';
+  const subPath = '/container/document';
+  const containerIdentifier = 'http://test.com/data/';
+  const subContainerIdentifier = 'http://test.com/data/container/';
+  let data: Map<string, string>;
+
+  let store: jest.Mocked<ResourceStore>;
   let storage: JsonResourceStorage<unknown>;
 
   beforeEach(async(): Promise<void> => {
-    const data: Record<string, string> = { };
+    data = new Map<string, string>();
     store = {
-      async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
-        return Boolean(data[identifier.path]);
-      },
-      async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
+      hasResource: jest.fn(async(id: ResourceIdentifier): Promise<boolean> => data.has(id.path)),
+      getRepresentation: jest.fn(async(id: ResourceIdentifier): Promise<Representation> => {
+        if (!data.has(id.path)) {
+          throw new NotFoundHttpError();
+        }
         // Simulate container metadata
-        if (identifier.path === 'http://test.com/data/' && Object.keys(data).length > 0) {
-          const metadata = new RepresentationMetadata({ [LDP.contains]: Object.keys(data) });
+        if (isContainerIdentifier(id)) {
+          const keys = [ ...data.keys() ].filter((key): boolean => key.startsWith(id.path) &&
+            /^[^/]+\/?$/u.test(key.slice(id.path.length)));
+          const metadata = new RepresentationMetadata({ [LDP.contains]: keys });
           return new BasicRepresentation('', metadata);
         }
-        if (!data[identifier.path]) {
+        return new BasicRepresentation(data.get(id.path)!, id);
+      }),
+      setRepresentation: jest.fn(async(id: ResourceIdentifier, representation: Representation): Promise<void> => {
+        data.set(id.path, await readableToString(representation.data));
+      }),
+      deleteResource: jest.fn(async(identifier: ResourceIdentifier): Promise<void> => {
+        if (!data.has(identifier.path)) {
           throw new NotFoundHttpError();
         }
-        return new BasicRepresentation(data[identifier.path], identifier);
-      },
-      async setRepresentation(identifier: ResourceIdentifier, representation: Representation): Promise<void> {
-        data[identifier.path] = await readableToString(representation.data);
-      },
-      async deleteResource(identifier: ResourceIdentifier): Promise<void> {
-        if (!data[identifier.path]) {
-          throw new NotFoundHttpError();
-        }
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete data[identifier.path];
-      },
+        data.delete(identifier.path);
+      }),
     } as any;
 
     storage = new JsonResourceStorage(store, baseUrl, container);
   });
 
   it('returns undefined if there is no matching data.', async(): Promise<void> => {
-    await expect(storage.get(identifier1)).resolves.toBeUndefined();
-  });
-
-  it('errors when trying to request entries.', async(): Promise<void> => {
-    expect((): never => storage.entries()).toThrow(NotImplementedHttpError);
+    await expect(storage.get(path1)).resolves.toBeUndefined();
   });
 
   it('returns data if it was set beforehand.', async(): Promise<void> => {
-    await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
-    await expect(storage.get(identifier1)).resolves.toBe('apple');
+    await expect(storage.set(path1, 'apple')).resolves.toBe(storage);
+    await expect(storage.get(path1)).resolves.toBe('apple');
   });
 
   it('can check if data is present.', async(): Promise<void> => {
-    await expect(storage.has(identifier1)).resolves.toBe(false);
-    await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
-    await expect(storage.has(identifier1)).resolves.toBe(true);
+    await expect(storage.has(path1)).resolves.toBe(false);
+    await expect(storage.set(path1, 'apple')).resolves.toBe(storage);
+    await expect(storage.has(path1)).resolves.toBe(true);
   });
 
   it('can delete data.', async(): Promise<void> => {
-    await expect(storage.has(identifier1)).resolves.toBe(false);
-    await expect(storage.delete(identifier1)).resolves.toBe(false);
-    await expect(storage.has(identifier1)).resolves.toBe(false);
-    await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
-    await expect(storage.has(identifier1)).resolves.toBe(true);
-    await expect(storage.delete(identifier1)).resolves.toBe(true);
-    await expect(storage.has(identifier1)).resolves.toBe(false);
+    await expect(storage.has(path1)).resolves.toBe(false);
+    await expect(storage.delete(path1)).resolves.toBe(false);
+    await expect(storage.has(path1)).resolves.toBe(false);
+    await expect(storage.set(path1, 'apple')).resolves.toBe(storage);
+    await expect(storage.has(path1)).resolves.toBe(true);
+    await expect(storage.delete(path1)).resolves.toBe(true);
+    await expect(storage.has(path1)).resolves.toBe(false);
   });
 
-  it('can handle multiple identifiers.', async(): Promise<void> => {
-    await expect(storage.set(identifier1, 'apple')).resolves.toBe(storage);
-    await expect(storage.has(identifier1)).resolves.toBe(true);
-    await expect(storage.has(identifier2)).resolves.toBe(false);
-    await expect(storage.set(identifier2, 'pear')).resolves.toBe(storage);
-    await expect(storage.get(identifier1)).resolves.toBe('apple');
+  it('can handle multiple paths.', async(): Promise<void> => {
+    await expect(storage.set(path1, 'apple')).resolves.toBe(storage);
+    await expect(storage.has(path1)).resolves.toBe(true);
+    await expect(storage.has(path2)).resolves.toBe(false);
+    await expect(storage.set(path2, 'pear')).resolves.toBe(storage);
+    await expect(storage.get(path1)).resolves.toBe('apple');
   });
 
   it('re-throws errors thrown by the store.', async(): Promise<void> => {
-    store.getRepresentation = jest.fn().mockRejectedValue(new Error('bad GET'));
-    await expect(storage.get(identifier1)).rejects.toThrow('bad GET');
+    store.getRepresentation.mockRejectedValue(new Error('bad GET'));
+    await expect(storage.get(path1)).rejects.toThrow('bad GET');
+    await expect(storage.entries().next()).rejects.toThrow('bad GET');
 
-    store.deleteResource = jest.fn().mockRejectedValueOnce(new Error('bad DELETE'));
-    await expect(storage.delete(identifier1)).rejects.toThrow('bad DELETE');
+    store.deleteResource.mockRejectedValueOnce(new Error('bad DELETE'));
+    await expect(storage.delete(path1)).rejects.toThrow('bad DELETE');
+  });
+
+  it('returns no entries if no data was added.', async(): Promise<void> => {
+    const entries = [];
+    for await (const entry of storage.entries()) {
+      entries.push(entry);
+    }
+    expect(entries).toHaveLength(0);
+  });
+
+  it('recursively accesses containers to find entries.', async(): Promise<void> => {
+    await expect(storage.set(path1, 'path1')).resolves.toBe(storage);
+    await expect(storage.set(path2, 'path2')).resolves.toBe(storage);
+    await expect(storage.set(subPath, 'subDocument')).resolves.toBe(storage);
+
+    // Need to manually insert the containers as they don't get created by the dummy store above
+    data.set(containerIdentifier, '');
+    data.set(subContainerIdentifier, '');
+
+    const entries = [];
+    for await (const entry of storage.entries()) {
+      entries.push(entry);
+    }
+    expect(entries).toEqual([
+      [ path1, 'path1' ],
+      [ path2, 'path2' ],
+      [ subPath, 'subDocument' ],
+    ]);
+  });
+
+  it('can handle resources being deleted while iterating in the entries call.', async(): Promise<void> => {
+    //
   });
 });

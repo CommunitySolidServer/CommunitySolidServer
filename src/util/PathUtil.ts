@@ -84,6 +84,19 @@ export function trimTrailingSlashes(path: string): string {
 }
 
 /**
+ * Makes sure the input path has exactly 1 slash at the beginning.
+ * Multiple slashes will get merged into one.
+ * If there is no slash it will be added.
+ *
+ * @param path - Path to check.
+ *
+ * @returns The potentially changed path.
+ */
+export function ensureLeadingSlash(path: string): string {
+  return path.replace(/^\/*/u, '/');
+}
+
+/**
  * Extracts the extension (without dot) from a path.
  * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
  * @param path - Input path to parse.

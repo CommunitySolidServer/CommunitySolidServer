@@ -1,9 +1,10 @@
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
+import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { ensureTrailingSlash, joinUrl } from '../../util/PathUtil';
+import { ensureLeadingSlash, ensureTrailingSlash, isContainerIdentifier, joinUrl } from '../../util/PathUtil';
 import { readableToString } from '../../util/StreamUtil';
+import { LDP } from '../../util/Vocabularies';
 import type { ResourceStore } from '../ResourceStore';
 import type { KeyValueStorage } from './KeyValueStorage';
 
@@ -11,6 +12,8 @@ import type { KeyValueStorage } from './KeyValueStorage';
  * A {@link KeyValueStorage} for JSON-like objects using a {@link ResourceStore} as backend.
  *
  * Creates a base URL by joining the input base URL with the container string.
+ * The storage assumes it has ownership over all entries in the target container
+ * so no other classes should access resources there to prevent issues.
  *
  * Assumes the input keys can be safely used to generate identifiers,
  * which will be appended to the stored base URL.
@@ -28,7 +31,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
 
   public async get(key: string): Promise<T | undefined> {
     try {
-      const identifier = this.createIdentifier(key);
+      const identifier = this.keyToIdentifier(key);
       const representation = await this.source.getRepresentation(identifier, { type: { 'application/json': 1 }});
       return JSON.parse(await readableToString(representation.data));
     } catch (error: unknown) {
@@ -39,12 +42,12 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
   }
 
   public async has(key: string): Promise<boolean> {
-    const identifier = this.createIdentifier(key);
+    const identifier = this.keyToIdentifier(key);
     return await this.source.hasResource(identifier);
   }
 
   public async set(key: string, value: unknown): Promise<this> {
-    const identifier = this.createIdentifier(key);
+    const identifier = this.keyToIdentifier(key);
     const representation = new BasicRepresentation(JSON.stringify(value), identifier, 'application/json');
     await this.source.setRepresentation(identifier, representation);
     return this;
@@ -52,7 +55,7 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
 
   public async delete(key: string): Promise<boolean> {
     try {
-      const identifier = this.createIdentifier(key);
+      const identifier = this.keyToIdentifier(key);
       await this.source.deleteResource(identifier);
       return true;
     } catch (error: unknown) {
@@ -63,15 +66,65 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
     }
   }
 
-  public entries(): never {
-    // There is no way of knowing which resources were added, or we should keep track in an index file
-    throw new NotImplementedHttpError();
+  public async* entries(): AsyncIterableIterator<[string, T]> {
+    yield* this.getResourceEntries({ path: this.container });
+  }
+
+  /**
+   * Recursively iterates through the container to find all documents.
+   */
+  private async* getResourceEntries(identifier: ResourceIdentifier): AsyncIterableIterator<[string, T]> {
+    const representation = await this.safelyGetResource(identifier);
+    if (representation) {
+      if (isContainerIdentifier(identifier)) {
+        // Only need the metadata
+        representation.data.destroy();
+        const members = representation.metadata.getAll(LDP.terms.contains).map((term): string => term.value);
+        for (const path of members) {
+          yield* this.getResourceEntries({ path });
+        }
+      } else {
+        const json = JSON.parse(await readableToString(representation.data));
+        yield [ this.identifierToKey(identifier), json ];
+      }
+    }
+  }
+
+  /**
+   * Returns the representation for the given identifier.
+   * Returns undefined if a 404 error is thrown.
+   * Re-throws the error in all other cases.
+   */
+  private async safelyGetResource(identifier: ResourceIdentifier): Promise<Representation | undefined> {
+    let representation: Representation | undefined;
+    try {
+      const preferences = isContainerIdentifier(identifier) ? {} : { type: { 'application/json': 1 }};
+      representation = await this.source.getRepresentation(identifier, preferences);
+    } catch (error: unknown) {
+      // Can happen if resource is deleted by this point.
+      // When using this for internal data this can specifically happen quite often with locks.
+      if (!NotFoundHttpError.isInstance(error)) {
+        throw error;
+      }
+    }
+    return representation;
   }
 
   /**
    * Converts a key into an identifier for internal storage.
    */
-  private createIdentifier(key: string): ResourceIdentifier {
+  private keyToIdentifier(key: string): ResourceIdentifier {
     return { path: joinUrl(this.container, key) };
+  }
+
+  /**
+   * Converts an internal identifier to an external key.
+   */
+  private identifierToKey(identifier: ResourceIdentifier): string {
+    // Due to the usage of `joinUrl` we don't know for sure if there was a preceding slash,
+    // so we always add one for consistency.
+    // In practice this would only be an issue if a class depends
+    // on the `entries` results matching a key that was sent before.
+    return ensureLeadingSlash(identifier.path.slice(this.container.length));
   }
 }
