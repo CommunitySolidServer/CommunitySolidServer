@@ -1,4 +1,4 @@
-import { BadRequestHttpError } from '../../../../../src';
+import { NotImplementedHttpError } from '../../../../../src';
 import { PlainJsonLdFilter } from '../../../../../src/http/input/metadata/PlainJsonLdFilter';
 import { RepresentationMetadata } from '../../../../../src/http/representation/RepresentationMetadata';
 import type { HttpRequest } from '../../../../../src/server/HttpRequest';
@@ -34,7 +34,7 @@ describe('A PlainJsonLdFilter', (): void => {
   it('throws error when content-type and link header are in conflict.', async(): Promise<void> => {
     request.headers['content-type'] = 'application/json';
     request.headers.link = '<https://json-ld.org/contexts/person.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"';
-    await expect(parser.handle({ request, metadata })).rejects.toThrow(BadRequestHttpError);
+    await expect(parser.handle({ request, metadata })).rejects.toThrow(NotImplementedHttpError);
     expect(metadata.quads()).toHaveLength(0);
   });
 
@@ -44,7 +44,7 @@ describe('A PlainJsonLdFilter', (): void => {
       '<http://test.com/type>; rel="type"',
       '<https://json-ld.org/contexts/person.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"',
     ];
-    await expect(parser.handle({ request, metadata })).rejects.toThrow(BadRequestHttpError);
+    await expect(parser.handle({ request, metadata })).rejects.toThrow(NotImplementedHttpError);
     expect(metadata.quads()).toHaveLength(0);
   });
 

@@ -1,6 +1,6 @@
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpRequest } from '../../../server/HttpRequest';
-import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
+import { NotImplementedHttpError } from '../../../util/errors/NotImplementedHttpError';
 import { parseLinkHeader } from '../../../util/HeaderUtil';
 import { JSON_LD } from '../../../util/Vocabularies';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
@@ -23,13 +23,13 @@ export class PlainJsonLdFilter extends MetadataParser {
     const entries: string[] = Array.isArray(link) ? link : [ link ];
     // Throw error on content-type application/json AND a link header that refers to a JSON-LD context.
     if (contentType === 'application/json' && this.linkHasContextRelation(entries)) {
-      throw new NotImplementedError('JSON-LD is only supported with the application/ld+json content type.');
+      throw new NotImplementedHttpError('JSON-LD is only supported with the application/ld+json content type.');
     }
   }
 
   private linkHasContextRelation(linkHeaders: string[]): boolean {
-    for (const { params } of parseLinkHeader(linkHeaders)) {
-      if (params.rel && params.rel === JSON_LD.context) {
+    for (const { parameters } of parseLinkHeader(linkHeaders)) {
+      if (parameters.rel === JSON_LD.context) {
         return true;
       }
     }

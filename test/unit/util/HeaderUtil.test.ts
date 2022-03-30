@@ -302,8 +302,8 @@ describe('HeaderUtil', (): void => {
       const link = [ '<http://test.com>; rel="myRel"; test="value1"' ];
       expect(parseLinkHeader(link)).toEqual([
         {
-          link: 'http://test.com',
-          params: {
+          target: 'http://test.com',
+          parameters: {
             rel: 'myRel',
             test: 'value1',
           },
@@ -316,15 +316,15 @@ describe('HeaderUtil', (): void => {
       <http://test2.com>; rel="myRel2"; test="value2"` ];
       expect(parseLinkHeader(link)).toEqual([
         {
-          link: 'http://test.com',
-          params: {
+          target: 'http://test.com',
+          parameters: {
             rel: 'myRel',
             test: 'value1',
           },
         },
         {
-          link: 'http://test2.com',
-          params: {
+          target: 'http://test2.com',
+          parameters: {
             rel: 'myRel2',
             test: 'value2',
           },
@@ -339,15 +339,15 @@ describe('HeaderUtil', (): void => {
       ];
       expect(parseLinkHeader(link)).toEqual([
         {
-          link: 'http://test.com',
-          params: {
+          target: 'http://test.com',
+          parameters: {
             rel: 'myRel',
             test: 'value1',
           },
         },
         {
-          link: 'http://test2.com',
-          params: {
+          target: 'http://test2.com',
+          parameters: {
             rel: 'myRel2',
             test: 'value2',
           },
@@ -355,17 +355,48 @@ describe('HeaderUtil', (): void => {
       ]);
     });
 
-    it('ignores invalid links.', (): void => {
+    it('ignores invalid syntax links.', (): void => {
       const link = [
         'http://test.com; rel="myRel"; test="value1"',
         '<http://test2.com>; rel="myRel2"; test="value2"',
       ];
       expect(parseLinkHeader(link)).toEqual([
         {
-          link: 'http://test2.com',
-          params: {
+          target: 'http://test2.com',
+          parameters: {
             rel: 'myRel2',
             test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores invalid links (no rel parameter).', (): void => {
+      const link = [
+        '<http://test.com>; att="myAtt"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores extra rel parameters.', (): void => {
+      const link = [
+        '<http://test.com>; rel="myRel1"; rel="myRel2"; test="value1"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel1',
+            test: 'value1',
           },
         },
       ]);

@@ -29,9 +29,9 @@ export class LinkRelParser extends MetadataParser {
   }
 
   protected parseLink(linkHeaders: string[], metadata: RepresentationMetadata): void {
-    for (const { link, params } of parseLinkHeader(linkHeaders)) {
-      if (params.rel && this.linkRelMap[params.rel]) {
-        metadata.add(this.linkRelMap[params.rel], namedNode(link));
+    for (const { target, parameters } of parseLinkHeader(linkHeaders)) {
+      if (this.linkRelMap[parameters.rel]) {
+        metadata.add(this.linkRelMap[parameters.rel], namedNode(target));
       }
     }
   }

@@ -108,9 +108,14 @@ export interface ContentType {
   parameters: Record<string, string>;
 }
 
+export interface LinkEntryParameters extends Record<string, string> {
+  /** Required rel properties of Link entry */
+  rel: string;
+}
+
 export interface LinkEntry {
-  link: string;
-  params: Record<string, string>;
+  target: string;
+  parameters: LinkEntryParameters;
 }
 
 // REUSED REGEXES
@@ -503,7 +508,7 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
 
 /**
  * Parses the link header(s) and returns an array of LinkEntry objects.
- * @param linkHeaders - Either an array of linkHeaders (can be one header wrapped in an array)
+ * @param linkHeaders - An array of linkHeaders (can be one header wrapped in an array)
  * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
  */
 export function parseLinkHeader(linkHeaders: string[]): LinkEntry[] {
@@ -516,11 +521,21 @@ export function parseLinkHeader(linkHeaders: string[]): LinkEntry[] {
         logger.warn(`Invalid link header ${part}.`);
         continue;
       }
-      const linkEntry: LinkEntry = { link: link.slice(1, -1), params: {}};
+
+      const params: any = {};
       for (const { name, value } of parseParameters(parameters, replacements)) {
-        linkEntry.params[name] = value;
+        if (name === 'rel' && 'rel' in params) {
+          continue;
+        }
+        params[name] = value;
       }
-      links.push(linkEntry);
+
+      if (!('rel' in params)) {
+        logger.warn(`Invalid link header ${part} contains no 'rel' parameter.`);
+        continue;
+      }
+
+      links.push({ target: link.slice(1, -1), parameters: params });
     }
   }
   return links;
