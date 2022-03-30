@@ -123,6 +123,10 @@ export class UnsecureWebSocketsProtocol extends WebSocketHandler {
 
   public constructor(source: EventEmitter) {
     super();
+
+    this.logger.warn('The chosen configuration includes Solid WebSockets API 0.1, which is unauthenticated.');
+    this.logger.warn('This component will be removed from default configurations in future versions.');
+
     source.on('changed', (changed: ResourceIdentifier): void => this.onResourceChanged(changed));
   }
 
