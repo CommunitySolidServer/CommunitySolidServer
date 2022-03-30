@@ -215,7 +215,6 @@ export * from './init/ServerInitializer';
 export * from './init/ModuleVersionVerifier';
 
 // Logging
-export * from './logging/LazyLogger';
 export * from './logging/LazyLoggerFactory';
 export * from './logging/Logger';
 export * from './logging/LoggerFactory';

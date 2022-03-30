@@ -1,33 +1,40 @@
-import { LazyLogger } from '../../../src/logging/LazyLogger';
-import { LazyLoggerFactory } from '../../../src/logging/LazyLoggerFactory';
-import { getLoggerFor, resetGlobalLoggerFactory, setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
-import { VoidLogger } from '../../../src/logging/VoidLogger';
-import { VoidLoggerFactory } from '../../../src/logging/VoidLoggerFactory';
+import { resetInternalLoggerFactory, getLoggerFor, setGlobalLoggerFactory } from '../../../src/logging/LogUtil';
+
+let currentFactory: any;
+
+class Dummy {
+  private readonly label = 'dummy';
+}
 
 describe('LogUtil', (): void => {
-  beforeEach(async(): Promise<void> => {
-    resetGlobalLoggerFactory();
+  beforeAll((): void => {
+    resetInternalLoggerFactory();
+    resetInternalLoggerFactory({
+      get loggerFactory(): any {
+        return currentFactory;
+      },
+      set loggerFactory(value: any) {
+        currentFactory = value;
+      },
+      createLogger: jest.fn((label: string): any => ({ label })),
+    } as any);
   });
 
   it('allows creating a lazy logger for a string label.', async(): Promise<void> => {
-    expect(getLoggerFor('MyLabel')).toBeInstanceOf(LazyLogger);
-    expect((getLoggerFor('MyLabel') as any).label).toBe('MyLabel');
+    expect(getLoggerFor('MyLabel')).toEqual({ label: 'MyLabel' });
   });
 
   it('allows creating a lazy logger for a class instance.', async(): Promise<void> => {
-    expect(getLoggerFor(new VoidLogger())).toBeInstanceOf(LazyLogger);
-    expect((getLoggerFor(new VoidLogger()) as any).label).toBe('VoidLogger');
+    expect(getLoggerFor(new Dummy())).toEqual({ label: 'Dummy' });
+  });
+
+  it('reuses loggers for instances of the same class.', async(): Promise<void> => {
+    expect(getLoggerFor(new Dummy())).toBe(getLoggerFor(new Dummy()));
   });
 
   it('allows setting the global logger factory.', async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-    expect(LazyLoggerFactory.getInstance().loggerFactory).toBeInstanceOf(VoidLoggerFactory);
-  });
-
-  it('allows unsetting the global logger factory.', async(): Promise<void> => {
-    setGlobalLoggerFactory(new VoidLoggerFactory());
-    resetGlobalLoggerFactory();
-    expect((): any => LazyLoggerFactory.getInstance().loggerFactory)
-      .toThrow('No logger factory has been set. Can be caused by logger invocation during initialization.');
+    const factory = {} as any;
+    setGlobalLoggerFactory(factory);
+    expect(currentFactory).toBe(factory);
   });
 });
