@@ -7,6 +7,7 @@ const portNames = [
   'Conditions',
   'ContentNegotiation',
   'DynamicPods',
+  'ExpiringDataCleanup',
   'GlobalQuota',
   'Identity',
   'LpdHandlerWithAuth',
