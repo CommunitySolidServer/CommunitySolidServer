@@ -16,6 +16,8 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
+import { flushPromises } from '../util/Util';
+
 jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
@@ -67,7 +69,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and read
     jest.advanceTimersByTime(1000);
-    await new Promise(setImmediate);
+    await flushPromises();
     expect(representation.data.destroyed).toBe(true);
 
     // Verify a timeout error was thrown
@@ -95,7 +97,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and watch the stream be destroyed
     jest.advanceTimersByTime(1000);
-    await new Promise(setImmediate);
+    await flushPromises();
     expect(representation.data.destroyed).toBe(true);
 
     // Verify a timeout error was thrown

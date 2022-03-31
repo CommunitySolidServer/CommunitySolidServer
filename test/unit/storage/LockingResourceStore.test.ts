@@ -7,6 +7,7 @@ import { LockingResourceStore } from '../../../src/storage/LockingResourceStore'
 import type { ResourceStore } from '../../../src/storage/ResourceStore';
 import type { ExpiringReadWriteLocker } from '../../../src/util/locking/ExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../../src/util/StreamUtil';
+import { flushPromises } from '../../util/Util';
 
 function emptyFn(): void {
   // Empty
@@ -170,7 +171,7 @@ describe('A LockingResourceStore', (): void => {
     registerEventOrder(representation.data, 'end');
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
@@ -187,7 +188,7 @@ describe('A LockingResourceStore', (): void => {
     registerEventOrder(representation.data, 'end');
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
@@ -205,7 +206,7 @@ describe('A LockingResourceStore', (): void => {
     registerEventOrder(representation.data, 'close');
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
@@ -222,7 +223,7 @@ describe('A LockingResourceStore', (): void => {
     registerEventOrder(representation.data, 'close');
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
@@ -241,7 +242,7 @@ describe('A LockingResourceStore', (): void => {
     });
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);
@@ -258,7 +259,7 @@ describe('A LockingResourceStore', (): void => {
     timeoutTrigger.emit('timeout');
 
     // Provide opportunity for async events
-    await new Promise(setImmediate);
+    await flushPromises();
 
     // Verify the lock was acquired and released at the right time
     expect(locker.withReadLock).toHaveBeenCalledTimes(1);

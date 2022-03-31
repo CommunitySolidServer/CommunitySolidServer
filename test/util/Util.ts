@@ -45,6 +45,17 @@ export function describeIf(envFlag: string, name: string, fn: () => void): void 
 }
 
 /**
+ * This is needed when you want to wait for all promises to resolve.
+ * Also works when using jest.useFakeTimers().
+ * For more details see the links below
+ *  - https://github.com/facebook/jest/issues/2157
+ *  - https://stackoverflow.com/questions/52177631/jest-timer-and-promise-dont-work-well-settimeout-and-async-function
+ */
+export async function flushPromises(): Promise<void> {
+  return new Promise(jest.requireActual('timers').setImmediate);
+}
+
+/**
  * Mocks (some) functions of the fs system library.
  * It is important that you call `jest.mock('fs');` in your test file before calling this!!!
  *
