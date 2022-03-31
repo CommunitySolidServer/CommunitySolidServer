@@ -1,7 +1,6 @@
 import fetch from 'cross-fetch';
 import type { App, RedisResourceLocker } from '../../src';
-
-import { describeIf, getPort } from '../util/Util';
+import { describeIf, flushPromises, getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
 
 /**
@@ -139,7 +138,7 @@ describeIf('docker', 'A server with a RedisResourceLocker as ResourceLocker', ()
       const lock2 = locker.acquire(identifier);
       const lock3 = locker.acquire(identifier);
 
-      await new Promise((resolve): any => setImmediate(resolve));
+      await flushPromises();
 
       const l2 = lock2.then(async(): Promise<void> => {
         res += 'l2';

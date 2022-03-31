@@ -5,6 +5,7 @@ import { ForbiddenHttpError } from '../../../../src/util/errors/ForbiddenHttpErr
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { GreedyReadWriteLocker } from '../../../../src/util/locking/GreedyReadWriteLocker';
 import type { ResourceLocker } from '../../../../src/util/locking/ResourceLocker';
+import { flushPromises } from '../../../util/Util';
 
 // A simple ResourceLocker that keeps a queue of lock requests
 class MemoryLocker implements ResourceLocker {
@@ -86,7 +87,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     }));
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     emitter.emit('release2');
     await expect(promises[2]).resolves.toBe(2);
@@ -112,12 +113,12 @@ describe('A GreedyReadWriteLocker', (): void => {
     }));
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     emitter.emit('release2');
 
     // Allow time to finish write 2
-    await new Promise(setImmediate);
+    await flushPromises();
 
     emitter.emit('release0');
     emitter.emit('release1');
@@ -140,7 +141,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     }));
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     emitter.emit('release1');
     await expect(promises[1]).resolves.toBe(1);
@@ -178,7 +179,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     });
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     const promAll = Promise.all([ delayedLockWrite, lockRead ]);
 
@@ -213,7 +214,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     });
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     const promAll = Promise.all([ delayedLockWrite, lockRead ]);
 
@@ -260,14 +261,14 @@ describe('A GreedyReadWriteLocker', (): void => {
     });
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     const promAll = Promise.all([ delayedLockWrite, lockRead, delayedLockRead2 ]);
 
     emitter.emit('releaseRead1');
 
     // Allow time to finish read 1
-    await new Promise(setImmediate);
+    await flushPromises();
 
     emitter.emit('releaseRead2');
     await promAll;
@@ -302,7 +303,7 @@ describe('A GreedyReadWriteLocker', (): void => {
     });
 
     // Allow time to attach listeners
-    await new Promise(setImmediate);
+    await flushPromises();
 
     const promAll = Promise.all([ delayedLockRead, lockWrite ]);
 

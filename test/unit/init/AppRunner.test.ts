@@ -4,6 +4,7 @@ import { AppRunner } from '../../../src/init/AppRunner';
 import type { CliExtractor } from '../../../src/init/cli/CliExtractor';
 import type { SettingsResolver } from '../../../src/init/variables/SettingsResolver';
 import { joinFilePath } from '../../../src/util/PathUtil';
+import { flushPromises } from '../../util/Util';
 
 const app: jest.Mocked<App> = {
   start: jest.fn(),
@@ -315,9 +316,7 @@ describe('AppRunner', (): void => {
       new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
       // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await flushPromises();
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
@@ -348,9 +347,7 @@ describe('AppRunner', (): void => {
       new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
       // Wait until app.start has been called, because we can't await AppRunner.runCli.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await flushPromises();
 
       expect(write).toHaveBeenCalledTimes(1);
       expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Cause: Fatal/mu));
