@@ -23,15 +23,9 @@ export class LinkRelParser extends MetadataParser {
   }
 
   public async handle(input: { request: HttpRequest; metadata: RepresentationMetadata }): Promise<void> {
-    const link = input.request.headers.link ?? [];
-    const entries: string[] = Array.isArray(link) ? link : [ link ];
-    this.parseLink(entries, input.metadata);
-  }
-
-  protected parseLink(linkHeaders: string[], metadata: RepresentationMetadata): void {
-    for (const { target, parameters } of parseLinkHeader(linkHeaders)) {
+    for (const { target, parameters } of parseLinkHeader(input.request.headers.link)) {
       if (this.linkRelMap[parameters.rel]) {
-        metadata.add(this.linkRelMap[parameters.rel], namedNode(target));
+        input.metadata.add(this.linkRelMap[parameters.rel], namedNode(target));
       }
     }
   }
