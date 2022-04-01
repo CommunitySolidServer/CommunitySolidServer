@@ -1,27 +1,10 @@
-import { Logger } from './Logger';
-import type { BasicLogger } from './Logger';
+import { WrappingLogger } from './Logger';
+import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
 import type { LogLevel } from './LogLevel';
 
 /**
- * Wraps around another {@link Logger} that can be set lazily.
- */
-class WrappingLogger extends Logger {
-  public logger: BasicLogger;
-
-  public constructor(logger: BasicLogger) {
-    super();
-    this.logger = logger;
-  }
-
-  public log(level: LogLevel, message: string): Logger {
-    this.logger.log(level, message);
-    return this;
-  }
-}
-
-/**
- * Temporary {@link LoggerFactory} that creates buffered {@link WrappingLogger}s
+ * Temporary {@link LoggerFactory} that buffers log messages in memory
  * until the {@link TemporaryLoggerFactory#switch} method is called.
  */
 class TemporaryLoggerFactory implements LoggerFactory {
