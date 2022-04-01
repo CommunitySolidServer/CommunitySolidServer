@@ -24,11 +24,11 @@ describe('LazyLogger', (): void => {
     };
     lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
 
-    expect(logger.log('debug', 'my message', { abc: true })).toBe(dummyLogger);
+    expect(logger.log('debug', 'my message')).toBe(dummyLogger);
     expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(1);
     expect(dummyLoggerFactory.createLogger).toHaveBeenCalledWith('MyLabel');
     expect(dummyLogger.log).toHaveBeenCalledTimes(1);
-    expect(dummyLogger.log).toHaveBeenCalledWith('debug', 'my message', { abc: true });
+    expect(dummyLogger.log).toHaveBeenCalledWith('debug', 'my message');
   });
 
   it('reuses the logger for repeated calls.', async(): Promise<void> => {
@@ -40,14 +40,14 @@ describe('LazyLogger', (): void => {
     };
     lazyLoggerFactory.loggerFactory = dummyLoggerFactory;
 
-    expect(logger.log('debug', 'my message 1', { abc: true })).toBe(dummyLogger);
-    expect(logger.log('debug', 'my message 2', { abc: true })).toBe(dummyLogger);
-    expect(logger.log('debug', 'my message 3', { abc: true })).toBe(dummyLogger);
+    expect(logger.log('debug', 'my message 1')).toBe(dummyLogger);
+    expect(logger.log('debug', 'my message 2')).toBe(dummyLogger);
+    expect(logger.log('debug', 'my message 3')).toBe(dummyLogger);
     expect(dummyLoggerFactory.createLogger).toHaveBeenCalledTimes(1);
     expect(dummyLoggerFactory.createLogger).toHaveBeenCalledWith('MyLabel');
     expect(dummyLogger.log).toHaveBeenCalledTimes(3);
-    expect(dummyLogger.log).toHaveBeenNthCalledWith(1, 'debug', 'my message 1', { abc: true });
-    expect(dummyLogger.log).toHaveBeenNthCalledWith(2, 'debug', 'my message 2', { abc: true });
-    expect(dummyLogger.log).toHaveBeenNthCalledWith(3, 'debug', 'my message 3', { abc: true });
+    expect(dummyLogger.log).toHaveBeenNthCalledWith(1, 'debug', 'my message 1');
+    expect(dummyLogger.log).toHaveBeenNthCalledWith(2, 'debug', 'my message 2');
+    expect(dummyLogger.log).toHaveBeenNthCalledWith(3, 'debug', 'my message 3');
   });
 });

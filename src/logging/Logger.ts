@@ -13,15 +13,15 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public abstract log(level: LogLevel, message: string, meta?: any): Logger;
+  public abstract log(level: LogLevel, message: string): Logger;
 
   /**
    * Log a message at the 'error' level.
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public error(message: string, meta?: any): Logger {
-    return this.log('error', message, meta);
+  public error(message: string): Logger {
+    return this.log('error', message);
   }
 
   /**
@@ -29,8 +29,8 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public warn(message: string, meta?: any): Logger {
-    return this.log('warn', message, meta);
+  public warn(message: string): Logger {
+    return this.log('warn', message);
   }
 
   /**
@@ -38,8 +38,8 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public info(message: string, meta?: any): Logger {
-    return this.log('info', message, meta);
+  public info(message: string): Logger {
+    return this.log('info', message);
   }
 
   /**
@@ -47,8 +47,8 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public verbose(message: string, meta?: any): Logger {
-    return this.log('verbose', message, meta);
+  public verbose(message: string): Logger {
+    return this.log('verbose', message);
   }
 
   /**
@@ -56,8 +56,8 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public debug(message: string, meta?: any): Logger {
-    return this.log('debug', message, meta);
+  public debug(message: string): Logger {
+    return this.log('debug', message);
   }
 
   /**
@@ -65,7 +65,7 @@ export abstract class Logger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  public silly(message: string, meta?: any): Logger {
-    return this.log('silly', message, meta);
+  public silly(message: string): Logger {
+    return this.log('silly', message);
   }
 }

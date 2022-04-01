@@ -118,7 +118,7 @@ export class StaticAssetHandler extends HttpHandler {
           reject(new NotFoundHttpError(`Cannot find ${request.url}`));
         // In other cases, we might already have started writing, so just hang up
         } else {
-          this.logger.warn(`Error reading asset ${filePath}: ${error.message}`, { error });
+          this.logger.warn(`Error reading asset ${filePath}: ${error.message}`);
           response.end();
           asset.destroy();
           resolve();
