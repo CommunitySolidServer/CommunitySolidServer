@@ -1,11 +1,11 @@
 import type { Logger as WinstonInnerLogger } from 'winston';
-import { Logger } from './Logger';
+import { BaseLogger } from './Logger';
 import type { LogLevel } from './LogLevel';
 
 /**
  * A WinstonLogger implements the {@link Logger} interface using a given winston logger.
  */
-export class WinstonLogger extends Logger {
+export class WinstonLogger extends BaseLogger {
   private readonly logger: WinstonInnerLogger;
 
   public constructor(logger: WinstonInnerLogger) {
