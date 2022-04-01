@@ -54,4 +54,10 @@ describe('A PlainJsonLdFilter', (): void => {
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(0);
   });
+
+  it('ignores empty content-type headers.', async(): Promise<void> => {
+    request.headers.link = '<http://test.com/type>;rel="type"';
+    await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
+    expect(metadata.quads()).toHaveLength(0);
+  });
 });

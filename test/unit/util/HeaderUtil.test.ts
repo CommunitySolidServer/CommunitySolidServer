@@ -298,8 +298,21 @@ describe('HeaderUtil', (): void => {
       expect(parseLinkHeader([ '' ])).toEqual([]);
     });
 
-    it('parses a Link header value.', (): void => {
+    it('parses a Link header value as array.', (): void => {
       const link = [ '<http://test.com>; rel="myRel"; test="value1"' ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('parses a Link header value as string.', (): void => {
+      const link = '<http://test.com>; rel="myRel"; test="value1"';
       expect(parseLinkHeader(link)).toEqual([
         {
           target: 'http://test.com',
@@ -400,6 +413,10 @@ describe('HeaderUtil', (): void => {
           },
         },
       ]);
+    });
+
+    it('works with an empty argument.', (): void => {
+      expect(parseLinkHeader()).toEqual([]);
     });
   });
 });

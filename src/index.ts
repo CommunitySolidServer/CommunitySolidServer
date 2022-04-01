@@ -63,8 +63,8 @@ export * from './http/input/metadata/ContentLengthParser';
 export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
-export * from './http/input/metadata/SlugParser';
 export * from './http/input/metadata/PlainJsonLdFilter';
+export * from './http/input/metadata/SlugParser';
 
 // HTTP/Input/Preferences
 export * from './http/input/preferences/AcceptPreferenceParser';
