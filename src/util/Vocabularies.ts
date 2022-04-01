@@ -96,6 +96,10 @@ export const HTTP = createUriAndTermNamespace('http://www.w3.org/2011/http#',
 
 export const IANA = createUriAndTermNamespace('http://www.w3.org/ns/iana/media-types/');
 
+export const JSON_LD = createUriAndTermNamespace('http://www.w3.org/ns/json-ld#',
+  'context',
+);
+
 export const LDP = createUriAndTermNamespace('http://www.w3.org/ns/ldp#',
   'contains',
 

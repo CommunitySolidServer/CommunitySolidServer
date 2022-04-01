@@ -108,6 +108,16 @@ export interface ContentType {
   parameters: Record<string, string>;
 }
 
+export interface LinkEntryParameters extends Record<string, string> {
+  /** Required rel properties of Link entry */
+  rel: string;
+}
+
+export interface LinkEntry {
+  target: string;
+  parameters: LinkEntryParameters;
+}
+
 // REUSED REGEXES
 const tchar = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
 const token = new RegExp(`^${tchar.source}+$`, 'u');
@@ -494,4 +504,46 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
     }
   }
   return forwarded;
+}
+
+/**
+ * Parses the link header(s) and returns an array of LinkEntry objects.
+ * @param link - A single link header or an array of link headers
+ * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
+ */
+export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
+  const linkHeaders = Array.isArray(link) ? link : [ link ];
+  const links: LinkEntry[] = [];
+  for (const entry of linkHeaders) {
+    const { result, replacements } = transformQuotedStrings(entry);
+    for (const part of splitAndClean(result)) {
+      const [ target, ...parameters ] = part.split(/\s*;\s*/u);
+      if (/^[^<]|[^>]$/u.test(target)) {
+        logger.warn(`Invalid link header ${part}.`);
+        continue;
+      }
+
+      // RFC 8288 - Web Linking (https://datatracker.ietf.org/doc/html/rfc8288)
+      //
+      //     The rel parameter MUST be
+      //     present but MUST NOT appear more than once in a given link-value;
+      //     occurrences after the first MUST be ignored by parsers.
+      //
+      const params: any = {};
+      for (const { name, value } of parseParameters(parameters, replacements)) {
+        if (name === 'rel' && 'rel' in params) {
+          continue;
+        }
+        params[name] = value;
+      }
+
+      if (!('rel' in params)) {
+        logger.warn(`Invalid link header ${part} contains no 'rel' parameter.`);
+        continue;
+      }
+
+      links.push({ target: target.slice(1, -1), parameters: params });
+    }
+  }
+  return links;
 }

@@ -9,6 +9,7 @@ import {
   parseAcceptLanguage,
   parseContentType,
   parseForwarded,
+  parseLinkHeader,
 } from '../../../src/util/HeaderUtil';
 
 describe('HeaderUtil', (): void => {
@@ -43,9 +44,11 @@ describe('HeaderUtil', (): void => {
 
     it('parses Accept headers with double quoted values.', async(): Promise<void> => {
       expect(parseAccept('audio/basic; param1="val" ; q=0.5 ;param2="\\\\\\"valid"')).toEqual([
-        { range: 'audio/basic',
+        {
+          range: 'audio/basic',
           weight: 0.5,
-          parameters: { mediaType: { param1: 'val' }, extension: { param2: '\\\\\\"valid' }}},
+          parameters: { mediaType: { param1: 'val' }, extension: { param2: '\\\\\\"valid' }},
+        },
       ]);
     });
 
@@ -283,6 +286,137 @@ describe('HeaderUtil', (): void => {
         host: 'pod.example',
         proto: 'https',
       });
+    });
+  });
+
+  describe('#parseLinkHeader', (): void => {
+    it('handles an empty set of headers.', (): void => {
+      expect(parseLinkHeader([])).toEqual([]);
+    });
+
+    it('handles empty string values.', (): void => {
+      expect(parseLinkHeader([ '' ])).toEqual([]);
+    });
+
+    it('parses a Link header value as array.', (): void => {
+      const link = [ '<http://test.com>; rel="myRel"; test="value1"' ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('parses a Link header value as string.', (): void => {
+      const link = '<http://test.com>; rel="myRel"; test="value1"';
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('parses multiple Link header values delimited by a comma.', (): void => {
+      const link = [ `<http://test.com>; rel="myRel"; test="value1", 
+      <http://test2.com>; rel="myRel2"; test="value2"` ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('parses multiple Link header values as array elements.', (): void => {
+      const link = [
+        '<http://test.com>; rel="myRel"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel',
+            test: 'value1',
+          },
+        },
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores invalid syntax links.', (): void => {
+      const link = [
+        'http://test.com; rel="myRel"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores invalid links (no rel parameter).', (): void => {
+      const link = [
+        '<http://test.com>; att="myAtt"; test="value1"',
+        '<http://test2.com>; rel="myRel2"; test="value2"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test2.com',
+          parameters: {
+            rel: 'myRel2',
+            test: 'value2',
+          },
+        },
+      ]);
+    });
+
+    it('ignores extra rel parameters.', (): void => {
+      const link = [
+        '<http://test.com>; rel="myRel1"; rel="myRel2"; test="value1"',
+      ];
+      expect(parseLinkHeader(link)).toEqual([
+        {
+          target: 'http://test.com',
+          parameters: {
+            rel: 'myRel1',
+            test: 'value1',
+          },
+        },
+      ]);
+    });
+
+    it('works with an empty argument.', (): void => {
+      expect(parseLinkHeader()).toEqual([]);
     });
   });
 });
