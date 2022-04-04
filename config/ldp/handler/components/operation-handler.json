@@ -6,10 +6,6 @@
       "@type": "WaterfallHandler",
       "handlers": [
         {
-          "@type": "OptionsOperationHandler",
-          "resourceSet": { "@id": "urn:solid-server:default:CachedResourceSet" }
-        },
-        {
           "@type": "GetOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" }
         },

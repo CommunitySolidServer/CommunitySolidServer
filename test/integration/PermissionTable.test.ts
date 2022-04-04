@@ -44,9 +44,13 @@ const allModes = [ AM.read, AM.append, AM.create, AM.write, AM.delete ];
 // For PUT/PATCH/DELETE we return 205 instead of 200/204
 /* eslint-disable no-multi-spaces */
 const table: [string, string, AM[], AM[] | undefined, string, string, number, number][] = [
-  [ 'OPTIONS', 'C/R', [],                     undefined,              '',     '',  401, 401 ],
-  [ 'OPTIONS', 'C/R', [],                     [ AM.read ],            '',     '',  204, 404 ],
-  [ 'OPTIONS', 'C/R', [ AM.read ],            undefined,              '',     '',  204, 404 ],
+  // No authorization headers are sent in an OPTIONS request making it impossible to grant permission.
+  // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1246#issuecomment-1087325235
+  // From https://fetch.spec.whatwg.org/#cors-preflight-fetch it follows
+  // that a preflight check should always return an OK response.
+  [ 'OPTIONS', 'C/R', [],                     undefined,              '',     '',  204, 204 ],
+  [ 'OPTIONS', 'C/R', [],                     [ AM.read ],            '',     '',  204, 204 ],
+  [ 'OPTIONS', 'C/R', [ AM.read ],            undefined,              '',     '',  204, 204 ],
 
   [ 'HEAD',    'C/R', [],                     undefined,              '',     '',  401, 401 ],
   [ 'HEAD',    'C/R', [],                     [ AM.read ],            '',     '',  200, 404 ],

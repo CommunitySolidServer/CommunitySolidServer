@@ -70,7 +70,7 @@ describe('An http server with middleware', (): void => {
       .set('Access-Control-Request-Headers', 'content-type')
       .set('Access-Control-Request-Method', 'POST')
       .set('Host', 'test.com')
-      .expect(200);
+      .expect(204);
     expect(res.header).toEqual(expect.objectContaining({
       'access-control-allow-origin': '*',
       'access-control-allow-headers': 'content-type',
