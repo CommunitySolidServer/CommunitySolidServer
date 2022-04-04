@@ -15,7 +15,7 @@
         "DELETE"
       ],
       "options_credentials": true,
-      "options_preflightContinue": true,
+      "options_preflightContinue": false,
       "options_exposedHeaders": [
         "Accept-Patch",
         "Accept-Post",
