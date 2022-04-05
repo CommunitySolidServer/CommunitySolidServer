@@ -11,7 +11,7 @@
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
       "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
       "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
-      "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "comment": "This makes it so all incoming data is converted to quad objects.",

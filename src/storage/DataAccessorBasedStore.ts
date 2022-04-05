@@ -75,21 +75,21 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly accessor: DataAccessor;
   private readonly identifierStrategy: IdentifierStrategy;
   private readonly auxiliaryStrategy: AuxiliaryStrategy;
-  private readonly metaStrategy: AuxiliaryStrategy;
+  private readonly metadataStrategy: AuxiliaryStrategy;
 
   public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy, metaStrategy: AuxiliaryStrategy) {
+    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy) {
     this.accessor = accessor;
     this.identifierStrategy = identifierStrategy;
     this.auxiliaryStrategy = auxiliaryStrategy;
-    this.metaStrategy = metaStrategy;
+    this.metadataStrategy = metadataStrategy;
   }
 
   public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
     try {
       this.validateIdentifier(identifier);
-      if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
-        await this.accessor.getMetadata(this.metaStrategy.getSubjectIdentifier(identifier));
+      if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
+        await this.accessor.getMetadata(this.metadataStrategy.getSubjectIdentifier(identifier));
         return true;
       }
       await this.accessor.getMetadata(identifier);
@@ -105,7 +105,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async getRepresentation(identifier: ResourceIdentifier): Promise<Representation> {
     this.validateIdentifier(identifier);
 
-    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return this.getMetadata(identifier);
     }
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
@@ -214,7 +214,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
-    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return await this.writeMetadata(identifier, representation);
     }
     // Ensure the representation is supported by the accessor
@@ -252,7 +252,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // DELETE is not allowed on metadata
-    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
     }
 
@@ -368,7 +368,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   protected async getMetadata(identifier: ResourceIdentifier): Promise<Representation> {
-    const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
+    const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
 
     const metadata = await this.accessor.getMetadata(subjectIdentifier);
     this.removeResponseMetadata(metadata);
@@ -378,7 +378,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
   protected async writeMetadata(identifier: ResourceIdentifier, representation: Representation):
   Promise<ResourceIdentifier[]> {
-    const subjectIdentifier = this.metaStrategy.getSubjectIdentifier(identifier);
+    const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
 
     // Cannot create metadata without a corresponding resource
     if (!await this.resourceExists(subjectIdentifier)) {
@@ -387,7 +387,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // It must not be possible to create .meta.meta resources
-    if (this.metaStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
       throw new ConflictHttpError(
         'Not allowed to create metadata resources on a metadata resource.',
       );

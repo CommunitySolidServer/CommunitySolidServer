@@ -19,12 +19,12 @@ export class PutOperationHandler extends OperationHandler {
   protected readonly logger = getLoggerFor(this);
 
   private readonly store: ResourceStore;
-  private readonly metaStrategy: AuxiliaryStrategy;
+  private readonly metadataStrategy: AuxiliaryStrategy;
 
-  public constructor(store: ResourceStore, metaStrategy: AuxiliaryStrategy) {
+  public constructor(store: ResourceStore, metadataStrategy: AuxiliaryStrategy) {
     super();
     this.store = store;
-    this.metaStrategy = metaStrategy;
+    this.metadataStrategy = metadataStrategy;
   }
 
   public async canHandle({ operation }: OperationHandlerInput): Promise<void> {
@@ -44,7 +44,7 @@ export class PutOperationHandler extends OperationHandler {
 
     // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
     // PUT is not allowed on metadata
-    if (this.metaStrategy.isAuxiliaryIdentifier(operation.target)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(operation.target)) {
       throw new ConflictHttpError('Not allowed to create or edit metadata resources using PUT.');
     }
 

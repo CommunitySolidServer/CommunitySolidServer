@@ -16,7 +16,7 @@
         {
           "@type": "PutOperationHandler",
           "store": { "@id": "urn:solid-server:default:ResourceStore" },
-          "metaStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+          "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
         },
         {
           "@type": "DeleteOperationHandler",

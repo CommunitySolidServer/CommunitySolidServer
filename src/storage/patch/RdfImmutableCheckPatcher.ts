@@ -16,12 +16,12 @@ export class RdfImmutableCheckPatcher extends RepresentationPatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly patcher: RepresentationPatcher;
-  private readonly metaStrategy: AuxiliaryStrategy;
+  private readonly metadataStrategy: AuxiliaryStrategy;
 
-  public constructor(patcher: RepresentationPatcher, metaStrategy: AuxiliaryStrategy) {
+  public constructor(patcher: RepresentationPatcher, metadataStrategy: AuxiliaryStrategy) {
     super();
     this.patcher = patcher;
-    this.metaStrategy = metaStrategy;
+    this.metadataStrategy = metadataStrategy;
   }
 
   public async handle(input: RepresentationPatcherInput): Promise<Representation> {
@@ -34,7 +34,7 @@ export class RdfImmutableCheckPatcher extends RepresentationPatcher {
     immutableTriples.push([ LDP.contains, undefined ]);
 
     let patched: Representation;
-    if (this.metaStrategy.isAuxiliaryIdentifier(identifier)) {
+    if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       const clonedRepresentation = await cloneRepresentation(representation);
       patched = await this.patcher.handleSafe(input);
       const clonedPatchedRepresentation = await cloneRepresentation(patched);
