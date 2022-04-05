@@ -46,6 +46,25 @@ import type { Conditions } from './Conditions';
 import { RdfToQuadConverter } from './conversion/RdfToQuadConverter';
 import type { ResourceStore } from './ResourceStore';
 
+export interface DataAccessorBasedStoreArgs {
+  /**
+   * Data Accessor used that is being used to store the data.
+   */
+  accessor: DataAccessor;
+  /**
+   * The strategy to handle the behaviour of container identifiers.
+   */
+  identifierStrategy: IdentifierStrategy;
+  /**
+   * The strategy to handle all auxiliary resources.
+   */
+  auxiliaryStrategy: AuxiliaryStrategy;
+  /**
+   * The strategy to handle metadata resources.
+   */
+  metadataStrategy: AuxiliaryStrategy;
+}
+
 /**
  * ResourceStore which uses a DataAccessor for backend access.
  *
@@ -72,17 +91,13 @@ import type { ResourceStore } from './ResourceStore';
 export class DataAccessorBasedStore implements ResourceStore {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accessor: DataAccessor;
-  private readonly identifierStrategy: IdentifierStrategy;
-  private readonly auxiliaryStrategy: AuxiliaryStrategy;
-  private readonly metadataStrategy: AuxiliaryStrategy;
+  private readonly accessor!: DataAccessor;
+  private readonly identifierStrategy!: IdentifierStrategy;
+  private readonly auxiliaryStrategy!: AuxiliaryStrategy;
+  private readonly metadataStrategy!: AuxiliaryStrategy;
 
-  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
-    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy) {
-    this.accessor = accessor;
-    this.identifierStrategy = identifierStrategy;
-    this.auxiliaryStrategy = auxiliaryStrategy;
-    this.metadataStrategy = metadataStrategy;
+  public constructor(args: DataAccessorBasedStoreArgs) {
+    Object.assign(this, args);
   }
 
   public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {

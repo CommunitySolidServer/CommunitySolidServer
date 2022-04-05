@@ -32,17 +32,17 @@ describe('A LockingResourceStore', (): void => {
 
     // Not relevant for these tests
     const strategy = new RoutingAuxiliaryStrategy([]);
-    const metaStrategy = new SimpleSuffixStrategy('.meta');
+    const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
     const base = 'http://test.com/';
     path = `${base}path`;
     const idStrategy = new SingleRootIdentifierStrategy(base);
-    source = new DataAccessorBasedStore(
-      new InMemoryDataAccessor(idStrategy),
-      idStrategy,
-      strategy,
-      metaStrategy,
-    );
+    source = new DataAccessorBasedStore({
+      accessor: new InMemoryDataAccessor(idStrategy),
+      identifierStrategy: idStrategy,
+      auxiliaryStrategy: strategy,
+      metadataStrategy,
+    });
 
     // Initialize store
     const metadata = new RepresentationMetadata({ path: base }, TEXT_TURTLE);

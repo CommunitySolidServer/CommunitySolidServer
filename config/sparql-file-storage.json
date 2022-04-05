@@ -67,9 +67,10 @@
     {
       "@id": "urn:solid-server:default:FileResourceStore",
       "@type": "DataAccessorBasedStore",
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" }
+      "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "args_auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "args_accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "args_metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "@id": "urn:solid-server:default:SparqlResourceStore",
@@ -78,9 +79,10 @@
       "options_inType": "internal/quads",
       "source": {
         "@type": "DataAccessorBasedStore",
-        "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" }
+        "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+        "args_auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+        "args_accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
+        "args_metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
       }
     }
   ]

@@ -8,10 +8,10 @@
       "comment": "A default store setup with a memory backend.",
       "@id": "urn:solid-server:default:ResourceStore_Backend",
       "@type": "DataAccessorBasedStore",
-      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-      "accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
-      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
+      "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "args_auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "args_accessor": { "@id": "urn:solid-server:default:SparqlDataAccessor" },
+      "args_metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" }
     },
     {
       "comment": "This makes it so all incoming data is converted to quad objects.",

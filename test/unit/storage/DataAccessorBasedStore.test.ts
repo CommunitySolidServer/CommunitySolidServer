@@ -110,9 +110,9 @@ describe('A DataAccessorBasedStore', (): void => {
     accessor = new SimpleDataAccessor();
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
-    const metaStrategy = new SimpleSuffixStrategy('.meta');
+    const metadataStrategy = new SimpleSuffixStrategy('.meta');
 
-    store = new DataAccessorBasedStore(accessor, identifierStrategy, auxiliaryStrategy, metaStrategy);
+    store = new DataAccessorBasedStore({ accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy });
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
