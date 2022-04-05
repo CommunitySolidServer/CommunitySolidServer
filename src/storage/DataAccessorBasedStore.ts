@@ -250,7 +250,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   public async deleteResource(identifier: ResourceIdentifier, conditions?: Conditions): Promise<ResourceIdentifier[]> {
     this.validateIdentifier(identifier);
 
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
     // DELETE is not allowed on metadata
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to delete metadata resources directly.');
@@ -385,7 +385,7 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new ConflictHttpError('Metadata resources can not be created directly.');
     }
 
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
     // It must not be possible to create .meta.meta resources
     if (this.metadataStrategy.isAuxiliaryIdentifier(subjectIdentifier)) {
       throw new ConflictHttpError(

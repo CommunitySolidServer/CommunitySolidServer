@@ -42,8 +42,11 @@ export class PutOperationHandler extends OperationHandler {
       throw new BadRequestHttpError('PUT requests require the Content-Type header to be set');
     }
 
-    // https://github.com/solid/community-server/issues/1027#issuecomment-988664970
-    // PUT is not allowed on metadata
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
+    // We do not allow PUT on metadata resources for simplicity.
+    // Otherwise, all generated metadata triples would have to be identical, such as date modified.
+    // We already reject the request here instead of `setRepresentation` so PATCH requests
+    // can still use that function to update data.
     if (this.metadataStrategy.isAuxiliaryIdentifier(operation.target)) {
       throw new ConflictHttpError('Not allowed to create or edit metadata resources using PUT.');
     }
@@ -51,13 +54,13 @@ export class PutOperationHandler extends OperationHandler {
     const exists = await this.store.resourceExists(operation.target, operation.conditions);
 
     // Not allowed performing PUT on an already existing Container
-    // See https://github.com/solid/community-server/issues/1027#issuecomment-1023371546
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
     if (exists && isContainerPath(operation.target.path)) {
       throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
     }
 
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
-    // See https://github.com/solid/community-server/issues/632
+    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();
