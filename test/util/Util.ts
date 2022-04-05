@@ -218,10 +218,121 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         delete folder[name];
       },
     },
+    async stat(path: string): Promise<Stats> {
+      return this.lstat(await this.realpath(path));
+    },
+    async lstat(path: string): Promise<Stats> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      return {
+        isFile: (): boolean => typeof folder[name] === 'string',
+        isDirectory: (): boolean => typeof folder[name] === 'object',
+        isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
+        size: typeof folder[name] === 'string' ? folder[name].length : 4,
+        mtime: time,
+      } as Stats;
+    },
+    async unlink(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      if (!(await this.lstat(path)).isFile()) {
+        throwSystemError('EISDIR');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
+    async symlink(target: string, path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      folder[name] = Symbol(target);
+    },
+    async realpath(path: string): Promise<string> {
+      const { folder, name } = getFolder(path);
+      const entry = folder[name];
+      return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
+    },
+    async rmdir(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      if (Object.keys(folder[name]).length > 0) {
+        throwSystemError('ENOTEMPTY');
+      }
+      if (!(await this.lstat(path)).isDirectory()) {
+        throwSystemError('ENOTDIR');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
+    async readdir(path: string): Promise<string[]> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      return Object.keys(folder[name]);
+    },
+    async* opendir(path: string): AsyncIterableIterator<Dirent> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      for (const [ child, entry ] of Object.entries(folder[name])) {
+        yield {
+          name: child,
+          isFile: (): boolean => typeof entry === 'string',
+          isDirectory: (): boolean => typeof entry === 'object',
+          isSymbolicLink: (): boolean => typeof entry === 'symbol',
+        } as Dirent;
+      }
+    },
+    async mkdir(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      if (folder[name]) {
+        throwSystemError('EEXIST');
+      }
+      folder[name] = {};
+    },
+    async readFile(path: string): Promise<string> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      return folder[name];
+    },
+    async writeFile(path: string, data: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      folder[name] = data;
+    },
+    async rename(path: string, destination: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      if (!(await this.lstat(path)).isFile()) {
+        throwSystemError('EISDIR');
+      }
+
+      const { folder: folderDest, name: nameDest } = getFolder(destination);
+      folderDest[nameDest] = folder[name];
+
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
+    async ensureDir(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      folder[name] = {};
+    },
   };
 
   const fs = jest.requireMock('fs');
   Object.assign(fs, mock);
+
+  const fsExtra = jest.requireMock('fs-extra');
+  Object.assign(fsExtra, mock);
 
   return cache;
 }

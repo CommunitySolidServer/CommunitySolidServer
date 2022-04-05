@@ -18,6 +18,7 @@ import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../
 import { mockFs } from '../../../util/Util';
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
 const now = new Date();
@@ -332,7 +333,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws other errors when making a directory.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.mkdir = (): any => {
+      jest.requireMock('fs-extra').ensureDir = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeContainer({ path: base }, metadata)).rejects.toThrow('error');
