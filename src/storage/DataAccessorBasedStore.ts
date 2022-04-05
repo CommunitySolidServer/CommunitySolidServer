@@ -89,8 +89,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     try {
       this.validateIdentifier(identifier);
       if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-        await this.accessor.getMetadata(this.metadataStrategy.getSubjectIdentifier(identifier));
-        return true;
+        identifier = this.metadataStrategy.getSubjectIdentifier(identifier);
       }
       await this.accessor.getMetadata(identifier);
       return true;
@@ -106,7 +105,11 @@ export class DataAccessorBasedStore implements ResourceStore {
     this.validateIdentifier(identifier);
 
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-      return this.getMetadata(identifier);
+      const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
+      const metadata = await this.accessor.getMetadata(subjectIdentifier);
+      this.removeResponseMetadata(metadata);
+      const serialized = serializeQuads(metadata.quads(null, null, null, null), TEXT_TURTLE);
+      return new BasicRepresentation(serialized, TEXT_TURTLE);
     }
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     const metadata = await this.accessor.getMetadata(identifier);
@@ -365,15 +368,6 @@ export class DataAccessorBasedStore implements ResourceStore {
         throw error;
       }
     }
-  }
-
-  protected async getMetadata(identifier: ResourceIdentifier): Promise<Representation> {
-    const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
-
-    const metadata = await this.accessor.getMetadata(subjectIdentifier);
-    this.removeResponseMetadata(metadata);
-    const serialized = serializeQuads(metadata.quads(null, null, null, null), TEXT_TURTLE);
-    return new BasicRepresentation(serialized, TEXT_TURTLE);
   }
 
   protected async writeMetadata(identifier: ResourceIdentifier, representation: Representation):
