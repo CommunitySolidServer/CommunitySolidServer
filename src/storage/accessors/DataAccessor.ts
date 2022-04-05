@@ -70,8 +70,9 @@ export interface DataAccessor {
   writeContainer: (identifier: ResourceIdentifier, metadata: RepresentationMetadata) => Promise<void>;
 
   /**
-   * Writes metadata.
-   * @param identifier - Identifier of the corresponding resource.
+   * Writes metadata for a resource.
+   * It can safely be assumed that the subject resource already exists.
+   * @param identifier - Identifier of the subject resource.
    * @param metadata - Metadata to store.
    */
   writeMetadata: (identifier: ResourceIdentifier, metadata: RepresentationMetadata) => Promise<void>;
