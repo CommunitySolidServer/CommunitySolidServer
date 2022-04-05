@@ -39,19 +39,14 @@ export class RedirectingHttpHandler extends HttpHandler {
     const { url } = request;
 
     // Get groups and redirect of first matching pattern
-    const result = this.redirects.reduce<{ match: RegExpExecArray; redirect: string } | null>(
-      (prev, { pattern, redirect }): { match: RegExpExecArray; redirect: string } | null => {
-        if (prev) {
-          return prev;
-        }
-        const match = pattern.exec(url ?? '');
-        if (match) {
-          return { match, redirect };
-        }
-        return null;
-      },
-      null,
-    );
+    let result;
+    for (const { pattern, redirect } of this.redirects) {
+      const match = pattern.exec(url ?? '');
+      if (match) {
+        result = { match, redirect };
+        break;
+      }
+    }
 
     // Only return if a redirect is configured for the requested URL
     if (!result) {
