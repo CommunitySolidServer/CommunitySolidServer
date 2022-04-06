@@ -57,6 +57,6 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
       }
       throw error;
     }
-    await this.writeMetadataOld(link, metadata);
+    await this.writeMetadataFile(link, metadata);
   }
 }

@@ -3,7 +3,6 @@ import type { ResourceStore } from '../../storage/ResourceStore';
 import { BadRequestHttpError } from '../../util/errors/BadRequestHttpError';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { isContainerPath } from '../../util/PathUtil';
 import type { AuxiliaryStrategy } from '../auxiliary/AuxiliaryStrategy';
 import { CreatedResponseDescription } from '../output/response/CreatedResponseDescription';
 import { ResetResponseDescription } from '../output/response/ResetResponseDescription';
@@ -51,16 +50,9 @@ export class PutOperationHandler extends OperationHandler {
       throw new ConflictHttpError('Not allowed to create or edit metadata resources using PUT.');
     }
 
-    const exists = await this.store.resourceExists(operation.target, operation.conditions);
-
-    // Not allowed performing PUT on an already existing Container
-    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
-    if (exists && isContainerPath(operation.target.path)) {
-      throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
-    }
-
     // A more efficient approach would be to have the server return metadata indicating if a resource was new
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/632
+    const exists = await this.store.resourceExists(operation.target, operation.conditions);
     await this.store.setRepresentation(operation.target, operation.body, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();

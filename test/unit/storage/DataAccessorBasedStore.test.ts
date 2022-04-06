@@ -2,7 +2,8 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'n3';
-import { DataFactory, Store } from 'n3';
+import { DataFactory } from 'n3';
+import { readableToQuads } from '../../../dist';
 import type { RepresentationPreferences } from '../../../src';
 import { RdfToQuadConverter, serializeQuads } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
@@ -210,8 +211,8 @@ describe('A DataAccessorBasedStore', (): void => {
       const resultConverted = await converter.handle(
         { identifier: metaResourceID, representation: result, preferences },
       );
-      const n3store = new Store(await arrayifyStream(resultConverted.data));
-      expect(n3store).toBeRdfDatasetContaining(
+      const resultStore = await readableToQuads(resultConverted.data);
+      expect(resultStore).toBeRdfDatasetContaining(
         quad(namedNode(root), namedNode(LDP.contains), namedNode(resourceID.path)),
       );
       expect(result.metadata.contentType).toBe(TEXT_TURTLE);
