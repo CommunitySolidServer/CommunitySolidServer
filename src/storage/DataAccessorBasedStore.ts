@@ -240,11 +240,11 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
-    // Not allowed performing PUT on an already existing Container
+    // Not allowed performing PUT on an already existing Container | todo: move back to PUT
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
-    if (isContainer && oldMetadata) {
-      throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
-    }
+    // if (isContainer && oldMetadata) {
+    //   throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
+    // }
 
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return await this.writeMetadata(identifier, representation);
@@ -515,6 +515,9 @@ export class DataAccessorBasedStore implements ResourceStore {
       } else {
         const { contentType, identifier } = representation.metadata;
         quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
+        if (quads.length > 0) {
+          throw new Error('Should be empty');
+        }
       }
     } catch (error: unknown) {
       throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`,

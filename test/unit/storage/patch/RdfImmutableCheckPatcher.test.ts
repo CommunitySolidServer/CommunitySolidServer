@@ -5,7 +5,7 @@ import { translate } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../../../src';
 import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
-import { RdfImmutableCheckPatcher } from '../../../../src/storage/patch/RdfImmutableCheckPatcher';
+import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
@@ -32,7 +32,7 @@ describe('A RdfImmutableCheckPatcher', (): void => {
   const dataInsert = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 . }';
 
   let patcher: SparqlUpdatePatcher;
-  let handler: RdfImmutableCheckPatcher;
+  let handler: ImmutableMetadataPatcher;
   let metaStrategy: SimpleSuffixStrategy;
   let representation = new BasicRepresentation([], 'internal/quads');
 
@@ -41,7 +41,7 @@ describe('A RdfImmutableCheckPatcher', (): void => {
     metaStrategy = new SimpleSuffixStrategy('.meta');
     representation = new BasicRepresentation([], 'internal/quads');
 
-    handler = new RdfImmutableCheckPatcher(patcher, metaStrategy);
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy);
   });
 
   it('handles patch without comparing input and patch stream.', async(): Promise<void> => {

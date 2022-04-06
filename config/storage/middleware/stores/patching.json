@@ -18,17 +18,16 @@
             },
             {
               "@type": "ConvertingPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck" },
+              "patcher": { "@id": "urn:solid-server:default:RdfPatcher" },
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },
               "intermediateType": "internal/quads",
               "defaultType": "text/turtle"
             },
             {
-              "comment": "Makes sure PATCH operations MUST NOT update certain triples.",
-              "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
-              "@type": "RdfImmutableCheckPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
-              "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" }
+              "comment": "Converts the input stream to a store to do the patches.",
+              "@id": "urn:solid-server:default:RdfPatcher",
+              "@type": "RdfPatcher",
+              "patcher": { "@id": "urn:solid-server:default:specialPatcherNeedsName" }
             },
             {
               "@type": "StaticThrowHandler",
@@ -37,6 +36,26 @@
           ]
         }
       }
+    },
+    {
+      "comment": "Does the patch and if the resource is metadata, then does an extra immutable check",
+      "@id": "urn:solid-server:default:specialPatcherNeedsName",
+      "@type": "WaterfallHandler",
+      "handlers": [
+        { "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck"},
+        { "@id": "urn:solid-server:default:PatchHandler_RDF" }
+      ]
+    },
+    {
+      "comment": "Makes sure PATCH operations MUST NOT update certain triples.",
+      "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
+      "@type": "ImmutableMetadataPatcher",
+      "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
+      "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
+      "immutableTriples": [
+        ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://www.w3.org/ns/pim/space#Storage"],
+        ["http://www.w3.org/ns/ldp#contains", ""]
+      ]
     },
     {
       "comment": "Dedicated handlers that apply specific types of patch documents",

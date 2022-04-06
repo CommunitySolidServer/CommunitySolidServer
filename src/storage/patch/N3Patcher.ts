@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import type { IQueryResultBindings } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
@@ -7,27 +6,21 @@ import type { Quad, Term } from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Generator, Wildcard } from 'sparqljs';
 import type { SparqlGenerator } from 'sparqljs';
-import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import { isN3Patch } from '../../http/representation/N3Patch';
 import type { N3Patch } from '../../http/representation/N3Patch';
-import type { Representation } from '../../http/representation/Representation';
-import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { INTERNAL_QUADS } from '../../util/ContentTypes';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
-import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { uniqueQuads } from '../../util/QuadUtil';
-import { readableToQuads } from '../../util/StreamUtil';
-import type { RepresentationPatcherInput } from './RepresentationPatcher';
-import { RepresentationPatcher } from './RepresentationPatcher';
+import type { RdfStorePatcherInput } from './RdfStorePatcher';
+import { RdfStorePatcher } from './RdfStorePatcher';
 
 /**
  * Applies an N3 Patch to a representation, or creates a new one if required.
  * Follows all the steps from Solid, §5.3.1: https://solid.github.io/specification/protocol#n3-patch
  */
-export class N3Patcher extends RepresentationPatcher {
+export class N3Patcher extends RdfStorePatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly engine: ActorInitSparql;
@@ -39,37 +32,32 @@ export class N3Patcher extends RepresentationPatcher {
     this.generator = new Generator();
   }
 
-  public async canHandle({ patch }: RepresentationPatcherInput): Promise<void> {
+  public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
     if (!isN3Patch(patch)) {
       throw new NotImplementedHttpError('Only N3 Patch updates are supported');
     }
   }
 
-  public async handle(input: RepresentationPatcherInput): Promise<Representation> {
+  public async handle(input: RdfStorePatcherInput): Promise<Store> {
     const patch = input.patch as N3Patch;
 
     // No work to be done if the patch is empty
     if (patch.deletes.length === 0 && patch.inserts.length === 0 && patch.conditions.length === 0) {
       this.logger.debug('Empty patch, returning input.');
-      return input.representation ?? new BasicRepresentation([], input.identifier, INTERNAL_QUADS, false);
-    }
-
-    if (input.representation && input.representation.metadata.contentType !== INTERNAL_QUADS) {
-      this.logger.error('Received non-quad data. This should not happen so there is probably a configuration error.');
-      throw new InternalServerError('Quad stream was expected for patching.');
+      return input.store ?? new Store();
     }
 
     return this.patch(input);
   }
 
   /**
-   * Applies the given N3Patch to the representation.
+   * Applies the given N3Patch to the store.
    * First the conditions are applied to find the necessary bindings,
    * which are then applied to generate the triples that need to be deleted and inserted.
    * After that the delete and insert operations are applied.
    */
-  private async patch({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
-    const result = representation ? await readableToQuads(representation.data) : new Store();
+  private async patch({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
+    const result = store;
     this.logger.debug(`${result.size} quads in ${identifier.path}.`);
 
     const { deletes, inserts } = await this.applyConditions(patch as N3Patch, identifier, result);
@@ -99,8 +87,7 @@ export class N3Patcher extends RepresentationPatcher {
 
     this.logger.debug(`${result.size} total quads after patching ${identifier.path}.`);
 
-    const metadata = representation?.metadata ?? new RepresentationMetadata(identifier, INTERNAL_QUADS);
-    return new BasicRepresentation(result.match() as unknown as Readable, metadata, false);
+    return result;
   }
 
   /**

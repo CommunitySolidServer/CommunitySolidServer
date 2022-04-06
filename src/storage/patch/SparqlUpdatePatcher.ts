@@ -1,28 +1,23 @@
-import type { Readable } from 'stream';
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import { DataFactory, Store } from 'n3';
+import type { Store } from 'n3';
+import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
-import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Patch } from '../../http/representation/Patch';
-import type { Representation } from '../../http/representation/Representation';
-import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { INTERNAL_QUADS } from '../../util/ContentTypes';
-import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { readableToQuads, readableToString } from '../../util/StreamUtil';
-import { RepresentationPatcher } from './RepresentationPatcher';
-import type { RepresentationPatcherInput } from './RepresentationPatcher';
+import { readableToString } from '../../util/StreamUtil';
+import type { RdfStorePatcherInput } from './RdfStorePatcher';
+import { RdfStorePatcher } from './RdfStorePatcher';
 
 /**
  * Supports application/sparql-update PATCH requests on RDF resources.
  *
  * Only DELETE/INSERT updates without variables are supported.
  */
-export class SparqlUpdatePatcher extends RepresentationPatcher {
+export class SparqlUpdatePatcher extends RdfStorePatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly engine: ActorInitSparql;
@@ -32,24 +27,20 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
     this.engine = newEngine();
   }
 
-  public async canHandle({ patch }: RepresentationPatcherInput): Promise<void> {
+  public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
     if (!this.isSparqlUpdate(patch)) {
       throw new NotImplementedHttpError('Only SPARQL update patches are supported');
     }
   }
 
-  public async handle(input: RepresentationPatcherInput): Promise<Representation> {
+  public async handle(input: RdfStorePatcherInput): Promise<Store> {
     // Verify the patch
-    const { patch, representation, identifier } = input;
+    const { patch, store } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
     if (op.type === Algebra.types.NOP) {
-      return representation ?? new BasicRepresentation([], identifier, INTERNAL_QUADS, false);
-    }
-
-    if (representation && representation.metadata.contentType !== INTERNAL_QUADS) {
-      throw new InternalServerError('Quad stream was expected for patching.');
+      return store;
     }
 
     this.validateUpdate(op);
@@ -70,8 +61,8 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
   }
 
   /**
-   * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
-   */
+     * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
+     */
   private validateUpdate(op: Algebra.Operation): void {
     if (this.isDeleteInsert(op)) {
       this.validateDeleteInsert(op);
@@ -84,9 +75,9 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
   }
 
   /**
-   * Checks if the input DELETE/INSERT is supported.
-   * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
-   */
+     * Checks if the input DELETE/INSERT is supported.
+     * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
+     */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
     const def = DataFactory.defaultGraph();
     const deletes = op.delete ?? [];
@@ -106,8 +97,8 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
   }
 
   /**
-   * Checks if the composite update only contains supported update components.
-   */
+     * Checks if the composite update only contains supported update components.
+     */
   private validateComposite(op: Algebra.CompositeUpdate): void {
     for (const update of op.updates) {
       this.validateUpdate(update);
@@ -115,10 +106,10 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
   }
 
   /**
-   * Apply the given algebra operation to the given identifier.
-   */
-  private async patch({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
-    const result = representation ? await readableToQuads(representation.data) : new Store();
+     * Apply the given algebra operation to the given identifier.
+     */
+  private async patch({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
+    const result = store;
     this.logger.debug(`${result.size} quads in ${identifier.path}.`);
 
     // Run the query through Comunica
@@ -129,7 +120,6 @@ export class SparqlUpdatePatcher extends RepresentationPatcher {
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 
-    const metadata = representation?.metadata ?? new RepresentationMetadata(identifier, INTERNAL_QUADS);
-    return new BasicRepresentation(result.match() as unknown as Readable, metadata, false);
+    return result;
   }
 }
