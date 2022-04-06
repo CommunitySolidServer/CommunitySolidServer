@@ -122,6 +122,14 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
       const metadata = await this.accessor.getMetadata(subjectIdentifier);
+      if (isContainerPath(metadata.identifier.value)) {
+        // Add containment triples of non-auxiliary resources
+        for await (const child of this.accessor.getChildren(subjectIdentifier)) {
+          if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+            metadata.add(LDP.terms.contains, child.identifier as NamedNode);
+          }
+        }
+      }
       this.removeResponseMetadata(metadata);
       const serialized = serializeQuads(metadata.quads(null, null, null, null), TEXT_TURTLE);
       return new BasicRepresentation(serialized, TEXT_TURTLE);

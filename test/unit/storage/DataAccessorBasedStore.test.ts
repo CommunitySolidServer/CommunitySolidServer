@@ -2,8 +2,9 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import type { Quad } from 'n3';
-import { DataFactory } from 'n3';
-import { serializeQuads } from '../../../src';
+import { DataFactory, Store } from 'n3';
+import type { RepresentationPreferences } from '../../../src';
+import { RdfToQuadConverter, serializeQuads } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -192,6 +193,26 @@ describe('A DataAccessorBasedStore', (): void => {
         [ '<http://test.com/resource> <http://www.w3.org/ns/ma-ont#format> "text/plain"',
           ';\n    a <http://www.w3.org/ns/ldp#Resource>',
           '.\n' ],
+      );
+      expect(result.metadata.contentType).toBe(TEXT_TURTLE);
+    });
+
+    it('will return the generated representation for container metadata resources.', async(): Promise<void> => {
+      const metaResourceID = { path: `${root}.meta` };
+
+      // Add resource to root
+      const resourceID = { path: `${root}resource` };
+      accessor.data[resourceID.path] = representation;
+
+      const result = await store.getRepresentation(metaResourceID);
+      const converter = new RdfToQuadConverter();
+      const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
+      const resultConverted = await converter.handle(
+        { identifier: metaResourceID, representation: result, preferences },
+      );
+      const n3store = new Store(await arrayifyStream(resultConverted.data));
+      expect(n3store).toBeRdfDatasetContaining(
+        quad(namedNode(root), namedNode(LDP.contains), namedNode(resourceID.path)),
       );
       expect(result.metadata.contentType).toBe(TEXT_TURTLE);
     });
