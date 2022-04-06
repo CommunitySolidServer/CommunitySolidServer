@@ -329,6 +329,11 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       const { folder, name } = getFolder(path);
       folder[name] = {};
     },
+    async remove(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
   };
 
   const fs = jest.requireMock('fs');

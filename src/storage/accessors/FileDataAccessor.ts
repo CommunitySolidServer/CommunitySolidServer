@@ -105,7 +105,6 @@ export class FileDataAccessor implements DataAccessor {
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
     try {
-      // TODO: this seems to work when running the server but tests fail.
       await ensureDir(link.filePath);
     } catch (error: unknown) {
       // Don't throw if directory already exists

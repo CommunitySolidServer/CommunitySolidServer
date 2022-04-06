@@ -10,6 +10,7 @@ import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 describe('AtomicFileDataAccessor', (): void => {
   const rootFilePath = 'uploads';

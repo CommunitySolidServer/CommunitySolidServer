@@ -84,7 +84,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws an error if something else went wrong.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.lstat = (): any => {
+      jest.requireMock('fs-extra').lstat = (): any => {
         throw new Error('error');
       };
       await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
@@ -249,7 +249,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('errors if there is a problem deleting the old metadata file.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').unlink = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -303,7 +303,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').unlink = (): any => {
         const error = new Error('error') as SystemError;
         error.code = 'EISDIR';
         error.syscall = 'unlink';
