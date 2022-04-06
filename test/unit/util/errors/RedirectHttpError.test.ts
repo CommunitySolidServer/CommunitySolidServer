@@ -1,7 +1,10 @@
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import type { HttpErrorOptions } from '../../../../src/util/errors/HttpError';
 import { MovedPermanentlyHttpError } from '../../../../src/util/errors/MovedPermanentlyHttpError';
+import { PermanentRedirectHttpError } from '../../../../src/util/errors/PermanentRedirectHttpError';
 import { RedirectHttpError } from '../../../../src/util/errors/RedirectHttpError';
+import { SeeOtherHttpError } from '../../../../src/util/errors/SeeOtherHttpError';
+import { TemporaryRedirectHttpError } from '../../../../src/util/errors/TemporaryRedirectHttpError';
 
 class FixedRedirectHttpError extends RedirectHttpError {
   public constructor(location: string, message?: string, options?: HttpErrorOptions) {
@@ -13,6 +16,9 @@ describe('RedirectHttpError', (): void => {
   const errors: [string, number, typeof FixedRedirectHttpError][] = [
     [ 'MovedPermanentlyHttpError', 301, MovedPermanentlyHttpError ],
     [ 'FoundHttpError', 302, FoundHttpError ],
+    [ 'SeeOtherHttpError', 303, SeeOtherHttpError ],
+    [ 'TemporaryRedirectHttpError', 307, TemporaryRedirectHttpError ],
+    [ 'PermanentRedirectHttpError', 308, PermanentRedirectHttpError ],
   ];
 
   describe.each(errors)('%s', (name, statusCode, constructor): void => {
