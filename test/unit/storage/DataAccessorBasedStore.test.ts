@@ -393,10 +393,17 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
-      const resourceID = { path: root };
+      const resourceID = { path: `${root}resource` };
+      await store.setRepresentation(resourceID, representation);
       const conditions = new BasicConditions({ notMatchesETag: [ '*' ]});
       await expect(store.setRepresentation(resourceID, representation, conditions))
         .rejects.toThrow(PreconditionFailedHttpError);
+    });
+
+    it('throws a 409 if the container already exists.', async(): Promise<void> => {
+      const resourceID = { path: root };
+      await expect(store.setRepresentation(resourceID, representation))
+        .rejects.toThrow(ConflictHttpError);
     });
 
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata

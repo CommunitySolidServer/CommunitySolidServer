@@ -63,10 +63,4 @@ describe('A PutOperationHandler', (): void => {
     operation.target.path = 'http://test.com/foo.meta';
     await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });
-
-  it('error if the target is a container that already exists.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
-    operation.target.path = 'http://test.com/';
-    await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
-  });
 });
