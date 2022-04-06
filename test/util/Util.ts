@@ -221,10 +221,30 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
   };
 
   const mockFsExtra = {
+    createReadStream(path: string): any {
+      const { folder, name } = getFolder(path);
+      return Readable.from([ folder[name] ]);
+    },
+    createWriteStream(path: string): any {
+      const { folder, name } = getFolder(path);
+      folder[name] = '';
+      const stream = new PassThrough();
+      stream.on('data', (data): any => {
+        folder[name] += data;
+      });
+      stream.on('end', (): any => stream.emit('finish'));
+      return stream;
+    },
+    async realpath(path: string): Promise<string> {
+      const { folder, name } = getFolder(path);
+      const entry = folder[name];
+      return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
+    },
     async stat(path: string): Promise<Stats> {
-      return this.lstat(await this.realpath(path));
+      return mockFsExtra.lstat(await mockFsExtra.realpath(path));
     },
     async lstat(path: string): Promise<Stats> {
+      path = await mockFsExtra.realpath(path);
       const { folder, name } = getFolder(path);
       if (!folder[name]) {
         throwSystemError('ENOENT');
@@ -251,11 +271,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
     async symlink(target: string, path: string): Promise<void> {
       const { folder, name } = getFolder(path);
       folder[name] = Symbol(target);
-    },
-    async realpath(path: string): Promise<string> {
-      const { folder, name } = getFolder(path);
-      const entry = folder[name];
-      return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
     },
     async rmdir(path: string): Promise<void> {
       const { folder, name } = getFolder(path);

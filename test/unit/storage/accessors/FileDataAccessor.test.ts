@@ -249,7 +249,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('errors if there is a problem deleting the old metadata file.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
-      jest.requireMock('fs-extra').unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -303,7 +303,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
-      jest.requireMock('fs-extra').unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         const error = new Error('error') as SystemError;
         error.code = 'EISDIR';
         error.syscall = 'unlink';
@@ -396,6 +396,9 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws error if there is a problem with deleting existing metadata.', async(): Promise<void> => {
       cache.data = { resource: 'apple', 'resource.meta': {}};
+      jest.requireMock('fs-extra').remove = (): any => {
+        throw new Error('error');
+      };
       await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow();
     });
 
