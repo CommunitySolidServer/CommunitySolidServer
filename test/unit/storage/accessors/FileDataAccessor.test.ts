@@ -15,7 +15,7 @@ import { isContainerPath } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 jest.mock('fs-extra');
@@ -33,7 +33,7 @@ describe('A FileDataAccessor', (): void => {
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath, now);
+    cache = mockFileSystem(rootFilePath, now);
     accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
 
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);

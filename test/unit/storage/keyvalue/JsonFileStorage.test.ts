@@ -1,7 +1,7 @@
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { JsonFileStorage } from '../../../../src/storage/keyvalue/JsonFileStorage';
 import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLocker';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
@@ -13,7 +13,7 @@ describe('A JsonFileStorage', (): void => {
   let storage: JsonFileStorage;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath);
+    cache = mockFileSystem(rootFilePath);
     locker = {
       withReadLock:
         jest.fn(async(identifier: ResourceIdentifier, whileLocked: () => any): Promise<any> => await whileLocked()),

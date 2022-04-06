@@ -60,7 +60,7 @@ export function describeIf(envFlag: string, name: string, fn: () => void): void 
  * @param rootFilepath - The name of the root folder in which fs will start.
  * @param time - The date object to use for time functions (currently only mtime from lstats)
  */
-export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
+export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any } {
   const cache: { data: any } = { data: {}};
 
   rootFilepath = rootFilepath ?? 'folder';
@@ -97,7 +97,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
     return { folder, name };
   }
 
-  const mock = {
+  const mockFs = {
     createReadStream(path: string): any {
       const { folder, name } = getFolder(path);
       return Readable.from([ folder[name] ]);
@@ -218,6 +218,9 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
         delete folder[name];
       },
     },
+  };
+
+  const mockFsExtra = {
     async stat(path: string): Promise<Stats> {
       return this.lstat(await this.realpath(path));
     },
@@ -329,10 +332,10 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
   };
 
   const fs = jest.requireMock('fs');
-  Object.assign(fs, mock);
+  Object.assign(fs, mockFs);
 
   const fsExtra = jest.requireMock('fs-extra');
-  Object.assign(fsExtra, mock);
+  Object.assign(fsExtra, mockFsExtra);
 
   return cache;
 }

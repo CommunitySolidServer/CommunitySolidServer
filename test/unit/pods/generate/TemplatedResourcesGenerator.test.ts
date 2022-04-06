@@ -8,7 +8,7 @@ import type {
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
@@ -52,7 +52,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
   const webId = 'http://alice/#profile';
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath);
+    cache = mockFileSystem(rootFilePath);
   });
 
   it('fills in a template with the given options.', async(): Promise<void> => {

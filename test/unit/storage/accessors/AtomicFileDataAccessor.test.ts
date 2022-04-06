@@ -7,7 +7,7 @@ import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import type { Guarded } from '../../../../src/util/GuardedStream';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
@@ -20,7 +20,7 @@ describe('AtomicFileDataAccessor', (): void => {
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath, new Date());
+    cache = mockFileSystem(rootFilePath, new Date());
     accessor = new AtomicFileDataAccessor(
       new ExtensionBasedMapper(base, rootFilePath),
       rootFilePath,
