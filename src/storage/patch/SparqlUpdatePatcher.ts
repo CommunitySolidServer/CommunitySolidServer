@@ -1,8 +1,7 @@
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import type { Store } from 'n3';
-import { DataFactory } from 'n3';
+import { Store, DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import type { Patch } from '../../http/representation/Patch';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
@@ -33,9 +32,8 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
     }
   }
 
-  public async handle(input: RdfStorePatcherInput): Promise<Store> {
+  public async handle({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
     // Verify the patch
-    const { patch, store } = input;
     const op = (patch as SparqlUpdatePatch).algebra;
 
     // In case of a NOP we can skip everything
@@ -45,7 +43,11 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
 
     this.validateUpdate(op);
 
-    return this.patch(input);
+    return this.patch({
+      identifier,
+      patch,
+      store: new Store(store.getQuads(null, null, null, null)),
+    });
   }
 
   private isSparqlUpdate(patch: Patch): patch is SparqlUpdatePatch {

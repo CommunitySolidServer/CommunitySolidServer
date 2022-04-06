@@ -1,13 +1,11 @@
-import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
+import { DataFactory, Store } from 'n3';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../../../src';
 import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
-import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
-import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
+import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
 import quad = DataFactory.quad;
@@ -34,33 +32,30 @@ describe('A RdfImmutableCheckPatcher', (): void => {
   let patcher: SparqlUpdatePatcher;
   let handler: ImmutableMetadataPatcher;
   let metaStrategy: SimpleSuffixStrategy;
-  let representation = new BasicRepresentation([], 'internal/quads');
+  let store: Store;
 
   beforeEach(async(): Promise<void> => {
     patcher = new SparqlUpdatePatcher();
     metaStrategy = new SimpleSuffixStrategy('.meta');
-    representation = new BasicRepresentation([], 'internal/quads');
+    store = new Store();
 
-    handler = new ImmutableMetadataPatcher(patcher, metaStrategy);
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      [ 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage' ],
+      [ 'http://www.w3.org/ns/ldp#contains', '' ],
+    ]);
   });
 
-  it('handles patch without comparing input and patch stream.', async(): Promise<void> => {
+  it('throws an error when trying to handle on a non metadata resource identifier.', async(): Promise<void> => {
     const patch = getPatch(dataInsert);
-    const input = { representation, patch, identifier };
-    const result = await handler.handleSafe(input);
-    const resultQuads = await arrayifyStream(result.data);
-    expect(resultQuads).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-      quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
-    ]);
+    const input = { store, patch, identifier };
+    await expect(handler.handleSafe(input)).rejects.toThrow(NotImplementedHttpError);
   });
 
   it('handles patch that does not change immutable metadata.', async(): Promise<void> => {
     const patch = getPatch(dataInsert);
-    const input = { representation, patch, identifier: metaIdentifier };
+    const input = { store, patch, identifier: metaIdentifier };
     const result = await handler.handleSafe(input);
-    const resultQuads = await arrayifyStream(result.data);
-    expect(resultQuads).toBeRdfIsomorphic([
+    expect(result).toBeRdfIsomorphic([
       quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
       quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
     ]);
@@ -68,38 +63,27 @@ describe('A RdfImmutableCheckPatcher', (): void => {
 
   it('rejects patches that adds ldp:contains triples in metadata.', async(): Promise<void> => {
     const patch = getPatch(`INSERT DATA { <${identifier.path}> <${LDP.contains}> :resource .}`);
-    const input = { representation, patch, identifier: metaIdentifier };
+    const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
   });
 
   it('rejects patches that adds pim:storage triples in metadata.', async(): Promise<void> => {
     const patch = getPatch(`INSERT DATA { <${identifier.path}> a <${PIM.Storage}> .}`);
-    const input = { representation, patch, identifier: metaIdentifier };
+    const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
   });
 
   it('reject patches that removes ldp:contains triples from metadata.', async(): Promise<void> => {
     const patch = getPatch(`DELETE DATA { <${identifier.path}> <${LDP.contains}> :resource .}`);
-    representation = new BasicRepresentation([
-      quad(namedNode(identifier.path), namedNode(LDP.contains), namedNode(`${base}resource`)) ], INTERNAL_QUADS);
-    const input = { representation, patch, identifier: metaIdentifier };
+    store.addQuad(namedNode(identifier.path), namedNode(LDP.contains), namedNode(`${base}resource`));
+    const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
   });
 
   it('reject patches that removes pim:storage triples from metadata.', async(): Promise<void> => {
     const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .}`);
-    representation = new BasicRepresentation([
-      quad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage)) ], INTERNAL_QUADS);
-    const input = { representation, patch, identifier: metaIdentifier };
+    store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
+    const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('handles patches when no representation is present.', async(): Promise<void> => {
-    const patch = getPatch(`INSERT DATA { <${identifier.path}> <${LDP.contains}> :resource .}`);
-    const input = { representation: undefined, patch, identifier };
-    const result = await handler.handleSafe(input);
-    const resultQuads = await arrayifyStream(result.data);
-    expect(resultQuads).toBeRdfIsomorphic([
-      quad(namedNode(identifier.path), namedNode(LDP.contains), namedNode(`${base}resource`)) ]);
   });
 });

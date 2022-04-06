@@ -8,6 +8,10 @@ export interface RdfStorePatcherInput {
   patch: Patch;
   store: Store;
 }
+
+/**
+ * Handles the patching on a N3 Store
+ */
 export abstract class RdfStorePatcher extends AsyncHandler<RdfStorePatcherInput, Store> {
 
 }

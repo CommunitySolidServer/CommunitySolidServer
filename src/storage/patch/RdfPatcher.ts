@@ -11,6 +11,10 @@ import type { RdfStorePatcher } from './RdfStorePatcher';
 import type { RepresentationPatcherInput } from './RepresentationPatcher';
 import { RepresentationPatcher } from './RepresentationPatcher';
 
+/**
+ * Patcher that converts the representation to an N3 Store, does the patch using this store
+ * and then converts the store back to a representation which gets returned
+ */
 export class RdfPatcher extends RepresentationPatcher {
   protected readonly logger = getLoggerFor(this);
 

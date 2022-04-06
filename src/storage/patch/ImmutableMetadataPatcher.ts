@@ -37,7 +37,7 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
 
   public async canHandle({ identifier }: RdfStorePatcherInput): Promise<void> {
     if (!this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-      throw new NotImplementedHttpError('Only metadata resources can be checked on immutable tripples.');
+      throw new NotImplementedHttpError('Only metadata resources can be checked on immutable triples.');
     }
   }
 

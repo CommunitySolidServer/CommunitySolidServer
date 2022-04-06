@@ -27,7 +27,7 @@
               "comment": "Converts the input stream to a store to do the patches.",
               "@id": "urn:solid-server:default:RdfPatcher",
               "@type": "RdfPatcher",
-              "patcher": { "@id": "urn:solid-server:default:specialPatcherNeedsName" }
+              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
             },
             {
               "@type": "StaticThrowHandler",
@@ -39,7 +39,7 @@
     },
     {
       "comment": "Does the patch and if the resource is metadata, then does an extra immutable check",
-      "@id": "urn:solid-server:default:specialPatcherNeedsName",
+      "@id": "urn:solid-server:default:PatchHandler_RDFStore",
       "@type": "WaterfallHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck"},

@@ -44,10 +44,14 @@ export class N3Patcher extends RdfStorePatcher {
     // No work to be done if the patch is empty
     if (patch.deletes.length === 0 && patch.inserts.length === 0 && patch.conditions.length === 0) {
       this.logger.debug('Empty patch, returning input.');
-      return input.store ?? new Store();
+      return input.store;
     }
 
-    return this.patch(input);
+    return this.patch({
+      identifier: input.identifier,
+      patch,
+      store: new Store(input.store.getQuads(null, null, null, null)),
+    });
   }
 
   /**
