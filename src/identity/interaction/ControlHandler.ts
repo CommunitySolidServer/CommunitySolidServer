@@ -7,7 +7,7 @@ import type { InteractionHandlerInput } from './InteractionHandler';
 import { InteractionHandler } from './InteractionHandler';
 import type { InteractionRoute } from './routing/InteractionRoute';
 
-const INTERNAL_API_VERSION = '0.3';
+const INTERNAL_API_VERSION = '0.4';
 
 /**
  * Adds `controls` and `apiVersion` fields to the output of its source handler,

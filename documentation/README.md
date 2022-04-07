@@ -26,6 +26,7 @@ the [changelog](https://github.com/CommunitySolidServer/CommunitySolidServer/blo
 
  * [Basic example HTTP requests](example-requests.md)
  * [How to use the Identity Provider](identity-provider.md)
+ * [How to automate authentication](client-credentials.md)
  * [How to automatically seed pods on startup](seeding-pods.md)
 
 ## What the internals look like

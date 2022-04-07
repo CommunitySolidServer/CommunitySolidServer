@@ -87,6 +87,8 @@ module.exports = {
     'unicorn/prefer-at': 'off',
     // Does not make sense for more complex cases
     'unicorn/prefer-object-from-entries': 'off',
+    // Only supported in Node v15
+    'unicorn/prefer-string-replace-all' : 'off',
     // Can get ugly with large single statements
     'unicorn/prefer-ternary': 'off',
     'yield-star-spacing': [ 'error', 'after' ],

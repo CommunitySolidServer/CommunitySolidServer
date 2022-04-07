@@ -42,7 +42,7 @@ describe('A ControlHandler', (): void => {
     const result = await handler.handle(input);
     await expect(readJsonStream(result.data)).resolves.toEqual({
       data: 'data',
-      apiVersion: '0.3',
+      apiVersion: '0.4',
       controls: {
         login: 'http://example.com/login/',
         register: 'http://example.com/register/',

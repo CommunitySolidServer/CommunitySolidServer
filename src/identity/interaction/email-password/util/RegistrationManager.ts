@@ -193,6 +193,7 @@ export class RegistrationManager {
     const settings: AccountSettings = {
       useIdp: input.register,
       podBaseUrl: podBaseUrl?.path,
+      clientCredentials: [],
     };
     await this.accountStore.create(input.email, input.webId!, input.password, settings);
 

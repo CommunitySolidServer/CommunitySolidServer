@@ -53,42 +53,6 @@ describe('A WebIdAdapterFactory', (): void => {
     adapter = factory.createStorageAdapter('Client');
   });
 
-  it('passes the call to the source for upsert.', async(): Promise<void> => {
-    await expect(adapter.upsert('id', 'payload' as any, 5)).resolves.toBeUndefined();
-    expect(source.upsert).toHaveBeenCalledTimes(1);
-    expect(source.upsert).toHaveBeenLastCalledWith('id', 'payload' as any, 5);
-  });
-
-  it('passes the call to the source for findByUserCode.', async(): Promise<void> => {
-    await expect(adapter.findByUserCode('userCode')).resolves.toBeUndefined();
-    expect(source.findByUserCode).toHaveBeenCalledTimes(1);
-    expect(source.findByUserCode).toHaveBeenLastCalledWith('userCode');
-  });
-
-  it('passes the call to the source for findByUid.', async(): Promise<void> => {
-    await expect(adapter.findByUid('uid')).resolves.toBeUndefined();
-    expect(source.findByUid).toHaveBeenCalledTimes(1);
-    expect(source.findByUid).toHaveBeenLastCalledWith('uid');
-  });
-
-  it('passes the call to the source for destroy.', async(): Promise<void> => {
-    await expect(adapter.destroy('id')).resolves.toBeUndefined();
-    expect(source.destroy).toHaveBeenCalledTimes(1);
-    expect(source.destroy).toHaveBeenLastCalledWith('id');
-  });
-
-  it('passes the call to the source for revokeByGrantId.', async(): Promise<void> => {
-    await expect(adapter.revokeByGrantId('grantId')).resolves.toBeUndefined();
-    expect(source.revokeByGrantId).toHaveBeenCalledTimes(1);
-    expect(source.revokeByGrantId).toHaveBeenLastCalledWith('grantId');
-  });
-
-  it('passes the call to the source for consume.', async(): Promise<void> => {
-    await expect(adapter.consume('id')).resolves.toBeUndefined();
-    expect(source.consume).toHaveBeenCalledTimes(1);
-    expect(source.consume).toHaveBeenLastCalledWith('id');
-  });
-
   it('returns the source payload if there is one.', async(): Promise<void> => {
     (source.find as jest.Mock).mockResolvedValueOnce('payload!');
     await expect(adapter.find(id)).resolves.toBe('payload!');

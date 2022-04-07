@@ -6,7 +6,6 @@ import type { JWK } from 'jose';
 import { exportJWK, generateKeyPair } from 'jose';
 import type { Account,
   Adapter,
-  CanBePromise,
   Configuration,
   ErrorOut,
   KoaContextWithOIDC,
@@ -21,6 +20,7 @@ import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
 import { joinUrl } from '../../util/PathUtil';
+import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { InteractionHandler } from '../interaction/InteractionHandler';
 import type { AdapterFactory } from '../storage/AdapterFactory';
 import type { ProviderFactory } from './ProviderFactory';
@@ -42,6 +42,10 @@ export interface IdentityProviderFactoryArgs {
    * The handler responsible for redirecting interaction requests to the correct URL.
    */
   interactionHandler: InteractionHandler;
+  /**
+   * Storage containing the generated client credentials with their associated WebID.
+   */
+  credentialStorage: KeyValueStorage<string, ClientCredentials>;
   /**
    * Storage used to store cookie and JWT keys so they can be re-used in case of multithreading.
    */
@@ -72,6 +76,7 @@ export class IdentityProviderFactory implements ProviderFactory {
   private readonly baseUrl!: string;
   private readonly oidcPath!: string;
   private readonly interactionHandler!: InteractionHandler;
+  private readonly credentialStorage!: KeyValueStorage<string, ClientCredentials>;
   private readonly storage!: KeyValueStorage<string, unknown>;
   private readonly errorHandler!: ErrorHandler;
   private readonly responseWriter!: ResponseWriter;
@@ -220,10 +225,10 @@ export class IdentityProviderFactory implements ProviderFactory {
     // Add extra claims in case an AccessToken is being issued.
     // Specifically this sets the required webid and client_id claims for the access token
     // See https://solid.github.io/solid-oidc/#resource-access-validation
-    config.extraTokenClaims = (ctx, token): CanBePromise<UnknownObject> =>
+    config.extraTokenClaims = async(ctx, token): Promise<UnknownObject> =>
       this.isAccessToken(token) ?
         { webid: token.accountId } :
-        {};
+        { webid: token.client && (await this.credentialStorage.get(token.client.clientId))?.webId };
 
     config.features = {
       ...config.features,
@@ -239,8 +244,8 @@ export class IdentityProviderFactory implements ProviderFactory {
         // See https://github.com/panva/node-oidc-provider/discussions/959#discussioncomment-524757
         getResourceServerInfo: (): ResourceServer => ({
           // The scopes of the Resource Server.
-          // Since this is irrelevant at the moment, an empty string is fine.
-          scope: '',
+          // These get checked when requesting client credentials.
+          scope: 'webid',
           audience: 'solid',
           accessTokenFormat: 'jwt',
           jwt: {

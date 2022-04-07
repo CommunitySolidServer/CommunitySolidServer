@@ -64,7 +64,7 @@ describe('A LoginHandler', (): void => {
 
   it('throws an error if the account does not have the correct settings.', async(): Promise<void> => {
     input.operation = createPostJsonOperation({ email, password: 'password!' });
-    accountStore.getSettings.mockResolvedValueOnce({ useIdp: false });
+    accountStore.getSettings.mockResolvedValueOnce({ useIdp: false, clientCredentials: []});
     await expect(handler.handle(input))
       .rejects.toThrow('This server is not an identity provider for this account.');
   });
