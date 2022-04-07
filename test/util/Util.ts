@@ -221,6 +221,15 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
   };
 
   const mockFsExtra = {
+    async ensureDir(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      folder[name] = {};
+    },
+    async remove(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
     createReadStream(path: string): any {
       const { folder, name } = getFolder(path);
       return Readable.from([ folder[name] ]);
@@ -337,15 +346,6 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       const { folder: folderDest, name: nameDest } = getFolder(destination);
       folderDest[nameDest] = folder[name];
 
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete folder[name];
-    },
-    async ensureDir(path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      folder[name] = {};
-    },
-    async remove(path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete folder[name];
     },

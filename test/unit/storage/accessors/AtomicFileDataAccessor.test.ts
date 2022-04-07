@@ -9,7 +9,6 @@ import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
-jest.mock('fs');
 jest.mock('fs-extra');
 
 describe('AtomicFileDataAccessor', (): void => {
@@ -60,27 +59,27 @@ describe('AtomicFileDataAccessor', (): void => {
         data.emit('error', new Error('error'));
         return null;
       });
-      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
+      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should throw when renaming / moving the file goes wrong.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.rename = jest.fn((): any => {
+      jest.requireMock('fs-extra').rename = jest.fn((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
+      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
         isFile: (): boolean => true,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
     });
 
     it('should (on error) not unlink the temp file if it does not exist.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.rename = jest.fn((): any => {
+      jest.requireMock('fs-extra').rename = jest.fn((): any => {
         throw new Error('error');
       });
-      jest.requireMock('fs').promises.stat = jest.fn((): any => ({
+      jest.requireMock('fs-extra').stat = jest.fn((): any => ({
         isFile: (): boolean => false,
       }));
       await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
@@ -88,10 +87,10 @@ describe('AtomicFileDataAccessor', (): void => {
 
     it('should throw when renaming / moving the file goes wrong and the temp file does not exist.',
       async(): Promise<void> => {
-        jest.requireMock('fs').promises.rename = jest.fn((): any => {
+        jest.requireMock('fs-extra').rename = jest.fn((): any => {
           throw new Error('error');
         });
-        jest.requireMock('fs').promises.stat = jest.fn();
+        jest.requireMock('fs-extra').stat = jest.fn();
         await expect(accessor.writeDocument({ path: `${base}res.ttl` }, data, metadata)).rejects.toThrow('error');
       });
   });

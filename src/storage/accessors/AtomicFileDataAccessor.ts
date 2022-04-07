@@ -1,5 +1,5 @@
-import { mkdirSync, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
+import { ensureDirSync, remove, rename } from 'fs-extra';
 import { v4 } from 'uuid';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -21,7 +21,7 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
     super(resourceMapper);
     this.tempFilePath = joinFilePath(rootFilePath, tempFilePath);
     // Cannot use fsPromises in constructor
-    mkdirSync(this.tempFilePath, { recursive: true });
+    ensureDirSync(this.tempFilePath);
   }
 
   /**
@@ -45,15 +45,11 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
       await this.verifyExistingExtension(link);
 
       // When no quota errors occur move the file to its desired location
-      await fsPromises.rename(tempFilePath, link.filePath);
+      await rename(tempFilePath, link.filePath);
     } catch (error: unknown) {
       // Delete the data already written
-      try {
-        if ((await this.getStats(tempFilePath)).isFile()) {
-          await fsPromises.unlink(tempFilePath);
-        }
-      } catch {
-        throw error;
+      if ((await this.getStats(tempFilePath)).isFile()) {
+        await remove(tempFilePath);
       }
       throw error;
     }
