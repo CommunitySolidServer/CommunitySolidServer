@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/expiring-todo-comments */
 import type { Readable } from 'stream';
 import type { Stats } from 'fs-extra';
 import { ensureDir, remove, stat, lstat, createWriteStream, createReadStream, opendir } from 'fs-extra';
@@ -104,14 +103,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
-    try {
-      await ensureDir(link.filePath);
-    } catch (error: unknown) {
-      // Don't throw if directory already exists
-      if (!isSystemError(error)) {
-        throw error;
-      }
-    }
+    await ensureDir(link.filePath);
 
     await this.writeMetadata(link, metadata);
   }
@@ -120,20 +112,12 @@ export class FileDataAccessor implements DataAccessor {
    * Removes the corresponding file/folder (and metadata file).
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+    const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
+    await remove(metaLink.filePath);
+
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
     const stats = await this.getStats(link.filePath);
 
-    try {
-      const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
-      await remove(metaLink.filePath);
-    } catch (error: unknown) {
-      // Ignore if it doesn't exist
-      if (!isSystemError(error) || error.code !== 'ENOENT') {
-        throw error;
-      }
-    }
-
-    // TODO: can we safely just remove here without the checking? Does this else statement ever occur?
     if (!isContainerIdentifier(identifier) && stats.isFile()) {
       await remove(link.filePath);
     } else if (isContainerIdentifier(identifier) && stats.isDirectory()) {
@@ -214,15 +198,7 @@ export class FileDataAccessor implements DataAccessor {
 
     // Delete (potentially) existing metadata file if no metadata needs to be stored
     } else {
-      try {
-        await remove(metadataLink.filePath);
-      } catch (error: unknown) {
-        // TODO Figure out these fs-extra error codes
-        // Metadata file doesn't exist so nothing needs to be removed
-        if (!isSystemError(error) || error.code !== 'ENOENT') {
-          throw error;
-        }
-      }
+      await remove(metadataLink.filePath);
       wroteMetadata = false;
     }
     return wroteMetadata;
@@ -331,17 +307,10 @@ export class FileDataAccessor implements DataAccessor {
    * @param link - ResourceLink corresponding to the new resource data.
    */
   protected async verifyExistingExtension(link: ResourceLink): Promise<void> {
-    try {
-      // Delete the old file with the (now) wrong extension
-      const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, false);
-      if (oldLink.filePath !== link.filePath) {
-        await remove(oldLink.filePath);
-      }
-    } catch (error: unknown) {
-      // Ignore it if the file didn't exist yet and couldn't be unlinked
-      if (!isSystemError(error) || error.code !== 'ENOENT') {
-        throw error;
-      }
+    // Delete the old file with the (now) wrong extension
+    const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, false);
+    if (oldLink.filePath !== link.filePath) {
+      await remove(oldLink.filePath);
     }
   }
 
