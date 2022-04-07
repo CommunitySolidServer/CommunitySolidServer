@@ -1,7 +1,9 @@
+import { SingleRootIdentifierStrategy } from '../../../../../src';
 import { OriginalUrlExtractor } from '../../../../../src/http/input/identifier/OriginalUrlExtractor';
 
 describe('A OriginalUrlExtractor', (): void => {
-  const extractor = new OriginalUrlExtractor();
+  const identifierStrategy = new SingleRootIdentifierStrategy('http://test.com/');
+  const extractor = new OriginalUrlExtractor({ identifierStrategy });
 
   it('can handle any input.', async(): Promise<void> => {
     await expect(extractor.canHandle({} as any)).resolves.toBeUndefined();
@@ -27,13 +29,13 @@ describe('A OriginalUrlExtractor', (): void => {
   });
 
   it('returns an input URL with query string.', async(): Promise<void> => {
-    const noQuery = new OriginalUrlExtractor({ includeQueryString: false });
+    const noQuery = new OriginalUrlExtractor({ identifierStrategy, includeQueryString: false });
     await expect(noQuery.handle({ request: { url: '/url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
       .resolves.toEqual({ path: 'http://test.com/url' });
   });
 
   it('returns an input URL with multiple leading slashes.', async(): Promise<void> => {
-    const noQuery = new OriginalUrlExtractor({ includeQueryString: true });
+    const noQuery = new OriginalUrlExtractor({ identifierStrategy, includeQueryString: true });
     await expect(noQuery.handle({ request: { url: '///url?abc=def&xyz', headers: { host: 'test.com' }} as any }))
       .resolves.toEqual({ path: 'http://test.com///url?abc=def&xyz' });
   });
