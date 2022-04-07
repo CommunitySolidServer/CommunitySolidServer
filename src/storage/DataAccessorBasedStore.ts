@@ -240,12 +240,6 @@ export class DataAccessorBasedStore implements ResourceStore {
       throw new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.');
     }
 
-    // Not allowed performing PUT on an already existing Container | todo: move back to PUT
-    // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546
-    // if (isContainer && oldMetadata) {
-    //   throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
-    // }
-
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return await this.writeMetadata(identifier, representation);
     }
