@@ -1,10 +1,16 @@
 import { SingleRootIdentifierStrategy } from '../../../../../src';
 import { OriginalUrlExtractor } from '../../../../../src/http/input/identifier/OriginalUrlExtractor';
 
+// Utility interface for defining the createExtractor utility method arguments
+interface CreateExtractorArgs {
+  baseUrl?: string;
+  includeQueryString?: boolean;
+}
+
 // Helper function for instantiating an OriginalUrlExtractor
-function createExtractor({ baseUrl = 'http://test.com', includeQueryString = true } = {}): OriginalUrlExtractor {
-  const identifierStrategy = new SingleRootIdentifierStrategy(baseUrl);
-  const extractor = new OriginalUrlExtractor({ identifierStrategy, includeQueryString });
+function createExtractor(args: CreateExtractorArgs = { }): OriginalUrlExtractor {
+  const identifierStrategy = new SingleRootIdentifierStrategy(args.baseUrl ?? 'http://test.com');
+  const extractor = new OriginalUrlExtractor({ identifierStrategy, includeQueryString: args.includeQueryString });
   return extractor;
 }
 
@@ -28,6 +34,11 @@ describe('A OriginalUrlExtractor', (): void => {
   it('errors if the host is invalid.', async(): Promise<void> => {
     await expect(extractor.handle({ request: { url: 'url', headers: { host: 'test.com/forbidden' }} as any }))
       .rejects.toThrow('The request has an invalid Host header: test.com/forbidden');
+  });
+
+  it('errors if the request URL base does not match the configured baseUrl.', async(): Promise<void> => {
+    await expect(extractor.handle({ request: { url: 'url', headers: { host: 'example.com' }} as any }))
+      .rejects.toThrow(`The identifier http://example.com/url is outside the configured identifier space.`);
   });
 
   it('returns the input URL.', async(): Promise<void> => {
