@@ -67,6 +67,15 @@ export class OriginalUrlExtractor extends TargetExtractor {
       originalUrl.search = search;
     }
 
-    return { path: originalUrl.href };
+    // Create ResourceIdentifier instance
+    const identifier = { path: originalUrl.href };
+
+    // Check if the configured IdentifierStrategy supports the identifier
+    if (!this.identifierStrategy.supportsIdentifier(identifier)) {
+      throw new InternalServerError(`The identifier ${identifier.path} is outside the configured identifier space.`,
+        { errorCode: 'E0001', details: { path: identifier.path }});
+    }
+
+    return identifier;
   }
 }
