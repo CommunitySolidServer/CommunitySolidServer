@@ -10,6 +10,10 @@ export interface AccountSettings {
    * The base URL of the pod associated with this account, if there is one.
    */
   podBaseUrl?: string;
+  /**
+   * All credential tokens associated with this account.
+   */
+  clientCredentials?: string[];
 }
 
 /**

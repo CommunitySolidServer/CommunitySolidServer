@@ -9,6 +9,7 @@ import { responseToDataset } from '../../util/FetchUtil';
 import { hasScheme } from '../../util/HeaderUtil';
 import { OIDC } from '../../util/Vocabularies';
 import type { AdapterFactory } from './AdapterFactory';
+import { PassthroughAdapter, PassthroughAdapterFactory } from './PassthroughAdapterFactory';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -19,21 +20,14 @@ import type { AdapterFactory } from './AdapterFactory';
  * If a valid `solid:oidcRegistration` triple is found there,
  * that data will be returned instead.
  */
-export class WebIdAdapter implements Adapter {
+export class WebIdAdapter extends PassthroughAdapter {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly name: string;
-  private readonly source: Adapter;
   private readonly converter: RepresentationConverter;
 
   public constructor(name: string, source: Adapter, converter: RepresentationConverter) {
-    this.name = name;
-    this.source = source;
+    super(name, source);
     this.converter = converter;
-  }
-
-  public async upsert(id: string, payload: AdapterPayload, expiresIn: number): Promise<void> {
-    return this.source.upsert(id, payload, expiresIn);
   }
 
   public async find(id: string): Promise<AdapterPayload | void> {
@@ -108,34 +102,13 @@ export class WebIdAdapter implements Adapter {
       redirect_uris: redirectUris,
     };
   }
-
-  public async findByUserCode(userCode: string): Promise<AdapterPayload | void> {
-    return this.source.findByUserCode(userCode);
-  }
-
-  public async findByUid(uid: string): Promise<AdapterPayload | void> {
-    return this.source.findByUid(uid);
-  }
-
-  public async destroy(id: string): Promise<void> {
-    return this.source.destroy(id);
-  }
-
-  public async revokeByGrantId(grantId: string): Promise<void> {
-    return this.source.revokeByGrantId(grantId);
-  }
-
-  public async consume(id: string): Promise<void> {
-    return this.source.consume(id);
-  }
 }
 
-export class WebIdAdapterFactory implements AdapterFactory {
-  private readonly source: AdapterFactory;
+export class WebIdAdapterFactory extends PassthroughAdapterFactory {
   private readonly converter: RepresentationConverter;
 
   public constructor(source: AdapterFactory, converter: RepresentationConverter) {
-    this.source = source;
+    super(source);
     this.converter = converter;
   }
 
