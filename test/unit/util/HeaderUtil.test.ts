@@ -2,6 +2,8 @@ import type { HttpResponse } from '../../../src/server/HttpResponse';
 import { BadRequestHttpError } from '../../../src/util/errors/BadRequestHttpError';
 import {
   addHeader,
+  hasScheme,
+  matchesAuthorizationScheme,
   parseAccept,
   parseAcceptCharset,
   parseAcceptDateTime,
@@ -417,6 +419,54 @@ describe('HeaderUtil', (): void => {
 
     it('works with an empty argument.', (): void => {
       expect(parseLinkHeader()).toEqual([]);
+    });
+  });
+
+  describe('#matchesAuthorizationScheme', (): void => {
+    it('returns true if the provided authorization header value matches the provided scheme.', (): void => {
+      const authorization = `Bearer Q0xXTzl1dTM4RF8xLXllSGx5am51WFUzbzZ2LTZ1WU1GWXpfMTBEajBjaw==`;
+      expect(matchesAuthorizationScheme('Bearer', authorization)).toBeTruthy();
+    });
+
+    it('returns false if the provided authorization header value does not match the provided scheme.', (): void => {
+      const authorization = `Basic YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('Bearer', authorization)).toBeFalsy();
+    });
+
+    it('correctly detects scheme matches when a different casing is used.', (): void => {
+      const authorization = `bAsIc YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('Basic', authorization)).toBeTruthy();
+    });
+
+    it('escapes special regex characters in the scheme argument, resulting in a correct match.', (): void => {
+      const authorization = `bA.*sIc$ YWxpY2U6YWxpY2U=`;
+      expect(matchesAuthorizationScheme('bA.*sIc$', authorization)).toBeTruthy();
+    });
+
+    it('returns false if the authorization argument is undefined.', (): void => {
+      expect(matchesAuthorizationScheme('Bearer')).toBeFalsy();
+    });
+  });
+
+  describe('#hasScheme', (): void => {
+    it('returns true if the provided url matches the provided scheme.', (): void => {
+      expect(hasScheme('http://example.com', 'http')).toBeTruthy();
+    });
+
+    it('returns true if the provided url matches one of the provided schemes.', (): void => {
+      expect(hasScheme('ws://example.com', 'http', 'https', 'ws')).toBeTruthy();
+    });
+
+    it('returns false if the provided url does not match the provided scheme.', (): void => {
+      expect(hasScheme('http://example.com', 'https')).toBeFalsy();
+    });
+
+    it('returns false if the provided value is not a valid url.', (): void => {
+      expect(hasScheme('not-a-URL:test', 'http')).toBeFalsy();
+    });
+
+    it('is case insensitive: schemes with different case, result in a correct match.', (): void => {
+      expect(hasScheme('wss://example.com', 'http', 'WSS')).toBeTruthy();
     });
   });
 });

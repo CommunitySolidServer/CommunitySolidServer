@@ -4,6 +4,7 @@ import { getLoggerFor } from '../../../../logging/LogUtil';
 import type { IdentifierGenerator } from '../../../../pods/generate/IdentifierGenerator';
 import type { PodManager } from '../../../../pods/PodManager';
 import type { PodSettings } from '../../../../pods/settings/PodSettings';
+import { hasScheme } from '../../../../util/HeaderUtil';
 import { joinUrl } from '../../../../util/PathUtil';
 import type { OwnershipValidator } from '../../../ownership/OwnershipValidator';
 import { assertPassword } from '../EmailPasswordUtil';
@@ -139,7 +140,7 @@ export class RegistrationManager {
     // Parse WebID
     if (!validated.createWebId) {
       const trimmedWebId = this.trimString(webId);
-      assert(trimmedWebId && /^https?:\/\/[^/]+/u.test(trimmedWebId), 'Please enter a valid WebID.');
+      assert(trimmedWebId && hasScheme(trimmedWebId, 'http', 'https'), 'Please enter a valid WebID.');
       validated.webId = trimmedWebId;
     }
 

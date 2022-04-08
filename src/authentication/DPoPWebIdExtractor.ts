@@ -5,6 +5,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { matchesAuthorizationScheme } from '../util/HeaderUtil';
 import { CredentialGroup } from './Credentials';
 import type { CredentialSet } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
@@ -27,7 +28,7 @@ export class DPoPWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !/^DPoP /ui.test(authorization)) {
+    if (!matchesAuthorizationScheme('DPoP', authorization)) {
       throw new NotImplementedHttpError('No DPoP-bound Authorization header specified.');
     }
   }

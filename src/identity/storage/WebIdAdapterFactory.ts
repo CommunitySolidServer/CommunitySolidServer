@@ -6,6 +6,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import type { RepresentationConverter } from '../../storage/conversion/RepresentationConverter';
 import { createErrorMessage } from '../../util/errors/ErrorUtil';
 import { responseToDataset } from '../../util/FetchUtil';
+import { hasScheme } from '../../util/HeaderUtil';
 import { OIDC } from '../../util/Vocabularies';
 import type { AdapterFactory } from './AdapterFactory';
 
@@ -42,7 +43,7 @@ export class WebIdAdapter implements Adapter {
     // Try to see if valid client metadata is found at the given Client ID.
     // The oidc-provider library will check if the redirect_uri matches an entry in the list of redirect_uris,
     // so no extra checks are needed from our side.
-    if (!payload && this.name === 'Client' && /^https?:\/\/.+/u.test(id)) {
+    if (!payload && this.name === 'Client' && hasScheme(id, 'http', 'https')) {
       this.logger.debug(`Looking for payload data at ${id}`);
       // All checks based on https://solid.github.io/authentication-panel/solid-oidc/#clientids-webid
       if (!/^https:|^http:\/\/localhost(?::\d+)?(?:\/|$)/u.test(id)) {

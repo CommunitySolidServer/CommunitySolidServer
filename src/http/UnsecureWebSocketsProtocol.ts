@@ -4,6 +4,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { WebSocketHandler } from '../server/WebSocketHandler';
 import { parseForwarded } from '../util/HeaderUtil';
+import { splitCommaSeparated } from '../util/StringUtil';
 import type { ResourceIdentifier } from './representation/ResourceIdentifier';
 
 const VERSION = 'solid-0.1';
@@ -36,7 +37,7 @@ class WebSocketListener extends EventEmitter {
     if (!protocolHeader) {
       this.sendMessage('warning', `Missing Sec-WebSocket-Protocol header, expected value '${VERSION}'`);
     } else {
-      const supportedProtocols = protocolHeader.split(/\s*,\s*/u);
+      const supportedProtocols = splitCommaSeparated(protocolHeader);
       if (!supportedProtocols.includes(VERSION)) {
         this.sendMessage('error', `Client does not support protocol ${VERSION}`);
         this.stop();

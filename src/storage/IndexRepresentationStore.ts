@@ -4,6 +4,7 @@ import type { RepresentationPreferences } from '../http/representation/Represent
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../util/errors/NotFoundHttpError';
 import { isContainerIdentifier } from '../util/PathUtil';
+import { isValidFileName } from '../util/StringUtil';
 import type { Conditions } from './Conditions';
 import { cleanPreferences, matchesMediaType } from './conversion/ConversionUtil';
 import { PassthroughStore } from './PassthroughStore';
@@ -31,7 +32,7 @@ export class IndexRepresentationStore extends PassthroughStore {
 
   public constructor(source: ResourceStore, indexName = 'index.html', mediaRange = 'text/html') {
     super(source);
-    assert(/^[\w.-]+$/u.test(indexName), 'Invalid index name');
+    assert(isValidFileName(indexName), 'Invalid index name');
     this.indexName = indexName;
     this.mediaRange = mediaRange;
   }
