@@ -433,6 +433,7 @@ export * from './util/QuadUtil';
 export * from './util/RecordObject';
 export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
+export * from './util/StringUtil';
 export * from './util/TermUtil';
 export * from './util/TimerUtil';
 export * from './util/Vocabularies';

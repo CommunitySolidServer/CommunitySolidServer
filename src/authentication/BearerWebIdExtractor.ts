@@ -4,6 +4,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from '../util/errors/BadRequestHttpError';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { matchesAuthorizationScheme } from '../util/HeaderUtil';
 import { CredentialGroup } from './Credentials';
 import type { CredentialSet } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
@@ -19,7 +20,7 @@ export class BearerWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !/^Bearer /ui.test(authorization)) {
+    if (!matchesAuthorizationScheme('Bearer', authorization)) {
       throw new NotImplementedHttpError('No Bearer Authorization header specified.');
     }
   }
