@@ -416,6 +416,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
+
       await expect(store.setRepresentation(resourceID, representation)).resolves
         .toEqual([{ path: `${root}` }]);
       expect(mock).toHaveBeenCalledTimes(1);
@@ -772,13 +773,13 @@ describe('A DataAccessorBasedStore', (): void => {
   describe('resource Exists', (): void => {
     it('should return false when the resource does not exist.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      await expect(store.resourceExists(resourceID)).resolves.toBeFalsy();
+      await expect(store.hasResource(resourceID)).resolves.toBeFalsy();
     });
 
     it('should return true when the resource exists.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
       accessor.data[resourceID.path] = representation;
-      await expect(store.resourceExists(resourceID)).resolves.toBeTruthy();
+      await expect(store.hasResource(resourceID)).resolves.toBeTruthy();
     });
 
     it('should rethrow any unexpected errors from validateIdentifier.', async(): Promise<void> => {
@@ -787,13 +788,13 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.getMetadata = jest.fn(async(): Promise<any> => {
         throw new Error('error');
       });
-      await expect(store.resourceExists(resourceID)).rejects.toThrow('error');
+      await expect(store.hasResource(resourceID)).rejects.toThrow('error');
       accessor.getMetadata = originalMetaData;
     });
 
     it('should return false when the metadata resource does not exist.', async(): Promise<void> => {
       const metaResourceID = { path: `${root}resource.meta` };
-      await expect(store.resourceExists(metaResourceID)).resolves.toBeFalsy();
+      await expect(store.hasResource(metaResourceID)).resolves.toBeFalsy();
     });
 
     it('should return true when the metadata resource exists.', async(): Promise<void> => {
@@ -801,7 +802,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const metaResourceID = { path: `${root}resource.meta` };
 
       accessor.data[resourceID.path] = representation;
-      await expect(store.resourceExists(metaResourceID)).resolves.toBeTruthy();
+      await expect(store.hasResource(metaResourceID)).resolves.toBeTruthy();
     });
   });
 });

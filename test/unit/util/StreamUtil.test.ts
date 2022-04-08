@@ -8,6 +8,7 @@ import {
   guardedStreamFrom, pipeSafely, transformSafely,
   readableToString, readableToQuads, readJsonStream, getSingleItem,
 } from '../../../src/util/StreamUtil';
+import { flushPromises } from '../../util/Util';
 
 jest.mock('../../../src/logging/LogUtil', (): any => {
   const logger: Logger = { warn: jest.fn(), log: jest.fn() } as any;
@@ -132,7 +133,7 @@ describe('StreamUtil', (): void => {
 
       piped.destroy(new Error('this causes an unpipe!'));
       // Allow events to propagate
-      await new Promise(setImmediate);
+      await flushPromises();
       expect(input.destroyed).toBe(true);
     });
 
@@ -149,7 +150,7 @@ describe('StreamUtil', (): void => {
 
       piped.destroy(new Error('error!'));
       // Allow events to propagate
-      await new Promise(setImmediate);
+      await flushPromises();
       expect(input.destroyed).toBe(false);
     });
 

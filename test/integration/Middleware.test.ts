@@ -93,10 +93,12 @@ describe('An http server with middleware', (): void => {
     expect(res.header).toEqual(expect.objectContaining({ 'access-control-allow-origin': 'test.com' }));
   });
 
-  it('exposes the Accept-Patch header via CORS.', async(): Promise<void> => {
+  it('exposes the Accept-[Method] header via CORS.', async(): Promise<void> => {
     const res = await request(server).get('/').expect(200);
     const exposed = res.header['access-control-expose-headers'];
     expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Patch');
+    expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Post');
+    expect(exposed.split(/\s*,\s*/u)).toContain('Accept-Put');
   });
 
   it('exposes the Last-Modified and ETag headers via CORS.', async(): Promise<void> => {

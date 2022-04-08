@@ -54,7 +54,7 @@ export class PutOperationHandler extends OperationHandler {
       throw new ConflictHttpError('Not allowed to create or edit metadata resources using PUT.');
     }
 
-    const exists = await this.store.resourceExists(operation.target, operation.conditions);
+    const exists = await this.store.hasResource(operation.target);
 
     // Not allowed performing PUT on an already existing Container
     // See https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1023371546

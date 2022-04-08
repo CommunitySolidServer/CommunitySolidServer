@@ -52,11 +52,18 @@
           }
         },
         {
-          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:AssetPathResolver",
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:podConfigJson",
           "CombinedSettingsResolver:_computers_value": {
             "@type": "AssetPathExtractor",
             "key": "podConfigJson",
             "defaultPath": "./pod-config.json"
+          }
+        },
+        {
+          "CombinedSettingsResolver:_computers_key": "urn:solid-server:default:variable:seededPodConfigJson",
+          "CombinedSettingsResolver:_computers_value": {
+            "@type": "AssetPathExtractor",
+            "key": "seededPodConfigJson"
           }
         }
       ]

@@ -1,6 +1,7 @@
 import type { Finalizable } from '../../init/final/Finalizable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
+import { setSafeInterval } from '../../util/TimerUtil';
 import type { ExpiringStorage } from './ExpiringStorage';
 import type { KeyValueStorage } from './KeyValueStorage';
 
@@ -23,7 +24,10 @@ export class WrappedExpiringStorage<TKey, TValue> implements ExpiringStorage<TKe
    */
   public constructor(source: KeyValueStorage<TKey, Expires<TValue>>, timeout = 60) {
     this.source = source;
-    this.timer = setInterval(this.removeExpiredEntries.bind(this), timeout * 60 * 1000);
+    this.timer = setSafeInterval(this.logger,
+      'Failed to remove expired entries',
+      this.removeExpiredEntries.bind(this),
+      timeout * 60 * 1000);
   }
 
   public async get(key: TKey): Promise<TValue | undefined> {

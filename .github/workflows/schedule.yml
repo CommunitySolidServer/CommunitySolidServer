@@ -14,15 +14,15 @@ jobs:
       matrix:
         branch:
           - 'main'
-          - 'versions/3.0.0'
+          - 'versions/4.0.0'
     timeout-minutes: 10
     steps:
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
       - name: Check out the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ matrix.branch }}
       - name: Install dependencies and run build scripts
@@ -56,13 +56,13 @@ jobs:
           branch-name: ${{ matrix.branch }}
       - name: Save the reports
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} reports
           path: reports
       - name: Save the server output
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.sanitize.outputs.sanitized-branch-name }} server output
           path: server-output.log

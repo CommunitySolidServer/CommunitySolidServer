@@ -5,6 +5,7 @@ import type { Representation } from '../../../../src/http/representation/Represe
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { FileDataAccessor } from '../../../../src/storage/accessors/FileDataAccessor';
 import { ExtensionBasedMapper } from '../../../../src/storage/mapping/ExtensionBasedMapper';
+import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage/mapping/FileIdentifierMapper';
 import { APPLICATION_OCTET_STREAM } from '../../../../src/util/ContentTypes';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
 import type { SystemError } from '../../../../src/util/errors/SystemError';
@@ -27,6 +28,7 @@ now.setMilliseconds(0);
 
 describe('A FileDataAccessor', (): void => {
   const base = 'http://test.com/';
+  let mapper: FileIdentifierMapper;
   let accessor: FileDataAccessor;
   let cache: { data: any };
   let metadata: RepresentationMetadata;
@@ -34,7 +36,8 @@ describe('A FileDataAccessor', (): void => {
 
   beforeEach(async(): Promise<void> => {
     cache = mockFs(rootFilePath, now);
-    accessor = new FileDataAccessor(new ExtensionBasedMapper(base, rootFilePath));
+    mapper = new ExtensionBasedMapper(base, rootFilePath);
+    accessor = new FileDataAccessor(mapper);
 
     metadata = new RepresentationMetadata(APPLICATION_OCTET_STREAM);
 
@@ -177,6 +180,7 @@ describe('A FileDataAccessor', (): void => {
       for (const child of children.filter(({ identifier }): boolean => !identifier.value.endsWith('/'))) {
         const types = child.getAll(RDF.type).map((term): string => term.value);
         expect(types).toContain(LDP.Resource);
+        expect(types).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
         expect(types).not.toContain(LDP.Container);
         expect(types).not.toContain(LDP.BasicContainer);
       }
@@ -189,6 +193,48 @@ describe('A FileDataAccessor', (): void => {
         // `dc:modified` is in the default graph
         expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
           .toHaveLength(isContainerPath(child.identifier.value) ? 1 : 2);
+      }
+    });
+
+    it('does not generate IANA URIs for children with invalid content-types.', async(): Promise<void> => {
+      cache.data = {
+        container: {
+          resource1: 'data',
+          resource2: 'badData',
+        },
+      };
+
+      const badMapper: jest.Mocked<FileIdentifierMapper> = {
+        mapFilePathToUrl: jest.fn(async(filePath: string, isContainer: boolean): Promise<ResourceLink> => {
+          const result = await mapper.mapFilePathToUrl(filePath, isContainer);
+          if (filePath.endsWith('resource2')) {
+            result.contentType = 'this is not a valid type';
+          }
+          return result;
+        }),
+        mapUrlToFilePath: jest.fn((...args): Promise<ResourceLink> => mapper.mapUrlToFilePath(...args)),
+      };
+
+      accessor = new FileDataAccessor(badMapper);
+
+      const children = [];
+      for await (const child of accessor.getChildren({ path: `${base}container/` })) {
+        children.push(child);
+      }
+
+      // Identifiers
+      expect(children).toHaveLength(2);
+      expect(new Set(children.map((child): string => child.identifier.value))).toEqual(new Set([
+        `${base}container/resource1`,
+        `${base}container/resource2`,
+      ]));
+
+      const types1 = children[0].getAll(RDF.type).map((term): string => term.value);
+      const types2 = children[1].getAll(RDF.type).map((term): string => term.value);
+
+      expect(types1).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
+      for (const type of types2) {
+        expect(type).not.toMatch(/^http:\/\/www\.w3.org\/ns\/iana\/media-types\//u);
       }
     });
 

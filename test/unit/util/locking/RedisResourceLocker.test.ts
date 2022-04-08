@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import redis from 'redis';
+import Redis from 'ioredis';
 import Redlock from 'redlock';
 import type { Lock } from 'redlock';
 import * as LogUtil from '../../../../src/logging/LogUtil';
@@ -20,19 +20,17 @@ const redlock: jest.Mocked<Redlock> = Object.assign(new EventEmitter(), {
 }) as any;
 
 jest.mock('redlock', (): any => jest.fn().mockImplementation((): Redlock => redlock));
+jest.mock('ioredis', (): any => jest.fn());
 
 jest.useFakeTimers();
 
 describe('A RedisResourceLocker', (): void => {
   let locker: RedisResourceLocker;
   const identifier = { path: 'http://test.com/foo' };
-  let createClient: jest.SpyInstance;
 
   beforeEach(async(): Promise<void> => {
     jest.clearAllMocks();
     redlock.removeAllListeners();
-
-    createClient = jest.spyOn(redis, 'createClient').mockImplementation(jest.fn());
 
     locker = new RedisResourceLocker([ '6379' ]);
   });
@@ -179,9 +177,9 @@ describe('A RedisResourceLocker', (): void => {
       jest.clearAllMocks();
       const clientStrings = [ '6379', '127.0.0.1:6378' ];
       locker = new RedisResourceLocker(clientStrings);
-      expect(createClient).toHaveBeenCalledTimes(2);
-      expect(createClient).toHaveBeenCalledWith(6379, undefined);
-      expect(createClient).toHaveBeenCalledWith(6378, '127.0.0.1');
+      expect(Redis).toHaveBeenCalledTimes(2);
+      expect(Redis).toHaveBeenCalledWith(6379, undefined);
+      expect(Redis).toHaveBeenCalledWith(6378, '127.0.0.1');
     });
 
     it('errors when invalid string is passed.', async(): Promise<void> => {
@@ -190,7 +188,7 @@ describe('A RedisResourceLocker', (): void => {
       const clientStrings = [ 'noHostOrPort' ];
       expect((): any => new RedisResourceLocker(clientStrings))
         .toThrow('Invalid data provided to create a Redis client: noHostOrPort');
-      expect(createClient).toHaveBeenCalledTimes(0);
+      expect(Redis).toHaveBeenCalledTimes(0);
     });
   });
 

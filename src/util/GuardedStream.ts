@@ -41,8 +41,7 @@ function guardingErrorListener(this: Guarded, error: Error): void {
     this[guardedErrors].push(error);
     if (!this[guardedTimeout]) {
       this[guardedTimeout] = setTimeout((): void => {
-        const message = `No error listener was attached but error was thrown: ${error.message}`;
-        logger.error(message, { error });
+        logger.error(`No error listener was attached but error was thrown: ${error.message}`);
       }, 1000);
     }
   }

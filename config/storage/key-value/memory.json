@@ -1,43 +1,18 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/key-value/storages/storages.json"
+  ],
   "@graph": [
     {
-      "comment": "These storage solutions store their data in memory."
-    },
-    {
-      "comment": "Used for internal storage by the locker.",
-      "@id": "urn:solid-server:default:LockStorage",
+      "comment": "Internal value storage. No different from urn:solid-server:default:KeyValueStorage, but required to be consistent with other storage solutions.",
+      "@id": "urn:solid-server:default:BackendKeyValueStorage",
       "@type": "MemoryMapStorage"
     },
     {
-      "comment": "Storage used by the IDP adapter.",
-      "@id": "urn:solid-server:default:IdpAdapterStorage",
+      "comment": "Internal value storage.",
+      "@id": "urn:solid-server:default:KeyValueStorage",
       "@type": "MemoryMapStorage"
-    },
-    {
-      "comment": "Storage used for the IDP keys.",
-      "@id": "urn:solid-server:default:IdpKeyStorage",
-      "@type": "MemoryMapStorage"
-    },
-    {
-      "comment": "Storage used for IDP ownership tokens.",
-      "@id": "urn:solid-server:default:IdpTokenStorage",
-      "@type": "MemoryMapStorage"
-    },
-    {
-      "comment": "Storage used for account management.",
-      "@id": "urn:solid-server:default:AccountStorage",
-      "@type": "MemoryMapStorage"
-    },
-    {
-      "comment": "Storage used by setup components.",
-      "@id": "urn:solid-server:default:SetupStorage",
-      "@type": "MemoryMapStorage"
-    },
-    {
-      "comment": "Storage used for ForgotPassword records",
-      "@id": "urn:solid-server:default:ForgotPasswordStorage",
-      "@type":"MemoryMapStorage"
     }
   ]
 }

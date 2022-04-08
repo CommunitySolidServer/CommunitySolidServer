@@ -3,19 +3,34 @@ import type { HttpRequest } from '../../../server/HttpRequest';
 import { BadRequestHttpError } from '../../../util/errors/BadRequestHttpError';
 import { InternalServerError } from '../../../util/errors/InternalServerError';
 import { parseForwarded } from '../../../util/HeaderUtil';
+import type { IdentifierStrategy } from '../../../util/identifiers/IdentifierStrategy';
 import { toCanonicalUriPath } from '../../../util/PathUtil';
 import type { ResourceIdentifier } from '../../representation/ResourceIdentifier';
 import { TargetExtractor } from './TargetExtractor';
+
+export interface OriginalUrlExtractorArgs {
+  /**
+   * The IdentifierStrategy to use for checking the scope of the request
+   */
+  identifierStrategy: IdentifierStrategy;
+
+  /**
+   * Specify wether the OriginalUrlExtractor should include the request query string.
+   */
+  includeQueryString?: boolean;
+}
 
 /**
  * Reconstructs the original URL of an incoming {@link HttpRequest}.
  */
 export class OriginalUrlExtractor extends TargetExtractor {
+  private readonly identifierStrategy: IdentifierStrategy;
   private readonly includeQueryString: boolean;
 
-  public constructor(options: { includeQueryString?: boolean } = {}) {
+  public constructor(args: OriginalUrlExtractorArgs) {
     super();
-    this.includeQueryString = options.includeQueryString ?? true;
+    this.identifierStrategy = args.identifierStrategy;
+    this.includeQueryString = args.includeQueryString ?? true;
   }
 
   public async handle({ request: { url, connection, headers }}: { request: HttpRequest }): Promise<ResourceIdentifier> {
@@ -52,6 +67,15 @@ export class OriginalUrlExtractor extends TargetExtractor {
       originalUrl.search = search;
     }
 
-    return { path: originalUrl.href };
+    // Create ResourceIdentifier instance
+    const identifier = { path: originalUrl.href };
+
+    // Check if the configured IdentifierStrategy supports the identifier
+    if (!this.identifierStrategy.supportsIdentifier(identifier)) {
+      throw new InternalServerError(`The identifier ${identifier.path} is outside the configured identifier space.`,
+        { errorCode: 'E0001', details: { path: identifier.path }});
+    }
+
+    return identifier;
   }
 }

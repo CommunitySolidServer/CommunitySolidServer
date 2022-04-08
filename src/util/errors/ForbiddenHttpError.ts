@@ -1,15 +1,14 @@
 import type { HttpErrorOptions } from './HttpError';
-import { HttpError } from './HttpError';
+import { generateHttpErrorClass } from './HttpError';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BaseHttpError = generateHttpErrorClass(403, 'ForbiddenHttpError');
 
 /**
  * An error thrown when an agent is not allowed to access data.
  */
-export class ForbiddenHttpError extends HttpError {
+export class ForbiddenHttpError extends BaseHttpError {
   public constructor(message?: string, options?: HttpErrorOptions) {
-    super(403, 'ForbiddenHttpError', message, options);
-  }
-
-  public static isInstance(error: any): error is ForbiddenHttpError {
-    return HttpError.isInstance(error) && error.statusCode === 403;
+    super(message, options);
   }
 }

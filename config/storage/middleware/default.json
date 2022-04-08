@@ -7,6 +7,12 @@
   ],
   "@graph": [
     {
+      "comment": "A cache to prevent duplicate existence checks on resources.",
+      "@id": "urn:solid-server:default:CachedResourceSet",
+      "@type": "CachedResourceSet",
+      "source": { "@id": "urn:solid-server:default:ResourceStore" }
+    },
+    {
       "comment": "Sets up a stack of utility stores used by most instances.",
       "@id": "urn:solid-server:default:ResourceStore",
       "@type": "MonitoringStore",

@@ -2,6 +2,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import type { Operation } from '../../http/Operation';
 import type { Representation } from '../../http/representation/Representation';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
+import type { ResourceSet } from '../../storage/ResourceSet';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
 import { ModesExtractor } from './ModesExtractor';
 import { AccessMode } from './Permissions';
@@ -12,6 +13,18 @@ import { AccessMode } from './Permissions';
  * while DELETEs require write permissions as well.
  */
 export class SparqlUpdateModesExtractor extends ModesExtractor {
+  private readonly resourceSet: ResourceSet;
+
+  /**
+   * Certain permissions depend on the existence of the target resource.
+   * The provided {@link ResourceSet} will be used for that.
+   * @param resourceSet - {@link ResourceSet} that can verify the target resource existence.
+   */
+  public constructor(resourceSet: ResourceSet) {
+    super();
+    this.resourceSet = resourceSet;
+  }
+
   public async canHandle({ body }: Operation): Promise<void> {
     if (!this.isSparql(body)) {
       throw new NotImplementedHttpError('Cannot determine permissions of non-SPARQL patches.');
@@ -21,21 +34,31 @@ export class SparqlUpdateModesExtractor extends ModesExtractor {
     }
   }
 
-  public async handle({ body }: Operation): Promise<Set<AccessMode>> {
+  public async handle({ body, target }: Operation): Promise<Set<AccessMode>> {
     // Verified in `canHandle` call
     const update = (body as SparqlUpdatePatch).algebra as Algebra.DeleteInsert;
-    const result = new Set<AccessMode>();
+    const modes = new Set<AccessMode>();
 
-    // Since `append` is a specific type of write, it is true if `write` is true.
-    if (this.needsWrite(update)) {
-      result.add(AccessMode.write);
-      result.add(AccessMode.append);
-      result.add(AccessMode.create);
-      result.add(AccessMode.delete);
-    } else if (this.needsAppend(update)) {
-      result.add(AccessMode.append);
+    if (this.isNop(update)) {
+      return modes;
     }
-    return result;
+
+    // Access modes inspired by the requirements on N3 Patch requests
+    if (this.hasConditions(update)) {
+      modes.add(AccessMode.read);
+    }
+    if (this.hasInserts(update)) {
+      modes.add(AccessMode.append);
+      if (!await this.resourceSet.hasResource(target)) {
+        modes.add(AccessMode.create);
+      }
+    }
+    if (this.hasDeletes(update)) {
+      modes.add(AccessMode.read);
+      modes.add(AccessMode.write);
+    }
+
+    return modes;
   }
 
   private isSparql(data: Representation): data is SparqlUpdatePatch {
@@ -52,33 +75,32 @@ export class SparqlUpdateModesExtractor extends ModesExtractor {
     return false;
   }
 
-  private isDeleteInsert(op: Algebra.Update): op is Algebra.DeleteInsert {
+  private isDeleteInsert(op: Algebra.Operation): op is Algebra.DeleteInsert {
     return op.type === Algebra.types.DELETE_INSERT;
   }
 
-  private isNop(op: Algebra.Update): op is Algebra.Nop {
+  private isNop(op: Algebra.Operation): op is Algebra.Nop {
     return op.type === Algebra.types.NOP;
   }
 
-  private needsAppend(update: Algebra.Update): boolean {
-    if (this.isNop(update)) {
-      return false;
+  private hasConditions(update: Algebra.Update): boolean {
+    if (this.isDeleteInsert(update)) {
+      return Boolean(update.where && !this.isNop(update.where));
     }
+    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.hasConditions(op));
+  }
+
+  private hasInserts(update: Algebra.Update): boolean {
     if (this.isDeleteInsert(update)) {
       return Boolean(update.insert && update.insert.length > 0);
     }
-
-    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.needsAppend(op));
+    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.hasInserts(op));
   }
 
-  private needsWrite(update: Algebra.Update): boolean {
-    if (this.isNop(update)) {
-      return false;
-    }
+  private hasDeletes(update: Algebra.Update): boolean {
     if (this.isDeleteInsert(update)) {
       return Boolean(update.delete && update.delete.length > 0);
     }
-
-    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.needsWrite(op));
+    return (update as Algebra.CompositeUpdate).updates.some((op): boolean => this.hasDeletes(op));
   }
 }

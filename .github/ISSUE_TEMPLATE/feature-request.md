@@ -9,5 +9,5 @@ assignees: ''
 
 #### Feature description:
 
-<!--In case you want to start a discussion about an idea, discussions are better suited for this https://github.com/solid/community-server/discussions -->
+<!--In case you want to start a discussion about an idea, discussions are better suited for this https://github.com/CommunitySolidServer/CommunitySolidServer/discussions -->
 <!--A clear and concise description of what you want to happen.-->

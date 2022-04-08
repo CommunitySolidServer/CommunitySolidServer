@@ -125,7 +125,7 @@ export class SparqlDataAccessor implements DataAccessor {
     }
     const { name, parent } = this.getRelatedNames(identifier);
 
-    const triples = await arrayifyStream(data) as Quad[];
+    const triples = await arrayifyStream<Quad>(data);
     const def = defaultGraph();
     if (triples.some((triple): boolean => !def.equals(triple.graph))) {
       throw new NotImplementedHttpError('Only triples in the default graph are supported.');

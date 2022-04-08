@@ -1,6 +1,6 @@
 import { assert } from 'console';
-import type { RedisClient } from 'redis';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
+import type { Redis as RedisType } from 'ioredis';
 import type { Lock } from 'redlock';
 import Redlock from 'redlock';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -46,7 +46,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
 
   public constructor(redisClients: string[], redlockOptions?: Record<string, number>) {
     this.lockMap = new Map();
-    const clients = this.createRedisClients(redisClients);
+    const clients: RedisType[] = this.createRedisClients(redisClients);
     if (clients.length === 0) {
       throw new Error('At least 1 client should be provided');
     }
@@ -61,8 +61,8 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
    * @param redisClientsStrings - a list of strings that contain either a host address and a
    * port number like '127.0.0.1:6379' or just a port number like '6379'
    */
-  private createRedisClients(redisClientsStrings: string[]): RedisClient[] {
-    const result: RedisClient[] = [];
+  private createRedisClients(redisClientsStrings: string[]): RedisType[] {
+    const result: RedisType[] = [];
     if (redisClientsStrings && redisClientsStrings.length > 0) {
       for (const client of redisClientsStrings) {
         // Check if port number or ip with port number
@@ -75,7 +75,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
         }
         const port = Number(match[2]);
         const host = match[1];
-        const redisclient = createClient(port, host);
+        const redisclient: RedisType = new Redis(port, host);
         result.push(redisclient);
       }
     }
@@ -87,7 +87,7 @@ export class RedisResourceLocker implements ResourceLocker, Finalizable {
    * @param clients - a list of RedisClients you want to use for the redlock instance
    * @param redlockOptions - extra redlock options to overwrite the default config
    */
-  private createRedlock(clients: RedisClient[], redlockOptions: Record<string, number> = {}): Redlock {
+  private createRedlock(clients: RedisType[], redlockOptions: Record<string, number> = {}): Redlock {
     try {
       return new Redlock(
         clients,

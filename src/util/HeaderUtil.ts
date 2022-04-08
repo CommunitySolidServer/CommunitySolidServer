@@ -99,8 +99,29 @@ export interface AcceptLanguage extends AcceptHeader { }
  */
 export interface AcceptDatetime extends AcceptHeader { }
 
+/**
+ * Contents of a HTTP Content-Type Header.
+ * Optional parameters Record is included.
+ */
+export interface ContentType {
+  value: string;
+  parameters: Record<string, string>;
+}
+
+export interface LinkEntryParameters extends Record<string, string> {
+  /** Required rel properties of Link entry */
+  rel: string;
+}
+
+export interface LinkEntry {
+  target: string;
+  parameters: LinkEntryParameters;
+}
+
 // REUSED REGEXES
-const token = /^[a-zA-Z0-9!#$%&'*+-.^_`|~]+$/u;
+const tchar = /[a-zA-Z0-9!#$%&'*+-.^_`|~]/u;
+const token = new RegExp(`^${tchar.source}+$`, 'u');
+const mediaRange = new RegExp(`${tchar.source}+/${tchar.source}+`, 'u');
 
 // HELPER FUNCTIONS
 /**
@@ -209,8 +230,7 @@ function parseAcceptPart(part: string, replacements: Record<string, string>): Ac
   const [ range, ...parameters ] = part.split(';').map((param): string => param.trim());
 
   // No reason to test differently for * since we don't check if the type exists
-  const [ type, subtype ] = range.split('/');
-  if (!type || !subtype || !token.test(type) || !token.test(subtype)) {
+  if (!mediaRange.test(range)) {
     logger.warn(`Invalid Accept range: ${range}`);
     throw new BadRequestHttpError(
       `Invalid Accept range: ${range} does not match ( "*/*" / ( token "/" "*" ) / ( token "/" token ) )`,
@@ -416,15 +436,32 @@ export function addHeader(response: HttpResponse, name: string, value: string | 
 }
 
 /**
- * Parses the Content-Type header.
+ * Parses the Content-Type header and also parses any parameters in the header.
  *
- * @param contentType - The media type of the content-type header
+ * @param input - The Content-Type header string.
  *
- * @returns The parsed media type of the content-type
+ * @throws {@link BadRequestHttpError}
+ * Thrown on invalid header syntax.
+ *
+ * @returns A {@link ContentType} object containing the value and optional parameters.
  */
-export function parseContentType(contentType: string): { type: string } {
-  const contentTypeValue = /^\s*([^;\s]*)/u.exec(contentType)![1];
-  return { type: contentTypeValue };
+export function parseContentType(input: string): ContentType {
+  // Quoted strings could prevent split from having correct results
+  const { result, replacements } = transformQuotedStrings(input);
+  const [ value, ...params ] = result.split(';').map((str): string => str.trim());
+  if (!mediaRange.test(value)) {
+    logger.warn(`Invalid content-type: ${value}`);
+    throw new BadRequestHttpError(`Invalid content-type: ${value} does not match ( token "/" token )`);
+  }
+
+  return parseParameters(params, replacements)
+    .reduce<ContentType>(
+    (prev, cur): ContentType => {
+      prev.parameters[cur.name] = cur.value;
+      return prev;
+    },
+    { value, parameters: {}},
+  );
 }
 
 /**
@@ -467,4 +504,46 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
     }
   }
   return forwarded;
+}
+
+/**
+ * Parses the link header(s) and returns an array of LinkEntry objects.
+ * @param link - A single link header or an array of link headers
+ * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
+ */
+export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
+  const linkHeaders = Array.isArray(link) ? link : [ link ];
+  const links: LinkEntry[] = [];
+  for (const entry of linkHeaders) {
+    const { result, replacements } = transformQuotedStrings(entry);
+    for (const part of splitAndClean(result)) {
+      const [ target, ...parameters ] = part.split(/\s*;\s*/u);
+      if (/^[^<]|[^>]$/u.test(target)) {
+        logger.warn(`Invalid link header ${part}.`);
+        continue;
+      }
+
+      // RFC 8288 - Web Linking (https://datatracker.ietf.org/doc/html/rfc8288)
+      //
+      //     The rel parameter MUST be
+      //     present but MUST NOT appear more than once in a given link-value;
+      //     occurrences after the first MUST be ignored by parsers.
+      //
+      const params: any = {};
+      for (const { name, value } of parseParameters(parameters, replacements)) {
+        if (name === 'rel' && 'rel' in params) {
+          continue;
+        }
+        params[name] = value;
+      }
+
+      if (!('rel' in params)) {
+        logger.warn(`Invalid link header ${part} contains no 'rel' parameter.`);
+        continue;
+      }
+
+      links.push({ target: target.slice(1, -1), parameters: params });
+    }
+  }
+  return links;
 }

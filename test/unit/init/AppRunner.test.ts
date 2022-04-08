@@ -4,6 +4,7 @@ import { AppRunner } from '../../../src/init/AppRunner';
 import type { CliExtractor } from '../../../src/init/cli/CliExtractor';
 import type { SettingsResolver } from '../../../src/init/variables/SettingsResolver';
 import { joinFilePath } from '../../../src/util/PathUtil';
+import { flushPromises } from '../../util/Util';
 
 const app: jest.Mocked<App> = {
   start: jest.fn(),
@@ -62,6 +63,7 @@ describe('AppRunner', (): void => {
         'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
         'urn:solid-server:default:variable:showStackTrace': false,
         'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
       };
       const createdApp = await new AppRunner().create(
         {
@@ -99,6 +101,7 @@ describe('AppRunner', (): void => {
         'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
         'urn:solid-server:default:variable:showStackTrace': false,
         'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
       };
       await new AppRunner().run(
         {
@@ -166,6 +169,7 @@ describe('AppRunner', (): void => {
         '-s', 'http://localhost:5000/sparql',
         '-t',
         '--podConfigJson', '/different-path.json',
+        '--seededPodConfigJson', '/different-path.json',
       ];
       process.argv = argvParameters;
 
@@ -312,9 +316,7 @@ describe('AppRunner', (): void => {
       new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
       // Wait until app.start has been called, because we can't await AppRunner.run.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await flushPromises();
 
       expect(ComponentsManager.build).toHaveBeenCalledTimes(1);
       expect(ComponentsManager.build).toHaveBeenCalledWith({
@@ -345,9 +347,7 @@ describe('AppRunner', (): void => {
       new AppRunner().runCliSync({ argv: [ 'node', 'script' ]});
 
       // Wait until app.start has been called, because we can't await AppRunner.runCli.
-      await new Promise((resolve): void => {
-        setImmediate(resolve);
-      });
+      await flushPromises();
 
       expect(write).toHaveBeenCalledTimes(1);
       expect(write).toHaveBeenLastCalledWith(expect.stringMatching(/Cause: Fatal/mu));

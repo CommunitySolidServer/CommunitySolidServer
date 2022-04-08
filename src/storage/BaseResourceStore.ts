@@ -11,7 +11,7 @@ import type { ResourceStore } from './ResourceStore';
  */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export class BaseResourceStore implements ResourceStore {
-  public async resourceExists(identifier: ResourceIdentifier, conditions?: Conditions): Promise<boolean> {
+  public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     throw new NotImplementedHttpError();
   }
 

@@ -1,0 +1,19 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Used for internal storage by the locker.",
+      "@id": "urn:solid-server:default:LockStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/locks/",
+      "source": { "@id": "urn:solid-server:default:BackendKeyValueStorage" }
+    },
+    {
+      "comment": "Storage used by setup components.",
+      "@id": "urn:solid-server:default:SetupStorage",
+      "@type": "EncodingPathStorage",
+      "relativePath": "/setup/",
+      "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
+    }
+  ]
+}

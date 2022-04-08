@@ -20,7 +20,7 @@ describe('A PatchOperationHandler', (): void => {
     operation = { method: 'PATCH', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
 
     store = {
-      resourceExists: jest.fn(),
+      hasResource: jest.fn(),
       modifyResource: jest.fn(),
     } as any;
 
@@ -48,7 +48,7 @@ describe('A PatchOperationHandler', (): void => {
   });
 
   it('returns the correct response if the resource already exists.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     const result = await handler.handle({ operation });
     expect(store.modifyResource).toHaveBeenCalledTimes(1);
     expect(store.modifyResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
@@ -61,7 +61,7 @@ describe('A PatchOperationHandler', (): void => {
     // Note: Currently, for every resource a corresponding meta resource is present.
     //  When https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1217#issuecomment-1065143263 is fixed
     //  the statusCode MUST BE 201
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/foo.meta';
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(205);

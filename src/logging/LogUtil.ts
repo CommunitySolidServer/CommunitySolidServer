@@ -2,10 +2,11 @@ import { LazyLoggerFactory } from './LazyLoggerFactory';
 import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
 
+let loggerFactoryWrapper = new LazyLoggerFactory();
+let classLoggers = new WeakMap<Constructor, Logger>();
+
 /**
  * Gets a logger instance for the given class instance.
- *
- * The returned type of logger depends on the configured {@link LoggerFactory} in {@link Setup}.
  *
  * The following shows a typical pattern on how to create loggers:
  * ```
@@ -21,32 +22,51 @@ import type { LoggerFactory } from './LoggerFactory';
  * @param loggable - A class instance or a class string name.
  */
 export function getLoggerFor(loggable: string | Instance): Logger {
-  return LazyLoggerFactory.getInstance()
-    .createLogger(typeof loggable === 'string' ? loggable : loggable.constructor.name);
+  let logger: Logger;
+  // Create a logger with a text label
+  if (typeof loggable === 'string') {
+    logger = loggerFactoryWrapper.createLogger(loggable);
+  // Create or reuse a logger for a specific class
+  } else {
+    const { constructor } = loggable;
+    if (classLoggers.has(constructor)) {
+      logger = classLoggers.get(constructor)!;
+    } else {
+      logger = loggerFactoryWrapper.createLogger(constructor.name);
+      classLoggers.set(constructor, logger);
+    }
+  }
+  return logger;
 }
 
 /**
  * Sets the global logger factory.
- * This will cause all loggers created by {@link getLoggerFor} to be delegated to a logger from the given factory.
+ * This causes loggers created by {@link getLoggerFor} to delegate to a logger from the given factory.
  * @param loggerFactory - A logger factory.
  */
 export function setGlobalLoggerFactory(loggerFactory: LoggerFactory): void {
-  LazyLoggerFactory.getInstance().loggerFactory = loggerFactory;
+  loggerFactoryWrapper.loggerFactory = loggerFactory;
 }
 
 /**
- * Resets the global logger factory to undefined.
- *
- * This typically only needs to be called during testing.
- * Call this at your own risk.
+ * Resets the internal logger factory, which holds the global logger factory.
+ * For testing purposes only.
  */
-export function resetGlobalLoggerFactory(): void {
-  LazyLoggerFactory.getInstance().resetLoggerFactory();
+export function resetInternalLoggerFactory(factory = new LazyLoggerFactory()): void {
+  loggerFactoryWrapper = factory;
+  classLoggers = new WeakMap();
 }
 
 /**
- * Helper interface to identify class instances.
+ * Any class constructor.
+ */
+interface Constructor {
+  name: string;
+}
+
+/**
+ * Any class instance.
  */
 interface Instance {
-  constructor: { name: string };
+  constructor: Constructor;
 }

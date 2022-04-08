@@ -2,7 +2,8 @@
 
 ## v4.0.0
 ### New features
-- ...
+- The server can be started with a new parameter to automatically generate accounts and pods, 
+  for more info see [here](guides/seeding-pods.md).
 
 ### Configuration changes
 You might need to make changes to your v3 configuration if you use a custom config.
@@ -14,11 +15,16 @@ The following changes pertain to the imports in the default configs:
 - ...
 
 The following changes are relevant for v3 custom configs that replaced certain features.
-- ...
+- The key/value storage configs in `config/storage/key-value/*` have been changed to reduce config duplication.
+  All storages there that were only relevant for 1 class have been moved to the config of that class.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
-- ...
+- The output of `parseContentType` in `HeaderUtil` was changed to include parameters.
+- `PermissionReader`s take an additional `modes` parameter as input.
+- The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
+  and has been moved to a separate `ResourceSet` interface.
+- Several `ModesExtractor`s `PermissionBasedAuthorizer` now take a `ResourceSet` as constructor parameter.
 
 ## v3.0.0
 ### New features
@@ -34,6 +40,13 @@ These changes are relevant if you wrote custom modules for the server that depen
   This is important for anyone who starts the server from code.
 - When logging in, a consent screen will now provide information about the client.
 
+### Data migration
+The following actions are required if you are upgrading from a v2 server and want to retain your data.
+
+Due to changes in the keys used by the IDP, you will need to delete the stored keys and sessions.
+If you are using a file backend, delete the `.internal/idp/` folder in your data folder and restart the server.
+This will not delete the user accounts, but users will have to log in again.
+
 ### Configuration changes
 You might need to make changes to your v2 configuration if you use a custom config.
 
@@ -42,7 +55,7 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 - A new configuration option needs to be imported:
-  - `/app/variables/default/json` contains everything related to parsing CLI arguments 
+  - `/app/variables/default.json` contains everything related to parsing CLI arguments 
     and assigning values to variables.
 
 The following changes are relevant for v2 custom configs that replaced certain features.

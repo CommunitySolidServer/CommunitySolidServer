@@ -104,7 +104,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     Object.assign(this, args);
   }
 
-  public async resourceExists(identifier: ResourceIdentifier): Promise<boolean> {
+  public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {
     try {
       this.validateIdentifier(identifier);
       if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
@@ -196,7 +196,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // that are not supported by the target resource."
     // https://solid.github.io/specification/protocol#reading-writing-resources
     if (!isContainerPath(parentMetadata.identifier.value)) {
-      throw new MethodNotAllowedHttpError('The given path is not a container.');
+      throw new MethodNotAllowedHttpError([ 'POST' ], 'The given path is not a container.');
     }
 
     this.validateConditions(conditions, parentMetadata);
@@ -291,14 +291,15 @@ export class DataAccessorBasedStore implements ResourceStore {
     // the server MUST respond with the 405 status code."
     // https://solid.github.io/specification/protocol#deleting-resources
     if (this.isRootStorage(metadata)) {
-      throw new MethodNotAllowedHttpError('Cannot delete a root storage container.');
+      throw new MethodNotAllowedHttpError([ 'DELETE' ], 'Cannot delete a root storage container.');
     }
     if (this.auxiliaryStrategy.isAuxiliaryIdentifier(identifier) &&
       this.auxiliaryStrategy.isRequiredInRoot(identifier)) {
       const subjectIdentifier = this.auxiliaryStrategy.getSubjectIdentifier(identifier);
       const parentMetadata = await this.accessor.getMetadata(subjectIdentifier);
       if (this.isRootStorage(parentMetadata)) {
-        throw new MethodNotAllowedHttpError(`Cannot delete ${identifier.path} from a root storage container.`);
+        throw new MethodNotAllowedHttpError([ 'DELETE' ],
+          `Cannot delete ${identifier.path} from a root storage container.`);
       }
     }
 
@@ -409,7 +410,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     const subjectIdentifier = this.metadataStrategy.getSubjectIdentifier(identifier);
 
     // Cannot create metadata without a corresponding resource
-    if (!await this.resourceExists(subjectIdentifier)) {
+    if (!await this.hasResource(subjectIdentifier)) {
       throw new ConflictHttpError('Metadata resources can not be created directly.');
     }
 
@@ -603,7 +604,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Make sure we don't already have a resource with this exact name (or with differing trailing slash)
     const withSlash = { path: ensureTrailingSlash(newID.path) };
     const withoutSlash = { path: trimTrailingSlashes(newID.path) };
-    if (await this.resourceExists(withSlash) || await this.resourceExists(withoutSlash)) {
+    if (await this.hasResource(withSlash) || await this.hasResource(withoutSlash)) {
       newID = this.createURI(container, isContainer);
     }
 

@@ -7,12 +7,16 @@ const portNames = [
   'Conditions',
   'ContentNegotiation',
   'DynamicPods',
+  'ExpiringDataCleanup',
+  'GlobalQuota',
   'Identity',
   'LpdHandlerWithAuth',
   'LpdHandlerWithoutAuth',
   'Middleware',
   'N3Patch',
+  'PermissionTable',
   'PodCreation',
+  'PodQuota',
   'RedisResourceLocker',
   'RestrictedIdentity',
   'ServerFetch',
@@ -20,8 +24,7 @@ const portNames = [
   'SparqlStorage',
   'Subdomains',
   'WebSocketsProtocol',
-  'PodQuota',
-  'GlobalQuota',
+
   // Unit
   'BaseHttpServerFactory',
 ] as const;
@@ -40,6 +43,17 @@ export function describeIf(envFlag: string, name: string, fn: () => void): void 
   const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
   // eslint-disable-next-line jest/valid-describe-callback, jest/valid-title, jest/no-disabled-tests
   return enabled ? describe(name, fn) : describe.skip(name, fn);
+}
+
+/**
+ * This is needed when you want to wait for all promises to resolve.
+ * Also works when using jest.useFakeTimers().
+ * For more details see the links below
+ *  - https://github.com/facebook/jest/issues/2157
+ *  - https://stackoverflow.com/questions/52177631/jest-timer-and-promise-dont-work-well-settimeout-and-async-function
+ */
+export async function flushPromises(): Promise<void> {
+  return new Promise(jest.requireActual('timers').setImmediate);
 }
 
 /**

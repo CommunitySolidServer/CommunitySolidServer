@@ -1,7 +1,7 @@
 #### 📁 Related issues
 
 <!-- 
-Reference any relevant issues here. Closing keywords only have an effect when targeting the main branch. If there are no related issues, you must first create an issue through https://github.com/solid/community-server/issues/new/choose
+Reference any relevant issues here. Closing keywords only have an effect when targeting the main branch. If there are no related issues, you must first create an issue through https://github.com/CommunitySolidServer/CommunitySolidServer/issues/new/choose
 -->
 
 #### ✍️ Description

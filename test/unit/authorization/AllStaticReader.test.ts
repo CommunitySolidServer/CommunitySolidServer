@@ -23,12 +23,12 @@ describe('An AllStaticReader', (): void => {
 
   it('always returns permissions matching the given allow parameter.', async(): Promise<void> => {
     let authorizer = new AllStaticReader(true);
-    await expect(authorizer.handle({ credentials, identifier })).resolves.toEqual({
+    await expect(authorizer.handle({ credentials, identifier, modes: new Set() })).resolves.toEqual({
       [CredentialGroup.agent]: getPermissions(true),
     });
 
     authorizer = new AllStaticReader(false);
-    await expect(authorizer.handle({ credentials, identifier })).resolves.toEqual({
+    await expect(authorizer.handle({ credentials, identifier, modes: new Set() })).resolves.toEqual({
       [CredentialGroup.agent]: getPermissions(false),
     });
   });

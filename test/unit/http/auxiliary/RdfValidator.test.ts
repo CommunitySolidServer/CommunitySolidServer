@@ -26,8 +26,8 @@ describe('An RdfValidator', (): void => {
   });
 
   it('validates data by running it through a converter.', async(): Promise<void> => {
-    converter.handleSafe = jest.fn().mockResolvedValue(new BasicRepresentation('transformedData', 'wrongType'));
-    const representation = new BasicRepresentation('data', 'content-type');
+    converter.handleSafe = jest.fn().mockResolvedValue(new BasicRepresentation('transformedData', 'wrong/type'));
+    const representation = new BasicRepresentation('data', 'content/type');
     const quads = representation.metadata.quads();
     // Output is not important for this Validator
     await expect(validator.handle({ representation, identifier })).resolves.toBeDefined();
@@ -39,7 +39,7 @@ describe('An RdfValidator', (): void => {
 
   it('throws an error when validating invalid data.', async(): Promise<void> => {
     converter.handleSafe = jest.fn().mockRejectedValue(new Error('bad data!'));
-    const representation = new BasicRepresentation('data', 'content-type');
+    const representation = new BasicRepresentation('data', 'content/type');
     await expect(validator.handle({ representation, identifier })).rejects.toThrow('bad data!');
     // Make sure the data on the readable has not been reset
     expect(representation.data.destroyed).toBe(true);

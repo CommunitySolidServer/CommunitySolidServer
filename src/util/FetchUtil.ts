@@ -9,7 +9,6 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from './ContentTypes';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
-import { parseContentType } from './HeaderUtil';
 
 const logger = getLoggerFor('FetchUtil');
 
@@ -23,7 +22,7 @@ export async function fetchDataset(url: string): Promise<Representation> {
   return (async(): Promise<Representation> => {
     try {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
-      const quadArray = await arrayifyStream(quadStream) as Quad[];
+      const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch {
       throw new BadRequestHttpError(`Could not parse resource at URL (${url})!`);
@@ -58,10 +57,9 @@ Promise<Representation> {
     logger.warn(`Missing content-type header from ${response.url}`);
     throw error;
   }
-  const contentTypeValue = parseContentType(contentType).type;
 
   // Try to convert to quads
-  const representation = new BasicRepresentation(body, contentTypeValue);
+  const representation = new BasicRepresentation(body, contentType);
   const preferences = { type: { [INTERNAL_QUADS]: 1 }};
   return converter.handleSafe({ representation, identifier: { path: response.url }, preferences });
 }

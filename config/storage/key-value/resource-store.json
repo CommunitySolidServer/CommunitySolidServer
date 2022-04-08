@@ -1,67 +1,24 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/storage/key-value/storages/storages.json"
+  ],
   "@graph": [
     {
-      "comment": "These storage solutions use the specified container in the ResourceStore to store their data."
-    },
-    {
-      "comment": [
-        "This is the internal storage for the locker, which maintains what resources are in use.",
-        "It writes directly to a low-level store, because higher-level storage typically already uses the locker and would thus cause a loop."
-      ],
-      "@id": "urn:solid-server:default:LockStorage",
+      "comment": "A storage that writes directly to a low-level store. This is necessary to prevent infinite loops with stores that also use storage.",
+      "@id": "urn:solid-server:default:BackendKeyValueStorage",
       "@type": "JsonResourceStorage",
       "source": { "@id": "urn:solid-server:default:ResourceStore_Backend" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/locks/"
+      "container": "/.internal/"
     },
     {
-      "comment": "Storage used by the IDP adapter.",
-      "@id": "urn:solid-server:default:IdpAdapterStorage",
+      "comment": "Internal value storage.",
+      "@id": "urn:solid-server:default:KeyValueStorage",
       "@type": "JsonResourceStorage",
       "source": { "@id": "urn:solid-server:default:ResourceStore" },
       "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/idp/adapter/"
-    },
-    {
-      "comment": "Storage used for the IDP keys.",
-      "@id": "urn:solid-server:default:IdpKeyStorage",
-      "@type": "JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/idp/keys/"
-    },
-    {
-      "comment": "Storage used for IDP ownership tokens.",
-      "@id": "urn:solid-server:default:IdpTokenStorage",
-      "@type": "JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/idp/tokens/"
-    },
-    {
-      "comment": "Storage used for account management.",
-      "@id": "urn:solid-server:default:AccountStorage",
-      "@type": "JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/accounts/"
-    },
-    {
-      "comment": "Storage used for ForgotPassword records",
-      "@id": "urn:solid-server:default:ForgotPasswordStorage",
-      "@type":"JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/forgot-password/"
-    },
-    {
-      "comment": "Storage used by setup components.",
-      "@id": "urn:solid-server:default:SetupStorage",
-      "@type": "JsonResourceStorage",
-      "source": { "@id": "urn:solid-server:default:ResourceStore" },
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "container": "/.internal/setup/"
+      "container": "/.internal/"
     },
     {
       "comment": "Block external access to the storage containers to avoid exposing internal data.",

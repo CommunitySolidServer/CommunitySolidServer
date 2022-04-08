@@ -22,7 +22,7 @@ describe('A PutOperationHandler', (): void => {
     body = new BasicRepresentation('', 'text/turtle');
     operation = { method: 'PUT', target: { path: 'http://test.com/foo' }, body, conditions, preferences: {}};
     store = {
-      resourceExists: jest.fn(),
+      hasResource: jest.fn(),
       setRepresentation: jest.fn(),
     } as any;
 
@@ -55,7 +55,7 @@ describe('A PutOperationHandler', (): void => {
   });
 
   it('returns the correct response if the resource already exists.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     const result = await handler.handle({ operation });
     expect(store.setRepresentation).toHaveBeenCalledTimes(1);
     expect(store.setRepresentation).toHaveBeenLastCalledWith(operation.target, body, conditions);
@@ -70,7 +70,7 @@ describe('A PutOperationHandler', (): void => {
   });
 
   it('error if the target is a container that already exists.', async(): Promise<void> => {
-    store.resourceExists.mockResolvedValueOnce(true);
+    store.hasResource.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/';
     await expect(handler.handle({ operation })).rejects.toThrow(ConflictHttpError);
   });

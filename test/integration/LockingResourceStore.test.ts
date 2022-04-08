@@ -3,6 +3,7 @@ import { BasicRepresentation } from '../../src/http/representation/BasicRepresen
 import type { Representation } from '../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../src/http/representation/RepresentationMetadata';
 import { InMemoryDataAccessor } from '../../src/storage/accessors/InMemoryDataAccessor';
+import { RdfToQuadConverter } from '../../src/storage/conversion/RdfToQuadConverter';
 import { DataAccessorBasedStore } from '../../src/storage/DataAccessorBasedStore';
 import { LockingResourceStore } from '../../src/storage/LockingResourceStore';
 import type { ResourceStore } from '../../src/storage/ResourceStore';
@@ -16,8 +17,9 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
-import { SimpleSuffixStrategy } from '../util/SimpleSuffixStrategy';
 jest.useFakeTimers('legacy');
+import { SimpleSuffixStrategy } from '../util/SimpleSuffixStrategy';
+import { flushPromises } from '../util/Util';
 
 describe('A LockingResourceStore', (): void => {
   let path: string;
@@ -33,6 +35,7 @@ describe('A LockingResourceStore', (): void => {
     // Not relevant for these tests
     const strategy = new RoutingAuxiliaryStrategy([]);
     const metadataStrategy = new SimpleSuffixStrategy('.meta');
+    const converter = new RdfToQuadConverter();
 
     const base = 'http://test.com/';
     path = `${base}path`;
@@ -42,6 +45,7 @@ describe('A LockingResourceStore', (): void => {
       identifierStrategy: idStrategy,
       auxiliaryStrategy: strategy,
       metadataStrategy,
+      converter,
     });
 
     // Initialize store
@@ -70,7 +74,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and read
     jest.advanceTimersByTime(1000);
-    await new Promise(setImmediate);
+    await flushPromises();
     expect(representation.data.destroyed).toBe(true);
 
     // Verify a timeout error was thrown
@@ -98,7 +102,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Wait 1000ms and watch the stream be destroyed
     jest.advanceTimersByTime(1000);
-    await new Promise(setImmediate);
+    await flushPromises();
     expect(representation.data.destroyed).toBe(true);
 
     // Verify a timeout error was thrown

@@ -11,6 +11,7 @@ import type { HttpRequest } from '../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../src/server/HttpResponse';
 import type { OperationHttpHandler } from '../../../src/server/OperationHttpHandler';
 import { ParsingHttpHandler } from '../../../src/server/ParsingHttpHandler';
+import { HttpError } from '../../../src/util/errors/HttpError';
 
 describe('A ParsingHttpHandler', (): void => {
   const request: HttpRequest = {} as any;
@@ -77,5 +78,18 @@ describe('A ParsingHttpHandler', (): void => {
     expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResponse });
+  });
+
+  it('adds error metadata if able.', async(): Promise<void> => {
+    const error = new HttpError(0, 'error');
+    source.handleSafe.mockRejectedValueOnce(error);
+    const metaResponse = new ResponseDescription(0, new RepresentationMetadata());
+    errorHandler.handleSafe.mockResolvedValueOnce(metaResponse);
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
+    expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: metaResponse });
+    expect(metaResponse.metadata?.quads()).toHaveLength(1);
   });
 });

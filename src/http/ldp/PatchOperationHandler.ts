@@ -43,7 +43,7 @@ export class PatchOperationHandler extends OperationHandler {
     // RFC7231, §4.3.4: If the target resource does not have a current representation and the
     //   PUT successfully creates one, then the origin server MUST inform the
     //   user agent by sending a 201 (Created) response.
-    const exists = await this.store.resourceExists(operation.target, operation.conditions);
+    const exists = await this.store.hasResource(operation.target);
     await this.store.modifyResource(operation.target, operation.body as Patch, operation.conditions);
     if (exists) {
       return new ResetResponseDescription();

@@ -64,6 +64,7 @@ export * from './http/input/metadata/ContentLengthParser';
 export * from './http/input/metadata/ContentTypeParser';
 export * from './http/input/metadata/LinkRelParser';
 export * from './http/input/metadata/MetadataParser';
+export * from './http/input/metadata/PlainJsonLdFilter';
 export * from './http/input/metadata/SlugParser';
 
 // HTTP/Input/Preferences
@@ -94,6 +95,7 @@ export * from './http/output/error/RedirectingErrorHandler';
 export * from './http/output/error/SafeErrorHandler';
 
 // HTTP/Output/Metadata
+export * from './http/output/metadata/AllowAcceptHeaderWriter';
 export * from './http/output/metadata/ConstantMetadataWriter';
 export * from './http/output/metadata/LinkRelMetadataWriter';
 export * from './http/output/metadata/MappedMetadataWriter';
@@ -208,11 +210,11 @@ export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/SeededPodInitializer';
 export * from './init/ServerInitializer';
 export * from './init/ModuleVersionVerifier';
 
 // Logging
-export * from './logging/LazyLogger';
 export * from './logging/LazyLoggerFactory';
 export * from './logging/Logger';
 export * from './logging/LoggerFactory';
@@ -302,6 +304,7 @@ export * from './storage/conversion/RepresentationConverter';
 export * from './storage/conversion/TypedRepresentationConverter';
 
 // Storage/KeyValue
+export * from './storage/keyvalue/EncodingPathStorage';
 export * from './storage/keyvalue/ExpiringStorage';
 export * from './storage/keyvalue/JsonFileStorage';
 export * from './storage/keyvalue/JsonResourceStorage';
@@ -317,7 +320,6 @@ export * from './storage/mapping/FixedContentTypeMapper';
 export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
-export * from './storage/patch/ContainerPatcher';
 export * from './storage/patch/ConvertingPatcher';
 export * from './storage/patch/N3Patcher';
 export * from './storage/patch/PatchHandler';
@@ -352,6 +354,7 @@ export * from './storage/validators/QuotaValidator';
 export * from './storage/AtomicResourceStore';
 export * from './storage/BaseResourceStore';
 export * from './storage/BasicConditions';
+export * from './storage/CachedResourceSet';
 export * from './storage/Conditions';
 export * from './storage/DataAccessorBasedStore';
 export * from './storage/IndexRepresentationStore';
@@ -361,6 +364,7 @@ export * from './storage/PassthroughStore';
 export * from './storage/PatchingStore';
 export * from './storage/ReadOnlyStore';
 export * from './storage/RepresentationConvertingStore';
+export * from './storage/ResourceSet';
 export * from './storage/ResourceStore';
 export * from './storage/RoutingResourceStore';
 
@@ -432,4 +436,5 @@ export * from './util/RecordObject';
 export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
 export * from './util/TermUtil';
+export * from './util/TimerUtil';
 export * from './util/Vocabularies';

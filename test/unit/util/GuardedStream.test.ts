@@ -157,9 +157,7 @@ describe('GuardedStream', (): void => {
       // Only the first error gets logged
       jest.advanceTimersByTime(900);
       expect(logger.error).toHaveBeenCalledTimes(1);
-      expect(logger.error).toHaveBeenCalledWith(
-        'No error listener was attached but error was thrown: 0', { error: errors[0] },
-      );
+      expect(logger.error).toHaveBeenCalledWith('No error listener was attached but error was thrown: 0');
 
       jest.advanceTimersByTime(1000);
       expect(logger.error).toHaveBeenCalledTimes(1);
