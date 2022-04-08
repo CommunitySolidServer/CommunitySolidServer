@@ -13,7 +13,7 @@ import {
   getTestFolder,
   instantiateFromConfig, removeFolder,
 } from './Config';
-const { literal, namedNode, quad } = DataFactory;
+const { namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
 const baseUrl = `http://localhost:${port}/`;
@@ -262,25 +262,6 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
 
     // DELETE
     expect(await deleteResource(documentUrl)).toBeUndefined();
-  });
-
-  it('can create a container with a diamond identifier in the data.', async(): Promise<void> => {
-    const slug = 'my-container/';
-
-    const body = '<> <http://www.w3.org/2000/01/rdf-schema#label> "My Container" .';
-    let response = await postResource(baseUrl, { isContainer: true, contentType: 'text/turtle', slug, body });
-    expect(response.headers.get('location')).toBe(`${baseUrl}${slug}`);
-
-    // GET
-    const containerUrl = `${baseUrl}${slug}`;
-    response = await getResource(containerUrl);
-
-    await expectQuads(response, [
-      quad(namedNode(containerUrl), namedNode('http://www.w3.org/2000/01/rdf-schema#label'), literal('My Container')),
-    ]);
-
-    // DELETE
-    expect(await deleteResource(containerUrl)).toBeUndefined();
   });
 
   // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/498

@@ -31,7 +31,7 @@
       "args_auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       },
-      "args_metaStrategy": {
+      "args_metadataStrategy": {
         "@id": "urn:solid-server:default:MetadataStrategy"
       },
       "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
