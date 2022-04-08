@@ -63,7 +63,7 @@ or if you want to try a specific [branch](https://www.npmjs.com/) of the code,
 you can use:
 ```shell
 git clone https://github.com/CommunitySolidServer/CommunitySolidServer.git
-cd community-server
+cd CommunitySolidServer
 npm ci
 npm start -- # add parameters if needed
 ```
@@ -74,7 +74,7 @@ Docker allows you to run the server without having Node.js installed. Images are
 ```shell
 # Clone the repo to get access to the configs
 git clone https://github.com/CommunitySolidServer/CommunitySolidServer.git
-cd community-server
+cd CommunitySolidServer
 # Run the image, serving your `~/Solid` directory on `http://localhost:3000`
 docker run --rm -v ~/Solid:/data -p 3000:3000 -it solidproject/community-server:latest
 # Or use one of the built-in configurations
