@@ -1,4 +1,3 @@
-import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
@@ -26,7 +25,7 @@ import {
   trimTrailingSlashes,
   toCanonicalUriPath,
 } from '../util/PathUtil';
-import { parseQuads, serializeQuads } from '../util/QuadUtil';
+import { serializeQuads } from '../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
 import { readableToQuads } from '../util/StreamUtil';
 import {
@@ -495,41 +494,19 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Verify if the incoming data for a container is valid (RDF and no containment triples).
-   * Adds the container data to its metadata afterwards.
+   * Verify if the incoming data for a container is empty.
    *
    * @param representation - Container representation.
    */
   protected async handleContainerData(representation: Representation): Promise<void> {
-    let quads: Quad[];
-    try {
-      // No need to parse the data if it already contains internal/quads
-      if (representation.metadata.contentType === INTERNAL_QUADS) {
-        quads = await arrayifyStream(representation.data);
-      } else {
-        const { contentType, identifier } = representation.metadata;
-        quads = await parseQuads(representation.data, { format: contentType, baseIRI: identifier.value });
-        if (quads.length > 0) {
-          throw new Error('Should be empty');
-        }
-      }
-    } catch (error: unknown) {
-      throw new BadRequestHttpError(`Can only create containers with RDF data. ${createErrorMessage(error)}`,
-        { cause: error });
-    }
-
-    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s containment triples;
-    // if the server receives such a request, it MUST respond with a 409 status code."
-    // https://solid.github.io/specification/protocol#writing-resources
-    if (quads.some((quad): boolean => quad.predicate.value === LDP.contains)) {
-      throw new ConflictHttpError('Container bodies are not allowed to have containment triples.');
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1022214820
+    // Make it not possible via PUT to add metadata during the creation of a container
+    if (!representation.isEmpty) {
+      throw new BadRequestHttpError('Can only create containers without a body.');
     }
 
     // Input content type doesn't matter anymore
     representation.metadata.removeAll(CONTENT_TYPE);
-
-    // Container data is stored in the metadata
-    representation.metadata.addQuads(quads);
   }
 
   /**

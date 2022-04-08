@@ -1,7 +1,6 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import type { Quad } from 'n3';
 import { DataFactory } from 'n3';
 import { readableToQuads } from '../../../dist';
 import type { RepresentationPreferences } from '../../../src';
@@ -259,10 +258,13 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
-    it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
+    it('errors when trying to create a container when the data is not empty.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+      representation.isEmpty = false;
+      const result = store.addResource(resourceID, representation);
+      await expect(result).rejects.toThrow(BadRequestHttpError);
+      await expect(result).rejects.toThrow('Can only create containers without a body.');
     });
 
     it('can write resources.', async(): Promise<void> => {
@@ -279,8 +281,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('can write containers.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.contentType = 'text/turtle';
-      representation.data = guardedStreamFrom([ '<> a <http://test.com/coolContainer>.' ]);
+      representation.isEmpty = true;
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
@@ -288,11 +289,8 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(accessor.data[result.path]).toBeTruthy();
       expect(accessor.data[result.path].metadata.contentType).toBeUndefined();
 
-      const { data, metadata } = await store.getRepresentation(result);
-      const quads: Quad[] = await arrayifyStream(data);
+      const { metadata } = await store.getRepresentation(result);
       expect(metadata.get(DC.terms.modified)?.value).toBe(now.toISOString());
-      expect(quads.some((entry): boolean => entry.subject.value === result.path &&
-        entry.object.value === 'http://test.com/coolContainer')).toBeTruthy();
     });
 
     it('creates a URI based on the incoming slug.', async(): Promise<void> => {
@@ -324,6 +322,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.add(SOLID_HTTP.slug, 'newContainer');
       representation.data = guardedStreamFrom([ `` ]);
+      representation.isEmpty = true;
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: `${root}newContainer/`,
@@ -379,8 +378,9 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      representation.binary = false;
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+      await expect(store.setRepresentation(resourceID, representation)).rejects
+        .toThrow('Can only create containers without a body.');
     });
 
     it('will error if the path has a different slash than the existing one.', async(): Promise<void> => {
@@ -400,12 +400,6 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
-    it('throws a 409 if the container already exists.', async(): Promise<void> => {
-      const resourceID = { path: root };
-      await expect(store.setRepresentation(resourceID, representation))
-        .rejects.toThrow(ConflictHttpError);
-    });
-
     // As discussed in #475, trimming the trailing slash of a root container in getNormalizedMetadata
     // can result in undefined behaviour since there is no parent container.
     it('will not trim the slash of root containers since there is no parent.', async(): Promise<void> => {
@@ -418,7 +412,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
-
+      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves
         .toEqual([{ path: `${root}` }]);
       expect(mock).toHaveBeenCalledTimes(1);
@@ -466,6 +460,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
+      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: root },
         { path: `${root}container/` },
@@ -523,36 +518,6 @@ describe('A DataAccessorBasedStore', (): void => {
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
     });
 
-    it('can write containers with quad data.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-
-      // Generate based on URI
-      representation.metadata.removeAll(RDF.type);
-      representation.metadata.contentType = 'internal/quads';
-      representation.data = guardedStreamFrom(
-        [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
-      );
-      await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
-        { path: `${root}` },
-        { path: `${root}container/` },
-      ]);
-      expect(accessor.data[resourceID.path]).toBeTruthy();
-      expect(accessor.data[resourceID.path].metadata.contentType).toBeUndefined();
-    });
-
-    it('errors when trying to create a container with containment triples.', async(): Promise<void> => {
-      const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.contentType = 'text/turtle';
-      representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
-      representation.data = guardedStreamFrom(
-        [ `<${root}resource/> <http://www.w3.org/ns/ldp#contains> <uri>.` ],
-      );
-      const result = store.setRepresentation(resourceID, representation);
-      await expect(result).rejects.toThrow(ConflictHttpError);
-      await expect(result).rejects.toThrow('Container bodies are not allowed to have containment triples.');
-    });
-
     it('creates recursive containers when needed.', async(): Promise<void> => {
       const resourceID = { path: `${root}a/b/resource` };
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
@@ -584,6 +549,7 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
+      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: `${root}` },
       ]);

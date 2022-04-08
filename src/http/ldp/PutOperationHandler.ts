@@ -34,10 +34,13 @@ export class PutOperationHandler extends OperationHandler {
   }
 
   public async handle({ operation }: OperationHandlerInput): Promise<ResponseDescription> {
+    const targetIsContainer = isContainerPath(operation.target.path);
+
     // Solid, §2.1: "A Solid server MUST reject PUT, POST and PATCH requests
     // without the Content-Type header with a status code of 400."
     // https://solid.github.io/specification/protocol#http-server
-    if (!operation.body.metadata.contentType) {
+    // An exception is made for LDP Containers as nothing is done with the body, so a Content-type does not make sense
+    if (!operation.body.metadata.contentType && !targetIsContainer) {
       this.logger.warn('PUT requests require the Content-Type header to be set');
       throw new BadRequestHttpError('PUT requests require the Content-Type header to be set');
     }
@@ -58,7 +61,7 @@ export class PutOperationHandler extends OperationHandler {
     // In the future, this check should be placed in the setRepresentation function of the DataAccessorBasedStore.ts
     // Currently this can not be added there as this would make the initialisation process not perform as intended
     // as pim:storage would then not be added to the root of the pod.
-    if (exists && isContainerPath(operation.target.path)) {
+    if (exists && targetIsContainer) {
       throw new ConflictHttpError('Not allowed to PUT on already existing containers.');
     }
 
