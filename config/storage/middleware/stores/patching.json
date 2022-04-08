@@ -12,11 +12,6 @@
           "@type": "WaterfallHandler",
           "handlers": [
             {
-              "comment": "Makes sure PATCH operations on containers target the metadata.",
-              "@type": "ContainerPatcher",
-              "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" }
-            },
-            {
               "@type": "ConvertingPatcher",
               "patcher": { "@id": "urn:solid-server:default:RdfPatcher" },
               "converter": { "@id": "urn:solid-server:default:RepresentationConverter" },

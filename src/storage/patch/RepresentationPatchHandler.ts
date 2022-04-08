@@ -43,9 +43,8 @@ export class RepresentationPatchHandler extends PatchHandler {
     // Patch it
     const patched = await this.patcher.handleSafe({ patch, identifier, representation });
 
-    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s resource metadata
-    // statements; if the server receives such a request, it MUST respond with a 409 status code.
-    // https://solid.github.io/specification/protocol#contained-resource-metadata-statements
+    // Not allowed performing PATCH on a container
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970
     if (isContainerIdentifier(identifier)) {
       throw new ConflictHttpError('Not allowed to execute PATCH request on containers.');
     }
