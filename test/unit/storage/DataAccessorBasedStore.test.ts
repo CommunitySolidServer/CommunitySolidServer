@@ -2,7 +2,6 @@ import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import { readableToQuads } from '../../../dist';
 import type { RepresentationPreferences } from '../../../src';
 import { RdfToQuadConverter, serializeQuads } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
@@ -24,7 +23,7 @@ import { PreconditionFailedHttpError } from '../../../src/util/errors/Preconditi
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
-import { guardedStreamFrom } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom, readableToQuads } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
 const { namedNode, quad } = DataFactory;
