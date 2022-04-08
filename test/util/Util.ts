@@ -221,6 +221,18 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
   };
 
   const mockFsExtra = {
+    async readJson(path: string): Promise<NodeJS.Dict<unknown>> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      return JSON.parse(folder[name]);
+    },
+    async writeJson(path: string, json: NodeJS.Dict<unknown>): Promise<void> {
+      const { folder, name } = getFolder(path);
+      const data = JSON.stringify(json, null, 2);
+      folder[name] = data;
+    },
     async ensureDir(path: string): Promise<void> {
       const { folder, name } = getFolder(path);
       folder[name] = {};

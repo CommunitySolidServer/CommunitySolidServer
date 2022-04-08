@@ -4,6 +4,7 @@ import type { ReadWriteLocker } from '../../../../src/util/locking/ReadWriteLock
 import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 describe('A JsonFileStorage', (): void => {
   const rootFilePath = 'files/';
