@@ -112,8 +112,10 @@ describe('A DataAccessorBasedStore', (): void => {
 
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
     const metadataStrategy = new SimpleSuffixStrategy('.meta');
-
-    store = new DataAccessorBasedStore({ accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy });
+    const converter = new RdfToQuadConverter();
+    store = new DataAccessorBasedStore({
+      accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy, converter,
+    });
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [
@@ -249,6 +251,8 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.binary = false;
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+      await expect(store.addResource(resourceID, representation)).rejects
+        .toThrow('The given input is not supported by the server configuration.');
     });
 
     it('throws a 412 if the conditions are not matched.', async(): Promise<void> => {
@@ -258,13 +262,15 @@ describe('A DataAccessorBasedStore', (): void => {
         .rejects.toThrow(PreconditionFailedHttpError);
     });
 
-    it('errors when trying to create a container when the data is not empty.', async(): Promise<void> => {
+    it('Ignores the content when trying to create a container when the data is not empty.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.isEmpty = false;
-      const result = store.addResource(resourceID, representation);
-      await expect(result).rejects.toThrow(BadRequestHttpError);
-      await expect(result).rejects.toThrow('Can only create containers without a body.');
+      const result = await store.addResource(resourceID, representation);
+      expect(result).toEqual({
+        path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
+      });
+      expect(accessor.data[result.path].data).toBeUndefined();
     });
 
     it('can write resources.', async(): Promise<void> => {
@@ -281,7 +287,6 @@ describe('A DataAccessorBasedStore', (): void => {
     it('can write containers.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.isEmpty = true;
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+/$`, 'u')),
@@ -322,7 +327,6 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.add(RDF.type, LDP.terms.Container);
       representation.metadata.add(SOLID_HTTP.slug, 'newContainer');
       representation.data = guardedStreamFrom([ `` ]);
-      representation.isEmpty = true;
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: `${root}newContainer/`,
@@ -378,9 +382,9 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('checks if the DataAccessor supports the data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
-      await expect(store.setRepresentation(resourceID, representation)).rejects
-        .toThrow('Can only create containers without a body.');
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toStrictEqual(
+        [{ path: root }, { path: `${root}container/` }],
+      );
     });
 
     it('will error if the path has a different slash than the existing one.', async(): Promise<void> => {
@@ -412,7 +416,6 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
-      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves
         .toEqual([{ path: `${root}` }]);
       expect(mock).toHaveBeenCalledTimes(1);
@@ -429,10 +432,13 @@ describe('A DataAccessorBasedStore', (): void => {
       );
     });
 
-    it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
+    it('succeeds when trying to create a container with non-RDF data +' +
+        'since the data will be ignored.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
       representation.metadata.add(RDF.type, LDP.terms.Container);
-      await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
+      await expect(store.setRepresentation(resourceID, representation)).resolves.toStrictEqual(
+        [{ path: root }, { path: `${root}container/` }],
+      );
     });
 
     it('errors when trying to create an auxiliary resource with invalid data.', async(): Promise<void> => {
@@ -460,7 +466,6 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
-      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: root },
         { path: `${root}container/` },
@@ -549,7 +554,6 @@ describe('A DataAccessorBasedStore', (): void => {
       representation.metadata.removeAll(RDF.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
-      representation.isEmpty = true;
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: `${root}` },
       ]);

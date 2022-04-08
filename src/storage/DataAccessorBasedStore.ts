@@ -1,3 +1,4 @@
+import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
@@ -27,7 +28,6 @@ import {
 } from '../util/PathUtil';
 import { serializeQuads } from '../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../util/ResourceUtil';
-import { readableToQuads } from '../util/StreamUtil';
 import {
   CONTENT_TYPE,
   DC,
@@ -42,12 +42,12 @@ import {
 } from '../util/Vocabularies';
 import type { DataAccessor } from './accessors/DataAccessor';
 import type { Conditions } from './Conditions';
-import { RdfToQuadConverter } from './conversion/RdfToQuadConverter';
+import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import type { ResourceStore } from './ResourceStore';
 
 export interface DataAccessorBasedStoreArgs {
   /**
-   * Data Accessor used that is being used to store the data.
+   * The Data Accessor that is being used to store the data.
    */
   accessor: DataAccessor;
   /**
@@ -62,6 +62,10 @@ export interface DataAccessorBasedStoreArgs {
    * The strategy to handle metadata resources.
    */
   metadataStrategy: AuxiliaryStrategy;
+  /**
+   * The converter that is being used for conversion of the representation data
+   */
+  converter: RepresentationConverter;
 }
 
 /**
@@ -94,6 +98,7 @@ export class DataAccessorBasedStore implements ResourceStore {
   private readonly identifierStrategy!: IdentifierStrategy;
   private readonly auxiliaryStrategy!: AuxiliaryStrategy;
   private readonly metadataStrategy!: AuxiliaryStrategy;
+  private readonly converter!: RepresentationConverter;
 
   public constructor(args: DataAccessorBasedStoreArgs) {
     Object.assign(this, args);
@@ -419,16 +424,14 @@ export class DataAccessorBasedStore implements ResourceStore {
     const metadata = new RepresentationMetadata(subjectIdentifier);
     let rdf = representation;
     if (representation.metadata.contentType && representation.metadata.contentType !== INTERNAL_QUADS) {
-      const rdfConverter = new RdfToQuadConverter();
-      rdf = await rdfConverter.handleSafe({
+      rdf = await this.converter.handleSafe({
         identifier,
         representation,
         preferences: { type: { [INTERNAL_QUADS]: 1 }},
       });
     }
 
-    const store = await readableToQuads(rdf.data);
-    const quads = store.getQuads(null, null, null, null);
+    const quads = await arrayifyStream(rdf.data);
     metadata.addQuads(quads);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
     return [ identifier ];
@@ -494,15 +497,16 @@ export class DataAccessorBasedStore implements ResourceStore {
   }
 
   /**
-   * Verify if the incoming data for a container is empty.
+   * Warns when the representation has data and removes the content-type from the metadata.
    *
    * @param representation - Container representation.
    */
   protected async handleContainerData(representation: Representation): Promise<void> {
     // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-1022214820
     // Make it not possible via PUT to add metadata during the creation of a container
+    // Thus the contents are ignored and a warning is sent
     if (!representation.isEmpty) {
-      throw new BadRequestHttpError('Can only create containers without a body.');
+      this.logger.warn('The contents of the body are ignored for the creation of the ldp:container.');
     }
 
     // Input content type doesn't matter anymore
