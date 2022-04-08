@@ -67,6 +67,13 @@ describe('A FileDataAccessor', (): void => {
       const stream = await accessor.getData({ path: `${base}resource` });
       await expect(readableToString(stream)).resolves.toBe('data');
     });
+
+    it('throws an error if something else went wrong.', async(): Promise<void> => {
+      jest.requireMock('fs-extra').stat = (): any => {
+        throw new Error('error');
+      };
+      await expect(accessor.getData({ path: `${base}resource` })).rejects.toThrow('error');
+    });
   });
 
   describe('getting metadata', (): void => {
