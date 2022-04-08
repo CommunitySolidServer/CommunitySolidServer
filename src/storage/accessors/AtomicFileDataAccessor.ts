@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { ensureDirSync, remove, rename } from 'fs-extra';
+import { ensureDirSync, rename, unlink } from 'fs-extra';
 import { v4 } from 'uuid';
 import type { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
@@ -20,7 +20,6 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
   public constructor(resourceMapper: FileIdentifierMapper, rootFilePath: string, tempFilePath: string) {
     super(resourceMapper);
     this.tempFilePath = joinFilePath(rootFilePath, tempFilePath);
-    // Cannot use fsPromises in constructor
     ensureDirSync(this.tempFilePath);
   }
 
@@ -48,8 +47,12 @@ export class AtomicFileDataAccessor extends FileDataAccessor implements AtomicDa
       await rename(tempFilePath, link.filePath);
     } catch (error: unknown) {
       // Delete the data already written
-      if ((await this.getStats(tempFilePath)).isFile()) {
-        await remove(tempFilePath);
+      try {
+        if ((await this.getStats(tempFilePath)).isFile()) {
+          await unlink(tempFilePath);
+        }
+      } catch {
+        throw error;
       }
       throw error;
     }

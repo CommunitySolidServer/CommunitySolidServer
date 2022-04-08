@@ -339,7 +339,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       if (!folder[name]) {
         throwSystemError('ENOENT');
       }
-      if (!(await this.lstat(path)).isFile()) {
+      if (!(await mockFsExtra.lstat(path)).isFile()) {
         throwSystemError('EISDIR');
       }
 

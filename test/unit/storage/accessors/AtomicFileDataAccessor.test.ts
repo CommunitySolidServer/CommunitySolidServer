@@ -9,6 +9,7 @@ import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
+jest.mock('fs');
 jest.mock('fs-extra');
 
 describe('AtomicFileDataAccessor', (): void => {

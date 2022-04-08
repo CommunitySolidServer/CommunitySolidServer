@@ -17,6 +17,7 @@ import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFileSystem } from '../../../util/Util';
 
+jest.mock('fs');
 jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
