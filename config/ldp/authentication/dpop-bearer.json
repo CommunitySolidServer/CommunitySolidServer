@@ -12,7 +12,8 @@
             {
               "@type": "DPoPWebIdExtractor",
               "originalUrlExtractor": {
-                "@type": "OriginalUrlExtractor"
+                "@type": "OriginalUrlExtractor",
+                "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }
               }
             },
             { "@type": "BearerWebIdExtractor" }
