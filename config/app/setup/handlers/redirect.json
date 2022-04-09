@@ -4,17 +4,11 @@
     {
       "comment": "Redirects all request to the setup.",
       "@id": "urn:solid-server:default:SetupRedirectHandler",
-      "@type": "RedirectingHttpHandler",
-      "redirects": [
-        {
-          "RedirectingHttpHandler:_redirects_key": ".*",
-          "RedirectingHttpHandler:_redirects_value": "/setup-page-reachable-with-any-suffix"
-        }
-      ],
-      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
-      "responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
-      "statusCode": 302
-    }
+      "@type": "RedirectAllHttpHandler",
+      "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
+      "args_target": "/setup",
+      "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
+      "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
+    },
   ]
 }
