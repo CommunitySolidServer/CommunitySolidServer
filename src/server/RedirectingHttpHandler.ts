@@ -36,6 +36,9 @@ export class RedirectingHttpHandler extends HttpHandler {
   /**
    * Creates a handler for the provided redirects.
    * @param redirects - A mapping between URL patterns.
+   * @param targetExtractor - To extract the target from the request.
+   * @param responseWriter - To write the redirect to the response.
+   * @param statusCode - Desired 30x redirection code (defaults to 308).
    */
   public constructor(
     redirects: Record<string, string>,
