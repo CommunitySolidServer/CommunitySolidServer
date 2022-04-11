@@ -258,6 +258,7 @@ export * from './server/HttpResponse';
 export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
+export * from './server/RedirectingHttpHandler';
 export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerFactory';
 
