@@ -243,76 +243,31 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       delete folder[name];
     },
     createReadStream(path: string): any {
-      const { folder, name } = getFolder(path);
-      return Readable.from([ folder[name] ]);
+      return mockFs.createReadStream(path);
     },
     createWriteStream(path: string): any {
-      const { folder, name } = getFolder(path);
-      folder[name] = '';
-      const stream = new PassThrough();
-      stream.on('data', (data): any => {
-        folder[name] += data;
-      });
-      stream.on('end', (): any => stream.emit('finish'));
-      return stream;
+      return mockFs.createWriteStream(path);
     },
     async realpath(path: string): Promise<string> {
-      const { folder, name } = getFolder(path);
-      const entry = folder[name];
-      return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
+      return await mockFs.promises.realpath(path);
     },
     async stat(path: string): Promise<Stats> {
-      return mockFsExtra.lstat(await mockFsExtra.realpath(path));
+      return mockFs.promises.lstat(await mockFs.promises.realpath(path));
     },
     async lstat(path: string): Promise<Stats> {
-      path = await mockFsExtra.realpath(path);
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      return {
-        isFile: (): boolean => typeof folder[name] === 'string',
-        isDirectory: (): boolean => typeof folder[name] === 'object',
-        isSymbolicLink: (): boolean => typeof folder[name] === 'symbol',
-        size: typeof folder[name] === 'string' ? folder[name].length : 4,
-        mtime: time,
-      } as Stats;
+      return mockFs.promises.lstat(path);
     },
     async unlink(path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      if (!(await this.lstat(path)).isFile()) {
-        throwSystemError('EISDIR');
-      }
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete folder[name];
+      await mockFs.promises.unlink(path);
     },
     async symlink(target: string, path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      folder[name] = Symbol(target);
+      await mockFs.promises.symlink(target, path);
     },
     async rmdir(path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      if (Object.keys(folder[name]).length > 0) {
-        throwSystemError('ENOTEMPTY');
-      }
-      if (!(await this.lstat(path)).isDirectory()) {
-        throwSystemError('ENOTDIR');
-      }
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete folder[name];
+      await mockFs.promises.rmdir(path);
     },
     async readdir(path: string): Promise<string[]> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      return Object.keys(folder[name]);
+      return await mockFs.promises.readdir(path);
     },
     async* opendir(path: string): AsyncIterableIterator<Dirent> {
       const { folder, name } = getFolder(path);
@@ -329,37 +284,16 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       }
     },
     async mkdir(path: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      if (folder[name]) {
-        throwSystemError('EEXIST');
-      }
-      folder[name] = {};
+      await mockFs.promises.mkdir(path);
     },
     async readFile(path: string): Promise<string> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      return folder[name];
+      return await mockFs.promises.readFile(path);
     },
     async writeFile(path: string, data: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      folder[name] = data;
+      await mockFs.promises.writeFile(path, data);
     },
     async rename(path: string, destination: string): Promise<void> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      if (!(await mockFsExtra.lstat(path)).isFile()) {
-        throwSystemError('EISDIR');
-      }
-
-      const { folder: folderDest, name: nameDest } = getFolder(destination);
-      folderDest[nameDest] = folder[name];
-
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete folder[name];
+      await mockFs.promises.rename(path, destination);
     },
   };
 
