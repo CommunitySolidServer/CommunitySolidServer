@@ -270,17 +270,8 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
       return await mockFs.promises.readdir(path);
     },
     async* opendir(path: string): AsyncIterableIterator<Dirent> {
-      const { folder, name } = getFolder(path);
-      if (!folder[name]) {
-        throwSystemError('ENOENT');
-      }
-      for (const [ child, entry ] of Object.entries(folder[name])) {
-        yield {
-          name: child,
-          isFile: (): boolean => typeof entry === 'string',
-          isDirectory: (): boolean => typeof entry === 'object',
-          isSymbolicLink: (): boolean => typeof entry === 'symbol',
-        } as Dirent;
+      for await (const entry of mockFs.promises.opendir(path)) {
+        yield entry;
       }
     },
     async mkdir(path: string): Promise<void> {
