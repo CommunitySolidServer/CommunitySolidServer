@@ -4,7 +4,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ContentType } from '../../util/HeaderUtil';
 import { parseContentType } from '../../util/HeaderUtil';
-import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
+import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
@@ -20,6 +20,11 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
 export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
   return typeof object?.setMetadata === 'function';
 }
+
+// Caches named node conversions
+const cachedNamedNodes: Record<string, NamedNode> = {
+  contentType: CONTENT_TYPE_TERM,
+};
 
 /**
  * Stores the metadata triples and provides methods for easy access.
@@ -98,7 +103,7 @@ export class RepresentationMetadata {
 
   private setOverrides(overrides: Record<string, MetadataValue>): void {
     for (const predicate of Object.keys(overrides)) {
-      const namedPredicate = toCachedNamedNode(predicate);
+      const namedPredicate = this.toCachedNamedNode(predicate);
       this.removeAll(namedPredicate);
 
       let objects = overrides[predicate];
@@ -172,7 +177,7 @@ export class RepresentationMetadata {
     graph?: MetadataGraph,
   ): this {
     this.store.addQuad(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      this.toCachedNamedNode(predicate),
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this;
@@ -199,7 +204,7 @@ export class RepresentationMetadata {
     graph?: MetadataGraph,
   ): this {
     const quads = this.quads(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      this.toCachedNamedNode(predicate),
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this.removeQuads(quads);
@@ -239,7 +244,7 @@ export class RepresentationMetadata {
    */
   private forQuads(predicate: NamedNode | string, object: MetadataValue,
     forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
-    const predicateNode = toCachedNamedNode(predicate);
+    const predicateNode = this.toCachedNamedNode(predicate);
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
       forFn(predicateNode, toObjectTerm(obj, true));
@@ -253,7 +258,7 @@ export class RepresentationMetadata {
    * @param graph - Optional graph where to remove from.
    */
   public removeAll(predicate: NamedNode | string, graph?: MetadataGraph): this {
-    this.removeQuads(this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null));
+    this.removeQuads(this.store.getQuads(this.id, this.toCachedNamedNode(predicate), null, graph ?? null));
     return this;
   }
 
@@ -279,7 +284,7 @@ export class RepresentationMetadata {
    * @returns An array with all matches.
    */
   public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
-    return this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null)
+    return this.store.getQuads(this.id, this.toCachedNamedNode(predicate), null, graph ?? null)
       .map((quad): Term => quad.object);
   }
 
@@ -414,5 +419,21 @@ export class RepresentationMetadata {
     if (input) {
       this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
     }
+  }
+
+  /**
+   * Converts the incoming name (URI or shorthand) to a named node.
+   * The generated terms get cached to reduce the number of created nodes,
+   * so only use this for internal constants!
+   * @param name - Predicate to potentially transform.
+   */
+  private toCachedNamedNode(name: NamedNode | string): NamedNode {
+    if (typeof name !== 'string') {
+      return name;
+    }
+    if (!(name in cachedNamedNodes)) {
+      cachedNamedNodes[name] = DataFactory.namedNode(name);
+    }
+    return cachedNamedNodes[name];
   }
 }
