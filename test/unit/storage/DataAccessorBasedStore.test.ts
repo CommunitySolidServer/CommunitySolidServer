@@ -255,13 +255,13 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       await expect(store.addResource(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
     it('can write resources.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: expect.stringMatching(new RegExp(`^${root}[^/]+$`, 'u')),
@@ -272,7 +272,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('can write containers.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ '<> a <http://test.com/coolContainer>.' ]);
       const result = await store.addResource(resourceID, representation);
@@ -291,7 +291,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('creates a URI based on the incoming slug.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.add(SOLID_HTTP.slug, 'newName');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
@@ -339,7 +339,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('generates http://test.com/%26%26 when slug is &%26.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.add(SOLID_HTTP.slug, '&%26');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({ path: `${root}%26%26` });
@@ -347,7 +347,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors if the slug contains a slash.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.data = guardedStreamFrom([ `` ]);
       representation.metadata.add(SOLID_HTTP.slug, 'sla/sh/es');
       const result = store.addResource(resourceID, representation);
@@ -357,7 +357,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors if the slug would cause an auxiliary resource URI to be generated.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.add(SOLID_HTTP.slug, 'test.dummy');
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(ForbiddenHttpError);
@@ -402,7 +402,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const mock = jest.spyOn(accessor, 'getMetadata');
 
       const resourceID = { path: `${root}` };
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}> a <coolContainer>.` ]);
 
@@ -416,7 +416,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will error if path does not end in slash and does not match its resource type.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(
         new BadRequestHttpError('Containers should have a `/` at the end of their path, resources should not.'),
       );
@@ -424,7 +424,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with non-RDF data.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       await expect(store.setRepresentation(resourceID, representation)).rejects.toThrow(BadRequestHttpError);
     });
 
@@ -450,7 +450,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}container/` };
 
       // Generate based on URI
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([ `<${root}resource/> a <coolContainer>.` ]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
@@ -514,7 +514,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}container/` };
 
       // Generate based on URI
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.contentType = 'internal/quads';
       representation.data = guardedStreamFrom(
         [ quad(namedNode(`${root}resource/`), namedNode('a'), namedNode('coolContainer')) ],
@@ -529,7 +529,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors when trying to create a container with containment triples.', async(): Promise<void> => {
       const resourceID = { path: `${root}container/` };
-      representation.metadata.add(RDF.type, LDP.terms.Container);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
       representation.metadata.contentType = 'text/turtle';
       representation.metadata.identifier = DataFactory.namedNode(`${root}resource/`);
       representation.data = guardedStreamFrom(
@@ -548,9 +548,9 @@ describe('A DataAccessorBasedStore', (): void => {
         { path: `${root}a/b/resource` },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
-      expect(accessor.data[`${root}a/`].metadata.getAll(RDF.type).map((type): string => type.value))
+      expect(accessor.data[`${root}a/`].metadata.getAll(RDF.terms.type).map((type): string => type.value))
         .toContain(LDP.Container);
-      expect(accessor.data[`${root}a/b/`].metadata.getAll(RDF.type).map((type): string => type.value))
+      expect(accessor.data[`${root}a/b/`].metadata.getAll(RDF.terms.type).map((type): string => type.value))
         .toContain(LDP.Container);
     });
 
@@ -568,7 +568,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: `${root}` };
 
       // Generate based on URI
-      representation.metadata.removeAll(RDF.type);
+      representation.metadata.removeAll(RDF.terms.type);
       representation.metadata.contentType = 'text/turtle';
       representation.data = guardedStreamFrom([]);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
@@ -620,7 +620,7 @@ describe('A DataAccessorBasedStore', (): void => {
     });
 
     it('will error when deleting a root storage container.', async(): Promise<void> => {
-      representation.metadata.add(RDF.type, PIM.terms.Storage);
+      representation.metadata.add(RDF.terms.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = representation;
       const result = store.deleteResource({ path: `${root}container/` });
       await expect(result).rejects.toThrow(MethodNotAllowedHttpError);
@@ -629,7 +629,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('will error when deleting an auxiliary of a root storage container if not allowed.', async(): Promise<void> => {
       const storageMetadata = new RepresentationMetadata(representation.metadata);
-      storageMetadata.add(RDF.type, PIM.terms.Storage);
+      storageMetadata.add(RDF.terms.type, PIM.terms.Storage);
       accessor.data[`${root}container/`] = new BasicRepresentation(representation.data, storageMetadata);
       accessor.data[`${root}container/.dummy`] = representation;
       auxiliaryStrategy.isRequiredInRoot = jest.fn().mockReturnValue(true);

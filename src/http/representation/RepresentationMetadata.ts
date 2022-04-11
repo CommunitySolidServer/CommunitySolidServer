@@ -199,7 +199,7 @@ export class RepresentationMetadata {
    */
   public removeQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
@@ -234,7 +234,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to remove.
    * @param graph - Optional graph of where to remove the values from.
    */
-  public remove(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public remove(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
   }
 
@@ -257,7 +257,7 @@ export class RepresentationMetadata {
    * @param predicate - Predicate to remove.
    * @param graph - Optional graph where to remove from.
    */
-  public removeAll(predicate: NamedNode | string, graph?: MetadataGraph): this {
+  public removeAll(predicate: NamedNode, graph?: MetadataGraph): this {
     this.removeQuads(this.store.getQuads(this.id, this.toCachedNamedNode(predicate), null, graph ?? null));
     return this;
   }
@@ -318,7 +318,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to set.
    * @param graph - Optional graph where the triple should be stored.
    */
-  public set(predicate: NamedNode | string, object?: MetadataValue, graph?: MetadataGraph): this {
+  public set(predicate: NamedNode, object?: MetadataValue, graph?: MetadataGraph): this {
     this.removeAll(predicate, graph);
     if (object) {
       this.add(predicate, object, graph);

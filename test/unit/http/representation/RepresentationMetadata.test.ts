@@ -3,7 +3,7 @@ import type { BlankNode } from 'n3';
 import { DataFactory } from 'n3';
 import type { NamedNode, Quad } from 'rdf-js';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import { CONTENT_TYPE, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
+import { CONTENT_TYPE_TERM, SOLID_META, RDFS } from '../../../../src/util/Vocabularies';
 const { defaultGraph, literal, namedNode, quad } = DataFactory;
 
 // Helper functions to filter quads
@@ -186,7 +186,7 @@ describe('A RepresentationMetadata', (): void => {
     });
 
     it('removes all matching triples if graph is undefined.', async(): Promise<void> => {
-      metadata.removeQuad(identifier, 'has', 'data');
+      metadata.removeQuad(identifier, namedNode('has'), 'data');
       expect(metadata.quads()).toHaveLength(inputQuads.length - 2);
       expect(metadata.quads()).toBeRdfIsomorphic(removeQuads(inputQuads, identifier.value, 'has', 'data'));
     });
@@ -293,15 +293,15 @@ describe('A RepresentationMetadata', (): void => {
     it('has a shorthand for content-type.', async(): Promise<void> => {
       expect(metadata.contentType).toBeUndefined();
       metadata.contentType = 'a/b';
-      expect(metadata.get(CONTENT_TYPE)).toEqualRdfTerm(literal('a/b'));
+      expect(metadata.get(CONTENT_TYPE_TERM)).toEqualRdfTerm(literal('a/b'));
       expect(metadata.contentType).toBe('a/b');
       metadata.contentType = undefined;
       expect(metadata.contentType).toBeUndefined();
     });
 
     it('errors if a shorthand has multiple values.', async(): Promise<void> => {
-      metadata.add(CONTENT_TYPE, 'a/b');
-      metadata.add(CONTENT_TYPE, 'c/d');
+      metadata.add(CONTENT_TYPE_TERM, 'a/b');
+      metadata.add(CONTENT_TYPE_TERM, 'c/d');
       expect((): any => metadata.contentType).toThrow();
     });
 

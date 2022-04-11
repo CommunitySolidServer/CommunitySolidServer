@@ -16,7 +16,7 @@ import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
 import { toLiteral, toNamedTerm } from '../../util/TermUtil';
-import { CONTENT_TYPE, DC, IANA, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
+import { CONTENT_TYPE_TERM, DC, IANA, LDP, POSIX, RDF, SOLID_META, XSD } from '../../util/Vocabularies';
 import type { FileIdentifierMapper, ResourceLink } from '../mapping/FileIdentifierMapper';
 import type { DataAccessor } from './DataAccessor';
 
@@ -174,7 +174,7 @@ export class FileDataAccessor implements DataAccessor {
   private async getFileMetadata(link: ResourceLink, stats: Stats):
   Promise<RepresentationMetadata> {
     return (await this.getBaseMetadata(link, stats, false))
-      .set(CONTENT_TYPE, link.contentType);
+      .set(CONTENT_TYPE_TERM, link.contentType);
   }
 
   /**
@@ -202,7 +202,7 @@ export class FileDataAccessor implements DataAccessor {
     metadata.remove(RDF.terms.type, LDP.terms.Container);
     metadata.remove(RDF.terms.type, LDP.terms.BasicContainer);
     metadata.removeAll(DC.terms.modified);
-    metadata.removeAll(CONTENT_TYPE);
+    metadata.removeAll(CONTENT_TYPE_TERM);
     const quads = metadata.quads();
     const metadataLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, true);
     let wroteMetadata: boolean;
