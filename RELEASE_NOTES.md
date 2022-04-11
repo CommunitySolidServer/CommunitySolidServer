@@ -4,6 +4,7 @@
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
   for more info see [here](guides/seeding-pods.md).
+- A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
 
 ### Configuration changes
 You might need to make changes to your v3 configuration if you use a custom config.
