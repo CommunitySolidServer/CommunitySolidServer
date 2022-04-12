@@ -19,6 +19,7 @@ const portNames = [
   'PodQuota',
   'RedisResourceLocker',
   'RestrictedIdentity',
+  'SeedingPods',
   'ServerFetch',
   'SetupMemory',
   'SparqlStorage',
