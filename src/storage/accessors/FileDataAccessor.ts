@@ -1,6 +1,6 @@
-import type { Stats } from 'fs';
-import { createWriteStream, createReadStream, promises as fsPromises } from 'fs';
 import type { Readable } from 'stream';
+import type { Stats } from 'fs-extra';
+import { ensureDir, remove, stat, lstat, createWriteStream, createReadStream, opendir } from 'fs-extra';
 import type { Quad } from 'rdf-js';
 import type { Representation } from '../../http/representation/Representation';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
@@ -92,7 +92,7 @@ export class FileDataAccessor implements DataAccessor {
       // Delete the metadata if there was an error writing the file
       if (wroteMetadata) {
         const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
-        await fsPromises.unlink(metaLink.filePath);
+        await remove(metaLink.filePath);
       }
       throw error;
     }
@@ -103,14 +103,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   public async writeContainer(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
-    try {
-      await fsPromises.mkdir(link.filePath, { recursive: true });
-    } catch (error: unknown) {
-      // Don't throw if directory already exists
-      if (!isSystemError(error) || error.code !== 'EEXIST') {
-        throw error;
-      }
-    }
+    await ensureDir(link.filePath);
 
     await this.writeMetadata(link, metadata);
   }
@@ -119,23 +112,16 @@ export class FileDataAccessor implements DataAccessor {
    * Removes the corresponding file/folder (and metadata file).
    */
   public async deleteResource(identifier: ResourceIdentifier): Promise<void> {
+    const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
+    await remove(metaLink.filePath);
+
     const link = await this.resourceMapper.mapUrlToFilePath(identifier, false);
     const stats = await this.getStats(link.filePath);
 
-    try {
-      const metaLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
-      await fsPromises.unlink(metaLink.filePath);
-    } catch (error: unknown) {
-      // Ignore if it doesn't exist
-      if (!isSystemError(error) || error.code !== 'ENOENT') {
-        throw error;
-      }
-    }
-
     if (!isContainerIdentifier(identifier) && stats.isFile()) {
-      await fsPromises.unlink(link.filePath);
+      await remove(link.filePath);
     } else if (isContainerIdentifier(identifier) && stats.isDirectory()) {
-      await fsPromises.rmdir(link.filePath);
+      await remove(link.filePath);
     } else {
       throw new NotFoundHttpError();
     }
@@ -151,7 +137,7 @@ export class FileDataAccessor implements DataAccessor {
    */
   protected async getStats(path: string): Promise<Stats> {
     try {
-      return await fsPromises.stat(path);
+      return await stat(path);
     } catch (error: unknown) {
       if (isSystemError(error) && error.code === 'ENOENT') {
         throw new NotFoundHttpError('', { cause: error });
@@ -212,14 +198,7 @@ export class FileDataAccessor implements DataAccessor {
 
     // Delete (potentially) existing metadata file if no metadata needs to be stored
     } else {
-      try {
-        await fsPromises.unlink(metadataLink.filePath);
-      } catch (error: unknown) {
-        // Metadata file doesn't exist so nothing needs to be removed
-        if (!isSystemError(error) || error.code !== 'ENOENT') {
-          throw error;
-        }
-      }
+      await remove(metadataLink.filePath);
       wroteMetadata = false;
     }
     return wroteMetadata;
@@ -251,7 +230,7 @@ export class FileDataAccessor implements DataAccessor {
       const metadataLink = await this.resourceMapper.mapUrlToFilePath(identifier, true);
 
       // Check if the metadata file exists first
-      await fsPromises.lstat(metadataLink.filePath);
+      await lstat(metadataLink.filePath);
 
       const readMetadataStream = guardStream(createReadStream(metadataLink.filePath));
       return await parseQuads(readMetadataStream, { format: metadataLink.contentType, baseIRI: identifier.path });
@@ -270,7 +249,7 @@ export class FileDataAccessor implements DataAccessor {
    * @param link - Path related metadata.
    */
   private async* getChildMetadata(link: ResourceLink): AsyncIterableIterator<RepresentationMetadata> {
-    const dir = await fsPromises.opendir(link.filePath);
+    const dir = await opendir(link.filePath);
 
     // For every child in the container we want to generate specific metadata
     for await (const entry of dir) {
@@ -328,17 +307,10 @@ export class FileDataAccessor implements DataAccessor {
    * @param link - ResourceLink corresponding to the new resource data.
    */
   protected async verifyExistingExtension(link: ResourceLink): Promise<void> {
-    try {
-      // Delete the old file with the (now) wrong extension
-      const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, false);
-      if (oldLink.filePath !== link.filePath) {
-        await fsPromises.unlink(oldLink.filePath);
-      }
-    } catch (error: unknown) {
-      // Ignore it if the file didn't exist yet and couldn't be unlinked
-      if (!isSystemError(error) || error.code !== 'ENOENT') {
-        throw error;
-      }
+    // Delete the old file with the (now) wrong extension
+    const oldLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, false);
+    if (oldLink.filePath !== link.filePath) {
+      await remove(oldLink.filePath);
     }
   }
 
