@@ -20,7 +20,7 @@ For example:
 You may optionally specify other parameters 
 as described in the [Identity Provider documentation](./identity-provider.md#json-api).
 
-For example, to use a pre-existing WebID:
+For example, to set up a pod without registering the generated WebID with the Identity Provider:
 ```json
 [
   {
@@ -28,7 +28,10 @@ For example, to use a pre-existing WebID:
     "email": "hello@example.com",
     "password": "abc123",
     "webId": "https://pod.inrupt.com/example/profile/card#me",
-    "createWebId": false
+    "register": false
   }
 ]
 ```
+
+This feature cannot be used to register pods with pre-existing WebIDs,
+which requires an interactive validation step.
