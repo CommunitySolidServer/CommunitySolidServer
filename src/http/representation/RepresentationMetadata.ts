@@ -302,9 +302,9 @@ export class RepresentationMetadata {
       return;
     }
     if (terms.length > 1) {
-      this.logger.error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
+      this.logger.error(`Multiple results for ${predicate.value}`);
       throw new InternalServerError(
-        `Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`,
+        `Multiple results for ${predicate.value}`,
       );
     }
     return terms[0];
