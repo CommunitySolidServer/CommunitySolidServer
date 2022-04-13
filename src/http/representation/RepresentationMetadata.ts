@@ -426,10 +426,7 @@ export class RepresentationMetadata {
    * so only use this for internal constants!
    * @param name - Predicate to potentially transform.
    */
-  private toCachedNamedNode(name: NamedNode | string): NamedNode {
-    if (typeof name !== 'string') {
-      return name;
-    }
+  private toCachedNamedNode(name: string): NamedNode {
     if (!(name in cachedNamedNodes)) {
       cachedNamedNodes[name] = DataFactory.namedNode(name);
     }
