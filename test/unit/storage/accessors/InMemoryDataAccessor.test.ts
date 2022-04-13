@@ -140,7 +140,7 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}container/`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(2);
-      expect(metadata.getAll(RDF.type).map((term): string => term.value))
+      expect(metadata.getAll(RDF.terms.type).map((term): string => term.value))
         .toEqual([ LDP.Container, LDP.BasicContainer ]);
 
       const children = [];
@@ -168,7 +168,7 @@ describe('An InMemoryDataAccessor', (): void => {
       expect(metadata.identifier.value).toBe(`${base}`);
       const quads = metadata.quads();
       expect(quads).toHaveLength(1);
-      expect(metadata.getAll(RDF.type)).toHaveLength(1);
+      expect(metadata.getAll(RDF.terms.type)).toHaveLength(1);
 
       const children = [];
       for await (const child of accessor.getChildren(identifier)) {
