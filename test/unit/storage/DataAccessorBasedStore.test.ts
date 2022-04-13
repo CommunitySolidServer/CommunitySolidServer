@@ -303,8 +303,8 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('errors on a slug ending on / without Link rel:type Container header.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(SOLID_HTTP.slug, 'noContainer/');
+      representation.metadata.removeAll(RDF.terms.type);
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'noContainer/');
       representation.data = guardedStreamFrom([ `` ]);
       const result = store.addResource(resourceID, representation);
 
@@ -316,9 +316,9 @@ describe('A DataAccessorBasedStore', (): void => {
     it('creates a URI when the incoming slug does not end with /, ' +
       'but has a Link rel:type Container header.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.removeAll(RDF.type);
-      representation.metadata.add(RDF.type, LDP.terms.Container);
-      representation.metadata.add(SOLID_HTTP.slug, 'newContainer');
+      representation.metadata.removeAll(RDF.terms.type);
+      representation.metadata.add(RDF.terms.type, LDP.terms.Container);
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'newContainer');
       representation.data = guardedStreamFrom([ `` ]);
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({

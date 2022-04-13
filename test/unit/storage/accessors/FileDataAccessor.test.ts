@@ -232,8 +232,8 @@ describe('A FileDataAccessor', (): void => {
         `${base}container/resource2`,
       ]));
 
-      const types1 = children[0].getAll(RDF.type).map((term): string => term.value);
-      const types2 = children[1].getAll(RDF.type).map((term): string => term.value);
+      const types1 = children[0].getAll(RDF.terms.type).map((term): string => term.value);
+      const types2 = children[1].getAll(RDF.terms.type).map((term): string => term.value);
 
       expect(types1).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
       for (const type of types2) {
