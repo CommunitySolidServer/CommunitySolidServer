@@ -5,22 +5,22 @@ describe('A CombinedSettingsResolver', (): void => {
   const values = { test: 'data' };
   const varPort = 'urn:solid-server:default:variable:port';
   const varLog = 'urn:solid-server:default:variable:loggingLevel';
-  let computerPort: jest.Mocked<SettingsExtractor>;
-  let computerLog: jest.Mocked<SettingsExtractor>;
+  let resolverPort: jest.Mocked<SettingsExtractor>;
+  let resolverLog: jest.Mocked<SettingsExtractor>;
   let resolver: CombinedSettingsResolver;
 
   beforeEach(async(): Promise<void> => {
-    computerPort = {
+    resolverPort = {
       handleSafe: jest.fn().mockResolvedValue(3000),
     } as any;
 
-    computerLog = {
+    resolverLog = {
       handleSafe: jest.fn().mockResolvedValue('info'),
     } as any;
 
     resolver = new CombinedSettingsResolver({
-      [varPort]: computerPort,
-      [varLog]: computerLog,
+      [varPort]: resolverPort,
+      [varLog]: resolverLog,
     });
   });
 
@@ -32,7 +32,7 @@ describe('A CombinedSettingsResolver', (): void => {
   });
 
   it('rethrows the error if something goes wrong.', async(): Promise<void> => {
-    computerPort.handleSafe.mockRejectedValueOnce(new Error('bad data'));
+    resolverPort.handleSafe.mockRejectedValueOnce(new Error('bad data'));
     await expect(resolver.handle(values)).rejects.toThrow(`Error in computing value for variable ${varPort}: bad data`);
   });
 });
