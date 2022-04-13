@@ -31,10 +31,13 @@ export class YargsCliExtractor extends CliExtractor {
    * @param parameters - Parameters that should be parsed from the CLI. @range {json}
    *                     Format details can be found at https://yargs.js.org/docs/#api-reference-optionskey-opt
    * @param options - Additional options to configure yargs. @range {json}
+   * @param extendedParameters - The same as @parameters. Separate variable so in Components.js
+   *                          we can have both a default set and a user-added version. @range {json}
    */
-  public constructor(parameters: YargsArgOptions = {}, options: CliOptions = {}) {
+  public constructor(parameters: YargsArgOptions = {}, options: CliOptions = {},
+    extendedParameters: YargsArgOptions = {}) {
     super();
-    this.yargsArgOptions = parameters;
+    this.yargsArgOptions = { ...parameters, ...extendedParameters };
     this.yargvOptions = options;
   }
 

@@ -4,6 +4,7 @@ import { YargsCliExtractor } from '../../../../src/init/cli/YargsCliExtractor';
 const error = jest.spyOn(console, 'error').mockImplementation(jest.fn());
 const log = jest.spyOn(console, 'log').mockImplementation(jest.fn());
 const exit = jest.spyOn(process, 'exit').mockImplementation(jest.fn() as any);
+
 describe('A YargsCliExtractor', (): void => {
   const parameters: YargsArgOptions = {
     baseUrl: { alias: 'b', requiresArg: true, type: 'string' },
@@ -39,6 +40,16 @@ describe('A YargsCliExtractor', (): void => {
     extractor = new YargsCliExtractor();
     const argv = [ 'node', 'script', '-b', 'http://localhost:3000/', '-p', '3000' ];
     await expect(extractor.handle(argv)).resolves.toEqual(expect.objectContaining({}));
+  });
+
+  it('combines parameters and extra parameters.', async(): Promise<void> => {
+    extractor = new YargsCliExtractor(parameters, {}, { test: { alias: 't', requiresArg: true, type: 'string' }});
+    const argv = [ 'node', 'script', '-b', 'http://localhost:3000/', '-p', '3000', '-t', 'test' ];
+    await expect(extractor.handle(argv)).resolves.toEqual(expect.objectContaining({
+      baseUrl: 'http://localhost:3000/',
+      port: 3000,
+      test: 'test',
+    }));
   });
 
   it('prints usage if defined.', async(): Promise<void> => {
