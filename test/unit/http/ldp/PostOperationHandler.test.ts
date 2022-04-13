@@ -41,7 +41,7 @@ describe('A PostOperationHandler', (): void => {
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
     expect(result.metadata).toBeInstanceOf(RepresentationMetadata);
-    expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe('newPath');
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe('newPath');
     expect(result.data).toBeUndefined();
     expect(store.addResource).toHaveBeenCalledTimes(1);
     expect(store.addResource).toHaveBeenLastCalledWith(operation.target, body, conditions);

@@ -544,7 +544,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * @param metadata - Metadata of the (new) resource.
    */
   protected isContainerType(metadata: RepresentationMetadata): boolean {
-    return this.hasContainerType(metadata.getAll(RDF.type));
+    return this.hasContainerType(metadata.getAll(RDF.terms.type));
   }
 
   /**
@@ -558,7 +558,7 @@ export class DataAccessorBasedStore implements ResourceStore {
    * Verifies if this is the metadata of a root storage container.
    */
   protected isRootStorage(metadata: RepresentationMetadata): boolean {
-    return metadata.getAll(RDF.type).some((term): boolean => term.value === PIM.Storage);
+    return metadata.getAll(RDF.terms.type).some((term): boolean => term.value === PIM.Storage);
   }
 
   /**

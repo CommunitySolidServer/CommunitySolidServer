@@ -22,14 +22,14 @@ describe('A LinkParser', (): void => {
     request.headers.link = '<http://test.com/type>;rel="type"';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.get(RDF.type)?.value).toBe('http://test.com/type');
+    expect(metadata.get(RDF.terms.type)?.value).toBe('http://test.com/type');
   });
 
   it('supports multiple link headers.', async(): Promise<void> => {
     request.headers.link = [ '<http://test.com/typeA>;rel="type"', '<http://test.com/typeB>;rel=type' ];
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(2);
-    expect(metadata.getAll(RDF.type).map((term): any => term.value))
+    expect(metadata.getAll(RDF.terms.type).map((term): any => term.value))
       .toEqual([ 'http://test.com/typeA', 'http://test.com/typeB' ]);
   });
 
@@ -37,7 +37,7 @@ describe('A LinkParser', (): void => {
     request.headers.link = '<http://test.com/typeA>;rel="type" , <http://test.com/typeB>;rel=type';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(2);
-    expect(metadata.getAll(RDF.type).map((term): any => term.value))
+    expect(metadata.getAll(RDF.terms.type).map((term): any => term.value))
       .toEqual([ 'http://test.com/typeA', 'http://test.com/typeB' ]);
   });
 

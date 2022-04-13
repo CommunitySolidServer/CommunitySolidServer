@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import type { AuxiliaryIdentifierStrategy } from '../../../../src/http/auxiliary/AuxiliaryIdentifierStrategy';
 import { LinkMetadataGenerator } from '../../../../src/http/auxiliary/LinkMetadataGenerator';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -35,7 +36,7 @@ describe('A LinkMetadataGenerator', (): void => {
     const metadata = new RepresentationMetadata(subjectId);
     await expect(generator.handle(metadata)).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.get(link)?.value).toBe(auxiliaryId.path);
-    expect(metadata.getAll(link, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
+    expect(metadata.get(DataFactory.namedNode(link))?.value).toBe(auxiliaryId.path);
+    expect(metadata.getAll(DataFactory.namedNode(link), SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
   });
 });

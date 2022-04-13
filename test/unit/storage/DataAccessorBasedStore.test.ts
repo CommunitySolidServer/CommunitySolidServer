@@ -181,7 +181,8 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: true });
       expect(await arrayifyStream(result.data)).toEqual([ resourceData ]);
       expect(result.metadata.contentType).toBe('text/plain');
-      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
+        .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will return a data stream that matches the metadata for containers.', async(): Promise<void> => {
@@ -196,7 +197,8 @@ describe('A DataAccessorBasedStore', (): void => {
       expect(result).toMatchObject({ binary: false });
       expect(await arrayifyStream(result.data)).toBeRdfIsomorphic(metaMirror.quads());
       expect(result.metadata.contentType).toEqual(INTERNAL_QUADS);
-      expect(result.metadata.get('AUXILIARY')?.value).toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
+      expect(result.metadata.get(namedNode('AUXILIARY'))?.value)
+        .toBe(auxiliaryStrategy.getAuxiliaryIdentifier(resourceID).path);
     });
 
     it('will remove containment triples referencing auxiliary resources.', async(): Promise<void> => {
@@ -292,7 +294,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('creates a URI based on the incoming slug.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.terms.type);
-      representation.metadata.add(SOLID_HTTP.slug, 'newName');
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'newName');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({
         path: `${root}newName`,
@@ -326,7 +328,7 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('generates a new URI if adding the slug would create an existing URI.', async(): Promise<void> => {
       const resourceID = { path: root };
-      representation.metadata.add(SOLID_HTTP.slug, 'newName');
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'newName');
       accessor.data[`${root}newName`] = representation;
       const result = await store.addResource(resourceID, representation);
       expect(result).not.toEqual({
@@ -340,7 +342,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('generates http://test.com/%26%26 when slug is &%26.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.terms.type);
-      representation.metadata.add(SOLID_HTTP.slug, '&%26');
+      representation.metadata.add(SOLID_HTTP.terms.slug, '&%26');
       const result = await store.addResource(resourceID, representation);
       expect(result).toEqual({ path: `${root}%26%26` });
     });
@@ -349,7 +351,7 @@ describe('A DataAccessorBasedStore', (): void => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.terms.type);
       representation.data = guardedStreamFrom([ `` ]);
-      representation.metadata.add(SOLID_HTTP.slug, 'sla/sh/es');
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'sla/sh/es');
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(BadRequestHttpError);
       await expect(result).rejects.toThrow('Slugs should not contain slashes');
@@ -358,7 +360,7 @@ describe('A DataAccessorBasedStore', (): void => {
     it('errors if the slug would cause an auxiliary resource URI to be generated.', async(): Promise<void> => {
       const resourceID = { path: root };
       representation.metadata.removeAll(RDF.terms.type);
-      representation.metadata.add(SOLID_HTTP.slug, 'test.dummy');
+      representation.metadata.add(SOLID_HTTP.terms.slug, 'test.dummy');
       const result = store.addResource(resourceID, representation);
       await expect(result).rejects.toThrow(ForbiddenHttpError);
       await expect(result).rejects.toThrow('Slug bodies that would result in an auxiliary resource are forbidden');
@@ -488,15 +490,15 @@ describe('A DataAccessorBasedStore', (): void => {
 
     it('does not write generated metadata.', async(): Promise<void> => {
       const resourceID = { path: `${root}resource` };
-      representation.metadata.add('notGen', 'value');
-      representation.metadata.add('gen', 'value', SOLID_META.terms.ResponseMetadata);
+      representation.metadata.add(namedNode('notGen'), 'value');
+      representation.metadata.add(namedNode('gen'), 'value', SOLID_META.terms.ResponseMetadata);
       await expect(store.setRepresentation(resourceID, representation)).resolves.toEqual([
         { path: root },
         { path: `${root}resource` },
       ]);
       await expect(arrayifyStream(accessor.data[resourceID.path].data)).resolves.toEqual([ resourceData ]);
-      expect(accessor.data[resourceID.path].metadata.get('notGen')?.value).toBe('value');
-      expect(accessor.data[resourceID.path].metadata.get('gen')).toBeUndefined();
+      expect(accessor.data[resourceID.path].metadata.get(namedNode('notGen'))?.value).toBe('value');
+      expect(accessor.data[resourceID.path].metadata.get(namedNode('gen'))).toBeUndefined();
     });
 
     it('can write resources even if root does not exist.', async(): Promise<void> => {

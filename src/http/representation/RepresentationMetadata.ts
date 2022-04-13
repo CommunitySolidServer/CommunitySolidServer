@@ -121,7 +121,7 @@ export class RepresentationMetadata {
    */
   public quads(
     subject: NamedNode | BlankNode | string | null = null,
-    predicate: NamedNode | string | null = null,
+    predicate: NamedNode | null = null,
     object: NamedNode | BlankNode | Literal | string | null = null,
     graph: MetadataGraph | null = null,
   ): Quad[] {
@@ -172,12 +172,12 @@ export class RepresentationMetadata {
    */
   public addQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
     this.store.addQuad(toNamedTerm(subject),
-      this.toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this;
@@ -204,7 +204,7 @@ export class RepresentationMetadata {
     graph?: MetadataGraph,
   ): this {
     const quads = this.quads(toNamedTerm(subject),
-      this.toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this.removeQuads(quads);
@@ -224,7 +224,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to add.
    * @param graph - Optional graph of where to add the values to.
    */
-  public add(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public add(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
   }
 
@@ -242,12 +242,11 @@ export class RepresentationMetadata {
    * Helper function to simplify add/remove
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
    */
-  private forQuads(predicate: NamedNode | string, object: MetadataValue,
+  private forQuads(predicate: NamedNode, object: MetadataValue,
     forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
-    const predicateNode = this.toCachedNamedNode(predicate);
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
-      forFn(predicateNode, toObjectTerm(obj, true));
+      forFn(predicate, toObjectTerm(obj, true));
     }
     return this;
   }
@@ -258,7 +257,7 @@ export class RepresentationMetadata {
    * @param graph - Optional graph where to remove from.
    */
   public removeAll(predicate: NamedNode, graph?: MetadataGraph): this {
-    this.removeQuads(this.store.getQuads(this.id, this.toCachedNamedNode(predicate), null, graph ?? null));
+    this.removeQuads(this.store.getQuads(this.id, predicate, null, graph ?? null));
     return this;
   }
 
@@ -284,7 +283,7 @@ export class RepresentationMetadata {
    * @returns An array with all matches.
    */
   public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
-    return this.store.getQuads(this.id, this.toCachedNamedNode(predicate), null, graph ?? null)
+    return this.store.getQuads(this.id, predicate, null, graph ?? null)
       .map((quad): Term => quad.object);
   }
 
@@ -297,7 +296,7 @@ export class RepresentationMetadata {
    *
    * @returns The corresponding value. Undefined if there is no match
    */
-  public get(predicate: NamedNode | string, graph?: MetadataGraph): Term | undefined {
+  public get(predicate: NamedNode, graph?: MetadataGraph): Term | undefined {
     const terms = this.getAll(predicate, graph);
     if (terms.length === 0) {
       return;

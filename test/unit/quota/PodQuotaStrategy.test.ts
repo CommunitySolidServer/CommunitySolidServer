@@ -39,7 +39,7 @@ describe('PodQuotaStrategy', (): void => {
         async(identifier: ResourceIdentifier): Promise<RepresentationMetadata> => {
           const res = new RepresentationMetadata();
           if (identifier.path === `${base}nested/`) {
-            res.add(RDF.type, PIM.Storage);
+            res.add(RDF.terms.type, PIM.Storage);
           }
           return res;
         },

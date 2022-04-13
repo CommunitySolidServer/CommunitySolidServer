@@ -133,7 +133,7 @@ describe('An InMemoryDataAccessor', (): void => {
       )).resolves.toBeUndefined();
 
       const newMetadata = new RepresentationMetadata(inputMetadata);
-      newMetadata.add(RDF.type, LDP.terms.BasicContainer);
+      newMetadata.add(RDF.terms.type, LDP.terms.BasicContainer);
       await expect(accessor.writeContainer(identifier, newMetadata)).resolves.toBeUndefined();
 
       metadata = await accessor.getMetadata(identifier);

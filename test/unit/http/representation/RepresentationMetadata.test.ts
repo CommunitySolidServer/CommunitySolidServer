@@ -82,14 +82,14 @@ describe('A RepresentationMetadata', (): void => {
 
     it('takes overrides for specific predicates.', async(): Promise<void> => {
       metadata = new RepresentationMetadata({ predVal: 'objVal' });
-      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
 
       metadata = new RepresentationMetadata({ predVal: literal('objVal') });
-      expect(metadata.get('predVal')).toEqualRdfTerm(literal('objVal'));
+      expect(metadata.get(namedNode('predVal'))).toEqualRdfTerm(literal('objVal'));
 
       metadata = new RepresentationMetadata({ predVal: [ 'objVal1', literal('objVal2') ], predVal2: 'objVal3' });
-      expect(metadata.getAll('predVal')).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
-      expect(metadata.get('predVal2')).toEqualRdfTerm(literal('objVal3'));
+      expect(metadata.getAll(namedNode('predVal'))).toEqualRdfTermArray([ literal('objVal1'), literal('objVal2') ]);
+      expect(metadata.get(namedNode('predVal2'))).toEqualRdfTerm(literal('objVal3'));
     });
 
     it('can combine overrides with an identifier.', async(): Promise<void> => {
@@ -153,7 +153,7 @@ describe('A RepresentationMetadata', (): void => {
       // `setMetadata` should have the same result as the following
       const expectedMetadata = new RepresentationMetadata(identifier).addQuads(inputQuads);
       expectedMetadata.identifier = namedNode('otherId');
-      expectedMetadata.add('test:pred', 'objVal');
+      expectedMetadata.add(namedNode('test:pred'), 'objVal');
 
       expect(metadata.identifier).toEqual(other.identifier);
       expect(metadata.quads()).toBeRdfIsomorphic(expectedMetadata.quads());
@@ -161,13 +161,13 @@ describe('A RepresentationMetadata', (): void => {
 
     it('can add a quad.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'));
-      metadata.addQuad('random', 'new', 'triple');
+      metadata.addQuad('random', namedNode('new'), 'triple');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
     it('can add a quad with a graph.', async(): Promise<void> => {
       const newQuad = quad(namedNode('random'), namedNode('new'), literal('triple'), namedNode('graph'));
-      metadata.addQuad('random', 'new', 'triple', 'graph');
+      metadata.addQuad('random', namedNode('new'), 'triple', 'graph');
       expect(metadata.quads()).toBeRdfIsomorphic([ ...inputQuads, newQuad ]);
     });
 
@@ -277,7 +277,6 @@ describe('A RepresentationMetadata', (): void => {
 
     it('errors if there are multiple values when getting a value.', async(): Promise<void> => {
       expect((): any => metadata.get(namedNode('has'))).toThrow(Error);
-      expect((): any => metadata.get('has')).toThrow(Error);
     });
 
     it('can set the value of a predicate.', async(): Promise<void> => {

@@ -30,6 +30,6 @@ describe('A SlugParser', (): void => {
     request.headers.slug = 'slugA';
     await expect(parser.handle({ request, metadata })).resolves.toBeUndefined();
     expect(metadata.quads()).toHaveLength(1);
-    expect(metadata.get(SOLID_HTTP.slug)?.value).toBe('slugA');
+    expect(metadata.get(SOLID_HTTP.terms.slug)?.value).toBe('slugA');
   });
 });
