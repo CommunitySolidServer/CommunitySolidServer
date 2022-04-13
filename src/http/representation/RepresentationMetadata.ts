@@ -282,7 +282,7 @@ export class RepresentationMetadata {
    *
    * @returns An array with all matches.
    */
-  public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
+  public getAll(predicate: NamedNode, graph?: MetadataGraph): Term[] {
     return this.store.getQuads(this.id, predicate, null, graph ?? null)
       .map((quad): Term => quad.object);
   }

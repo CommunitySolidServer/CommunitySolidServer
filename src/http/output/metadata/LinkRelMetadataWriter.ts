@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
@@ -21,7 +22,8 @@ export class LinkRelMetadataWriter extends MetadataWriter {
     const keys = Object.keys(this.linkRelMap);
     this.logger.debug(`Available link relations: ${keys.length}`);
     for (const key of keys) {
-      const values = input.metadata.getAll(key).map((term): string => `<${term.value}>; rel="${this.linkRelMap[key]}"`);
+      const values = input.metadata.getAll(DataFactory.namedNode(key))
+        .map((term): string => `<${term.value}>; rel="${this.linkRelMap[key]}"`);
       if (values.length > 0) {
         this.logger.debug(`Adding Link header ${values}`);
         addHeader(input.response, 'Link', values);

@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import type { HttpResponse } from '../../../server/HttpResponse';
 import { addHeader } from '../../../util/HeaderUtil';
 import type { RepresentationMetadata } from '../../representation/RepresentationMetadata';
@@ -17,7 +18,7 @@ export class MappedMetadataWriter extends MetadataWriter {
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
     for (const [ predicate, header ] of this.headerMap) {
-      const terms = input.metadata.getAll(predicate);
+      const terms = input.metadata.getAll(DataFactory.namedNode(predicate));
       if (terms.length > 0) {
         addHeader(input.response, header, terms.map((term): string => term.value));
       }
