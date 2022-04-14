@@ -27,6 +27,19 @@ const cachedNamedNodes: Record<string, NamedNode> = {
 };
 
 /**
+ * Converts the incoming name (URI or shorthand) to a named node.
+ * The generated terms get cached to reduce the number of created nodes,
+ * so only use this for internal constants!
+ * @param name - Predicate to potentially transform.
+ */
+function toCachedNamedNode(name: string): NamedNode {
+  if (!(name in cachedNamedNodes)) {
+    cachedNamedNodes[name] = DataFactory.namedNode(name);
+  }
+  return cachedNamedNodes[name];
+}
+
+/**
  * Stores the metadata triples and provides methods for easy access.
  * Most functions return the metadata object to allow for chaining.
  */
@@ -103,7 +116,7 @@ export class RepresentationMetadata {
 
   private setOverrides(overrides: Record<string, MetadataValue>): void {
     for (const predicate of Object.keys(overrides)) {
-      const namedPredicate = this.toCachedNamedNode(predicate);
+      const namedPredicate = toCachedNamedNode(predicate);
       this.removeAll(namedPredicate);
 
       let objects = overrides[predicate];
@@ -418,18 +431,5 @@ export class RepresentationMetadata {
     if (input) {
       this.set(CONTENT_LENGTH_TERM, toLiteral(input, XSD.terms.integer));
     }
-  }
-
-  /**
-   * Converts the incoming name (URI or shorthand) to a named node.
-   * The generated terms get cached to reduce the number of created nodes,
-   * so only use this for internal constants!
-   * @param name - Predicate to potentially transform.
-   */
-  private toCachedNamedNode(name: string): NamedNode {
-    if (!(name in cachedNamedNodes)) {
-      cachedNamedNodes[name] = DataFactory.namedNode(name);
-    }
-    return cachedNamedNodes[name];
   }
 }
