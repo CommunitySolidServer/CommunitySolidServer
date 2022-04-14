@@ -112,6 +112,11 @@ describe('PathUtil', (): void => {
     it('leaves the query string untouched.', (): void => {
       expect(decodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toBe('/a path&/name?abc=def&xyz');
     });
+
+    it('ignores url encoded path separator characters.', (): void => {
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%2F')).toBe('/a path&/c1/c2/t1%2F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%5C')).toBe('/a path&/c1/c2/t1%5C');
+    });
   });
 
   describe('#encodeUriPathComponents', (): void => {
@@ -121,6 +126,11 @@ describe('PathUtil', (): void => {
 
     it('leaves the query string untouched.', (): void => {
       expect(encodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toBe('/a%2520path%26/name?abc=def&xyz');
+    });
+
+    it('does not double-encode url encoded path separator characters.', (): void => {
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%2F')).toBe('/a%2520path%26/c1/c2/t1%2F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%5C')).toBe('/a%2520path%26/c1/c2/t1%5C');
     });
   });
 
