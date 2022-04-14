@@ -5,6 +5,45 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 
+// Characters to ignore when URL decoding the URI path to a file path.
+const pathComponentDelimiters = [ '/', '\\' ];
+// Regex to find all instances of encoded path component delimiters.
+const encodedDelimiterRegex = new RegExp(
+  `${pathComponentDelimiters.map((delimiter): string => encodeURIComponent(delimiter)).join('|')}`, 'giu',
+);
+// Mapping of the replacements to perform in the preventDelimiterDecoding helper function.
+const preventDelimiterDecodingMap = Object.fromEntries(pathComponentDelimiters.map((delimiter): [string, string] => {
+  const encodedDelimiter = encodeURIComponent(delimiter);
+  return [ encodedDelimiter, encodeURIComponent(encodedDelimiter) ];
+}));
+// Mapping of the replacements to perform in the preventDelimiterEncoding helper function.
+const preventDelimiterEncodingMap = Object.fromEntries(pathComponentDelimiters.map((delimiter): [string, string] => {
+  const encodedDelimiter = encodeURIComponent(delimiter);
+  return [ encodedDelimiter, delimiter ];
+}));
+
+/**
+ * Prevents some characters from being URL decoded by escaping them.
+ * The characters to 'escape' are declared in codecExceptions.
+ *
+ * @param pathComponent - The path component to apply the escaping on.
+ * @returns A copy of the input path that is safe to apply URL decoding on.
+ */
+function preventDelimiterDecoding(pathComponent: string): string {
+  return pathComponent.replace(encodedDelimiterRegex, (delimiter): string => preventDelimiterDecodingMap[delimiter]);
+}
+
+/**
+ * Prevents some characters from being URL encoded by escaping them.
+ * The characters to 'escape' are declared in codecExceptions.
+ *
+ * @param pathComponent - The path component to apply the escaping on.
+ * @returns A copy of the input path that is safe to apply URL encoding on.
+ */
+function preventDelimiterEncoding(pathComponent: string): string {
+  return pathComponent.replace(encodedDelimiterRegex, (delimiter): string => preventDelimiterEncodingMap[delimiter]);
+}
+
 /**
  * Changes a potential Windows path into a POSIX path.
  *
@@ -118,6 +157,11 @@ function transformPathComponents(path: string, transform: (part: string) => stri
 /**
  * Converts a URI path to the canonical version by splitting on slashes,
  * decoding any percent-based encodings, and then encoding any special characters.
+ * This function is used to clean unwanted characters in the components of
+ * the provided path.
+ *
+ * @param path - The path to convert to its canonical URI path form.
+ * @returns The canonical URI path form of the provided path.
  */
 export function toCanonicalUriPath(path: string): string {
   return transformPathComponents(path, (part): string =>
@@ -125,17 +169,29 @@ export function toCanonicalUriPath(path: string): string {
 }
 
 /**
- * Decodes all components of a URI path.
+ * This function is used when converting a URI to a file path. Decodes all components of a URI path,
+ * with the exception of encoded slash characters, as this would lead to unexpected file locations
+ * being targeted (resulting in erroneous behaviour of the file based backend).
+ *
+ * @param path - The path to decode the URI path components of.
+ * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
-  return transformPathComponents(path, decodeURIComponent);
+  return transformPathComponents(path, (part): string =>
+    decodeURIComponent(preventDelimiterDecoding(part)));
 }
 
 /**
- * Encodes all (non-slash) special characters in a URI path.
+ * This function is used in the process of converting a file path to a URI. Encodes all (non-slash)
+ * special characters in a URI path, with the exception of encoded slash characters, as this would
+ * lead to unnecessary double encoding, resulting in a URI that differs from the expected result.
+ *
+ * @param path - The path to encode the URI path components of.
+ * @returns An encoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function encodeUriPathComponents(path: string): string {
-  return transformPathComponents(path, encodeURIComponent);
+  return transformPathComponents(path, (part): string =>
+    encodeURIComponent(preventDelimiterEncoding(part)));
 }
 
 /**
