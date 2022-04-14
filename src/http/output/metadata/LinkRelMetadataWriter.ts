@@ -1,3 +1,4 @@
+import type { NamedNode } from 'n3';
 import { DataFactory } from 'n3';
 import { getLoggerFor } from '../../../logging/LogUtil';
 import type { HttpResponse } from '../../../server/HttpResponse';
@@ -10,20 +11,26 @@ import { MetadataWriter } from './MetadataWriter';
  * The values of the objects will be put in a Link header with the corresponding "rel" value.
  */
 export class LinkRelMetadataWriter extends MetadataWriter {
-  private readonly linkRelMap: Record<string, string>;
+  private readonly linkRelMap: Map<NamedNode, string>;
   protected readonly logger = getLoggerFor(this);
 
   public constructor(linkRelMap: Record<string, string>) {
     super();
-    this.linkRelMap = linkRelMap;
+
+    this.linkRelMap = new Map<NamedNode, string>();
+    for (const [ key, value ] of Object.entries(linkRelMap)) {
+      this.linkRelMap.set(DataFactory.namedNode(key), value);
+    }
+    Object.entries(linkRelMap).forEach(([ key, value ]): void => {
+      this.linkRelMap.set(DataFactory.namedNode(key), value);
+    });
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
-    const keys = Object.keys(this.linkRelMap);
-    this.logger.debug(`Available link relations: ${keys.length}`);
-    for (const key of keys) {
-      const values = input.metadata.getAll(DataFactory.namedNode(key))
-        .map((term): string => `<${term.value}>; rel="${this.linkRelMap[key]}"`);
+    this.logger.debug(`Available link relations: ${this.linkRelMap.size}`);
+    for (const [ predicate, relValue ] of this.linkRelMap) {
+      const values = input.metadata.getAll(predicate)
+        .map((term): string => `<${term.value}>; rel="${relValue}"`);
       if (values.length > 0) {
         this.logger.debug(`Adding Link header ${values}`);
         addHeader(input.response, 'Link', values);
