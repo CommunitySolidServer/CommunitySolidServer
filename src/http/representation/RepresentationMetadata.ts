@@ -22,9 +22,7 @@ export function isRepresentationMetadata(object: any): object is RepresentationM
 }
 
 // Caches named node conversions
-const cachedNamedNodes: Record<string, NamedNode> = {
-  contentType: CONTENT_TYPE_TERM,
-};
+const cachedNamedNodes: Record<string, NamedNode> = {};
 
 /**
  * Converts the incoming name (URI or shorthand) to a named node.

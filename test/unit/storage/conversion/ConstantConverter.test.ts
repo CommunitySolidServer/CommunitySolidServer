@@ -63,7 +63,7 @@ describe('A ConstantConverter', (): void => {
 
   it('does not support representations that are already in the right format.', async(): Promise<void> => {
     const preferences = { type: { 'text/html': 1 }};
-    const metadata = new RepresentationMetadata({ contentType: 'text/html' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/html' });
     const representation = { metadata } as any;
     const args = { identifier, representation, preferences };
 
@@ -101,7 +101,7 @@ describe('A ConstantConverter', (): void => {
 
   it('replaces the representation of a supported request.', async(): Promise<void> => {
     const preferences = { type: { 'text/html': 1 }};
-    const metadata = new RepresentationMetadata({ contentType: 'text/turtle' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/turtle' });
     const representation = { metadata, data: { destroy: jest.fn() }} as any;
     const args = { identifier, representation, preferences };
 
