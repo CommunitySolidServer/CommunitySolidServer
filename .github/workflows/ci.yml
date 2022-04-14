@@ -119,7 +119,7 @@ jobs:
       - name: Run integration tests
         run: npm run test:integration
 
-  test-deploy:
+  test-configs:
     runs-on: ubuntu-latest
     services:
       sparql-endpoint:
@@ -135,10 +135,16 @@ jobs:
           node-version: '16.x'
       - name: Check out repository
         uses: actions/checkout@v3
+      - name: Generate certificates https config
+        uses: kofemann/action-create-certificate@v0.0.4
+        with:
+          hostcert: 'hostcert.pem'
+          hostkey:  'hostkey.pem'
+          cachain:  'ca-chain.pem'
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests
-        run: npm run test:deploy
+        run: test/deploy/validate-configs.sh
 
   coveralls:
     needs: test-unit
