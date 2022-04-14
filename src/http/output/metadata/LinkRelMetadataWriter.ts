@@ -21,9 +21,6 @@ export class LinkRelMetadataWriter extends MetadataWriter {
     for (const [ key, value ] of Object.entries(linkRelMap)) {
       this.linkRelMap.set(DataFactory.namedNode(key), value);
     }
-    Object.entries(linkRelMap).forEach(([ key, value ]): void => {
-      this.linkRelMap.set(DataFactory.namedNode(key), value);
-    });
   }
 
   public async handle(input: { response: HttpResponse; metadata: RepresentationMetadata }): Promise<void> {
