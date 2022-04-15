@@ -9,7 +9,7 @@ import { NotFoundHttpError } from '../../../src/util/errors/NotFoundHttpError';
 import type { IdentifierStrategy } from '../../../src/util/identifiers/IdentifierStrategy';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { PIM, RDF } from '../../../src/util/Vocabularies';
-import { mockFs } from '../../util/Util';
+import { mockFileSystem } from '../../util/Util';
 
 jest.mock('fs');
 
@@ -24,7 +24,7 @@ describe('PodQuotaStrategy', (): void => {
 
   beforeEach((): void => {
     jest.restoreAllMocks();
-    mockFs(rootFilePath, new Date());
+    mockFileSystem(rootFilePath, new Date());
     mockSize = { amount: 2000, unit: UNIT_BYTES };
     identifierStrategy = new SingleRootIdentifierStrategy(base);
     mockReporter = {

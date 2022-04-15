@@ -4,7 +4,7 @@ import { UNIT_BYTES } from '../../../src/storage/size-reporter/Size';
 import type { Size } from '../../../src/storage/size-reporter/Size';
 import type { SizeReporter } from '../../../src/storage/size-reporter/SizeReporter';
 import { guardedStreamFrom, pipeSafely } from '../../../src/util/StreamUtil';
-import { mockFs } from '../../util/Util';
+import { mockFileSystem } from '../../util/Util';
 
 jest.mock('fs');
 
@@ -26,7 +26,7 @@ describe('A QuotaStrategy', (): void => {
 
   beforeEach((): void => {
     jest.restoreAllMocks();
-    mockFs(rootFilePath, new Date());
+    mockFileSystem(rootFilePath, new Date());
     mockSize = { amount: 2000, unit: UNIT_BYTES };
     mockReporter = {
       getSize: jest.fn().mockResolvedValue({ unit: mockSize.unit, amount: 50 }),

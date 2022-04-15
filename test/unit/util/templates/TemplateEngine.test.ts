@@ -1,6 +1,6 @@
 import { resolveAssetPath } from '../../../../src/util/PathUtil';
 import { getTemplateFilePath, readTemplate } from '../../../../src/util/templates/TemplateEngine';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
@@ -10,7 +10,7 @@ describe('TemplateEngine', (): void => {
     const templatePath = 'other';
 
     beforeEach(async(): Promise<void> => {
-      const { data } = mockFs(resolveAssetPath(''));
+      const { data } = mockFileSystem(resolveAssetPath(''));
       Object.assign(data, {
         'template.xyz': '{{template}}',
         other: {
@@ -45,7 +45,7 @@ describe('TemplateEngine', (): void => {
     const templatePath = 'other';
 
     beforeEach(async(): Promise<void> => {
-      const { data } = mockFs(resolveAssetPath(''));
+      const { data } = mockFileSystem(resolveAssetPath(''));
       Object.assign(data, {
         'template.xyz': '{{template}}',
         other: {

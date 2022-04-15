@@ -16,11 +16,12 @@ import { isContainerPath } from '../../../../src/util/PathUtil';
 import { guardedStreamFrom, readableToString } from '../../../../src/util/StreamUtil';
 import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 const { namedNode } = DataFactory;
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 const rootFilePath = 'uploads';
 const now = new Date();
@@ -36,7 +37,7 @@ describe('A FileDataAccessor', (): void => {
   let data: Guarded<Readable>;
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath, now);
+    cache = mockFileSystem(rootFilePath, now);
     mapper = new ExtensionBasedMapper(base, rootFilePath);
     accessor = new FileDataAccessor(mapper);
 
@@ -71,6 +72,13 @@ describe('A FileDataAccessor', (): void => {
       const stream = await accessor.getData({ path: `${base}resource` });
       await expect(readableToString(stream)).resolves.toBe('data');
     });
+
+    it('throws an error if something else went wrong.', async(): Promise<void> => {
+      jest.requireMock('fs-extra').stat = (): any => {
+        throw new Error('error');
+      };
+      await expect(accessor.getData({ path: `${base}resource` })).rejects.toThrow('error');
+    });
   });
 
   describe('getting metadata', (): void => {
@@ -88,7 +96,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws an error if something else went wrong.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.lstat = (): any => {
+      jest.requireMock('fs-extra').lstat = (): any => {
         throw new Error('error');
       };
       await expect(accessor.getMetadata({ path: base })).rejects.toThrow('error');
@@ -298,7 +306,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('errors if there is a problem deleting the old metadata file.', async(): Promise<void> => {
       cache.data = { resource: 'data', 'resource.meta': 'metadata!' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
@@ -352,7 +360,7 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws an error if there is an issue deleting the original file.', async(): Promise<void> => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.' };
-      jest.requireMock('fs').promises.unlink = (): any => {
+      jest.requireMock('fs-extra').remove = (): any => {
         const error = new Error('error') as SystemError;
         error.code = 'EISDIR';
         error.syscall = 'unlink';
@@ -382,7 +390,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('throws other errors when making a directory.', async(): Promise<void> => {
-      jest.requireMock('fs').promises.mkdir = (): any => {
+      jest.requireMock('fs-extra').ensureDir = (): any => {
         throw new Error('error');
       };
       await expect(accessor.writeContainer({ path: base }, metadata)).rejects.toThrow('error');
@@ -445,6 +453,9 @@ describe('A FileDataAccessor', (): void => {
 
     it('throws error if there is a problem with deleting existing metadata.', async(): Promise<void> => {
       cache.data = { resource: 'apple', 'resource.meta': {}};
+      jest.requireMock('fs-extra').remove = (): any => {
+        throw new Error('error');
+      };
       await expect(accessor.deleteResource({ path: `${base}resource` })).rejects.toThrow();
     });
 
