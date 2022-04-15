@@ -38,6 +38,10 @@ jobs:
           until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
             sleep 1
           done
+      - name: Build test script
+        run: npx tsc -p test/deploy/tsconfig.json
+      - name: Create users
+        run: node test/tmp/cth/createAccountCredentials.js http://localhost:3000/ >> test/deploy/conformance.env
       - name: Run the test harness
         run: >
           docker run -i --rm
@@ -45,6 +49,7 @@ jobs:
           --env-file=./test/deploy/conformance.env
           --network="host"
           solidproject/conformance-test-harness
+          --skip-teardown
           --output=/reports
           --target=https://github.com/solid/conformance-test-harness/css
       # Steps below use `always()` to make sure logs get uploaded in case the CTH errors
