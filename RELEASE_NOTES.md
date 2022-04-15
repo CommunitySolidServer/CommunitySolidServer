@@ -26,6 +26,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
   and has been moved to a separate `ResourceSet` interface.
 - Several `ModesExtractor`s `PermissionBasedAuthorizer` now take a `ResourceSet` as constructor parameter.
+- `RepresentationMetadata` no longer accepts strings for predicates in any of its functions.
 
 ## v3.0.0
 ### New features
