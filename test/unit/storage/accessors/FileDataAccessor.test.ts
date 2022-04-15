@@ -18,6 +18,8 @@ import { toLiteral } from '../../../../src/util/TermUtil';
 import { CONTENT_TYPE, DC, LDP, POSIX, RDF, SOLID_META, XSD } from '../../../../src/util/Vocabularies';
 import { mockFs } from '../../../util/Util';
 
+const { namedNode } = DataFactory;
+
 jest.mock('fs');
 
 const rootFilePath = 'uploads';
@@ -104,10 +106,11 @@ describe('A FileDataAccessor', (): void => {
       metadata = await accessor.getMetadata({ path: `${base}resource.ttl` });
       expect(metadata.identifier.value).toBe(`${base}resource.ttl`);
       expect(metadata.contentType).toBe('text/turtle');
-      expect(metadata.get(RDF.type)?.value).toBe(LDP.Resource);
-      expect(metadata.get(POSIX.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.get(RDF.terms.type)?.value).toBe(LDP.Resource);
+      expect(metadata.get(POSIX.terms.size)).toEqualRdfTerm(toLiteral('data'.length, XSD.terms.integer));
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(2);
     });
@@ -115,8 +118,8 @@ describe('A FileDataAccessor', (): void => {
     it('does not generate size metadata for a container.', async(): Promise<void> => {
       cache.data = { container: {}};
       metadata = await accessor.getMetadata({ path: `${base}container/` });
-      expect(metadata.get(POSIX.size)).toBeUndefined();
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.size)).toBeUndefined();
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
     });
 
     it('generates the metadata for a container.', async(): Promise<void> => {
@@ -130,12 +133,13 @@ describe('A FileDataAccessor', (): void => {
       };
       metadata = await accessor.getMetadata({ path: `${base}container/` });
       expect(metadata.identifier.value).toBe(`${base}container/`);
-      expect(metadata.getAll(RDF.type)).toEqualRdfTermArray(
+      expect(metadata.getAll(RDF.terms.type)).toEqualRdfTermArray(
         [ LDP.terms.Container, LDP.terms.BasicContainer, LDP.terms.Resource ],
       );
-      expect(metadata.get(POSIX.size)).toBeUndefined();
-      expect(metadata.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-      expect(metadata.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000), XSD.terms.integer));
+      expect(metadata.get(POSIX.terms.size)).toBeUndefined();
+      expect(metadata.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+      expect(metadata.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        XSD.terms.integer));
       // `dc:modified` is in the default graph
       expect(metadata.quads(null, null, null, SOLID_META.terms.ResponseMetadata)).toHaveLength(1);
     });
@@ -169,7 +173,7 @@ describe('A FileDataAccessor', (): void => {
 
       // Containers
       for (const child of children.filter(({ identifier }): boolean => identifier.value.endsWith('/'))) {
-        const types = child.getAll(RDF.type).map((term): string => term.value);
+        const types = child.getAll(RDF.terms.type).map((term): string => term.value);
         expect(types).toContain(LDP.Resource);
         expect(types).toContain(LDP.Container);
         expect(types).toContain(LDP.BasicContainer);
@@ -177,7 +181,7 @@ describe('A FileDataAccessor', (): void => {
 
       // Documents
       for (const child of children.filter(({ identifier }): boolean => !identifier.value.endsWith('/'))) {
-        const types = child.getAll(RDF.type).map((term): string => term.value);
+        const types = child.getAll(RDF.terms.type).map((term): string => term.value);
         expect(types).toContain(LDP.Resource);
         expect(types).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
         expect(types).not.toContain(LDP.Container);
@@ -186,8 +190,8 @@ describe('A FileDataAccessor', (): void => {
 
       // All resources
       for (const child of children) {
-        expect(child.get(DC.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
-        expect(child.get(POSIX.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
+        expect(child.get(DC.terms.modified)).toEqualRdfTerm(toLiteral(now.toISOString(), XSD.terms.dateTime));
+        expect(child.get(POSIX.terms.mtime)).toEqualRdfTerm(toLiteral(Math.floor(now.getTime() / 1000),
           XSD.terms.integer));
         // `dc:modified` is in the default graph
         expect(child.quads(null, null, null, SOLID_META.terms.ResponseMetadata))
@@ -228,8 +232,8 @@ describe('A FileDataAccessor', (): void => {
         `${base}container/resource2`,
       ]));
 
-      const types1 = children[0].getAll(RDF.type).map((term): string => term.value);
-      const types2 = children[1].getAll(RDF.type).map((term): string => term.value);
+      const types1 = children[0].getAll(RDF.terms.type).map((term): string => term.value);
+      const types2 = children[1].getAll(RDF.terms.type).map((term): string => term.value);
 
       expect(types1).toContain('http://www.w3.org/ns/iana/media-types/application/octet-stream#Resource');
       for (const type of types2) {
@@ -279,7 +283,7 @@ describe('A FileDataAccessor', (): void => {
     });
 
     it('does not write metadata that is stored by the file system.', async(): Promise<void> => {
-      metadata.add(RDF.type, LDP.terms.Resource);
+      metadata.add(RDF.terms.type, LDP.terms.Resource);
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -315,7 +319,7 @@ describe('A FileDataAccessor', (): void => {
         data.emit('error', new Error('error'));
         return null;
       };
-      metadata.add('likes', 'apples');
+      metadata.add(namedNode('likes'), 'apples');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .rejects.toThrow('error');
       expect(cache.data['resource.meta']).toBeUndefined();
@@ -325,7 +329,7 @@ describe('A FileDataAccessor', (): void => {
       cache.data = { 'resource$.ttl': '<this> <is> <data>.', 'resource.meta': '<this> <is> <metadata>.' };
       metadata.identifier = DataFactory.namedNode(`${base}resource`);
       metadata.contentType = 'text/plain';
-      metadata.add('new', 'metadata');
+      metadata.add(namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({
@@ -337,7 +341,7 @@ describe('A FileDataAccessor', (): void => {
     it('does not try to update the content-type if there is no original file.', async(): Promise<void> => {
       metadata.identifier = DataFactory.namedNode(`${base}resource.txt`);
       metadata.contentType = 'text/turtle';
-      metadata.add('new', 'metadata');
+      metadata.add(namedNode('new'), 'metadata');
       await expect(accessor.writeDocument({ path: `${base}resource.txt` }, data, metadata))
         .resolves.toBeUndefined();
       expect(cache.data).toEqual({

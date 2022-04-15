@@ -42,7 +42,7 @@ describe('A PatchOperationHandler', (): void => {
     expect(store.modifyResource).toHaveBeenCalledTimes(1);
     expect(store.modifyResource).toHaveBeenLastCalledWith(operation.target, body, conditions);
     expect(result.statusCode).toBe(201);
-    expect(result.metadata?.get(SOLID_HTTP.location)?.value).toBe(operation.target.path);
+    expect(result.metadata?.get(SOLID_HTTP.terms.location)?.value).toBe(operation.target.path);
     expect(result.data).toBeUndefined();
   });
 

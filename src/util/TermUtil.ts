@@ -1,34 +1,7 @@
 import { DataFactory } from 'n3';
 import type { NamedNode, Literal, Term } from 'rdf-js';
-import { CONTENT_TYPE_TERM } from './Vocabularies';
 
 const { namedNode, literal } = DataFactory;
-
-// Shorthands for commonly used predicates
-const shorthands: Record<string, NamedNode> = {
-  contentType: CONTENT_TYPE_TERM,
-};
-
-// Caches named node conversions
-const cachedNamedNodes: Record<string, NamedNode> = {
-  ...shorthands,
-};
-
-/**
- * Converts the incoming name (URI or shorthand) to a named node.
- * The generated terms get cached to reduce the number of created nodes,
- * so only use this for internal constants!
- * @param name - Predicate to potentially transform.
- */
-export function toCachedNamedNode(name: NamedNode | string): NamedNode {
-  if (typeof name !== 'string') {
-    return name;
-  }
-  if (!(name in cachedNamedNodes)) {
-    cachedNamedNodes[name] = namedNode(name);
-  }
-  return cachedNamedNodes[name];
-}
 
 /**
  * @param input - Checks if this is a {@link Term}.

@@ -4,7 +4,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import type { ContentType } from '../../util/HeaderUtil';
 import { parseContentType } from '../../util/HeaderUtil';
-import { toNamedTerm, toObjectTerm, toCachedNamedNode, isTerm, toLiteral } from '../../util/TermUtil';
+import { toNamedTerm, toObjectTerm, isTerm, toLiteral } from '../../util/TermUtil';
 import { CONTENT_TYPE_TERM, CONTENT_LENGTH_TERM, XSD, SOLID_META, RDFS } from '../../util/Vocabularies';
 import type { ResourceIdentifier } from './ResourceIdentifier';
 import { isResourceIdentifier } from './ResourceIdentifier';
@@ -19,6 +19,22 @@ export type MetadataGraph = NamedNode | BlankNode | DefaultGraph | string;
  */
 export function isRepresentationMetadata(object: any): object is RepresentationMetadata {
   return typeof object?.setMetadata === 'function';
+}
+
+// Caches named node conversions
+const cachedNamedNodes: Record<string, NamedNode> = {};
+
+/**
+ * Converts the incoming name (URI or shorthand) to a named node.
+ * The generated terms get cached to reduce the number of created nodes,
+ * so only use this for internal constants!
+ * @param name - Predicate to potentially transform.
+ */
+function toCachedNamedNode(name: string): NamedNode {
+  if (!(name in cachedNamedNodes)) {
+    cachedNamedNodes[name] = DataFactory.namedNode(name);
+  }
+  return cachedNamedNodes[name];
 }
 
 /**
@@ -116,7 +132,7 @@ export class RepresentationMetadata {
    */
   public quads(
     subject: NamedNode | BlankNode | string | null = null,
-    predicate: NamedNode | string | null = null,
+    predicate: NamedNode | null = null,
     object: NamedNode | BlankNode | Literal | string | null = null,
     graph: MetadataGraph | null = null,
   ): Quad[] {
@@ -167,12 +183,12 @@ export class RepresentationMetadata {
    */
   public addQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
     this.store.addQuad(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this;
@@ -194,12 +210,12 @@ export class RepresentationMetadata {
    */
   public removeQuad(
     subject: NamedNode | BlankNode | string,
-    predicate: NamedNode | string,
+    predicate: NamedNode,
     object: NamedNode | BlankNode | Literal | string,
     graph?: MetadataGraph,
   ): this {
     const quads = this.quads(toNamedTerm(subject),
-      toCachedNamedNode(predicate),
+      predicate,
       toObjectTerm(object, true),
       graph ? toNamedTerm(graph) : undefined);
     return this.removeQuads(quads);
@@ -219,7 +235,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to add.
    * @param graph - Optional graph of where to add the values to.
    */
-  public add(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public add(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.addQuad(this.id, pred, obj, graph));
   }
 
@@ -229,7 +245,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to remove.
    * @param graph - Optional graph of where to remove the values from.
    */
-  public remove(predicate: NamedNode | string, object: MetadataValue, graph?: MetadataGraph): this {
+  public remove(predicate: NamedNode, object: MetadataValue, graph?: MetadataGraph): this {
     return this.forQuads(predicate, object, (pred, obj): any => this.removeQuad(this.id, pred, obj, graph));
   }
 
@@ -237,12 +253,11 @@ export class RepresentationMetadata {
    * Helper function to simplify add/remove
    * Runs the given function on all predicate/object pairs, but only converts the predicate to a named node once.
    */
-  private forQuads(predicate: NamedNode | string, object: MetadataValue,
+  private forQuads(predicate: NamedNode, object: MetadataValue,
     forFn: (pred: NamedNode, obj: NamedNode | Literal) => void): this {
-    const predicateNode = toCachedNamedNode(predicate);
     const objects = Array.isArray(object) ? object : [ object ];
     for (const obj of objects) {
-      forFn(predicateNode, toObjectTerm(obj, true));
+      forFn(predicate, toObjectTerm(obj, true));
     }
     return this;
   }
@@ -252,8 +267,8 @@ export class RepresentationMetadata {
    * @param predicate - Predicate to remove.
    * @param graph - Optional graph where to remove from.
    */
-  public removeAll(predicate: NamedNode | string, graph?: MetadataGraph): this {
-    this.removeQuads(this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null));
+  public removeAll(predicate: NamedNode, graph?: MetadataGraph): this {
+    this.removeQuads(this.store.getQuads(this.id, predicate, null, graph ?? null));
     return this;
   }
 
@@ -278,8 +293,8 @@ export class RepresentationMetadata {
    *
    * @returns An array with all matches.
    */
-  public getAll(predicate: NamedNode | string, graph?: MetadataGraph): Term[] {
-    return this.store.getQuads(this.id, toCachedNamedNode(predicate), null, graph ?? null)
+  public getAll(predicate: NamedNode, graph?: MetadataGraph): Term[] {
+    return this.store.getQuads(this.id, predicate, null, graph ?? null)
       .map((quad): Term => quad.object);
   }
 
@@ -292,15 +307,15 @@ export class RepresentationMetadata {
    *
    * @returns The corresponding value. Undefined if there is no match
    */
-  public get(predicate: NamedNode | string, graph?: MetadataGraph): Term | undefined {
+  public get(predicate: NamedNode, graph?: MetadataGraph): Term | undefined {
     const terms = this.getAll(predicate, graph);
     if (terms.length === 0) {
       return;
     }
     if (terms.length > 1) {
-      this.logger.error(`Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`);
+      this.logger.error(`Multiple results for ${predicate.value}`);
       throw new InternalServerError(
-        `Multiple results for ${typeof predicate === 'string' ? predicate : predicate.value}`,
+        `Multiple results for ${predicate.value}`,
       );
     }
     return terms[0];
@@ -313,7 +328,7 @@ export class RepresentationMetadata {
    * @param object - Value(s) to set.
    * @param graph - Optional graph where the triple should be stored.
    */
-  public set(predicate: NamedNode | string, object?: MetadataValue, graph?: MetadataGraph): this {
+  public set(predicate: NamedNode, object?: MetadataValue, graph?: MetadataGraph): this {
     this.removeAll(predicate, graph);
     if (object) {
       this.add(predicate, object, graph);
