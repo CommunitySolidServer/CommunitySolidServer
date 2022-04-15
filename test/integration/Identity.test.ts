@@ -1,10 +1,16 @@
 import { stringify } from 'querystring';
 import { URL } from 'url';
+import type { KeyPair } from '@inrupt/solid-client-authn-core';
+import {
+  buildAuthenticatedFetch,
+  createDpopHeader,
+  generateDpopKeyPair,
+} from '@inrupt/solid-client-authn-core';
 import { load } from 'cheerio';
 import type { Response } from 'cross-fetch';
 import { fetch } from 'cross-fetch';
 import type { App } from '../../src/init/App';
-import { APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
+import { APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED } from '../../src/util/ContentTypes';
 import { joinUrl } from '../../src/util/PathUtil';
 import { getPort } from '../util/Util';
 import { getDefaultVariables, getTestConfigPath, instantiateFromConfig } from './Config';
@@ -37,6 +43,7 @@ async function postForm(url: string, formBody: string): Promise<Response> {
 describe('A Solid server with IDP', (): void => {
   let app: App;
   const redirectUrl = 'http://mockedredirect/';
+  const container = new URL('secret/', baseUrl).href;
   const oidcIssuer = baseUrl;
   const card = joinUrl(baseUrl, 'profile/card');
   const webId = `${card}#me`;
@@ -61,11 +68,26 @@ describe('A Solid server with IDP', (): void => {
     await app.start();
 
     // Create a simple webId
-    const turtle = `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${baseUrl}> .`;
+    const webIdTurtle = `<${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> <${baseUrl}> .`;
     await fetch(card, {
       method: 'PUT',
       headers: { 'content-type': 'text/turtle' },
-      body: turtle,
+      body: webIdTurtle,
+    });
+
+    // Create container where only webId can write
+    const aclTurtle = `
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+<#owner> a acl:Authorization;
+         acl:agent <${webId}>;
+         acl:accessTo <./>;
+         acl:default <./>;
+         acl:mode acl:Read, acl:Write, acl:Control.
+`;
+    await fetch(`${container}.acl`, {
+      method: 'PUT',
+      headers: { 'content-type': 'text/turtle' },
+      body: aclTurtle,
     });
   });
 
@@ -112,25 +134,9 @@ describe('A Solid server with IDP', (): void => {
 
   describe('authenticating', (): void => {
     let state: IdentityTestState;
-    const container = new URL('secret/', baseUrl).href;
 
     beforeAll(async(): Promise<void> => {
       state = new IdentityTestState(baseUrl, redirectUrl, oidcIssuer);
-
-      // Create container where only webId can write
-      const turtle = `
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-<#owner> a acl:Authorization;
-         acl:agent <${webId}>;
-         acl:accessTo <./>;
-         acl:default <./>;
-         acl:mode acl:Read, acl:Write, acl:Control.
-`;
-      await fetch(`${container}.acl`, {
-        method: 'PUT',
-        headers: { 'content-type': 'text/turtle' },
-        body: turtle,
-      });
     });
 
     afterAll(async(): Promise<void> => {
@@ -259,6 +265,97 @@ describe('A Solid server with IDP', (): void => {
       const res = await state.fetchIdp(nextUrl);
       expect(res.status).toBe(400);
       await expect(res.text()).resolves.toContain('invalid_redirect_uri');
+    });
+  });
+
+  describe('using client_credentials', (): void => {
+    const credentialsUrl = joinUrl(baseUrl, '/idp/credentials/');
+    const tokenUrl = joinUrl(baseUrl, '.oidc/token');
+    let dpopKey: KeyPair;
+    let id: string | undefined;
+    let secret: string | undefined;
+    let accessToken: string | undefined;
+
+    beforeAll(async(): Promise<void> => {
+      dpopKey = await generateDpopKeyPair();
+    });
+
+    it('can request a credentials token.', async(): Promise<void> => {
+      const res = await fetch(credentialsUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_JSON,
+        },
+        body: JSON.stringify({ email, password, name: 'token' }),
+      });
+      expect(res.status).toBe(200);
+      ({ id, secret } = await res.json());
+      expect(typeof id).toBe('string');
+      expect(typeof secret).toBe('string');
+      expect(id).toMatch(/^token/u);
+    });
+
+    it('can request an access token using the credentials.', async(): Promise<void> => {
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const authString = `${encodeURIComponent(id!)}:${encodeURIComponent(secret!)}`;
+      const res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: 'grant_type=client_credentials&scope=webid',
+      });
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      ({ access_token: accessToken } = json);
+      expect(typeof accessToken).toBe('string');
+    });
+
+    it('can use the generated access token to do an authenticated call.', async(): Promise<void> => {
+      const authFetch = await buildAuthenticatedFetch(fetch, accessToken!, { dpopKey });
+      let res = await fetch(container);
+      expect(res.status).toBe(401);
+      res = await authFetch(container);
+      expect(res.status).toBe(200);
+    });
+
+    it('can see all credentials.', async(): Promise<void> => {
+      const res = await fetch(credentialsUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_JSON,
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      expect(res.status).toBe(200);
+      await expect(res.json()).resolves.toEqual([ id ]);
+    });
+
+    it('can delete credentials.', async(): Promise<void> => {
+      let res = await fetch(credentialsUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': APPLICATION_JSON,
+        },
+        body: JSON.stringify({ email, password, delete: id }),
+      });
+      expect(res.status).toBe(200);
+
+      // Client_credentials call should fail now
+      const dpopHeader = await createDpopHeader(tokenUrl, 'POST', dpopKey);
+      const authString = `${encodeURIComponent(id!)}:${encodeURIComponent(secret!)}`;
+      res = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
+          'content-type': APPLICATION_X_WWW_FORM_URLENCODED,
+          dpop: dpopHeader,
+        },
+        body: 'grant_type=client_credentials&scope=webid',
+      });
+      expect(res.status).toBe(401);
     });
   });
 

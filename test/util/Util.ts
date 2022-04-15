@@ -19,6 +19,7 @@ const portNames = [
   'PodQuota',
   'RedisResourceLocker',
   'RestrictedIdentity',
+  'SeedingPods',
   'ServerFetch',
   'SetupMemory',
   'SparqlStorage',
@@ -74,7 +75,7 @@ export async function flushPromises(): Promise<void> {
  * @param rootFilepath - The name of the root folder in which fs will start.
  * @param time - The date object to use for time functions (currently only mtime from lstats)
  */
-export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
+export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any } {
   const cache: { data: any } = { data: {}};
 
   rootFilepath = rootFilepath ?? 'folder';
@@ -111,7 +112,7 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
     return { folder, name };
   }
 
-  const mock = {
+  const mockFs = {
     createReadStream(path: string): any {
       const { folder, name } = getFolder(path);
       return Readable.from([ folder[name] ]);
@@ -234,8 +235,79 @@ export function mockFs(rootFilepath?: string, time?: Date): { data: any } {
     },
   };
 
+  const mockFsExtra = {
+    async readJson(path: string): Promise<NodeJS.Dict<unknown>> {
+      const { folder, name } = getFolder(path);
+      if (!folder[name]) {
+        throwSystemError('ENOENT');
+      }
+      return JSON.parse(folder[name]);
+    },
+    async writeJson(path: string, json: NodeJS.Dict<unknown>): Promise<void> {
+      const { folder, name } = getFolder(path);
+      const data = JSON.stringify(json, null, 2);
+      folder[name] = data;
+    },
+    async ensureDir(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      folder[name] = {};
+    },
+    async remove(path: string): Promise<void> {
+      const { folder, name } = getFolder(path);
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete folder[name];
+    },
+    createReadStream(path: string): any {
+      return mockFs.createReadStream(path);
+    },
+    createWriteStream(path: string): any {
+      return mockFs.createWriteStream(path);
+    },
+    async realpath(path: string): Promise<string> {
+      return await mockFs.promises.realpath(path);
+    },
+    async stat(path: string): Promise<Stats> {
+      return mockFs.promises.lstat(await mockFs.promises.realpath(path));
+    },
+    async lstat(path: string): Promise<Stats> {
+      return mockFs.promises.lstat(path);
+    },
+    async unlink(path: string): Promise<void> {
+      await mockFs.promises.unlink(path);
+    },
+    async symlink(target: string, path: string): Promise<void> {
+      await mockFs.promises.symlink(target, path);
+    },
+    async rmdir(path: string): Promise<void> {
+      await mockFs.promises.rmdir(path);
+    },
+    async readdir(path: string): Promise<string[]> {
+      return await mockFs.promises.readdir(path);
+    },
+    async* opendir(path: string): AsyncIterableIterator<Dirent> {
+      for await (const entry of mockFs.promises.opendir(path)) {
+        yield entry;
+      }
+    },
+    async mkdir(path: string): Promise<void> {
+      await mockFs.promises.mkdir(path);
+    },
+    async readFile(path: string): Promise<string> {
+      return await mockFs.promises.readFile(path);
+    },
+    async writeFile(path: string, data: string): Promise<void> {
+      await mockFs.promises.writeFile(path, data);
+    },
+    async rename(path: string, destination: string): Promise<void> {
+      await mockFs.promises.rename(path, destination);
+    },
+  };
+
   const fs = jest.requireMock('fs');
-  Object.assign(fs, mock);
+  Object.assign(fs, mockFs);
+
+  const fsExtra = jest.requireMock('fs-extra');
+  Object.assign(fsExtra, mockFsExtra);
 
   return cache;
 }

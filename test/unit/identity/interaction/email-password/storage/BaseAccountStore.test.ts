@@ -14,7 +14,7 @@ describe('A BaseAccountStore', (): void => {
   const email = 'test@test.com';
   const webId = 'http://test.com/#webId';
   const password = 'password!';
-  const settings: AccountSettings = { useIdp: true };
+  const settings: AccountSettings = { useIdp: true, clientCredentials: []};
 
   beforeEach(async(): Promise<void> => {
     const map = new Map();
@@ -92,7 +92,7 @@ describe('A BaseAccountStore', (): void => {
   });
 
   it('can update the settings.', async(): Promise<void> => {
-    const newSettings = { webId, useIdp: false };
+    const newSettings = { webId, useIdp: false, clientCredentials: []};
     await expect(store.create(email, webId, password, settings)).resolves.toBeUndefined();
     await expect(store.verify(email)).resolves.toBeUndefined();
     await expect(store.updateSettings(webId, newSettings)).resolves.toBeUndefined();

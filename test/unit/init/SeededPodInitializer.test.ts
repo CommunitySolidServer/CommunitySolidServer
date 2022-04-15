@@ -1,12 +1,13 @@
-import { promises as fsPromises } from 'fs';
+import { writeJson } from 'fs-extra';
 import type { RegistrationManager } from '../../../src/identity/interaction/email-password/util/RegistrationManager';
 import { SeededPodInitializer } from '../../../src/init/SeededPodInitializer';
-import { mockFs } from '../../util/Util';
+import { mockFileSystem } from '../../util/Util';
 
 jest.mock('fs');
+jest.mock('fs-extra');
 
 describe('A SeededPodInitializer', (): void => {
-  const dummyConfig = JSON.stringify([
+  const dummyConfig = [
     {
       podName: 'example',
       email: 'hello@example.com',
@@ -17,7 +18,7 @@ describe('A SeededPodInitializer', (): void => {
       email: 'hello2@example.com',
       password: '123abc',
     },
-  ]);
+  ];
   let registrationManager: RegistrationManager;
   let configFilePath: string | null;
 
@@ -28,8 +29,8 @@ describe('A SeededPodInitializer', (): void => {
       register: jest.fn(),
     } as any;
 
-    mockFs('/');
-    await fsPromises.writeFile(configFilePath, dummyConfig);
+    mockFileSystem('/');
+    await writeJson(configFilePath, dummyConfig);
   });
 
   it('does not generate any accounts or pods if no config file is specified.', async(): Promise<void> => {

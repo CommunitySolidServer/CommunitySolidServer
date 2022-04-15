@@ -19,7 +19,7 @@ export class SlugParser extends MetadataParser {
         throw new BadRequestHttpError('Request has multiple Slug headers');
       }
       this.logger.debug(`Request Slug is '${slug}'.`);
-      input.metadata.set(SOLID_HTTP.slug, slug);
+      input.metadata.set(SOLID_HTTP.terms.slug, slug);
     }
   }
 }

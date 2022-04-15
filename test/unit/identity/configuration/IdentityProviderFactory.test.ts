@@ -3,6 +3,9 @@ import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandle
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import { IdentityProviderFactory } from '../../../../src/identity/configuration/IdentityProviderFactory';
+import type {
+  ClientCredentials,
+} from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
@@ -40,6 +43,7 @@ describe('An IdentityProviderFactory', (): void => {
   let interactionHandler: jest.Mocked<InteractionHandler>;
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
+  let credentialStorage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
@@ -68,6 +72,11 @@ describe('An IdentityProviderFactory', (): void => {
       set: jest.fn((id: string, value: any): any => map.set(id, value)),
     } as any;
 
+    credentialStorage = {
+      get: jest.fn((id: string): any => map.get(id)),
+      set: jest.fn((id: string, value: any): any => map.set(id, value)),
+    } as any;
+
     errorHandler = {
       handleSafe: jest.fn().mockResolvedValue({ statusCode: 500 }),
     } as any;
@@ -80,6 +89,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      credentialStorage,
       errorHandler,
       responseWriter,
     });
@@ -114,14 +124,19 @@ describe('An IdentityProviderFactory', (): void => {
     findResult = await config.findAccount?.({ oidc: {}} as any, webId);
     await expect((findResult?.claims as any)()).resolves.toEqual({ sub: webId, webid: webId });
 
-    expect((config.extraTokenClaims as any)({}, {})).toEqual({});
-    expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
-      .toEqual({ webid: webId });
+    await expect((config.extraTokenClaims as any)({}, {})).resolves.toEqual({});
+    const client = { clientId: 'my_id' };
+    await expect((config.extraTokenClaims as any)({}, { client })).resolves.toEqual({});
+    await credentialStorage.set('my_id', { webId: 'http://example.com/foo', secret: 'my-secret' });
+    await expect((config.extraTokenClaims as any)({}, { client }))
+      .resolves.toEqual({ webid: 'http://example.com/foo' });
+    await expect((config.extraTokenClaims as any)({}, { kind: 'AccessToken', accountId: webId, clientId: 'clientId' }))
+      .resolves.toEqual({ webid: webId });
 
     expect(config.features?.resourceIndicators?.enabled).toBe(true);
     expect((config.features?.resourceIndicators?.defaultResource as any)()).toBe('http://example.com/');
     expect((config.features?.resourceIndicators?.getResourceServerInfo as any)()).toEqual({
-      scope: '',
+      scope: 'webid',
       audience: 'solid',
       accessTokenFormat: 'jwt',
       jwt: { sign: { alg: 'ES256' }},
@@ -158,6 +173,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      credentialStorage,
       errorHandler,
       responseWriter,
     });
@@ -180,6 +196,7 @@ describe('An IdentityProviderFactory', (): void => {
       oidcPath,
       interactionHandler,
       storage,
+      credentialStorage,
       errorHandler,
       responseWriter,
     });

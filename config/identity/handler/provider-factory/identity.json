@@ -12,6 +12,7 @@
       "args_baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "args_oidcPath": "/.oidc",
       "args_interactionHandler": { "@id": "urn:solid-server:auth:password:PromptHandler" },
+      "args_credentialStorage": { "@id": "urn:solid-server:auth:password:CredentialsStorage" },
       "args_storage": {
         "@type": "EncodingPathStorage",
         "relativePath": "/idp/keys/",
@@ -30,6 +31,7 @@
         },
         "features": {
           "claimsParameter": { "enabled": true },
+          "clientCredentials": { "enabled": true },
           "devInteractions": { "enabled": false },
           "dPoP": { "enabled": true, "ack": "draft-03" },
           "introspection": { "enabled": true },
@@ -43,6 +45,7 @@
           "AccessToken": 3600,
           "AuthorizationCode": 600,
           "BackchannelAuthenticationRequest": 600,
+          "ClientCredentials": 600,
           "DeviceCode": 600,
           "Grant": 1209600,
           "IdToken": 3600,

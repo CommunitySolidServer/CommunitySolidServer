@@ -2,6 +2,7 @@ import 'jest-rdf';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ContentTypeReplacer } from '../../../../src/storage/conversion/ContentTypeReplacer';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { CONTENT_TYPE } from '../../../../src/util/Vocabularies';
 
 const binary = true;
 const data = { data: true };
@@ -21,7 +22,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('throws on an unsupported input type.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'text/plain' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' });
     const representation = { metadata };
     const preferences = { type: { 'application/json': 1 }};
 
@@ -31,7 +32,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('throws on an unsupported output type.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'application/n-triples' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/n-triples' });
     const representation = { metadata };
     const preferences = { type: { 'application/json': 1 }};
 
@@ -51,7 +52,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('replaces a supported content type when no preferences are given.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'application/n-triples' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/n-triples' });
     const representation = { binary, data, metadata };
     const preferences = {};
 
@@ -62,7 +63,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('replaces a supported content type when preferences are given.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'application/n-triples' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/n-triples' });
     const representation = { binary, data, metadata };
     const preferences = { type: { 'application/n-quads': 1 }};
 
@@ -73,7 +74,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('replaces a supported wildcard type.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'text/plain' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'text/plain' });
     const representation = { binary, data, metadata };
     const preferences = { type: { 'application/octet-stream': 1 }};
 
@@ -84,7 +85,7 @@ describe('A ContentTypeReplacer', (): void => {
   });
 
   it('picks the most preferred content type.', async(): Promise<void> => {
-    const metadata = new RepresentationMetadata({ contentType: 'application/n-triples' });
+    const metadata = new RepresentationMetadata({ [CONTENT_TYPE]: 'application/n-triples' });
     const representation = { binary, data, metadata };
     const preferences = { type: {
       'text/turtle': 0.5,

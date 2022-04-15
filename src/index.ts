@@ -131,6 +131,14 @@ export * from './http/UnsecureWebSocketsProtocol';
 export * from './identity/configuration/IdentityProviderFactory';
 export * from './identity/configuration/ProviderFactory';
 
+// Identity/Interaction/Email-Password/Credentials
+export * from './identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
+export * from './identity/interaction/email-password/credentials/EmailPasswordAuthorizer';
+export * from './identity/interaction/email-password/credentials/CreateCredentialsHandler';
+export * from './identity/interaction/email-password/credentials/CredentialsHandler';
+export * from './identity/interaction/email-password/credentials/DeleteCredentialsHandler';
+export * from './identity/interaction/email-password/credentials/ListCredentialsHandler';
+
 // Identity/Interaction/Email-Password/Handler
 export * from './identity/interaction/email-password/handler/ForgotPasswordHandler';
 export * from './identity/interaction/email-password/handler/LoginHandler';
@@ -173,6 +181,7 @@ export * from './identity/ownership/TokenOwnershipValidator';
 // Identity/Storage
 export * from './identity/storage/AdapterFactory';
 export * from './identity/storage/ExpiringAdapterFactory';
+export * from './identity/storage/PassthroughAdapterFactory';
 export * from './identity/storage/WebIdAdapterFactory';
 
 // Identity
@@ -261,6 +270,7 @@ export * from './server/HttpResponse';
 export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
+export * from './server/RedirectingHttpHandler';
 export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerFactory';
 
@@ -435,6 +445,7 @@ export * from './util/QuadUtil';
 export * from './util/RecordObject';
 export * from './util/ResourceUtil';
 export * from './util/StreamUtil';
+export * from './util/StringUtil';
 export * from './util/TermUtil';
 export * from './util/TimerUtil';
 export * from './util/Vocabularies';

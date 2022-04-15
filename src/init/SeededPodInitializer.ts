@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { readJson } from 'fs-extra';
 import type { RegistrationManager } from '../identity/interaction/email-password/util/RegistrationManager';
 import { getLoggerFor } from '../logging/LogUtil';
 import { Initializer } from './Initializer';
@@ -23,8 +23,7 @@ export class SeededPodInitializer extends Initializer {
     if (!this.configFilePath) {
       return;
     }
-    const configText = await fsPromises.readFile(this.configFilePath, 'utf8');
-    const configuration: NodeJS.Dict<unknown>[] = JSON.parse(configText);
+    const configuration = await readJson(this.configFilePath, 'utf8');
 
     let count = 0;
     for await (const input of configuration) {

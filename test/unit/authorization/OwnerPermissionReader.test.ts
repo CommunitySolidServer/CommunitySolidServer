@@ -31,6 +31,7 @@ describe('An OwnerPermissionReader', (): void => {
     settings = {
       useIdp: true,
       podBaseUrl,
+      clientCredentials: [],
     };
 
     accountStore = {

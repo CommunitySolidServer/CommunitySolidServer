@@ -3,7 +3,13 @@
 ## v4.0.0
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
-  for more info see [here](guides/seeding-pods.md).
+  for more info see [here](documentation/seeding-pods.md).
+- It is now possible to automate authentication requests using Client Credentials,
+  for more info see [here](documentation/client-credentials.md).
+- A new `RedirectingHttpHandler` class has been added which can be used to redirect certain URLs.
+- A new default configuration `config/https-file-cli.json` 
+  that can set the HTTPS parameters through the CLI has been added.
+  This is also an example of how to add CLI parameters through a custom configuration.
 
 ### Configuration changes
 You might need to make changes to your v3 configuration if you use a custom config.
@@ -17,6 +23,11 @@ The following changes pertain to the imports in the default configs:
 The following changes are relevant for v3 custom configs that replaced certain features.
 - The key/value storage configs in `config/storage/key-value/*` have been changed to reduce config duplication.
   All storages there that were only relevant for 1 class have been moved to the config of that class.
+- Due to a parameter rename in `CombinedSettingsResolver`, 
+  `config/app/variables/resolver/resolver.json` has been updated.
+- The OIDC provider setup was changed to add client_credentials support.
+  - `/identity/handler/adapter-factory/webid.json`
+  - `/identity/handler/provider-factory/identity.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -25,6 +36,9 @@ These changes are relevant if you wrote custom modules for the server that depen
 - The `ResourceStore` function `resourceExists` has been renamed to `hasResource`
   and has been moved to a separate `ResourceSet` interface.
 - Several `ModesExtractor`s `PermissionBasedAuthorizer` now take a `ResourceSet` as constructor parameter.
+- `RepresentationMetadata` no longer accepts strings for predicates in any of its functions.
+- `CombinedSettingsResolver` parameter `computers` has been renamed to `resolvers`.
+- `IdentityProviderFactory` requires an additional `credentialStorage` parameter.
 
 ## v3.0.0
 ### New features

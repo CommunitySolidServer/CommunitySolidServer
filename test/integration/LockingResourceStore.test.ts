@@ -50,7 +50,7 @@ describe('A LockingResourceStore', (): void => {
 
     // Initialize store
     const metadata = new RepresentationMetadata({ path: base }, TEXT_TURTLE);
-    metadata.add(RDF.type, PIM.terms.Storage);
+    metadata.add(RDF.terms.type, PIM.terms.Storage);
     await source.setRepresentation({ path: base }, new BasicRepresentation([], metadata));
 
     locker = new EqualReadWriteLocker(new SingleThreadedResourceLocker());

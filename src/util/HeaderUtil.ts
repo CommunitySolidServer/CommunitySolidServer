@@ -1,9 +1,12 @@
 import type { IncomingHttpHeaders } from 'http';
+import escapeStringRegexp from 'escape-string-regexp';
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpResponse } from '../server/HttpResponse';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 
 const logger = getLoggerFor('HeaderUtil');
+// Map used as a simple cache in the helper function matchesAuthorizationScheme.
+const authSchemeRegexCache: Map<string, RegExp> = new Map();
 
 // BNF based on https://tools.ietf.org/html/rfc7231
 //
@@ -508,6 +511,7 @@ export function parseForwarded(headers: IncomingHttpHeaders): Forwarded {
 
 /**
  * Parses the link header(s) and returns an array of LinkEntry objects.
+ *
  * @param link - A single link header or an array of link headers
  * @returns A LinkEntry array, LinkEntry contains a link and a params Record&lt;string,string&gt;
  */
@@ -546,4 +550,33 @@ export function parseLinkHeader(link: string | string[] = []): LinkEntry[] {
     }
   }
   return links;
+}
+
+/**
+ * Checks if the value of an HTTP Authorization header matches a specific scheme (e.g. Basic, Bearer, etc).
+ *
+ * @param scheme - Name of the authorization scheme (case insensitive).
+ * @param authorization - The value of the Authorization header (may be undefined).
+ * @returns True if the Authorization header uses the specified scheme, false otherwise.
+ */
+export function matchesAuthorizationScheme(scheme: string, authorization?: string): boolean {
+  const lowerCaseScheme = scheme.toLowerCase();
+  if (!authSchemeRegexCache.has(lowerCaseScheme)) {
+    authSchemeRegexCache.set(lowerCaseScheme, new RegExp(`^${escapeStringRegexp(lowerCaseScheme)} `, 'ui'));
+  }
+  // Support authorization being undefined (for the sake of usability).
+  return typeof authorization !== 'undefined' && authSchemeRegexCache.get(lowerCaseScheme)!.test(authorization);
+}
+
+/**
+ * Checks if the scheme part of the specified url matches at least one of the provided options.
+ *
+ * @param url - A string representing the URL.
+ * @param schemes - Scheme value options (the function will check if at least one matches the URL scheme).
+ * @returns True if the URL scheme matches at least one of the provided options, false otherwise.
+ */
+export function hasScheme(url: string, ...schemes: string[]): boolean {
+  const schemeOptions = new Set(schemes.map((item): string => item.toLowerCase()));
+  const urlSchemeResult = /^(.+?):\/\//u.exec(url);
+  return urlSchemeResult ? schemeOptions.has(urlSchemeResult[1].toLowerCase()) : false;
 }

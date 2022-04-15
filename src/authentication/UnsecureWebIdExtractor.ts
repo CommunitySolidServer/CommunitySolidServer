@@ -1,6 +1,7 @@
 import { getLoggerFor } from '../logging/LogUtil';
 import type { HttpRequest } from '../server/HttpRequest';
 import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
+import { matchesAuthorizationScheme } from '../util/HeaderUtil';
 import { CredentialGroup } from './Credentials';
 import type { CredentialSet } from './Credentials';
 import { CredentialsExtractor } from './CredentialsExtractor';
@@ -13,7 +14,7 @@ export class UnsecureWebIdExtractor extends CredentialsExtractor {
 
   public async canHandle({ headers }: HttpRequest): Promise<void> {
     const { authorization } = headers;
-    if (!authorization || !/^WebID /ui.test(authorization)) {
+    if (!matchesAuthorizationScheme('WebID', authorization)) {
       throw new NotImplementedHttpError('No WebID Authorization header specified.');
     }
   }

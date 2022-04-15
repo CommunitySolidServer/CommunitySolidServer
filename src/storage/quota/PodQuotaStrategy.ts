@@ -57,7 +57,7 @@ export class PodQuotaStrategy extends QuotaStrategy {
       throw error;
     }
 
-    const hasPimStorageMetadata = metadata!.getAll(RDF.type)
+    const hasPimStorageMetadata = metadata!.getAll(RDF.terms.type)
       .some((term): boolean => term.value === PIM.Storage);
 
     return hasPimStorageMetadata ? identifier : this.searchPimStorage(parent);

@@ -5,7 +5,7 @@ import type { FileIdentifierMapper, ResourceLink } from '../../../../src/storage
 import { FileSizeReporter } from '../../../../src/storage/size-reporter/FileSizeReporter';
 import { UNIT_BYTES } from '../../../../src/storage/size-reporter/Size';
 import { joinFilePath } from '../../../../src/util/PathUtil';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
 
 jest.mock('fs');
 
@@ -28,7 +28,7 @@ describe('A FileSizeReporter', (): void => {
   );
 
   beforeEach(async(): Promise<void> => {
-    mockFs(fileRoot);
+    mockFileSystem(fileRoot);
   });
 
   it('should work without the ignoreFolders constructor parameter.', async(): Promise<void> => {

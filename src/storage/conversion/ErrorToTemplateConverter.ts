@@ -5,6 +5,7 @@ import { INTERNAL_ERROR } from '../../util/ContentTypes';
 import { HttpError } from '../../util/errors/HttpError';
 import { resolveModulePath } from '../../util/PathUtil';
 import { getSingleItem } from '../../util/StreamUtil';
+import { isValidFileName } from '../../util/StringUtil';
 import type { TemplateEngine } from '../../util/templates/TemplateEngine';
 import { BaseTypedRepresentationConverter } from './BaseTypedRepresentationConverter';
 import type { RepresentationConverterArgs } from './RepresentationConverter';
@@ -63,7 +64,7 @@ export class ErrorToTemplateConverter extends BaseTypedRepresentationConverter {
     if (HttpError.isInstance(error)) {
       try {
         const templateFile = `${error.errorCode}${this.extension}`;
-        assert(/^[\w.-]+$/u.test(templateFile), 'Invalid error template name');
+        assert(isValidFileName(templateFile), 'Invalid error template name');
         description = await this.templateEngine.render(error.details ?? {},
           { templateFile, templatePath: this.codeTemplatesPath });
       } catch {

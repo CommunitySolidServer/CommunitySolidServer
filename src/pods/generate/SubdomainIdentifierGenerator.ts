@@ -1,5 +1,6 @@
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { ensureTrailingSlash, extractScheme } from '../../util/PathUtil';
+import { sanitizeUrlPart } from '../../util/StringUtil';
 import type { IdentifierGenerator } from './IdentifierGenerator';
 
 /**
@@ -15,7 +16,7 @@ export class SubdomainIdentifierGenerator implements IdentifierGenerator {
 
   public generate(name: string): ResourceIdentifier {
     // Using the punycode converter is a risk as it doesn't convert slashes for example
-    const cleanName = name.replace(/\W/gu, '-');
+    const cleanName = sanitizeUrlPart(name);
     return { path: `${this.baseParts.scheme}${cleanName}.${this.baseParts.rest}` };
   }
 }

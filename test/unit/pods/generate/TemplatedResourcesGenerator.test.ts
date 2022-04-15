@@ -1,3 +1,4 @@
+import { DataFactory } from 'n3';
 import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
 import { TemplatedResourcesGenerator } from '../../../../src/pods/generate/TemplatedResourcesGenerator';
 import type {
@@ -8,7 +9,9 @@ import type {
 import { ensureTrailingSlash, trimTrailingSlashes } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { HandlebarsTemplateEngine } from '../../../../src/util/templates/HandlebarsTemplateEngine';
-import { mockFs } from '../../../util/Util';
+import { mockFileSystem } from '../../../util/Util';
+
+const { namedNode } = DataFactory;
 
 jest.mock('fs');
 
@@ -52,7 +55,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
   const webId = 'http://alice/#profile';
 
   beforeEach(async(): Promise<void> => {
-    cache = mockFs(rootFilePath);
+    cache = mockFileSystem(rootFilePath);
   });
 
   it('fills in a template with the given options.', async(): Promise<void> => {
@@ -115,7 +118,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
     const rootMetadata = result[0].representation.metadata;
     expect(rootMetadata.identifier.value).toBe(location.path);
     expect(rootMetadata.quads()).toHaveLength(1);
-    expect(rootMetadata.get('pre:has')?.value).toBe('metadata');
+    expect(rootMetadata.get(namedNode('pre:has'))?.value).toBe('metadata');
     expect(rootMetadata.contentType).toBeUndefined();
 
     // Container has no metadata triples besides content-type
@@ -127,7 +130,7 @@ describe('A TemplatedResourcesGenerator', (): void => {
     const docMetadata = result[2].representation.metadata;
     expect(docMetadata.identifier.value).toBe(`${location.path}container/template`);
     expect(docMetadata.quads()).toHaveLength(2);
-    expect(docMetadata.get('pre:has')?.value).toBe('metadata');
+    expect(docMetadata.get(namedNode('pre:has'))?.value).toBe('metadata');
     expect(docMetadata.contentType).toBe('text/turtle');
   });
 });

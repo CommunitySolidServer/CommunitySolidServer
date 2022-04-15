@@ -2,8 +2,11 @@ import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 import type { HttpErrorOptions } from '../../../../src/util/errors/HttpError';
 import { generateHttpErrorUri } from '../../../../src/util/errors/HttpError';
 import { MovedPermanentlyHttpError } from '../../../../src/util/errors/MovedPermanentlyHttpError';
+import { PermanentRedirectHttpError } from '../../../../src/util/errors/PermanentRedirectHttpError';
 import { RedirectHttpError } from '../../../../src/util/errors/RedirectHttpError';
 import type { RedirectHttpErrorClass } from '../../../../src/util/errors/RedirectHttpError';
+import { SeeOtherHttpError } from '../../../../src/util/errors/SeeOtherHttpError';
+import { TemporaryRedirectHttpError } from '../../../../src/util/errors/TemporaryRedirectHttpError';
 
 // Used to make sure the RedirectHttpError constructor also gets called in a test.
 class FixedRedirectHttpError extends RedirectHttpError {
@@ -20,6 +23,9 @@ describe('RedirectHttpError', (): void => {
     [ 'RedirectHttpError', 0, FixedRedirectHttpError ],
     [ 'MovedPermanentlyHttpError', 301, MovedPermanentlyHttpError ],
     [ 'FoundHttpError', 302, FoundHttpError ],
+    [ 'SeeOtherHttpError', 303, SeeOtherHttpError ],
+    [ 'TemporaryRedirectHttpError', 307, TemporaryRedirectHttpError ],
+    [ 'PermanentRedirectHttpError', 308, PermanentRedirectHttpError ],
   ];
 
   describe.each(errors)('%s', (name, statusCode, constructor): void => {
