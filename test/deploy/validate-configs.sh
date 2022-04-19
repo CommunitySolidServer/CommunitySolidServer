@@ -19,9 +19,20 @@ run_server_with_config () {
   fi
   CONFIG_PATH=$1
   CONFIG_NAME=$2
+
+  CSS_OPTS="-p 8888 -l warn -s http://localhost:4000/sparql"
+  CURL_STATEMENT='http://localhost:8888'
+  # HTTPS config needs a base-url override
+  if [[ $CONFIG_NAME =~ "https" ]]; then
+    sed -i -E "s/(\W+\"options_key\".*\").+(\".*)/\1hostkey.pem\2/" $CONFIG_PATH
+    sed -i -E "s/(\W+\"options_cert\".*\").+(\".*)/\1hostcert.pem\2/" $CONFIG_PATH
+    CSS_OPTS="$CSS_OPTS -b https://localhost:8888"
+    CURL_STATEMENT='-k https://localhost:8888'
+  fi
+
   echo -e "----------------------------------"
   echo "$TEST_NAME($CONFIG_NAME) - Starting the server"
-  community-solid-server -p 8888 -l warn -s "http://localhost:4000/sparql" -c $CONFIG_PATH &>logs/$CONFIG_NAME &
+  community-solid-server $CSS_OPTS -c $CONFIG_PATH  &>logs/$CONFIG_NAME &
   PID=$!
 
   FAILURE=1
@@ -30,17 +41,10 @@ run_server_with_config () {
     cat logs/$CONFIG_NAME
   else
     echo "$TEST_NAME($CONFIG_NAME) - Attempting HTTP access to the server"
-    for i in {1..30}; do
-      echo "$TEST_NAME($CONFIG_NAME) - Attempting HTTP access to the server ($i/30s)"
+    for i in {1..20}; do
       sleep 1
-      # echo -ne "."
-      if curl -s -f localhost:8888 > /dev/null; then
+      if curl -s -f $CURL_STATEMENT > logs/$CONFIG_NAME-curl; then
         echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached (after ~${i}s)"
-        FAILURE=0
-        break
-      fi
-      if curl -s -f https://localhost:8888 > /dev/null; then
-        echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached over https (after ~${i}s)"
         FAILURE=0
         break
       fi
@@ -66,8 +70,10 @@ for CONFIG_PATH in config/*.json; do
   if [ $SERVER_FAILURE -eq 0 ]; then
     SUCCESSES="$SUCCESSES[SUCCESS]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
   else
-    echo "$TEST_NAME($CONFIG_NAME) - Logs: ";
+    echo "$TEST_NAME($CONFIG_NAME) - CSS logs: ";
     cat logs/$CONFIG_NAME
+    echo "$TEST_NAME($CONFIG_NAME) - curl logs: ";
+    cat logs/$CONFIG_NAME-curl.log
     VALIDATION_FAILURE=1
     FAILURES="$FAILURES[FAILURE]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
   fi
