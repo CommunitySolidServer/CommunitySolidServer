@@ -22,11 +22,11 @@ run_server_with_config () {
 
   CSS_OPTS="-p 8888 -l warn -s http://localhost:4000/sparql"
   CURL_STATEMENT='http://localhost:8888'
-  # HTTPS config needs a base-url override
+  # HTTPS config needs a base-url override + keys and certs
   if [[ $CONFIG_NAME =~ "https" ]]; then
     sed -i -E "s/(\W+\"options_key\".*\").+(\".*)/\1hostkey.pem\2/" $CONFIG_PATH
     sed -i -E "s/(\W+\"options_cert\".*\").+(\".*)/\1hostcert.pem\2/" $CONFIG_PATH
-    CSS_OPTS="$CSS_OPTS -b https://localhost:8888"
+    CSS_OPTS="$CSS_OPTS -b https://localhost:8888 --httpsKey hostkey.pem --httpsCert hostcert.pem"
     CURL_STATEMENT='-k https://localhost:8888'
   fi
 
