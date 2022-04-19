@@ -136,11 +136,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Generate certificates https config
-        uses: kofemann/action-create-certificate@v0.0.4
-        with:
-          hostcert: 'hostcert.pem'
-          hostkey:  'hostkey.pem'
-          cachain:  'ca-chain.pem'
+        run: openssl req -x509 -nodes -days 1 -newkey rsa:2048 -keyout server.key -out server.cert -subj '/CN=localhost'
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests
