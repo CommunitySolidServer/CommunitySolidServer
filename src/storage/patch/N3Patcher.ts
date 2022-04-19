@@ -61,10 +61,9 @@ export class N3Patcher extends RdfStorePatcher {
    * After that the delete and insert operations are applied.
    */
   private async patch({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
-    const result = store;
-    this.logger.debug(`${result.size} quads in ${identifier.path}.`);
+    this.logger.debug(`${store.size} quads in ${identifier.path}.`);
 
-    const { deletes, inserts } = await this.applyConditions(patch as N3Patch, identifier, result);
+    const { deletes, inserts } = await this.applyConditions(patch as N3Patch, identifier, store);
 
     // Apply deletes
     if (deletes.length > 0) {
@@ -72,26 +71,26 @@ export class N3Patcher extends RdfStorePatcher {
       // which would result in an incorrect count.
       const uniqueDeletes = uniqueQuads(deletes);
       // Solid, §5.3.1: "The triples resulting from ?deletions are to be removed from the RDF dataset."
-      const oldSize = result.size;
-      result.removeQuads(uniqueDeletes);
+      const oldSize = store.size;
+      store.removeQuads(uniqueDeletes);
 
       // Solid, §5.3.1: "If the set of triples resulting from ?deletions is non-empty and the dataset
       // does not contain all of these triples, the server MUST respond with a 409 status code."
-      if (oldSize - result.size !== uniqueDeletes.length) {
+      if (oldSize - store.size !== uniqueDeletes.length) {
         throw new ConflictHttpError(
           'The document does not contain all triples the N3 Patch requests to delete, which is required for patching.',
         );
       }
-      this.logger.debug(`Deleted ${oldSize - result.size} quads from ${identifier.path}.`);
+      this.logger.debug(`Deleted ${oldSize - store.size} quads from ${identifier.path}.`);
     }
 
     // Solid, §5.3.1: "The triples resulting from ?insertions are to be added to the RDF dataset,
     // with each blank node from ?insertions resulting in a newly created blank node."
-    result.addQuads(inserts);
+    store.addQuads(inserts);
 
-    this.logger.debug(`${result.size} total quads after patching ${identifier.path}.`);
+    this.logger.debug(`${store.size} total quads after patching ${identifier.path}.`);
 
-    return result;
+    return store;
   }
 
   /**

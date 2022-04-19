@@ -1,5 +1,4 @@
 // Authentication
-
 export * from './authentication/BearerWebIdExtractor';
 export * from './authentication/Credentials';
 export * from './authentication/CredentialsExtractor';
@@ -331,11 +330,11 @@ export * from './storage/mapping/SubdomainExtensionBasedMapper';
 
 // Storage/Patch
 export * from './storage/patch/ConvertingPatcher';
+export * from './storage/patch/ImmutableMetadataPatcher';
 export * from './storage/patch/N3Patcher';
 export * from './storage/patch/PatchHandler';
 export * from './storage/patch/RdfPatcher';
 export * from './storage/patch/RdfStorePatcher';
-export * from './storage/patch/ImmutableMetadataPatcher';
 export * from './storage/patch/RepresentationPatcher';
 export * from './storage/patch/RepresentationPatchHandler';
 export * from './storage/patch/SparqlUpdatePatcher';

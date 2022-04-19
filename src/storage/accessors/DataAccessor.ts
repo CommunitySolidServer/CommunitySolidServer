@@ -76,6 +76,7 @@ export interface DataAccessor {
    * @param metadata - Metadata to store.
    */
   writeMetadata: (identifier: ResourceIdentifier, metadata: RepresentationMetadata) => Promise<void>;
+
   /**
    * Deletes the resource and its corresponding metadata.
    *

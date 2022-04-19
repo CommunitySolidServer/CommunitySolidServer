@@ -345,9 +345,7 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       'WHERE {}',
     ].join('\n');
 
-    // Solid, §5.3: "Servers MUST NOT allow HTTP POST, PUT and PATCH to update a container’s resource metadata
-    // statements; if the server receives such a request, it MUST respond with a 409 status code.
-    // https://solid.github.io/specification/protocol#contained-resource-metadata-statements
+    // We don't want you to PATCH on containers
     response = await fetch(documentUrl, {
       method: 'PATCH',
       headers: {

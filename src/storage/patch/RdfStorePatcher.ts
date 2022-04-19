@@ -13,5 +13,4 @@ export interface RdfStorePatcherInput {
  * Handles the patching on a N3 Store
  */
 export abstract class RdfStorePatcher extends AsyncHandler<RdfStorePatcherInput, Store> {
-
 }

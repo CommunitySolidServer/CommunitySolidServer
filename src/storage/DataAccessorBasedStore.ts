@@ -507,7 +507,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     // Make it not possible via PUT to add metadata during the creation of a container
     // Thus the contents are ignored and a warning is sent
     if (!representation.isEmpty) {
-      this.logger.warn('The contents of the body are ignored for the creation of the ldp:container.');
+      this.logger.warn('The contents of the body are ignored when creating a container.');
     }
 
     // Input content type doesn't matter anymore

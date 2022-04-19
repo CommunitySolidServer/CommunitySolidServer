@@ -63,8 +63,8 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
   }
 
   /**
-     * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
-     */
+   * Checks if the input operation is of a supported type (DELETE/INSERT or composite of those)
+   */
   private validateUpdate(op: Algebra.Operation): void {
     if (this.isDeleteInsert(op)) {
       this.validateDeleteInsert(op);
@@ -77,9 +77,9 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
   }
 
   /**
-     * Checks if the input DELETE/INSERT is supported.
-     * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
-     */
+   * Checks if the input DELETE/INSERT is supported.
+   * This means: no GRAPH statements, no DELETE WHERE containing terms of type Variable.
+   */
   private validateDeleteInsert(op: Algebra.DeleteInsert): void {
     const def = DataFactory.defaultGraph();
     const deletes = op.delete ?? [];
@@ -99,8 +99,8 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
   }
 
   /**
-     * Checks if the composite update only contains supported update components.
-     */
+   * Checks if the composite update only contains supported update components.
+   */
   private validateComposite(op: Algebra.CompositeUpdate): void {
     for (const update of op.updates) {
       this.validateUpdate(update);
@@ -108,8 +108,8 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
   }
 
   /**
-     * Apply the given algebra operation to the given identifier.
-     */
+   * Apply the given algebra operation to the given identifier.
+   */
   private async patch({ identifier, patch, store }: RdfStorePatcherInput): Promise<Store> {
     const result = store;
     this.logger.debug(`${result.size} quads in ${identifier.path}.`);

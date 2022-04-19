@@ -1,5 +1,8 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "import": [
+    "files-scs:config/util/auxiliary/strategies/meta.json"
+  ],
   "@graph": [
     {
       "comment": [
@@ -8,7 +11,9 @@
       ],
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
-      "sources": [ ]
+      "sources": [
+        { "@id": "urn:solid-server:default:MetadataStrategy" }
+      ]
     }
   ]
 }
