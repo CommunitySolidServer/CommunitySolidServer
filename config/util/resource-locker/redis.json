@@ -2,27 +2,23 @@
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
   "@graph": [
     {
-      "comment": "Allows multiple simultaneous read operations. Locks are stored in memory. Locks expire after inactivity.",
+      "comment": "Allows multiple simultaneous read operations. All locks are threadsafe.",
       "@id": "urn:solid-server:default:ResourceLocker",
       "@type": "WrappedExpiringReadWriteLocker",
       "locker": {
-        "@type": "GreedyReadWriteLocker",
-        "locker": {
-          "@id": "urn:solid-server:default:RedisResourceLocker",
-          "@type": "RedisResourceLocker",
-          "redisClients": [ "6379" ]
-        },
-        "storage": { "@id": "urn:solid-server:default:LockStorage" },
-        "suffixes_count": "count",
-        "suffixes_read": "read",
-        "suffixes_write": "write"
+        "@id": "urn:solid-server:default:RedisLocker",
+        "@type": "RedisLocker"
       },
       "expiration": 3000
     },
     {
-      "comment": "Makes sure the redis connection is closed when the application needs to stop.",
+      "comment": "Makes sure the redis connection is closed when the application needs to stop. Also deletes still-existing locks and counters.",
       "@id": "urn:solid-server:default:Finalizer",
-      "ParallelFinalizer:_finalizers": [ { "@id": "urn:solid-server:default:RedisResourceLocker" } ]
+      "ParallelFinalizer:_finalizers": [
+        {
+          "@id": "urn:solid-server:default:RedisLocker"
+        }
+      ]
     }
   ]
 }

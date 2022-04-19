@@ -10,6 +10,8 @@
 - A new default configuration `config/https-file-cli.json` 
   that can set the HTTPS parameters through the CLI has been added.
   This is also an example of how to add CLI parameters through a custom configuration.
+- A new RedisLocker has been added to replace the old RedisResourceLocker class. 
+  It allows for true threadsafe read/write locking.
 
 ### Configuration changes
 You might need to make changes to your v3 configuration if you use a custom config.
@@ -39,6 +41,8 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `RepresentationMetadata` no longer accepts strings for predicates in any of its functions.
 - `CombinedSettingsResolver` parameter `computers` has been renamed to `resolvers`.
 - `IdentityProviderFactory` requires an additional `credentialStorage` parameter.
+- The `RedisResourceLocker` class has been removed and the `RedisLocker`class was added instead. 
+ `RedisLocker` implements both the `ResourceLocker` and `ReadWriteLocker` interface.
 
 ## v3.0.0
 ### New features
