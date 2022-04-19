@@ -126,21 +126,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       identifier = this.metadataStrategy.getSubjectIdentifier(identifier);
       isMetadata = true;
-
-      // Note: below here must be removed later on
-      const subjectIdentifier = identifier;
-      const metadata = await this.accessor.getMetadata(subjectIdentifier);
-      if (isContainerPath(metadata.identifier.value)) {
-        // Add containment triples of non-auxiliary resources
-        for await (const child of this.accessor.getChildren(subjectIdentifier)) {
-          if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
-            metadata.add(LDP.terms.contains, child.identifier as NamedNode);
-          }
-        }
-      }
-      this.removeResponseMetadata(metadata);
-      return new BasicRepresentation(metadata.quads(), identifier, INTERNAL_QUADS);
     }
+
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
     const metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
@@ -157,10 +144,8 @@ export class DataAccessorBasedStore implements ResourceStore {
         if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
           if (!isMetadata) {
             metadata.addQuads(child.quads());
-            metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
-          } else {
-            metadata.add(LDP.terms.contains, child.identifier as NamedNode);
           }
+          metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
       }
 
@@ -181,7 +166,6 @@ export class DataAccessorBasedStore implements ResourceStore {
 
         representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
       } else {
-        // This.removeResponseMetadata(metadata);
         representation = new BasicRepresentation(
           metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
         );
@@ -439,7 +423,6 @@ export class DataAccessorBasedStore implements ResourceStore {
         'Not allowed to create metadata resources on a metadata resource.',
       );
     }
-
     const metadata = new RepresentationMetadata(subjectIdentifier);
     let rdf = representation;
     if (representation.metadata.contentType && representation.metadata.contentType !== INTERNAL_QUADS) {
@@ -452,6 +435,8 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     const quads = await arrayifyStream(rdf.data);
     metadata.addQuads(quads);
+
+    this.removeResponseMetadata(metadata);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
     return [ identifier ];
   }
