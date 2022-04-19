@@ -8,7 +8,7 @@
       "saltRounds": 10,
       "storage": {
         "@type": "EncodingPathStorage",
-        "relativePath": "/idp/accounts/",
+        "relativePath": "/accounts/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       },
       "forgotPasswordStorage": {
