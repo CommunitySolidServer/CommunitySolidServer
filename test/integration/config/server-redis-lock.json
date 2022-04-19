@@ -40,9 +40,16 @@
         },
         {
           "RecordObject:_record_key": "locker",
-          "RecordObject:_record_value": { "@id": "urn:solid-server:default:RedisResourceLocker" }
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:RedisLocker" }
         }
       ]
+    },
+    {
+      "@id": "urn:solid-server:default:RedisLocker",
+      "@type": "RedisLocker",
+      "attemptSettings_retryCount": 29,
+      "attemptSettings_retryDelay": 100,
+      "attemptSettings_retryJitter": 0
     }
   ]
 }
