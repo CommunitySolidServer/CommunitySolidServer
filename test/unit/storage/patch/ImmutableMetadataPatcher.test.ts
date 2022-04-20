@@ -1,10 +1,9 @@
 import { DataFactory, Store } from 'n3';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
-import { ImmutableTriple } from '../../../../dist';
 import type { SparqlUpdatePatch } from '../../../../src';
 import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
-import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
+import { ImmutableTriple, ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
@@ -93,6 +92,24 @@ describe('A ImmutableMetadataPatcher', (): void => {
     const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .} ;
 INSERT DATA { <${identifier.path}> <${LDP.contains}> <${identifier.path}/resource> }`);
     store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
+    const input = { store, patch, identifier: metaIdentifier };
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+  });
+
+  it('rejects custom ImmutableTriple patches.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutableTriple('http://example.org/', 'http://example.org/has', 'http://example.org/something'),
+    ]);
+    const patch = getPatch(`INSERT DATA { <http://example.org/> <http://example.org/has> <http://example.org/something> .}`);
+    const input = { store, patch, identifier: metaIdentifier };
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+  });
+
+  it('rejects everything when ImmutableTriple has no argumetns.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutableTriple(),
+    ]);
+    const patch = getPatch(`INSERT DATA { <http://example.org/a> <http://example.org/b> <http://example.org/c> .}`);
     const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
   });

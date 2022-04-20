@@ -43,11 +43,7 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
     const patchedImmutable: Quad[] = [];
 
     // For loop over triples that can not be changed in solid metadata
-    for (const immutable of this.immutableTriples) {
-      const subject = immutable.subject ?? null;
-      const predicate = immutable.predicate ?? null;
-      const object = immutable.object ?? null;
-
+    for (const { subject, predicate, object } of this.immutableTriples) {
       inputImmutable.push(...inputStore.getQuads(subject, predicate, object, null));
       patchedImmutable.push(...patchedStore.getQuads(subject, predicate, object, null));
     }
@@ -76,13 +72,13 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
  * there MUST be no change in quads after the patch that have that given predicate.
  */
 export class ImmutableTriple {
-  public readonly subject?: string;
-  public readonly predicate?: string;
-  public readonly object?: string;
+  public readonly subject: string | null;
+  public readonly predicate: string | null;
+  public readonly object: string | null;
 
   public constructor(subject?: string, predicate?: string, object?: string) {
-    this.subject = subject;
-    this.predicate = predicate;
-    this.object = object;
+    this.subject = subject ?? null;
+    this.predicate = predicate ?? null;
+    this.object = object ?? null;
   }
 }
