@@ -27,7 +27,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { LDP } from '../../util/Vocabularies';
+import { CONTENT_TYPE_TERM, LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
 
 const { defaultGraph, namedNode, quad, variable } = DataFactory;
@@ -130,6 +130,9 @@ export class SparqlDataAccessor implements DataAccessor {
     if (triples.some((triple): boolean => !def.equals(triple.graph))) {
       throw new NotImplementedHttpError('Only triples in the default graph are supported.');
     }
+
+    // Not relevant since all content is triples
+    metadata.removeAll(CONTENT_TYPE_TERM);
 
     return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent, triples));
   }

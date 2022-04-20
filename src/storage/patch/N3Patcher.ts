@@ -1,7 +1,7 @@
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import type { IQueryResultBindings } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import { Store } from 'n3';
+import type { Store } from 'n3';
 import type { Quad, Term } from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Generator, Wildcard } from 'sparqljs';
@@ -50,7 +50,7 @@ export class N3Patcher extends RdfStorePatcher {
     return this.patch({
       identifier: input.identifier,
       patch,
-      store: new Store(input.store.getQuads(null, null, null, null)),
+      store: input.store,
     });
   }
 

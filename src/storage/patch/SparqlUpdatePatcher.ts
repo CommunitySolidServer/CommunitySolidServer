@@ -1,7 +1,8 @@
 import type { ActorInitSparql } from '@comunica/actor-init-sparql';
 import { newEngine } from '@comunica/actor-init-sparql';
 import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import { Store, DataFactory } from 'n3';
+import type { Store } from 'n3';
+import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
 import type { Patch } from '../../http/representation/Patch';
 import type { SparqlUpdatePatch } from '../../http/representation/SparqlUpdatePatch';
@@ -46,7 +47,7 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
     return this.patch({
       identifier,
       patch,
-      store: new Store(store.getQuads(null, null, null, null)),
+      store,
     });
   }
 

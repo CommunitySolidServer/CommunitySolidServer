@@ -23,7 +23,7 @@ function getPatch(query: string): SparqlUpdatePatch {
   };
 }
 
-describe('A RdfImmutableCheckPatcher', (): void => {
+describe('A ImmutableMetadataPatcher', (): void => {
   const base = 'http://test.com/';
   const identifier = { path: 'http://test.com/foo' };
   const metaIdentifier = { path: 'http://test.com/foo.meta' };
@@ -82,6 +82,15 @@ describe('A RdfImmutableCheckPatcher', (): void => {
 
   it('reject patches that removes pim:storage triples from metadata.', async(): Promise<void> => {
     const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .}`);
+    store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
+    const input = { store, patch, identifier: metaIdentifier };
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+  });
+
+  it('reject patches that removes pim:storage triples from the metadata ' +
+      'and adds an ldp:contains to the metadata.', async(): Promise<void> => {
+    const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .} ;
+INSERT DATA { <${identifier.path}> <${LDP.contains}> <${identifier.path}/resource> }`);
     store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
     const input = { store, patch, identifier: metaIdentifier };
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);

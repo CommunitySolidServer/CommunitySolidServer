@@ -438,6 +438,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     metadata.addQuads(quads);
 
     this.removeResponseMetadata(metadata);
+    metadata.removeAll(CONTENT_TYPE_TERM);
     await this.accessor.writeMetadata(subjectIdentifier, metadata);
     return [ identifier ];
   }
@@ -493,6 +494,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Remove all generated metadata to prevent it from being stored permanently
     this.removeResponseMetadata(representation.metadata);
+    // Representation.metadata.removeAll(CONTENT_TYPE_TERM);
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
