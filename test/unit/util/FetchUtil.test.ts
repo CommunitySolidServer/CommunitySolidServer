@@ -34,8 +34,7 @@ describe('FetchUtil', (): void => {
         }
         return {
           uri,
-          quads: Readable.from(quads),
-          exists: true,
+          data: Readable.from(quads),
         };
       });
     }
