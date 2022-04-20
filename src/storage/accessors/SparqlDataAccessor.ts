@@ -27,7 +27,7 @@ import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import type { IdentifierStrategy } from '../../util/identifiers/IdentifierStrategy';
 import { isContainerIdentifier } from '../../util/PathUtil';
-import { LDP, CONTENT_TYPE_TERM } from '../../util/Vocabularies';
+import { LDP } from '../../util/Vocabularies';
 import type { DataAccessor } from './DataAccessor';
 
 const { defaultGraph, namedNode, quad, variable } = DataFactory;
@@ -131,9 +131,6 @@ export class SparqlDataAccessor implements DataAccessor {
       throw new NotImplementedHttpError('Only triples in the default graph are supported.');
     }
 
-    // Not relevant since all content is triples
-    metadata.removeAll(CONTENT_TYPE_TERM);
-
     return this.sendSparqlUpdate(this.sparqlInsert(name, metadata, parent, triples));
   }
 
@@ -142,9 +139,6 @@ export class SparqlDataAccessor implements DataAccessor {
    */
   public async writeMetadata(identifier: ResourceIdentifier, metadata: RepresentationMetadata): Promise<void> {
     const { name } = this.getRelatedNames(identifier);
-
-    // Not relevant since all content is triples
-    metadata.removeAll(CONTENT_TYPE_TERM);
     const metaName = this.getMetadataNode(name);
 
     return this.sendSparqlUpdate(this.sparqlInsertMetadata(metaName, metadata));

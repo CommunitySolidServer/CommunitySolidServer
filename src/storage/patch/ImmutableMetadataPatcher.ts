@@ -11,6 +11,7 @@ import { RdfStorePatcher } from './RdfStorePatcher';
 
 /**
  * Guarantees that certain PATCH operations MUST NOT update certain triples in metadata resources.
+ * Furthermore, this class also handles the patching for metadata resources.
  * List of triples that must not be updated are given during instantiation.
  *
  * This list is a list of tuples where the first element is the predicate and the second element the object.

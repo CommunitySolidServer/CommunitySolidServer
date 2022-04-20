@@ -1,5 +1,5 @@
 import type { Readable } from 'stream';
-import { StreamWriter } from 'n3';
+import { DataFactory, StreamWriter } from 'n3';
 import type { Quad } from 'rdf-js';
 import rdfSerializer from 'rdf-serialize';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
@@ -36,8 +36,7 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
       objectMode: true,
       transform(quad: Quad): void {
         if (quad.graph.value === SOLID_META.terms.ResponseMetadata.value) {
-          // Console.log(quad.object);
-          // this.push(DataFactory.quad(quad.subject, quad.predicate, quad.object));
+          this.push(DataFactory.quad(quad.subject, quad.predicate, quad.object));
         } else {
           this.push(quad);
         }

@@ -1,9 +1,8 @@
 import 'jest-rdf';
 import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
-import { DataFactory } from 'n3';
-import type { RepresentationPreferences } from '../../../src';
-import { RdfToQuadConverter, serializeQuads } from '../../../src';
+import { DataFactory, Store } from 'n3';
+import { CONTENT_TYPE_TERM, RdfToQuadConverter, serializeQuads } from '../../../src';
 import type { AuxiliaryStrategy } from '../../../src/http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../src/http/representation/Representation';
@@ -23,7 +22,7 @@ import { PreconditionFailedHttpError } from '../../../src/util/errors/Preconditi
 import type { Guarded } from '../../../src/util/GuardedStream';
 import { SingleRootIdentifierStrategy } from '../../../src/util/identifiers/SingleRootIdentifierStrategy';
 import { trimTrailingSlashes } from '../../../src/util/PathUtil';
-import { guardedStreamFrom, readableToQuads } from '../../../src/util/StreamUtil';
+import { guardedStreamFrom } from '../../../src/util/StreamUtil';
 import { CONTENT_TYPE, SOLID_HTTP, LDP, PIM, RDF, SOLID_META, DC } from '../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../util/SimpleSuffixStrategy';
 const { namedNode, quad } = DataFactory;
@@ -191,13 +190,12 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
 
       const result = await store.getRepresentation(metaResourceID);
-      expect(result).toMatchObject({ binary: true });
-      expect(await arrayifyStream(result.data)).toEqual(
-        [ '<http://test.com/resource> <http://www.w3.org/ns/ma-ont#format> "text/plain"',
-          ';\n    a <http://www.w3.org/ns/ldp#Resource>',
-          '.\n' ],
+      const quads = await arrayifyStream(result.data);
+      expect(result).toMatchObject({ binary: false });
+      expect(new Store(quads)).toBeRdfDatasetContaining(
+        DataFactory.quad(DataFactory.namedNode(resourceID.path), CONTENT_TYPE_TERM, DataFactory.literal('text/plain')),
       );
-      expect(result.metadata.contentType).toBe(TEXT_TURTLE);
+      expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
     });
 
     it('will return the generated representation for container metadata resources.', async(): Promise<void> => {
@@ -208,16 +206,16 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = representation;
 
       const result = await store.getRepresentation(metaResourceID);
-      const converter = new RdfToQuadConverter();
-      const preferences: RepresentationPreferences = { type: { [INTERNAL_QUADS]: 1 }};
-      const resultConverted = await converter.handle(
-        { identifier: metaResourceID, representation: result, preferences },
+      const quads = await arrayifyStream(result.data);
+      expect(new Store(quads)).toBeRdfDatasetContaining(
+        DataFactory.quad(
+          DataFactory.namedNode(root),
+          DataFactory.namedNode(LDP.contains),
+          DataFactory.namedNode(resourceID.path),
+          SOLID_META.terms.ResponseMetadata,
+        ),
       );
-      const resultStore = await readableToQuads(resultConverted.data);
-      expect(resultStore).toBeRdfDatasetContaining(
-        quad(namedNode(root), namedNode(LDP.contains), namedNode(resourceID.path)),
-      );
-      expect(result.metadata.contentType).toBe(TEXT_TURTLE);
+      expect(result.metadata.contentType).toBe(INTERNAL_QUADS);
     });
   });
 

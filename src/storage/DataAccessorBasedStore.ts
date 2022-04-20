@@ -248,7 +248,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Ensure the representation is supported by the accessor
     // Containers are not checked because uploaded representations are treated as metadata
-    if (!isContainer) {
+    if (!isContainer && !this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       await this.accessor.canHandle(representation);
     }
 
@@ -423,6 +423,7 @@ export class DataAccessorBasedStore implements ResourceStore {
         'Not allowed to create metadata resources on a metadata resource.',
       );
     }
+
     const metadata = new RepresentationMetadata(subjectIdentifier);
     let rdf = representation;
     if (representation.metadata.contentType && representation.metadata.contentType !== INTERNAL_QUADS) {
