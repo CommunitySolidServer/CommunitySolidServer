@@ -111,9 +111,9 @@ describe('A DataAccessorBasedStore', (): void => {
     auxiliaryStrategy = new SimpleSuffixStrategy('.dummy');
     const metadataStrategy = new SimpleSuffixStrategy('.meta');
     const converter = new RdfToQuadConverter();
-    store = new DataAccessorBasedStore({
+    store = new DataAccessorBasedStore(
       accessor, identifierStrategy, auxiliaryStrategy, metadataStrategy, converter,
-    });
+    );
 
     containerMetadata = new RepresentationMetadata(
       { [RDF.type]: [

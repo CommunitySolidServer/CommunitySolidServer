@@ -44,29 +44,6 @@ import type { Conditions } from './Conditions';
 import type { RepresentationConverter } from './conversion/RepresentationConverter';
 import type { ResourceStore } from './ResourceStore';
 
-export interface DataAccessorBasedStoreArgs {
-  /**
-   * The Data Accessor that is being used to store the data.
-   */
-  accessor: DataAccessor;
-  /**
-   * The strategy to handle the behaviour of container identifiers.
-   */
-  identifierStrategy: IdentifierStrategy;
-  /**
-   * The strategy to handle all auxiliary resources.
-   */
-  auxiliaryStrategy: AuxiliaryStrategy;
-  /**
-   * The strategy to handle metadata resources.
-   */
-  metadataStrategy: AuxiliaryStrategy;
-  /**
-   * The converter that is being used for conversion of the representation data
-   */
-  converter: RepresentationConverter;
-}
-
 /**
  * ResourceStore which uses a DataAccessor for backend access.
  *
@@ -93,14 +70,19 @@ export interface DataAccessorBasedStoreArgs {
 export class DataAccessorBasedStore implements ResourceStore {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly accessor!: DataAccessor;
-  private readonly identifierStrategy!: IdentifierStrategy;
-  private readonly auxiliaryStrategy!: AuxiliaryStrategy;
-  private readonly metadataStrategy!: AuxiliaryStrategy;
-  private readonly converter!: RepresentationConverter;
+  private readonly accessor: DataAccessor;
+  private readonly identifierStrategy: IdentifierStrategy;
+  private readonly auxiliaryStrategy: AuxiliaryStrategy;
+  private readonly metadataStrategy: AuxiliaryStrategy;
+  private readonly converter: RepresentationConverter;
 
-  public constructor(args: DataAccessorBasedStoreArgs) {
-    Object.assign(this, args);
+  public constructor(accessor: DataAccessor, identifierStrategy: IdentifierStrategy,
+    auxiliaryStrategy: AuxiliaryStrategy, metadataStrategy: AuxiliaryStrategy, converter: RepresentationConverter) {
+    this.accessor = accessor;
+    this.identifierStrategy = identifierStrategy;
+    this.auxiliaryStrategy = auxiliaryStrategy;
+    this.metadataStrategy = metadataStrategy;
+    this.converter = converter;
   }
 
   public async hasResource(identifier: ResourceIdentifier): Promise<boolean> {

@@ -22,19 +22,19 @@
     {
       "@id": "urn:solid-server:template:ResourceStore",
       "@type": "DataAccessorBasedStore",
-      "args_accessor": {
+      "accessor": {
         "@id": "urn:solid-server:template:DataAccessor"
       },
-      "args_identifierStrategy": {
+      "identifierStrategy": {
         "@id": "urn:solid-server:default:IdentifierStrategy"
       },
-      "args_auxiliaryStrategy": {
+      "auxiliaryStrategy": {
         "@id": "urn:solid-server:default:AuxiliaryStrategy"
       },
-      "args_metadataStrategy": {
+      "metadataStrategy": {
         "@id": "urn:solid-server:default:MetadataStrategy"
       },
-      "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     },
 
     {

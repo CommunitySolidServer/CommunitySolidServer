@@ -40,13 +40,13 @@ describe('A LockingResourceStore', (): void => {
     const base = 'http://test.com/';
     path = `${base}path`;
     const idStrategy = new SingleRootIdentifierStrategy(base);
-    source = new DataAccessorBasedStore({
-      accessor: new InMemoryDataAccessor(idStrategy),
-      identifierStrategy: idStrategy,
-      auxiliaryStrategy: strategy,
+    source = new DataAccessorBasedStore(
+      new InMemoryDataAccessor(idStrategy),
+      idStrategy,
+      strategy,
       metadataStrategy,
       converter,
-    });
+    );
 
     // Initialize store
     const metadata = new RepresentationMetadata({ path: base }, TEXT_TURTLE);
