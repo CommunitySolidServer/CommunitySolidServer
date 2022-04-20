@@ -9,6 +9,10 @@ npm pack --loglevel warn
 npm install -g solid-community-server-*.tgz --loglevel warn
 rm solid-community-server-*.tgz
 
+# Change key/cert paths of example-https-file.json
+sed -i -E "s/(\W+\"options_key\".*\").+(\".*)/\1server.key\2/" config/example-https-file.json
+sed -i -E "s/(\W+\"options_cert\".*\").+(\".*)/\1server.cert\2/" config/example-https-file.json
+
 run_server_with_config () {
   if [[ $# -ne 2 ]]; then
     echo "Config arguments not set"
@@ -20,19 +24,22 @@ run_server_with_config () {
   CONFIG_PATH=$1
   CONFIG_NAME=$2
 
-  CSS_OPTS="-p 8888 -l warn -s http://localhost:4000/sparql"
-  CURL_STATEMENT='http://localhost:8888'
+  mkdir -p .data
+
+  CSS_ARGS="-p 8888 -l warn -f .data/ -s http://localhost:4000/sparql"
+  CSS_BASE_URL="http://localhost:8888"
+
   # HTTPS config needs a base-url override + keys and certs
+  if [[ $CONFIG_NAME =~ "https-file-cli" ]]; then
+    CSS_ARGS="$CSS_ARGS --httpsKey server.key --httpsCert server.cert"
+  fi
   if [[ $CONFIG_NAME =~ "https" ]]; then
-    sed -i -E "s/(\W+\"options_key\".*\").+(\".*)/\1server.key\2/" $CONFIG_PATH
-    sed -i -E "s/(\W+\"options_cert\".*\").+(\".*)/\1server.cert\2/" $CONFIG_PATH
-    CSS_OPTS="$CSS_OPTS -b https://localhost:8888 --httpsKey server.key --httpsCert server.cert"
-    CURL_STATEMENT='-k https://localhost:8888'
+    CSS_BASE_URL="https://localhost:8888"
   fi
 
   echo -e "----------------------------------"
   echo "$TEST_NAME($CONFIG_NAME) - Starting the server"
-  community-solid-server $CSS_OPTS -c $CONFIG_PATH  &>logs/$CONFIG_NAME &
+  community-solid-server $CSS_ARGS -b $CSS_BASE_URL -c $CONFIG_PATH  &>logs/$CONFIG_NAME &
   PID=$!
 
   FAILURE=1
@@ -41,20 +48,18 @@ run_server_with_config () {
     cat logs/$CONFIG_NAME
   else
     echo "$TEST_NAME($CONFIG_NAME) - Attempting HTTP access to the server"
-    for i in {1..20}; do
-      sleep 1
-      if curl -s -f $CURL_STATEMENT > logs/$CONFIG_NAME-curl; then
-        echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached (after ~${i}s)"
-        FAILURE=0
-        break
-      fi
-    done
+    if curl -sfkI -X GET --retry 15 --retry-connrefused --retry-delay 1 $CSS_BASE_URL > logs/$CONFIG_NAME-curl; then
+      echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached"
+      FAILURE=0
+    fi
     if [ $FAILURE -eq 1 ]; then
       echo "$TEST_NAME($CONFIG_NAME) - FAILURE: Could not reach server"
     fi
     kill -9 $PID &> /dev/null
     timeout 30s tail --pid=$PID -f /dev/null
   fi
+
+  rm -rf .data/*
 
   return $FAILURE
 }
@@ -79,6 +84,9 @@ for CONFIG_PATH in config/*.json; do
   fi
   echo ""
 done;
+
+echo "$TEST_NAME - Cleanup"
+npm uninstall -g @solid/community-server
 
 echo -e "\n\n----------------------------------------"
 echo "Config validation overview"
