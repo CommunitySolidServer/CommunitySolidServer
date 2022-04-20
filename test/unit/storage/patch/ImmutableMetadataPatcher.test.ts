@@ -1,6 +1,7 @@
 import { DataFactory, Store } from 'n3';
 import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
+import { ImmutableTriple } from '../../../../dist';
 import type { SparqlUpdatePatch } from '../../../../src';
 import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
 import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
@@ -40,8 +41,8 @@ describe('A ImmutableMetadataPatcher', (): void => {
     store = new Store();
 
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      [ 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage' ],
-      [ 'http://www.w3.org/ns/ldp#contains', '' ],
+      new ImmutableTriple(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
+      new ImmutableTriple(undefined, 'http://www.w3.org/ns/ldp#contains'),
     ]);
   });
 

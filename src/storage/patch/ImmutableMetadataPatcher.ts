@@ -4,7 +4,7 @@ import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { serializeQuads } from '../../util/QuadUtil';
+import { serializeQuads, uniqueQuads } from '../../util/QuadUtil';
 import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
 import { RdfStorePatcher } from './RdfStorePatcher';
@@ -12,24 +12,18 @@ import { RdfStorePatcher } from './RdfStorePatcher';
 /**
  * Guarantees that certain PATCH operations MUST NOT update certain triples in metadata resources.
  * Furthermore, this class also handles the patching for metadata resources.
- * List of triples that must not be updated are given during instantiation.
- *
- * This list is a list of tuples where the first element is the predicate and the second element the object.
- * Thus, when a triple has been added/removed in the metadata resource
- * where its predicate is equal to the first element and its object is equal to the second element,
- * then this Patcher throws a ConflictHttpError as this is not allowed.
- * Note that the object can be an empty string,
- * which will be interpreted that the object of the modified triple can be anything.
+ * List of triples that must not be updated are given during instantiation with the ImmutableTriple class.
+ * When there is a change to an Immutable Triple, then a ConflictError will be thrown.
  */
 export class ImmutableMetadataPatcher extends RdfStorePatcher {
   protected readonly logger = getLoggerFor(this);
 
   private readonly patcher: RdfStorePatcher;
   private readonly metadataStrategy: AuxiliaryStrategy;
-  private readonly immutableTriples: [string, string][];
+  private readonly immutableTriples: ImmutableTriple[];
 
   public constructor(patcher: RdfStorePatcher, metadataStrategy: AuxiliaryStrategy,
-    immutableTriples: [string, string][]) {
+    immutableTriples: ImmutableTriple[]) {
     super();
     this.patcher = patcher;
     this.metadataStrategy = metadataStrategy;
@@ -50,24 +44,45 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
 
     // For loop over triples that can not be changed in solid metadata
     for (const immutable of this.immutableTriples) {
-      const predicate = immutable[0];
-      const object = immutable[1] !== '' ? immutable[1] : null;
-      inputImmutable.push(...inputStore.getQuads(null, predicate, object, null));
-      patchedImmutable.push(...patchedStore.getQuads(null, predicate, object, null));
+      const subject = immutable.subject ?? null;
+      const predicate = immutable.predicate ?? null;
+      const object = immutable.object ?? null;
+
+      inputImmutable.push(...inputStore.getQuads(subject, predicate, object, null));
+      patchedImmutable.push(...patchedStore.getQuads(subject, predicate, object, null));
     }
 
     this.logger.debug(`input stream immutable: ${await readableToString(serializeQuads(inputImmutable))}`);
     this.logger.debug(`output stream immutable: ${await readableToString(serializeQuads(patchedImmutable))}`);
 
     // Filter out differences using custom filter
-    if (inputImmutable.length !== patchedImmutable.length) {
-      throw new ConflictHttpError('Not allowed to change this type of metadata.');
-    }
-    const changed = inputImmutable.some((inputQuad): boolean => patchedImmutable
-      .some((patchedQuad): boolean => !inputQuad.equals(patchedQuad)));
-    if (changed) {
+    const unique = uniqueQuads([ ...inputImmutable, ...patchedImmutable ]);
+    const lengthTogether = unique.length;
+
+    this.logger.debug(`Nothing has changed: ${lengthTogether === inputImmutable.length &&
+    lengthTogether === patchedImmutable.length}`);
+    if (!(lengthTogether === inputImmutable.length && lengthTogether === patchedImmutable.length)) {
       throw new ConflictHttpError('Not allowed to change this type of metadata.');
     }
     return patchedStore;
+  }
+}
+
+/**
+ * Class to define which triples MUST NOT be changed during patching.
+ *
+ * The constructor arguments are optional, which allows for partial matches.
+ * E.g. when only the predicate is given as argument,
+ * there MUST be no change in quads after the patch that have that given predicate.
+ */
+export class ImmutableTriple {
+  public readonly subject?: string;
+  public readonly predicate?: string;
+  public readonly object?: string;
+
+  public constructor(subject?: string, predicate?: string, object?: string) {
+    this.subject = subject;
+    this.predicate = predicate;
+    this.object = object;
   }
 }

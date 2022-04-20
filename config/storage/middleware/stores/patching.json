@@ -48,8 +48,15 @@
       "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
       "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
       "immutableTriples": [
-        ["http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://www.w3.org/ns/pim/space#Storage"],
-        ["http://www.w3.org/ns/ldp#contains", ""]
+        {
+          "@type": "ImmutableTriple",
+          "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+          "object": "http://www.w3.org/ns/pim/space#Storage"
+        },
+        {
+          "@type": "ImmutableTriple",
+          "predicate": "http://www.w3.org/ns/ldp#contains"
+        }
       ]
     },
     {
