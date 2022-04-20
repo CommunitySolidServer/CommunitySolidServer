@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
     "files-scs:config/app/main/default.json",
     "files-scs:config/app/init/initialize-prefilled-root.json",

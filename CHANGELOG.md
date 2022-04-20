@@ -1,6 +1,53 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.0.0"></a>
+## [v4.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v3.0.0...v4.0.0) - 2022-04-19
+
+### Added
+* [feat: Support seeding pods and accounts](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/c8d4bfec39e554fc920ece99d4272cff8128f342)
+* [feat: Store content type parameters](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a8602055e67b5d23ec70f3cc0dbaee6b4235fda4)
+* [feat: Pass access modes to PermissionReaders](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2ae5924dde55c53c8c58e447a3e3734e993287fb)
+* [feat: Add CachedResourceSet](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0e4d012086801108c462d14cc52c669c7e59a232)
+* [feat: Return 404 for read/delete requests if there is no resource](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e86e0cf36bb69858c514352c84b5ddc1900633f7)
+* [feat: Check parent ACL permissions for create/delete requests](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d908374364d3b3d72bf8cfe111d42634503e32fd)
+* [test: Create permission table to automate tests](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f83ac5ead5bb98fae9c09d1996b4b5c2ce2fa51)
+* [feat: Handle OPTIONS requests in OperationHandler](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ad3edcf1a89257344d2209edd76b91f3eed9bc82)
+* [docs: Write initial user documentation](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a5a34f5071a97ab42c9f17bfe7727f21ccd2461d)
+* [feat: Add utility functions for generating error classes](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f3dedf4e27234efd6caa8a04ad0d0318aa3ba01d)
+* [feat: Store methods in MethodNotAllowedHttpError](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/effc20a270baa2b9305eb11a7858fa2353ab4434)
+* [feat: Dynamically generate Allow and Accept-* headers](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6e98c6aae4bfc53b5a002bf8314c83add9a129e5)
+* [feat: Make LazyLoggerFactory buffer messages.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/238570b3d29d19cbda8e3ba9263f34d4a5679ff4)
+* [feat: Warn about UnsecureWebSocketsProtocol.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5c218193ab7ddf8ad80122279a52f1c06f662cea)
+* [feat: Create MetadataParser that detects JSON with Context link and throws an error](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/48efc6fae180108756550dc761b65fb1b71a4018)
+* [feat: Add RedirectingHttpHandler](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/468e11d906e051a463d24ea21a7ad4db53dde5f5)
+* [feat: Allow dynamically adding CLI parameters in configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/bedab907f9c62bb2e146188bf31c82272692465b)
+* [feat: Add support for client_credentials authentication](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2ec8fabd54823fd40ba194247715000a181f8076)
+
+### Changed
+* [refactor: Rename resourceExists to hasResource](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/4404fa07d9238aed2afdce29e3a3d1eafed6af0b)
+* [feat: Parse content-type more strictly](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/027e3707fdc161fee005d4049648806f546d09d9)
+* [feat: Create separate storage to generate keys](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/a1a6ce01fa245e39acd7df5866b45c754704e9b9)
+* [refactor: Move key/value storages to relevant configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/30ad3015f04a8ecad4e387906e0971345abbce39)
+* [feat: Remove meta parameter from logging.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/2c6167e0cb57f97d412d97ddf84f5698a881175b)
+* [refactor: Make Logger an interface.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3685b7c659aadf583abe3c7442427682006049e3)
+* [refactor: Use fs-extra instead of fs to simplify file access](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fe39f97ee0550065a65c8e221a5f51908922fd37)
+* [feat: new helper functions to replace regexes #807](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/283c301f0833718b879cf2040fab3d70f72ebf53)
+* [feat: Only accept NamedNodes as predicates for metadata](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/668d0a331fb8da45b0dc8e72f05d0a47fbcedd2e)
+
+### Fixed
+* [fix: Prevent slugs with trailing slashes for non-container resources](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/5965268ebfdb49f1ae4da3809c913016686cee07)
+* [fix: Extract correct access modes from request](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/9a29cc22578c5a71667445b6b28a76c3eaaf61e4)
+* [fix: Add IANA type to child metadata in FileDataAccessor](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/7152897b89b6454142ade57e610588093bf03c5d)
+* [fix: Support entries function in JsonResourceStorage](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/76548011f22b3939a39c7ffae09e31805450bc0a)
+* [fix: Prevent expired storage cleanup from crashing the server](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/f08cdf75f76d7e23b5d3277aae4a113380e245a7)
+* [fix: Undo authorization on OPTIONS requests](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/97e600bf4f1e9e397de88239395216e05e6c3b4b)
+* [fix: Throw error when accessing URLs out of scope](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d42125a91d7d4a2dde5fc280869f99e10546731f)
+* [fix: Add missing imports from default configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/30799f6667490f3105bca05784c6bbf0d38b36f3)
+* [fix: Keep storage paths consistent with previous version](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/570e167a36b8da14561680d2709190ea78e15b61)
+* [feat: add a Redis based Read-Write Locker](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/e2e2d0864f9b81c56fea61067acdc011347b2283)
+
+
 <a name="v3.0.0"></a>
 ## [v3.0.0](https://github.com/solid/community-server/compare/v2.0.1...v3.0.0) - 2022-02-23
 

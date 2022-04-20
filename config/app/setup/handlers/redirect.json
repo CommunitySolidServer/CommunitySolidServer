@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Redirects all request to the setup.",
@@ -9,6 +9,6 @@
       "args_target": "/setup",
       "args_targetExtractor": { "@id": "urn:solid-server:default:TargetExtractor" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" }
-    },
+    }
   ]
 }

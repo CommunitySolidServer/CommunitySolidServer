@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^3.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Separate manager from the RegistrationHandler in case registration is disabled.",
@@ -17,7 +17,7 @@
       "@id": "urn:solid-server:default:SeededPodInitializer",
       "@type": "SeededPodInitializer",
       "registrationManager": { "@id": "urn:solid-server:default:SeededPodRegistrationManager" },
-      "configFilePath": { "@id": "urn:solid-server:default:variable:seededPodConfigJson" },
+      "configFilePath": { "@id": "urn:solid-server:default:variable:seededPodConfigJson" }
     }
   ]
 }

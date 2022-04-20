@@ -17,7 +17,7 @@ const portNames = [
   'PermissionTable',
   'PodCreation',
   'PodQuota',
-  'RedisResourceLocker',
+  'RedisLocker',
   'RestrictedIdentity',
   'SeedingPods',
   'ServerFetch',
