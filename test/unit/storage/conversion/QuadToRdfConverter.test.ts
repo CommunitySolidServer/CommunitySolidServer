@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
 import rdfSerializer from 'rdf-serialize';
-import { SOLID_META } from '../../../../dist';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -9,7 +8,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { QuadToRdfConverter } from '../../../../src/storage/conversion/QuadToRdfConverter';
 import { INTERNAL_QUADS } from '../../../../src/util/ContentTypes';
 import { readableToString } from '../../../../src/util/StreamUtil';
-import { DC, PREFERRED_PREFIX_TERM } from '../../../../src/util/Vocabularies';
+import { DC, PREFERRED_PREFIX_TERM, SOLID_META } from '../../../../src/util/Vocabularies';
 import quad = DataFactory.quad;
 const { namedNode, triple } = DataFactory;
 
