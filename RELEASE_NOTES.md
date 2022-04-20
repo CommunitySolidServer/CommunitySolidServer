@@ -1,5 +1,30 @@
 # Community Solid Server release notes
 
+## v5.0.0
+### New features
+- ...
+
+### Data migration
+The following actions are required if you are upgrading from a v4 server and want to retain your data.
+
+...
+
+### Configuration changes
+You might need to make changes to your v4 configuration if you use a custom config.
+
+The `@context` needs to be updated to
+`https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld`.
+
+The following changes pertain to the imports in the default configs:
+- ...
+
+The following changes are relevant for v3 custom configs that replaced certain features.
+- ...
+
+### Interface changes
+These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
+- ...
+
 ## v4.0.0
 ### New features
 - The server can be started with a new parameter to automatically generate accounts and pods, 
