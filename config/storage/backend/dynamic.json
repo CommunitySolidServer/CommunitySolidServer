@@ -16,11 +16,11 @@
       "BaseUrlRouterRule:_baseStore": {
         "@id": "urn:solid-server:default:ResourceStore_DataAccessor",
         "@type": "DataAccessorBasedStore",
-        "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-        "args_auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "args_accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-        "args_metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
-        "args_converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+        "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+        "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
       }
     }
   ]
