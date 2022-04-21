@@ -52,7 +52,7 @@ async function clearInitialFiles(rootFilePath: string, pods: string[]): Promise<
       if (file !== '.meta') {
         const path = joinFilePath(rootFilePath, pod, file);
         if ((await fsPromises.stat(path)).isDirectory()) {
-          await fsPromises.rmdir(path, { recursive: true });
+          await fsPromises.rm(path, { recursive: true });
         } else {
           await fsPromises.unlink(path);
         }
