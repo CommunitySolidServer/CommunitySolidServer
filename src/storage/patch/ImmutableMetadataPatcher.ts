@@ -4,7 +4,7 @@ import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { serializeQuads, uniqueQuads } from '../../util/QuadUtil';
+import { serializeQuads } from '../../util/QuadUtil';
 import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
 import { RdfStorePatcher } from './RdfStorePatcher';
@@ -52,12 +52,12 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
     this.logger.debug(`output stream immutable: ${await readableToString(serializeQuads(patchedImmutable))}`);
 
     // Filter out differences using custom filter
-    const unique = uniqueQuads([ ...inputImmutable, ...patchedImmutable ]);
-    const lengthTogether = unique.length;
-
-    this.logger.debug(`Nothing has changed: ${lengthTogether === inputImmutable.length &&
-    lengthTogether === patchedImmutable.length}`);
-    if (!(lengthTogether === inputImmutable.length && lengthTogether === patchedImmutable.length)) {
+    if (inputImmutable.length !== patchedImmutable.length) {
+      throw new ConflictHttpError('Not allowed to change this type of metadata.');
+    }
+    const changed = inputImmutable.some((inputQuad): boolean => !patchedImmutable
+      .some((patchedQuad): boolean => inputQuad.equals(patchedQuad)));
+    if (changed) {
       throw new ConflictHttpError('Not allowed to change this type of metadata.');
     }
     return patchedStore;
