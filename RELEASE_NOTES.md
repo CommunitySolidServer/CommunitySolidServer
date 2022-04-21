@@ -2,7 +2,7 @@
 
 ## v5.0.0
 ### New features
-- ...
+- Support for Node v12 was dropped.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
