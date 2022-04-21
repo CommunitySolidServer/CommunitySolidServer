@@ -39,12 +39,12 @@ describe('A server with a file backend storage', (): void => {
   });
 
   afterAll(async(): Promise<void> => {
-    // Await removeFolder(rootFilePath);
+    await removeFolder(rootFilePath);
     await app.stop();
   });
 
-  it('can put a document for which the URI path contains url encoded separator characters.', async(): Promise<void> => {
-    const url = `${baseUrl}/c1/c2/t1%2F`;
+  it('can put a document for which the URI path contains URL-encoded separator characters.', async(): Promise<void> => {
+    const url = `${baseUrl}c1/c2/t1%2f`;
     const res = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -53,10 +53,10 @@ describe('A server with a file backend storage', (): void => {
       body: 'abc',
     });
     expect(res.status).toBe(201);
-    expect(res.headers.get('location')).toBe(url);
+    expect(res.headers.get('location')).toBe(`${baseUrl}c1/c2/t1%2F`);
 
-    // The resource should not be accessible through ${baseUrl}/c1/c2/t1/.
-    const check1 = await fetch(`${baseUrl}/c1/c2/t1/}`, {
+    // The resource should not be accessible through ${baseUrl}c1/c2/t1/.
+    const check1 = await fetch(`${baseUrl}c1/c2/t1/}`, {
       method: 'GET',
       headers: {
         accept: 'text/plain',
@@ -79,7 +79,7 @@ describe('A server with a file backend storage', (): void => {
     expect(check3).toBe(true);
   });
 
-  it('can post a document using a slug that contains url encoded separator characters.', async(): Promise<void> => {
+  it('can post a document using a slug that contains URL-encoded separator characters.', async(): Promise<void> => {
     const slug = 't1%2Faa';
     const res = await fetch(baseUrl, {
       method: 'POST',
@@ -92,15 +92,15 @@ describe('A server with a file backend storage', (): void => {
     expect(res.status).toBe(201);
     expect(res.headers.get('location')).toBe(`${baseUrl}${slug}`);
 
-    // Check that the the appropriate file path exists
+    // Check that the appropriate file path exists
     const check = await pathExists(`${rootFilePath}/${slug}$.txt`);
     expect(check).toBe(true);
   });
 
-  it('prevents accessing a document via a different identifier that results in the same path after url decoding.',
+  it('prevents accessing a document via a different identifier that results in the same path after URL decoding.',
     async(): Promise<void> => {
       // First put a resource using a path without encoded separator characters: foo/bar
-      const url = `${baseUrl}/foo/bar`;
+      const url = `${baseUrl}foo/bar`;
       await fetch(url, {
         method: 'PUT',
         headers: {
@@ -110,7 +110,7 @@ describe('A server with a file backend storage', (): void => {
       });
 
       // The resource at foo/bar should not be accessible using the url encoded variant of this path: foo%2Fbar
-      const check1 = await fetch(`${baseUrl}/foo%2Fbar`, {
+      const check1 = await fetch(`${baseUrl}foo%2Fbar`, {
         method: 'GET',
         headers: {
           accept: 'text/plain',
@@ -124,7 +124,7 @@ describe('A server with a file backend storage', (): void => {
       expect(check2).toBe(true);
 
       // Next, put a resource using a path with an encoded separator character: bar%2Ffoo
-      await fetch(`${baseUrl}/bar%2Ffoo`, {
+      await fetch(`${baseUrl}bar%2Ffoo`, {
         method: 'PUT',
         headers: {
           'content-type': 'text/plain',
@@ -133,7 +133,7 @@ describe('A server with a file backend storage', (): void => {
       });
 
       // The resource at bar%2Ffoo should not be accessible through bar/foo
-      const check3 = await fetch(`${baseUrl}/bar/foo`, {
+      const check3 = await fetch(`${baseUrl}bar/foo`, {
         method: 'GET',
         headers: {
           accept: 'text/plain',
