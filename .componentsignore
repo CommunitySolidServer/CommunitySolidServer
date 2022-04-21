@@ -23,5 +23,5 @@
   "VariableBindings",
   "UnionHandler",
   "WinstonLogger",
-  "YargsArgOptions"
+  "YargsOptions"
 ]
