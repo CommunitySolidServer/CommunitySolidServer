@@ -1,18 +1,18 @@
-import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
-import { RedirectResponseDescription } from '../http/output/response/RedirectResponseDescription';
-import type { ResponseWriter } from '../http/output/ResponseWriter';
-import { getLoggerFor } from '../logging/LogUtil';
-import { FoundHttpError } from '../util/errors/FoundHttpError';
-import { MovedPermanentlyHttpError } from '../util/errors/MovedPermanentlyHttpError';
-import { NotImplementedHttpError } from '../util/errors/NotImplementedHttpError';
-import { PermanentRedirectHttpError } from '../util/errors/PermanentRedirectHttpError';
-import type { RedirectHttpError } from '../util/errors/RedirectHttpError';
-import { SeeOtherHttpError } from '../util/errors/SeeOtherHttpError';
-import { TemporaryRedirectHttpError } from '../util/errors/TemporaryRedirectHttpError';
-import { getRelativeUrl, joinUrl } from '../util/PathUtil';
-import type { HttpHandlerInput } from './HttpHandler';
-import { HttpHandler } from './HttpHandler';
-import type { HttpRequest } from './HttpRequest';
+import type { TargetExtractor } from '../../http/input/identifier/TargetExtractor';
+import { RedirectResponseDescription } from '../../http/output/response/RedirectResponseDescription';
+import type { ResponseWriter } from '../../http/output/ResponseWriter';
+import { getLoggerFor } from '../../logging/LogUtil';
+import { FoundHttpError } from '../../util/errors/FoundHttpError';
+import { MovedPermanentlyHttpError } from '../../util/errors/MovedPermanentlyHttpError';
+import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import { PermanentRedirectHttpError } from '../../util/errors/PermanentRedirectHttpError';
+import type { RedirectHttpError } from '../../util/errors/RedirectHttpError';
+import { SeeOtherHttpError } from '../../util/errors/SeeOtherHttpError';
+import { TemporaryRedirectHttpError } from '../../util/errors/TemporaryRedirectHttpError';
+import { getRelativeUrl, joinUrl } from '../../util/PathUtil';
+import type { HttpHandlerInput } from '../HttpHandler';
+import { HttpHandler } from '../HttpHandler';
+import type { HttpRequest } from '../HttpRequest';
 
 const redirectErrorFactories: Record<301 | 302 | 303 | 307 | 308, (location: string) => RedirectHttpError> = {
   301: (location: string): RedirectHttpError => new MovedPermanentlyHttpError(location),
