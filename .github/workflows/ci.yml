@@ -30,13 +30,12 @@ jobs:
           - ubuntu-latest
           - windows-latest
         node-version:
-          - '12.17'
-          - '12.x'
           - '14.2'
           - '14.x'
           - '16.0'
           - '16.x'
-          - '17.x'
+          - '18.0'
+          - '18.x'
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
@@ -67,9 +66,9 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '12.x'
           - '14.x'
           - '16.x'
+          - '18.x'
     env:
       TEST_DOCKER: true
     services:
@@ -101,9 +100,9 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - '12.x'
           - '14.x'
           - '16.x'
+          - '18.x'
     timeout-minutes: 15
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
