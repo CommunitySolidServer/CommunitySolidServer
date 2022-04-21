@@ -15,7 +15,7 @@ export class FixedInteractionHandler extends InteractionHandler {
   /**
    * @param response - @range {json}
    */
-  public constructor(response: unknown) {
+  public constructor(response: Record<string, unknown>) {
     super();
     this.response = JSON.stringify(response);
   }
