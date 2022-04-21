@@ -5,45 +5,6 @@ import type { ResourceIdentifier } from '../http/representation/ResourceIdentifi
 import type { HttpRequest } from '../server/HttpRequest';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
 
-// Characters to ignore when URL decoding the URI path to a file path.
-const pathComponentDelimiters = [ '/', '\\' ];
-// Regex to find all instances of encoded path component delimiters.
-const encodedDelimiterRegex = new RegExp(
-  `${pathComponentDelimiters.map((delimiter): string => encodeURIComponent(delimiter)).join('|')}`, 'giu',
-);
-// Mapping of the replacements to perform in the preventDelimiterDecoding helper function.
-const preventDelimiterDecodingMap = Object.fromEntries(pathComponentDelimiters.map((delimiter): [string, string] => {
-  const encodedDelimiter = encodeURIComponent(delimiter);
-  return [ encodedDelimiter, encodeURIComponent(encodedDelimiter) ];
-}));
-// Mapping of the replacements to perform in the preventDelimiterEncoding helper function.
-const preventDelimiterEncodingMap = Object.fromEntries(pathComponentDelimiters.map((delimiter): [string, string] => {
-  const encodedDelimiter = encodeURIComponent(delimiter);
-  return [ encodedDelimiter, delimiter ];
-}));
-
-/**
- * Prevents some characters from being URL decoded by escaping them.
- * The characters to 'escape' are declared in codecExceptions.
- *
- * @param pathComponent - The path component to apply the escaping on.
- * @returns A copy of the input path that is safe to apply URL decoding on.
- */
-function preventDelimiterDecoding(pathComponent: string): string {
-  return pathComponent.replace(encodedDelimiterRegex, (delimiter): string => preventDelimiterDecodingMap[delimiter]);
-}
-
-/**
- * Prevents some characters from being URL encoded by escaping them.
- * The characters to 'escape' are declared in codecExceptions.
- *
- * @param pathComponent - The path component to apply the escaping on.
- * @returns A copy of the input path that is safe to apply URL encoding on.
- */
-function preventDelimiterEncoding(pathComponent: string): string {
-  return pathComponent.replace(encodedDelimiterRegex, (delimiter): string => preventDelimiterEncodingMap[delimiter]);
-}
-
 /**
  * Changes a potential Windows path into a POSIX path.
  *
@@ -146,11 +107,25 @@ export function getExtension(path: string): string {
 }
 
 /**
- * Performs a transformation on the path components of a URI.
+ * Performs a transformation on the path components of a URI,
+ * preserving but normalizing path delimiters and their escaped forms.
  */
 function transformPathComponents(path: string, transform: (part: string) => string): string {
   const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
-  const transformed = base.split('/').map((element): string => transform(element)).join('/');
+  const transformed = base
+    // We split on actual URI path component delimiters (slash and backslash),
+    // but also on things that could be wrongly interpreted as component delimiters,
+    // such that they cannot be transformed incorrectly.
+    // We thus ensure that encoded slashes (%2F) and backslashes (%5C) are preserved,
+    // since they would become _actual_ delimiters if accidentally decoded.
+    // Additionally, we need to preserve any encoded percent signs (%25)
+    // that precede them, because these might change their interpretation as well.
+    .split(/(\/|\\|%(?:25)*(?:2f|5c))/ui)
+    // Even parts map to components that need to be transformed,
+    // odd parts to (possibly escaped) delimiters that need to be normalized.
+    .map((part, index): string =>
+      index % 2 === 0 ? transform(part) : part.toUpperCase())
+    .join('');
   return !queryString ? transformed : `${transformed}${queryString}`;
 }
 
@@ -177,8 +152,7 @@ export function toCanonicalUriPath(path: string): string {
  * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
-  return transformPathComponents(path, (part): string =>
-    decodeURIComponent(preventDelimiterDecoding(part)));
+  return transformPathComponents(path, decodeURIComponent);
 }
 
 /**
@@ -190,8 +164,7 @@ export function decodeUriPathComponents(path: string): string {
  * @returns An encoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function encodeUriPathComponents(path: string): string {
-  return transformPathComponents(path, (part): string =>
-    encodeURIComponent(preventDelimiterEncoding(part)));
+  return transformPathComponents(path, encodeURIComponent);
 }
 
 /**
