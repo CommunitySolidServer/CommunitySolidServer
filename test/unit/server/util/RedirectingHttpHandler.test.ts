@@ -1,11 +1,11 @@
-import type { TargetExtractor } from '../../../src/http/input/identifier/TargetExtractor';
-import type { ResponseWriter } from '../../../src/http/output/ResponseWriter';
-import type { ResourceIdentifier } from '../../../src/http/representation/ResourceIdentifier';
-import type { HttpRequest } from '../../../src/server/HttpRequest';
-import type { HttpResponse } from '../../../src/server/HttpResponse';
-import { RedirectingHttpHandler } from '../../../src/server/RedirectingHttpHandler';
-import { joinUrl } from '../../../src/util/PathUtil';
-import { SOLID_HTTP } from '../../../src/util/Vocabularies';
+import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
+import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
+import type { ResourceIdentifier } from '../../../../src/http/representation/ResourceIdentifier';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
+import type { HttpResponse } from '../../../../src/server/HttpResponse';
+import { RedirectingHttpHandler } from '../../../../src/server/util/RedirectingHttpHandler';
+import { joinUrl } from '../../../../src/util/PathUtil';
+import { SOLID_HTTP } from '../../../../src/util/Vocabularies';
 
 describe('A RedirectingHttpHandler', (): void => {
   const baseUrl = 'http://test.com/';

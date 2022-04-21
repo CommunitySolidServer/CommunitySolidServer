@@ -26,6 +26,7 @@ The following changes are relevant for v3 custom configs that replaced certain f
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
+- `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 
 ## v4.0.0
 ### New features
