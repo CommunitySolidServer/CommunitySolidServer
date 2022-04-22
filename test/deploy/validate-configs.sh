@@ -2,26 +2,24 @@
 # Script to validate the packaged module and configs
 
 # Ensure our workdir is that of the project root
-cd "${0%/*}/../.."
+cd "${0%/*}/../.." || exit 
 
 TEST_NAME="Deployment testing"
 declare -a CONFIG_ARRAY
 if [[ $# -gt 0 ]]; then
     for CONFIG in "$@"; do
-      CONFIG=$(ls {$CONFIG,config/$CONFIG,config/$CONFIG.json,$CONFIG.json} 2> /dev/null)
-      if [ ! -f $CONFIG ]; then
+      CONFIG=$(ls {"$CONFIG",config/"$CONFIG",config/"$CONFIG".json,"$CONFIG".json} 2> /dev/null)
+      if [ ! -f "$CONFIG" ]; then
         echo "Config file $CONFIG does not exist, check the path."
         exit 1
       fi
-      CONFIG_ARRAY+=($CONFIG)
+      CONFIG_ARRAY+=("$CONFIG")
     done
-    echo "Deployment testing ${#CONFIG_ARRAY[@]} configs"
+    echo "Deployment testing ${#CONFIG_ARRAY[@]} configs:"
 else
-  CONFIG_ARRAY=($(ls config/*.json))
-  echo "Deployment testing all configs!"
-  # Change key/cert paths of example-https-file.json
+  mapfile -t CONFIG_ARRAY < <(ls config/*.json)
+  echo "Deployment testing all configs:"
 fi
-
 printf " - %s\n" "${CONFIG_ARRAY[@]}"
 
 mkdir -p .tmp
@@ -34,7 +32,7 @@ run_server_with_config () {
   if [[ $# -ne 2 ]]; then
     echo "Config arguments not set"
     return 1
-  elif [ ! -f $1 ]; then
+  elif [ ! -f "$1" ]; then
     echo "Config file does not exist, check the path."
     return 1
   fi
@@ -61,16 +59,16 @@ run_server_with_config () {
 
   echo -e "----------------------------------"
   echo "$TEST_NAME($CONFIG_NAME) - Starting the server"
-  community-solid-server $CSS_ARGS -b $CSS_BASE_URL -c $CONFIG_PATH  &>.tmp/$CONFIG_NAME &
+  community-solid-server "$CSS_ARGS" -b $CSS_BASE_URL -c "$CONFIG_PATH"  &>.tmp/"$CONFIG_NAME" &
   PID=$!
 
   FAILURE=1
   if [ -z $PID ]; then
     echo "$TEST_NAME($CONFIG_NAME) - FAILURE: Server did not start"
-    cat .tmp/$CONFIG_NAME
+    cat .tmp/"$CONFIG_NAME"
   else
     echo "$TEST_NAME($CONFIG_NAME) - Attempting HTTP access to the server"
-    if curl -sfkI -X GET --retry 15 --retry-connrefused --retry-delay 1 $CSS_BASE_URL > .tmp/$CONFIG_NAME-curl; then
+    if curl -sfkI -X GET --retry 15 --retry-connrefused --retry-delay 1 $CSS_BASE_URL > .tmp/"$CONFIG_NAME"-curl; then
       echo "$TEST_NAME($CONFIG_NAME) - SUCCESS: server reached"
       FAILURE=0
     fi
@@ -88,21 +86,20 @@ run_server_with_config () {
 VALIDATION_FAILURE=0
 SUCCESSES=''
 FAILURES=''
-STATE=''
 for CONFIG_PATH in "${CONFIG_ARRAY[@]}"; do
-  CONFIG_NAME=$(echo $CONFIG_PATH | sed -E 's/.+\/(.+)\.json/\1/')
+  CONFIG_NAME=$(echo "$CONFIG_PATH" | sed -E 's/.+\/(.+)\.json/\1/')
 
-  run_server_with_config $CONFIG_PATH $CONFIG_NAME
+  run_server_with_config "$CONFIG_PATH" "$CONFIG_NAME"
   SERVER_FAILURE=$?
   if [ $SERVER_FAILURE -eq 0 ]; then
-    SUCCESSES="$SUCCESSES[SUCCESS]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
+    SUCCESSES="${SUCCESSES}[SUCCESS]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
   else
     echo "$TEST_NAME($CONFIG_NAME) - CSS logs: ";
-    cat .tmp/$CONFIG_NAME
+    cat .tmp/"$CONFIG_NAME"
     echo "$TEST_NAME($CONFIG_NAME) - curl logs: ";
-    cat .tmp/$CONFIG_NAME-curl.log
+    cat .tmp/"$CONFIG_NAME"-curl.log
     VALIDATION_FAILURE=1
-    FAILURES="$FAILURES[FAILURE]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
+    FAILURES="${FAILURES}[FAILURE]\t$CONFIG_NAME\t($CONFIG_PATH)\n"
   fi
   echo ""
 done;
@@ -116,6 +113,6 @@ rm -rf .tmp .data
 echo -e "\n\n----------------------------------------"
 echo "Config validation overview"
 echo "----------------------------------------"
-echo -e $SUCCESSES
-echo -e $FAILURES
+echo -e "$SUCCESSES"
+echo -e "$FAILURES"
 exit $VALIDATION_FAILURE
