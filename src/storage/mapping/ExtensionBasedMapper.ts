@@ -64,10 +64,12 @@ export class ExtensionBasedMapper extends BaseFileIdentifierMapper {
     // If the extension of the identifier matches a different content-type than the one that is given,
     // we need to add a new extension to match the correct type.
     } else if (contentType !== await this.getContentTypeFromPath(filePath)) {
-      const extension: string = mime.extension(contentType) || this.customExtensions[contentType];
+      let extension: string = mime.extension(contentType) || this.customExtensions[contentType];
       if (!extension) {
-        this.logger.warn(`No extension found for ${contentType}`);
-        throw new NotImplementedHttpError(`Unsupported content type ${contentType}`);
+        // When no extension is found for the provided content-type, use a fallback extension.
+        extension = this.unknownMediaTypeExtension;
+        // Signal the fallback by setting the content-type to undefined in the output link.
+        contentType = undefined;
       }
       filePath += `$.${extension}`;
     }
