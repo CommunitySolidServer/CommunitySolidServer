@@ -2,17 +2,18 @@
 # Script to validate the packaged module and configs
 
 # Ensure our workdir is that of the project root
-cd "${0%/*}/../.." || echo "Error setting workdir to project directory." || exit 1
+cd "${0%/*}/../.." || { echo "Error setting workdir to project directory."; exit 1; }
 
-# No arguments: all default configs will be tested
-# One or more arguments: 
-#   Example: validate-configs.sh default file.json config/sparql-endpoint.json
+# This script takes config paths (from project directory) as optional input
+# No arguments: all default configs are tested
+# One ore more arguments: provided configs are tested
+#   Example: validate-configs.sh config/default.json config/file.json
 TEST_NAME="Deployment testing"
 declare -a CONFIG_ARRAY
 if [[ $# -gt 0 ]]; then
     for CONFIG in "$@"; do
       if [ ! -f "$CONFIG" ]; then
-        echo "Config file $CONFIG does not exist, check the path."
+        echo "Config file $CONFIG does not exist, check the path (example: config/default.json)"
         exit 1
       fi
       CONFIG_ARRAY+=("$CONFIG")
@@ -43,7 +44,7 @@ run_server_with_config () {
 
   mkdir -p test/tmp/data
 
-  CSS_ARGS=(-p 8888 -l warn -f test/tmp/data/ -s http://localhost:4000/sparql)
+  CSS_ARGS=("-p" "8888" "-l" "warn" "-f" "test/tmp/data/" "-s" "http://localhost:4000/sparql")
   CSS_BASE_URL="http://localhost:8888"
 
   # HTTPS config specifics: self-signed key/cert + CSS base URL override
@@ -51,7 +52,7 @@ run_server_with_config () {
     openssl req -x509 -nodes -days 1 -newkey rsa:2048 -keyout test/tmp/server.key -out test/tmp/server.cert -subj '/CN=localhost' &>/dev/null
     CSS_BASE_URL="https://localhost:8888"
     if [[ $CONFIG_NAME =~ "https-file-cli" ]]; then
-      CSS_ARGS="$CSS_ARGS --httpsKey test/tmp/server.key --httpsCert test/tmp/server.cert"
+      CSS_ARGS+=("--httpsKey" "test/tmp/server.key" "--httpsCert" "test/tmp/server.cert")
     elif [[ $CONFIG_NAME =~ "example-https" ]]; then
       CONFIG_PATH=test/tmp/example-https-file.json
       cp config/example-https-file.json $CONFIG_PATH
