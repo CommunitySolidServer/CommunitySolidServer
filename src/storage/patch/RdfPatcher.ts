@@ -25,6 +25,10 @@ export class RdfPatcher extends RepresentationPatcher {
     this.patcher = patcher;
   }
 
+  public async canHandle({ identifier, patch }: RepresentationPatcherInput): Promise<void> {
+    await this.patcher.canHandle({ identifier, patch, store: new Store() });
+  }
+
   public async handle({ identifier, patch, representation }: RepresentationPatcherInput): Promise<Representation> {
     if (representation && representation.metadata.contentType !== INTERNAL_QUADS) {
       this.logger.error('Received non-quad data. This should not happen so there is probably a configuration error.');
@@ -35,7 +39,7 @@ export class RdfPatcher extends RepresentationPatcher {
     const inputStore = representation ? await readableToQuads(representation.data) : new Store();
 
     // Execute the patcher
-    const outputStore = await this.patcher.handleSafe({
+    const outputStore = await this.patcher.handle({
       identifier,
       patch,
       store: inputStore,

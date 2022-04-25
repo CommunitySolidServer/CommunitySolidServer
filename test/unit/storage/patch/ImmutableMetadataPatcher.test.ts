@@ -3,7 +3,7 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { translate } from 'sparqlalgebrajs';
 import type { SparqlUpdatePatch } from '../../../../src';
 import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
-import { ImmutableTriple, ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
+import { ImmutablePattern, ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
 import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
@@ -40,8 +40,8 @@ describe('A ImmutableMetadataPatcher', (): void => {
     store = new Store();
 
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutableTriple(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
-      new ImmutableTriple(undefined, 'http://www.w3.org/ns/ldp#contains'),
+      new ImmutablePattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
+      new ImmutablePattern(undefined, 'http://www.w3.org/ns/ldp#contains'),
     ]);
   });
 
@@ -98,7 +98,7 @@ INSERT DATA { <${identifier.path}> <${LDP.contains}> <${identifier.path}/resourc
 
   it('rejects custom ImmutableTriple patches.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutableTriple('http://example.org/', 'http://example.org/has', 'http://example.org/something'),
+      new ImmutablePattern('http://example.org/', 'http://example.org/has', 'http://example.org/something'),
     ]);
     const patch = getPatch(`INSERT DATA { <http://example.org/> <http://example.org/has> <http://example.org/something> .}`);
     const input = { store, patch, identifier: metaIdentifier };
@@ -107,7 +107,7 @@ INSERT DATA { <${identifier.path}> <${LDP.contains}> <${identifier.path}/resourc
 
   it('rejects everything when ImmutableTriple has no argumetns.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutableTriple(),
+      new ImmutablePattern(),
     ]);
     const patch = getPatch(`INSERT DATA { <http://example.org/a> <http://example.org/b> <http://example.org/c> .}`);
     const input = { store, patch, identifier: metaIdentifier };

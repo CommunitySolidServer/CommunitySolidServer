@@ -36,7 +36,7 @@ describe('An RdfPatcher,', (): void => {
       handle: jest.fn(),
       handleSafe: jest.fn(),
     };
-    patcher.handleSafe.mockImplementation(
+    patcher.handle.mockImplementation(
       async(input: RdfStorePatcherInput): Promise<Store> => Promise.resolve(input.store),
     );
 

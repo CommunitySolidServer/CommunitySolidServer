@@ -20,30 +20,30 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
 
   private readonly patcher: RdfStorePatcher;
   private readonly metadataStrategy: AuxiliaryStrategy;
-  private readonly immutableTriples: ImmutableTriple[];
+  private readonly immutablePatterns: ImmutablePattern[];
 
   public constructor(patcher: RdfStorePatcher, metadataStrategy: AuxiliaryStrategy,
-    immutableTriples: ImmutableTriple[]) {
+    immutablePatterns: ImmutablePattern[]) {
     super();
     this.patcher = patcher;
     this.metadataStrategy = metadataStrategy;
-    this.immutableTriples = immutableTriples;
+    this.immutablePatterns = immutablePatterns;
   }
 
-  public async canHandle({ identifier }: RdfStorePatcherInput): Promise<void> {
-    if (!this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
-      throw new NotImplementedHttpError('Only metadata resources can be checked on immutable triples.');
+  public async canHandle(input: RdfStorePatcherInput): Promise<void> {
+    if (!this.metadataStrategy.isAuxiliaryIdentifier(input.identifier)) {
+      throw new NotImplementedHttpError('This handler only supports metadata resources.');
     }
+    await this.patcher.canHandle(input);
   }
 
-  public async handle({ store, identifier, patch }: RdfStorePatcherInput): Promise<Store> {
-    const inputStore = new Store(store.getQuads(null, null, null, null));
-    const patchedStore = await this.patcher.handleSafe({ identifier, patch, store });
+  public async handle(input: RdfStorePatcherInput): Promise<Store> {
+    const inputStore = new Store(input.store.getQuads(null, null, null, null));
+    const patchedStore = await this.patcher.handle(input);
     const inputImmutable: Quad[] = [];
     const patchedImmutable: Quad[] = [];
 
-    // For loop over triples that can not be changed in solid metadata
-    for (const { subject, predicate, object } of this.immutableTriples) {
+    for (const { subject, predicate, object } of this.immutablePatterns) {
       inputImmutable.push(...inputStore.getQuads(subject, predicate, object, null));
       patchedImmutable.push(...patchedStore.getQuads(subject, predicate, object, null));
     }
@@ -67,11 +67,11 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
 /**
  * Class to define which triples MUST NOT be changed during patching.
  *
- * The constructor arguments are optional, which allows for partial matches.
+ * All fields are optional and are interpreted as wildcards if not provided.
  * E.g. when only the predicate is given as argument,
- * there MUST be no change in quads after the patch that have that given predicate.
+ * there MUST be no change in quads with that given predicate.
  */
-export class ImmutableTriple {
+export class ImmutablePattern {
   public readonly subject: string | null;
   public readonly predicate: string | null;
   public readonly object: string | null;
