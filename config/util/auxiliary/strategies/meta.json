@@ -11,10 +11,6 @@
         "link": "http://purl.org/dc/terms/description",
         "identifierStrategy": { "@id": "urn:solid-server:default:MetadataIdentifierStrategy" }
       },
-      "validator": {
-        "@type": "RdfValidator",
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
-      },
       "ownAuthorization": false,
       "requiredInRoot": false
     },

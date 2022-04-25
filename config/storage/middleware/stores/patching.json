@@ -19,7 +19,7 @@
               "defaultType": "text/turtle"
             },
             {
-              "comment": "Converts the input stream to a store to do the patches.",
+              "comment": "Converts the input stream into an N3.js store.",
               "@id": "urn:solid-server:default:RdfPatcher",
               "@type": "RdfPatcher",
               "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDFStore" }
@@ -33,7 +33,6 @@
       }
     },
     {
-      "comment": "Does the patch and if the resource is metadata, then does an extra immutable check",
       "@id": "urn:solid-server:default:PatchHandler_RDFStore",
       "@type": "WaterfallHandler",
       "handlers": [
@@ -42,7 +41,7 @@
       ]
     },
     {
-      "comment": "Makes sure PATCH operations MUST NOT update certain triples.",
+      "comment": "Patches metadata resources. Prevents specific triple patterns from being updated.",
       "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
       "@type": "ImmutableMetadataPatcher",
       "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },

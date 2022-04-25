@@ -9,11 +9,11 @@
       "comment": "A pod quota store setup with a file system backend.",
       "@id": "urn:solid-server:default:ResourceStore_Backend",
       "@type": "DataAccessorBasedStore",
-"identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-"auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-"accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-"metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
-"converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     }
   ]
 }
