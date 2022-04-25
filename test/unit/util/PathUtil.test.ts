@@ -112,6 +112,32 @@ describe('PathUtil', (): void => {
     it('leaves the query string untouched.', (): void => {
       expect(decodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toBe('/a path&/name?abc=def&xyz');
     });
+
+    it('ignores URL-encoded path separator characters.', (): void => {
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%2F')).toBe('/a path&/c1/c2/t1%2F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%5C')).toBe('/a path&/c1/c2/t1%5C');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%252F')).toBe('/a path&/c1/c2/t1%252F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%255C')).toBe('/a path&/c1/c2/t1%255C');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%25%252F')).toBe('/a path&/c1/c2/t1%%252F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%25%255C')).toBe('/a path&/c1/c2/t1%%255C');
+    });
+
+    it('normalizes to uppercase encoding.', (): void => {
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%2f')).toBe('/a path&/c1/c2/t1%2F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%5c')).toBe('/a path&/c1/c2/t1%5C');
+    });
+
+    it('accepts paths with mixed lowercase and uppercase encoding.', (): void => {
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%2F%2f')).toBe('/a path&/c1/c2/t1%2F%2F');
+      expect(decodeUriPathComponents('/a%20path&/c1/c2/t1%5C%5c')).toBe('/a path&/c1/c2/t1%5C%5C');
+    });
+
+    it('takes sequences of encoded percent signs into account.', (): void => {
+      expect(decodeUriPathComponents('/a%2Fb')).toBe('/a%2Fb');
+      expect(decodeUriPathComponents('/a%252Fb')).toBe('/a%252Fb');
+      expect(decodeUriPathComponents('/a%25252Fb')).toBe('/a%25252Fb');
+      expect(decodeUriPathComponents('/a%2525252Fb')).toBe('/a%2525252Fb');
+    });
   });
 
   describe('#encodeUriPathComponents', (): void => {
@@ -121,6 +147,32 @@ describe('PathUtil', (): void => {
 
     it('leaves the query string untouched.', (): void => {
       expect(encodeUriPathComponents('/a%20path&/name?abc=def&xyz')).toBe('/a%2520path%26/name?abc=def&xyz');
+    });
+
+    it('does not double-encode URL-encoded path separator characters.', (): void => {
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%2F')).toBe('/a%2520path%26/c1/c2/t1%2F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%5C')).toBe('/a%2520path%26/c1/c2/t1%5C');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%252F')).toBe('/a%2520path%26/c1/c2/t1%252F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%255C')).toBe('/a%2520path%26/c1/c2/t1%255C');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%%252F')).toBe('/a%2520path%26/c1/c2/t1%25%252F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%%255C')).toBe('/a%2520path%26/c1/c2/t1%25%255C');
+    });
+
+    it('normalizes to uppercase encoding.', (): void => {
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%2f')).toBe('/a%2520path%26/c1/c2/t1%2F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%5c')).toBe('/a%2520path%26/c1/c2/t1%5C');
+    });
+
+    it('accepts paths with mixed lowercase and uppercase encoding.', (): void => {
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%2F%2f')).toBe('/a%2520path%26/c1/c2/t1%2F%2F');
+      expect(encodeUriPathComponents('/a%20path&/c1/c2/t1%5C%5c')).toBe('/a%2520path%26/c1/c2/t1%5C%5C');
+    });
+
+    it('takes sequences of encoded percent signs into account.', (): void => {
+      expect(encodeUriPathComponents('/a%2Fb')).toBe('/a%2Fb');
+      expect(encodeUriPathComponents('/a%252Fb')).toBe('/a%252Fb');
+      expect(encodeUriPathComponents('/a%25252Fb')).toBe('/a%25252Fb');
+      expect(encodeUriPathComponents('/a%2525252Fb')).toBe('/a%2525252Fb');
     });
   });
 
