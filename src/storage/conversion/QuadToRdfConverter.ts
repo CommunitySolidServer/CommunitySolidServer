@@ -31,7 +31,7 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
     const contentType = getConversionTarget(await this.getOutputTypes(INTERNAL_QUADS), preferences.type)!;
     let data: Readable;
 
-    // Transform that handles response metadata
+    // Remove the ResponseMetadata graph as we never want to see it in a serialization
     quads.data = transformSafely<Quad>(quads.data, {
       objectMode: true,
       transform(quad: Quad): void {

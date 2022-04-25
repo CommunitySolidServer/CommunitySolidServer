@@ -159,7 +159,7 @@ describe('A DataAccessorBasedStore', (): void => {
       accessor.data[resourceID.path] = { metadata: containerMetadata } as Representation;
       const metaMirror = new RepresentationMetadata(containerMetadata);
       // Generated metadata will have its graph removed
-      metaMirror.add(GENERATED_PREDICATE, 'data');
+      metaMirror.add(GENERATED_PREDICATE, 'data', SOLID_META.terms.ResponseMetadata);
       await auxiliaryStrategy.addMetadata(metaMirror);
       const result = await store.getRepresentation(resourceID);
       expect(result).toMatchObject({ binary: false });

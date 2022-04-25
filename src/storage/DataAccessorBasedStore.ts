@@ -1,6 +1,6 @@
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'n3';
-import type { NamedNode, Quad, Term } from 'rdf-js';
+import type { NamedNode, Term } from 'rdf-js';
 import { v4 as uuid } from 'uuid';
 import type { AuxiliaryStrategy } from '../http/auxiliary/AuxiliaryStrategy';
 import { BasicRepresentation } from '../http/representation/BasicRepresentation';
@@ -111,7 +111,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // In the future we want to use getNormalizedMetadata and redirect in case the identifier differs
-    const metadata = await this.accessor.getMetadata(identifier);
+    let metadata = await this.accessor.getMetadata(identifier);
     let representation: Representation;
 
     // Potentially add auxiliary related metadata
@@ -120,7 +120,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     // https://solid.github.io/specification/protocol#auxiliary-resources
     await this.auxiliaryStrategy.addMetadata(metadata);
 
-    if (isContainerPath(metadata.identifier.value)) {
+    const isContainer = isContainerPath(metadata.identifier.value);
+    if (isContainer) {
       // Add containment triples of non-auxiliary resources
       for await (const child of this.accessor.getChildren(identifier)) {
         if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
@@ -130,28 +131,16 @@ export class DataAccessorBasedStore implements ResourceStore {
           metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
       }
-
-      if (!isMetadata) {
-        // Generate a container representation from the metadata
-        // All triples should be in the same graph for the data representation
-        const data = metadata.quads().map((triple): Quad => {
-          if (triple.graph.termType === 'DefaultGraph') {
-            return triple;
-          }
-          return DataFactory.quad(triple.subject, triple.predicate, triple.object);
-        });
-
-        metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
-        metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
-        metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
-        metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
-
-        representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
-      } else {
-        representation = new BasicRepresentation(
-          metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
-        );
+      const data = metadata.quads();
+      if (isMetadata) {
+        metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
       }
+
+      metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
+      metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
+      representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
     } else if (!isMetadata) {
       representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
     } else {
@@ -159,6 +148,7 @@ export class DataAccessorBasedStore implements ResourceStore {
         metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
       );
     }
+
     return representation;
   }
 
@@ -239,7 +229,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return await this.writeMetadata(identifier, representation);
     }
-    // Potentially have to create containers if it didn't exist yet
+    // Metadata and containers are not checked since they get converted to RepresentationMetadata objects.
     return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
@@ -408,7 +398,7 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     const metadata = new RepresentationMetadata(subjectIdentifier);
     let rdf = representation;
-    if (representation.metadata.contentType && representation.metadata.contentType !== INTERNAL_QUADS) {
+    if (!representation.isEmpty) {
       rdf = await this.converter.handleSafe({
         identifier,
         representation,
