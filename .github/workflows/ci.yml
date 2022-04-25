@@ -59,8 +59,6 @@ jobs:
           github-token: ${{ secrets.github_token }}
           flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
           parallel: true
-      - name: Run deployment tests
-        run: npm run test:deploy
 
   test-integration:
     runs-on: ubuntu-latest
@@ -135,12 +133,10 @@ jobs:
           node-version: '16.x'
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Generate certificates for HTTPS configurations
-        run: openssl req -x509 -nodes -days 1 -newkey rsa:2048 -keyout server.key -out server.cert -subj '/CN=localhost'
       - name: Install dependencies and run build scripts
         run: npm ci
       - name: Run deploy tests
-        run: test/deploy/validate-configs.sh
+        run: npm run test:deploy
 
   coveralls:
     needs: test-unit
@@ -158,6 +154,7 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
+      - test-configs
     # Only run on tag push events starting with v prefix for now OR main branch push events
     if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
@@ -199,6 +196,7 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
+      - test-configs
     # Only run on push events on a versions/* branch (ASSUMPTION: THERE SHOULD ONLY BE ONE THERE!)
     if: startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
@@ -255,6 +253,8 @@ jobs:
       - lint
       - test-unit
       - test-integration
+      - test-integration-windows
+      - test-configs
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
