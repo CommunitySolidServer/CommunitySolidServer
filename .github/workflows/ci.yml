@@ -58,8 +58,6 @@ jobs:
           github-token: ${{ secrets.github_token }}
           flag-name: test-unit-${{ matrix.node-version }}-${{ matrix.operating-system }}
           parallel: true
-      - name: Run deployment tests
-        run: npm run test:deploy
 
   test-integration:
     runs-on: ubuntu-latest
@@ -118,6 +116,27 @@ jobs:
       - name: Run integration tests
         run: npm run test:integration
 
+  test-configs:
+    runs-on: ubuntu-latest
+    services:
+      sparql-endpoint:
+        image: tenforce/virtuoso
+        env:
+          SPARQL_UPDATE: true
+        ports:
+          - 4000:8890
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Install dependencies and run build scripts
+        run: npm ci
+      - name: Run deploy tests
+        run: npm run test:deploy
+
   coveralls:
     needs: test-unit
     runs-on: ubuntu-latest
@@ -134,6 +153,7 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
+      - test-configs
     # Only run on tag push events starting with v prefix for now OR main branch push events
     if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
@@ -175,6 +195,7 @@ jobs:
       - test-unit
       - test-integration
       - test-integration-windows
+      - test-configs
     # Only run on push events on a versions/* branch (ASSUMPTION: THERE SHOULD ONLY BE ONE THERE!)
     if: startsWith(github.ref, 'refs/heads/versions/')
     runs-on: ubuntu-latest
@@ -231,6 +252,8 @@ jobs:
       - lint
       - test-unit
       - test-integration
+      - test-integration-windows
+      - test-configs
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:

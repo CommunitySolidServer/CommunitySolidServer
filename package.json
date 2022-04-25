@@ -54,7 +54,7 @@
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
     "test": "npm run test:ts && npm run jest",
-    "test:deploy": "test/deploy/validate-package.sh",
+    "test:deploy": "test/deploy/validate-configs.sh",
     "test:ts": "tsc -p test --noEmit",
     "test:integration": "jest --coverageReporters text-summary -- test/integration",
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
