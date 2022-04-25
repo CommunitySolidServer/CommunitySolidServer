@@ -58,9 +58,7 @@ describe('A PatchOperationHandler', (): void => {
   });
 
   it('returns the correct response if the resource is metadata.', async(): Promise<void> => {
-    // Note: Currently, for every resource a corresponding meta resource is present.
-    //  When https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1217#issuecomment-1065143263 is fixed
-    //  the statusCode MUST BE 201
+    // For every resource a corresponding meta resource does always exist, thus statusCode is always 205
     store.hasResource.mockResolvedValueOnce(true);
     operation.target.path = 'http://test.com/foo.meta';
     const result = await handler.handle({ operation });

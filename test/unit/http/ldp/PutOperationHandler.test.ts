@@ -35,14 +35,15 @@ describe('A PutOperationHandler', (): void => {
     await expect(handler.canHandle({ operation })).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('errors if there is no content-type.', async(): Promise<void> => {
-    // Errors only when the target is not a container
-    operation.body.metadata.contentType = undefined;
-    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
-
+  it('creates a new container when there is no content-type.', async(): Promise<void> => {
     operation.target.path = 'http://test.com/foo/';
     const result = await handler.handle({ operation });
     expect(result.statusCode).toBe(201);
+  });
+
+  it('errors if there is no content-type.', async(): Promise<void> => {
+    operation.body.metadata.contentType = undefined;
+    await expect(handler.handle({ operation })).rejects.toThrow(BadRequestHttpError);
   });
 
   it('creates the representation in the store and returns the correct response.', async(): Promise<void> => {
