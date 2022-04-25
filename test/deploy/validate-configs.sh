@@ -43,7 +43,7 @@ run_server_with_config () {
 
   mkdir -p test/tmp/data
 
-  CSS_ARGS="-p 8888 -l warn -f test/tmp/data -s http://localhost:4000/sparql"
+  CSS_ARGS=(-p 8888 -l warn -f test/tmp/data/ -s http://localhost:4000/sparql)
   CSS_BASE_URL="http://localhost:8888"
 
   # HTTPS config specifics: self-signed key/cert + CSS base URL override
@@ -62,7 +62,7 @@ run_server_with_config () {
 
   echo -e "----------------------------------"
   echo "$TEST_NAME($CONFIG_NAME) - Starting the server"
-  community-solid-server "$CSS_ARGS" -b $CSS_BASE_URL -c "$CONFIG_PATH"  &>test/tmp/"$CONFIG_NAME" &
+  community-solid-server "${CSS_ARGS[@]}" -b $CSS_BASE_URL -c $CONFIG_PATH &>test/tmp/"$CONFIG_NAME" &
   PID=$!
 
   FAILURE=1
