@@ -8,7 +8,7 @@ const portNames = [
   'ContentNegotiation',
   'DynamicPods',
   'ExpiringDataCleanup',
-  'FileBackendEncodedSlashHandling',
+  'FileBackend',
   'GlobalQuota',
   'Identity',
   'LpdHandlerWithAuth',

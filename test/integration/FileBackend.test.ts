@@ -10,10 +10,10 @@ import {
   removeFolder,
 } from './Config';
 
-const port = getPort('FileBackendEncodedSlashHandling');
+const port = getPort('FileBackend');
 const baseUrl = `http://localhost:${port}/`;
 
-const rootFilePath = getTestFolder('file-backend-encoded-slash-handling');
+const rootFilePath = getTestFolder('file-backend');
 
 describe('A server with a file backend storage', (): void => {
   let app: App;
@@ -145,5 +145,36 @@ describe('A server with a file backend storage', (): void => {
       // Check that the the appropriate file path for bar%foo exists
       const check4 = await pathExists(`${rootFilePath}/bar%2Ffoo$.txt`);
       expect(check4).toBe(true);
+    });
+
+  it('supports content types for which no extension mapping can be found (and falls back to using .unknown).',
+    async(): Promise<void> => {
+      const url = `${baseUrl}test`;
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'content-type': 'unknown/some-type',
+        },
+        body: 'abc',
+      });
+      expect(res.status).toBe(201);
+      expect(res.headers.get('location')).toBe(`${baseUrl}test`);
+
+      // Check if the document can be retrieved
+      const check1 = await fetch(`${baseUrl}test`, {
+        method: 'GET',
+        headers: {
+          accept: '*/*',
+        },
+      });
+      const body = await check1.text();
+      expect(check1.status).toBe(200);
+      expect(body).toBe('abc');
+      // The content-type should be unknown/some-type.
+      expect(check1.headers.get('content-type')).toBe('unknown/some-type');
+
+      // Check if the expected file was created
+      const check2 = await pathExists(`${rootFilePath}/test$.unknown`);
+      expect(check2).toBe(true);
     });
 });
