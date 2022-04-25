@@ -1,25 +1,20 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/identity/registration/route/registration.json"
+    "css:config/identity/registration/route/registration.json"
   ],
   "@graph": [
     {
       "@id": "urn:solid-server:auth:password:InteractionRouteHandler",
-      "WaterfallHandler:_handlers": [
-        {
-          "comment": [
-            "This handler is required to prevent Components.js issues with arrays.",
-            "This might be fixed in the next Components.js release after which this can be removed."
-          ],
-          "@type": "UnsupportedAsyncHandler"
-        },
+      "@type": "WaterfallHandler",
+      "handlers": [
         { "@id": "urn:solid-server:auth:password:RegistrationRouteHandler" }
       ]
     },
     {
       "@id": "urn:solid-server:auth:password:ControlHandler",
-      "ControlHandler:_controls": [
+      "@type": "ControlHandler",
+      "controls": [
         {
           "ControlHandler:_controls_key": "register",
           "ControlHandler:_controls_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }
@@ -28,7 +23,8 @@
     },
     {
       "@id": "urn:solid-server:auth:password:HtmlViewHandler",
-      "HtmlViewHandler:_templates": [
+      "@type": "HtmlViewHandler",
+      "templates": [
         {
           "HtmlViewHandler:_templates_key": "@css:templates/identity/email-password/register.html.ejs",
           "HtmlViewHandler:_templates_value": { "@id": "urn:solid-server:auth:password:RegistrationRoute" }

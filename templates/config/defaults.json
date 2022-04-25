@@ -1,9 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/util/auxiliary/acl.json",
-    "files-scs:config/util/index/default.json",
-    "files-scs:config/util/representation-conversion/default.json"
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/index/default.json",
+    "css:config/util/representation-conversion/default.json"
   ],
   "@graph": [
     {

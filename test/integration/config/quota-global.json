@@ -1,35 +1,35 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/app/main/default.json",
-    "files-scs:config/app/init/initialize-root.json",
-    "files-scs:config/app/setup/disabled.json",
-    "files-scs:config/http/handler/default.json",
-    "files-scs:config/http/middleware/websockets.json",
-    "files-scs:config/http/server-factory/websockets.json",
-    "files-scs:config/http/static/default.json",
-    "files-scs:config/identity/access/public.json",
-    "files-scs:config/identity/email/default.json",
-    "files-scs:config/identity/handler/default.json",
-    "files-scs:config/identity/ownership/token.json",
-    "files-scs:config/identity/pod/static.json",
-    "files-scs:config/identity/registration/enabled.json",
-    "files-scs:config/ldp/authentication/dpop-bearer.json",
-    "files-scs:config/ldp/authorization/allow-all.json",
-    "files-scs:config/ldp/handler/default.json",
-    "files-scs:config/ldp/metadata-parser/default.json",
-    "files-scs:config/ldp/metadata-writer/default.json",
-    "files-scs:config/ldp/modes/default.json",
-    "files-scs:config/storage/backend/global-quota-file.json",
-    "files-scs:config/storage/key-value/resource-store.json",
-    "files-scs:config/storage/middleware/default.json",
-    "files-scs:config/util/auxiliary/acl.json",
-    "files-scs:config/util/identifiers/suffix.json",
-    "files-scs:config/util/index/default.json",
-    "files-scs:config/util/logging/winston.json",
-    "files-scs:config/util/representation-conversion/default.json",
-    "files-scs:config/util/resource-locker/memory.json",
-    "files-scs:config/util/variables/default.json"
+    "css:config/app/main/default.json",
+    "css:config/app/init/initialize-root.json",
+    "css:config/app/setup/disabled.json",
+    "css:config/http/handler/default.json",
+    "css:config/http/middleware/websockets.json",
+    "css:config/http/server-factory/websockets.json",
+    "css:config/http/static/default.json",
+    "css:config/identity/access/public.json",
+    "css:config/identity/email/default.json",
+    "css:config/identity/handler/default.json",
+    "css:config/identity/ownership/token.json",
+    "css:config/identity/pod/static.json",
+    "css:config/identity/registration/enabled.json",
+    "css:config/ldp/authentication/dpop-bearer.json",
+    "css:config/ldp/authorization/allow-all.json",
+    "css:config/ldp/handler/default.json",
+    "css:config/ldp/metadata-parser/default.json",
+    "css:config/ldp/metadata-writer/default.json",
+    "css:config/ldp/modes/default.json",
+    "css:config/storage/backend/global-quota-file.json",
+    "css:config/storage/key-value/resource-store.json",
+    "css:config/storage/middleware/default.json",
+    "css:config/util/auxiliary/acl.json",
+    "css:config/util/identifiers/suffix.json",
+    "css:config/util/index/default.json",
+    "css:config/util/logging/winston.json",
+    "css:config/util/representation-conversion/default.json",
+    "css:config/util/resource-locker/memory.json",
+    "css:config/util/variables/default.json"
   ],
   "@graph": [
     {
@@ -42,14 +42,16 @@
     },
     {
       "@id": "urn:solid-server:default:QuotaStrategy",
-      "GlobalQuotaStrategy:_limit_amount": {
+      "@type": "GlobalQuotaStrategy",
+      "limit_amount": {
         "@id": "urn:solid-server:default:variable:GlobalQuota"
       },
-      "GlobalQuotaStrategy:_limit_unit": "bytes"
+      "limit_unit": "bytes"
     },
     {
       "@id": "urn:solid-server:default:SizeReporter",
-      "FileSizeReporter:_ignoreFolders": [ "^/\\.internal$" ]
+      "@type": "FileSizeReporter",
+      "ignoreFolders": [ "^/\\.internal$" ]
     },
     {
       "@id": "urn:solid-server:test:Instances",

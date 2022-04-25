@@ -5,10 +5,7 @@
   ],
   "@graph": [
     {
-      "comment": [
-        "This will contain references to all the auxiliary strategies (such as the acl one) if they are needed.",
-        "Components.js does not support empty arrays, so this config can only by used if at least one strategy gets added."
-      ],
+      "comment": "This will contain references to all the auxiliary strategies (such as the acl one) if they are needed.",
       "@id": "urn:solid-server:default:AuxiliaryStrategy",
       "@type": "RoutingAuxiliaryStrategy",
       "sources": [

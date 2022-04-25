@@ -1,6 +1,4 @@
-import type { ActorInitSparql } from '@comunica/actor-init-sparql';
-import { newEngine } from '@comunica/actor-init-sparql';
-import type { IQueryResultUpdate } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
+import { QueryEngine } from '@comunica/query-sparql';
 import type { Store } from 'n3';
 import { DataFactory } from 'n3';
 import { Algebra } from 'sparqlalgebrajs';
@@ -20,11 +18,11 @@ import { RdfStorePatcher } from './RdfStorePatcher';
 export class SparqlUpdatePatcher extends RdfStorePatcher {
   protected readonly logger = getLoggerFor(this);
 
-  private readonly engine: ActorInitSparql;
+  private readonly engine: QueryEngine;
 
   public constructor() {
     super();
-    this.engine = newEngine();
+    this.engine = new QueryEngine();
   }
 
   public async canHandle({ patch }: RdfStorePatcherInput): Promise<void> {
@@ -117,9 +115,7 @@ export class SparqlUpdatePatcher extends RdfStorePatcher {
 
     // Run the query through Comunica
     const sparql = await readableToString(patch.data);
-    const query = await this.engine.query(sparql,
-      { sources: [ result ], baseIRI: identifier.path }) as IQueryResultUpdate;
-    await query.updateResult;
+    await this.engine.queryVoid(sparql, { sources: [ result ], baseIRI: identifier.path });
 
     this.logger.debug(`${result.size} quads will be stored to ${identifier.path}.`);
 

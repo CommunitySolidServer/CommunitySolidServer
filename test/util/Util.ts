@@ -164,7 +164,7 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
         const entry = folder[name];
         return typeof entry === 'symbol' ? entry.description ?? 'invalid' : path;
       },
-      async rmdir(path: string): Promise<void> {
+      async rm(path: string): Promise<void> {
         const { folder, name } = getFolder(path);
         if (!folder[name]) {
           throwSystemError('ENOENT');
@@ -278,8 +278,8 @@ export function mockFileSystem(rootFilepath?: string, time?: Date): { data: any 
     async symlink(target: string, path: string): Promise<void> {
       await mockFs.promises.symlink(target, path);
     },
-    async rmdir(path: string): Promise<void> {
-      await mockFs.promises.rmdir(path);
+    async rm(path: string): Promise<void> {
+      await mockFs.promises.rm(path);
     },
     async readdir(path: string): Promise<string[]> {
       return await mockFs.promises.readdir(path);

@@ -1,13 +1,13 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/ldp/metadata-writer/writers/allow-accept.json",
-    "files-scs:config/ldp/metadata-writer/writers/constant.json",
-    "files-scs:config/ldp/metadata-writer/writers/link-rel.json",
-    "files-scs:config/ldp/metadata-writer/writers/mapped.json",
-    "files-scs:config/ldp/metadata-writer/writers/modified.json",
-    "files-scs:config/ldp/metadata-writer/writers/wac-allow.json",
-    "files-scs:config/ldp/metadata-writer/writers/www-auth.json"
+    "css:config/ldp/metadata-writer/writers/allow-accept.json",
+    "css:config/ldp/metadata-writer/writers/constant.json",
+    "css:config/ldp/metadata-writer/writers/link-rel.json",
+    "css:config/ldp/metadata-writer/writers/mapped.json",
+    "css:config/ldp/metadata-writer/writers/modified.json",
+    "css:config/ldp/metadata-writer/writers/wac-allow.json",
+    "css:config/ldp/metadata-writer/writers/www-auth.json"
   ],
   "@graph": [
     {

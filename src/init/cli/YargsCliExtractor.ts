@@ -3,7 +3,28 @@ import type { Arguments, Argv, Options } from 'yargs';
 import yargs from 'yargs';
 import { CliExtractor } from './CliExtractor';
 
-export type YargsArgOptions = Record<string, Options>;
+// This type exists to prevent Components.js from erroring on an unknown type
+export type YargsOptions = Options;
+
+/**
+ * This class exists as wrapper around a yargs Options object,
+ * thereby allowing us to create these in a Components.js configuration.
+ *
+ * Format details can be found at https://yargs.js.org/docs/#api-reference-optionskey-opt
+ */
+export class YargsParameter {
+  public readonly name: string;
+  public readonly options: YargsOptions;
+
+  /**
+   * @param name - Name of the parameter. Corresponds to the first parameter passed to the `yargs.options` function.
+   * @param options - Options for a single parameter that should be parsed. @range {json}
+   */
+  public constructor(name: string, options: Record<string, any>) {
+    this.name = name;
+    this.options = options;
+  }
+}
 
 export interface CliOptions {
   // Usage string printed in case of CLI errors
@@ -24,21 +45,21 @@ export interface CliOptions {
  * Specific settings can be enabled through the provided options.
  */
 export class YargsCliExtractor extends CliExtractor {
-  protected readonly yargsArgOptions: YargsArgOptions;
+  protected readonly yargsArgOptions: Record<string, YargsOptions>;
   protected readonly yargvOptions: CliOptions;
 
   /**
-   * @param parameters - Parameters that should be parsed from the CLI. @range {json}
-   *                     Format details can be found at https://yargs.js.org/docs/#api-reference-optionskey-opt
+   * @param parameters - Parameters that should be parsed from the CLI.
    * @param options - Additional options to configure yargs. @range {json}
-   * @param extendedParameters - The same as @parameters. Separate variable so in Components.js
-   *                          we can have both a default set and a user-added version. @range {json}
+   *
+   * JSON parameters cannot be optional due to https://github.com/LinkedSoftwareDependencies/Components-Generator.js/issues/87
    */
-  public constructor(parameters: YargsArgOptions = {}, options: CliOptions = {},
-    extendedParameters: YargsArgOptions = {}) {
+  public constructor(parameters: YargsParameter[], options: CliOptions) {
     super();
-    this.yargsArgOptions = { ...parameters, ...extendedParameters };
-    this.yargvOptions = options;
+    this.yargsArgOptions = Object.fromEntries(
+      parameters.map((entry): [string, YargsOptions] => [ entry.name, entry.options ]),
+    );
+    this.yargvOptions = { ...options };
   }
 
   public async handle(argv: readonly string[]): Promise<Arguments> {

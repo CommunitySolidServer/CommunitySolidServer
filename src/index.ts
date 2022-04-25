@@ -269,7 +269,6 @@ export * from './server/HttpResponse';
 export * from './server/HttpServerFactory';
 export * from './server/OperationHttpHandler';
 export * from './server/ParsingHttpHandler';
-export * from './server/RedirectingHttpHandler';
 export * from './server/WebSocketHandler';
 export * from './server/WebSocketServerFactory';
 
@@ -280,7 +279,7 @@ export * from './server/middleware/StaticAssetHandler';
 export * from './server/middleware/WebSocketAdvertiser';
 
 // Server/Util
-export * from './server/util/RedirectAllHttpHandler';
+export * from './server/util/RedirectingHttpHandler';
 export * from './server/util/RouterHandler';
 
 // Storage/Accessors

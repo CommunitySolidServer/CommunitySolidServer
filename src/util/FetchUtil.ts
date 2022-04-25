@@ -1,4 +1,3 @@
-import type { Readable } from 'stream';
 import type { Quad } from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import type { Response } from 'cross-fetch';
@@ -21,7 +20,7 @@ export async function fetchDataset(url: string): Promise<Representation> {
   // Try content negotiation to parse quads from the URL
   return (async(): Promise<Representation> => {
     try {
-      const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
+      const quadStream = (await rdfDereferencer.dereference(url)).data;
       const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
     } catch {

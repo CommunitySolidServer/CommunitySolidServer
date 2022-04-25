@@ -9,6 +9,7 @@ Steps to follow:
    * Does authentication still work?
    * Is there an issue upgrading the recipes at https://github.com/CommunitySolidServer/recipes
    * None of the above has to be blocking per se, but should be noted in the release notes if relevant.
+ * Verify that the RELEASE_NOTES.md are correct.
  * Update all Components.js references to the new version.
    * All contexts in all configs to 
      `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^x.0.0/components/context.jsonld`.
@@ -22,7 +23,7 @@ Steps to follow:
      * Most `chore` and `docs` entries can probably be removed.
    * Make sure there are 2 newlines between this and the previous section.
  * `git push --follow-tags`
- * Merge `versions/x.0.0` into `main`.
+ * Merge `versions/x.0.0` into `main` and push.
  * Do a GitHub release.
  * `npm publish`
  * Rename the `versions/x.0.0` branch to the next version.

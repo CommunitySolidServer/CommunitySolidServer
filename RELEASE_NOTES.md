@@ -2,7 +2,9 @@
 
 ## v5.0.0
 ### New features
-- ...
+- Support for Node v12 was dropped.
+- Components.js was upgraded to v5. If you have created an external component
+  you should also upgrade to prevent warnings and conflicts.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -16,14 +18,15 @@ The `@context` needs to be updated to
 `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld`.
 
 The following changes pertain to the imports in the default configs:
-- ...
+- The prefix of all imports was changed from `files-scs` to `css`.
 
 The following changes are relevant for v3 custom configs that replaced certain features.
-- ...
+- `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
-- ...
+- `YargsCliExtractor` was changed to now take as input an array of parameter objects.
+- `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 
 ## v4.0.0
 ### New features

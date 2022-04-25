@@ -1,9 +1,9 @@
 {
   "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
   "import": [
-    "files-scs:config/storage/backend/data-accessors/file.json",
-    "files-scs:config/storage/backend/data-accessors/memory.json",
-    "files-scs:config/storage/backend/data-accessors/sparql-endpoint.json"
+    "css:config/storage/backend/data-accessors/file.json",
+    "css:config/storage/backend/data-accessors/memory.json",
+    "css:config/storage/backend/data-accessors/sparql-endpoint.json"
   ],
   "@graph": [
     {
