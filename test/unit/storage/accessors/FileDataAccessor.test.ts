@@ -269,11 +269,6 @@ describe('A FileDataAccessor', (): void => {
         .rejects.toThrow(NotFoundHttpError);
     });
 
-    it('writes the data to the corresponding a metadata file.', async(): Promise<void> => {
-      await expect(accessor.writeDocument({ path: `${base}resource.meta` }, data, metadata)).resolves.toBeUndefined();
-      expect(cache.data['resource.meta$.bin']).toBe('data');
-    });
-
     it('writes the data to the corresponding file.', async(): Promise<void> => {
       await expect(accessor.writeDocument({ path: `${base}resource` }, data, metadata)).resolves.toBeUndefined();
       expect(cache.data.resource).toBe('data');

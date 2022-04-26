@@ -1,21 +1,20 @@
 import { DataFactory, Store } from 'n3';
-import type { Algebra } from 'sparqlalgebrajs';
-import { translate } from 'sparqlalgebrajs';
-import type { SparqlUpdatePatch } from '../../../../src';
-import { guardedStreamFrom, RepresentationMetadata, SparqlUpdatePatcher } from '../../../../src';
+import type { Patch } from '../../../../src/http/representation/Patch';
+import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
 import { ImmutablePattern, ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
+import type { RdfStorePatcherInput } from '../../../../src/storage/patch/RdfStorePatcher';
+import type { SparqlUpdatePatcher } from '../../../../src/storage/patch/SparqlUpdatePatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
-import { LDP, PIM, RDF } from '../../../../src/util/Vocabularies';
+import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
+import { PIM, RDF } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
 import 'jest-rdf';
+const { namedNode, quad } = DataFactory;
 
-function getPatch(query: string): SparqlUpdatePatch {
-  const prefixedQuery = `prefix : <http://test.com/>\n${query}`;
+function getPatch(): Patch {
+  const prefixedQuery = `This is a valid patch query`;
   return {
-    algebra: translate(prefixedQuery, { quads: true }) as Algebra.Update,
     data: guardedStreamFrom(prefixedQuery),
     metadata: new RepresentationMetadata(),
     binary: true,
@@ -27,90 +26,143 @@ describe('A ImmutableMetadataPatcher', (): void => {
   const base = 'http://test.com/';
   const identifier = { path: 'http://test.com/foo' };
   const metaIdentifier = { path: 'http://test.com/foo.meta' };
-  const dataInsert = 'INSERT DATA { :s1 :p1 :o1 . :s2 :p2 :o2 . }';
 
+  let patch: Patch;
   let patcher: SparqlUpdatePatcher;
   let handler: ImmutableMetadataPatcher;
   let metaStrategy: SimpleSuffixStrategy;
   let store: Store;
+  let input: RdfStorePatcherInput;
 
   beforeEach(async(): Promise<void> => {
-    patcher = new SparqlUpdatePatcher();
+    patcher = {
+      canHandle: jest.fn(),
+      handle: jest.fn(async(): Promise<Store> => new Store([
+        quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)) ])),
+    } as unknown as SparqlUpdatePatcher;
     metaStrategy = new SimpleSuffixStrategy('.meta');
     store = new Store();
-
+    patch = getPatch();
+    input = { store, patch, identifier: metaIdentifier };
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
-      new ImmutablePattern(undefined, 'http://www.w3.org/ns/ldp#contains'),
+      new ImmutablePattern(`${base}a`, `${base}b`, `${base}c`),
     ]);
   });
 
-  it('throws an error when trying to handle on a non metadata resource identifier.', async(): Promise<void> => {
-    const patch = getPatch(dataInsert);
-    const input = { store, patch, identifier };
+  it('throws an error when trying to handle a non metadata resource identifier.', async(): Promise<void> => {
+    input.identifier = identifier;
     await expect(handler.handleSafe(input)).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('handles patch that does not change immutable metadata.', async(): Promise<void> => {
-    const patch = getPatch(dataInsert);
-    const input = { store, patch, identifier: metaIdentifier };
+  it('handles patches if they do not change immutable metadata.', async(): Promise<void> => {
     const result = await handler.handleSafe(input);
     expect(result).toBeRdfIsomorphic([
-      quad(namedNode('http://test.com/s1'), namedNode('http://test.com/p1'), namedNode('http://test.com/o1')),
-      quad(namedNode('http://test.com/s2'), namedNode('http://test.com/p2'), namedNode('http://test.com/o2')),
+      quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)),
     ]);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
   });
 
-  it('rejects patches that adds ldp:contains triples in metadata.', async(): Promise<void> => {
-    const patch = getPatch(`INSERT DATA { <${identifier.path}> <${LDP.contains}> :resource .}`);
-    const input = { store, patch, identifier: metaIdentifier };
-    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+  it('handles patches if there are no immutable patterns.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [ ]);
+
+    const result = await handler.handleSafe(input);
+    expect(result).toBeRdfIsomorphic([
+      quad(namedNode(`${base}s`), namedNode(`${base}p`), namedNode(`${base}o`)),
+    ]);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
   });
 
-  it('rejects patches that adds pim:storage triples in metadata.', async(): Promise<void> => {
-    const patch = getPatch(`INSERT DATA { <${identifier.path}> a <${PIM.Storage}> .}`);
-    const input = { store, patch, identifier: metaIdentifier };
-    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('reject patches that removes ldp:contains triples from metadata.', async(): Promise<void> => {
-    const patch = getPatch(`DELETE DATA { <${identifier.path}> <${LDP.contains}> :resource .}`);
-    store.addQuad(namedNode(identifier.path), namedNode(LDP.contains), namedNode(`${base}resource`));
-    const input = { store, patch, identifier: metaIdentifier };
-    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('reject patches that removes pim:storage triples from metadata.', async(): Promise<void> => {
-    const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .}`);
-    store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
-    const input = { store, patch, identifier: metaIdentifier };
-    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('reject patches that removes pim:storage triples from the metadata ' +
-      'and adds an ldp:contains to the metadata.', async(): Promise<void> => {
-    const patch = getPatch(`DELETE DATA { <${identifier.path}> a <${PIM.Storage}> .} ;
-INSERT DATA { <${identifier.path}> <${LDP.contains}> <${identifier.path}/resource> }`);
-    store.addQuad(namedNode(identifier.path), namedNode(RDF.type), namedNode(PIM.Storage));
-    const input = { store, patch, identifier: metaIdentifier };
-    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('rejects custom ImmutableTriple patches.', async(): Promise<void> => {
+  it('rejects patches that change immutable triples based on subject alone.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern('http://example.org/', 'http://example.org/has', 'http://example.org/something'),
+      new ImmutablePattern(`${base}s`),
     ]);
-    const patch = getPatch(`INSERT DATA { <http://example.org/> <http://example.org/has> <http://example.org/something> .}`);
-    const input = { store, patch, identifier: metaIdentifier };
+
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
   });
 
-  it('rejects everything when ImmutableTriple has no argumetns.', async(): Promise<void> => {
+  it('rejects patches that change immutable triples based on predicate alone.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(undefined, `${base}p`),
+    ]);
+
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('rejects patches that change immutable triples based on object alone.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(undefined, undefined, `${base}o`),
+    ]);
+
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('rejects patches that change immutable triples based on predicate and object.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(undefined, `${base}p`, `${base}o`),
+    ]);
+
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('handles patches that changes triples where only a part is immutable.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(undefined, `${base}p`, `${base}o`),
+    ]);
+    patcher.handle = jest.fn(async(): Promise<Store> => new Store([
+      quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
+      quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+    ]));
+
+    const result = await handler.handleSafe(input);
+    expect(result).toBeRdfIsomorphic([
+      quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
+      quad(namedNode(`${base}a`), namedNode(`${base}b`), namedNode(`${base}o`)),
+    ]);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('rejects patches that replaces immutable triples.', async(): Promise<void> => {
+    input.store.addQuad(namedNode(base), RDF.terms.type, PIM.terms.Storage);
+    patcher.handle = jest.fn(async(): Promise<Store> => new Store([
+      quad(namedNode(`${base}newRoot`), RDF.terms.type, PIM.terms.Storage),
+    ]));
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
+    ]);
+
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('rejects patches that change immutable triples.', async(): Promise<void> => {
+    handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
+      new ImmutablePattern(`${base}s`, `${base}p`, `${base}o`),
+    ]);
+
+    await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
+  });
+
+  it('rejects everything when ImmutableTriple has no arguments.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
       new ImmutablePattern(),
     ]);
-    const patch = getPatch(`INSERT DATA { <http://example.org/a> <http://example.org/b> <http://example.org/c> .}`);
-    const input = { store, patch, identifier: metaIdentifier };
+
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith(input);
   });
 });
