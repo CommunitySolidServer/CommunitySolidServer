@@ -26,8 +26,7 @@ describe('A RepresentationPatchHandler', (): void => {
     input = { source, identifier, patch };
 
     patcher = {
-      handle: jest.fn().mockResolvedValue(patchResult),
-      canHandle: jest.fn(),
+      handleSafe: jest.fn().mockResolvedValue(patchResult),
     } as any;
 
     handler = new RepresentationPatchHandler(patcher);
@@ -36,8 +35,8 @@ describe('A RepresentationPatchHandler', (): void => {
   it('calls the patcher with the representation from the store.', async(): Promise<void> => {
     await expect(handler.handle(input)).resolves.toEqual([ identifier ]);
 
-    expect(patcher.handle).toHaveBeenCalledTimes(1);
-    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, representation });
+    expect(patcher.handleSafe).toHaveBeenCalledTimes(1);
+    expect(patcher.handleSafe).toHaveBeenLastCalledWith({ identifier, patch, representation });
 
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(identifier, patchResult);
@@ -48,8 +47,8 @@ describe('A RepresentationPatchHandler', (): void => {
 
     await expect(handler.handle(input)).resolves.toEqual([ identifier ]);
 
-    expect(patcher.handle).toHaveBeenCalledTimes(1);
-    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch });
+    expect(patcher.handleSafe).toHaveBeenCalledTimes(1);
+    expect(patcher.handleSafe).toHaveBeenLastCalledWith({ identifier, patch });
 
     expect(source.setRepresentation).toHaveBeenCalledTimes(1);
     expect(source.setRepresentation).toHaveBeenLastCalledWith(identifier, patchResult);
@@ -65,11 +64,5 @@ describe('A RepresentationPatchHandler', (): void => {
   it('errors if the target is a container.', async(): Promise<void> => {
     identifier.path = 'http://test.com/';
     await expect(handler.handle(input)).rejects.toThrow(ConflictHttpError);
-  });
-
-  it('calls the patcher canHandle to verify if the call can be handled.', async(): Promise<void> => {
-    await expect(handler.canHandle(input)).resolves.toBeUndefined();
-    expect(patcher.canHandle).toHaveBeenCalledTimes(1);
-    expect(patcher.canHandle).toHaveBeenLastCalledWith({ identifier, patch });
   });
 });

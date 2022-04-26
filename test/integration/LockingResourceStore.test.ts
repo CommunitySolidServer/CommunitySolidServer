@@ -17,9 +17,9 @@ import { SingleThreadedResourceLocker } from '../../src/util/locking/SingleThrea
 import { WrappedExpiringReadWriteLocker } from '../../src/util/locking/WrappedExpiringReadWriteLocker';
 import { guardedStreamFrom } from '../../src/util/StreamUtil';
 import { PIM, RDF } from '../../src/util/Vocabularies';
-jest.useFakeTimers('legacy');
 import { SimpleSuffixStrategy } from '../util/SimpleSuffixStrategy';
 import { flushPromises } from '../util/Util';
+jest.useFakeTimers('legacy');
 
 describe('A LockingResourceStore', (): void => {
   let path: string;

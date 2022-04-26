@@ -72,7 +72,7 @@ const table: [string, string, AM[], AM[] | undefined, string, string, number, nu
 
   [ 'PUT',     'C/',  [],                     undefined,              '',     N3,  401, 401 ],
   [ 'PUT',     'C/',  [ AM.read ],            undefined,              '',     N3,  401, 401 ],
-  [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     N3,  409, 201 ],
+  [ 'PUT',     'C/',  [ AM.write ],           undefined,              '',     '',  409, 201 ],
 
   [ 'PUT',     'C/R', [],                     undefined,              '',     TXT, 401, 401 ],
   [ 'PUT',     'C/R', [],                     [ AM.read ],            '',     TXT, 401, 401 ],

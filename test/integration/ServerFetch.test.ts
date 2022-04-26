@@ -198,4 +198,23 @@ describe('A Solid server', (): void => {
     });
     expect(res.status).toBe(409);
   });
+
+  it('can PATCH metadata resources.', async(): Promise<void> => {
+    const url = `${baseUrl}resourcePATCH`;
+    await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'text/turtle',
+      },
+      body: '<a:b> <a:b> <a:b>.',
+    });
+    const res = await fetch(`${url}.meta`, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/sparql-update',
+      },
+      body: 'INSERT DATA { <b:b> <b:b> <b:b>. }',
+    });
+    expect(res.status).toBe(205);
+  });
 });

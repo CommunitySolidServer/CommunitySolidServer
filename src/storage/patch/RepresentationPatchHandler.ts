@@ -26,10 +26,6 @@ export class RepresentationPatchHandler extends PatchHandler {
     this.patcher = patcher;
   }
 
-  public async canHandle({ patch, identifier }: PatchHandlerInput): Promise<void> {
-    await this.patcher.canHandle({ identifier, patch, representation: undefined });
-  }
-
   public async handle({ source, patch, identifier }: PatchHandlerInput): Promise<ResourceIdentifier[]> {
     // Get the representation from the store
     let representation: Representation | undefined;
@@ -47,7 +43,7 @@ export class RepresentationPatchHandler extends PatchHandler {
     }
 
     // Patch it
-    const patched = await this.patcher.handle({ patch, identifier, representation });
+    const patched = await this.patcher.handleSafe({ patch, identifier, representation });
 
     // Not allowed performing PATCH on a container
     // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1027#issuecomment-988664970

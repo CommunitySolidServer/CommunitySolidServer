@@ -4,7 +4,15 @@ import { DataFactory, Parser, Store } from 'n3';
 import { joinFilePath, PIM, RDF } from '../../src/';
 import type { App } from '../../src/';
 import { LDP } from '../../src/util/Vocabularies';
-import { deleteResource, expectQuads, getResource, patchResource, postResource, putResource } from '../util/FetchUtil';
+import {
+  deleteResource,
+  expectQuads,
+  getResource,
+  patchResource,
+  patchResourceN3,
+  postResource,
+  putResource,
+} from '../util/FetchUtil';
 import { getPort } from '../util/Util';
 import {
   getDefaultVariables,
@@ -13,6 +21,7 @@ import {
   getTestFolder,
   instantiateFromConfig, removeFolder,
 } from './Config';
+import literal = DataFactory.literal;
 const { namedNode, quad } = DataFactory;
 
 const port = getPort('LpdHandlerWithoutAuth');
@@ -264,6 +273,25 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 
+  it('can create a resource with a diamond identifier in the data.', async(): Promise<void> => {
+    const slug = 'my-resource';
+
+    const body = '<> <http://www.w3.org/2000/01/rdf-schema#label> "My Resource" .';
+    let response = await postResource(baseUrl, { isContainer: false, contentType: 'text/turtle', slug, body });
+    expect(response.headers.get('location')).toBe(`${baseUrl}${slug}`);
+
+    // GET
+    const containerUrl = `${baseUrl}${slug}`;
+    response = await getResource(containerUrl);
+
+    await expectQuads(response, [
+      quad(namedNode(containerUrl), namedNode('http://www.w3.org/2000/01/rdf-schema#label'), literal('My Resource')),
+    ]);
+
+    // DELETE
+    expect(await deleteResource(containerUrl)).toBeUndefined();
+  });
+
   // https://github.com/CommunitySolidServer/CommunitySolidServer/issues/498
   it('accepts a GET with Content-Length: 0.', async(): Promise<void> => {
     // PUT
@@ -332,6 +360,56 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
     expect(await deleteResource(documentUrl)).toBeUndefined();
   });
 
+  it('can handle simple N3 Patch updates.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ '<> a solid:InsertDeletePatch;',
+      'solid:deletes { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> };',
+      'solid:inserts { <http://test.com/s3> <http://test.com/p3> <http://test.com/o3> }.',
+    ].join('\n');
+    await patchResourceN3(documentUrl, query, true);
+
+    // PATCH using a content-type header with charset
+    const query2 = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+      '<> a solid:InsertDeletePatch;',
+      'solid:deletes { <http://test.com/s2> <http://test.com/p2> <http://test.com/o2> };',
+      'solid:inserts {<#s4> <#p4> <#o4>}.',
+    ].join('\n');
+    response = await fetch(documentUrl, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'text/n3 ; charset=UTF-8',
+      },
+      body: query2,
+    });
+    await expect(response.text()).resolves.toHaveLength(0);
+    expect(response.status).toBe(205);
+
+    // GET
+    response = await getResource(documentUrl);
+    const expected = [
+      quad(
+        namedNode('http://test.com/s3'),
+        namedNode('http://test.com/p3'),
+        namedNode('http://test.com/o3'),
+      ),
+      quad(
+        namedNode(`${documentUrl}#s4`),
+        namedNode(`${documentUrl}#p4`),
+        namedNode(`${documentUrl}#o4`),
+      ),
+    ];
+    await expectQuads(response, expected, true);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
   it('can not handle SPARQL updates on containers.', async(): Promise<void> => {
     // POST
     const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
@@ -350,6 +428,34 @@ describe.each(stores)('An LDP handler allowing all requests %s', (name, { storeC
       method: 'PATCH',
       headers: {
         'content-type': 'application/sparql-update',
+      },
+      body: query,
+    });
+    expect(response.status).toBe(409);
+
+    // DELETE
+    expect(await deleteResource(documentUrl)).toBeUndefined();
+  });
+
+  it('can not handle N3 Patch updates on containers.', async(): Promise<void> => {
+    // POST
+    const body = [ '<http://test.com/s1> <http://test.com/p1> <http://test.com/o1>.',
+      '<http://test.com/s2> <http://test.com/p2> <http://test.com/o2>.' ].join('\n');
+    let response = await postResource(baseUrl, { contentType: 'text/turtle', body, isContainer: true });
+    const documentUrl = response.headers.get('location')!;
+
+    // PATCH
+    const query = [ '@prefix solid: <http://www.w3.org/ns/solid/terms#>.',
+      '<> a solid:InsertDeletePatch;',
+      'solid:deletes { <http://test.com/s1> <http://test.com/p1> <http://test.com/o1> };',
+      'solid:inserts { <http://test.com/s3> <http://test.com/p3> <http://test.com/o3> }.',
+    ].join('\n');
+
+    // We don't want you to PATCH on containers
+    response = await fetch(documentUrl, {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'text/n3',
       },
       body: query,
     });
