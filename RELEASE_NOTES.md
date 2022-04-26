@@ -26,6 +26,10 @@ The following changes pertain to the imports in the default configs:
 The following changes are relevant for v3 custom configs that replaced certain features.
 - `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
 - `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- The content-length parser has been moved from the default configuration to the quota configurations.
+   - `/ldp/metadata-parser/default.json`
+   - `/storage/backend/*-quota-file.json`
+   - `/storage/backend/quota/quota-file.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

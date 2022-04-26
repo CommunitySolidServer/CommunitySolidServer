@@ -2,6 +2,7 @@ import { promises as fsPromises } from 'fs';
 import type { Stats } from 'fs';
 import fetch from 'cross-fetch';
 import type { Response } from 'cross-fetch';
+import { pathExists } from 'fs-extra';
 import { joinFilePath, joinUrl } from '../../src';
 import type { App } from '../../src';
 import { getPort } from '../util/Util';
@@ -151,6 +152,18 @@ describe('A quota server', (): void => {
       await expect(response2).resolves.toBeDefined();
       expect((await response2).status).toBe(413);
     });
+
+    it('should not generate metadata files (the only possible entry content-length is removed after quota validation).',
+      async(): Promise<void> => {
+        const testFile3 = `${pod1}/test3.txt`;
+        const response1 = performSimplePutWithLength(testFile3, 100);
+        await expect(response1).resolves.toBeDefined();
+        expect((await response1).status).toBe(201);
+
+        // Validate that a meta file was not created
+        const check = await pathExists(`${rootFilePath}/${podName1}/test3.txt.meta`);
+        expect(check).toBe(false);
+      });
   });
 
   /** Test the general functionality of the server using global quota */
@@ -218,5 +231,17 @@ describe('A quota server', (): void => {
       const awaitedRes2 = await response2;
       expect(awaitedRes2.status).toBe(413);
     });
+
+    it('should not generate metadata files (the only possible entry content-length is removed after quota validation).',
+      async(): Promise<void> => {
+        const testFile3 = `${pod1}/test5.txt`;
+        const response1 = performSimplePutWithLength(testFile3, 100);
+        await expect(response1).resolves.toBeDefined();
+        expect((await response1).status).toBe(201);
+
+        // Validate that a meta file was not created
+        const check = await pathExists(`${rootFilePath}/${podName1}/test5.txt.meta`);
+        expect(check).toBe(false);
+      });
   });
 });
