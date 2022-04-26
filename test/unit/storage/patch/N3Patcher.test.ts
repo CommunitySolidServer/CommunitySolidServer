@@ -35,14 +35,6 @@ describe('An N3Patcher', (): void => {
     await expect(patcher.canHandle(input)).rejects.toThrow(NotImplementedHttpError);
   });
 
-  it('returns an empty representation for an empty patch for new resources.', async(): Promise<void> => {
-    patch.deletes = [];
-    patch.inserts = [];
-    patch.conditions = [];
-    const result = await patcher.handle(input);
-    expect(result).toBeRdfIsomorphic([]);
-  });
-
   it('returns the input representation for an empty patch.', async(): Promise<void> => {
     patch.deletes = [];
     patch.inserts = [];

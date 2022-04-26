@@ -1,5 +1,4 @@
-import type { Store } from 'n3';
-import { DataFactory } from 'n3';
+import { Store, DataFactory } from 'n3';
 import type { Quad } from 'rdf-js';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Patch } from '../../../../src/http/representation/Patch';
@@ -9,8 +8,7 @@ import { RdfPatcher } from '../../../../src/storage/patch/RdfPatcher';
 import type { RdfStorePatcher, RdfStorePatcherInput } from '../../../../src/storage/patch/RdfStorePatcher';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { readableToQuads } from '../../../../src/util/StreamUtil';
-import quad = DataFactory.quad;
-import namedNode = DataFactory.namedNode;
+const { quad, namedNode } = DataFactory;
 import 'jest-rdf';
 
 describe('An RdfPatcher,', (): void => {
@@ -50,17 +48,22 @@ describe('An RdfPatcher,', (): void => {
     await expect(rdfPatcher.handleSafe({ identifier, patch, representation })).rejects.toThrow(InternalServerError);
     await expect(rdfPatcher.handleSafe({ identifier, patch, representation })).rejects
       .toThrow('Quad stream was expected for patching.');
+    expect(patcher.handle).toHaveBeenCalledTimes(0);
   });
 
   it('uses a new store when there is no representation to patch.', async(): Promise<void> => {
     const result = await rdfPatcher.handleSafe({ identifier, patch });
     const store = await readableToQuads(result.data);
     expect(store).toBeRdfIsomorphic([]);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, store: new Store() });
   });
 
   it('transforms the representation to a store to patch.', async(): Promise<void> => {
     const result = await rdfPatcher.handleSafe({ identifier, patch, representation });
     const store = await readableToQuads(result.data);
     expect(store).toBeRdfIsomorphic(startQuads);
+    expect(patcher.handle).toHaveBeenCalledTimes(1);
+    expect(patcher.handle).toHaveBeenLastCalledWith({ identifier, patch, store: new Store(startQuads) });
   });
 });
