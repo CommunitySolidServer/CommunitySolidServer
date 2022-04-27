@@ -106,19 +106,19 @@ export async function fromResp2ToBool(result: Promise<RedisAnswer>): Promise<boo
 
 export interface RedisReadWriteLock extends Redis {
   /**
-     * Try to acquire a readLock on `resourceIdentifierPath`.
-     * Will succeed if there are no write locks.
-     *
-     * @returns 1 if succeeded. 0 if not possible.
-     */
+   * Try to acquire a readLock on `resourceIdentifierPath`.
+   * Will succeed if there are no write locks.
+   *
+   * @returns 1 if succeeded. 0 if not possible.
+   */
   acquireReadLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;
 
   /**
-     * Try to acquire a writeLock on `resourceIdentifierPath`.
-     * Only works if no other write lock is present and the read counter is 0.
-     *
-     * @returns 'OK' if succeeded, 0 if not possible.
-     */
+   * Try to acquire a writeLock on `resourceIdentifierPath`.
+   * Only works if no other write lock is present and the read counter is 0.
+   *
+   * @returns 'OK' if succeeded, 0 if not possible.
+   */
   acquireWriteLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;
 
   /**
@@ -136,11 +136,11 @@ export interface RedisReadWriteLock extends Redis {
 
 export interface RedisResourceLock extends Redis {
   /**
-     * Try to acquire a lock  on `resourceIdentifierPath`.
-     * Only works if no other lock is present.
-     *
-     * @returns 'OK' if succeeded, 0 if not possible.
-     */
+   * Try to acquire a lock  on `resourceIdentifierPath`.
+   * Only works if no other lock is present.
+   *
+   * @returns 'OK' if succeeded, 0 if not possible.
+   */
   acquireLock: (resourceIdentifierPath: string, callback?: Callback<string>) => Promise<RedisAnswer>;
 
   /**

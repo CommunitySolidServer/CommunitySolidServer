@@ -5,6 +5,7 @@
 - Support for Node v12 was dropped.
 - Components.js was upgraded to v5. If you have created an external component
   you should also upgrade to prevent warnings and conflicts.
+- A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -19,14 +20,18 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 - The prefix of all imports was changed from `files-scs` to `css`.
+- All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
+  making them threadsafe.
 
 The following changes are relevant for v3 custom configs that replaced certain features.
 - `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
+- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
+- `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
 
 ## v4.0.0
 ### New features

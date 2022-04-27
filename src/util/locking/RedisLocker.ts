@@ -2,20 +2,12 @@ import Redis from 'ioredis';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Finalizable } from '../../init/final/Finalizable';
 import { getLoggerFor } from '../../logging/LogUtil';
-import { InternalServerError } from '../errors/InternalServerError';
+import type { AttemptSettings } from '../LockUtils';
+import { retryFunction } from '../LockUtils';
 import type { ReadWriteLocker } from './ReadWriteLocker';
 import type { ResourceLocker } from './ResourceLocker';
-import type { RedisResourceLock, RedisReadWriteLock } from './scripts/RedisLuaScripts';
+import type { RedisResourceLock, RedisReadWriteLock, RedisAnswer } from './scripts/RedisLuaScripts';
 import { fromResp2ToBool, REDIS_LUA_SCRIPTS } from './scripts/RedisLuaScripts';
-
-export interface AttemptSettings {
-  /** How many times should an operation in Redis be retried. (-1 is indefinitely). */
-  retryCount?: number;
-  /** The how long should the next retry be delayed (+ some retryJitter) (in ms). */
-  retryDelay?: number;
-  /** Add a fraction of jitter to the original delay each attempt (in ms). */
-  retryJitter?: number;
-}
 
 const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay: 50, retryJitter: 30 };
 
@@ -41,6 +33,10 @@ const PREFIX_LOCK = '__L__';
  * All operations, such as checking for a write lock AND read count, are executed in a single Lua script.
  * These scripts are used by Redis as a single new command.
  * Redis executes its operations in a single thread, as such, each such operation can be considered atomic.
+ *
+ * The operation to (un)lock will always resolve with either 1/OK/true if succeeded or 0/false if not succeeded.
+ * Rejection with errors will be happen on actual failures. Retrying the (un)lock operations will be done by making
+ * use of the LockUtils' {@link retryFunctionUntil} function.
  *
  * * @see [Redis Commands documentation](https://redis.io/commands/)
  * * @see [Redis Lua scripting documentation](https://redis.io/docs/manual/programmability/)
@@ -91,44 +87,6 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Finalizable
   }
 
   /**
-   * Try a Redis function according to the set {@link AttemptSettings}
-   * Since the locking strategy is custom-built on Redis and Redis itself does not have a lock concept,
-   * this function allows us to wait until we acquired a lock.
-   *
-   * The AttemptSettings will dictate how many times we should retry the Redis functions
-   * before giving up and throwing an error.
-   *
-   * @param fn - The function to try
-   *
-   * @returns Promise that resolves if operation succeeded. Rejects with error otherwise
-   *
-   * @see To convert from Redis operation to Promise<boolean> use {@link fromResp2ToBool} to wrap the function
-   */
-  private async tryRedisFn(fn: () => Promise<boolean>): Promise<void> {
-    const settings = this.attemptSettings;
-    const maxTries = settings.retryCount === -1 ? Number.POSITIVE_INFINITY : settings.retryCount + 1;
-    function calcTime(): number {
-      return Math.max(0, settings.retryDelay + Math.floor(Math.random() * settings.retryJitter));
-    }
-
-    let tries = 1;
-    let acquired = await fn();
-    // Keep going until either you get a lock/release or maxTries has been reached.
-    while (!acquired && (tries <= maxTries)) {
-      await new Promise<void>((resolve): any => setTimeout(resolve, calcTime()));
-      acquired = await fn();
-      tries += 1;
-    }
-
-    // Max tries was reached
-    if (tries > maxTries) {
-      const err = `The operation did not succeed after the set maximum of tries (${maxTries}).`;
-      this.logger.warn(err);
-      throw new InternalServerError(err);
-    }
-  }
-
-  /**
    * Create a scoped Redis key for Read-Write locking.
    * @param identifier - The identifier object to create a Redis key for
    * @returns A scoped Redis key that allows cleanup afterwards without affecting other keys.
@@ -148,23 +106,51 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Finalizable
 
   /* ReadWriteLocker methods */
 
+  /**
+   * Wrapper function for all (un)lock operations. If the `fn()` resolves to false (after applying
+   * {@link fromResp2ToBool}, the result will be swallowed. When `fn()` resolves to true, this wrapper
+   * will return true. Any error coming from `fn()` will be thrown.
+   * @param fn - The function reference to swallow false from.
+   */
+  private swallowFalse(fn: () => Promise<RedisAnswer>): () => Promise<unknown> {
+    return async(): Promise<unknown> => {
+      const result = await fromResp2ToBool(fn());
+      // Swallow any result resolving to `false`
+      if (result) {
+        return true;
+      }
+    };
+  }
+
   public async withReadLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
     const key = this.getReadWriteKey(identifier);
-    await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisRw.acquireReadLock(key)));
+    await retryFunction(
+      this.swallowFalse(this.redisRw.acquireReadLock.bind(this.redisRw, key)),
+      this.attemptSettings,
+    );
     try {
       return await whileLocked();
     } finally {
-      await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisRw.releaseReadLock(key)));
+      await retryFunction(
+        this.swallowFalse(this.redisRw.releaseReadLock.bind(this.redisRw, key)),
+        this.attemptSettings,
+      );
     }
   }
 
   public async withWriteLock<T>(identifier: ResourceIdentifier, whileLocked: () => (Promise<T> | T)): Promise<T> {
     const key = this.getReadWriteKey(identifier);
-    await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisRw.acquireWriteLock(key)));
+    await retryFunction(
+      this.swallowFalse(this.redisRw.acquireWriteLock.bind(this.redisRw, key)),
+      this.attemptSettings,
+    );
     try {
       return await whileLocked();
     } finally {
-      await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisRw.releaseWriteLock(key)));
+      await retryFunction(
+        this.swallowFalse(this.redisRw.releaseWriteLock.bind(this.redisRw, key)),
+        this.attemptSettings,
+      );
     }
   }
 
@@ -172,12 +158,18 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Finalizable
 
   public async acquire(identifier: ResourceIdentifier): Promise<void> {
     const key = this.getResourceKey(identifier);
-    await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisLock.acquireLock(key)));
+    await retryFunction(
+      this.swallowFalse(this.redisLock.acquireLock.bind(this.redisLock, key)),
+      this.attemptSettings,
+    );
   }
 
   public async release(identifier: ResourceIdentifier): Promise<void> {
     const key = this.getResourceKey(identifier);
-    await this.tryRedisFn((): Promise<boolean> => fromResp2ToBool(this.redisLock.releaseLock(key)));
+    await retryFunction(
+      this.swallowFalse(this.redisLock.releaseLock.bind(this.redisLock, key)),
+      this.attemptSettings,
+    );
   }
 
   /* Finalizer methods */
@@ -201,4 +193,3 @@ export class RedisLocker implements ReadWriteLocker, ResourceLocker, Finalizable
     }
   }
 }
-
