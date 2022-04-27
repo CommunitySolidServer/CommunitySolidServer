@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import AsyncLock from 'async-lock';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { getLoggerFor } from '../../logging/LogUtil';
@@ -10,7 +11,7 @@ import type { ResourceLocker } from './ResourceLocker';
  * in a memory leak if locks are never unlocked, so make sure this is covered with expiring locks for example,
  * and/or proper `finally` handles.
  */
-export class SingleThreadedResourceLocker implements ResourceLocker {
+export class MemoryResourceLocker implements ResourceLocker {
   protected readonly logger = getLoggerFor(this);
 
   private readonly locker: AsyncLock;
@@ -19,6 +20,10 @@ export class SingleThreadedResourceLocker implements ResourceLocker {
   public constructor() {
     this.locker = new AsyncLock();
     this.unlockCallbacks = {};
+    if (cluster.isWorker) {
+      this.logger.warn(`MemoryResourceLocker is not thread-safe/process-safe! 
+      You should only use this locker in a single-thread/single-process CSS setup.`);
+    }
   }
 
   public async acquire(identifier: ResourceIdentifier): Promise<void> {

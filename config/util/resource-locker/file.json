@@ -1,0 +1,33 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Allows multiple simultaneous read operations. Locks are stored on filesystem. Locks expire after inactivity. This locker is threadsafe.",
+      "@id": "urn:solid-server:default:ResourceLocker",
+      "@type": "WrappedExpiringReadWriteLocker",
+      "locker": {
+        "@type": "GreedyReadWriteLocker",
+        "locker": {
+          "@id": "urn:solid-server:default:FileSystemResourceLocker",
+          "@type": "FileSystemResourceLocker",
+          "args_rootFilePath": { "@id": "urn:solid-server:default:variable:rootFilePath" }
+        },
+        "storage": {
+          "@id": "urn:solid-server:default:LockStorage"
+        },
+        "suffixes_count": "count",
+        "suffixes_read": "read",
+        "suffixes_write": "write"
+      },
+      "expiration": 3000
+    },
+    {
+      "comment": "Makes sure the lock folder is cleared and delete when the application needs to stop.",
+      "@id": "urn:solid-server:default:Finalizer",
+      "@type": "ParallelFinalizer",
+      "finalizers": [
+        { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
+      ]
+    }
+  ]
+}

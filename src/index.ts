@@ -416,11 +416,12 @@ export * from './util/identifiers/SubdomainIdentifierStrategy';
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/FileSystemResourceLocker';
 export * from './util/locking/GreedyReadWriteLocker';
+export * from './util/locking/MemoryResourceLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/RedisLocker';
 export * from './util/locking/ResourceLocker';
-export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 export * from './util/locking/VoidLocker';
 
