@@ -65,7 +65,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration"
+      "pre-commit": "npm run build && npm run lint && npm run test:unit && npm run test:integration",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "files": [
@@ -132,6 +133,8 @@
     "yargs": "^17.3.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^16.2.4",
+    "@commitlint/config-conventional": "^16.2.4",
     "@inrupt/solid-client-authn-core": "^1.11.5",
     "@inrupt/solid-client-authn-node": "^1.11.5",
     "@microsoft/tsdoc-config": "^0.15.2",
