@@ -15,6 +15,8 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      # Sticking with Husky 4.x
+      - dependency-name: "husky"
   - package-ecosystem: "docker"
     directory: /
     schedule: 
