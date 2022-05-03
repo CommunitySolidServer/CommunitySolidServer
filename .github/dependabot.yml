@@ -4,14 +4,18 @@ updates:
     directory: /
     schedule: 
       interval: "daily"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 6
   - package-ecosystem: "npm"
     directory: /
     schedule: 
       interval: "daily"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 6
+    # Ignore <major releases
+    ignore:
+      - dependency-name: "*"
+        update_types: ["version-update:semver-minor", "version-update:semver-patch"]
   - package-ecosystem: "docker"
     directory: /
     schedule: 
       interval: "daily"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 6
