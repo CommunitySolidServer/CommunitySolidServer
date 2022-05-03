@@ -13,7 +13,7 @@ updates:
     # Ignore <major releases
     ignore:
       - dependency-name: "*"
-        update_types: ["version-update:semver-minor", "version-update:semver-patch"]
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
   - package-ecosystem: "docker"
     directory: /
     schedule: 
