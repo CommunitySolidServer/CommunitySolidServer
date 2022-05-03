@@ -15,8 +15,8 @@ updates:
       timezone: "Europe/Brussels"
     open-pull-requests-limit: 6
     target-branch: "versions/5.0.0"
-    # Ignore <major releases
     ignore:
+      # Ignore <major releases
       - dependency-name: "*"
         update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       # Sticking with Husky 4.x
