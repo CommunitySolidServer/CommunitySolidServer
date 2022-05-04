@@ -4,27 +4,44 @@ updates:
     directory: /
     schedule: 
       interval: "daily"
-      time: "00:00"
+      time: "02:13"
       timezone: "Europe/Brussels"
-    open-pull-requests-limit: 6
+    labels:
+      - "github-actions"
+      - ":gear: dependencies"
   - package-ecosystem: "npm"
     directory: /
     schedule: 
       interval: "daily"
-      time: "00:00"
+      time: "03:35"
       timezone: "Europe/Brussels"
-    open-pull-requests-limit: 6
     target-branch: "versions/5.0.0"
     ignore:
-      # Ignore <major releases
+      # Ignore minor and patch version updates
       - dependency-name: "*"
         update-types: ["version-update:semver-minor", "version-update:semver-patch"]
       # Sticking with Husky 4.x
       - dependency-name: "husky"
+    labels:
+      - "npm"
+      - ":gear: dependencies"
+  - package-ecosystem: "npm"
+    directory: /
+    schedule: 
+      interval: "daily"
+      time: "03:54"
+      timezone: "Europe/Brussels"
+    open-pull-requests-limit: 0
+    labels:
+      - "npm"
+      - "security"
+      - ":gear: dependencies"
   - package-ecosystem: "docker"
     directory: /
     schedule: 
       interval: "daily"
-      time: "00:00"
+      time: "04:22"
       timezone: "Europe/Brussels"
-    open-pull-requests-limit: 6
+    labels:
+      - "docker"
+      - ":gear: dependencies"
