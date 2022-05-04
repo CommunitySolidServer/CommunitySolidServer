@@ -25,17 +25,6 @@ updates:
     labels:
       - "npm"
       - ":gear: dependencies"
-  - package-ecosystem: "npm"
-    directory: /
-    schedule: 
-      interval: "daily"
-      time: "03:54"
-      timezone: "Europe/Brussels"
-    open-pull-requests-limit: 0
-    labels:
-      - "npm"
-      - "security"
-      - ":gear: dependencies"
   - package-ecosystem: "docker"
     directory: /
     schedule: 
