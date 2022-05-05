@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.0-alpha.0"></a>
+## [v5.0.0-alpha.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v5.0.0-alpha.0) - 2022-05-05
+
+### Added
+* [feat: add a process-/thread-safe file-based ResourceLocker](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/fa78bc68567d836927731eaa9a7d7f752dadae49)
+* [feat: file-based backend fallback for unknown media types](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ff80079000a0f308f31b83cfc52e90421f20dadc)
+
+### Changed
+* [fix: Fix typing issues with latest Components.js generator](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/0e32d9ad9b3e8558c32bf7263e33af157b88a6a1)
+* [fix(deps): Update to Comunica v2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1de1f7c12a8ae3f89fd91e9cb33af0405af7d995)
+* [refactor: Replace RedirectAllHttpHandler usage with RedirectingHttpHandler](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d2bc995272ed596b2bd6acd0d4cab50fcb7859f0)
+
+### Deprecated
+* [chore: Drop support for Node 12](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3d6e3d2e39ffd54ffed6fc0d24de97d50d45c96d)
+
+### Fixed
+* [fix: %2F not handled correctly in file backend #1184](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dbdb9b424e4c4f68c19c66396064486bff93a7e4)
+* [fix: Update prefixes in all configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ce27bec207652f0bd37beb23301f864464751438)
+* [fix: Always define @type in configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cfdd1221f05f2b51abc770e64407bb8392224383)
+* [fix: Change YargsCliExtractor structure to avoid Components.js issues](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f4e70dbb928a9cb64e83a71954ea607a0bdb1a0)
+* [fix: Make delimiter encoding case-insensitive.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/50469e2c1f3d9c808062fde96d2ce62d5e85475e)
+
+
 <a name="v4.0.0"></a>
 ## [v4.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v3.0.0...v4.0.0) - 2022-04-19
 
