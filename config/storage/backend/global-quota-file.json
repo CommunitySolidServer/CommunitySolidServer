@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/storage/backend/quota/global-quota-file.json",
     "css:config/storage/backend/quota/quota-file.json"
