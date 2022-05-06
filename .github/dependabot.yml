@@ -2,16 +2,15 @@ version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: /
-    schedule: 
+    schedule:
       interval: "daily"
       time: "02:13"
       timezone: "Europe/Brussels"
     labels:
-      - "github-actions"
-      - ":gear: dependencies"
+      - "⚙️ dependencies"
   - package-ecosystem: "npm"
     directory: /
-    schedule: 
+    schedule:
       interval: "daily"
       time: "03:35"
       timezone: "Europe/Brussels"
@@ -23,14 +22,12 @@ updates:
       # Sticking with Husky 4.x
       - dependency-name: "husky"
     labels:
-      - "npm"
-      - ":gear: dependencies"
+      - "⚙️ dependencies"
   - package-ecosystem: "docker"
     directory: /
-    schedule: 
+    schedule:
       interval: "daily"
       time: "04:22"
       timezone: "Europe/Brussels"
     labels:
-      - "docker"
-      - ":gear: dependencies"
+      - "⚙️ dependencies"
