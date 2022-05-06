@@ -27,5 +27,5 @@ Steps to follow:
  * Do a GitHub release.
  * `npm publish`
  * Rename the `versions/x.0.0` branch to the next version.
- * Update `.github/workflows/schedule.yml` to point at the new branch.
+ * Update `.github/workflows/schedule.yml` and `.github/dependabot.yml` to point at the new branch.
  * Potentially upgrade the recipes at https://github.com/CommunitySolidServer/recipes
