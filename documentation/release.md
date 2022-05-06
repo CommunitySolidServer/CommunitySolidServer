@@ -29,3 +29,9 @@ Steps to follow:
  * Rename the `versions/x.0.0` branch to the next version.
  * Update `.github/workflows/schedule.yml` and `.github/dependabot.yml` to point at the new branch.
  * Potentially upgrade the recipes at https://github.com/CommunitySolidServer/recipes
+ 
+Changes when doing a pre-release of a major version:
+ * Version with `npm version premajor --preid alpha -m "Release version %s of the npm package."`.
+ * Do not merge `versions/x.0.0` into `main`.
+ * Publish with `npm publish --tag next`.
+ * Do not update the branch or anything related.
