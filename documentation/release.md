@@ -31,7 +31,7 @@ Steps to follow:
  * Potentially upgrade the recipes at https://github.com/CommunitySolidServer/recipes
  
 Changes when doing a pre-release of a major version:
- * Version with `npm version premajor --preid alpha -m "Release version %s of the npm package."`.
+ * Version with `npm version premajor --preid alpha -m "chore: Release version %s of the npm package"`.
  * Do not merge `versions/x.0.0` into `main`.
  * Publish with `npm publish --tag next`.
  * Do not update the branch or anything related.
