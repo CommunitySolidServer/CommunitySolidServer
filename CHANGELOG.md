@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.0.1"></a>
+## [v4.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v4.0.1) - 2022-05-10
+
+### Changed
+* [chore: Fix oidc-provider library to v7.10.6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ef9dd433464799f54eade34fe11de04c5ab3a70e)
+
+### Deprecated
+* [chore: Drop support for Node 12](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3d6e3d2e39ffd54ffed6fc0d24de97d50d45c96d)
+
+### Fixed
+* [fix: %2F not handled correctly in file backend #1184](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dbdb9b424e4c4f68c19c66396064486bff93a7e4)
+* [fix: Make delimiter encoding case-insensitive.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/50469e2c1f3d9c808062fde96d2ce62d5e85475e)
+
+
 <a name="v4.0.0"></a>
 ## [v4.0.0](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v3.0.0...v4.0.0) - 2022-04-19
 
