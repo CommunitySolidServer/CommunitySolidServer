@@ -15,7 +15,7 @@ Steps to follow:
      `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^x.0.0/components/context.jsonld`.
    * Update all `lsd` entries in `package.json` to the new version.
    * Commit this with `chore: Update configs to vx.0.0`.
- * `npm version major -m "Release version %s of the npm package."`
+ * `npm version major -m "chore: Release version %s of the npm package"`
    * This will update the `package.json`, generate a tag, and generate the new entries in `CHANGELOG.md`.
  * Manually edit the `CHANGELOG.md`.
    * First reverse the list of new entries so they go from old to new.
