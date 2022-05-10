@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
 import type { Representation } from '../../../../src/http/representation/Representation';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
@@ -5,7 +6,7 @@ import type { ResourceIdentifier } from '../../../../src/http/representation/Res
 import { JsonResourceStorage } from '../../../../src/storage/keyvalue/JsonResourceStorage';
 import type { ResourceStore } from '../../../../src/storage/ResourceStore';
 import { NotFoundHttpError } from '../../../../src/util/errors/NotFoundHttpError';
-import { isContainerIdentifier } from '../../../../src/util/PathUtil';
+import { isContainerIdentifier, joinUrl } from '../../../../src/util/PathUtil';
 import { readableToString } from '../../../../src/util/StreamUtil';
 import { LDP } from '../../../../src/util/Vocabularies';
 
@@ -123,7 +124,23 @@ describe('A JsonResourceStorage', (): void => {
     ]);
   });
 
-  it('can handle resources being deleted while iterating in the entries call.', async(): Promise<void> => {
-    //
-  });
+  it('converts keys that would result in too large filenames into an identifier that uses a hash.',
+    async(): Promise<void> => {
+      const longFileName = `${'sometext'.repeat(32)}.json`;
+      const b64LongFileName = Buffer.from(longFileName).toString('base64');
+      const longKey = `/container/${b64LongFileName}`;
+      const longKeyId = joinUrl(subContainerIdentifier, createHash('sha256').update(b64LongFileName).digest('hex'));
+
+      await storage.set(longKey, 'data');
+      // Check if a hash of the key has been used for the filename part of the key.
+      expect(data.has(longKeyId)).toBeTruthy();
+
+      data.clear();
+
+      // Check that normal keys stay unaffected
+      const normalKey = '/container/test';
+      const normalKeyId = joinUrl(containerIdentifier, normalKey);
+      await storage.set(normalKey, 'data');
+      expect(data.has(normalKeyId)).toBeTruthy();
+    });
 });
