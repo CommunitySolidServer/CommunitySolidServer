@@ -9,7 +9,7 @@ jest.mock('cross-fetch');
 /* eslint-disable @typescript-eslint/naming-convention */
 describe('A WebIdAdapterFactory', (): void => {
   const fetchMock: jest.Mock = fetch as any;
-  const id = 'https://app.test.com/card#me';
+  let id: string;
   let json: any;
   let rdf: string;
   let source: Adapter;
@@ -19,9 +19,9 @@ describe('A WebIdAdapterFactory', (): void => {
   let factory: WebIdAdapterFactory;
 
   beforeEach(async(): Promise<void> => {
+    id = 'https://app.test.com/card#me';
     json = {
       '@context': 'https://www.w3.org/ns/solid/oidc-context.jsonld',
-
       client_id: id,
       client_name: 'Solid Application Name',
       redirect_uris: [ 'http://test.com/' ],
@@ -70,6 +70,16 @@ describe('A WebIdAdapterFactory', (): void => {
   it('errors if the client ID is unsecure.', async(): Promise<void> => {
     await expect(adapter.find('http://unsecure')).rejects
       .toThrow('SSL is required for client_id authentication unless working locally.');
+  });
+
+  it('does not error if the client ID is an unsecure localhost domain.', async(): Promise<void> => {
+    id = 'http://id.localhost:3000';
+    json.client_id = id;
+    fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });
+    await expect(adapter.find(id)).resolves.toEqual({
+      ...json,
+      token_endpoint_auth_method: 'none',
+    });
   });
 
   it('errors if the client ID requests does not respond with 200.', async(): Promise<void> => {
