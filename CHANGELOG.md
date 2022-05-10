@@ -13,14 +13,23 @@ All notable changes to this project will be documented in this file.
 * [fix(deps): Update to Comunica v2](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/1de1f7c12a8ae3f89fd91e9cb33af0405af7d995)
 * [refactor: Replace RedirectAllHttpHandler usage with RedirectingHttpHandler](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/d2bc995272ed596b2bd6acd0d4cab50fcb7859f0)
 
+### Fixed
+* [fix: Update prefixes in all configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ce27bec207652f0bd37beb23301f864464751438)
+* [fix: Always define @type in configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cfdd1221f05f2b51abc770e64407bb8392224383)
+* [fix: Change YargsCliExtractor structure to avoid Components.js issues](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f4e70dbb928a9cb64e83a71954ea607a0bdb1a0)
+
+
+<a name="v4.0.1"></a>
+## [v4.0.1](https://github.com/CommunitySolidServer/CommunitySolidServer/compare/v4.0.0...v4.0.1) - 2022-05-10
+
+### Changed
+* [chore: Fix oidc-provider library to v7.10.6](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ef9dd433464799f54eade34fe11de04c5ab3a70e)
+
 ### Deprecated
 * [chore: Drop support for Node 12](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/3d6e3d2e39ffd54ffed6fc0d24de97d50d45c96d)
 
 ### Fixed
 * [fix: %2F not handled correctly in file backend #1184](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/dbdb9b424e4c4f68c19c66396064486bff93a7e4)
-* [fix: Update prefixes in all configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/ce27bec207652f0bd37beb23301f864464751438)
-* [fix: Always define @type in configs](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/cfdd1221f05f2b51abc770e64407bb8392224383)
-* [fix: Change YargsCliExtractor structure to avoid Components.js issues](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/6f4e70dbb928a9cb64e83a71954ea607a0bdb1a0)
 * [fix: Make delimiter encoding case-insensitive.](https://github.com/CommunitySolidServer/CommunitySolidServer/commit/50469e2c1f3d9c808062fde96d2ce62d5e85475e)
 
 
