@@ -128,7 +128,7 @@
     "rdf-terms": "^1.7.1",
     "sparqlalgebrajs": "^4.0.2",
     "sparqljs": "^3.5.1",
-    "url-join": "^4.0.1",
+    "url-join": "^5.0.0",
     "uuid": "^8.3.2",
     "winston": "^3.5.1",
     "winston-transport": "^4.4.2",
