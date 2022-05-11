@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type { Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
@@ -8,7 +9,6 @@ import type {
 } from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
-import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
 
@@ -53,6 +53,8 @@ describe('An IdentityProviderFactory', (): void => {
 
     ctx = {
       method: 'GET',
+      req: Readable.from('data'),
+      res: {},
       request: {
         href: 'http://example.com/idp/',
       },
@@ -143,13 +145,12 @@ describe('An IdentityProviderFactory', (): void => {
     });
 
     // Test the renderError function
-    const response = { } as HttpResponse;
-    await expect((config.renderError as any)({ res: response }, {}, 'error!')).resolves.toBeUndefined();
+    await expect((config.renderError as any)(ctx, {}, 'error!')).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error: 'error!', preferences: { type: { 'text/plain': 1 }}});
+      .toHaveBeenLastCalledWith({ error: 'error!', request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
   });
 
   it('errors if there is no valid interaction redirect.', async(): Promise<void> => {
@@ -212,17 +213,16 @@ describe('An IdentityProviderFactory', (): void => {
   it('updates errors if there is more information.', async(): Promise<void> => {
     const provider = await factory.getProvider() as any;
     const { config } = provider as { config: Configuration };
-    const response = { } as HttpResponse;
 
     const error = new Error('bad data');
     const out = { error_description: 'more info' };
 
-    await expect((config.renderError as any)({ res: response }, out, error)).resolves.toBeUndefined();
+    await expect((config.renderError as any)(ctx, out, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+      .toHaveBeenLastCalledWith({ error, request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
-    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
+    expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
     expect(error.message).toBe('bad data - more info');
     expect(error.stack).toContain('Error: bad data - more info');
   });

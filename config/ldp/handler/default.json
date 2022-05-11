@@ -5,6 +5,7 @@
     "css:config/ldp/handler/components/error-handler.json",
     "css:config/ldp/handler/components/operation-handler.json",
     "css:config/ldp/handler/components/operation-metadata.json",
+    "css:config/ldp/handler/components/preferences.json",
     "css:config/ldp/handler/components/request-parser.json",
     "css:config/ldp/handler/components/response-writer.json"
   ],
