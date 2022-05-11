@@ -3,13 +3,15 @@ import type { BodyParser } from '../../../../src/http/input/body/BodyParser';
 import type { ConditionsParser } from '../../../../src/http/input/conditions/ConditionsParser';
 import type { TargetExtractor } from '../../../../src/http/input/identifier/TargetExtractor';
 import type { MetadataParser } from '../../../../src/http/input/metadata/MetadataParser';
-import type { PreferenceParser } from '../../../../src/http/input/preferences/PreferenceParser';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
+import type { RepresentationPreferences } from '../../../../src/http/representation/RepresentationPreferences';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import { StaticAsyncHandler } from '../../../util/StaticAsyncHandler';
 
 describe('A BasicRequestParser', (): void => {
+  const request: HttpRequest = {} as any;
+  const preferences: RepresentationPreferences = { type: {}};
   let targetExtractor: TargetExtractor;
-  let preferenceParser: PreferenceParser;
   let metadataParser: MetadataParser;
   let conditionsParser: ConditionsParser;
   let bodyParser: BodyParser;
@@ -17,30 +19,30 @@ describe('A BasicRequestParser', (): void => {
 
   beforeEach(async(): Promise<void> => {
     targetExtractor = new StaticAsyncHandler(true, { path: 'target' });
-    preferenceParser = new StaticAsyncHandler(true, 'preference' as any);
     metadataParser = new StaticAsyncHandler(true, undefined);
     conditionsParser = new StaticAsyncHandler(true, 'conditions' as any);
     bodyParser = new StaticAsyncHandler(true, 'body' as any);
     requestParser = new BasicRequestParser(
-      { targetExtractor, preferenceParser, metadataParser, conditionsParser, bodyParser },
+      { targetExtractor, metadataParser, conditionsParser, bodyParser },
     );
   });
 
   it('can handle any input.', async(): Promise<void> => {
-    await expect(requestParser.canHandle({} as any)).resolves.toBeUndefined();
+    await expect(requestParser.canHandle({ request, preferences })).resolves.toBeUndefined();
   });
 
   it('errors if there is no input.', async(): Promise<void> => {
-    await expect(requestParser.handle({ url: 'url' } as any))
+    await expect(requestParser.handle({ request, preferences }))
       .rejects.toThrow('No method specified on the HTTP request');
   });
 
   it('returns the output of all input parsers after calling handle.', async(): Promise<void> => {
+    request.method = 'GET';
     bodyParser.handle = ({ metadata }): any => ({ data: 'body', metadata });
-    await expect(requestParser.handle({ url: 'url', method: 'GET' } as any)).resolves.toEqual({
+    await expect(requestParser.handle({ request, preferences })).resolves.toEqual({
       method: 'GET',
       target: { path: 'target' },
-      preferences: 'preference',
+      preferences,
       conditions: 'conditions',
       body: { data: 'body', metadata: new RepresentationMetadata({ path: 'target' }) },
     });

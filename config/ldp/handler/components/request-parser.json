@@ -11,7 +11,6 @@
         "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "args_includeQueryString": false
       },
-      "args_preferenceParser": { "@type": "AcceptPreferenceParser" },
       "args_metadataParser": { "@id": "urn:solid-server:default:MetadataParser" },
       "args_conditionsParser": { "@type": "BasicConditionsParser" },
       "args_bodyParser": {

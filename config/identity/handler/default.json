@@ -21,6 +21,7 @@
       "comment": "Handles IDP input parsing.",
       "@id": "urn:solid-server:default:IdentityProviderParsingHandler",
       "@type": "ParsingHttpHandler",
+      "args_preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
       "args_requestParser": { "@id": "urn:solid-server:default:RequestParser" },
       "args_metadataCollector": { "@id": "urn:solid-server:default:OperationMetadataCollector" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },

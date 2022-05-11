@@ -1,3 +1,4 @@
+import type { PreferenceParser } from '../../../src/http/input/preferences/PreferenceParser';
 import type { RequestParser } from '../../../src/http/input/RequestParser';
 import type { OperationMetadataCollector } from '../../../src/http/ldp/metadata/OperationMetadataCollector';
 import type { Operation } from '../../../src/http/Operation';
@@ -20,6 +21,7 @@ describe('A ParsingHttpHandler', (): void => {
   const body = new BasicRepresentation();
   const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, body };
   const errorResponse = new ResponseDescription(400);
+  let preferenceParser: jest.Mocked<PreferenceParser>;
   let requestParser: jest.Mocked<RequestParser>;
   let metadataCollector: jest.Mocked<OperationMetadataCollector>;
   let errorHandler: jest.Mocked<ErrorHandler>;
@@ -28,6 +30,7 @@ describe('A ParsingHttpHandler', (): void => {
   let handler: ParsingHttpHandler;
 
   beforeEach(async(): Promise<void> => {
+    preferenceParser = { handleSafe: jest.fn().mockResolvedValue(preferences) } as any;
     requestParser = { handleSafe: jest.fn().mockResolvedValue(operation) } as any;
     metadataCollector = { handleSafe: jest.fn() } as any;
     errorHandler = { handleSafe: jest.fn().mockResolvedValue(errorResponse) } as any;
@@ -38,7 +41,7 @@ describe('A ParsingHttpHandler', (): void => {
     } as any;
 
     handler = new ParsingHttpHandler(
-      { requestParser, metadataCollector, errorHandler, responseWriter, operationHandler: source },
+      { preferenceParser, requestParser, metadataCollector, errorHandler, responseWriter, operationHandler: source },
     );
   });
 
