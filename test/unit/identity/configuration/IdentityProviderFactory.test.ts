@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import type { Configuration, KoaContextWithOIDC } from 'oidc-provider';
+import type { errors, Configuration, KoaContextWithOIDC } from 'oidc-provider';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -92,6 +92,7 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -175,6 +176,7 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -198,6 +200,7 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -214,16 +217,17 @@ describe('An IdentityProviderFactory', (): void => {
     const provider = await factory.getProvider() as any;
     const { config } = provider as { config: Configuration };
 
-    const error = new Error('bad data');
-    const out = { error_description: 'more info' };
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    error.error_description = 'more info';
+    error.error_detail = 'more details';
 
-    await expect((config.renderError as any)(ctx, out, error)).resolves.toBeUndefined();
+    await expect((config.renderError as any)(ctx, {}, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
       .toHaveBeenLastCalledWith({ error, request: ctx.req });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response: ctx.res, result: { statusCode: 500 }});
-    expect(error.message).toBe('bad data - more info');
-    expect(error.stack).toContain('Error: bad data - more info');
+    expect(error.message).toBe('bad data - more info - more details');
+    expect(error.stack).toContain('Error: bad data - more info - more details');
   });
 });
