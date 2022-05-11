@@ -19,6 +19,7 @@ import { BasicRepresentation } from '../../http/representation/BasicRepresentati
 import type { KeyValueStorage } from '../../storage/keyvalue/KeyValueStorage';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { RedirectHttpError } from '../../util/errors/RedirectHttpError';
+import { guardStream } from '../../util/GuardedStream';
 import { joinUrl } from '../../util/PathUtil';
 import type { ClientCredentials } from '../interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { InteractionHandler } from '../interaction/InteractionHandler';
@@ -325,7 +326,7 @@ export class IdentityProviderFactory implements ProviderFactory {
         error.message += ` - ${out.error_description}`;
       }
 
-      const result = await this.errorHandler.handleSafe({ error, preferences: { type: { 'text/plain': 1 }}});
+      const result = await this.errorHandler.handleSafe({ error, request: guardStream(ctx.req) });
       await this.responseWriter.handleSafe({ response: ctx.res, result });
     };
   }

@@ -16,9 +16,8 @@ import { HttpError } from '../../../src/util/errors/HttpError';
 describe('A ParsingHttpHandler', (): void => {
   const request: HttpRequest = {} as any;
   const response: HttpResponse = {} as any;
-  const preferences = { type: { 'text/html': 1 }};
   const body = new BasicRepresentation();
-  const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences, body };
+  const operation: Operation = { method: 'GET', target: { path: 'http://test.com/foo' }, preferences: {}, body };
   const errorResponse = new ResponseDescription(400);
   let requestParser: jest.Mocked<RequestParser>;
   let metadataCollector: jest.Mocked<OperationMetadataCollector>;
@@ -75,7 +74,7 @@ describe('A ParsingHttpHandler', (): void => {
     source.handleSafe.mockRejectedValueOnce(error);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, request });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: errorResponse });
   });
@@ -87,7 +86,7 @@ describe('A ParsingHttpHandler', (): void => {
     errorHandler.handleSafe.mockResolvedValueOnce(metaResponse);
     await expect(handler.handle({ request, response })).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
-    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, preferences });
+    expect(errorHandler.handleSafe).toHaveBeenLastCalledWith({ error, request });
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: metaResponse });
     expect(metaResponse.metadata?.quads()).toHaveLength(1);

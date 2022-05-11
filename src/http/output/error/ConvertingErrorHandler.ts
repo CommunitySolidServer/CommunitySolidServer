@@ -6,6 +6,7 @@ import { INTERNAL_ERROR } from '../../../util/ContentTypes';
 import { getStatusCode } from '../../../util/errors/HttpErrorUtil';
 import { toLiteral } from '../../../util/TermUtil';
 import { HTTP, XSD } from '../../../util/Vocabularies';
+import type { PreferenceParser } from '../../input/preferences/PreferenceParser';
 import { BasicRepresentation } from '../../representation/BasicRepresentation';
 import type { Representation } from '../../representation/Representation';
 import { RepresentationMetadata } from '../../representation/RepresentationMetadata';
@@ -25,22 +26,25 @@ type PreparedArguments = {
  */
 export class ConvertingErrorHandler extends ErrorHandler {
   private readonly converter: RepresentationConverter;
+  private readonly preferenceParser: PreferenceParser;
   private readonly showStackTrace: boolean;
 
-  public constructor(converter: RepresentationConverter, showStackTrace = false) {
+  public constructor(converter: RepresentationConverter, preferenceParser: PreferenceParser, showStackTrace = false) {
     super();
     this.converter = converter;
+    this.preferenceParser = preferenceParser;
     this.showStackTrace = showStackTrace;
   }
 
   public async canHandle(input: ErrorHandlerArgs): Promise<void> {
-    const { conversionArgs } = this.prepareArguments(input);
+    await this.preferenceParser.canHandle({ request: input.request });
+    const { conversionArgs } = await this.extractErrorDetails(input);
 
     await this.converter.canHandle(conversionArgs);
   }
 
   public async handle(input: ErrorHandlerArgs): Promise<ResponseDescription> {
-    const { statusCode, conversionArgs } = this.prepareArguments(input);
+    const { statusCode, conversionArgs } = await this.extractErrorDetails(input);
 
     const converted = await this.converter.handle(conversionArgs);
 
@@ -48,7 +52,8 @@ export class ConvertingErrorHandler extends ErrorHandler {
   }
 
   public async handleSafe(input: ErrorHandlerArgs): Promise<ResponseDescription> {
-    const { statusCode, conversionArgs } = this.prepareArguments(input);
+    await this.preferenceParser.canHandle({ request: input.request });
+    const { statusCode, conversionArgs } = await this.extractErrorDetails(input);
 
     const converted = await this.converter.handleSafe(conversionArgs);
 
@@ -58,10 +63,11 @@ export class ConvertingErrorHandler extends ErrorHandler {
   /**
    * Prepares the arguments used by all functions.
    */
-  private prepareArguments({ error, preferences }: ErrorHandlerArgs): PreparedArguments {
+  private async extractErrorDetails({ error, request }: ErrorHandlerArgs): Promise<PreparedArguments> {
     const statusCode = getStatusCode(error);
     const representation = this.toRepresentation(error, statusCode);
     const identifier = { path: representation.metadata.identifier.value };
+    const preferences = await this.preferenceParser.handle({ request });
     return { statusCode, conversionArgs: { identifier, representation, preferences }};
   }
 
