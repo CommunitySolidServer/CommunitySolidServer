@@ -10,7 +10,8 @@ import type { Account,
   ErrorOut,
   KoaContextWithOIDC,
   ResourceServer,
-  UnknownObject } from 'oidc-provider';
+  UnknownObject,
+  errors } from 'oidc-provider';
 import { Provider } from 'oidc-provider';
 import type { Operation } from '../../http/Operation';
 import type { ErrorHandler } from '../../http/output/error/ErrorHandler';
@@ -52,6 +53,10 @@ export interface IdentityProviderFactoryArgs {
    */
   storage: KeyValueStorage<string, unknown>;
   /**
+   * Extra information will be added to the error output if this is true.
+   */
+  showStackTrace: boolean;
+  /**
    * Used to convert errors thrown by the OIDC library.
    */
   errorHandler: ErrorHandler;
@@ -73,14 +78,15 @@ const COOKIES_KEY = 'cookie-secret';
  */
 export class IdentityProviderFactory implements ProviderFactory {
   private readonly config: Configuration;
-  private readonly adapterFactory!: AdapterFactory;
-  private readonly baseUrl!: string;
-  private readonly oidcPath!: string;
-  private readonly interactionHandler!: InteractionHandler;
-  private readonly credentialStorage!: KeyValueStorage<string, ClientCredentials>;
-  private readonly storage!: KeyValueStorage<string, unknown>;
-  private readonly errorHandler!: ErrorHandler;
-  private readonly responseWriter!: ResponseWriter;
+  private readonly adapterFactory: AdapterFactory;
+  private readonly baseUrl: string;
+  private readonly oidcPath: string;
+  private readonly interactionHandler: InteractionHandler;
+  private readonly credentialStorage: KeyValueStorage<string, ClientCredentials>;
+  private readonly storage: KeyValueStorage<string, unknown>;
+  private readonly showStackTrace: boolean;
+  private readonly errorHandler: ErrorHandler;
+  private readonly responseWriter: ResponseWriter;
 
   private readonly jwtAlg = 'ES256';
   private provider?: Provider;
@@ -91,7 +97,16 @@ export class IdentityProviderFactory implements ProviderFactory {
    */
   public constructor(config: Configuration, args: IdentityProviderFactoryArgs) {
     this.config = config;
-    Object.assign(this, args);
+
+    this.adapterFactory = args.adapterFactory;
+    this.baseUrl = args.baseUrl;
+    this.oidcPath = args.oidcPath;
+    this.interactionHandler = args.interactionHandler;
+    this.credentialStorage = args.credentialStorage;
+    this.storage = args.storage;
+    this.showStackTrace = args.showStackTrace;
+    this.errorHandler = args.errorHandler;
+    this.responseWriter = args.responseWriter;
   }
 
   public async getProvider(): Promise<Provider> {
@@ -317,13 +332,27 @@ export class IdentityProviderFactory implements ProviderFactory {
    * Pipes library errors to the provided ErrorHandler and ResponseWriter.
    */
   private configureErrors(config: Configuration): void {
-    config.renderError = async(ctx: KoaContextWithOIDC, out: ErrorOut, error: Error): Promise<void> => {
+    config.renderError = async(ctx: KoaContextWithOIDC, out: ErrorOut, error: errors.OIDCProviderError | Error):
+    Promise<void> => {
       // This allows us to stream directly to the response object, see https://github.com/koajs/koa/issues/944
       ctx.respond = false;
 
-      // OIDC library hides extra details in this field
-      if (out.error_description) {
-        error.message += ` - ${out.error_description}`;
+      // Doesn't really matter which type it is since all relevant fields are optional
+      const oidcError = error as errors.OIDCProviderError;
+
+      // OIDC library hides extra details in these fields
+      if (this.showStackTrace) {
+        if (oidcError.error_description) {
+          error.message += ` - ${oidcError.error_description}`;
+        }
+        if (oidcError.error_detail) {
+          oidcError.message += ` - ${oidcError.error_detail}`;
+        }
+
+        // Also change the error message in the stack trace
+        if (error.stack) {
+          error.stack = error.stack.replace(/.*/u, `${error.name}: ${error.message}`);
+        }
       }
 
       const result = await this.errorHandler.handleSafe({ error, request: guardStream(ctx.req) });

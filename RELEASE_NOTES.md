@@ -36,6 +36,10 @@ The following changes are relevant for v4 custom configs that replaced certain f
 - RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
    - `/storage/backend/regex.json`
    - `/sparql-file-storage.json`
+- The `IdentityProviderFactory` inputs have been extended.
+  - `/identity/handler/provider-factory/identity.json`
+- LDP components have slightly changed so the preference parser is in a separate config file.
+  - `/config/ldp/handler/*`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -43,6 +47,8 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
 - Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
+- The `IdentityProviderFactory` and `ConvertingErrorHandler` now additionally take a `PreferenceParser` as input.
+- Error handlers now take the incoming HttpRequest as input instead of just the preferences.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 
