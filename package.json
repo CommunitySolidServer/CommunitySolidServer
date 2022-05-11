@@ -88,7 +88,7 @@
     "@types/marked": "^4.0.2",
     "@types/mime-types": "^2.1.1",
     "@types/n3": "^1.10.4",
-    "@types/node": "^14.18.0",
+    "@types/node": "^16.11.34",
     "@types/nodemailer": "^6.4.4",
     "@types/oidc-provider": "^7.8.1",
     "@types/proper-lockfile": "^4.1.2",
