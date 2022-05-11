@@ -18,6 +18,8 @@
         "relativePath": "/idp/keys/",
         "source": { "@id": "urn:solid-server:default:KeyValueStorage" }
       },
+      "args_preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
+      "args_showStackTrace": { "@id": "urn:solid-server:default:variable:showStackTrace" },
       "args_errorHandler": { "@id": "urn:solid-server:default:ErrorHandler" },
       "args_responseWriter": { "@id": "urn:solid-server:default:ResponseWriter" },
       "config": {

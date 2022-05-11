@@ -34,6 +34,8 @@ The following changes are relevant for v3 custom configs that replaced certain f
   - `/app/setup/handlers/setup.json`
   - `/identity/handler/default.json`
   - `/ldp/handler/*`
+- The `IdentityProviderFactory` inputs have been extended.
+  - `/identity/handler/provider-factory/identity.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
@@ -41,6 +43,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
 - The `PreferenceParser` has been moved from the `BasicRequestParser` to the `ParsingHttpHandler`.
+- The `IdentityProviderFactory` now additionally takes a `PreferenceParser` and a `showStackTracke` boolean as input..
 
 ## V4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
