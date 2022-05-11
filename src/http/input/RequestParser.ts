@@ -1,8 +1,18 @@
-import type { HttpRequest } from '../../server/HttpRequest';
-import { AsyncHandler } from '../../util/handlers/AsyncHandler';
-import type { Operation } from '../Operation';
+import type { BodyParser } from './body/BodyParser';
+import type { ConditionsParser } from './conditions/ConditionsParser';
+import type { TargetExtractor } from './identifier/TargetExtractor';
+import type { MetadataParser } from './metadata/MetadataParser';
+import type { PreferenceParser } from './preferences/PreferenceParser';
 
 /**
- * Converts an incoming HttpRequest to an Operation.
+ * Stores the classes necessary to create an Operation.
  */
-export abstract class RequestParser extends AsyncHandler<HttpRequest, Operation> {}
+export class RequestParser {
+  public constructor(
+    public readonly targetExtractor: TargetExtractor,
+    public readonly preferenceParser: PreferenceParser,
+    public readonly metadataParser: MetadataParser,
+    public readonly conditionsParser: ConditionsParser,
+    public readonly bodyParser: BodyParser,
+  ) {}
+}

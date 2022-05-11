@@ -30,12 +30,17 @@ The following changes are relevant for v3 custom configs that replaced certain f
    - `/ldp/metadata-parser/default.json`
    - `/storage/backend/*-quota-file.json`
    - `/storage/backend/quota/quota-file.json`
+- The `PreferenceParser` has been moved from the `BasicRequestParser` to the `ParsingHttpHandler`.
+  - `/app/setup/handlers/setup.json`
+  - `/identity/handler/default.json`
+  - `/ldp/handler/*`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+- The `PreferenceParser` has been moved from the `BasicRequestParser` to the `ParsingHttpHandler`.
 
 ## V4.0.1
 Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client

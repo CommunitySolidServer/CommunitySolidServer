@@ -71,7 +71,6 @@ export * from './http/input/preferences/AcceptPreferenceParser';
 export * from './http/input/preferences/PreferenceParser';
 
 // HTTP/Input
-export * from './http/input/BasicRequestParser';
 export * from './http/input/RequestParser';
 
 // HTTP/LDP/Metadata

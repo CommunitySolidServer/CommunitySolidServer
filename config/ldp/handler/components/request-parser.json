@@ -4,17 +4,17 @@
     {
       "comment": "Handles everything related to parsing a Request.",
       "@id": "urn:solid-server:default:RequestParser",
-      "@type": "BasicRequestParser",
-      "args_targetExtractor": {
+      "@type": "RequestParser",
+      "targetExtractor": {
         "@id": "urn:solid-server:default:TargetExtractor",
         "@type": "OriginalUrlExtractor",
         "args_identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
         "args_includeQueryString": false
       },
-      "args_preferenceParser": { "@type": "AcceptPreferenceParser" },
-      "args_metadataParser": { "@id": "urn:solid-server:default:MetadataParser" },
-      "args_conditionsParser": { "@type": "BasicConditionsParser" },
-      "args_bodyParser": {
+      "preferenceParser": { "@id": "urn:solid-server:default:PreferenceParser" },
+      "metadataParser": { "@id": "urn:solid-server:default:MetadataParser" },
+      "conditionsParser": { "@type": "BasicConditionsParser" },
+      "bodyParser": {
         "@type": "WaterfallHandler",
         "handlers": [
           { "@id": "urn:solid-server:default:PatchBodyParser" },
