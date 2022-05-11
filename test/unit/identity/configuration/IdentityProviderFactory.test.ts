@@ -1,4 +1,6 @@
-import type { Configuration, KoaContextWithOIDC } from 'oidc-provider';
+import { Readable } from 'stream';
+import type { errors, Configuration, KoaContextWithOIDC } from 'oidc-provider';
+import type { PreferenceParser } from '../../../../src/http/input/preferences/PreferenceParser';
 import type { ErrorHandler } from '../../../../src/http/output/error/ErrorHandler';
 import type { ResponseWriter } from '../../../../src/http/output/ResponseWriter';
 import { BasicRepresentation } from '../../../../src/http/representation/BasicRepresentation';
@@ -8,6 +10,7 @@ import type {
 } from '../../../../src/identity/interaction/email-password/credentials/ClientCredentialsAdapterFactory';
 import type { Interaction, InteractionHandler } from '../../../../src/identity/interaction/InteractionHandler';
 import type { AdapterFactory } from '../../../../src/identity/storage/AdapterFactory';
+import type { HttpRequest } from '../../../../src/server/HttpRequest';
 import type { HttpResponse } from '../../../../src/server/HttpResponse';
 import type { KeyValueStorage } from '../../../../src/storage/keyvalue/KeyValueStorage';
 import { FoundHttpError } from '../../../../src/util/errors/FoundHttpError';
@@ -44,6 +47,7 @@ describe('An IdentityProviderFactory', (): void => {
   let adapterFactory: jest.Mocked<AdapterFactory>;
   let storage: jest.Mocked<KeyValueStorage<string, any>>;
   let credentialStorage: jest.Mocked<KeyValueStorage<string, ClientCredentials>>;
+  let preferenceParser: jest.Mocked<PreferenceParser>;
   let errorHandler: jest.Mocked<ErrorHandler>;
   let responseWriter: jest.Mocked<ResponseWriter>;
   let factory: IdentityProviderFactory;
@@ -77,6 +81,10 @@ describe('An IdentityProviderFactory', (): void => {
       set: jest.fn((id: string, value: any): any => map.set(id, value)),
     } as any;
 
+    preferenceParser = {
+      handleSafe: jest.fn().mockResolvedValue({ type: { 'text/html': 1 }}),
+    } as any;
+
     errorHandler = {
       handleSafe: jest.fn().mockResolvedValue({ statusCode: 500 }),
     } as any;
@@ -90,6 +98,8 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      preferenceParser,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -174,6 +184,8 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      preferenceParser,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -197,6 +209,8 @@ describe('An IdentityProviderFactory', (): void => {
       interactionHandler,
       storage,
       credentialStorage,
+      preferenceParser,
+      showStackTrace: true,
       errorHandler,
       responseWriter,
     });
@@ -212,18 +226,20 @@ describe('An IdentityProviderFactory', (): void => {
   it('updates errors if there is more information.', async(): Promise<void> => {
     const provider = await factory.getProvider() as any;
     const { config } = provider as { config: Configuration };
+    const request = Readable.from('data') as HttpRequest;
     const response = { } as HttpResponse;
 
-    const error = new Error('bad data');
-    const out = { error_description: 'more info' };
+    const error = new Error('bad data') as errors.OIDCProviderError;
+    error.error_description = 'more info';
+    error.error_detail = 'more details';
 
-    await expect((config.renderError as any)({ res: response }, out, error)).resolves.toBeUndefined();
+    await expect((config.renderError as any)({ req: request, res: response }, {}, error)).resolves.toBeUndefined();
     expect(errorHandler.handleSafe).toHaveBeenCalledTimes(1);
     expect(errorHandler.handleSafe)
-      .toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/plain': 1 }}});
+      .toHaveBeenLastCalledWith({ error, preferences: { type: { 'text/html': 1 }}});
     expect(responseWriter.handleSafe).toHaveBeenCalledTimes(1);
     expect(responseWriter.handleSafe).toHaveBeenLastCalledWith({ response, result: { statusCode: 500 }});
-    expect(error.message).toBe('bad data - more info');
-    expect(error.stack).toContain('Error: bad data - more info');
+    expect(error.message).toBe('bad data - more info - more details');
+    expect(error.stack).toContain('Error: bad data - more info - more details');
   });
 });
