@@ -14,6 +14,8 @@ Steps to follow:
 * `npm run release -- -r major`
   * Automatically updates Components.js references to the new version. Committed with `chore(release): Update configs to vx.0.0`.
   * Updates the `package.json`, generate a tag, and generate the new entries in `CHANGELOG.md`. Commited with `chore(release): Release version vx0.0 of the npm package`
+  * You can always add `--dry-run` to the above command to preview the commands that will be run and the changes to `CHANGELOG.md`.
+
 * Manually edit the `CHANGELOG.md`.
   * All entries are added in separate sections of the new release according to their commit prefixes.
   * Re-organize the entries accordingly, referencing previous releases.
@@ -30,7 +32,7 @@ Steps to follow:
 
 Changes when doing a pre-release of a major version:
 
-* Version with `npm release -- -r major --pre-release alpha` (or `npm release -- --pre-release alpha` to autogenerate the version)
+* Version with `npm release -- -r major --pre-release alpha`
 * Do not merge `versions/x.0.0` into `main`.
 * Publish with `npm publish --tag next`.
 * Do not update the branch or anything related.
