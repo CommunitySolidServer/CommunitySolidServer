@@ -9,6 +9,7 @@ import { getLoggerFor } from '../logging/LogUtil';
 import type { RepresentationConverter } from '../storage/conversion/RepresentationConverter';
 import { INTERNAL_QUADS } from './ContentTypes';
 import { BadRequestHttpError } from './errors/BadRequestHttpError';
+import { createErrorMessage } from './errors/ErrorUtil';
 
 const logger = getLoggerFor('FetchUtil');
 
@@ -24,8 +25,8 @@ export async function fetchDataset(url: string): Promise<Representation> {
       const quadStream = (await rdfDereferencer.dereference(url)).quads as Readable;
       const quadArray = await arrayifyStream<Quad>(quadStream);
       return new BasicRepresentation(quadArray, { path: url }, INTERNAL_QUADS, false);
-    } catch {
-      throw new BadRequestHttpError(`Could not parse resource at URL (${url})!`);
+    } catch (error: unknown) {
+      throw new BadRequestHttpError(`Could not parse resource at URL (${url})! ${createErrorMessage(error)}`);
     }
   })();
 }
