@@ -51,6 +51,7 @@
     "jest": "jest --coverageReporters text-summary --",
     "lint": "eslint . --cache --ignore-path .gitignore --max-warnings 0",
     "prepare": "npm run build",
+    "release": "standard-version",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
     "test": "npm run test:ts && npm run jest",
@@ -60,9 +61,8 @@
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
-    "upgrade-config": "node ./scripts/upgrade-configs.js",
-    "release": "standard-version",
     "version": "node ./scripts/upgrade-configs.js && manual-git-changelog onversion",
+    "upgrade-config": "node ./scripts/upgrade-configs.js",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "husky": {
