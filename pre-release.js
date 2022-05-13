@@ -5,7 +5,7 @@ const { fdir } = require("fdir");
 const major = process.env.npm_package_version.split('.')[0]
 
 async function replaceVersion(filePath){
-    fs.readFile(filePath, 'utf8', function(err,data) {
+    return fs.readFile(filePath, 'utf8', function(err,data) {
         if (err) {
             return process.stderr.write(`${err}\n`)
         }
