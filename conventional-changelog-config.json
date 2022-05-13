@@ -1,0 +1,19 @@
+{
+    "options": {
+        "preset": {
+            "name": "conventionalcommits",
+            "types": [
+                {"type": "feat", "section": "Features"},
+                {"type": "fix", "section": "Fixes"},
+                {"type": "chore", "section": "Chores"},
+                {"type": "chore(deps)", "section": "Dependency updates"},
+                {"type": "docs", "section": "Docs"},
+                {"type": "style", "section": "Styling"},
+                {"type": "refactor", "section": "Refactored"},
+                {"type": "perf", "section": "Performance"},
+                {"type": "test", "section": "Testing"}
+            ],
+            "header": "# Changelog\n\n"
+        }
+    }
+}
