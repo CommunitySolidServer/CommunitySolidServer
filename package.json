@@ -167,7 +167,6 @@
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.15",
     "set-cookie-parser": "^2.4.8",
-    "shelljs": "^0.8.5",
     "simple-git": "^3.7.1",
     "supertest": "^6.2.2",
     "ts-jest": "^27.1.3",
