@@ -4,9 +4,9 @@
         {"type": "fix", "section": "Fixes"},
         {"type": "chore", "section": "Chores"},
         {"type": "chore(deps)", "section": "Dependency updates"},
-        {"type": "docs", "section": "Docs"},
+        {"type": "docs", "section": "Documentation"},
         {"type": "style", "section": "Styling"},
-        {"type": "refactor", "section": "Refactored"},
+        {"type": "refactor", "section": "Refactors"},
         {"type": "perf", "section": "Performance"},
         {"type": "test", "section": "Testing"}
     ],
