@@ -51,16 +51,18 @@
       "@id": "urn:solid-server:default:RouterRule",
       "@type": "RegexRouterRule",
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "storeMap": [
+      "rules": [
         {
           "comment": "Internal storage data",
-          "RegexRouterRule:_storeMap_key": "^/\\.internal/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:FileResourceStore" }
+          "@type": "RegexRule",
+          "regex": "^/\\.internal/",
+          "store": { "@id": "urn:solid-server:default:FileResourceStore" }
         },
         {
           "comment": "Send everything else to the SPARQL store.",
-          "RegexRouterRule:_storeMap_key": "^/(?!\\.internal/).*",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+          "@type": "RegexRule",
+          "regex": ".*",
+          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         }
       ]
     },

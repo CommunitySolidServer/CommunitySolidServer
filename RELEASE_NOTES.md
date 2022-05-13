@@ -24,7 +24,7 @@ The following changes pertain to the imports in the default configs:
 - All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
   making them threadsafe.
 
-The following changes are relevant for v3 custom configs that replaced certain features.
+The following changes are relevant for v4 custom configs that replaced certain features.
 - `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
 - `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
 - The content-length parser has been moved from the default configuration to the quota configurations.
@@ -33,6 +33,9 @@ The following changes are relevant for v3 custom configs that replaced certain f
    - `/storage/backend/quota/quota-file.json`
 - The structure of the init configs has changed significantly to support worker threads.
    - `/app/init/*`
+- RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
+   - `/storage/backend/regex.json`
+   - `/sparql-file-storage.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.

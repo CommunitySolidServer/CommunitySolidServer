@@ -7,6 +7,19 @@ import type { ResourceStore } from '../ResourceStore';
 import { RouterRule } from './RouterRule';
 
 /**
+ * Utility class to easily configure Regex to ResourceStore mappings in the config files.
+ */
+export class RegexRule {
+  public readonly regex: RegExp;
+  public readonly store: ResourceStore;
+
+  public constructor(regex: string, store: ResourceStore) {
+    this.regex = new RegExp(regex, 'u');
+    this.store = store;
+  }
+}
+
+/**
  * Routes requests to a store based on the path of the identifier.
  * The identifier will be stripped of the base URI after which regexes will be used to find the correct store.
  * The trailing slash of the base URI will still be present so the first character a regex can match would be that `/`.
@@ -16,16 +29,15 @@ import { RouterRule } from './RouterRule';
  */
 export class RegexRouterRule extends RouterRule {
   private readonly base: string;
-  private readonly regexes: Map<RegExp, ResourceStore>;
+  private readonly rules: RegexRule[];
 
   /**
    * The keys of the `storeMap` will be converted into actual RegExp objects that will be used for testing.
    */
-  public constructor(base: string, storeMap: Record<string, ResourceStore>) {
+  public constructor(base: string, rules: RegexRule[]) {
     super();
     this.base = trimTrailingSlashes(base);
-    this.regexes = new Map(Object.keys(storeMap).map((regex): [ RegExp, ResourceStore ] =>
-      [ new RegExp(regex, 'u'), storeMap[regex] ]));
+    this.rules = rules;
   }
 
   public async canHandle(input: { identifier: ResourceIdentifier; representation?: Representation }): Promise<void> {
@@ -42,9 +54,9 @@ export class RegexRouterRule extends RouterRule {
    */
   private matchStore(identifier: ResourceIdentifier): ResourceStore {
     const path = this.toRelative(identifier);
-    for (const regex of this.regexes.keys()) {
+    for (const { regex, store } of this.rules) {
       if (regex.test(path)) {
-        return this.regexes.get(regex)!;
+        return store;
       }
     }
     throw new NotImplementedHttpError(`No stored regexes match ${identifier.path}`);
