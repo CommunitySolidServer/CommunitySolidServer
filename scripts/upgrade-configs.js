@@ -21,7 +21,7 @@ async function upgradeConfig(){
     for(let index = 0; index < configs.length; index++){
         await replaceVersion(configs[index]);
     }
-    await replaceVersion('package-lock.json');
+    await replaceVersion('package.json');
 
     return simpleGit().commit(`chore: Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});
 }
