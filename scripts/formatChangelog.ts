@@ -7,7 +7,7 @@ import { readFile, writeFile } from 'fs-extra';
  * This script can be extended to add further custom formatting
  * to the changelog.
  * Current automatic changes:
- *  - Change all version titles to H2 ( ### [vX.Y.Z] => ## [vX.Y.Z])
+ *  - Change all version titles to H2 ("### [vX.Y.Z]" to "## [vX.Y.Z]")
  */
 
 /**
