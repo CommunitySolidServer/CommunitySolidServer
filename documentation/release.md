@@ -11,11 +11,10 @@ Steps to follow:
   * Is there an issue upgrading the recipes at <https://github.com/CommunitySolidServer/recipes>
   * None of the above has to be blocking per se, but should be noted in the release notes if relevant.
 * Verify that the RELEASE_NOTES.md are correct.
-* `npm run release -- -r major`
+* `npm run release -- -r major` or `npx standard-version -r major`
   * Automatically updates Components.js references to the new version. Committed with `chore(release): Update configs to vx.0.0`.
   * Updates the `package.json`, generate a tag, and generate the new entries in `CHANGELOG.md`. Commited with `chore(release): Release version vx0.0 of the npm package`
   * You can always add `--dry-run` to the above command to preview the commands that will be run and the changes to `CHANGELOG.md`.
-
 * Manually edit the `CHANGELOG.md`.
   * All entries are added in separate sections of the new release according to their commit prefixes.
   * Re-organize the entries accordingly, referencing previous releases.
