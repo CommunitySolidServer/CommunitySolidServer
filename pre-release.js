@@ -1,7 +1,4 @@
 const shell = require('shelljs');
-const yargs = require('yargs')
-const fs = require('fs-extra')
-
 
 const version = process.env.npm_package_version;
 console.log(`Changing @solid/community-server references to ${version}`); // --> 1.0.0
