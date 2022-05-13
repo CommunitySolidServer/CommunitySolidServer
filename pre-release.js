@@ -12,4 +12,4 @@ configs.forEach((filePath,index) => {
 
 const git = simpleGit();
 git.add(configs);
-git.commit(`chore: Update configs to v${version}`);
+git.commit(`chore: Update configs to v${major}.0.0`);
