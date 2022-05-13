@@ -62,7 +62,7 @@
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
     "upgrade-config": "node ./scripts/upgrade-configs.js",
     "release": "standard-version",
-    "version": "manual-git-changelog onversion",
+    "version": "node ./scripts/upgrade-configs.js && manual-git-changelog onversion",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "husky": {
