@@ -35,6 +35,7 @@ describe('WinstonLoggerFactory', (): void => {
       level: expect.stringContaining('debug'),
       message: 'my message',
       timestamp: expect.any(String),
+      metadata: expect.any(Object),
       [Symbol.for('level')]: 'debug',
       [Symbol.for('splat')]: [ undefined ],
       [Symbol.for('message')]: expect.any(String),

@@ -65,6 +65,14 @@
             "@type": "AssetPathExtractor",
             "key": "seededPodConfigJson"
           }
+        },
+        {
+          "CombinedSettingsResolver:_resolvers_key": "urn:solid-server:default:variable:workers",
+          "CombinedSettingsResolver:_resolvers_value": {
+            "@type": "KeyExtractor",
+            "key": "workers", 
+            "defaultValue": 1
+          }
         }
       ]
     }

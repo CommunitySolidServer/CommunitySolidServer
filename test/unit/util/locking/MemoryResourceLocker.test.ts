@@ -1,29 +1,11 @@
-import type { Logger } from '../../../../src';
-import { getLoggerFor } from '../../../../src';
 import { InternalServerError } from '../../../../src/util/errors/InternalServerError';
 import { MemoryResourceLocker } from '../../../../src/util/locking/MemoryResourceLocker';
-
-jest.mock('../../../../src/logging/LogUtil', (): any => {
-  const logger: Logger =
-    { error: jest.fn(), debug: jest.fn(), warn: jest.fn(), info: jest.fn(), log: jest.fn() } as any;
-  return { getLoggerFor: (): Logger => logger };
-});
-const logger: jest.Mocked<Logger> = getLoggerFor('MemoryResourceLocker') as any;
-
-jest.mock('cluster', (): any => ({
-  isWorker: true,
-}));
 
 describe('A MemoryResourceLocker', (): void => {
   let locker: MemoryResourceLocker;
   const identifier = { path: 'http://test.com/foo' };
   beforeEach(async(): Promise<void> => {
     locker = new MemoryResourceLocker();
-  });
-
-  it('logs a warning when constructed on a worker process.', (): void => {
-    expect((): MemoryResourceLocker => new MemoryResourceLocker()).toBeDefined();
-    expect(logger.warn).toHaveBeenCalled();
   });
 
   it('can lock and unlock a resource.', async(): Promise<void> => {
