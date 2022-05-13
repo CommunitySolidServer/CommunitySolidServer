@@ -4,7 +4,7 @@ const { fdir } = require("fdir");
 
 const major = process.env.npm_package_version.split('.')[0]
 
-function replaceVersion(filePath){
+async function replaceVersion(filePath){
     fs.readFile(filePath, 'utf8', function(err,data) {
         if (err) {
             return process.stderr.write(`${err}\n`)
@@ -25,14 +25,17 @@ async function upgradeConfig(){
         .crawl('config')
         .withPromise();
     
-    configs.forEach((filePath,index) => replaceVersion(filePath));
-    replaceVersion('package-lock.json');
+    for(let index = 0; index < configs.length; index++){
+        await replaceVersion(configs[index]);
+    }
+    await replaceVersion('package-lock.json');
 
-    simpleGit().commit(`chore: Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});
+    return await simpleGit().commit(`chore: Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});
 }
 
-upgradeConfig().then(() => process.stdout.write(`Configs upgraded and committed\n`))
-.catch(error => {
-  process.stderr.write(`${error.stack}\n`);
-  process.exit(1);
-});
+upgradeConfig()
+    .then(() => process.stdout.write(`Configs upgraded and committed\n`))
+    .catch(error => {
+    process.stderr.write(`${error.stack}\n`);
+    process.exit(1);
+    });
