@@ -11,5 +11,5 @@
         {"type": "test", "section": "Testing"}
     ],
     "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
-    "releaseCommitMessageFormat": "chore(release): Release version {{currentTag}} of the npm package."
+    "releaseCommitMessageFormat": "chore(release): Release version {{currentTag}} of the npm package"
 }
