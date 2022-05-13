@@ -60,7 +60,7 @@
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
-    "version": "manual-git-changelog onversion",
+    "version": "node ./pre-release.js && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "husky": {
@@ -164,6 +164,7 @@
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.15",
     "set-cookie-parser": "^2.4.8",
+    "shelljs": "^0.8.5",
     "supertest": "^6.2.2",
     "ts-jest": "^27.1.3",
     "typedoc": "^0.22.11",
