@@ -60,7 +60,7 @@
     "test:unit": "jest --config=./jest.coverage.config.js test/unit",
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
-    "version": "node ./scripts/upgrade-configs.js && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "version": "node ./scripts/upgrade-configs.js && conventional-changelog -p conventionalcommits -i CHANGELOG.md -s && git add CHANGELOG.md",
     "upgrade-config": "node ./scripts/upgrade-configs.js",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
