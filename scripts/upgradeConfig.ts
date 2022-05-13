@@ -85,6 +85,8 @@ async function upgradeConfig(): Promise<void> {
   console.log(`Changing @solid/community-server references to ${major}.0.0\n`);
 
   const configs = await getFilePaths('config/', /.+\.json/u);
+  configs.push(...await getFilePaths('test/integration/config/', /.+\.json/u));
+  configs.push(...await getFilePaths('templates/config/', /.+\.json/u));
 
   for (const config of configs) {
     await replaceComponentVersion(config, npmPackage.name, `${major}.0.0`);
