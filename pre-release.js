@@ -10,6 +10,4 @@ configs.forEach((filePath,index) => {
     shell.sed('-i', /(@solid\/community-server\/)\^\d+\.\d+\.\d+/, `$1^${major}.0.0`, filePath)
 });
 
-const git = simpleGit();
-git.add(configs);
-git.commit(`chore: Update configs to v${major}.0.0`);
+simpleGit().commit(`chore: Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});

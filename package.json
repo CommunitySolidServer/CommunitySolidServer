@@ -61,6 +61,7 @@
     "test:watch": "jest --coverageReporters none --watch test/unit",
     "validate": "componentsjs-compile-config urn:solid-server:default:Initializer -c config/default.json -f > /dev/null",
     "version": "node ./pre-release.js && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+    "pre-release": "node ./pre-release.js",
     "watch": "nodemon --watch \"dist/**/*.js\" --exec npm start"
   },
   "husky": {
