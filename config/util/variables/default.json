@@ -41,6 +41,11 @@
       "comment": "Path to the JSON file used to seed pods.",
       "@id": "urn:solid-server:default:variable:seededPodConfigJson",
       "@type": "Variable"
+    },
+    {
+      "comment": "Run the server in multithreaded mode with the set amount of workers.",
+      "@id": "urn:solid-server:default:variable:workers",
+      "@type": "Variable"
     }
   ]
 }

@@ -53,13 +53,13 @@ describe('LazyLoggerFactory', (): void => {
 
     const wrappedA = dummyLoggerFactory.createLogger.mock.results[0].value as jest.Mocked<Logger>;
     expect(wrappedA.log).toHaveBeenCalledTimes(2);
-    expect(wrappedA.log).toHaveBeenNthCalledWith(1, 'warn', 'message1');
-    expect(wrappedA.log).toHaveBeenNthCalledWith(2, 'error', 'message4');
+    expect(wrappedA.log).toHaveBeenNthCalledWith(1, 'warn', 'message1', undefined);
+    expect(wrappedA.log).toHaveBeenNthCalledWith(2, 'error', 'message4', undefined);
 
     const wrappedB = dummyLoggerFactory.createLogger.mock.results[1].value as jest.Mocked<Logger>;
     expect(wrappedB.log).toHaveBeenCalledTimes(2);
-    expect(wrappedB.log).toHaveBeenNthCalledWith(1, 'warn', 'message2');
-    expect(wrappedB.log).toHaveBeenNthCalledWith(2, 'error', 'message3');
+    expect(wrappedB.log).toHaveBeenNthCalledWith(1, 'warn', 'message2', undefined);
+    expect(wrappedB.log).toHaveBeenNthCalledWith(2, 'error', 'message3', undefined);
   });
 
   it('does not store more messages than the buffer limit.', (): void => {
@@ -84,6 +84,6 @@ describe('LazyLoggerFactory', (): void => {
     expect(wrappedA.log).toHaveBeenCalledTimes(50);
     expect(wrappedB.log).toHaveBeenCalledTimes(49);
     expect(warningLogger.log).toHaveBeenCalledTimes(1);
-    expect(warningLogger.log).toHaveBeenCalledWith('warn', 'Memory-buffered logging limit of 100 reached');
+    expect(warningLogger.log).toHaveBeenCalledWith('warn', 'Memory-buffered logging limit of 100 reached', undefined);
   });
 });

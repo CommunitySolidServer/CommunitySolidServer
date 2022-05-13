@@ -187,6 +187,11 @@ export * from './identity/storage/WebIdAdapterFactory';
 export * from './identity/IdentityProviderHttpHandler';
 export * from './identity/OidcHttpHandler';
 
+// Init/Cluster
+export * from './init/cluster/ClusterManager';
+export * from './init/cluster/SingleThreaded';
+export * from './init/cluster/WorkerManager';
+
 // Init/Final
 export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
@@ -218,9 +223,9 @@ export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/ModuleVersionVerifier';
 export * from './init/SeededPodInitializer';
 export * from './init/ServerInitializer';
-export * from './init/ModuleVersionVerifier';
 
 // Logging
 export * from './logging/LazyLoggerFactory';
@@ -401,6 +406,7 @@ export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
 export * from './util/handlers/ParallelHandler';
+export * from './util/handlers/ProcessHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/StaticHandler';
 export * from './util/handlers/StaticThrowHandler';

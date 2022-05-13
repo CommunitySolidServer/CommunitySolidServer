@@ -6,9 +6,11 @@ import yargs from 'yargs';
 import { LOG_LEVELS } from '../logging/LogLevel';
 import { getLoggerFor } from '../logging/LogUtil';
 import { createErrorMessage, isError } from '../util/errors/ErrorUtil';
+import { InternalServerError } from '../util/errors/InternalServerError';
 import { resolveModulePath, resolveAssetPath } from '../util/PathUtil';
 import type { App } from './App';
 import type { CliResolver } from './CliResolver';
+import { listSingleThreadedComponents } from './cluster/SingleThreaded';
 import type { CliArgv, VariableBindings } from './variables/Types';
 
 const DEFAULT_CONFIG = resolveModulePath('config/default.json');
@@ -65,7 +67,7 @@ export class AppRunner {
     const componentsManager = await this.createComponentsManager<App>(loaderProperties, configFile);
 
     // Create the application using the translated variable values
-    return componentsManager.instantiate(DEFAULT_APP, { variables: variableBindings });
+    return await this.createApp(componentsManager, variableBindings);
   }
 
   /**
@@ -177,12 +179,26 @@ export class AppRunner {
    * where the App is created and started using the variable mappings.
    */
   private async createApp(componentsManager: ComponentsManager<App>, variables: Record<string, unknown>): Promise<App> {
+    let app: App;
+    // Create the app
     try {
-      // Create the app
-      return await componentsManager.instantiate(DEFAULT_APP, { variables });
+      app = await componentsManager.instantiate(DEFAULT_APP, { variables });
     } catch (error: unknown) {
       this.resolveError(`Could not create the server`, error);
     }
+
+    // Ensure thread safety
+    if (!app.clusterManager.isSingleThreaded()) {
+      const violatingClasses = await listSingleThreadedComponents(componentsManager);
+      if (violatingClasses.length > 0) {
+        const verb = violatingClasses.length > 1 ? 'are' : 'is';
+        const detailedError = new InternalServerError(
+          `[${violatingClasses.join(', ')}] ${verb} not threadsafe and should not be run in multithreaded setups!`,
+        );
+        this.resolveError('Cannot run a singlethreaded-only component in a multithreaded setup!', detailedError);
+      }
+    }
+    return app;
   }
 
   /**

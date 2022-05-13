@@ -1,3 +1,4 @@
+import type { ClusterManager } from './cluster/ClusterManager';
 import type { Finalizable } from './final/Finalizable';
 import type { Initializer } from './Initializer';
 
@@ -7,10 +8,12 @@ import type { Initializer } from './Initializer';
 export class App {
   private readonly initializer: Initializer;
   private readonly finalizer: Finalizable;
+  public readonly clusterManager: ClusterManager;
 
-  public constructor(initializer: Initializer, finalizer: Finalizable) {
+  public constructor(initializer: Initializer, finalizer: Finalizable, clusterManager: ClusterManager) {
     this.initializer = initializer;
     this.finalizer = finalizer;
+    this.clusterManager = clusterManager;
   }
 
   /**

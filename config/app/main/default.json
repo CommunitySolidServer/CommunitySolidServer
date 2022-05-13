@@ -13,7 +13,12 @@
         "finalizers": [
           { "@id": "urn:solid-server:default:ServerInitializer" }
         ]
-      }
+      },
+      "clusterManager": { 
+        "@id": "urn:solid-server:default:ClusterManager",
+        "@type": "ClusterManager",
+        "workers": { "@id": "urn:solid-server:default:variable:workers" }
+       }
     }
   ]
 }

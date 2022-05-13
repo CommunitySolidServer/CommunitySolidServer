@@ -5,8 +5,14 @@
   ],
   "@graph": [
     {
-      "comment": "These handlers are called whenever the server is started, and can be used to ensure that all necessary resources for booting are available.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
+      "comment": "These handlers are called only for the Primary process whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
+      "@type": "ParallelHandler",
+      "handlers": [ ]
+    },
+    {
+      "comment": "These handlers are called only for the workers processes whenever the server is started, and can be used to ensure that all necessary resources for booting are available. (in singlethreaded mode, these are always called)",
+      "@id": "urn:solid-server:default:WorkerParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [ ]
     }

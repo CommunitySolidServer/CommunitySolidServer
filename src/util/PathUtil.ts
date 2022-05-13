@@ -1,4 +1,5 @@
 import { posix, win32 } from 'path';
+import { readJson } from 'fs-extra';
 import urljoin from 'url-join';
 import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
@@ -268,6 +269,13 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
     return resolveModulePath(path.slice(modulePathPlaceholder.length));
   }
   return absoluteFilePath(path);
+}
+
+/**
+ * Reads the project package.json and returns it.
+ */
+export async function readPackageJson(): Promise<Record<string, any>> {
+  return readJson(resolveModulePath('package.json'));
 }
 
 /**

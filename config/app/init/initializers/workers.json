@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
+  "@graph": [
+    {
+      "comment": "Spawns the required amount of workers",
+      "@id": "urn:solid-server:default:WorkerManager",
+      "@type": "WorkerManager",
+      "clusterManager": { "@id": "urn:solid-server:default:ClusterManager" }
+    }
+  ]
+}

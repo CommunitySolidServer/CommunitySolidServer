@@ -55,7 +55,7 @@ export class BaseHttpServerFactory implements HttpServerFactory {
   public startServer(port: number): Server {
     const protocol = this.options.https ? 'https' : 'http';
     const url = new URL(`${protocol}://localhost:${port}/`).href;
-    this.logger.info(`Starting server at ${url}`);
+    this.logger.info(`Listening to server at ${url}`);
 
     const createServer = this.options.https ? createHttpsServer : createHttpServer;
     const options = this.createServerOptions();

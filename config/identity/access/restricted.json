@@ -13,7 +13,7 @@
     },
     {
       "comment": "IDP-related containers require initialized resources to support authorization.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:IdpContainerInitializer" },
