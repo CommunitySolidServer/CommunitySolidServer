@@ -1,14 +1,11 @@
-const replace = require('replace-in-file');
+const fs = require('fs-extra');
 
-const options = {
-    files: 'CHANGELOG.md',
-    from: /### \[/g,
-    to: '## ['
+async function replaceInFile(from, to, filePath){
+    const data = await fs.readFile(filePath, 'utf8');
+    const result = data.replace(from, to);
+    return fs.writeFile(filePath, result, 'utf8');
 }
 
-try{
-    replace.sync(options);
-}
-catch (error) {
-    console.error(error)
-}
+replaceInFile(/### \[/g, '## [', 'CHANGELOG.md')
+    .then(console.log("CHANGELOG.md formatted"))
+    .catch(error => console.error(error))

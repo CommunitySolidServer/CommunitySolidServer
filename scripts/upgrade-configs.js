@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const simpleGit = require('simple-git');
 const { fdir } = require("fdir");
 
-const major = process.env.npm_package_version.split('.')[0]
+const major = process.env.npm_package_version.split('.')[0];
 
 async function replaceVersion(filePath){
     const data = await fs.readFile(filePath, 'utf8');
@@ -23,7 +23,7 @@ async function upgradeConfig(){
     }
     await replaceVersion('package.json');
 
-    return simpleGit().commit(`chore: Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});
+    return simpleGit().commit(`chore(release): Update configs to v${major}.0.0`, configs, {'--no-verify': undefined});
 }
 
 upgradeConfig()
