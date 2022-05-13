@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-console */
 import { readdir, readFile, writeFile } from 'fs-extra';
 import simpleGit from 'simple-git';
@@ -59,11 +58,11 @@ async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {
   const entries = await readdir(path, { withFileTypes: true });
 
   const files = entries
-    .filter(file => !file.isDirectory())
-    .filter(file => regex.test(file.name))
-    .map(file => `${path}${file.name}`);
+    .filter((file): boolean => !file.isDirectory())
+    .filter((file): boolean => regex.test(file.name))
+    .map((file): string => `${path}${file.name}`);
 
-  const folders = entries.filter(folder => folder.isDirectory());
+  const folders = entries.filter((folder): boolean => folder.isDirectory());
 
   for (const folder of folders) {
     files.push(...await getFilePaths(`${path}${folder.name}/`, regex));
