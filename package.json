@@ -159,6 +159,7 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-plugin-unicorn": "^37.0.1",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "fdir": "^5.2.0",
     "husky": "^4.3.8",
     "jest": "^27.4.7",
     "jest-rdf": "^1.7.0",
