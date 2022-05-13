@@ -167,7 +167,6 @@
     "husky": "^4.3.8",
     "jest": "^27.4.7",
     "jest-rdf": "^1.7.0",
-    "manual-git-changelog": "^1.0.1",
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.15",
     "set-cookie-parser": "^2.4.8",
