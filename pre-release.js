@@ -1,21 +1,15 @@
 const shell = require('shelljs');
+const simpleGit = require('simple-git');
+const git = simpleGit();
 
-const version = process.env.npm_package_version;
-console.log(`Changing @solid/community-server references to ${version}`); // --> 1.0.0
-
-// const yargv = yargs(process.argv.slice(2))
-//     .usage('node ./pre-release.js [args]')
-//     .option('tag', {
-//         alias: 't',
-//         description: 'A semver tag to apply to @solid/community-server references in config files and package.json',
-//         type: 'string'
-//     })
-//     .help().argv;
-
-
+const major = process.env.npm_package_version.split('.')[0]
+console.log(`Changing @solid/community-server references to ${major}.0.0`)
 
 const configs = shell.find('config/**/*.json');
 configs.push('package.json');
 configs.forEach((filePath,index) => {
-    shell.sed('-i', /(@solid\/community-server\/)\^\d+\.\d+\.\d+/, `$1^${version}`, filePath)
-})
+    shell.sed('-i', /(@solid\/community-server\/)\^\d+\.\d+\.\d+/, `$1^${major}.0.0`, filePath)
+});
+
+git.add(configs);
+// git.commit(`chore: Update configs to v${version}`);
