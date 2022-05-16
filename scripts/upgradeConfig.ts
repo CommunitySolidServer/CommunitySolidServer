@@ -9,10 +9,10 @@ import { joinFilePath, readPackageJson } from '../src/util/PathUtil';
  * Script: upgradeConfigs.ts
  * Run with: ts-node scripts/upgradeConfig.ts
  * ------------------------------------------
- * Upgrades the references to \@solid/community-server in
- * package.json (lsd prefix) and all JSON-LD config files.
- * This script is run alongside standard-version
- * after the version bump is done in package.json but before the
+ * Upgrades the lsd:module references to CSS in package.json
+ * and all JSON-LD config files.
+ * This script is run alongside standard-version after the
+ * version bump is done in package.json but before the
  * release has been committed.
  */
 
