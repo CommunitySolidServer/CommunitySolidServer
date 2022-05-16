@@ -1,7 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 /* eslint-disable no-console */
+import escapeStringRegexp from 'escape-string-regexp';
 import { readdir, readFile, writeFile } from 'fs-extra';
 import simpleGit from 'simple-git';
+import { joinFilePath, readPackageJson } from '../src/util/PathUtil';
 
 /**
  * Script: upgradeConfigs.ts
@@ -15,39 +17,18 @@ import simpleGit from 'simple-git';
  */
 
 /**
- * Helper function to escape search strings for use in Regular Expressions
- * @param  string - the search string to be escaped
- * @returns Promise with the escaped string
- */
-async function escapeString(string: string): Promise<string> {
-  return string.replace(/[$()*+.?[\\\]^{|}]/gu, '\\$&');
-}
-
-interface NpmPackage {
-  version: string;
-  name: string;
-}
-/**
- * Reads and return the package.json file to extract version and name
- * @returns Promise with the NpmPackage
- */
-async function getNpmPackage(): Promise<NpmPackage> {
-  return JSON.parse(await readFile('package.json', 'utf8'));
-}
-/**
  * Search and replace the version of a component with given name
  * @param  filePath - File to search/replace
- * @param  name - Component name
+ * @param  regex - RegExp matching the component reference
  * @param  version - Semantic version to change to
  */
-async function replaceComponentVersion(filePath: string, name: string, version: string): Promise<void> {
+async function replaceComponentVersion(filePath: string, regex: RegExp, version: string): Promise<void> {
   console.log(`Replacing version in ${filePath}`);
   const data = await readFile(filePath, 'utf8');
-  const escapedName = await escapeString(name);
-  const regex = new RegExp(`(${escapedName}\\/)\\^\\d+\\.\\d+\\.\\d+`, 'gmu');
   const result = data.replace(regex, `$1^${version}`);
   return writeFile(filePath, result, 'utf8');
 }
+
 /**
  * Recursive search for files that match a given Regex
  * @param  path - Path of folder to start search in
@@ -60,12 +41,12 @@ async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {
   const files = entries
     .filter((file): boolean => !file.isDirectory())
     .filter((file): boolean => regex.test(file.name))
-    .map((file): string => `${path}${file.name}`);
+    .map((file): string => joinFilePath(path, file.name));
 
   const folders = entries.filter((folder): boolean => folder.isDirectory());
 
   for (const folder of folders) {
-    files.push(...await getFilePaths(`${path}${folder.name}/`, regex));
+    files.push(...await getFilePaths(joinFilePath(path, folder.name), regex));
   }
 
   return files;
@@ -79,19 +60,22 @@ async function getFilePaths(path: string, regex: RegExp): Promise<string[]> {
  * that file are included in the release commit).
  */
 async function upgradeConfig(): Promise<void> {
-  const npmPackage = await getNpmPackage();
-  const major = npmPackage.version.split('.')[0];
+  const pkg = await readPackageJson();
+  const major = pkg.version.split('.')[0];
 
-  console.log(`Changing @solid/community-server references to ${major}.0.0\n`);
+  console.log(`Changing ${pkg['lsd:module']} references to ${major}.0.0\n`);
 
   const configs = await getFilePaths('config/', /.+\.json/u);
   configs.push(...await getFilePaths('test/integration/config/', /.+\.json/u));
   configs.push(...await getFilePaths('templates/config/', /.+\.json/u));
 
+  const escapedName = escapeStringRegexp(pkg['lsd:module']);
+  const regex = new RegExp(`(${escapedName}/)${/\^\d+\.\d+\.\d+/u.source}`, 'gmu');
+
   for (const config of configs) {
-    await replaceComponentVersion(config, npmPackage.name, `${major}.0.0`);
+    await replaceComponentVersion(config, regex, `${major}.0.0`);
   }
-  await replaceComponentVersion('package.json', npmPackage.name, `${major}.0.0`);
+  await replaceComponentVersion('package.json', regex, `${major}.0.0`);
 
   await simpleGit().commit(`chore(release): Update configs to v${major}.0.0`, configs, { '--no-verify': null });
 }

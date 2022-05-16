@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 /* eslint-disable no-console */
 import { readFile, writeFile } from 'fs-extra';
 
