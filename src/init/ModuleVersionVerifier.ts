@@ -1,9 +1,6 @@
-import { readJson } from 'fs-extra';
 import type { KeyValueStorage } from '../storage/keyvalue/KeyValueStorage';
-import { resolveModulePath } from '../util/PathUtil';
+import { readPackageJson } from '../util/PathUtil';
 import { Initializer } from './Initializer';
-
-const PACKAGE_JSON_PATH = resolveModulePath('package.json');
 
 /**
  * This initializer simply writes the version number of the server to the storage.
@@ -22,7 +19,7 @@ export class ModuleVersionVerifier extends Initializer {
   }
 
   public async handle(): Promise<void> {
-    const pkg = await readJson(PACKAGE_JSON_PATH);
+    const pkg = await readPackageJson();
     await this.storage.set(this.storageKey, pkg.version);
   }
 }
