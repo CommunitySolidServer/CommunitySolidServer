@@ -51,9 +51,10 @@ export class WebIdAdapter extends PassthroughAdapter {
       let json: any | undefined;
       try {
         json = JSON.parse(data);
+        const contexts = Array.isArray(json['@context']) ? json['@context'] : [ json['@context'] ];
         // We can only parse as simple JSON if the @context is correct
-        if (json['@context'] !== 'https://www.w3.org/ns/solid/oidc-context.jsonld') {
-          throw new Error('Invalid context');
+        if (!contexts.includes('https://www.w3.org/ns/solid/oidc-context.jsonld')) {
+          throw new Error('Missing context https://www.w3.org/ns/solid/oidc-context.jsonld');
         }
       } catch (error: unknown) {
         json = undefined;
