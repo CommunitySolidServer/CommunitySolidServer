@@ -42,4 +42,14 @@ describe('An OidcHttpHandler', (): void => {
     expect(provider.callback.mock.results[0].value).toHaveBeenCalledTimes(1);
     expect(provider.callback.mock.results[0].value).toHaveBeenLastCalledWith(request, response);
   });
+
+  it('respects query parameters when rewriting requests.', async(): Promise<void> => {
+    Object.assign(provider, { issuer: 'http://localhost:3000/path/' });
+    request.url = '/path/.well-known/openid-configuration?param1=value1';
+    await expect(handler.handle({ request, response })).resolves.toBeUndefined();
+    expect(request.url).toBe('/.well-known/openid-configuration?param1=value1');
+    expect(provider.callback).toHaveBeenCalledTimes(1);
+    expect(provider.callback.mock.results[0].value).toHaveBeenCalledTimes(1);
+    expect(provider.callback.mock.results[0].value).toHaveBeenLastCalledWith(request, response);
+  });
 });

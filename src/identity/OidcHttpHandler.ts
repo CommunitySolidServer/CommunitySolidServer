@@ -22,7 +22,7 @@ export class OidcHttpHandler extends HttpHandler {
     // Rewrite requests to allow hosting on root paths
     const path = new URL(provider.issuer).pathname;
     if (path.length > 1 && request.url!.startsWith(`${path}.well-known/openid-configuration`)) {
-      request.url = '/.well-known/openid-configuration';
+      request.url = request.url!.replace(path, '/');
     }
 
     this.logger.debug(`Sending request to oidc-provider: ${request.url}`);
