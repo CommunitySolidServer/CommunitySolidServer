@@ -4,7 +4,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: [ './tsconfig.json', './test/tsconfig.json' ],
+    project: [ './tsconfig.json', './test/tsconfig.json', './scripts/tsconfig.json' ],
   },
   // Ignoring js files (such as this one) since they seem to conflict with rules that require typing info
   ignorePatterns: [ '*.js' ],

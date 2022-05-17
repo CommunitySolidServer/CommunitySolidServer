@@ -38,10 +38,8 @@ jobs:
           until $(curl --output /dev/null --silent --head --fail -k http://localhost:3000/); do
             sleep 1
           done
-      - name: Build test script
-        run: npx tsc -p test/deploy/tsconfig.json
       - name: Create users
-        run: node test/tmp/cth/createAccountCredentials.js http://localhost:3000/ >> test/deploy/conformance.env
+        run: ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
       - name: Run the test harness
         run: >
           docker run -i --rm
