@@ -138,7 +138,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
-    "@commitlint/config-conventional": "^16.2.4",
+    "@commitlint/config-conventional": "^17.0.0",
     "@inrupt/solid-client-authn-core": "^1.11.5",
     "@inrupt/solid-client-authn-node": "^1.11.5",
     "@microsoft/tsdoc-config": "^0.15.2",
