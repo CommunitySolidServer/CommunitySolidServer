@@ -30,12 +30,14 @@
             {
               "comment": "Renders the main setup template.",
               "@type": "EjsTemplateEngine",
-              "template": "@css:templates/setup/index.html.ejs"
+              "template": "@css:templates/setup/index.html.ejs",
+              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
             },
             {
               "comment": "Will embed the result of the first engine into the main HTML template.",
               "@type": "EjsTemplateEngine",
-              "template": "@css:templates/main.html.ejs"
+              "template": "@css:templates/main.html.ejs",
+              "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
             }
           ]
         }

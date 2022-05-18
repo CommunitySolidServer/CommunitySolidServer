@@ -6,6 +6,7 @@
       "@id": "urn:solid-server:default:StaticAssetHandler",
       "@type": "StaticAssetHandler",
       "options_expires": 86400,
+      "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" },
       "assets": [
         {
           "StaticAssetHandler:_assets_key": "/favicon.ico",
