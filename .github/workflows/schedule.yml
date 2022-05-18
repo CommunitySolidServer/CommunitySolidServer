@@ -39,7 +39,7 @@ jobs:
             sleep 1
           done
       - name: Create users
-        run: ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
+        run: npx ts-node test/deploy/createAccountCredentials.ts http://localhost:3000/ >> test/deploy/conformance.env
       - name: Run the test harness
         run: >
           docker run -i --rm
