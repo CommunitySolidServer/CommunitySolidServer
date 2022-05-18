@@ -29,11 +29,14 @@ export class StaticAssetHandler extends HttpHandler {
    *  where URL paths ending in a slash are interpreted as entire folders.
    * @param options - Cache expiration time in seconds.
    */
-  public constructor(assets: Record<string, string>, options: { expires?: number } = {}) {
+  public constructor(assets: Record<string, string>, baseUrl: string, options: { expires?: number } = {}) {
     super();
     this.mappings = {};
+    const rootPath = new URL(baseUrl).pathname;
+
     for (const [ url, path ] of Object.entries(assets)) {
-      this.mappings[url] = resolveAssetPath(path);
+      this.mappings[url.replace(/^\//u, rootPath)] = resolveAssetPath(path);
+      this.logger.debug(url.replace(/^\//u, rootPath));
     }
     this.pathMatcher = this.createPathMatcher(assets);
     this.expires = Number.isInteger(options.expires) ? Math.max(0, options.expires!) : 0;

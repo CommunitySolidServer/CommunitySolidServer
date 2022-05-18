@@ -7,7 +7,8 @@
       "@type": "MarkdownToHtmlConverter",
       "templateEngine": {
         "@type": "EjsTemplateEngine",
-        "template": "@css:templates/main.html.ejs"
+        "template": "@css:templates/main.html.ejs",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       }
     },
     {
