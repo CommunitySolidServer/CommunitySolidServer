@@ -38,7 +38,7 @@ export interface Logger extends SimpleLogger {
    * @param message - The message to log.
    * @param meta - Optional metadata to include in the log message.
    */
-  log: (level: LogLevel, message: string) => Logger;
+  log: (level: LogLevel, message: string, meta?: LogMetadata) => Logger;
 
   /**
    * Log a message at the 'error' level.
