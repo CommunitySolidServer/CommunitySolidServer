@@ -36,18 +36,17 @@ export class StaticAssetHandler extends HttpHandler {
 
     for (const [ url, path ] of Object.entries(assets)) {
       this.mappings[url.replace(/^\//u, rootPath)] = resolveAssetPath(path);
-      this.logger.debug(url.replace(/^\//u, rootPath));
     }
-    this.pathMatcher = this.createPathMatcher(assets);
+    this.pathMatcher = this.createPathMatcher();
     this.expires = Number.isInteger(options.expires) ? Math.max(0, options.expires!) : 0;
   }
 
   /**
    * Creates a regular expression that matches the URL paths.
    */
-  private createPathMatcher(assets: Record<string, string>): RegExp {
+  private createPathMatcher(): RegExp {
     // Sort longest paths first to ensure the longest match has priority
-    const paths = Object.keys(assets)
+    const paths = Object.keys(this.mappings)
       .sort((pathA, pathB): number => pathB.length - pathA.length);
 
     // Collect regular expressions for files and folders separately
