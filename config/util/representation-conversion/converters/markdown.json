@@ -17,7 +17,8 @@
       "@type": "ContainerToTemplateConverter",
       "templateEngine": {
         "@type": "HandlebarsTemplateEngine",
-        "template": "@css:templates/container.md.hbs"
+        "template": "@css:templates/container.md.hbs",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
       },
       "contentType": "text/markdown",
       "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" }

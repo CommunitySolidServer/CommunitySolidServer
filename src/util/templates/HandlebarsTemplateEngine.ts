@@ -11,11 +11,12 @@ import Dict = NodeJS.Dict;
  */
 export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> implements TemplateEngine<T> {
   private readonly applyTemplate: Promise<TemplateDelegate>;
-
+  private readonly baseUrl: string;
   /**
    * @param template - The default template @range {json}
    */
-  public constructor(template?: Template) {
+  public constructor(baseUrl: string, template?: Template) {
+    this.baseUrl = baseUrl;
     this.applyTemplate = readTemplate(template)
       .then((templateString: string): TemplateDelegate => compile(templateString));
   }
@@ -24,6 +25,6 @@ export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> implement
   public async render<TCustom = T>(contents: TCustom, template: Template): Promise<string>;
   public async render<TCustom = T>(contents: TCustom, template?: Template): Promise<string> {
     const applyTemplate = template ? compile(await readTemplate(template)) : await this.applyTemplate;
-    return applyTemplate(contents);
+    return applyTemplate({ ...contents, baseUrl: this.baseUrl });
   }
 }

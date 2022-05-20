@@ -13,7 +13,10 @@
       "comment": "Converts an error into a Markdown description of its details.",
       "@id": "urn:solid-server:default:ErrorToTemplateConverter",
       "@type": "ErrorToTemplateConverter",
-      "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+      "templateEngine": {
+        "@type": "HandlebarsTemplateEngine",
+        "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+      }
     }
   ]
 }
