@@ -5,7 +5,7 @@ import { getLoggerFor } from '../../logging/LogUtil';
 import { APPLICATION_OCTET_STREAM } from '../../util/ContentTypes';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
-import { joinFilePath, resolveAssetPath } from '../../util/PathUtil';
+import { ensureTrailingSlash, joinFilePath, resolveAssetPath, trimLeadingSlashes } from '../../util/PathUtil';
 import { pipeSafely } from '../../util/StreamUtil';
 import type { HttpHandlerInput } from '../HttpHandler';
 import { HttpHandler } from '../HttpHandler';
@@ -32,19 +32,19 @@ export class StaticAssetHandler extends HttpHandler {
   public constructor(assets: Record<string, string>, baseUrl: string, options: { expires?: number } = {}) {
     super();
     this.mappings = {};
-    const rootPath = new URL(baseUrl).pathname;
+    const rootPath = ensureTrailingSlash(new URL(baseUrl).pathname);
 
     for (const [ url, path ] of Object.entries(assets)) {
-      this.mappings[url.replace(/^\//u, rootPath)] = resolveAssetPath(path);
+      this.mappings[trimLeadingSlashes(url)] = resolveAssetPath(path);
     }
-    this.pathMatcher = this.createPathMatcher();
+    this.pathMatcher = this.createPathMatcher(rootPath);
     this.expires = Number.isInteger(options.expires) ? Math.max(0, options.expires!) : 0;
   }
 
   /**
    * Creates a regular expression that matches the URL paths.
    */
-  private createPathMatcher(): RegExp {
+  private createPathMatcher(rootPath: string): RegExp {
     // Sort longest paths first to ensure the longest match has priority
     const paths = Object.keys(this.mappings)
       .sort((pathA, pathB): number => pathB.length - pathA.length);
@@ -57,7 +57,7 @@ export class StaticAssetHandler extends HttpHandler {
     }
 
     // Either match an exact document or a file within a folder (stripping the query string)
-    return new RegExp(`^(?:(${files.join('|')})|(${folders.join('|')})([^?]+))(?:\\?.*)?$`, 'u');
+    return new RegExp(`^${rootPath}(?:(${files.join('|')})|(${folders.join('|')})([^?]+))(?:\\?.*)?$`, 'u');
   }
 
   /**
