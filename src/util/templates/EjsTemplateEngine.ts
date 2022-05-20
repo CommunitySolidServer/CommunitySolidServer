@@ -11,7 +11,7 @@ import Dict = NodeJS.Dict;
  */
 export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> implements TemplateEngine<T> {
   private readonly applyTemplate: Promise<TemplateFunction>;
-  private readonly rootPath: string;
+  private readonly baseUrl: string;
 
   /**
    * @param template - The default template @range {json}
@@ -19,7 +19,7 @@ export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> implements Templ
   public constructor(baseUrl: string, template?: Template) {
     // EJS requires the `filename` parameter to be able to include partial templates
     const filename = getTemplateFilePath(template);
-    this.rootPath = new URL(baseUrl).pathname;
+    this.baseUrl = baseUrl;
 
     this.applyTemplate = readTemplate(template)
       .then((templateString: string): TemplateFunction => compile(templateString, { filename }));
@@ -28,10 +28,7 @@ export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> implements Templ
   public async render(contents: T): Promise<string>;
   public async render<TCustom = T>(contents: TCustom, template: Template): Promise<string>;
   public async render<TCustom = T>(contents: TCustom, template?: Template): Promise<string> {
-    const options = { ...contents, filename: getTemplateFilePath(template), rootPath: this.rootPath };
-    return template ?
-      render(await readTemplate(template),
-        options) :
-      (await this.applyTemplate)(options);
+    const options = { ...contents, filename: getTemplateFilePath(template), baseUrl: this.baseUrl };
+    return template ? render(await readTemplate(template), options) : (await this.applyTemplate)(options);
   }
 }
