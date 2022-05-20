@@ -31,6 +31,7 @@ export class TemplatedPodGenerator implements PodGenerator {
   private readonly variableHandler: VariableHandler;
   private readonly configStorage: KeyValueStorage<string, unknown>;
   private readonly configTemplatePath: string;
+  private readonly baseUrl: string;
 
   /**
    * @param storeFactory - Factory used for Components.js instantiation.
@@ -39,10 +40,11 @@ export class TemplatedPodGenerator implements PodGenerator {
    * @param configTemplatePath - Where to find the configuration templates.
    */
   public constructor(storeFactory: ComponentsJsFactory, variableHandler: VariableHandler,
-    configStorage: KeyValueStorage<string, unknown>, configTemplatePath?: string) {
+    configStorage: KeyValueStorage<string, unknown>, baseUrl: string, configTemplatePath?: string) {
     this.storeFactory = storeFactory;
     this.variableHandler = variableHandler;
     this.configStorage = configStorage;
+    this.baseUrl = baseUrl;
     this.configTemplatePath = configTemplatePath ?? DEFAULT_CONFIG_PATH;
   }
 
@@ -75,7 +77,11 @@ export class TemplatedPodGenerator implements PodGenerator {
     variables[TEMPLATE_VARIABLE.templateConfig] = joinFilePath(this.configTemplatePath, settings.template);
 
     const store: ResourceStore =
-      await this.storeFactory.generate(variables[TEMPLATE_VARIABLE.templateConfig]!, TEMPLATE.ResourceStore, variables);
+      await this.storeFactory.generate(
+        variables[TEMPLATE_VARIABLE.templateConfig]!,
+        TEMPLATE.ResourceStore,
+        { ...variables, 'urn:solid-server:default:variable:baseUrl': this.baseUrl },
+      );
     this.logger.debug(`Generating store ${identifier.path} with variables ${JSON.stringify(variables)}`);
 
     // Store the variables permanently

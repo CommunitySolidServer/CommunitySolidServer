@@ -7,7 +7,8 @@
     "css:config/util/representation-conversion/converters/form-to-json.json",
     "css:config/util/representation-conversion/converters/markdown.json",
     "css:config/util/representation-conversion/converters/quad-to-rdf.json",
-    "css:config/util/representation-conversion/converters/rdf-to-quad.json"
+    "css:config/util/representation-conversion/converters/rdf-to-quad.json",
+    "css:config/util/variables/default.json"
   ],
   "@graph": [
     {
