@@ -179,6 +179,7 @@ export const XSD = createUriAndTermNamespace('http://www.w3.org/2001/XMLSchema#'
 );
 
 // Alias for commonly used types
+export const CONTENT_LENGTH = HH['content-length'];
 export const CONTENT_LENGTH_TERM = HH.terms['content-length'];
 export const CONTENT_TYPE = MA.format;
 export const CONTENT_TYPE_TERM = MA.terms.format;

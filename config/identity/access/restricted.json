@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/identity/access/initializers/idp.json",
     "css:config/identity/access/initializers/well-known.json"
@@ -13,7 +13,7 @@
     },
     {
       "comment": "IDP-related containers require initialized resources to support authorization.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
         { "@id": "urn:solid-server:default:IdpContainerInitializer" },

@@ -1,4 +1,5 @@
 import { posix, win32 } from 'path';
+import { readJson } from 'fs-extra';
 import urljoin from 'url-join';
 import type { TargetExtractor } from '../http/input/identifier/TargetExtractor';
 import type { ResourceIdentifier } from '../http/representation/ResourceIdentifier';
@@ -107,17 +108,36 @@ export function getExtension(path: string): string {
 }
 
 /**
- * Performs a transformation on the path components of a URI.
+ * Performs a transformation on the path components of a URI,
+ * preserving but normalizing path delimiters and their escaped forms.
  */
 function transformPathComponents(path: string, transform: (part: string) => string): string {
   const [ , base, queryString ] = /^([^?]*)(.*)$/u.exec(path)!;
-  const transformed = base.split('/').map((element): string => transform(element)).join('/');
+  const transformed = base
+    // We split on actual URI path component delimiters (slash and backslash),
+    // but also on things that could be wrongly interpreted as component delimiters,
+    // such that they cannot be transformed incorrectly.
+    // We thus ensure that encoded slashes (%2F) and backslashes (%5C) are preserved,
+    // since they would become _actual_ delimiters if accidentally decoded.
+    // Additionally, we need to preserve any encoded percent signs (%25)
+    // that precede them, because these might change their interpretation as well.
+    .split(/(\/|\\|%(?:25)*(?:2f|5c))/ui)
+    // Even parts map to components that need to be transformed,
+    // odd parts to (possibly escaped) delimiters that need to be normalized.
+    .map((part, index): string =>
+      index % 2 === 0 ? transform(part) : part.toUpperCase())
+    .join('');
   return !queryString ? transformed : `${transformed}${queryString}`;
 }
 
 /**
  * Converts a URI path to the canonical version by splitting on slashes,
  * decoding any percent-based encodings, and then encoding any special characters.
+ * This function is used to clean unwanted characters in the components of
+ * the provided path.
+ *
+ * @param path - The path to convert to its canonical URI path form.
+ * @returns The canonical URI path form of the provided path.
  */
 export function toCanonicalUriPath(path: string): string {
   return transformPathComponents(path, (part): string =>
@@ -125,14 +145,24 @@ export function toCanonicalUriPath(path: string): string {
 }
 
 /**
- * Decodes all components of a URI path.
+ * This function is used when converting a URI to a file path. Decodes all components of a URI path,
+ * with the exception of encoded slash characters, as this would lead to unexpected file locations
+ * being targeted (resulting in erroneous behaviour of the file based backend).
+ *
+ * @param path - The path to decode the URI path components of.
+ * @returns A decoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function decodeUriPathComponents(path: string): string {
   return transformPathComponents(path, decodeURIComponent);
 }
 
 /**
- * Encodes all (non-slash) special characters in a URI path.
+ * This function is used in the process of converting a file path to a URI. Encodes all (non-slash)
+ * special characters in a URI path, with the exception of encoded slash characters, as this would
+ * lead to unnecessary double encoding, resulting in a URI that differs from the expected result.
+ *
+ * @param path - The path to encode the URI path components of.
+ * @returns An encoded copy of the provided URI path (ignoring encoded slash characters).
  */
 export function encodeUriPathComponents(path: string): string {
   return transformPathComponents(path, encodeURIComponent);
@@ -239,6 +269,13 @@ export function resolveAssetPath(path = modulePathPlaceholder): string {
     return resolveModulePath(path.slice(modulePathPlaceholder.length));
   }
   return absoluteFilePath(path);
+}
+
+/**
+ * Reads the project package.json and returns it.
+ */
+export async function readPackageJson(): Promise<Record<string, any>> {
+  return readJson(resolveModulePath('package.json'));
 }
 
 /**

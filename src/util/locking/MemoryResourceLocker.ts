@@ -1,5 +1,6 @@
 import AsyncLock from 'async-lock';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import type { SingleThreaded } from '../../init/cluster/SingleThreaded';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { InternalServerError } from '../errors/InternalServerError';
 import type { ResourceLocker } from './ResourceLocker';
@@ -10,7 +11,7 @@ import type { ResourceLocker } from './ResourceLocker';
  * in a memory leak if locks are never unlocked, so make sure this is covered with expiring locks for example,
  * and/or proper `finally` handles.
  */
-export class SingleThreadedResourceLocker implements ResourceLocker {
+export class MemoryResourceLocker implements ResourceLocker, SingleThreaded {
   protected readonly logger = getLoggerFor(this);
 
   private readonly locker: AsyncLock;

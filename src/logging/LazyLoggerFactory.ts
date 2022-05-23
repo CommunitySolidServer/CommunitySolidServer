@@ -1,3 +1,4 @@
+import cluster from 'cluster';
 import { WrappingLogger } from './Logger';
 import type { Logger } from './Logger';
 import type { LoggerFactory } from './LoggerFactory';
@@ -51,7 +52,7 @@ class TemporaryLoggerFactory implements LoggerFactory {
     }
     // Emit all buffered log messages
     for (const { logger, level, message } of this.buffer.splice(0, this.buffer.length)) {
-      logger.log(level, message);
+      logger.log(level, message, { isPrimary: cluster.isMaster, pid: process.pid });
     }
   }
 }

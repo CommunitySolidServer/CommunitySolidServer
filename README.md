@@ -116,8 +116,17 @@ to some commonly used settings:
 | `--sparqlEndpoint, -s` |                            | URL of the SPARQL endpoint, when using a quadstore-based configuration.                                                              |
 | `--showStackTrace, -t` | false                      | Enables detailed logging on error output.                                                                                            |
 | `--podConfigJson`      | `./pod-config.json`        | Path to the file that keeps track of dynamic Pod configurations. Only relevant when using `@css:config/dynamic.json`.                |
-| `--seededPodConfigJson` |                           | Path to the file that keeps track of seeded Pod configurations. |
+| `--seededPodConfigJson`|                            | Path to the file that keeps track of seeded Pod configurations.                                                                      |
 | `--mainModulePath, -m` |                            | Path from where Components.js will start its lookup when initializing configurations.                                                |
+| `--workers, -w`        | `1`                        | Run in multithreaded mode using workers. Special values are `-1` (scale to `num_cores-1`), `0` (scale to `num_cores`) and 1 (singlethreaded).     |
+
+### 🔀 Multithreading
+The Community Solid Server can be started in multithreaded mode with any config. The config must only contain components that are threadsafe though. If a non-threadsafe component is used in multithreaded mode, the server will describe with an error which class is the culprit.
+
+```node
+# Running multithreaded with autoscaling to number of logical cores minus 1
+npm start -- -c config/file.json -w -1
+```
 
 ### 🧶 Custom configurations
 More substantial changes to server behavior can be achieved

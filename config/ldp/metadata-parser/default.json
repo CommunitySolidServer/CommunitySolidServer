@@ -1,7 +1,6 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
-    "css:config/ldp/metadata-parser/parsers/content-length.json",
     "css:config/ldp/metadata-parser/parsers/content-type.json",
     "css:config/ldp/metadata-parser/parsers/link.json",
     "css:config/ldp/metadata-parser/parsers/plain-json-ld-filter.json",
@@ -13,7 +12,6 @@
       "@id": "urn:solid-server:default:MetadataParser",
       "@type": "ParallelHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:ContentLengthParser" },
         { "@id": "urn:solid-server:default:ContentTypeParser" },
         { "@id": "urn:solid-server:default:LinkRelParser" },
         { "@id": "urn:solid-server:default:PlainJsonLdFilter" },

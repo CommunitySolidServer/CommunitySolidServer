@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/identity/pod/pod-generators/templated.json",
     "css:config/identity/pod/resource-generators/templated.json"
@@ -23,8 +23,8 @@
     },
 
     {
-      "comment": "Add to the list of initializers.",
-      "@id": "urn:solid-server:default:ParallelInitializer",
+      "comment": "Add to the list of primary initializers.",
+      "@id": "urn:solid-server:default:PrimaryParallelInitializer",
       "@type": "ParallelHandler",
       "handlers": [
         {

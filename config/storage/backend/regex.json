@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/storage/backend/data-accessors/file.json",
     "css:config/storage/backend/data-accessors/memory.json",
@@ -21,22 +21,26 @@
       "@id": "urn:solid-server:default:RouterRule",
       "@type": "RegexRouterRule",
       "base": { "@id": "urn:solid-server:default:variable:baseUrl" },
-      "storeMap": [
+      "rules": [
         {
-          "RegexRouterRule:_storeMap_key": "^/(\\.acl)?$",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+          "@type": "RegexRule",
+          "regex": "^/(\\.acl)?$",
+          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/file/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:FileResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/file/",
+          "store": { "@id": "urn:solid-server:default:FileResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/memory/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:MemoryResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/memory/",
+          "store": { "@id": "urn:solid-server:default:MemoryResourceStore" }
         },
         {
-          "RegexRouterRule:_storeMap_key": "/sparql/",
-          "RegexRouterRule:_storeMap_value": { "@id": "urn:solid-server:default:SparqlResourceStore" }
+          "@type": "RegexRule",
+          "regex": "/sparql/",
+          "store": { "@id": "urn:solid-server:default:SparqlResourceStore" }
         }
       ]
     },

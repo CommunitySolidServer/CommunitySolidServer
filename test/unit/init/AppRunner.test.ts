@@ -1,14 +1,11 @@
 import { ComponentsManager } from 'componentsjs';
+import type { ClusterManager } from '../../../src';
 import type { App } from '../../../src/init/App';
 import { AppRunner } from '../../../src/init/AppRunner';
 import type { CliExtractor } from '../../../src/init/cli/CliExtractor';
 import type { SettingsResolver } from '../../../src/init/variables/SettingsResolver';
 import { joinFilePath } from '../../../src/util/PathUtil';
 import { flushPromises } from '../../util/Util';
-
-const app: jest.Mocked<App> = {
-  start: jest.fn(),
-} as any;
 
 const defaultParameters = {
   port: 3000,
@@ -26,6 +23,31 @@ const settingsResolver: jest.Mocked<SettingsResolver> = {
   handleSafe: jest.fn().mockResolvedValue(defaultVariables),
 } as any;
 
+const mockLogger = {
+  info: jest.fn(),
+  warn: jest.fn(),
+  silly: jest.fn(),
+  error: jest.fn(),
+  verbose: jest.fn(),
+  debug: jest.fn(),
+  log: jest.fn(),
+};
+
+const clusterManager: jest.Mocked<ClusterManager> = {
+  isSingleThreaded: jest.fn().mockReturnValue(false),
+  spawnWorkers: jest.fn(),
+  isPrimary: jest.fn().mockReturnValue(true),
+  isWorker: jest.fn().mockReturnValue(false),
+  logger: mockLogger,
+  workers: 1,
+  clusterMode: 1,
+} as any;
+
+const app: jest.Mocked<App> = {
+  start: jest.fn(),
+  clusterManager,
+} as any;
+
 const manager: jest.Mocked<ComponentsManager<App>> = {
   instantiate: jest.fn(async(iri: string): Promise<any> => {
     switch (iri) {
@@ -38,6 +60,12 @@ const manager: jest.Mocked<ComponentsManager<App>> = {
     register: jest.fn(),
   },
 } as any;
+
+const listSingleThreadedComponentsMock = jest.fn().mockResolvedValue([]);
+
+jest.mock('../../../src/init/cluster/SingleThreaded', (): any => ({
+  listSingleThreadedComponents: (): any => listSingleThreadedComponentsMock(),
+}));
 
 jest.mock('componentsjs', (): any => ({
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -90,6 +118,75 @@ describe('AppRunner', (): void => {
       expect(cliExtractor.handleSafe).toHaveBeenCalledTimes(0);
       expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(0);
       expect(app.start).toHaveBeenCalledTimes(0);
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
+    });
+
+    it('throws an error if threading issues are detected with 1 class.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass' ]);
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
+
+      let caughtError: Error | undefined;
+      try {
+        await new AppRunner().create(
+          {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          joinFilePath(__dirname, '../../../config/default.json'),
+          variables,
+        );
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
+    });
+
+    it('throws an error if threading issues are detected with 2 class.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass1', 'ViolatingClass2' ]);
+      const variables = {
+        'urn:solid-server:default:variable:port': 3000,
+        'urn:solid-server:default:variable:loggingLevel': 'info',
+        'urn:solid-server:default:variable:rootFilePath': '/var/cwd/',
+        'urn:solid-server:default:variable:showStackTrace': false,
+        'urn:solid-server:default:variable:podConfigJson': '/var/cwd/pod-config.json',
+        'urn:solid-server:default:variable:seededPodConfigJson': '/var/cwd/seeded-pod-config.json',
+      };
+
+      let caughtError: Error | undefined;
+      try {
+        await new AppRunner().create(
+          {
+            mainModulePath: joinFilePath(__dirname, '../../../'),
+            dumpErrorState: true,
+            logLevel: 'info',
+          },
+          joinFilePath(__dirname, '../../../config/default.json'),
+          variables,
+        );
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError?.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass1, ViolatingClass2\] are not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -128,6 +225,7 @@ describe('AppRunner', (): void => {
       expect(settingsResolver.handleSafe).toHaveBeenCalledTimes(0);
       expect(app.start).toHaveBeenCalledTimes(1);
       expect(app.start).toHaveBeenCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
   });
 
@@ -154,6 +252,7 @@ describe('AppRunner', (): void => {
       expect(manager.instantiate).toHaveBeenNthCalledWith(2,
         'urn:solid-server:default:App',
         { variables: defaultVariables });
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
       expect(app.start).toHaveBeenCalledTimes(0);
     });
 
@@ -171,6 +270,7 @@ describe('AppRunner', (): void => {
         '-t',
         '--podConfigJson', '/different-path.json',
         '--seededPodConfigJson', '/different-path.json',
+        '-w', '1',
       ];
       process.argv = argvParameters;
 
@@ -195,8 +295,33 @@ describe('AppRunner', (): void => {
         'urn:solid-server:default:App',
         { variables: defaultVariables });
       expect(app.start).toHaveBeenCalledTimes(0);
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
 
       process.argv = argv;
+    });
+
+    it('checks for threading issues when starting in multithreaded mode.', async(): Promise<void> => {
+      const createdApp = await new AppRunner().createCli();
+      expect(createdApp).toBe(app);
+      expect(listSingleThreadedComponentsMock).toHaveBeenCalled();
+    });
+
+    it('throws an error if there are threading issues detected.', async(): Promise<void> => {
+      listSingleThreadedComponentsMock.mockImplementationOnce((): string[] => [ 'ViolatingClass' ]);
+
+      let caughtError: Error = new Error('should disappear');
+      try {
+        await new AppRunner().createCli([ 'node', 'script' ]);
+      } catch (error: unknown) {
+        caughtError = error as Error;
+      }
+      expect(caughtError.message).toMatch(/^Cannot run a singlethreaded-only component in a multithreaded setup!/mu);
+      expect(caughtError?.message).toMatch(
+        /\[ViolatingClass\] is not threadsafe and should not be run in multithreaded setups!/mu,
+      );
+
+      expect(write).toHaveBeenCalledTimes(0);
+      expect(exit).toHaveBeenCalledTimes(0);
     });
 
     it('throws an error if creating a ComponentsManager fails.', async(): Promise<void> => {
@@ -291,6 +416,7 @@ describe('AppRunner', (): void => {
         { variables: defaultVariables });
       expect(app.start).toHaveBeenCalledTimes(1);
       expect(app.start).toHaveBeenLastCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
 
     it('throws an error if the server could not start.', async(): Promise<void> => {
@@ -342,6 +468,7 @@ describe('AppRunner', (): void => {
         { variables: defaultVariables });
       expect(app.start).toHaveBeenCalledTimes(1);
       expect(app.start).toHaveBeenLastCalledWith();
+      expect(app.clusterManager.isSingleThreaded()).toBeFalsy();
     });
 
     it('exits the process and writes to stderr if there was an error.', async(): Promise<void> => {

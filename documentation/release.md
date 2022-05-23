@@ -15,7 +15,7 @@ Steps to follow:
      `https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^x.0.0/components/context.jsonld`.
    * Update all `lsd` entries in `package.json` to the new version.
    * Commit this with `chore: Update configs to vx.0.0`.
- * `npm version major -m "Release version %s of the npm package."`
+ * `npm version major -m "chore: Release version %s of the npm package"`
    * This will update the `package.json`, generate a tag, and generate the new entries in `CHANGELOG.md`.
  * Manually edit the `CHANGELOG.md`.
    * First reverse the list of new entries so they go from old to new.
@@ -27,5 +27,11 @@ Steps to follow:
  * Do a GitHub release.
  * `npm publish`
  * Rename the `versions/x.0.0` branch to the next version.
- * Update `.github/workflows/schedule.yml` to point at the new branch.
+ * Update `.github/workflows/schedule.yml` and `.github/dependabot.yml` to point at the new branch.
  * Potentially upgrade the recipes at https://github.com/CommunitySolidServer/recipes
+ 
+Changes when doing a pre-release of a major version:
+ * Version with `npm version premajor --preid alpha -m "chore: Release version %s of the npm package"`.
+ * Do not merge `versions/x.0.0` into `main`.
+ * Publish with `npm publish --tag next`.
+ * Do not update the branch or anything related.

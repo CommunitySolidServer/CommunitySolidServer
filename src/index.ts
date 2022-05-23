@@ -187,6 +187,11 @@ export * from './identity/storage/WebIdAdapterFactory';
 export * from './identity/IdentityProviderHttpHandler';
 export * from './identity/OidcHttpHandler';
 
+// Init/Cluster
+export * from './init/cluster/ClusterManager';
+export * from './init/cluster/SingleThreaded';
+export * from './init/cluster/WorkerManager';
+
 // Init/Final
 export * from './init/final/Finalizable';
 export * from './init/final/ParallelFinalizer';
@@ -218,9 +223,9 @@ export * from './init/ConfigPodInitializer';
 export * from './init/ContainerInitializer';
 export * from './init/Initializer';
 export * from './init/LoggerInitializer';
+export * from './init/ModuleVersionVerifier';
 export * from './init/SeededPodInitializer';
 export * from './init/ServerInitializer';
-export * from './init/ModuleVersionVerifier';
 
 // Logging
 export * from './logging/LazyLoggerFactory';
@@ -287,6 +292,7 @@ export * from './storage/accessors/AtomicDataAccessor';
 export * from './storage/accessors/AtomicFileDataAccessor';
 export * from './storage/accessors/DataAccessor';
 export * from './storage/accessors/FileDataAccessor';
+export * from './storage/accessors/FilterMetadataDataAccessor';
 export * from './storage/accessors/InMemoryDataAccessor';
 export * from './storage/accessors/PassthroughDataAccessor';
 export * from './storage/accessors/SparqlDataAccessor';
@@ -402,6 +408,7 @@ export * from './util/handlers/ConditionalHandler';
 export * from './util/handlers/HandlerUtil';
 export * from './util/handlers/MethodFilterHandler';
 export * from './util/handlers/ParallelHandler';
+export * from './util/handlers/ProcessHandler';
 export * from './util/handlers/SequenceHandler';
 export * from './util/handlers/StaticHandler';
 export * from './util/handlers/StaticThrowHandler';
@@ -418,11 +425,12 @@ export * from './util/identifiers/SubdomainIdentifierStrategy';
 // Util/Locking
 export * from './util/locking/ExpiringReadWriteLocker';
 export * from './util/locking/EqualReadWriteLocker';
+export * from './util/locking/FileSystemResourceLocker';
 export * from './util/locking/GreedyReadWriteLocker';
+export * from './util/locking/MemoryResourceLocker';
 export * from './util/locking/ReadWriteLocker';
 export * from './util/locking/RedisLocker';
 export * from './util/locking/ResourceLocker';
-export * from './util/locking/SingleThreadedResourceLocker';
 export * from './util/locking/WrappedExpiringReadWriteLocker';
 export * from './util/locking/VoidLocker';
 

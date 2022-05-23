@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "@graph": [
     {
       "comment": "Extracts CLI arguments into a key/value object. Config and mainModulePath are only defined here so their description is returned.",
@@ -101,6 +101,16 @@
             "requiresArg": true,
             "type": "string",
             "describe": "Path to the file that will be used to seed pods."
+          }
+        },
+        {
+          "@type": "YargsParameter",
+          "name": "workers",
+          "options": {
+            "alias": "w",
+            "requiresArg": true,
+            "type": "number",
+            "describe": "Run the server in multithreaded mode using workers. (special values: -1: num_cores-1, 0: num_cores). Defaults to 1 (singlethreaded)"
           }
         }
       ],

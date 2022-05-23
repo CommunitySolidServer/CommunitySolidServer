@@ -399,4 +399,3 @@ describeIf('docker', 'A server with a RedisLocker', (): void => {
     });
   });
 });
-

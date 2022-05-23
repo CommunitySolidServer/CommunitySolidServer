@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^4.0.0/components/context.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@solid/community-server/^5.0.0/components/context.jsonld",
   "import": [
     "css:config/app/main/default.json",
     "css:config/app/init/initialize-root.json",
@@ -29,7 +29,7 @@
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
-    "css:config/util/resource-locker/memory.json",
+    "css:config/util/resource-locker/file.json",
     "css:config/util/variables/default.json"
   ],
   "@graph": [

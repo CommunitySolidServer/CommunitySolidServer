@@ -5,6 +5,8 @@
 - Support for Node v12 was dropped.
 - Components.js was upgraded to v5. If you have created an external component
   you should also upgrade to prevent warnings and conflicts.
+- A new FileSystemResourceLocker has been added. It allows for true threadsafe locking without external dependencies.
+- The CSS can now run multithreaded with multiple workers, this is done with the `--workers` or `-w` flag.
 
 ### Data migration
 The following actions are required if you are upgrading from a v4 server and want to retain your data.
@@ -19,14 +21,33 @@ The `@context` needs to be updated to
 
 The following changes pertain to the imports in the default configs:
 - The prefix of all imports was changed from `files-scs` to `css`.
+- All default configurations with a file-based backend now use a file-based locker instead of a memory-based one,
+  making them threadsafe.
 
-The following changes are relevant for v3 custom configs that replaced certain features.
+The following changes are relevant for v4 custom configs that replaced certain features.
 - `config/app/variables/cli.json` was changed to support the new `YargsCliExtractor` format.
+- `config/util/resource-locker/memory.json` had the locker @type changed from `SingleThreadedResourceLocker` to `MemoryResourceLocker`.
+- The content-length parser has been moved from the default configuration to the quota configurations.
+   - `/ldp/metadata-parser/default.json`
+   - `/storage/backend/*-quota-file.json`
+   - `/storage/backend/quota/quota-file.json`
+- The structure of the init configs has changed significantly to support worker threads.
+   - `/app/init/*`
+- RegexPathRouting has changed from a map datastructure to an array datastructure, allowing for fallthrough regex parsing. The change is reflected in the following default configs:
+   - `/storage/backend/regex.json`
+   - `/sparql-file-storage.json`
 
 ### Interface changes
 These changes are relevant if you wrote custom modules for the server that depend on existing interfaces.
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
+- `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+
+A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
+
+## V4.0.1
+Freezes the `oidc-provider` dependency to prevent a potential issue with the solid authn client
+as described in https://github.com/inrupt/solid-client-authn-js/issues/2103.
 
 ## v4.0.0
 ### New features

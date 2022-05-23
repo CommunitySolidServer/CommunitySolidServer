@@ -12,7 +12,7 @@ import { UnsupportedMediaTypeHttpError } from '../../util/errors/UnsupportedMedi
 import { guardStream } from '../../util/GuardedStream';
 import type { Guarded } from '../../util/GuardedStream';
 import { parseContentType } from '../../util/HeaderUtil';
-import { joinFilePath, isContainerIdentifier } from '../../util/PathUtil';
+import { joinFilePath, isContainerIdentifier, isContainerPath } from '../../util/PathUtil';
 import { parseQuads, serializeQuads } from '../../util/QuadUtil';
 import { addResourceMetadata, updateModifiedDate } from '../../util/ResourceUtil';
 import { toLiteral, toNamedTerm } from '../../util/TermUtil';
@@ -164,8 +164,14 @@ export class FileDataAccessor implements DataAccessor {
    */
   private async getFileMetadata(link: ResourceLink, stats: Stats):
   Promise<RepresentationMetadata> {
-    return (await this.getBaseMetadata(link, stats, false))
-      .set(CONTENT_TYPE_TERM, link.contentType);
+    const metadata = await this.getBaseMetadata(link, stats, false);
+    // If the resource is using an unsupported contentType, the original contentType was written to the metadata file.
+    // As a result, we should only set the contentType derived from the file path,
+    // when no previous metadata entry for contentType is present.
+    if (typeof metadata.contentType === 'undefined') {
+      metadata.set(CONTENT_TYPE_TERM, link.contentType);
+    }
+    return metadata;
   }
 
   /**
@@ -193,7 +199,12 @@ export class FileDataAccessor implements DataAccessor {
     metadata.remove(RDF.terms.type, LDP.terms.Container);
     metadata.remove(RDF.terms.type, LDP.terms.BasicContainer);
     metadata.removeAll(DC.terms.modified);
-    metadata.removeAll(CONTENT_TYPE_TERM);
+    // When writing metadata for a document, only remove the content-type when dealing with a supported media type.
+    // A media type is supported if the FileIdentifierMapper can correctly store it.
+    // This allows restoring the appropriate content-type on data read (see getFileMetadata).
+    if (isContainerPath(link.filePath) || typeof link.contentType !== 'undefined') {
+      metadata.removeAll(CONTENT_TYPE_TERM);
+    }
     const quads = metadata.quads();
     const metadataLink = await this.resourceMapper.mapUrlToFilePath(link.identifier, true);
     let wroteMetadata: boolean;

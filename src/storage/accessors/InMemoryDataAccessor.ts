@@ -2,6 +2,7 @@ import type { Readable } from 'stream';
 import arrayifyStream from 'arrayify-stream';
 import { RepresentationMetadata } from '../../http/representation/RepresentationMetadata';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
+import type { SingleThreaded } from '../../init/cluster/SingleThreaded';
 import { InternalServerError } from '../../util/errors/InternalServerError';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
 import type { Guarded } from '../../util/GuardedStream';
@@ -19,7 +20,7 @@ interface ContainerEntry {
 }
 type CacheEntry = DataEntry | ContainerEntry;
 
-export class InMemoryDataAccessor implements DataAccessor {
+export class InMemoryDataAccessor implements DataAccessor, SingleThreaded {
   private readonly identifierStrategy: IdentifierStrategy;
   // A dummy container where every entry corresponds to a root container
   private readonly store: { entries: Record<string, ContainerEntry> };
