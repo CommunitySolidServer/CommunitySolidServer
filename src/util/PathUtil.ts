@@ -98,7 +98,7 @@ export function ensureLeadingSlash(path: string): string {
 }
 
 /**
- * Makes sure the input path has no slashes at the end.
+ * Makes sure the input path has no slashes at the beginning.
  *
  * @param path - Path to check.
  *

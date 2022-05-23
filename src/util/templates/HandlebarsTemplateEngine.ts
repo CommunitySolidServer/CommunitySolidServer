@@ -12,6 +12,7 @@ import Dict = NodeJS.Dict;
 export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> implements TemplateEngine<T> {
   private readonly applyTemplate: Promise<TemplateDelegate>;
   private readonly baseUrl: string;
+
   /**
    * @param template - The default template @range {json}
    */
