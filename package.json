@@ -137,7 +137,7 @@
     "yargs": "^17.3.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.4",
+    "@commitlint/cli": "^17.0.0",
     "@commitlint/config-conventional": "^17.0.0",
     "@inrupt/solid-client-authn-core": "^1.11.5",
     "@inrupt/solid-client-authn-node": "^1.11.5",
