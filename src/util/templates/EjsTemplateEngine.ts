@@ -14,6 +14,7 @@ export class EjsTemplateEngine<T extends Dict<any> = Dict<any>> implements Templ
   private readonly baseUrl: string;
 
   /**
+   * @param baseUrl - Base URL of the server.
    * @param template - The default template @range {json}
    */
   public constructor(baseUrl: string, template?: Template) {

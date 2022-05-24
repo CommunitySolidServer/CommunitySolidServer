@@ -14,6 +14,7 @@ export class HandlebarsTemplateEngine<T extends Dict<any> = Dict<any>> implement
   private readonly baseUrl: string;
 
   /**
+   * @params baseUrl - Base URL of the server.
    * @param template - The default template @range {json}
    */
   public constructor(baseUrl: string, template?: Template) {
