@@ -1,12 +1,18 @@
+import { createHash } from 'crypto';
+import { parse } from 'path';
 import { BasicRepresentation } from '../../http/representation/BasicRepresentation';
 import type { Representation } from '../../http/representation/Representation';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import { NotFoundHttpError } from '../../util/errors/NotFoundHttpError';
-import { ensureLeadingSlash, ensureTrailingSlash, isContainerIdentifier, joinUrl } from '../../util/PathUtil';
+import { ensureLeadingSlash, ensureTrailingSlash, isContainerIdentifier, joinUrl,
+  joinFilePath } from '../../util/PathUtil';
 import { readableToString } from '../../util/StreamUtil';
 import { LDP } from '../../util/Vocabularies';
 import type { ResourceStore } from '../ResourceStore';
 import type { KeyValueStorage } from './KeyValueStorage';
+
+// Maximum allowed length for the keys, longer keys will be hashed.
+const KEY_LENGTH_LIMIT = 255;
 
 /**
  * A {@link KeyValueStorage} for JSON-like objects using a {@link ResourceStore} as backend.
@@ -114,6 +120,15 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
    * Converts a key into an identifier for internal storage.
    */
   private keyToIdentifier(key: string): ResourceIdentifier {
+    // Parse the key as a file path
+    const parsedPath = parse(key);
+    // Hash long filenames to prevent issues with the underlying storage.
+    // E.g. a UNIX a file name cannot exceed 255 bytes.
+    // This is a temporary fix for https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1013,
+    // until we have a solution for data migration.
+    if (parsedPath.base.length > KEY_LENGTH_LIMIT) {
+      key = joinFilePath(parsedPath.dir, this.applyHash(parsedPath.base));
+    }
     return { path: joinUrl(this.container, key) };
   }
 
@@ -126,5 +141,9 @@ export class JsonResourceStorage<T> implements KeyValueStorage<string, T> {
     // In practice this would only be an issue if a class depends
     // on the `entries` results matching a key that was sent before.
     return ensureLeadingSlash(identifier.path.slice(this.container.length));
+  }
+
+  private applyHash(key: string): string {
+    return createHash('sha256').update(key).digest('hex');
   }
 }

@@ -85,6 +85,15 @@ describe('A WebIdAdapterFactory', (): void => {
     });
   });
 
+  it('can handle a context array.', async(): Promise<void> => {
+    json['@context'] = [ json['@context'] ];
+    fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });
+    await expect(adapter.find(id)).resolves.toEqual({
+      ...json,
+      token_endpoint_auth_method: 'none',
+    });
+  });
+
   it('errors if there is a client_id mismatch.', async(): Promise<void> => {
     json.client_id = 'someone else';
     fetchMock.mockResolvedValueOnce({ url: id, status: 200, text: (): string => JSON.stringify(json) });

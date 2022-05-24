@@ -1,0 +1,15 @@
+{
+    "types": [
+        {"type": "feat", "section": "Features"},
+        {"type": "fix", "section": "Fixes"},
+        {"type": "chore", "section": "Chores"},
+        {"type": "chore(deps)", "section": "Dependency updates"},
+        {"type": "docs", "section": "Documentation"},
+        {"type": "style", "section": "Styling"},
+        {"type": "refactor", "section": "Refactors"},
+        {"type": "perf", "section": "Performance"},
+        {"type": "test", "section": "Testing"}
+    ],
+    "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
+    "releaseCommitMessageFormat": "chore(release): Release version {{currentTag}} of the npm package"
+}
