@@ -48,7 +48,7 @@ async function genToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
 describe('A TemplatedResourcesGenerator', (): void => {
   const rootFilePath = '/templates/pod';
   // Using handlebars engine since it's smaller than any possible dummy
-  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine());
+  const generator = new TemplatedResourcesGenerator(rootFilePath, new DummyFactory(), new HandlebarsTemplateEngine('http://test.com/'));
   let cache: { data: any };
   const template = '<{{webId}}> a <http://xmlns.com/foaf/0.1/Person>.';
   const location = { path: 'http://test.com/alice/' };

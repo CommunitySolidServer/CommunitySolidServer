@@ -42,6 +42,7 @@ These changes are relevant if you wrote custom modules for the server that depen
 - `YargsCliExtractor` was changed to now take as input an array of parameter objects.
 - `RedirectAllHttpHandler` was removed and fully replaced by `RedirectingHttpHandler`.
 - `SingleThreadedResourceLocker` has been renamed to `MemoryResourceLocker`.
+- Both `TemplateEngine` implementations now take a `baseUrl` parameter as input.
 
 A new interface `SingleThreaded` has been added. This empty interface can be implemented to mark a component as not-threadsafe. When the CSS starts in multithreaded mode, it will error and halt if any SingleThreaded components are instantiated.
 

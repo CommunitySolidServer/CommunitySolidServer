@@ -11,7 +11,7 @@ describe('A EjsTemplateEngine', (): void => {
   let templateEngine: EjsTemplateEngine;
 
   beforeEach((): void => {
-    templateEngine = new EjsTemplateEngine(defaultTemplate);
+    templateEngine = new EjsTemplateEngine('http://localhost:3000', defaultTemplate);
   });
 
   it('uses the default template when no template was passed.', async(): Promise<void> => {

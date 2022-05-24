@@ -98,6 +98,17 @@ export function ensureLeadingSlash(path: string): string {
 }
 
 /**
+ * Makes sure the input path has no slashes at the beginning.
+ *
+ * @param path - Path to check.
+ *
+ * @returns The potentially changed path.
+ */
+export function trimLeadingSlashes(path: string): string {
+  return path.replace(/^\/+/u, '');
+}
+
+/**
  * Extracts the extension (without dot) from a path.
  * Custom function since `path.extname` does not work on all cases (e.g. ".acl")
  * @param path - Input path to parse.

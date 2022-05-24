@@ -17,7 +17,10 @@
           "@type": "TemplatedResourcesGenerator",
           "templateFolder": "@css:templates/root/empty",
           "factory": { "@type": "ExtensionBasedMapperFactory" },
-          "templateEngine": { "@type": "HandlebarsTemplateEngine" }
+          "templateEngine": {
+            "@type": "HandlebarsTemplateEngine",
+            "baseUrl": { "@id": "urn:solid-server:default:variable:baseUrl" }
+          }
         },
         "args_storageKey": "wellKnownContainerInitialized",
         "args_storage": { "@id": "urn:solid-server:default:SetupStorage" }
