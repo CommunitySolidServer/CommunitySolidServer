@@ -32,6 +32,8 @@ export class QuadToRdfConverter extends BaseTypedRepresentationConverter {
     let data: Readable;
 
     // Remove the ResponseMetadata graph as we never want to see it in a serialization
+    // Note that this is a temporary solution as indicated in following comment:
+    // https://github.com/CommunitySolidServer/CommunitySolidServer/pull/1188#discussion_r853830903
     quads.data = transformSafely<Quad>(quads.data, {
       objectMode: true,
       transform(quad: Quad): void {
