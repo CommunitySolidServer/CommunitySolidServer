@@ -4,8 +4,21 @@ import type { ResourceIdentifier } from '../../http/representation/ResourceIdent
 import { AsyncHandler } from '../../util/handlers/AsyncHandler';
 
 export interface RdfStorePatcherInput {
+  /**
+   * Identifier of the resource that will be patched
+   */
   identifier: ResourceIdentifier;
+
+  /**
+   * The changes represented by a Patch object
+   */
   patch: Patch;
+
+  /**
+   * The store on which the patch will be executed.
+   * Note the RdfStorePatcher is allowed to make changes to the store.
+   * This means the store object might be modified by the patch.
+   */
   store: Store;
 }
 
