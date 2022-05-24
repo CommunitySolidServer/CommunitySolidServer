@@ -1,11 +1,12 @@
 import { DataFactory, Store } from 'n3';
 import type { Patch } from '../../../../src/http/representation/Patch';
 import { RepresentationMetadata } from '../../../../src/http/representation/RepresentationMetadata';
-import { ImmutablePattern, ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
+import { ImmutableMetadataPatcher } from '../../../../src/storage/patch/ImmutableMetadataPatcher';
 import type { RdfStorePatcherInput } from '../../../../src/storage/patch/RdfStorePatcher';
 import type { SparqlUpdatePatcher } from '../../../../src/storage/patch/SparqlUpdatePatcher';
 import { ConflictHttpError } from '../../../../src/util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../../../src/util/errors/NotImplementedHttpError';
+import { FilterPattern } from '../../../../src/util/QuadUtil';
 import { guardedStreamFrom } from '../../../../src/util/StreamUtil';
 import { PIM, RDF } from '../../../../src/util/Vocabularies';
 import { SimpleSuffixStrategy } from '../../../util/SimpleSuffixStrategy';
@@ -45,7 +46,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
     patch = getPatch();
     input = { store, patch, identifier: metaIdentifier };
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(`${base}a`, `${base}b`, `${base}c`),
+      new FilterPattern(`${base}a`, `${base}b`, `${base}c`),
     ]);
   });
 
@@ -76,7 +77,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples based on subject alone.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(`${base}s`),
+      new FilterPattern(`${base}s`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -86,7 +87,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples based on predicate alone.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, `${base}p`),
+      new FilterPattern(undefined, `${base}p`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -96,7 +97,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples based on object alone.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, undefined, `${base}o`),
+      new FilterPattern(undefined, undefined, `${base}o`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -106,7 +107,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples based on predicate and object.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, `${base}p`, `${base}o`),
+      new FilterPattern(undefined, `${base}p`, `${base}o`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -116,7 +117,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('handles patches that changes triples where only a part is immutable.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, `${base}p`, `${base}o`),
+      new FilterPattern(undefined, `${base}p`, `${base}o`),
     ]);
     patcher.handle = jest.fn(async(): Promise<Store> => new Store([
       quad(namedNode(`${base}a`), namedNode(`${base}p`), namedNode(`${base}c`)),
@@ -138,7 +139,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
       quad(namedNode(`${base}newRoot`), RDF.terms.type, PIM.terms.Storage),
     ]));
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
+      new FilterPattern(undefined, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', 'http://www.w3.org/ns/pim/space#Storage'),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -148,7 +149,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects patches that change immutable triples.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(`${base}s`, `${base}p`, `${base}o`),
+      new FilterPattern(`${base}s`, `${base}p`, `${base}o`),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);
@@ -158,7 +159,7 @@ describe('A ImmutableMetadataPatcher', (): void => {
 
   it('rejects everything when ImmutableTriple has no arguments.', async(): Promise<void> => {
     handler = new ImmutableMetadataPatcher(patcher, metaStrategy, [
-      new ImmutablePattern(),
+      new FilterPattern(),
     ]);
 
     await expect(handler.handleSafe(input)).rejects.toThrow(ConflictHttpError);

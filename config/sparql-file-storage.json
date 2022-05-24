@@ -70,11 +70,11 @@
     {
       "@id": "urn:solid-server:default:FileResourceStore",
       "@type": "DataAccessorBasedStore",
-        "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
-        "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
-        "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
-        "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
-        "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
+      "identifierStrategy": { "@id": "urn:solid-server:default:IdentifierStrategy" },
+      "auxiliaryStrategy": { "@id": "urn:solid-server:default:AuxiliaryStrategy" },
+      "accessor": { "@id": "urn:solid-server:default:FileDataAccessor" },
+      "metadataStrategy":{ "@id": "urn:solid-server:default:MetadataStrategy" },
+      "converter": { "@id": "urn:solid-server:default:RepresentationConverter" }
     },
     {
       "@id": "urn:solid-server:default:SparqlResourceStore",

@@ -36,25 +36,57 @@
       "@id": "urn:solid-server:default:PatchHandler_RDFStore",
       "@type": "WaterfallHandler",
       "handlers": [
-        { "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck"},
+        { "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata"},
         { "@id": "urn:solid-server:default:PatchHandler_RDF" }
       ]
     },
     {
       "comment": "Patches metadata resources. Prevents specific triple patterns from being updated.",
-      "@id": "urn:solid-server:default:PatchHandler_ImmutableCheck",
+      "@id": "urn:solid-server:default:PatchHandler_ImmutableMetadata",
       "@type": "ImmutableMetadataPatcher",
       "patcher": { "@id": "urn:solid-server:default:PatchHandler_RDF" },
       "metadataStrategy": { "@id": "urn:solid-server:default:MetadataStrategy" },
       "immutablePatterns": [
         {
-          "@type": "ImmutablePattern",
+          "comment": "Pattern corresponding to the root storage of a Solid Pod.",
+          "@type": "FilterPattern",
           "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
           "object": "http://www.w3.org/ns/pim/space#Storage"
         },
         {
-          "@type": "ImmutablePattern",
+          "comment": "Pattern corresponding to the containment of resources.",
+          "@type": "FilterPattern",
           "predicate": "http://www.w3.org/ns/ldp#contains"
+        },
+        {
+          "comment": "Pattern corresponding to describing the location of the metadata resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://purl.org/dc/terms/description"
+        },
+        {
+          "comment": "Pattern corresponding to describing the location of the access control resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/auth/acl#accessControl"
+        },
+        {
+          "comment": "Pattern corresponding to describing the size of the resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/posix/stat#size"
+        },
+        {
+          "comment": "Pattern corresponding to describing the last modified timestamp of a resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/posix/stat#mtime"
+        },
+        {
+          "comment": "Pattern corresponding to describing the last modified datetime of a resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://purl.org/dc/terms/modified"
+        },
+        {
+          "comment": "Pattern corresponding to describing the content type of a resource.",
+          "@type": "FilterPattern",
+          "predicate": "http://www.w3.org/ns/ma-ont#format"
         }
       ]
     },

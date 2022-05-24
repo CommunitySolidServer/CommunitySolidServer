@@ -4,6 +4,7 @@ import type { AuxiliaryStrategy } from '../../http/auxiliary/AuxiliaryStrategy';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { ConflictHttpError } from '../../util/errors/ConflictHttpError';
 import { NotImplementedHttpError } from '../../util/errors/NotImplementedHttpError';
+import type { FilterPattern } from '../../util/QuadUtil';
 import { serializeQuads } from '../../util/QuadUtil';
 import { readableToString } from '../../util/StreamUtil';
 import type { RdfStorePatcherInput } from './RdfStorePatcher';
@@ -20,10 +21,10 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
 
   private readonly patcher: RdfStorePatcher;
   private readonly metadataStrategy: AuxiliaryStrategy;
-  private readonly immutablePatterns: ImmutablePattern[];
+  private readonly immutablePatterns: FilterPattern[];
 
   public constructor(patcher: RdfStorePatcher, metadataStrategy: AuxiliaryStrategy,
-    immutablePatterns: ImmutablePattern[]) {
+    immutablePatterns: FilterPattern[]) {
     super();
     this.patcher = patcher;
     this.metadataStrategy = metadataStrategy;
@@ -61,24 +62,5 @@ export class ImmutableMetadataPatcher extends RdfStorePatcher {
       throw new ConflictHttpError('Not allowed to change this type of metadata.');
     }
     return patchedStore;
-  }
-}
-
-/**
- * Class to define which triples MUST NOT be changed during patching.
- *
- * All fields are optional and are interpreted as wildcards if not provided.
- * E.g. when only the predicate is given as argument,
- * there MUST be no change in quads with that given predicate.
- */
-export class ImmutablePattern {
-  public readonly subject: string | null;
-  public readonly predicate: string | null;
-  public readonly object: string | null;
-
-  public constructor(subject?: string, predicate?: string, object?: string) {
-    this.subject = subject ?? null;
-    this.predicate = predicate ?? null;
-    this.object = object ?? null;
   }
 }
