@@ -121,7 +121,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     await this.auxiliaryStrategy.addMetadata(metadata);
 
     const isContainer = isContainerPath(metadata.identifier.value);
-    if (isContainer) {
+    let data = metadata.quads();
+    if (isContainer || isMetadata) {
       // Add containment triples of non-auxiliary resources
       for await (const child of this.accessor.getChildren(identifier)) {
         if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
@@ -131,22 +132,25 @@ export class DataAccessorBasedStore implements ResourceStore {
           metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
       }
-      const data = metadata.quads();
-      if (isMetadata) {
+      data = metadata.quads();
+
+      if (isMetadata && isContainer) {
         metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
       }
-
       metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(POSIX.terms.namespace, PREFERRED_PREFIX_TERM, 'posix', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(XSD.terms.namespace, PREFERRED_PREFIX_TERM, 'xsd', SOLID_META.terms.ResponseMetadata);
+    }
+
+    if (isContainer) {
       representation = new BasicRepresentation(data, metadata, INTERNAL_QUADS);
-    } else if (!isMetadata) {
-      representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
-    } else {
+    } else if (isMetadata) {
       representation = new BasicRepresentation(
         metadata.quads(), this.metadataStrategy.getAuxiliaryIdentifier(identifier), INTERNAL_QUADS,
       );
+    } else {
+      representation = new BasicRepresentation(await this.accessor.getData(identifier), metadata);
     }
 
     return representation;
@@ -219,7 +223,7 @@ export class DataAccessorBasedStore implements ResourceStore {
     }
 
     // Ensure the representation is supported by the accessor
-    // Containers are not checked because uploaded representations are treated as metadata
+    // Metadata and containers are not checked since they get converted to RepresentationMetadata objects.
     if (!isContainer && !this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       await this.accessor.canHandle(representation);
     }
@@ -229,7 +233,8 @@ export class DataAccessorBasedStore implements ResourceStore {
     if (this.metadataStrategy.isAuxiliaryIdentifier(identifier)) {
       return await this.writeMetadata(identifier, representation);
     }
-    // Metadata and containers are not checked since they get converted to RepresentationMetadata objects.
+
+    // Potentially have to create containers if it didn't exist yet
     return this.writeData(identifier, representation, isContainer, !oldMetadata, Boolean(oldMetadata));
   }
 
@@ -466,7 +471,6 @@ export class DataAccessorBasedStore implements ResourceStore {
 
     // Remove all generated metadata to prevent it from being stored permanently
     this.removeResponseMetadata(representation.metadata);
-    // Representation.metadata.removeAll(CONTENT_TYPE_TERM);
 
     await (isContainer ?
       this.accessor.writeContainer(identifier, representation.metadata) :
