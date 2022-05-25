@@ -123,19 +123,21 @@ export class DataAccessorBasedStore implements ResourceStore {
     const isContainer = isContainerPath(metadata.identifier.value);
     let data = metadata.quads();
     if (isContainer || isMetadata) {
-      // Add containment triples of non-auxiliary resources
-      for await (const child of this.accessor.getChildren(identifier)) {
-        if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
-          if (!isMetadata) {
-            metadata.addQuads(child.quads());
+      if (isContainer) {
+        // Add containment triples of non-auxiliary resources
+        for await (const child of this.accessor.getChildren(identifier)) {
+          if (!this.auxiliaryStrategy.isAuxiliaryIdentifier({ path: child.identifier.value })) {
+            if (!isMetadata) {
+              metadata.addQuads(child.quads());
+            }
+            metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
           }
-          metadata.add(LDP.terms.contains, child.identifier as NamedNode, SOLID_META.terms.ResponseMetadata);
         }
-      }
-      data = metadata.quads();
+        data = metadata.quads();
 
-      if (isMetadata && isContainer) {
-        metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
+        if (isMetadata) {
+          metadata = new RepresentationMetadata(this.metadataStrategy.getAuxiliaryIdentifier(identifier));
+        }
       }
       metadata.addQuad(DC.terms.namespace, PREFERRED_PREFIX_TERM, 'dc', SOLID_META.terms.ResponseMetadata);
       metadata.addQuad(LDP.terms.namespace, PREFERRED_PREFIX_TERM, 'ldp', SOLID_META.terms.ResponseMetadata);
