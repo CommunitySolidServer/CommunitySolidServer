@@ -1,6 +1,7 @@
 import type { Dirent, Stats } from 'fs';
 import { PassThrough, Readable } from 'stream';
 import type { SystemError } from '../../src/util/errors/SystemError';
+import Describe = jest.Describe;
 
 const portNames = [
   // Integration
@@ -19,6 +20,7 @@ const portNames = [
   'PodCreation',
   'PodQuota',
   'RedisLocker',
+  'ResourceLockCleanup',
   'RestrictedIdentity',
   'SeedingPods',
   'ServerFetch',
@@ -40,11 +42,10 @@ export function getPort(name: typeof portNames[number]): number {
   return 6000 + idx;
 }
 
-export function describeIf(envFlag: string, name: string, fn: () => void): void {
+export function describeIf(envFlag: string): Describe {
   const flag = `TEST_${envFlag.toUpperCase()}`;
   const enabled = !/^(|0|false)$/iu.test(process.env[flag] ?? '');
-  // eslint-disable-next-line jest/valid-describe-callback, jest/valid-title, jest/no-disabled-tests
-  return enabled ? describe(name, fn) : describe.skip(name, fn);
+  return enabled ? describe : describe.skip;
 }
 
 /**

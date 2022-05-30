@@ -27,17 +27,25 @@
     "css:config/util/index/default.json",
     "css:config/util/logging/winston.json",
     "css:config/util/representation-conversion/default.json",
-    "css:config/util/resource-locker/memory.json",
+    "css:config/util/resource-locker/file.json",
     "css:config/util/variables/default.json"
   ],
   "@graph": [
     {
       "@id": "urn:solid-server:test:Instances",
       "@type": "RecordObject",
-      "RecordObject:_record": [
+      "record": [
         {
           "RecordObject:_record_key": "app",
           "RecordObject:_record_value": { "@id": "urn:solid-server:default:App" }
+        },
+        {
+          "RecordObject:_record_key": "store",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:ResourceStore_Backend" }
+        },
+        {
+          "RecordObject:_record_key": "locker",
+          "RecordObject:_record_value": { "@id": "urn:solid-server:default:FileSystemResourceLocker" }
         }
       ]
     },

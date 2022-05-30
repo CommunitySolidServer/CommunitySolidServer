@@ -1,9 +1,10 @@
 import { createHash } from 'crypto';
-import { ensureDirSync, pathExists, readdir, rmdir } from 'fs-extra';
+import { ensureDir, remove } from 'fs-extra';
 import type { LockOptions, UnlockOptions } from 'proper-lockfile';
 import { lock, unlock } from 'proper-lockfile';
 import type { ResourceIdentifier } from '../../http/representation/ResourceIdentifier';
 import type { Finalizable } from '../../init/final/Finalizable';
+import type { Initializable } from '../../init/Initializable';
 import { getLoggerFor } from '../../logging/LogUtil';
 import { createErrorMessage } from '../errors/ErrorUtil';
 import { InternalServerError } from '../errors/InternalServerError';
@@ -34,9 +35,12 @@ const attemptDefaults: Required<AttemptSettings> = { retryCount: -1, retryDelay:
  * Argument interface of the FileSystemResourceLocker constructor.
  */
 interface FileSystemResourceLockerArgs {
-  /** The rootPath of the filesystem */
+  /** The rootPath of the filesystem _[default is the current dir `./`]_ */
   rootFilePath?: string;
-  /** The path to the directory where locks will be stored (appended to rootFilePath) */
+  /**
+   * The path to the directory where locks will be stored (appended to rootFilePath)
+   * _[default is `/.internal/locks`]_
+   */
   lockDirectory?: string;
   /** Custom settings concerning retrying locks */
   attemptSettings?: AttemptSettings;
@@ -54,24 +58,22 @@ function isCodedError(err: unknown): err is { code: string } & Error {
  * either resolve successfully or reject immediately with the causing error. The retry function of the library
  * however will be ignored and replaced by our own LockUtils' {@link retryFunctionUntil} function.
  */
-export class FileSystemResourceLocker implements ResourceLocker, Finalizable {
+export class FileSystemResourceLocker implements ResourceLocker, Initializable, Finalizable {
   protected readonly logger = getLoggerFor(this);
   private readonly attemptSettings: Required<AttemptSettings>;
   /** Folder that stores the locks */
   private readonly lockFolder: string;
+  private finalized = false;
 
   /**
    * Create a new FileSystemResourceLocker
-   * @param rootFilePath - The rootPath of the filesystem _[default is the current dir `./`]_
-   * @param lockDirectory - The path to the directory where locks will be stored (appended to rootFilePath)
-                            _[default is `/.internal/locks`]_
-   * @param attemptSettings - Custom settings concerning retrying locks
+   * @param args - Configures the locker using the specified FileSystemResourceLockerArgs instance.
    */
   public constructor(args: FileSystemResourceLockerArgs = {}) {
     const { rootFilePath, lockDirectory, attemptSettings } = args;
+    defaultLockOptions.onCompromised = this.customOnCompromised.bind(this);
     this.attemptSettings = { ...attemptDefaults, ...attemptSettings };
     this.lockFolder = joinFilePath(rootFilePath ?? './', lockDirectory ?? '/.internal/locks');
-    ensureDirSync(this.lockFolder);
   }
 
   /**
@@ -149,13 +151,36 @@ export class FileSystemResourceLocker implements ResourceLocker, Finalizable {
     };
   }
 
+  /**
+   * Initializer method to be executed on server start. This makes sure that no pre-existing (dangling) locks
+   * remain on disk, so that request will not be blocked because a lock was acquired in the previous server instance.
+   *
+   * NOTE: this also removes locks created by the GreedyReadWriteLocker.
+   * (See issue: https://github.com/CommunitySolidServer/CommunitySolidServer/issues/1358)
+   */
+  public async initialize(): Promise<void> {
+    // Remove all existing (dangling) locks so new requests are not blocked (by removing the lock folder).
+    await remove(this.lockFolder);
+    // Put the folder back since `proper-lockfile` depends on its existence.
+    return ensureDir(this.lockFolder);
+  }
+
   public async finalize(): Promise<void> {
-    // Delete lingering locks in the lockFolder.
-    if (await pathExists(this.lockFolder)) {
-      for (const dir of await readdir(this.lockFolder)) {
-        await rmdir(joinFilePath(this.lockFolder, dir));
-      }
-      await rmdir(this.lockFolder);
+    // Register that finalize was called by setting a state variable.
+    this.finalized = true;
+    // NOTE: in contrast with initialize(), the lock folder is not cleared here, as the proper-lock library
+    // manages these files and will attempt to clear existing files when the process is shutdown gracefully.
+  }
+
+  /**
+   * This function is used to override the proper-lock onCompromised function.
+   * Once the locker was finalized, it will log the provided error instead of throwing it
+   * This allows for a clean shutdown procedure.
+   */
+  private customOnCompromised(err: any): void {
+    if (!this.finalized) {
+      throw err;
     }
+    this.logger.warn(`onCompromised was called with error: ${err.message}`);
   }
 }

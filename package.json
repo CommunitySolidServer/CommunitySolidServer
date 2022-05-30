@@ -54,6 +54,7 @@
     "release": "standard-version",
     "start": "node ./bin/server.js",
     "start:file": "node ./bin/server.js -c config/file.json -f ./data",
+    "start:file-no-setup": "node ./bin/server.js -c config/file-no-setup.json -f ./data",
     "test": "npm run test:ts && npm run jest",
     "test:deploy": "test/deploy/validate-configs.sh",
     "test:ts": "tsc -p test --noEmit",
