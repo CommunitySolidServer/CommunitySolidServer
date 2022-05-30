@@ -1,5 +1,7 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix pim: <http://www.w3.org/ns/pim/space#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
 
 <>
     a foaf:PersonalProfileDocument;
@@ -8,5 +10,18 @@
 
 <{{webId}}>
     {{#if name}}foaf:name "{{name}}";{{/if}}
+    acl:trustedApp
+            [
+                acl:mode acl:Append, acl:Control, acl:Read, acl:Write;
+                acl:origin <https://staging.mysilio.garden>
+            ],
+            [
+                acl:mode acl:Append, acl:Control, acl:Read, acl:Write;
+                acl:origin <https://mysilio.garden>
+            ];
     {{#if oidcIssuer}}solid:oidcIssuer <{{oidcIssuer}}>;{{/if}}
+    {{#if podBaseUrl}}
+      pim:storage <{{podBaseUrl}}>;
+      pim:preferencesFile <{{podBaseUrl}}settings/prefs.ttl>;
+    {{/if}}
     a foaf:Person.
