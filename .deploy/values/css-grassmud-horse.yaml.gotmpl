@@ -5,6 +5,12 @@ persistence:
   enabled: true
   size: : 100Gi
 fullNameOverride: {{ .Release.Name }}
+image:
+  registry: docker.io
+  repository: itme/{{ requiredEnv  "CIRCLE_PROJECT_REPONAME" }}
+  tag: {{ requiredEnv "CIRCLECI_SHA1" }}
+  pullSecrets:
+    - css-image-pull-secrets
 ingress:
   annotatations:
     kubernetes.io/ingress.class: "nginx"

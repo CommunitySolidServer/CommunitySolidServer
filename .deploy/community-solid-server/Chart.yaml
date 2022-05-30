@@ -1,5 +1,0 @@
-apiVersion: v2
-name: community-solid-server
-description: A simple helm chart for deploying community-solid-server. Uses persistent volumes and stateful sets.
-type: application
-version: 0.2.11

@@ -6,8 +6,15 @@ environments:
   css-grassmud-horse:
 
 releases:
+  - name: css-image-pull-secrets
+    namespace: {{ .Environment.Name }}
+    chart: ./image-pull-secrets
+    values:
+      - ./values/image-pull-secrets.yaml.gotmpl
   - name: community-solid-server
     namespace: {{ .Environment.Name }}
     chart: css/community-solid-server
     values:
       - ./values/{{ .Environment.Name }}.yaml.gotmpl
+    needs:
+      - css-image-pull-secrets

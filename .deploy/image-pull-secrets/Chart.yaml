@@ -1,0 +1,5 @@
+apiVersion: v2
+name: image-pull-secrets
+description: A simple helm chart for deploying Docker image pull secrets.
+type: application
+version: 0.2.11
