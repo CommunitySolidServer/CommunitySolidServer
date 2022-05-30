@@ -1,0 +1,13 @@
+repositories:
+- name: css
+  url: https://communitysolidserver.github.io/css-helm-chart/charts/
+
+environments:
+  css-grassmud-horse:
+
+releases:
+  - name: community-solid-server
+    namespace: {{ .Environment.Name }}
+    chart: css/community-solid-server
+    values:
+      - ./values/{{ .Environment.Name }}.yaml.gotmpl

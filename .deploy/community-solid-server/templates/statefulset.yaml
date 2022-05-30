@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  serviceName: {{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.image.tag }}
+        args: [
+          "--config", {{ .Values.solid.config | quote }},
+          "--rootFilePath", "/var/lib/solid/data",
+          "--port", {{ .Values.image.port | quote }},
+          "--baseUrl", {{ (printf "%v://%v/" "http" .Values.host) | quote }},
+          "--loggingLevel", {{ .Values.solid.loggingLevel | quote }}
+        ]
+        ports:
+        - containerPort: {{ .Values.image.port }}
+          name: web
+        volumeMounts:
+        - name: {{ .Release.Name }}-data
+          mountPath: /var/lib/solid/data
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-image-pull-secret
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Release.Name }}-data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: {{ .Values.volumeSize }}
